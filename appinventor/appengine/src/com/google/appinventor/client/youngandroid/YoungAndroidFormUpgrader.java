@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -938,6 +938,11 @@ public final class YoungAndroidFormUpgrader {
       // The PrimaryColorDark property was added.
       // The Theme property was added.
       srcCompVersion = 21;
+    }
+
+    if (srcCompVersion < 22) {
+      // The Theme property was updated with the Classic option.
+      srcCompVersion = 22;
     }
 
     return srcCompVersion;

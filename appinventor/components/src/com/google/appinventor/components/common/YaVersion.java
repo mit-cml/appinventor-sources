@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -732,7 +732,9 @@ public class YaVersion {
   // - The Screen.PrimaryColor property was added
   // - The Screen.PrimaryColorDark property was added
   // - The Screen.Theme property was added
-  public static final int FORM_COMPONENT_VERSION = 21;
+  // For FORM_COMPONENT_VERSION 22:
+  // - The Classic option for themes was added
+  public static final int FORM_COMPONENT_VERSION = 22;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

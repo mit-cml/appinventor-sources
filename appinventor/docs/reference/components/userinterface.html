@@ -958,7 +958,9 @@ none
     By default, the title bar will match older versions of
     Android. Enabling this option will replace the default title bar
     with an ActionBar to match newer Android versions. The ActionBar
-    can be styled using the PrimaryColor and Theme properties.
+    can be styled using the PrimaryColor and Theme
+    properties. ActionBar is only supported on themes other than
+    "Classic."
   </dd>
   <dt><code>AlignHorizontal</code></dt>
   <dd>A number that encodes how contents of the screen are aligned  horizontally. The choices are: 1 = left aligned, 2 = horizontally centered,  3 = right aligned.</dd>
@@ -1015,11 +1017,13 @@ none
   <dd>
     Selects the theme for the application. Theme can only be set at
     compile time and the Companion will approximate changes during
-    live development. Possible options are Default, which is the same
-    as Default PrimaryColor for the title bar and has light buttons,
-    Black Title Text, which uses the PrimaryColor but with black text,
-    and Dark, which will use the PrimaryColorDark and have dark grey
-    components.
+    live development. Possible options are Classic, which is the same
+    as older versions of App Inventor; Device Default, which gives the
+    same theme as the version of Android running on the device and
+    uses PrimaryColor for the ActinBar and has light buttons; Black
+    Title Text, which is the Device Default theme but with black title
+    text, and Dark, which is a dark version of the Device Default
+    theme using PrimaryColorDark and having dark grey components.
   </dd>
   <dt><code><em>TitleVisible</em></code></dt>
   <dd>The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.</dd>

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2017 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2018 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -2209,7 +2209,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 21:
     // - The AccentColor, PrimaryColor, PrimaryColorDark, and Theme properties were added to Screen, and no block needs to be changed.
-    21: "noUpgrade"
+    21: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 22:
+    // - The Classic option was added to the Theme property. No blocks need to be changed
+    22: "noUpgrade"
 
 
   }, // End Screen

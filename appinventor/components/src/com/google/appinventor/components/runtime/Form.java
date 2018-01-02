@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,11 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import android.support.v7.app.ActionBar;
-import android.view.Gravity;
-import android.widget.TextView;
-import com.google.appinventor.components.runtime.util.PaintUtil;
-import org.json.JSONException;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -35,7 +30,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -44,7 +38,6 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -67,7 +60,6 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
-import com.google.appinventor.components.runtime.multidex.MultiDexApplication;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -75,9 +67,11 @@ import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -103,7 +97,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 @UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
-public class Form extends AppCompatActivity
+public class Form extends AppInventorCompatActivity
   implements Component, ComponentContainer, HandlesEventDispatching,
   OnGlobalLayoutListener {
 
@@ -115,7 +109,6 @@ public class Form extends AppCompatActivity
 
   public static final String APPINVENTOR_URL_SCHEME = "appinventor";
 
-  private static final int DEFAULT_PRIMARY_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR);
   private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
   private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
@@ -133,6 +126,7 @@ public class Form extends AppCompatActivity
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
+  private static boolean isClassicTheme;
 
   private final Handler androidUIHandler = new Handler();
 
@@ -155,6 +149,8 @@ public class Form extends AppCompatActivity
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
+  private boolean usesDefaultBackground;
+  private boolean usesDarkTheme;
 
   // Layout
   private LinearLayout viewLayout;
@@ -174,8 +170,6 @@ public class Form extends AppCompatActivity
   private int primaryColor = DEFAULT_PRIMARY_COLOR;
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
-
-  private android.widget.LinearLayout frameWithTitle;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -219,7 +213,6 @@ public class Form extends AppCompatActivity
   private int formWidth;
   private int formHeight;
 
-  private TextView titleBar;
   private boolean actionBarEnabled = false;
   private boolean keyboardShown = false;
 
@@ -262,28 +255,6 @@ public class Form extends AppCompatActivity
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
-
-    titleBar = (TextView) findViewById(android.R.id.title);
-    if (getSupportActionBar() == null || (titleBar == null && isRepl())) {
-      titleBar = new TextView(this);
-      titleBar.setBackgroundResource(android.R.drawable.title_bar);
-      titleBar.setTextAppearance(this, android.R.style.TextAppearance_WindowTitle);
-      titleBar.setGravity(Gravity.CENTER_VERTICAL);
-      titleBar.setSingleLine();
-      titleBar.setShadowLayer(2, 0, 0, 0xBB000000);
-    }
-    frameWithTitle = new android.widget.LinearLayout(this);
-    frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
-    if (titleBar != null) {  // true for companion and compiled apps without ActionBar
-      if (titleBar.getParent() != null) {
-        ((ViewGroup) titleBar.getParent()).removeAllViews();
-      }
-      frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
-          ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.WRAP_CONTENT
-      ));
-    }
-    setContentView(frameWithTitle);
 
     // Figure out the name of this form.
     String className = getClass().getName();
@@ -385,7 +356,6 @@ public class Form extends AppCompatActivity
     BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
-    BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
@@ -398,6 +368,7 @@ public class Form extends AppCompatActivity
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
+    BackgroundColor(Component.COLOR_DEFAULT);
   }
 
   @Override
@@ -946,11 +917,15 @@ public class Form extends AppCompatActivity
       frameLayout.removeAllViews();
     }
     frameWithTitle.removeAllViews();
-    if (titleBar != null) {
-      frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
-          ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.WRAP_CONTENT
-      ));
+    if (isAppCompatMode() && !isClassicTheme && titleBar != null) {
+      try {
+        frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+      } catch(IllegalStateException e) {
+        // Whoops!
+      }
     }
 
     // Layout
@@ -1018,7 +993,12 @@ public class Form extends AppCompatActivity
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
-    backgroundColor = argb;
+    if (argb == Component.COLOR_DEFAULT) {
+      usesDefaultBackground = true;
+    } else {
+      usesDefaultBackground = false;
+      backgroundColor = argb;
+    }
     // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
     setBackground(frameLayout);
   }
@@ -1086,6 +1066,7 @@ public class Form extends AppCompatActivity
     if (titleBar != null) {
       titleBar.setText(title);
     }
+    setTitle(title);
     updateTitle();
   }
 
@@ -1283,6 +1264,7 @@ public class Form extends AppCompatActivity
   @SimpleProperty(userVisible = false)
   public void ActionBar(boolean enabled) {
     if (actionBarEnabled != enabled) {
+      setActionBarEnabled(enabled);
       if (enabled) {
         hideTitleBar();
         ActionBar actionBar = getSupportActionBar();
@@ -1586,13 +1568,7 @@ public class Form extends AppCompatActivity
   @SimpleProperty(userVisible = false, description = "This is the primary color used for " +
       "Material UI elements, such as the ActionBar.", category = PropertyCategory.APPEARANCE)
   public void PrimaryColor(final int color) {
-    final ActionBar actionBar = getSupportActionBar();
-    int newColor = color == Component.COLOR_DEFAULT ? DEFAULT_PRIMARY_COLOR : color;
-    if (actionBar != null && newColor != primaryColor) {
-      // Only make the change if we have to...
-      primaryColor = newColor;
-      actionBar.setBackgroundDrawable(new ColorDrawable(color));
-    }
+    setPrimaryColor(color);
   }
 
   @SimpleProperty()
@@ -1630,7 +1606,25 @@ public class Form extends AppCompatActivity
       defaultValue = ComponentConstants.DEFAULT_THEME)
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
   public void Theme(String theme) {
-    // nothing to do here
+    if (usesDefaultBackground) {
+      if (theme.equalsIgnoreCase("AppTheme")) {
+        backgroundColor = Component.COLOR_BLACK;
+      } else {
+        backgroundColor = Component.COLOR_WHITE;
+      }
+      setBackground(frameLayout);
+    }
+    usesDarkTheme = false;
+    if (theme.equals("Classic")) {
+      setAppInventorTheme(Theme.CLASSIC);
+    } else if (theme.equals("AppTheme.Light.DarkActionBar")) {
+      setAppInventorTheme(Theme.DEVICE_DEFAULT);
+    } else if (theme.equals("AppTheme.Light")) {
+      setAppInventorTheme(Theme.BLACK_TITLE_TEXT);
+    } else if (theme.equals("AppTheme")) {
+      usesDarkTheme = true;
+      setAppInventorTheme(Theme.DARK);
+    }
   }
 
   /**
@@ -2253,10 +2247,6 @@ public class Form extends AppCompatActivity
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
   }
 
-  protected boolean isRepl() {
-    return false;
-  }
-
   protected void updateTitle() {
     final ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
@@ -2271,15 +2261,14 @@ public class Form extends AppCompatActivity
     }
   }
 
-  private void hideTitleBar() {
-    if (titleBar != null) {
-      titleBar.setVisibility(View.GONE);
-    }
-  }
-
-  private void maybeShowTitleBar() {
+  @Override
+  protected void maybeShowTitleBar() {
     if (titleBar != null) {
       titleBar.setVisibility(showTitle ? View.VISIBLE : View.GONE);
     }
+  }
+
+  public boolean isDarkTheme() {
+    return usesDarkTheme;
   }
 }
