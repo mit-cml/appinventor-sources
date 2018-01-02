@@ -419,8 +419,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 166:
   // - MAP_COMPONENT_VERSION was incremented to 3
   // - FEATURE_COLLECTION_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 167:
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 166;
+  public static final int YOUNG_ANDROID_VERSION = 167;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -835,7 +837,9 @@ public class YaVersion {
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 4:
+  // - The default value of Enabled was changed to false
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap

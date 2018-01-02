@@ -217,7 +217,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * @param container  ignored (because this is a non-visible component)
    */
   public LocationSensor(ComponentContainer container) {
-    this(container, true);
+    this(container, false);
   }
 
   /**
@@ -463,7 +463,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * and raise the corresponding events.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+      defaultValue = "False")
   @SimpleProperty
   public void Enabled(boolean enabled) {
     this.enabled = enabled;

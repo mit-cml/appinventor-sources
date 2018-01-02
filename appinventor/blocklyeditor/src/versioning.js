@@ -1823,7 +1823,9 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
     // AI2:
     // The speed parameter to the LocationChanged event
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // Make location sensor disible by default
+    4: "noUpgrade"
 
   }, // End LocationSensor upgraders
 

@@ -1140,6 +1140,13 @@ public final class YoungAndroidFormUpgrader {
       // The speed parameter was added to the LocationChanged event
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Make location sensor disible by default
+      if (!componentProperties.containsKey("Enabled")) {
+        componentProperties.put("Enabled", new ClientJsonString("True"));
+      }
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
