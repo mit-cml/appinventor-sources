@@ -2663,7 +2663,6 @@ public interface OdeMessages extends Messages {
   String webViewerComponentPallette();
 
   // Component Properties
-  
   @DefaultMessage("AboutScreen")
   @Description("")
   String AboutScreenProperties();
