@@ -2356,7 +2356,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "TinyDB": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    //Added Property: Namespace
+    2: "noUpgrade"
 
   }, // End TinyDB upgraders
 
