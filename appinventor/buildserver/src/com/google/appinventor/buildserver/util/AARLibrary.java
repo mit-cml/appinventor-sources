@@ -229,8 +229,6 @@ public class AARLibrary {
    */
   public void unpackToDirectory(final File path) throws IOException {
     ZipFile zip = null;
-    InputStream input = null;
-    OutputStream output = null;
     try {
       zip = new ZipFile(aarPath);
       packageName = extractPackageName(zip);
@@ -238,6 +236,8 @@ public class AARLibrary {
       if (!basedir.mkdirs()) {
         throw new IOException("Unable to create directory for AAR package");
       }
+      InputStream input = null;
+      OutputStream output = null;
       Enumeration<? extends ZipEntry> i = zip.entries();
       while (i.hasMoreElements()) {
         ZipEntry entry = i.nextElement();
@@ -245,9 +245,13 @@ public class AARLibrary {
         if (entry.isDirectory() && !target.exists() && !target.mkdirs()) {
           throw new IOException("Unable to create directory " + path.getAbsolutePath());
         } else if (!entry.isDirectory()) {
-          output = new FileOutputStream(target);
-          input = zip.getInputStream(entry);
-          IOUtils.copy(input, output);
+          try {
+            output = new FileOutputStream(target);
+            input = zip.getInputStream(entry);
+            IOUtils.copy(input, output);
+          } finally {
+            IOUtils.closeQuietly(input, output);
+          }
           catalog(target);
         }
       }
@@ -256,8 +260,6 @@ public class AARLibrary {
         resdir = null;
       }
     } finally {
-      IOUtils.closeQuietly(output);
-      IOUtils.closeQuietly(input);
       IOUtils.closeQuietly(zip);
     }
   }
