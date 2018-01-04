@@ -909,7 +909,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     UsesPermissions usesPermissions = element.getAnnotation(UsesPermissions.class);
     if (usesPermissions != null) {
       for (String permission : usesPermissions.permissionNames().split(",")) {
-        componentInfo.permissions.add(permission.trim());
+        updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
     }
 
@@ -917,7 +917,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     UsesLibraries usesLibraries = element.getAnnotation(UsesLibraries.class);
     if (usesLibraries != null) {
       for (String library : usesLibraries.libraries().split(",")) {
-        componentInfo.libraries.add(library.trim());
+        updateWithNonEmptyValue(componentInfo.libraries, library);
       }
     }
 
@@ -925,10 +925,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     UsesNativeLibraries usesNativeLibraries = element.getAnnotation(UsesNativeLibraries.class);
     if (usesNativeLibraries != null) {
       for (String nativeLibrary : usesNativeLibraries.libraries().split(",")) {
-        componentInfo.nativeLibraries.add(nativeLibrary.trim());
+        updateWithNonEmptyValue(componentInfo.nativeLibraries, nativeLibrary);
       }
       for (String v7aLibrary : usesNativeLibraries.v7aLibraries().split(",")) {
-        componentInfo.nativeLibraries.add(v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
+        updateWithNonEmptyValue(componentInfo.nativeLibraries, v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
       }
     }
 
@@ -936,7 +936,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     UsesAssets usesAssets = element.getAnnotation(UsesAssets.class);
     if (usesAssets != null) {
       for (String file : usesAssets.fileNames().split(",")) {
-        componentInfo.assets.add(file.trim());
+        updateWithNonEmptyValue(componentInfo.assets, file);
       }
     }
 
@@ -945,7 +945,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesActivities != null) {
       try {
         for (ActivityElement ae : usesActivities.activities()) {
-          componentInfo.activities.add(activityElementToString(ae));
+          updateWithNonEmptyValue(componentInfo.activities, activityElementToString(ae));
         }
       } catch (IllegalAccessException e) {
         messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
@@ -963,7 +963,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesBroadcastReceivers != null) {
       try {
         for (ReceiverElement re : usesBroadcastReceivers.receivers()) {
-          componentInfo.broadcastReceivers.add(receiverElementToString(re));
+          updateWithNonEmptyValue(componentInfo.broadcastReceivers, receiverElementToString(re));
         }
       } catch (IllegalAccessException e) {
         messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
@@ -1552,6 +1552,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           return componentTypes.contains(typeName);
         }
       }, visitedTypes);
+    }
+  }
+
+  private void updateWithNonEmptyValue(Set<String> collection, String value) {
+    String trimmedValue = value.trim();
+    if (!trimmedValue.isEmpty()) {
+      collection.add(trimmedValue);
     }
   }
 }

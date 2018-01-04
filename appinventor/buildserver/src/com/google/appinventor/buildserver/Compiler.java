@@ -1748,7 +1748,9 @@ public final class Compiler {
         Set<String> infoSet = Sets.newHashSet();
         for (int j = 0; j < infoArray.length(); ++j) {
           String info = infoArray.getString(j);
-          infoSet.add(info);
+          if (!info.isEmpty()) {
+            infoSet.add(info);
+          }
         }
 
         if (!infoSet.isEmpty()) {
