@@ -245,13 +245,12 @@ public class AARLibrary {
         if (entry.isDirectory() && !target.exists() && !target.mkdirs()) {
           throw new IOException("Unable to create directory " + path.getAbsolutePath());
         } else if (!entry.isDirectory()) {
-		      try{
+          try {
             output = new FileOutputStream(target);
             input = zip.getInputStream(entry);
             IOUtils.copy(input, output);
-          }finally{
-            IOUtils.closeQuietly(output);
-            IOUtils.closeQuietly(input);
+          } finally {
+            IOUtils.closeQuietly(input, output);
           }
           catalog(target);
         }
