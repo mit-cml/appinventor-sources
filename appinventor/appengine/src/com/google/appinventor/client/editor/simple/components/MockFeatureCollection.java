@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.ArrayList;
@@ -31,8 +32,11 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
     super(editor, TYPE, images.featurecollection(), new MockFeatureCollectionLayout());
 
     SimplePanel panel = new SimplePanel();
-    panel.setWidth("0px");
-    panel.setHeight("0px");
+    panel.setWidth("16px");
+    panel.setHeight("16px");
+    panel.setStylePrimaryName("ode-SimpleMockComponent");
+    Image icon = new Image(images.featurecollection());
+    panel.add(icon);
 
     initComponent(panel);
     initCollection();
@@ -45,6 +49,9 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
 
   @Override
   public void addToMap(MockMap map) {
+    setVisible(false);  // MockFeatureCollection is managed by Leaflet
+    layout.layoutWidth = 0;
+    layout.layoutHeight = 0;
     this.map = map;
     setContainer(map);
     addToMap(map.getMapInstance());

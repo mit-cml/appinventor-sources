@@ -12,8 +12,8 @@ import java.util.Map;
 public class MockFeatureCollectionLayout extends MockLayout {
 
   MockFeatureCollectionLayout() {
-    layoutWidth = 0;
-    layoutHeight = 0;
+    layoutWidth = 16;
+    layoutHeight = 16;
   }
 
   @Override

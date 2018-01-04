@@ -107,6 +107,7 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
           }
         };
         UrlImportWizard wizard = new UrlImportWizard(assetsFolder, callback);
+        wizard.center();
         wizard.show();
       }
     });
@@ -140,6 +141,15 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
     Project project = Ode.getInstance().getProjectManager().getProject(assetsFolder.getProjectId());
     project.removeProjectChangeListener(this);
     super.orphan();
+  }
+
+  @Override
+  protected String getPropertyValueSummary() {
+    String value = property.getValue();
+    if (choices.containsValue(value)) {
+      return choices.getDisplayItemForValue(value);
+    }
+    return value;
   }
 
   @Override
