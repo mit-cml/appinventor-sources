@@ -2663,6 +2663,7 @@ public interface OdeMessages extends Messages {
   String webViewerComponentPallette();
 
   // Component Properties
+  
   @DefaultMessage("AboutScreen")
   @Description("")
   String AboutScreenProperties();
@@ -2918,6 +2919,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MultiLine")
   @Description("")
   String MultiLineProperties();
+
+  @DefaultMessage("Namespace")
+  @Description("")
+  String NamespaceProperties();
 
   @DefaultMessage("NumbersOnly")
   @Description("")

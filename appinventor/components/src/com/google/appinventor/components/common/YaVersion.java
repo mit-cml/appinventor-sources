@@ -1024,7 +1024,9 @@ public class YaVersion {
   // - SetTimeToDisplayFromInstant, and Instant property are added.
   public static final int TIMEPICKER_COMPONENT_VERSION = 3;
 
-  public static final int TINYDB_COMPONENT_VERSION = 1;
+  // For TINYDB_COMPONENT_VERSION 2:
+  // - Added Property: Namespace
+  public static final int TINYDB_COMPONENT_VERSION = 2;
 
   // For TINYWEBDB_COMPONENT_VERSION 2:
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
