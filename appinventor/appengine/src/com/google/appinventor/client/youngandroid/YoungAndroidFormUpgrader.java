@@ -1142,10 +1142,9 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 4) {
       // Make location sensor disable by default
-      if (componentProperties.containsKey("Enabled")) {
-        if (componentProperties.get("Enabled").asString().getString().toLowerCase().equals("false")) {
-          componentProperties.remove("Enabled");
-        }
+      if (componentProperties.containsKey("Enabled") && 
+          componentProperties.get("Enabled").asString().getString().toLowerCase().equals("false")) {
+        componentProperties.remove("Enabled");
       } else {
         componentProperties.put("Enabled", new ClientJsonString("True"));
       }
