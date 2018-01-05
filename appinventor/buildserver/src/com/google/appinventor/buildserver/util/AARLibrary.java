@@ -250,7 +250,8 @@ public class AARLibrary {
             input = zip.getInputStream(entry);
             IOUtils.copy(input, output);
           } finally {
-            IOUtils.closeQuietly(input, output);
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(output);
           }
           catalog(target);
         }
