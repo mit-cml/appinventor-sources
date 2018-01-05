@@ -287,7 +287,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @SimpleEvent(
     description = "Event raised when the user canceled ShowChooseDialog.")
   public void ChoosingCanceled() {
-    EventDispatcher.dispatchEvent(this, "ChoosingCancel");
+    EventDispatcher.dispatchEvent(this, "ChoosingCanceled");
   }
 
   
