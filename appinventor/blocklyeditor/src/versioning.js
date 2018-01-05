@@ -1894,7 +1894,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Added a ProgressDialog, a dialog that cannot be dismissed by the user.
     // The ShowProgressDialog will show the dialog, and DismissProgressDialog is the only way to dismiss it
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // Added TextInputCanceled & ChoosingCanceled event
+    5: "noUpgrade"
 
   }, // End Notifier upgraders
 

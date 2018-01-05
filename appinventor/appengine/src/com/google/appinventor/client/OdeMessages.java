@@ -4561,6 +4561,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AfterTextInputEvents();
 
+  @DefaultMessage("ChoosingCanceled")
+  @Description("")
+  String ChoosingCanceledEvents();
+
+  @DefaultMessage("TextInputCanceled")
+  @Description("")
+  String TextInputCanceledEvents();
+
   @DefaultMessage("AboveRange")
   @Description("")
   String AboveRangeEvents();
