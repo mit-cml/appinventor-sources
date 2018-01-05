@@ -26,36 +26,41 @@ goog.require('AI.Blockly.Instrument');
 if (Blockly.SaveFile === undefined) Blockly.SaveFile = {};
 
 Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
-  Blockly.Instrument.initializeStats("Blockly.SaveFile.load");
-  Blockly.Instrument.timer(
-  function () {
-    // We leave it to our caller to catch JavaScriptException and deal with
-    // errors loading the block space.
+  try {
+    Blockly.Events.disable();
+    Blockly.Instrument.initializeStats("Blockly.SaveFile.load");
+    Blockly.Instrument.timer(
+      function () {
+        // We leave it to our caller to catch JavaScriptException and deal with
+        // errors loading the block space.
 
-    if (blocksContent.length != 0) {
+        if (blocksContent.length != 0) {
 
-      // Turn rendering off since we may go back and forth between
-      // dom and blocks representations many time, and only want
-      // to render once at the very end.
-      try {
-        Blockly.Block.isRenderingOn = false;
-        // Perform language and component upgrades, and put blocks into Blockly.mainWorkspace
-        Blockly.Versioning.upgrade(preUpgradeFormJson,blocksContent);
-      } finally { // Guarantee that rendering is turned on going forward.
-        Blockly.Block.isRenderingOn = true;
+          // Turn rendering off since we may go back and forth between
+          // dom and blocks representations many time, and only want
+          // to render once at the very end.
+          try {
+            Blockly.Block.isRenderingOn = false;
+            // Perform language and component upgrades, and put blocks into Blockly.mainWorkspace
+            Blockly.Versioning.upgrade(preUpgradeFormJson, blocksContent);
+          } finally { // Guarantee that rendering is turned on going forward.
+            Blockly.Block.isRenderingOn = true;
+          }
+        }
+      },
+      function (result, timeDiff) {
+        Blockly.Instrument.stats.totalTime = timeDiff;
+        Blockly.Instrument.stats.blockCount = Blockly.Instrument.stats.domToBlockInnerCalls;
+        Blockly.Instrument.stats.topBlockCount = Blockly.Instrument.stats.domToBlockCalls;
+        Blockly.Instrument.displayStats("Blockly.SaveFile.load");
+        if (Blockly.mainWorkspace != null && Blockly.mainWorkspace.getCanvas() != null) {
+          Blockly.mainWorkspace.render(); // Save the rendering of the workspace until the very end
+        }
       }
-    }
-  },
-  function (result, timeDiff) {
-    Blockly.Instrument.stats.totalTime = timeDiff;
-    Blockly.Instrument.stats.blockCount = Blockly.Instrument.stats.domToBlockInnerCalls;
-    Blockly.Instrument.stats.topBlockCount = Blockly.Instrument.stats.domToBlockCalls;
-    Blockly.Instrument.displayStats("Blockly.SaveFile.load");
-    if (Blockly.mainWorkspace != null && Blockly.mainWorkspace.getCanvas() != null) {
-      Blockly.mainWorkspace.render(); // Save the rendering of the workspace until the very end
-    }
+    );
+  } finally {
+    Blockly.Events.enable();
   }
-  );
 };
 
 /**

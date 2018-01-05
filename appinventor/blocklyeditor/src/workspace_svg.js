@@ -403,10 +403,15 @@ Blockly.WorkspaceSvg.prototype.populateComponentTypes = function(strComponentInf
 Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent) {
   if (blocksContent.length != 0) {
     try {
-      Blockly.Block.isRenderingOn = false;
-      Blockly.Versioning.upgrade(formJson, blocksContent, this);
+      Blockly.Events.disable();
+      if (Blockly.Versioning.upgrade(formJson, blocksContent, this)) {
+        var self = this;
+        setTimeout(function() {
+          self.fireChangeListener(new AI.Events.ForceSave(self));
+        });
+      }
     } finally {
-      Blockly.Block.isRenderingOn = true;
+      Blockly.Events.enable();
     }
     if (this.getCanvas() != null) {
       this.render();
