@@ -863,7 +863,9 @@ public class YaVersion {
   // - Added NotifierColor, TextColor and NotifierLength options
   // For NOTIFIER_COMPONENT_VERSION 4:
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
-  public static final int NOTIFIER_COMPONENT_VERSION = 4;
+  // For NOTIFIER_COMPONENT_VERSION 5:
+  // - Added TextInputCanceled & ChoosingCanceled event
+  public static final int NOTIFIER_COMPONENT_VERSION = 5;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

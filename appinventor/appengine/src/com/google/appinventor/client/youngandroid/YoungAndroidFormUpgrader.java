@@ -1321,6 +1321,10 @@ public final class YoungAndroidFormUpgrader {
       // dismiss the dialog was also added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Added TextInputCanceled & ChoosingCanceled event
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
