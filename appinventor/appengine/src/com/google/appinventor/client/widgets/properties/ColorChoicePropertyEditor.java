@@ -160,7 +160,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     this.colors = colors;
     this.advanced = advanced;
     if (defaultValue.startsWith(hexPrefix)) {
-      this.defaultValue = defaultValue.substring(hexPrefix.length()-6);  // Take last 6 digits (assumes RRGGBB format)
+      this.defaultValue = defaultValue.substring(defaultValue.length()-6);  // Take last 6 digits (assumes RRGGBB format)
       this.defaultValueArgb = Long.valueOf("FF" + this.defaultValue, 16) & 0xFFFFFFFFL;
     } else {
       this.defaultValue = defaultValue;
