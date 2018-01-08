@@ -131,6 +131,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
   private Command showCustomPicker;
 
   /**
+   * The default color value, as a numeric value.
+   */
+  private long defaultValueArgb;
+
+  /**
    * Creates a new instance of the property editor.
    *
    * @param hexPrefix  language specific hex number prefix
@@ -147,14 +152,20 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
    * @param colors  language specific hex number prefix
    * @param hexPrefix  colors to be shown in property editor - must not be
    *                   {@code null} or empty
-   * @oaram defaultValue  the color of the default value, for display in the editor only
+   * @param defaultValue  the color of the default value, for display in the editor only
    * @param advanced  specify true to show a button for the advanced picker
    */
   public ColorChoicePropertyEditor(final Color[] colors, final String hexPrefix, final String defaultValue, final boolean advanced) {
     this.hexPrefix = hexPrefix;
     this.colors = colors;
     this.advanced = advanced;
-    this.defaultValue = defaultValue.substring(4);
+    if (defaultValue.startsWith(hexPrefix)) {
+      this.defaultValue = defaultValue.substring(hexPrefix.length()-6);  // Take last 6 digits (assumes RRGGBB format)
+      this.defaultValueArgb = Long.valueOf("FF" + this.defaultValue, 16) & 0xFFFFFFFFL;
+    } else {
+      this.defaultValue = defaultValue;
+      this.defaultValueArgb = Long.valueOf(defaultValue, 10) & 0xFFFFFFFFL;
+    }
 
     // Initialize UI
     List<DropDownItem> choices = Lists.newArrayList();
@@ -253,12 +264,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     long argbValue = Long.valueOf(propertyValue, radix) & 0xFFFFFFFFL;
-    long defaultArgbValue = Long.valueOf("FF" + defaultValue, radix) & 0xFFFFFFFFL;
-    if (argbValue == defaultArgbValue || argbValue == 0) {
+    if (argbValue == this.defaultValueArgb || argbValue == 0) {
       selectedColorMenu.setHTML(Color.getHtmlDescription(defaultValue, Ode.MESSAGES.defaultColor()));
       if (advanced) {
-        selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(defaultArgbValue), showCustomPicker));
-        setPickerColor(defaultArgbValue);
+        selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(this.defaultValueArgb), showCustomPicker));
+        setPickerColor(this.defaultValueArgb);
       }
       return;
     }
