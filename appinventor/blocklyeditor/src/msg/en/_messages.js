@@ -308,6 +308,11 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'opened this one.   This command is for returning text to non-App Inventor activities, not to App Inventor screens. '
         + 'For App Inventor Screens, as in multiple screen apps, use Close Screen with Value, not Close Screen with Plain Text.';
 
+    Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#break';
+    Blockly.Msg.LANG_CONTROLS_BREAK_TITLE = 'break';
+    Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT = 'value';
+    Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT = 'break';
+
 // Logic Blocks.
     Blockly.Msg.LANG_CATEGORY_LOGIC = 'Logic';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL = 'http://en.wikipedia.org/wiki/Inequality_(mathematics)';

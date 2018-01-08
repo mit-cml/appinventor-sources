@@ -767,11 +767,25 @@
         (*:addParent (KawaEnvironment:getCurrent) *test-environment*)
         (set! *test-global-var-environment* (gnu.mapping.Environment:make 'test-global-var-env)))))
 
-(define-syntax foreach
-  (syntax-rules ()
-    ((_ lambda-arg-name body-form list)
-     (yail-for-each (lambda (lambda-arg-name) body-form) list))))
 
+(define-syntax foreach-with-break
+  (syntax-rules ()
+    ((_ escapename arg-name bodyform list-of-args)
+     (call-with-current-continuation
+      (lambda (escapename)
+	(let ((proc (lambda (arg-name) bodyform)))
+	  (yail-for-each proc list-of-args)))))))
+
+  ;; To call this foreach macro, we must pass a symbol that will be the name of an escape procedure
+  ;; referenced in the body of the proc argument.  For example
+  ;; (foreach
+  ;;  break
+  ;;  x
+  ;;  (if (= x 17)
+  ;;      (begin (display "escape") (break #f))
+  ;;      (begin (display x) (display " "))
+  ;;      )
+  ;;  '(100 200 17 300))
 
 (define-syntax forrange
   (syntax-rules ()
