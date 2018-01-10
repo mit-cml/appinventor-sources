@@ -266,6 +266,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
   @SuppressWarnings("WeakerAccess")
   protected void setAppInventorTheme(Theme theme) {
+    if (!Form.getActiveForm().isRepl()) return;  // Theme changing only allowed in REPL
     if (theme == currentTheme) {
       return;
     }

@@ -2213,7 +2213,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 22:
     // - The Classic option was added to the Theme property. No blocks need to be changed
-    22: "noUpgrade"
+    22: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 23:
+    // - The ActionBar designer property was hidden and tied to the Theme property. No blocks need to be changed.
+    23: "noUpgrade"
 
 
   }, // End Screen

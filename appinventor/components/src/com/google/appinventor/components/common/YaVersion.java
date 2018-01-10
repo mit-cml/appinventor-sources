@@ -419,8 +419,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 166:
   // - MAP_COMPONENT_VERSION was incremented to 3
   // - FEATURE_COLLECTION_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 167:
+  // - FORM_COMPONENT_VERSION was incremented to 23
 
-  public static final int YOUNG_ANDROID_VERSION = 166;
+  public static final int YOUNG_ANDROID_VERSION = 167;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -734,7 +736,9 @@ public class YaVersion {
   // - The Screen.Theme property was added
   // For FORM_COMPONENT_VERSION 22:
   // - The Classic option for themes was added
-  public static final int FORM_COMPONENT_VERSION = 22;
+  // For FORM_COMPONENT_VERSION 23:
+  // - The ActionBar property was deprecated
+  public static final int FORM_COMPONENT_VERSION = 23;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

@@ -475,7 +475,7 @@ public final class MockForm extends MockContainer {
     }
 
     if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
-      return editor.isScreen1();
+      return false;
     }
 
     if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
@@ -958,9 +958,20 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
-      setActionBarProperty(newValue);
+      // ActionBar is now tied to the Theme. This can be removed once Companion 2.47 is the minimum version supported.
+      String theme = getProperties().hasProperty(PROPERTY_NAME_THEME) ? getPropertyValue(PROPERTY_NAME_THEME) : null;
+      if (theme == null || theme.isEmpty() || theme.equals("Classic")) {
+        setActionBarProperty("False");
+      } else {
+        setActionBarProperty("True");
+      }
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
       setTheme(newValue);
+      if ("Classic".equals(newValue)) {
+        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("False");
+      } else {
+        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
+      }
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
       setPrimaryColor(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {

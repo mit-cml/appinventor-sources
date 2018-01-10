@@ -945,6 +945,17 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 22;
     }
 
+    if (srcCompVersion < 23) {
+      // The ActionBar property was deprecated. It should always be true in new themes, and false
+      // in classic themes.
+      if (componentProperties.containsKey("Theme") && !"Classic".equals(componentProperties.get("Theme").asString().toString())) {
+        componentProperties.put("ActionBar", new ClientJsonString("True"));
+      } else if (componentProperties.containsKey("ActionBar")) {  // Theme is Classic
+        componentProperties.remove("ActionBar");  // Resets ActionBar to default (False)
+      }
+      srcCompVersion = 23;
+    }
+
     return srcCompVersion;
   }
 
