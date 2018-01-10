@@ -478,13 +478,15 @@ public final class Compiler {
    * @param parent The parent style to inherit from.
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, boolean actionBar) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
     out.write(parent);
     out.write("\">\n");
-    out.write("<item name=\"windowActionBar\">true</item>\n");
+    if (actionBar) {
+      out.write("<item name=\"windowActionBar\">true</item>\n");
+    }
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
@@ -506,6 +508,10 @@ public final class Compiler {
         parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
       } else {
         parentTheme += ".NoActionBar";
+      }
+    }else{
+      if (parentTheme.startsWith("Classic")) {
+    	  actionbar = "false";
       }
     }
     colorPrimary = cleanColor(colorPrimary, true);
@@ -532,7 +538,7 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
       if (!parentTheme.startsWith("Classic")) {
-        writeTheme(out, "AppTheme", parentTheme);
+        writeTheme(out, "AppTheme", parentTheme, "true".equalsIgnoreCase(actionbar));
       }
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
       out.write("<item name=\"textAllCaps\">false</item>\n");
