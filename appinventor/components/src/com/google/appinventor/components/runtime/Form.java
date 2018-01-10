@@ -2263,8 +2263,10 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   protected void maybeShowTitleBar() {
-    if (titleBar != null) {
-      titleBar.setVisibility(showTitle ? View.VISIBLE : View.GONE);
+    if (showTitle) {
+      super.maybeShowTitleBar();
+    } else {
+      super.hideTitleBar();
     }
   }
 
