@@ -668,7 +668,7 @@ yail_format_inexact(pic_state *pic) {
   double value, absvalue;
   char buf[BUFSIZE];
 
-  pic_get_args(pic, "d", &value);
+  pic_get_args(pic, "f", &value);
   absvalue = fabs(value);
 
   if (absvalue > 1e6 || absvalue < 1e-6) {

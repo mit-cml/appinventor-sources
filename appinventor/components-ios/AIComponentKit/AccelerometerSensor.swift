@@ -1,10 +1,5 @@
-//
-//  AccelerometerSensor.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 11/5/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import CoreMotion
@@ -21,6 +16,9 @@ open class AccelerometerSensor: NonvisibleComponent {
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
+    MinimumInterval = 400
+    Sensitivity = 2
+    Enabled = true
   }
 
   // MARK: AccelerometerSensor Properties
