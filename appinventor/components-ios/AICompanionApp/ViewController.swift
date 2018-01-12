@@ -44,8 +44,12 @@ public class ViewController: UINavigationController {
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     if (form == nil) {
-      form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm;
+      form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm
       form.Initialize()
+      form.AccentColor = Int32(bitPattern: 0xFF128BA8)
+      form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
+      form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
+      form.title = "MIT App Inventor 2"
       let repl = form as! ReplForm
       repl.startHTTPD(false)
       repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
@@ -70,6 +74,9 @@ public class ViewController: UINavigationController {
       versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControlEvents.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControlEvents.primaryActionTriggered)
+      navigationBar.barTintColor = argbToColor(form.PrimaryColor)
+      navigationBar.isTranslucent = false
+      form.updateNavbar()
     }
   }
 
@@ -139,6 +146,10 @@ public class ViewController: UINavigationController {
     if (text != "") {
       ViewController.controller?.connect(nil)
     }
+  }
+
+  override public var childViewControllerForStatusBarStyle: UIViewController? {
+    return form
   }
 }
 

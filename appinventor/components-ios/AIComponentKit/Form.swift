@@ -1,10 +1,5 @@
-//
-//  Form.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/16/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import UIKit
@@ -25,7 +20,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate var _components: [Component] = []
   fileprivate var _aboutScreen: String?
   fileprivate var _appName: String?
+  fileprivate var _accentColor: Int32 = Int32(bitPattern: 0xFFFF4081)
+  fileprivate var _primaryColor: Int32 = Int32(bitPattern: 0xFF3F51B5)
+  fileprivate var _primaryColorDark: Int32 = Int32(bitPattern: 0xFF303F9F)
   fileprivate var _scrollable = false
+  fileprivate var _theme = AIComponentKit.Theme.DeviceDefault
   fileprivate var _title = "Screen1"
   fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
   fileprivate var _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
@@ -202,6 +201,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
   
   fileprivate func defaultPropertyValues() {
+    AccentColor = Int32(bitPattern: 0xFFFF4081)
+    PrimaryColor = Int32(bitPattern: 0xFF3F51B5)
+    PrimaryColorDark = Int32(bitPattern: 0xFF303F9F)
+    Theme = "Classic"
     Scrollable = false
     Sizing = "Fixed"
     BackgroundImage = ""
@@ -223,7 +226,27 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       _aboutScreen = aboutScreen
     }
   }
-  
+
+  open var AccentColor: Int32 {
+    get {
+      return _accentColor
+    }
+    set(value) {
+      if _accentColor != value {
+        _accentColor = value
+      }
+    }
+  }
+
+  open var ActionBar: Bool {
+    get {
+      return false
+    }
+    set(actionBar) {
+      // Not supported on iOS
+    }
+  }
+
   open var AlignHorizontal: Int32 {
     get {
       return _horizontalAlignment
@@ -346,6 +369,30 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
+  open var PrimaryColor: Int32 {
+    get {
+      return _primaryColor
+    }
+    set(value) {
+      if _primaryColor != value {
+        _primaryColor = value
+        updateNavbar()
+      }
+    }
+  }
+
+  open var PrimaryColorDark: Int32 {
+    get {
+      return _primaryColorDark
+    }
+    set(value) {
+      if _primaryColorDark != value {
+        _primaryColorDark = value
+        updateNavbar()
+      }
+    }
+  }
+
   open var ScreenOrientation: String {
     get {
       return "portrait"
@@ -379,6 +426,19 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
     set(value) {
       _compatibilityMode = (value == "Fixed")
+    }
+  }
+
+  open var Theme: String {
+    get {
+      return _theme.rawValue
+    }
+    set(value) {
+      let newTheme = AIComponentKit.Theme.fromString(value)
+      if _theme != newTheme {
+        _theme = newTheme
+        updateNavbar()
+      }
     }
   }
 
@@ -449,5 +509,38 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
 
   open func ScreenOrientationChanged() {
     EventDispatcher.dispatchEvent(of: self, called: "ScreenOrientationChanged")
+  }
+
+  // Private implementation
+  override open var preferredStatusBarStyle: UIStatusBarStyle {
+    switch _theme {
+    case .BlackText:
+      return .default
+    default:
+      return .lightContent
+    }
+  }
+
+  open func updateNavbar() {
+    if let parent = navigationController {
+      let navbar = parent.navigationBar
+      navbar.tintColor = UIColor.white
+      navbar.backgroundColor = argbToColor(_primaryColor)
+      navbar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
+      switch _theme {
+      case .Classic, .DeviceDefault:
+        navbar.barTintColor = argbToColor(_primaryColor)
+        break
+      case .BlackText:
+        navbar.barTintColor = argbToColor(_primaryColor)
+        navbar.tintColor = UIColor.black
+        navbar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.black]
+        break
+      case .Dark:
+        navbar.barTintColor = argbToColor(_primaryColorDark)
+        break
+      }
+      parent.setNeedsStatusBarAppearanceUpdate()
+    }
   }
 }
