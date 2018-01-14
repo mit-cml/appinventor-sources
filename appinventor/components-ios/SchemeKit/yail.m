@@ -677,7 +677,7 @@ yail_format_inexact(pic_state *pic) {
     snprintf(&buf[0], BUFSIZE - 1, "%F", value);
   }
 
-  return pic_intern_cstr(pic, buf);
+  return pic_str_value(pic, buf, strlen(buf));
 }
 
 pic_value

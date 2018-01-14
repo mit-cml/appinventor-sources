@@ -70,4 +70,9 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("#f", interpreter.evalForm("(string-contains \"Hello\" \"foo\")"))  // mismatch of lesser length
     XCTAssertEqual("#f", interpreter.evalForm("(string-contains \"Hello\" \"Hello world\")"))  // mismatch of greater length
   }
+
+  func testYailCoerceToString() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(string? (coerce-to-string 0.5))"))
+  }
 }
