@@ -488,6 +488,22 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    // Handles theme for Notifier
+    out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
+    // Handles theme for DatePicker/TimePicker
+    out.write("<item name=\"android:alertDialogTheme\">@style/AIAlertDialog</item>\n");
+    out.write("</style>\n");
+  }
+
+  private static void writeDialogTheme(Writer out, String name, String parent) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
+    out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
+    out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
     out.write("</style>\n");
   }
 
@@ -533,6 +549,13 @@ public final class Compiler {
       out.write("<resources>\n");
       if (!parentTheme.startsWith("Classic")) {
         writeTheme(out, "AppTheme", parentTheme);
+        if (parentTheme.contains("Light")) {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
+        } else {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
+        }
       }
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
       out.write("<item name=\"textAllCaps\">false</item>\n");
