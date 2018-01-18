@@ -3603,6 +3603,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebViewStringProperties();
 
+  @DefaultMessage("WebViewStringChange")
+  @Description("")
+  String WebViewStringChangeEvents();
+
   @DefaultMessage("EnableSpeedRegulation")
   @Description("")
   String EnableSpeedRegulationProperties();

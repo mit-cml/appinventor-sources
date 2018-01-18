@@ -1116,7 +1116,9 @@ public class YaVersion {
   // - IgnoreSslError property added
   // For WEBVIEWER_COMPONENT_VERSION 6:
   // - ClearCaches method was added
-  public static final int WEBVIEWER_COMPONENT_VERSION = 6;
+  // For WEBVIEWER_COMPONENT_VERSiON 7:
+  // - Added WebViewStringChange event
+  public static final int WEBVIEWER_COMPONENT_VERSION = 7;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
