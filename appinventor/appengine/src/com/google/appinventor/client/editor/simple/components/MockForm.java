@@ -958,13 +958,7 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
-      // ActionBar is now tied to the Theme. This can be removed once Companion 2.47 is the minimum version supported.
-      String theme = getProperties().hasProperty(PROPERTY_NAME_THEME) ? getPropertyValue(PROPERTY_NAME_THEME) : null;
-      if (theme == null || theme.isEmpty() || theme.equals("Classic")) {
-        setActionBarProperty("False");
-      } else {
-        setActionBarProperty("True");
-      }
+      setActionBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
       setTheme(newValue);
       if ("Classic".equals(newValue)) {
