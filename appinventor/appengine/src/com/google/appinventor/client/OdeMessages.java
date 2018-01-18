@@ -7003,4 +7003,8 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetCenter")
   @Description("")
   String SetCenterMethods();
+
+  @DefaultMessage("Rotation")
+  @Description("")
+  String RotationProperties();
 }
