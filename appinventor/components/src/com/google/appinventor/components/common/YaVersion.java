@@ -848,7 +848,9 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 3:
   // - GotGeoJSON was renamed to GotFeatures
   // - GeoJSONError was renamed to LoadError
-  public static final int MAP_COMPONENT_VERSION = 3;
+  // For MAP_COMPONENT_VERSION 4:
+  // - Added Rotation property
+  public static final int MAP_COMPONENT_VERSION = 4;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap

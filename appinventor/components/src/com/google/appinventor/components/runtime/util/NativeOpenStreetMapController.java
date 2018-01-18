@@ -1170,12 +1170,12 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public void setRotation(float Rotation) {
-	  view.setMapOrientation(Rotation);
+    view.setMapOrientation(Rotation);
   }
 
   @Override
   public float getRotation() {
-	  return view.getMapOrientation();
+    return view.getMapOrientation();
   }
 
   static class MultiPolygon extends Polygon {
