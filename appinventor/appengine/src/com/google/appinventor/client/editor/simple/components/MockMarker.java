@@ -36,6 +36,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
   private double anchorU = 0.5;
   private double anchorV = 1.0;
   private JavaScriptObject nativeIcon;
+  private boolean needsSizeUpdate;
 
   public MockMarker(SimpleEditor editor) {
     super(editor, TYPE, images.marker());
@@ -132,6 +133,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     }
     panel.setVisible(false);
     this.map = map;
+    updateSizeIfNeeded();
     addToMap(map.getMapInstance());
   }
 
@@ -163,9 +165,17 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     try {
       int newWidth = Integer.parseInt(text);
       if (newWidth == LENGTH_FILL_PARENT) {
-        width = map.getLayout().getLayoutWidth();
+        if (isMapInitialized()) {
+          width = map.getLayout().getLayoutWidth();
+        } else {
+          needsSizeUpdate = true;
+        }
       } else if (newWidth <= LENGTH_PERCENT_TAG) {
-        width = (int)((-newWidth - 1000) / 100.0 * map.getLayout().getLayoutWidth());
+        if (isMapInitialized()) {
+          width = (int) ((-newWidth - 1000) / 100.0 * map.getLayout().getLayoutWidth());
+        } else {
+          needsSizeUpdate = true;
+        }
       } else if (newWidth == LENGTH_PREFERRED) {
         width = srcWidth;
       } else {
@@ -182,9 +192,17 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     try {
       int newHeight = Integer.parseInt(text);
       if (newHeight == LENGTH_FILL_PARENT) {
-        height = map.getLayout().getLayoutHeight();
-      } else if (newHeight == LENGTH_PERCENT_TAG) {
-        height = (int) ((-newHeight - 1000) / 100.0 * map.getLayout().getLayoutHeight());
+        if (isMapInitialized()) {
+          height = map.getLayout().getLayoutHeight();
+        } else {
+          needsSizeUpdate = true;
+        }
+      } else if (newHeight <= LENGTH_PERCENT_TAG) {
+        if (isMapInitialized()) {
+          height = (int) ((-newHeight - 1000) / 100.0 * map.getLayout().getLayoutHeight());
+        } else {
+          needsSizeUpdate = true;
+        }
       } else if (newHeight == LENGTH_PREFERRED) {
         height = srcHeight;
       } else {
@@ -297,6 +315,18 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
   @Override
   public int getPreferredHeight() {
     return ComponentConstants.MARKER_PREFERRED_HEIGHT;
+  }
+
+  private boolean isMapInitialized() {
+    return map != null && map.getLayout() != null;
+  }
+
+  private void updateSizeIfNeeded() {
+    if (needsSizeUpdate) {
+      setWidthProperty(getPropertyValue(PROPERTY_NAME_WIDTH));
+      setHeightProperty(getPropertyValue(PROPERTY_NAME_HEIGHT));
+      needsSizeUpdate = false;
+    }
   }
 
   // JSNI methods
@@ -460,6 +490,12 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     var marker = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature;
     if (visible) {
       map.addLayer(marker);
+      // Fix for #1137: Icon size info seems to be reset when we remove a marker from the map. This
+      // code will force recreating the marker from the icon, which should grab the 'real' iconSize info.
+      var icon = this.@com.google.appinventor.client.editor.simple.components.MockMarker::nativeIcon;
+      if (icon) {
+        marker.setIcon(icon);
+      }
     } else {
       map.removeLayer(marker);
     }
@@ -543,6 +579,8 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
         iconUrl: url,
         className: 'ode-SimpleMockMapFeature',
         title: this.@com.google.appinventor.client.editor.simple.components.MockComponent::getName()(),
+        iconSize: [0, 0],  // Will be filled in during onLoad
+        iconAnchor: [0, 0],  // Will be filled in during onLoad
         onLoad: function(w, h) {
           // adjust w, h for selection border
           self.@com.google.appinventor.client.editor.simple.components.MockMarker::srcWidth = w;
