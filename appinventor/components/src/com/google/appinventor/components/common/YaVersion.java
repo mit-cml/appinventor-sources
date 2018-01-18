@@ -429,8 +429,10 @@ public class YaVersion {
   // - MAP_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 171:
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 172:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 171;
+  public static final int YOUNG_ANDROID_VERSION = 172;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1139,7 +1141,9 @@ public class YaVersion {
   // - IgnoreSslError property added
   // For WEBVIEWER_COMPONENT_VERSION 6:
   // - ClearCaches method was added
-  public static final int WEBVIEWER_COMPONENT_VERSION = 6;
+  // For WEBVIEWER_COMPONENT_VERSiON 7:
+  // - Added WebViewStringChange event
+  public static final int WEBVIEWER_COMPONENT_VERSION = 7;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.

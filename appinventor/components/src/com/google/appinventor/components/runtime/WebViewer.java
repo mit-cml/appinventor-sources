@@ -11,6 +11,7 @@ import android.webkit.JavascriptInterface;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -440,6 +441,11 @@ public final class WebViewer extends AndroidViewComponent {
     webview.clearCache(true);
   }
 
+  @SimpleEvent(description = "When the JavaScript calls AppInventor.setWebViewString this event is run.")
+  public void WebViewStringChange(String value) {
+    EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
+  }
+
   /**
    * Allows the setting of properties to be monitored from the javascript
    * in the WebView
@@ -468,8 +474,14 @@ public final class WebViewer extends AndroidViewComponent {
      * Sets the web view string
      */
     @JavascriptInterface
-    public void setWebViewString(String newString) {
+    public void setWebViewString(final String newString) {
       webViewString = newString;
+
+      container.$form().runOnUiThread(new Runnable() {
+        public void run() {
+          WebViewStringChange(newString);
+        }
+      });
     }
 
   }

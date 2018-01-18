@@ -2547,7 +2547,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Added ClearCaches method
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: Added WebViewStringChange
+    7: "noUpgrade"
 
   }, // End WebViewer upgraders
 
