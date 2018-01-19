@@ -638,13 +638,11 @@ Blockly.Blocks['controls_break'] = {
   helpUrl: Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('VALUE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("any", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_CONTROLS_BREAK_TITLE)
-        .appendField(Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_CONTROLS_BREAK_TITLE);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_BREAK_TITLE}]
 };
+

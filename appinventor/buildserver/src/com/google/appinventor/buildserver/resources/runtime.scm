@@ -776,9 +776,9 @@
 	(let ((proc (lambda (arg-name) bodyform)))
 	  (yail-for-each proc list-of-args)))))))
 
-  ;; To call this foreach macro, we must pass a symbol that will be the name of an escape procedure
+  ;; To call this foreach-with-break macro, we must pass a symbol that will be the name of an escape procedure
   ;; referenced in the body of the proc argument.  For example
-  ;; (foreach
+  ;; (foreach-with-break
   ;;  break
   ;;  x
   ;;  (if (= x 17)

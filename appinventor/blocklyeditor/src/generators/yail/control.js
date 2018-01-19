@@ -88,10 +88,46 @@ Blockly.Yail['controls_forEach'] = function() {
   var loopIndexName = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR');
   var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
   var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
-  return Blockly.Yail.YAIL_FOREACH + loopIndexName + Blockly.Yail.YAIL_SPACER
+  // Blockly.Yail.YAIL_FOREACH generates a call to foreach-with-break
+  // we harcode the name of the escape procedure to "break".  This must match the
+  // name of the function invoked by the BREAK block
+  return Blockly.Yail.YAIL_FOREACH + "break" + Blockly.Yail.YAIL_SPACER + loopIndexName + Blockly.Yail.YAIL_SPACER
          + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
          + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
+
+// In general break could take a value to return from the loop, but 
+// none of our block language loops return values, so we won't use that capability.
+
+Blockly.Yail['controls_break'] = function() {
+// generates call to (break #f)
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "break" + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_FALSE;
+  code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  code = code + "number"
+  code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "break" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return code;
+};
+
+/// arg type needs to be boolean, no
+
+// FLUSH THIS!!!!
+// Blockly.Yail['controls_closeScreen'] = function() {
+//   // Close screen
+//   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-screen" + Blockly.Yail.YAIL_SPACER;
+//   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+//   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+//   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+//   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+//   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "close screen" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+//   return code;
+// };
+
+
+
 
 // [lyn, 12/27/2012]
 Blockly.Yail['controls_forRange'] = function() {
