@@ -787,6 +787,19 @@
   ;;      )
   ;;  '(100 200 17 300))
 
+
+;;; does this hack work?
+;;; this should only be called if "break" is not shadowed by 
+;;; the parameter in the loop macro.
+;;; from within the loop?
+;;; This by itself might be insufficient/redundant -- check how get
+;;; generates the error when the block is placed, not when it is executed
+(define (break ignore)
+  (signal-runtime-error
+  ;;; !!! internationalize this
+     "Break should be called only within a loop"
+     "Bad use of Break"))
+
 (define-syntax forrange
   (syntax-rules ()
     ((_ lambda-arg-name body-form start end step)
