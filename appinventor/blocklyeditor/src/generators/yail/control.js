@@ -89,9 +89,7 @@ Blockly.Yail['controls_forEach'] = function() {
   var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
   var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
   // Blockly.Yail.YAIL_FOREACH generates a call to foreach-with-break
-  // we harcode the name of the escape procedure to "break".  This must match the
-  // name of the function invoked by the BREAK block
-  return Blockly.Yail.YAIL_FOREACH + "break" + Blockly.Yail.YAIL_SPACER + loopIndexName + Blockly.Yail.YAIL_SPACER
+  return Blockly.Yail.YAIL_FOREACH + Blockly.Yail.Yail_Break + Blockly.Yail.YAIL_SPACER + loopIndexName + Blockly.Yail.YAIL_SPACER
          + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
          + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
@@ -99,34 +97,20 @@ Blockly.Yail['controls_forEach'] = function() {
 // In general break could take a value to return from the loop, but 
 // none of our block language loops return values, so we won't use that capability.
 
+// [hal, 1/20/2018]
 Blockly.Yail['controls_break'] = function() {
-// generates call to (break #f)
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "break" + Blockly.Yail.YAIL_SPACER;
+// generates call to (break #f) using apply-primitive-procedure
+// This isn't quite the right thing, but I think it's OK (Hal)
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + Blockly.Yail.YAIL_BREAK + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_FALSE;
   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + "boolean"
   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "break" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_BREAK + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
-
-/// arg type needs to be boolean, no
-
-// FLUSH THIS!!!!
-// Blockly.Yail['controls_closeScreen'] = function() {
-//   // Close screen
-//   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-screen" + Blockly.Yail.YAIL_SPACER;
-//   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
-//   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-//   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
-//   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-//   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "close screen" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-//   return code;
-// };
-
-
 
 
 // [lyn, 12/27/2012]
