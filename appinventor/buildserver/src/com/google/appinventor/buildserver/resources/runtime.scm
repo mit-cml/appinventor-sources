@@ -800,20 +800,23 @@
      "Break should be run only from within a loop"
      "Bad use of Break"))
 
-(define-syntax forrange
+(define-syntax forrange-with-break
   (syntax-rules ()
-    ((_ lambda-arg-name body-form start end step)
-     (yail-for-range (lambda (lambda-arg-name) body-form) start end step))))
+    ((_ escapename lambda-arg-name body-form start end step)
+     (call-with-current-continuation
+      (lambda (escapename)
+	(yail-for-range (lambda (lambda-arg-name) body-form) start end step))))))
 
-(define-syntax while
+(define-syntax while-with-break
   (syntax-rules ()
-    ((_ condition body ...)
-     (let loop ()
-       (if condition
-       (begin
-         body ...
-         (loop))
-       *the-null-value*)))))
+    ((_ escapename condition body ...)
+     (call-with-current-continuation
+      (let loop ()
+	(if condition
+	    (begin
+	      body ...
+	      (loop))
+	    *the-null-value*))))))
 
 ;;; RUNTIME library
 
