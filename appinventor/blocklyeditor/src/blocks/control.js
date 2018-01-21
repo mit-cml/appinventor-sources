@@ -633,7 +633,7 @@ Blockly.Blocks['controls_closeScreenWithPlainText'] = {
 };
 
 Blockly.Blocks['controls_break'] = {
-  // generate a call to break (the escape from loops)
+    // generate a call to break (the escape from loops)
   category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL,
   init: function () {
@@ -642,6 +642,7 @@ Blockly.Blocks['controls_break'] = {
         .appendField(Blockly.Msg.LANG_CONTROLS_BREAK_TITLE);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK);
+    this.errors = [{name:"checkIsNotInLoop"}];
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_BREAK_TITLE}]
 };

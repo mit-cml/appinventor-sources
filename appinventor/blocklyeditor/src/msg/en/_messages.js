@@ -106,6 +106,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
     Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
     Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
+    Blockly.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';

@@ -788,16 +788,16 @@
   ;;  '(100 200 17 300))
 
 
-;;; does this hack work?
-;;; this should only be called if "break" is not shadowed by 
-;;; the parameter in the loop macro.
-;;; from within the loop?
-;;; This by itself might be insufficient/redundant -- check how get
-;;; generates the error when the block is placed, not when it is executed
+;; This yail procedure should be called only if "break" is not shadowed by 
+;; the break passed as the escape parameter in the loop macro.
+;; The blocks editor should give an error if the break block is placed
+;; outside of a loop.   So the only way this yail procedure
+;; would be called should be by running do-it on an isolated break block.
+;; See blocklyeditor/src/warninghandler.js checkIsNotInLoop
+
 (define (break ignore)
   (signal-runtime-error
-  ;;; !!! internationalize this
-     "Break should be called only within a loop"
+     "Break should be run only from within a loop"
      "Bad use of Break"))
 
 (define-syntax forrange
