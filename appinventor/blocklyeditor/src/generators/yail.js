@@ -58,7 +58,7 @@ Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION = "(do-after-form-creation ";
 Blockly.Yail.YAIL_DOUBLE_QUOTE = "\"";
 Blockly.Yail.YAIL_FALSE = "#f";
 Blockly.Yail.YAIL_FOREACH = "(foreach-with-break ";
-Blockly.Yail.YAIL_FORRANGE = "(forrange ";
+Blockly.Yail.YAIL_FORRANGE = "(forrange-with-break ";
 Blockly.Yail.YAIL_GET_COMPONENT = "(get-component ";
 Blockly.Yail.YAIL_GET_PROPERTY = "(get-property ";
 Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY = "(get-property-and-check  ";
@@ -85,7 +85,7 @@ Blockly.Yail.YAIL_SET_VARIABLE = "(set-var! ";
 Blockly.Yail.YAIL_SET_THIS_FORM = "(set-this-form)\n ";
 Blockly.Yail.YAIL_SPACER = " ";
 Blockly.Yail.YAIL_TRUE = "#t";
-Blockly.Yail.YAIL_WHILE = "(while ";
+Blockly.Yail.YAIL_WHILE = "(while-with-break ";
 Blockly.Yail.YAIL_LIST_CONSTRUCTOR = "*list-for-runtime*";
 
 Blockly.Yail.SIMPLE_HEX_PREFIX = "&H";
