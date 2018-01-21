@@ -811,12 +811,13 @@
   (syntax-rules ()
     ((_ escapename condition body ...)
      (call-with-current-continuation
-      (let loop ()
-	(if condition
-	    (begin
-	      body ...
-	      (loop))
-	    *the-null-value*))))))
+      (lambda (escapename)
+	(let loop ()
+	  (if condition
+	      (begin
+		body ...
+		(loop))
+	      *the-null-value*)))))))
 
 ;;; RUNTIME library
 
