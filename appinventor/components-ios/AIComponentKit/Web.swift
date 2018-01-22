@@ -167,7 +167,7 @@ open class Web: NonvisibleComponent {
       if (self._saveResponse) {
         let path = self.saveResponseContent(response!, webProps.responseFileName, responseType, data)
         
-        self.GotFile(url: webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
+        self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
       } else {
         if let data = data {
           if let encodingName = response?.textEncodingName {
@@ -178,7 +178,7 @@ open class Web: NonvisibleComponent {
             responseContent = responseContentStr as NSString
           }
         }
-        self.GotText(url: webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
+        self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
       }
     })
     
@@ -265,11 +265,11 @@ open class Web: NonvisibleComponent {
     return nil
   }
   
-  open func GotText(url: NSString, responseCode: NSNumber, responseType: NSString, responseContent: NSString) {
+  open func GotText(_ url: NSString, responseCode: NSNumber, responseType: NSString, responseContent: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotText", arguments: url, responseCode, responseType, responseContent)
   }
   
-  open func GotFile(url: NSString, responseCode: NSNumber, responseType: NSString, fileName: NSString) {
+  open func GotFile(_ url: NSString, responseCode: NSNumber, responseType: NSString, fileName: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotFile", arguments: url, responseCode, responseType, fileName)
   }
   
