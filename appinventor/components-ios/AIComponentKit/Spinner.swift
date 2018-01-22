@@ -5,6 +5,7 @@ import Foundation
 
 protocol SpinnerDelegate: UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UIPopoverPresentationControllerDelegate {
     func AfterSelecting()
+    func CancelSelection(for pickerView: UIPickerView)
 }
 
 protocol SpinnerController {
@@ -67,7 +68,9 @@ fileprivate class SpinnerPhoneController: UIViewController, SpinnerController {
         _pickerView.dataSource = delegateDataSource
         _toolBar.barStyle = UIBarStyle.default
         let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissPicker))
-        _toolBar.setItems([doneButton], animated: true)
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPicker))
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        _toolBar.setItems([doneButton, flexibleSpace, cancelButton], animated: true)
         _toolBar.isUserInteractionEnabled = true
         _toolBar.sizeToFit()
     }
@@ -100,9 +103,16 @@ fileprivate class SpinnerPhoneController: UIViewController, SpinnerController {
         _pickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         _pickerView.translatesAutoresizingMaskIntoConstraints = false
     }
+
+    public func cancelPicker() {
+        self._delegate.CancelSelection(for: _pickerView)
+        self.dismiss(animated: true)
+    }
     
     public func dismissPicker(){
-        self._delegate.AfterSelecting()
+        if _pickerView.numberOfRows(inComponent: 0) > 0 {
+          self._delegate.AfterSelecting()
+        }
         self.dismiss(animated: true)
     }
 }
@@ -114,6 +124,8 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     fileprivate var _selectionIndex : Int32 = 0
     fileprivate var _selection: String = ""
     fileprivate let _isPhone = UIDevice.current.userInterfaceIdiom == .phone
+    fileprivate var _currSelection: String = "" // saves selection state for cancel
+    fileprivate var _currSelectionIndex: Int32 = 0 // saves selection state for cancel
     
     public override init(_ parent: ComponentContainer) {
         super.init(parent)
@@ -141,7 +153,16 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
                 popover.sourceRect = _view.frame
             }
         }
+        _currSelection = _selection
+        _currSelectionIndex = _selectionIndex
         _container.form.present(_viewController as! UIViewController, animated: true)
+      
+    }
+  
+    open func CancelSelection(for pickerView: UIPickerView) {
+        _selection = _currSelection
+        _selectionIndex = _currSelectionIndex
+        pickerView.selectRow(Int(_selectionIndex) - 1, inComponent: 0, animated: true)
     }
     
     open func DisplayDropdown() {
@@ -171,6 +192,9 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
     
     open func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if _items.isEmpty {
+          return
+        }
         _selection = _items[row]
         _selectionIndex = Int32(row) + 1
     }
