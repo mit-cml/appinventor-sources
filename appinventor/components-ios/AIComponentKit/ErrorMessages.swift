@@ -25,6 +25,9 @@ import Foundation
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
 
+  // ImagePicker Errors
+  case ERROR_CANNOT_COPY_MEDIA = 1602
+
   // WebViewer Errors
   case ERROR_WEB_VIEWER_UNKNOWN_ERROR = 2502
   case ERROR_WEB_VIEWER_UNSUPPORTED_METHOD = 101000
@@ -41,7 +44,7 @@ import Foundation
   
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
-  
+
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -92,6 +95,10 @@ import Foundation
 
     case .ERROR_REPL_SECURITY_ERROR:
       return "Security Error Receiving Blocks from Browser: %@."
+
+    // ImagePicker Errors
+    case .ERROR_CANNOT_COPY_MEDIA:
+      return "Unable to copy selected media: %s"
 
     // AccelerometerSensor Errors
     case .ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY:

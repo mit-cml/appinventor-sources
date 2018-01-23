@@ -52,5 +52,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App Inventor accesses your photo library when you include an ImagePicker component in your app.</string>
 </dict>
 </plist>
