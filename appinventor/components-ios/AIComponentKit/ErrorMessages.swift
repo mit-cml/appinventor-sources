@@ -25,6 +25,11 @@ import Foundation
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
 
+  // WebViewer Errors
+  case ERROR_WEB_VIEWER_UNKNOWN_ERROR = 2502
+  case ERROR_WEB_VIEWER_UNSUPPORTED_METHOD = 101000
+  case ERROR_WEB_VIEWER_MISSING_FILE = 101001
+
   // Repl Communication Errors
   case ERROR_REPL_SECURITY_ERROR = 1801
 
@@ -75,6 +80,15 @@ import Foundation
       return "The specified request headers are not valid: element %s is not a list"
     case .ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS:
       return "The specified request headers are not valid: element %s does not contain two elements"
+
+    // WebViewer Errors
+    case .ERROR_WEB_VIEWER_UNKNOWN_ERROR:
+      return ""
+    case .ERROR_WEB_VIEWER_UNSUPPORTED_METHOD:
+      return "The specified method is not supported on iOS"
+    case .ERROR_WEB_VIEWER_MISSING_FILE:
+      return "Could not locate target file"
+
 
     case .ERROR_REPL_SECURITY_ERROR:
       return "Security Error Receiving Blocks from Browser: %@."
