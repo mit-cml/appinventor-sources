@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043ACD8A20104F52002C74DD /* DatePicker.swift */; };
 		060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060119DD1DC24126000FC1E2 /* ListPicker.swift */; };
 		060395451F342ADE006D6E66 /* language-codes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 060395431F342ADE006D6E66 /* language-codes.plist */; };
 		060395461F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */; };
@@ -113,6 +114,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		043ACD8A20104F52002C74DD /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
 		060119DD1DC24126000FC1E2 /* ListPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPicker.swift; sourceTree = "<group>"; };
 		060395431F342ADE006D6E66 /* language-codes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "language-codes.plist"; sourceTree = "<group>"; };
 		060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iso3166_1_2_to_iso3166_1_3.plist; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				068E0EB61DC251BA0086FFDA /* Slider.swift */,
 				06B216011DB95134000B3366 /* TextBox.swift */,
 				06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */,
+				043ACD8A20104F52002C74DD /* DatePicker.swift */,
 				DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */,
 			);
 			name = ui;
@@ -783,6 +786,7 @@
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
 				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
+				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
