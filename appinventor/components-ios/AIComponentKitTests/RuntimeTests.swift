@@ -12,6 +12,7 @@ class RuntimeTests: XCTestCase {
       do {
         let text = try String(contentsOf: runtimeUrl, encoding: String.Encoding.utf8)
         interpreter.evalForm(text)
+        interpreter.evalForm("(set! *testing* #t)")
       } catch {
         XCTFail("Unable to load runtime.scm")
         throw TestFailure()
@@ -74,5 +75,21 @@ class RuntimeTests: XCTestCase {
   func testYailCoerceToString() throws {
     let interpreter = try getInterpreterForTesting()
     XCTAssertEqual("#t", interpreter.evalForm("(string? (coerce-to-string 0.5))"))
+  }
+
+  func testYailCoerceToInstant() throws {
+    let interpreter = try getInterpreterForTesting()
+    interpreter.evalForm("(define *test-instant* (yail:make-instance NSDate))")
+    XCTAssertEqual("#t", interpreter.evalForm("(yail:isa *test-instant* NSDate)"))
+    XCTAssertEqual("#t", interpreter.evalForm("(eq? *non-coercible-value* (coerce-to-instant 0))"))
+    XCTAssertEqual("#t", interpreter.evalForm("(eq? *test-instant* (coerce-to-instant *test-instant*))"))
+  }
+
+  func testYailGenerateRuntimeTypeError() throws {
+    let interpreter = try getInterpreterForTesting()
+    interpreter.evalForm("(generate-runtime-type-error 'testYailGenerateRuntimeTypeError '(\"Test error\"))")
+    XCTAssertNotNil(interpreter.exception)
+    XCTAssertEqual("RuntimeError", (interpreter.exception?.name)! as NSString)
+    XCTAssertTrue((interpreter.exception?.reason?.contains("testYailGenerateRuntimeTypeError"))!)
   }
 }

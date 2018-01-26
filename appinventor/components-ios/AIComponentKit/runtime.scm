@@ -18,6 +18,7 @@
 (define Screen1-global-vars '())
 (define *test-environment* '())
 (define *test-global-var-environment* '())
+(define *testing* #f)
 
 (define-syntax call-with-output-string
   (syntax-rules ()
@@ -297,6 +298,12 @@
     (or (padded-string->number arg) *non-coercible-value*))
    (else *non-coercible-value*)))
 
+(define-syntax use-json-format
+  (syntax-rules ()
+   ((_)
+    (if *testing* #t
+      (yail:invoke (yail:invoke AIComponentKit.Form 'activeForm) 'ShowListsAsJson)))))
+
 (define (coerce-to-string arg)
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
         ((string? arg) arg)
@@ -307,6 +314,63 @@
          (let ((pieces (map coerce-to-string arg)))
             (call-with-output-string (lambda (port) (display pieces port)))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
+
+;;; This is very similar to coerce-to-string, but is intended for places where we
+;;; want to make the structure more clear.  For example, the empty string should
+;;; be explicity shown in error messages.
+;;; This procedure is currently almost completely redundant with coerce-to-string
+;;; but it give us flexibility to tailor display for other data types
+
+(define get-display-representation
+  (lambda (arg)
+    (if (use-json-format)
+        (get-json-display-representation arg)
+      (get-original-display-representation arg))))
+
+(define get-original-display-representation
+  ;;there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
+  ;;which is why this uses 1.0 and -1.0
+  (let ((+inf (/ 1.0 0))
+        (-inf (/ -1.0 0)))
+    (lambda (arg)
+    (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+          ((symbol? arg)
+           (symbol->string arg))
+          ((string? arg)
+           (if (string=? arg "")
+               *the-empty-string-printed-rep*
+             arg))
+          ((number? arg)
+           (cond ((= arg +inf) "+infinity")
+                 ((= arg -inf) "-infinity")
+                 (else (appinventor-number->string arg))))
+          ((boolean? arg) (boolean->string arg))
+          ((yail-list? arg) (get-display-representation (yail-list->kawa-list arg)))
+          ((list? arg)
+           (let ((pieces (map get-display-representation arg)))
+              (call-with-output-string (lambda (port) (display pieces port)))))
+          (else (call-with-output-string (lambda (port) (display arg port))))))))
+
+(define get-json-display-representation
+  ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
+  ;; which is why this uses 1.0 and -1.0
+  (let ((+inf (/ 1.0 0))
+        (-inf (/ -1.0 0)))
+    (lambda (arg)
+      (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+            ((symbol? arg)
+             (symbol->string arg))
+            ((string? arg) (string-append "\"" arg "\""))
+            ((number? arg)
+             (cond ((= arg +inf) "+infinity")
+                   ((= arg -inf) "-infinity")
+                   (else (appinventor-number->string arg))))
+            ((boolean? arg) (boolean->string arg))
+            ((yail-list? arg) (get-json-display-representation (yail-list->kawa-list arg)))
+            ((list? arg)
+             (let ((pieces (map get-json-display-representation arg)))
+              (string-append "[" (join-strings pieces ", ") "]")))
+            (else (call-with-output-string (lambda (port) (display arg port))))))))
 
 (define (coerce-to-yail-list arg)
   (cond
@@ -352,6 +416,17 @@
                     ": "
                     (show-arglist-no-parens arglist))
      (string-append "Bad arguments to " string-name))))
+
+;;; show a string that is the elements in arglist, with the individual
+;;; elements delimited by brackets to make error messages more readable
+(define (show-arglist-no-parens args)
+  (let* ((elements (map get-display-representation args))
+         (bracketed (map (lambda (s) (string-append "[" s "]")) elements)))
+     (let loop ((result "") (rest-elements bracketed))
+          (if (null? rest-elements)
+              result
+            (loop (string-append result ", " (car rest-elements))
+                  (cdr rest-elements))))))
 
 (define (coerce-args procedure-name arglist typelist)
   (cond ((null? typelist)
@@ -403,7 +478,7 @@
    (else arg)))
 
 (define (signal-runtime-error message error-type)
-  (error "Runtime Error" message error-type))
+  (error "RuntimeError" message error-type))
 
 (define (signal-runtime-form-error function-name error-number message)
   (yail:invoke *this-form* 'runtimeFormErrorOccurredEvent function-name error-number message)
