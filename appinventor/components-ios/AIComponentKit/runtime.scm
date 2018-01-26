@@ -259,8 +259,7 @@
 
 (define (coerce-to-instant arg)
   (cond
-   ;TODO(ewpatton): Represent objects with NSCalendar
-   ;((instance? arg java.util.Calendar) arg)
+   ((yail:isa arg NSDate) arg)
    (else *non-coercible-value*)))
 
 (define (coerce-to-component arg)
