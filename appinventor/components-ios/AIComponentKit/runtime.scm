@@ -342,6 +342,17 @@
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
       (sanitize-component-data result))))
 
+(define (generate-runtime-type-error proc-name arglist)
+  (let ((string-name (coerce-to-string proc-name)))
+    (signal-runtime-error
+     (string-append "The operation "
+                    string-name
+                    " cannot accept the argument"
+                    (if (= (length arglist) 1) "" "s")
+                    ": "
+                    (show-arglist-no-parens arglist))
+     (string-append "Bad arguments to " string-name))))
+
 (define (coerce-args procedure-name arglist typelist)
   (cond ((null? typelist)
          (if (null? arglist)
@@ -390,6 +401,13 @@
    ((number? arg)
     arg)
    (else arg)))
+
+(define (signal-runtime-error message error-type)
+  (error "Runtime Error" message error-type))
+
+(define (signal-runtime-form-error function-name error-number message)
+  (yail:invoke *this-form* 'runtimeFormErrorOccurredEvent function-name error-number message)
+)
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations

@@ -512,6 +512,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // Private implementation
+
+  open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
+    dispatchErrorOccurredEvent(self, functionName, errorNumber, message as NSString)
+  }
+
   override open var preferredStatusBarStyle: UIStatusBarStyle {
     switch _theme {
     case .BlackText:
