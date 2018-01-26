@@ -42,6 +42,10 @@ import Foundation
   // File Errors
   case ERROR_CANNOT_WRITE_TO_FILE = 2104
   
+  // TimePicker Errors
+  case ERROR_ILLEGAL_HOUR = 2301
+  case ERROR_ILLEGAL_MINUTE = 2302
+  
   // DatePicker Errors
   case ERROR_ILLEGAL_DATE = 2401
   
@@ -95,7 +99,7 @@ import Foundation
     case .ERROR_WEB_VIEWER_MISSING_FILE:
       return "Could not locate target file"
 
-
+    // Repl Communication Errors
     case .ERROR_REPL_SECURITY_ERROR:
       return "Security Error Receiving Blocks from Browser: %@."
 
@@ -106,6 +110,12 @@ import Foundation
     // AccelerometerSensor Errors
     case .ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY:
       return "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. The only legal values are 1, 2, or 3."
+      
+    // TimePicker Errors
+    case .ERROR_ILLEGAL_HOUR:
+      return "The hour must be set to a value between 0 and 23."
+    case .ERROR_ILLEGAL_MINUTE:
+      return "The minute must be set to a value between 0 and 59."
     
     // DatePicker Errors
     case .ERROR_ILLEGAL_DATE:
