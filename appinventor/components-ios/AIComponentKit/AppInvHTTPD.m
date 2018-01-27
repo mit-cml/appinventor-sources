@@ -94,7 +94,7 @@ static NSString *kMimeJson = @"application/json";
     @"fqcn": @true,
     @"installer": @"unknown",
     @"package": @"edu.mit.appinventor.aicompanion3",
-    @"version": @"2.43"
+    @"version": @"2.46"
   };
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithData:data contentType:@"application/json"];
