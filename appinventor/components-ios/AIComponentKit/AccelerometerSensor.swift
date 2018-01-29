@@ -1,24 +1,48 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import CoreMotion
 
-private let GRAVITY = 9.8
+private let GRAVITY = -9.81
+private let SENSOR_CACHE_SIZE = 10
 
+/**
+ * An AccelerometerSensor class.  A component that can detect shaking and
+ * measure acceleration approximately in three dimensions using SI units m/s^2.
+ */
 open class AccelerometerSensor: NonvisibleComponent {
   fileprivate let _manager = CMMotionManager()
   fileprivate var _enabled = false
   fileprivate var _x = 0.0
   fileprivate var _y = 0.0
   fileprivate var _z = 0.0
-  fileprivate var _sensitivity: Int32 = 2
-
+  fileprivate var _sensitivity: AccelerometerSensitivity = AccelerometerSensitivity.moderate
+  
+  // Cache for shake detection
+  private var X_CACHE: CircularBuffer<Double>
+  private var Y_CACHE: CircularBuffer<Double>
+  private var Z_CACHE: CircularBuffer<Double>
+  private var _timeLastShook: Int = 0
+  
+  // Shake Thresholds
+  private let weakShakeThreshold: Double = 3.2
+  private let moderateShakeThreshold: Double = 4.01
+  private let strongShakeThreshold: Double = 4.3
+  
+  fileprivate var _needsUpdate = false
+  
   public override init(_ parent: ComponentContainer) {
+    X_CACHE = CircularBuffer(SENSOR_CACHE_SIZE, 0.0)
+    Y_CACHE = CircularBuffer(SENSOR_CACHE_SIZE, 0.0)
+    Z_CACHE = CircularBuffer(SENSOR_CACHE_SIZE, 0.0)
     super.init(parent)
     MinimumInterval = 400
-    Sensitivity = 2
+    Sensitivity = AccelerometerSensitivity.moderate.rawValue
     Enabled = true
+    // TODO: add registration following form update
+    //    _form.registerForOnResume(self)
+    //    _form.registerForOnStop(self)
   }
 
   // MARK: AccelerometerSensor Properties
@@ -33,11 +57,11 @@ open class AccelerometerSensor: NonvisibleComponent {
   
   open var Sensitivity: Int32 {
     get {
-      return _sensitivity
+      return _sensitivity.rawValue
     }
     set(sensitivity) {
       if sensitivity >= 1 && sensitivity <= 3 {
-        _sensitivity = sensitivity
+        _sensitivity = AccelerometerSensitivity(rawValue: sensitivity)!
       } else {
         _form.dispatchErrorOccurredEvent(self, "Sensitivity", ErrorMessage.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.code, ErrorMessage.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.message)
       }
@@ -61,7 +85,7 @@ open class AccelerometerSensor: NonvisibleComponent {
           _manager.startDeviceMotionUpdates(to: OperationQueue.main) {
             [weak self] (data: CMDeviceMotion?, error: Error?) in
             if let gravity = data?.gravity {
-              self?.AccelerationChanged(gravity.x, y: gravity.y, z: gravity.z)
+              self?.AccelerationChanged(gravity.x * GRAVITY, y: gravity.y * GRAVITY, z: gravity.z * GRAVITY)
             } else if (error != nil) {
               self?.Enabled = false
             }
@@ -72,7 +96,7 @@ open class AccelerometerSensor: NonvisibleComponent {
             if (error != nil) {
               self?.Enabled = false
             } else if let acceleration = data?.acceleration {
-              self?.AccelerationChanged(acceleration.x * GRAVITY, y: acceleration.y, z: acceleration.z)
+              self?.AccelerationChanged(acceleration.x * GRAVITY, y: acceleration.y * GRAVITY, z: acceleration.z * GRAVITY)
             }
           }
         }
@@ -80,6 +104,15 @@ open class AccelerometerSensor: NonvisibleComponent {
         _manager.stopAccelerometerUpdates()
         _manager.stopDeviceMotionUpdates()
       }
+    }
+  }
+  
+  open var LegacyMode: Bool {
+    get {
+      return false
+    }
+    set (legacyMode) {
+      // not necessary for iOS
     }
   }
   
@@ -106,10 +139,46 @@ open class AccelerometerSensor: NonvisibleComponent {
     _x = x
     _y = y
     _z = z
-    EventDispatcher.dispatchEvent(of: self, called: "AccelerationChanged", arguments: NSNumber(floatLiteral: x), NSNumber(floatLiteral: y), NSNumber(floatLiteral: z))
+    
+    if !_needsUpdate {
+      _needsUpdate = true
+      OperationQueue.main.addOperation {
+        defer {
+          self._needsUpdate = false
+        }
+        self.X_CACHE.write(x)
+        self.Y_CACHE.write(y)
+        self.Z_CACHE.write(z)
+        
+        let currentTimeInMS = Int(NSDate().timeIntervalSince1970 * 1000)
+        if (self.isShaking(self.X_CACHE, x) || self.isShaking(self.Y_CACHE, y) || self.isShaking(self.Z_CACHE, z)) && (self._timeLastShook == 0 || currentTimeInMS >= self._timeLastShook + Int(self.MinimumInterval)) {
+          self._timeLastShook = currentTimeInMS
+          self.Shaking()
+        }
+        
+        EventDispatcher.dispatchEvent(of: self, called: "AccelerationChanged", arguments: NSNumber(floatLiteral: x), NSNumber(floatLiteral: y), NSNumber(floatLiteral: z))
+      }
+    }
   }
-
+  
+  private func isShaking(_ cache: CircularBuffer<Double>, _ currentValue: Double) -> Bool {
+    // cache size is fixed
+    let average = cache.buffer.reduce(0, +) / Double(cache.size)
+    let diff = abs(average - currentValue)
+    
+    // values based on iPhone tests comparatively to Android phone
+    switch _sensitivity {
+    case AccelerometerSensitivity.weak:
+      return diff > strongShakeThreshold
+    case AccelerometerSensitivity.moderate:
+      return diff > moderateShakeThreshold
+    case AccelerometerSensitivity.strong:
+      return diff > weakShakeThreshold
+    }
+  }
+  
   open func Shaking() {
-    EventDispatcher.dispatchEvent(of: self, called: "Events")
+    EventDispatcher.dispatchEvent(of: self, called: "Shaking")
   }
 }
+
