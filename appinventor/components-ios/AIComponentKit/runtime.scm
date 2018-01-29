@@ -382,6 +382,16 @@
    ((boolean? arg) arg)
    (else *non-coercible-value*)))
 
+(define-syntax and-delayed
+  (syntax-rules ()
+    ((_ conjunct ...)
+     (process-and-delayed (lambda () conjunct) ...))))
+
+(define-syntax or-delayed
+  (syntax-rules ()
+    ((_ disjunct ...)
+     (process-or-delayed (lambda () disjunct) ...))))
+
 (define-syntax define-form
   (syntax-rules ()
     ((_ class-name form-name)
@@ -483,6 +493,8 @@
 (define (signal-runtime-form-error function-name error-number message)
   (yail:invoke *this-form* 'runtimeFormErrorOccurredEvent function-name error-number message)
 )
+
+(define (yail-not foo) (not foo))
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations
@@ -595,6 +607,36 @@
 
 (define (yail-not-equal? x1 x2)
   (not (yail-equal? x1 x2)))
+
+(define (process-and-delayed . delayed-args)
+  (define (and-proc delayed-args)
+    (if (null? delayed-args)
+        #t
+      (let* ((conjunct ((car delayed-args)))
+             (coerced-conjunct (coerce-to-boolean conjunct)))
+        (if (is-coercible? coerced-conjunct)
+            (and coerced-conjunct (and-proc (cdr delayed-args)))
+          (signal-runtime-error
+           (string-append "The AND operation cannot accept the argument "
+               (get-display-representation conjunct)
+               " because it is neither true nor false")
+           (string-append "Bad argument to AND"))))))
+  (and-proc delayed-args))
+
+(define (process-or-delayed . delayed-args)
+  (define (or-proc delayed-args)
+    (if (null? delayed-args)
+        #f
+      (let* ((disjunct ((car delayed-args)))
+             (coerced-disjunct (coerce-to-boolean disjunct)))
+        (if (is-coercible? coerced-disjunct)
+            (or coerced-disjunct (or-proc (cdr delayed-args)))
+          (signal-runtime-error
+           (string-append "The OR operation cannot accept the argument "
+               (get-display-representation disjunct)
+               " because it is neither true nor false")
+           (string-append "Bad argument to OR"))))))
+  (or-proc delayed-args))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
