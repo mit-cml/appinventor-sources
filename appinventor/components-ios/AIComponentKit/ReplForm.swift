@@ -1,10 +1,5 @@
-//
-//  ReplForm.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/17/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import SchemeKit
@@ -54,7 +49,7 @@ open class ReplForm: Form {
     }
     return false
   }
-  
+
   open func startHTTPD(_ secure: Bool) {
     if _httpdServer == nil {
       _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
@@ -65,6 +60,21 @@ open class ReplForm: Form {
     get {
       return _httpdServer?.interpreter
     }
+  }
+/*
+  open override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    interpreter?.setCurrentForm(self)
+  }
+*/
+  open override func doSwitchForm(to formName: String, startValue: AnyObject?) {
+    let newForm = ReplForm(nibName: nil, bundle: nil)
+    newForm.formName = formName
+    if let startValue = startValue {
+      newForm.startValue = startValue
+    }
+    self.navigationController?.pushViewController(newForm, animated: true)
+    RetValManager.shared().pushScreen(formName, withValue: newForm.startText as NSString)
   }
 
   open var activeForm: ReplForm? {
@@ -78,7 +88,7 @@ open class ReplForm: Form {
     }
   }
 
-  open var assetsLoaded: Bool {
+  @objc open var assetsLoaded: Bool {
     @objc(isAssetsLoaded)
     get {
       return _assetsLoaded;
@@ -87,5 +97,23 @@ open class ReplForm: Form {
   
   open func setAssetsLoaded() {
     _assetsLoaded = true
+  }
+
+  override func doCloseScreen(withValue value: AnyObject? = nil) {
+    super.doCloseScreen(withValue: value)
+    do {
+      RetValManager.shared().popScreen(try getJsonRepresentation(value))
+    } catch {
+      RetValManager.shared().popScreen("")
+    }
+  }
+
+  override func doCloseScreen(withPlainText text: String) {
+    super.doCloseScreen(withPlainText: text)
+    RetValManager.shared().popScreen(text)
+  }
+
+  override open func doCloseApplication() {
+    view.makeToast("Closing the application is not allowed in live development mode.")
   }
 }

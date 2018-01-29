@@ -531,6 +531,27 @@
         ;(*:addParent (KawaEnvironment:getCurrent) *test-environment*)
         (set! *test-global-var-environment* '()))))
 
+(define-syntax foreach
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-for-each (lambda (lambda-arg-name) body-form) list))))
+
+
+(define-syntax forrange
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form start end step)
+     (yail-for-range (lambda (lambda-arg-name) body-form) start end step))))
+
+(define-syntax while
+  (syntax-rules ()
+    ((_ condition body ...)
+     (let loop ()
+       (if condition
+       (begin
+         body ...
+         (loop))
+       *the-null-value*)))))
+
 (define (init-runtime)
   ; no-op
   #f)
@@ -1262,11 +1283,29 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 |#
 
+(define (close-screen)
+  (yail:invoke AIComponentKit.Form 'closeScreen))
+
+(define (close-application)
+  (yail:invoke AIComponentKit.Form 'closeApplication))
+
 (define (open-another-screen screen-name)
   (yail:invoke AIComponentKit.Form 'switchForm (coerce-to-string screen-name)))
 
 (define (open-another-screen-with-start-value screen-name start-value)
   (yail:invoke AIComponentKit.Form 'switchFormWithStartValue (coerce-to-string screen-name) start-value))
+
+(define (get-start-value)
+  (yail:invoke AIComponentKit.Form 'getStartValue))
+
+(define (close-screen-with-value result)
+  (yail:invoke AIComponentKit.Form 'closeScreenWithValue result))
+
+(define (get-plain-start-text)
+  (yail:invoke AIComponentKit.Form 'getStartText))
+
+(define (close-screen-with-plain-text string)
+  (yail:invoke AIComponentKit.Form 'closeScreenWithPlainText string))
 
 ;;;; def
 

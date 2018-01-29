@@ -6,6 +6,7 @@ import UIKit
 import Toast_Swift
 
 open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching {
+  fileprivate static var _showListsAsJson = false
   fileprivate let TAG = "Form"
   fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
   fileprivate let ARGUMENT_NAME = "APP_INVENTOR_START"
@@ -15,7 +16,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate var deviceDensity: Float?
   fileprivate var compatScalingFactor: Float?
   fileprivate var applicationIsBeingClosed = false
-  var formName: String?
+  var formName: String = ""
   fileprivate var screenInitialized = false
   fileprivate var _components: [Component] = []
   fileprivate var _aboutScreen: String?
@@ -32,6 +33,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
   fileprivate var _backgroundImage = ""
   fileprivate var _screenInitialized = false
+  fileprivate var _startText = ""
   fileprivate var _viewLayout = LinearLayout()
   fileprivate var _compatibilityMode = true
   fileprivate var _verticalLayout = CSLinearLayoutView()
@@ -160,14 +162,6 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       NSLog("Unable to process width value \(height)")
     }
     form.view.setNeedsLayout()
-  }
-  
-  open class func switchForm(_ name: String) {
-    activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
-  }
-  
-  open class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
-    activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
   }
 
   open func clear() {
@@ -411,6 +405,15 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
+  open var ShowListsAsJson: Bool {
+    get {
+      return Form._showListsAsJson
+    }
+    set(show) {
+      Form._showListsAsJson = show
+    }
+  }
+
   open var ShowStatusBar: Bool {
     get {
       return UIApplication.shared.isStatusBarHidden
@@ -484,7 +487,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
 
   // MARK: Form Events
   open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
-    // TODO: Implementation
+    if let error = ErrorMessage(rawValue: Int(errorNumber)) {
+      let formattedMessage = String(format: error.message, messageArgs)
+      EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: component, functionName as NSString, NSNumber(value: errorNumber), formattedMessage as NSString)
+    }
   }
 
   open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
@@ -495,8 +501,12 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     // TODO: Implementation
   }
 
+  open func BackPressed() {
+    EventDispatcher.dispatchEvent(of: self, called: "BackPressed")
+  }
+
   open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
-    // TODO: Implementation
+    EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: functionName as NSString, NSNumber(value: errorNumber), message as NSString)
   }
 
   open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
@@ -507,6 +517,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     _screenInitialized = true
   }
 
+  open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
+    EventDispatcher.dispatchEvent(of: self, called: "OtherScreenClosed", arguments: otherScreenName as NSString, result)
+  }
+
   open func ScreenOrientationChanged() {
     EventDispatcher.dispatchEvent(of: self, called: "ScreenOrientationChanged")
   }
@@ -515,6 +529,101 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
 
   open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
     dispatchErrorOccurredEvent(self, functionName, errorNumber, message as NSString)
+  }
+
+  open class func switchForm(_ name: String) {
+    activeForm?.doSwitchForm(to: name)
+  }
+
+  open class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
+    activeForm?.doSwitchForm(to: name, startValue: value)
+  }
+
+  open func doSwitchForm(to formName: String, startValue: AnyObject? = nil) {
+    view.makeToast("Switching screens is not yet supported on iOS")
+  }
+
+  open class func closeScreen() {
+    activeForm?.doCloseScreen()
+  }
+
+  func doCloseScreen(withValue value: AnyObject? = nil) {
+    if let nc = self.navigationController, nc.viewControllers.count > 1 {
+      navigationController?.popViewController(animated: true)
+      Form.activeForm?.OtherScreenClosed(self.formName, value ?? "" as NSString)
+    }
+  }
+
+  func doCloseScreen(withPlainText text: String) {
+    if let nc = self.navigationController, nc.viewControllers.count > 1 {
+      navigationController?.popViewController(animated: true)
+      Form.activeForm?.OtherScreenClosed(self.formName, text as NSString)
+    }
+  }
+
+  open class func closeApplication() {
+    activeForm?.doCloseApplication()
+  }
+
+  func doCloseApplication() {
+    exit(0)
+  }
+
+  open var startValue: AnyObject {
+    get {
+      do {
+        return try getObjectFromJson(_startText) ?? _startText as NSString
+      } catch {
+        return _startText as NSString
+      }
+    }
+    set(startValue) {
+      do {
+        _startText = try getJsonRepresentation(startValue)
+      } catch {
+        _startText = ""
+      }
+    }
+  }
+
+  open class func getStartValue() -> AnyObject {
+    if let form = Form.activeForm {
+      return form.startValue
+    } else {
+      return "" as NSString
+    }
+  }
+
+  open class func closeScreenWithValue(_ value: AnyObject) {
+    activeForm?.doCloseScreen(withValue: value)
+  }
+
+  open var startText: String {
+    get {
+      return _startText
+    }
+    set(startText) {
+      _startText = startText
+    }
+  }
+
+  open class func getStartText() -> String {
+    if let form = Form.activeForm {
+      return form.startText
+    } else {
+      return ""
+    }
+  }
+
+  open class func closeScreenWithPlainText(_ text: String) {
+    if let form = activeForm, let vcs = activeForm?.navigationController?.viewControllers {
+      if vcs.count > 1 {
+        if let parentForm = vcs[vcs.count - 2] as? Form {
+          form.doCloseScreen()
+          parentForm.OtherScreenClosed(form.formName, text as NSString)
+        }
+      }
+    }
   }
 
   override open var preferredStatusBarStyle: UIStatusBarStyle {
