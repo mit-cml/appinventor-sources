@@ -41,7 +41,12 @@ import Foundation
   
   // File Errors
   case ERROR_CANNOT_WRITE_TO_FILE = 2104
-  
+
+  // Yandex.Translate errors
+  case ERROR_TRANSLATE_NO_KEY_FOUND = 2201
+  case ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE = 2202
+  case ERROR_TRANSLATE_JSON_RESPONSE = 2203
+
   // TimePicker Errors
   case ERROR_ILLEGAL_HOUR = 2301
   case ERROR_ILLEGAL_MINUTE = 2302
@@ -124,6 +129,14 @@ import Foundation
     // File Errors
     case .ERROR_CANNOT_WRITE_TO_FILE:
       return "Cannot write to file %s"
+
+    //Yandex.Translate Errors
+    case .ERROR_TRANSLATE_NO_KEY_FOUND:
+      return "Missing API key for the Yandex.Translate service."
+    case .ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE:
+      return "The translation service is not available; Please try again later."
+    case .ERROR_TRANSLATE_JSON_RESPONSE:
+      return "The response from the Yandex.Translate service cannot be parsed; Please try again later."
       
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
