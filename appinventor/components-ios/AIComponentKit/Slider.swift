@@ -1,112 +1,121 @@
-//
-//  Slider.swift
-//  AIComponentKit
-//
-//  Created by Andrew McKinney on 1/6/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
 public class Slider: ViewComponent, AbstractMethodsForViewComponent {
-    private var _view: UISlider
-    private var _alignment: Int32 = Alignment.normal.rawValue
-    private var _typeface: Int32 = Typeface.normal.rawValue
-    private var _bold = false
-    private var _italic = false
-    private var _hasMargins = false
-    private var _minValue: Float = 0.0
-    private var _maxValue: Float = 0.0
-    private var _thumbValue: Float = 0.0
-    private var _leftColor: UIColor = UIColor.orange
-    private var _rightColor: UIColor = UIColor.gray
-
-    public override init(_ parent: ComponentContainer) {
-        _view = UISlider()
-        _view.maximumValue = Float(kSliderMaxValue)
-        _view.minimumValue = Float(kSliderMinValue)
-        _view.minimumTrackTintColor = _leftColor
-        _view.maximumTrackTintColor = _rightColor
-        _view.isEnabled = true
-        super.init(parent)
-        super.setDelegate(self)
-        parent.add(self)
+  private var _view: UISlider
+  private var _minValue: Float32 = kSliderMinValue
+  private var _maxValue: Float32 = kSliderMaxValue
+  private var _thumbPosition: Float32 = kSliderThumbValue
+  private var _leftColor: UIColor = UIColor.orange
+  private var _rightColor: UIColor = UIColor.gray
+  
+  public override init(_ parent: ComponentContainer) {
+    _view = UISlider()
+    super.init(parent)
+    super.setDelegate(self)
+    
+    setupSliderView()
+    parent.add(self)
+    
+    ThumbPosition = kSliderThumbValue
+    MinValue = kSliderMinValue
+    MaxValue = kSliderMaxValue
+  }
+  
+  private func setupSliderView() {
+    _view.isContinuous = false
+    _view.translatesAutoresizingMaskIntoConstraints = false
+    _view.minimumTrackTintColor = _leftColor
+    _view.maximumTrackTintColor = _rightColor
+    _view.maximumValue = 100.0
+    _view.minimumValue = 0.0
+    _view.isEnabled = true
+    _view.addTarget(self, action: #selector(self.positionChanged(sender:forEvent:)), for: .valueChanged)
+  }
+  
+  public override var view: UIView {
+    get {
+      return _view
     }
-
-    public override var view: UIView {
-        get {
-            return _view
-        }
+  }
+  
+  public var ThumbEnabled: Bool {
+    get {
+      return _view.isEnabled
     }
-
-    public var ThumbEnabled: Bool {
-        get {
-            return _view.isEnabled
-        }
-        set(thumbEnable) {
-            _view.isEnabled = thumbEnable
-        }
+    set(thumbEnable) {
+      _view.isEnabled = thumbEnable
     }
-
-    public func ThumbPosition(_thumbValue: Float) {
-            _view.setValue(_thumbValue, animated: true)
+  }
+  
+  public var ThumbPosition: Float32 {
+    get {
+      return _thumbPosition
     }
-
-    public var MinValue: Float {
-        get {
-            return _view.minimumValue
-        }
-        set(value) {
-            let maxValue = max(value, _view.maximumValue)
-            ThumbPosition(_thumbValue: ((maxValue + _minValue) / 2))
-        }
+    set(position) {
+      _thumbPosition = min(max(position, _minValue), _maxValue)
+      setSliderPosition()
     }
-
-    public var MaxValue: Float {
-        get {
-            return _view.maximumValue
-        }
-        set(value) {
-            let minValue = min(value, _view.minimumValue)
-            ThumbPosition(_thumbValue: ((minValue + _maxValue) / 2))
-        }
+  }
+  
+  public var MinValue: Float32 {
+    get {
+      return _minValue
     }
-
-    public var ColorLeft: Int32 {
-        get {
-            return colorToArgb(_leftColor)
-        }
-        set(argb) {
-            _leftColor = argbToColor(argb)
-            _view.minimumTrackTintColor = _leftColor
-        }
+    set(value) {
+      _minValue = value
+      _maxValue = max(value, _maxValue)
+      ThumbPosition = (_maxValue + _minValue) / 2.0
     }
-
-    public var ColorRight: Int32 {
-        get {
-            return colorToArgb(_rightColor)
-        }
-        set(argb) {
-            _rightColor = argbToColor(argb)
-            _view.maximumTrackTintColor = _rightColor
-        }
+  }
+  
+  public var MaxValue: Float32 {
+    get {
+      return _maxValue
     }
-
-//    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//    //progress has been changed. Set the sliderThumbPosition and then trigger the event
-//
-//    //Now convert this progress value (which is between 0-100), back to a value between the
-//    //range that user has set within minValue, maxValue
-//    thumbPosition = ((maxValue - minValue) * (float) progress / 100)
-//    + minValue;
-//
-//    if (DEBUG) {
-//    Log.d(LOG_TAG, "onProgressChanged progress value [0-100]: " + progress
-//    + ", reporting to user as: " + thumbPosition);
-//    }
-//
-//    //Trigger the event, reporting this new value
-//    PositionChanged(thumbPosition);
-//    EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
-//    }
+    set(value) {
+      _maxValue = value
+      _minValue = min(value, _minValue)
+      ThumbPosition = (_minValue + _maxValue) / 2.0
+    }
+  }
+  
+  public var ColorLeft: Int32 {
+    get {
+      return colorToArgb(_leftColor)
+    }
+    set(argb) {
+      _leftColor = argbToColor(argb)
+      _view.minimumTrackTintColor = _leftColor
+    }
+  }
+  
+  public var ColorRight: Int32 {
+    get {
+      return colorToArgb(_rightColor)
+    }
+    set(argb) {
+      _rightColor = argbToColor(argb)
+      _view.maximumTrackTintColor = _rightColor
+    }
+  }
+  
+  // Set the slider position based on _minValue, _maxValue, and _thumbPosition
+  // Slider position is a float in the range [0,100] and is determined by _minValue,
+  // _maxValue and _thumbPosition
+  private func setSliderPosition() {
+    let thumbPosition: Float = (_thumbPosition - _minValue) / (_maxValue - _minValue) * 100.0
+    thumbPosition.isNaN ? _view.setValue(50.0, animated: true) : _view.setValue(thumbPosition, animated: true)
+  }
+  
+  @objc private func positionChanged(sender: UISlider, forEvent event: UIEvent) {
+    _thumbPosition = (_maxValue - _minValue) * sender.value / 100
+    PositionChanged(_thumbPosition)
+  }
+  
+  open func PositionChanged(_ thumbPosition: Float) {
+    EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber)
+  }
 }

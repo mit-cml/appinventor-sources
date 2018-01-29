@@ -98,9 +98,9 @@ public enum Direction: Int32 {
   case none = 0
 }
 
-public let kSliderMinValue = 10
-public let kSliderMaxValue = 50
-public let kSliderThumbValue = (kSliderMinValue + kSliderMaxValue)
+public let kSliderMinValue: Float32 = 10
+public let kSliderMaxValue: Float32 = 50
+public let kSliderThumbValue: Float32 = (kSliderMinValue + kSliderMaxValue) / 2.0
 
 public let kDefaultValueTextToSpeechCountry = ""
 public let kDefaultValueTextToSpeechLanguage = ""
