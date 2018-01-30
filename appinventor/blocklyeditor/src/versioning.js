@@ -2507,6 +2507,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added method XMLTextDecode
     4: "noUpgrade"
+      
+    // AI2: Added method UriDecode
+    5: "noUpgrade"
 
   }, // End Web upgraders
 
