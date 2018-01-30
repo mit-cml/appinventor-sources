@@ -374,8 +374,13 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
 
 
   var formName = Blockly.mainWorkspace.formName;
-  // ???
-  var subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, "Screen1", "SubsetJSON");
+  var subsetJsonString;
+  if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
+    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, "Screen1", "SubsetJSON");
+  } else {
+    subsetJsonString = window.reactGetSubsetString();
+  }
+  //var subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, "Screen1", "SubsetJSON");
   var subsetArray = [];
   var subsetBlocks = [];
   console.log(formName);

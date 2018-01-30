@@ -519,10 +519,41 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     visibleComponentsPanel.setForm(form);
     form.select();
 
+    Map<String, JSONValue> properties = propertiesObject.getProperties();
+    JSONObject screenprops = propertiesObject.get("Properties").asObject();
+    JSONValue subset = screenprops.getProperties().get("SubsetJSON");
+    try {
+      String subsetjson = subset.toJson();
+      String shownComponentsStr = getShownComponents(subsetjson);
+      //OdeLog.log(shownComponentsStr);
+      String[] shownComponents = shownComponentsStr.split(",");
+      palettePanel.clearComponents();
+      for (String component : shownComponents) {
+        palettePanel.addComponent(component);
+      }
+    } catch (Exception e) {
+      OdeLog.log("invalid subset string");
+    }
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
     loadComplete = true;
   }
+
+  private native String getShownComponents(String subsetString)/*-{
+    var jsonObj = JSON.parse(JSON.parse(subsetString));
+    var shownComponentTypes = jsonObj["shownComponentTypes"];
+    var shownString = "";
+    for (var category in shownComponentTypes) {
+      var categoryArr = shownComponentTypes[category];
+      for (var i = 0; i < categoryArr.length; i++) {
+        shownString = shownString + "," + categoryArr[i]["type"];
+        //console.log(categoryArr[i]["type"]);
+      }
+    }
+    var shownCompStr = shownString.substring(1);
+    //console.log(shownCompStr);
+    return shownCompStr;
+  }-*/;
 
   /*
    * Parses the JSON properties and creates the form and its component structure.
