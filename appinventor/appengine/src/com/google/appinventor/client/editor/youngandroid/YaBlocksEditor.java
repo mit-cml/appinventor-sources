@@ -378,6 +378,17 @@ public final class YaBlocksEditor extends FileEditor
       return blocksEditor.myFormEditor.getComponentInstanceTypeName(instanceName);
   }
 
+  public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName){
+      //use form name to get blocks editor
+      YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
+      Map<String, MockComponent> componentMap = blocksEditor.myFormEditor.getComponents();
+      for (String key : componentMap.keySet()) {
+        OdeLog.log(key);
+      }
+      MockComponent mockComponent = componentMap.get(instanceName);
+      return mockComponent.getPropertyValue(propertyName);
+  }
+
   public void addComponent(String typeName, String instanceName, String uuid) {
     if (componentUuids.add(uuid)) {
       blocksArea.addComponent(uuid, instanceName, typeName);

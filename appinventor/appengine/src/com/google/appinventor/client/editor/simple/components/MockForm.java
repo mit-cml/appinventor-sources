@@ -212,6 +212,7 @@ public final class MockForm extends MockContainer {
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
+  private static final String PROPERTY_NAME_SUBSET_JSON = "SubsetJSON";
   private static final String PROPERTY_NAME_ACTIONBAR = "ActionBar";
   private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
@@ -474,6 +475,10 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
+    if (propertyName.equals(PROPERTY_NAME_SUBSET_JSON)) {
+      return editor.isScreen1();
+    }
+
     if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
       return false;
     }
@@ -615,6 +620,16 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, asJson);
+    }
+  }
+
+  private void setSubsetJSONProperty(String asJson) {
+    //This property applies to the application and is only visible on Screen1. When we load a form that is
+    //not Screen1, this method will be called with the default value for SubsetJson (""). We need to ignore that. 
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON, asJson);
     }
   }
 
@@ -957,6 +972,8 @@ public final class MockForm extends MockContainer {
       setShowListsAsJsonProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SUBSET_JSON)) {
+      setSubsetJSONProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
       setActionBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
@@ -1022,6 +1039,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON, 
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

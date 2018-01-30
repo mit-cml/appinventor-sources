@@ -3143,6 +3143,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TutorialURLProperties();
 
+  @DefaultMessage("SubsetJSON")
+  @Description("")
+  String SubsetJSONProperties();
+
   @DefaultMessage("Sizing")
   @Description("")
   String SizingProperties();

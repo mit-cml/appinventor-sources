@@ -51,6 +51,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   public static final String YOUNG_ANDROID_SETTINGS_TUTORIAL_URL = "TutorialURL";
+  public static final String YOUNG_ANDROID_SETTINGS_SUBSET_JSON = "SubsetJSON";
   public static final String YOUNG_ANDROID_SETTINGS_ACTIONBAR = "ActionBar";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR = "PrimaryColor";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";

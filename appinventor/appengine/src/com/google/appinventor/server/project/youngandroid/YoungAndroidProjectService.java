@@ -129,7 +129,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * Returns project settings that can be used when creating a new project.
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
-    String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL,
+    String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON,
     String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
@@ -139,6 +139,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     aName = Strings.nullToEmpty(aName);
     showListsAsJson = Strings.nullToEmpty(showListsAsJson);
     tutorialURL = Strings.nullToEmpty(tutorialURL);
+    subsetJSON = Strings.nullToEmpty(subsetJSON);
     actionBar = Strings.nullToEmpty(actionBar);
     theme = Strings.nullToEmpty(theme);
     primaryColor = Strings.nullToEmpty(primaryColor);
@@ -153,6 +154,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"" + showListsAsJson +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"" + tutorialURL +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON + "\":\"" + subsetJSON +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"" + actionBar +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"" + theme +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"" + primaryColor +
@@ -173,7 +175,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
     String icon, String vcode, String vname, String useslocation, String aname,
-    String sizing, String showListsAsJson, String tutorialURL, String actionBar, String theme,
+    String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
     String primaryColor, String primaryColorDark, String accentColor) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
@@ -203,6 +205,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (tutorialURL != null && !tutorialURL.isEmpty()) {
       contents += "tutorialurl=" + tutorialURL + "\n";
+    }
+    if (subsetJSON != null && !subsetJSON.isEmpty()) {
+      contents += "subsetjson=" + subsetJSON + "\n";
     }
     if (actionBar != null && !actionBar.isEmpty()) {
       contents += "actionbar=" + actionBar + "\n";
@@ -291,6 +296,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newTutorialURL = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+    String newSubsetJSON = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON));
     String newAName = Strings.nullToEmpty(settings.getSetting(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
@@ -329,6 +337,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldAName = Strings.nullToEmpty(properties.getProperty("aname"));
     String oldShowListsAsJson = Strings.nullToEmpty(properties.getProperty("showlistsasjson"));
     String oldTutorialURL = Strings.nullToEmpty(properties.getProperty("tutorialurl"));
+    String oldSubsetJSON = Strings.nullToEmpty(properties.getProperty("subsetjson"));
     String oldActionBar = Strings.nullToEmpty(properties.getProperty("actionbar"));
     String oldTheme = Strings.nullToEmpty(properties.getProperty("theme"));
     String oldPrimaryColor = Strings.nullToEmpty(properties.getProperty("color.primary"));
@@ -339,14 +348,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       || !newUsesLocation.equals(oldUsesLocation) ||
          !newAName.equals(oldAName) || !newSizing.equals(oldSizing) ||
       !newShowListsAsJson.equals(oldShowListsAsJson) ||
-        !newTutorialURL.equals(oldTutorialURL) || !newActionBar.equals(oldActionBar) ||
+        !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
         !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
         !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
-        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsJson, newTutorialURL,
+        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
         newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
@@ -367,7 +376,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
       qualifiedFormName, null, null, null, null, null, null, null, null, null, null, null, null,
-        null);
+        null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -388,7 +397,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create new project
     return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
-        projectName, "Fixed", "false", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
+        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
   }
 
   @Override
@@ -421,6 +430,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String tutorialURL = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+    String subsetJSON = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON);
     String actionBar = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR);
@@ -455,7 +467,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
         newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
-          vname, useslocation, aname, sizing, showListsAsJson, tutorialURL, actionBar,
+          vname, useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
           theme, primaryColor, primaryColorDark, accentColor);
       } else {
         // This is some file other than the project properties file.
@@ -480,7 +492,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
-        useslocation, aname, sizing, showListsAsJson, tutorialURL, actionBar, theme, primaryColor,
+        useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
         primaryColorDark, accentColor));
   }
 
