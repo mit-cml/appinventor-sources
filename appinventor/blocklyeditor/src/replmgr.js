@@ -79,6 +79,10 @@ top.ReplState.phoneState = {};
 
 // Blockly.mainWorkSpace --- hold the main workspace
 
+Blockly.ReplMgr.isConnected = function() {
+    return top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+};
+
 /**
  * Build YAIL for sending to the companion.
  * @param {Blockly.WorkspaceSvg} workspace
@@ -646,7 +650,15 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
         context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
                                        addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
-        context.runtimeError.setTextContent(message);
+        if (context.runtimeError.getContentElement()) {
+            // This is not condoned by Google Closure Library rules, but we have already escaped
+            // the return value and the static content should be code reviewed to be safe.
+            context.runtimeError.getContentElement().innerHTML = message;
+        } else {
+            // Fallback option if for some reason the content element did not exist.
+            // This shouldn't happen in practice, but you never know...
+            context.runtimeError.setSafeHtmlContent(goog.html.SafeHtml.htmlEscape(message));
+        }
         context.runtimeError.setVisible(true);
     };
     // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
@@ -675,7 +687,9 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                 // We had an error in initial form load or at another
                 // time when we were chunking forms together
                 top.loadAll = false;
-                top.loadAllErrorCount = 20;
+                // This was 20, but for large projects it lead to infinite loops trying to
+                // find an error if the error occurs below a top level block at index > 20.
+                top.loadAllErrorCount = Blockly.mainWorkspace.getTopBlocks().length;
                 console.log("Error in chunking, disabling.");
                 this.resetYail(true);
                 this.pollYail(Blockly.mainWorkspace);
@@ -1211,7 +1225,7 @@ Blockly.ReplMgr.ehardreset = function(formName) {
     var context = this;
     var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_OK, Blockly.Msg.REPL_CANCEL, 0, function(response) {
         dialog.hide();
-        if (response == "OK") {
+        if (response == Blockly.Msg.REPL_OK) {
             context.hardreset(formName, function() {
                 var xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/emulatorreset/", true);

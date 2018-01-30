@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -37,6 +37,18 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
     } else {
       DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "#" + getHexString(color, 6));
+    }
+  }
+
+  /**
+   * Clears the background color of a widget to its default by CSS rules.
+   *
+   * @param widget  widget to remove the background color for
+   */
+  static void resetWidgetBackgroundColor(Widget widget) {
+    Element el = widget.getElement();
+    if (el != null) {
+      el.getStyle().clearBackgroundColor();
     }
   }
 
@@ -111,6 +123,18 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(widget.getElement(), "color", "transparent");
     } else {
       DOM.setStyleAttribute(widget.getElement(), "color", "#" + getHexString(color, 6));
+    }
+  }
+
+  /**
+   * Clears the text color of a widget to its default by CSS rules
+   *
+   * @param widget  widget to remove the text color for
+   */
+  static void resetWidgetTextColor(Widget widget) {
+    Element el = widget.getElement();
+    if (el != null) {
+      el.getStyle().clearColor();
     }
   }
 
@@ -255,13 +279,17 @@ public final class MockComponentsUtil {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
     if (widthStyle != null) {
       DOM.setStyleAttribute(element, "width", null);
     }
     if (heightStyle != null) {
       DOM.setStyleAttribute(element, "height", null);
     }
-    return new String[] { widthStyle, heightStyle };
+    if (lineHeightStyle != null) {
+      DOM.setStyleAttribute(element, "line-height", "initial");
+    }
+    return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
 
   /*
@@ -278,6 +306,9 @@ public final class MockComponentsUtil {
     }
     if (style[1] != null) {
       DOM.setStyleAttribute(element, "height", style[1]);
+    }
+    if (style[2] != null) {
+      DOM.setStyleAttribute(element, "line-height", style[2]);
     }
   }
 
@@ -321,7 +352,10 @@ public final class MockComponentsUtil {
 
     String[] style = clearSizeStyle(w);
     int width = w.getOffsetWidth() + 4;
-    int height = w.getOffsetHeight();
+    int height = w.getOffsetHeight() + 6;
+    if (height < 26) {          // Do not make the button smaller
+      height = 26;              // then 26, as this mimicks what happens
+    }                           // on the real device
     restoreSizeStyle(w, style);
 
     // Detach the widget from the DOM before returning

@@ -3,6 +3,7 @@
 <!-- ======================================================================
      Copyright 2011 Google Inc.  All Rights Reserved.
      Author: markf@google.com (Mark Friedman)
+     Copyright 2012-2017 Massachusetts Institute of Technology, All rights reserved.
 
      App Inventor build server
      ====================================================================== -->
@@ -64,7 +65,14 @@
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json,simple_components.json"/>
+      <!-- Map assets for build server -->
+      <fileset dir="${lib.dir}/leaflet" includes="leaflet.js,leaflet.css" />
+      <fileset dir="${lib.dir}/leaflet/assets" includes="*"/>
     </copy>
+    <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
+    <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${classes.files.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+    <copy toFile="${classes.files.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
@@ -81,8 +89,16 @@
     <copy toFile="${classes.files.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
     <copy toFile="${classes.files.dir}/json.jar" file="${lib.dir}/json/json.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${classes.files.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+    <copy toFile="${classes.files.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.aar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.jar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/internal_impl.jar" file="${lib.dir}/android/support/internal_impl-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/support-annotations.jar" file="${lib.dir}/android/support/support-annotations-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/support-v4.aar" file="${lib.dir}/android/support/support-v4-22.2.1.aar" />
+    <copy toFile="${classes.files.dir}/support-v4.jar" file="${lib.dir}/android/support/support-v4-22.2.1.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
@@ -115,7 +131,13 @@
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="bouncycastle/bcprov-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="bouncycastle/bcpkix-jdk15on-149.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/common-24.3.0.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/builder-1.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/builder-model-1.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/sdk-common-24.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/layoutlib-api-24.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="ecj/ecj-4.5.1.jar"/>
       <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>

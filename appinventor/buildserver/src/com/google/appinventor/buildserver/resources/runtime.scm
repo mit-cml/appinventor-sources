@@ -396,8 +396,9 @@
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
              (when ((this):toastAllowed)
-                   (begin (send-error (ex:getMessage))
-                          ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)))
+                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
+                     (send-error message)
+                     ((android.widget.Toast:makeText (this) message 5):show)))
 
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
@@ -808,6 +809,7 @@
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1271,22 +1273,58 @@
                 (string-append "[" (join-strings pieces ", ") "]")))
             (else (call-with-output-string (lambda (port) (display arg port))))))))
 
-(define (join-strings strings separator)
-   (cond ((null? strings) "")
-         ((null? (cdr strings)) (car strings))
-         (else ;; have at least two strings
-           (apply string-append
-                  (cons (car strings)
-                        (let recur ((strs (cdr strings)))
-                          (if (null? strs)
-                              '()
-                              (cons separator (cons (car strs) (recur (cdr strs)))))))))))
 
-;;;!!! end of replacement
+;;; join-strings:  Combine all the strings in a list, separated by a specified separator string.
+;;; WARNING: The elements of list-of-strings must be actual strings.   Otherwise, we'll get type
+;;; errors.
 
+;;; We're using Java for joining collections of strings, because doing it
+;;; in Kawa seems to run out of memory (or stack?) on large collections
+;;; a small-memory phones (like the original emulator).
+
+;; Here's the original recursive version that overflows stack
+;; (define (join-strings list-of-strings separator)
+;;    (cond ((null? list-of-strings) "")
+;;          ((null? (cdr list-of-strings)) (car list-of-strings))
+;;          (else ;; have at least two strings
+;;            (apply string-append
+;;                   (cons (car list-of-strings)
+;;                         (let recur ((strs (cdr list-of-strings)))
+;;                           (if (null? strs)
+;;                               '()
+;;                               (cons separator (cons (car strs) (recur (cdr strs)))))))))))
+
+
+;;; Here's a replacement tail-recursive version that runs out of
+;;; memory in the emulator.  Is this due to inadequate tail recursion in Kawa?
+
+;; (define (join-strings list-of-strings separator)
+;;   (join-strings-iter list-of-strings separator))
+
+;; (define (join-strings-iter list-of-strings separator)
+;;   (if (null? list-of-strings)
+;;       ""
+;;       (let ((rstrings (reverse list-of-strings)))
+;;      (let loop ((remaining (cdr rstrings))
+;;                 (joined-so-far (car rstrings)))
+;;        (if (null? remaining)
+;;            joined-so-far
+;;            (loop (cdr remaining)
+;;                  (string-append (car remaining) separator joined-so-far)))))))
+
+;;; Here's the Java version
+
+(define (join-strings list-of-strings separator)
+  ;; NOTE: The elements in list-of-strings should be Kawa strings
+  ;; but they might not be Java strings, since some (all?) Kawa strings
+  ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
+  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+
+;;; end of join-strings
 
 ;; Note: This is not general substring replacement. It just replaces one string with another
 ;; using the replacement table
+
 (define (string-replace original replacement-table)
   (cond ((null? replacement-table) original)
         ((string=? original (caar replacement-table)) (cadar replacement-table))
@@ -2504,12 +2542,14 @@ list, use the make-yail-list constructor with no arguments.
                              (android-log (exception:getMessage))
                              (list "NOK"
                                    (exception:getMessage))))
-                 (exception java.lang.Exception
+                 (exception java.lang.Throwable
                             (android-log (exception:getMessage))
                             (exception:printStackTrace)
                             (list
                              "NOK"
-                             (exception:getMessage)))))))))
+                             (if (instance? exception java.lang.Error)
+                                 (exception:toString)
+                                 (exception:getMessage))))))))))
 
 ;; send-to-block is used for all communication back to the blocks editor
 ;; Calls on report are also generated for code from the blocks compiler

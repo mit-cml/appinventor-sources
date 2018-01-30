@@ -397,7 +397,18 @@ public class NanoHTTPD
                                 splitbyte++;
 
                                 // Write the part of body already read to ByteArrayOutputStream f
-                                ByteArrayOutputStream f = new ByteArrayOutputStream();
+                                OutputStream f;
+                                if ( method.equalsIgnoreCase( "PUT" ) )
+                                {
+                                        File tmpfile = File.createTempFile("upload", "bin");
+                                        tmpfile.deleteOnExit();
+                                        f = new FileOutputStream(tmpfile);
+                                        files.put("content", tmpfile.getAbsolutePath());
+                                }
+                                else
+                                {
+                                        f = new ByteArrayOutputStream();
+                                }
                                 if (splitbyte < rlen) f.write(buf, splitbyte, rlen-splitbyte);
 
                                 // While Firefox sends on the first read all the data fitting
@@ -421,17 +432,17 @@ public class NanoHTTPD
                                                 f.write(buf, 0, rlen);
                                 }
 
-                                // Get the raw body as a byte []
-                                byte [] fbuf = f.toByteArray();
-
-                                // Create a BufferedReader for easily reading it as string.
-                                ByteArrayInputStream bin = new ByteArrayInputStream(fbuf);
-                                BufferedReader in = new BufferedReader( new InputStreamReader(bin));
-
                                 // If the method is POST, there may be parameters
                                 // in data section, too, read it:
                                 if ( method.equalsIgnoreCase( "POST" ))
                                 {
+                                        // Get the raw body as a byte []
+                                        byte [] fbuf = ((ByteArrayOutputStream)f).toByteArray();
+
+                                        // Create a BufferedReader for easily reading it as string.
+                                        ByteArrayInputStream bin = new ByteArrayInputStream(fbuf);
+                                        BufferedReader in = new BufferedReader( new InputStreamReader(bin));
+
                                         String contentType = "";
                                         String contentTypeHeader = header.getProperty("content-type");
                                         StringTokenizer st = new StringTokenizer( contentTypeHeader , "; " );
@@ -467,10 +478,12 @@ public class NanoHTTPD
                                                 postLine = postLine.trim();
                                                 decodeParms( postLine, parms );
                                         }
+                                        in.close();
                                 }
-
-                                if ( method.equalsIgnoreCase( "PUT" ))
-                                        files.put("content", saveTmpFile( fbuf, 0, f.size()));
+                                else if ( method.equalsIgnoreCase( "PUT " ) )
+                                {
+                                        f.close();  // Close open file
+                                }
 
                                 // Ok, now do the serve()
                                 Response r = serve( uri, method, header, parms, files, mySocket );
@@ -479,7 +492,6 @@ public class NanoHTTPD
                                 else
                                         sendResponse( r.status, r.mimeType, r.header, r.data );
 
-                                in.close();
                                 is.close();
                         }
                         catch ( IOException ioe )

@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +17,20 @@ import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Looper;
+import android.support.v7.app.ActionBar;
+import android.support.v7.internal.widget.TintImageView;
+import android.text.Html;
+import android.view.View;
+import android.view.ViewGroup;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.ImageViewUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
 
 import dalvik.system.DexClassLoader;
@@ -51,6 +64,7 @@ public class ReplForm extends Form {
   private Object replResult = null; // Return result when closing screen in Repl
   private String replResultFormName = null;
   private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
+  private String currentTheme = ComponentConstants.DEFAULT_THEME;
 
   public ReplForm() {
     super();
@@ -64,6 +78,10 @@ public class ReplForm extends Form {
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
     processExtras(intent, false);
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setShowHideAnimationEnabled(false);
+    }
   }
 
   @Override
@@ -294,6 +312,33 @@ public class ReplForm extends Form {
     Log.d("ReplForm", Thread.currentThread().toString());
     Log.d("ReplForm", Looper.getMainLooper().getThread().toString());
     Looper.getMainLooper().getThread().setContextClassLoader(dexCloader);
+  }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public void Theme(String theme) {
+    currentTheme = theme;
+    super.Theme(theme);
+    updateTitle();
+  }
+
+  @Override
+  protected boolean isRepl() {
+    return true;
+  }
+
+  @Override
+  protected void updateTitle() {
+    final ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      if ("AppTheme.Light".equals(currentTheme)) {
+        actionBar.setTitle(Html.fromHtml("<font color=\"black\">" + title + "</font>"));
+        ImageViewUtil.setMenuButtonColor(this, Color.BLACK);
+      } else {
+        actionBar.setTitle(title);
+        ImageViewUtil.setMenuButtonColor(this, Color.WHITE);
+      }
+    }
   }
 
   private String genReportId() {

@@ -1,11 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -22,6 +24,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 @DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION,
@@ -47,11 +50,19 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
 
   public Spinner(ComponentContainer container) {
     super(container);
-    view = new android.widget.Spinner(container.$context());
+    // Themes made the Spinner look and feel change significantly. This allows us to be backward
+    // compatible with established expectations of behavior. However, on Honeycomb and higher there
+    // is a different constructor to get the old behavior. To ensure we work on older devices, that
+    // instantiation is moved to HoneycombUtil
+    if (VERSION.SDK_INT < VERSION_CODES.HONEYCOMB) {
+      view = new android.widget.Spinner(container.$context());
+    } else {
+      view = HoneycombUtil.makeSpinner(container.$context());
+    }
 
     // set regular and dropdown layouts
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_spinner_item);
-    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
 

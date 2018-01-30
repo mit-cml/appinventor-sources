@@ -8,6 +8,7 @@ package com.google.appinventor.components.scripts;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import javax.tools.Diagnostic;
@@ -27,6 +28,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static final String NATIVE_TARGET = "native";
   private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
   private static final String ACTIVITIES_TARGET = "activities";
+  private static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -91,6 +93,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(sb, NATIVE_TARGET, component.nativeLibraries);
     appendComponentInfo(sb, ASSETS_TARGET, component.assets);
     appendComponentInfo(sb, ACTIVITIES_TARGET, component.activities);
+    appendComponentInfo(sb, ANDROIDMINSDK_TARGET, Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
     appendComponentInfo(sb, BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.simple.components.MockVisibleCompone
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -349,6 +350,12 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFirebaseDBProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Pedometer")) {
         srcCompVersion = upgradePedometerProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Map")) {
+        srcCompVersion = upgradeMapProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Marker")) {
+        srcCompVersion = upgradeMarkerProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("FeatureCollection")) {
+        srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -410,6 +417,11 @@ public final class YoungAndroidFormUpgrader {
       // The AccelerometerSensor.Sensitivity property was added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The LegacyMode property was added
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -919,6 +931,31 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 20;
     }
 
+    if (srcCompVersion < 21) {
+      // The AccentColor property was added.
+      // The ActionBar property was added.
+      // The PrimaryColor property was added.
+      // The PrimaryColorDark property was added.
+      // The Theme property was added.
+      srcCompVersion = 21;
+    }
+
+    if (srcCompVersion < 22) {
+      // The Theme property was updated with the Classic option.
+      srcCompVersion = 22;
+    }
+
+    if (srcCompVersion < 23) {
+      // The ActionBar property was deprecated. It should always be true in new themes, and false
+      // in classic themes.
+      if (componentProperties.containsKey("Theme") && !"Classic".equals(componentProperties.get("Theme").asString().toString())) {
+        componentProperties.put("ActionBar", new ClientJsonString("True"));
+      } else if (componentProperties.containsKey("ActionBar")) {  // Theme is Classic
+        componentProperties.remove("ActionBar");  // Resets ActionBar to default (False)
+      }
+      srcCompVersion = 23;
+    }
+
     return srcCompVersion;
   }
 
@@ -1144,6 +1181,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // Added RequestFocus Function (via TextBoxBase)
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Added PasswordVisible Property
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1456,6 +1497,40 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // The step sensing algorithm was updated to be more accurate.
       // The GPS related functionality was removed.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 3) {
+      // Version 2
+      // The Markers property (blocks-only) was renamed to Features
+      // Version 3
+      // Block event handlers were renamed
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeMarkerProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The ShowShadow property was removed.
+      if (componentProperties.containsKey("ShowShadow")) {
+        componentProperties.remove("ShowShadow");
+      }
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFeatureCollection(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2
+      // The GotGeoJSON and GeoJSONError events were renamed in the blocks editor.
       srcCompVersion = 2;
     }
     return srcCompVersion;

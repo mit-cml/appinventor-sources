@@ -7,7 +7,6 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
-import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
 import com.google.appinventor.shared.rpc.component.ComponentImportResponse.Status;
@@ -24,7 +23,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -55,7 +53,6 @@ public class ComponentServiceTest {
   @Before
   public void setUp() throws Exception {
     helper.setUp();
-    StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
     LocalUser localUserMock = LocalUser.getInstance();
     localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
     localUserMock.setSessionId("test-session");
@@ -217,6 +214,47 @@ public class ComponentServiceTest {
     assertAssetsOnServer("assets/external_comps/test.Extension1/components.json");
     assertAssetsOnServer("assets/external_comps/test2.Extension2/components.json");
     assertAssetsOnServer("assets/external_comps/test/components.json");
+  }
+
+  /**
+   * Tests whether two extensions compiled with the same package name will collide. This won't
+   * happen if one adheres to using a single package per set of extension. However, in practice
+   * there have been reports of older extensions using the same package name being upgraded to the
+   * new extensions model and then one extension overwrites another due to collisions at the
+   * package name level. For example, com.example.Bar overwrites com.example.Foo because both
+   * packages are com.example. Extension authors should use one package per extension bundle, so
+   * com.example.foo.Foo and com.example.bar.Bar would be acceptable, or generate a single package
+   * with both extensions, com.example containing com.example.Foo and com.example.Bar.
+   */
+  @Test
+  public void testFailIfPackageCollisionWithDifferingComponents() {
+    importTestExtension("test.Extension3.aix");
+    ComponentImportResponse result = importTestExtension("test.Extension4.aix");
+    assertEquals(Status.FAILED, result.getStatus());
+    assertEquals(0, result.getComponentTypes().size());
+    assertNotNull(result.getMessage());
+    System.err.println(result.getMessage());
+  }
+
+  /**
+   * Tests to ensure that if multiple (old) extensions share the same package name that after
+   * importing a new style extension bundle containing the union of the old extensions will result
+   * in the old extension files being removed and replaced with the contents of the single new
+   * extension.
+   */
+  @Test
+  public void testUpgradeManyOldExtensionsToOneBundle() {
+    importTestExtension("FooOld.aix");
+    importTestExtension("BarOld.aix");
+    ComponentImportResponse result = importTestExtension("FooBar.aix");
+    assertEquals(Status.UPGRADED, result.getStatus());
+    assertEquals(2, result.getComponentTypes().size());
+    assertNull(result.getMessage());
+    assertTrue(result.getComponentTypes().containsKey("com.example.Foo"));
+    assertTrue(result.getComponentTypes().containsKey("com.example.Bar"));
+    assertAssetsWithPrefixRemoved("assets/external_comps/com.example.Foo/");
+    assertAssetsWithPrefixRemoved("assets/external_comps/com.example.Bar/");
+    assertAssetsOnServer("assets/external_comps/com.example/components.json");
   }
 
   @Test

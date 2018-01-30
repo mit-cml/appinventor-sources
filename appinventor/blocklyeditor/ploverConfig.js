@@ -15,7 +15,9 @@
     '../lib/blockly/msg/js/it.js',
     '../lib/blockly/msg/js/ru.js',
     '../lib/blockly/msg/js/sv.js',
+    '../lib/blockly/msg/js/nl.js',
     '../lib/blockly/msg/js/pt-br.js',
+    '../lib/blockly/msg/js/pt.js',
     '../lib/blockly/msg/js/en.js',
     './src/msg/ko_kr/_messages.js',
     './src/msg/es_es/_messages.js',
@@ -26,6 +28,8 @@
     './src/msg/ru/_messages.js',
     './src/msg/sv/_messages.js',
     './src/msg/pt_br/_messages.js',
+    './src/msg/pt/_messages.js',
+    './src/msg/nl/_messages.js',
     './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code
@@ -160,7 +164,10 @@
     "./src/generators/yail/procedures.js",
 
     // Repl
-    "./src/replmgr.js"
+    "./src/replmgr.js",
+
+    // extras
+    "./src/extras.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

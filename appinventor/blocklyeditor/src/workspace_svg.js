@@ -318,9 +318,8 @@ Blockly.WorkspaceSvg.prototype.getProcedureDatabase = function() {
  */
 Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeName) {
   if (this.componentDb_.addInstance(uid, instanceName, typeName)) {
-    return this;
+    this.typeBlock_.needsReload.components = true;
   }
-  this.typeBlock_.needsReload.components = true;
   return this;
 };
 

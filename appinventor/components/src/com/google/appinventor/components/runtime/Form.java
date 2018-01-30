@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONException;
-
+import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -39,7 +38,6 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -52,6 +50,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -61,7 +60,6 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
-import com.google.appinventor.components.runtime.multidex.MultiDexApplication;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -69,9 +67,11 @@ import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -91,11 +91,13 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Top-level component containing all other components in the program",
+    androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
+@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
-public class Form extends Activity
+public class Form extends AppInventorCompatActivity
   implements Component, ComponentContainer, HandlesEventDispatching,
   OnGlobalLayoutListener {
 
@@ -106,6 +108,9 @@ public class Form extends Activity
   private static final String ARGUMENT_NAME = "APP_INVENTOR_START";
 
   public static final String APPINVENTOR_URL_SCHEME = "appinventor";
+
+  private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
+  private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
@@ -121,6 +126,7 @@ public class Form extends Activity
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
+  private static boolean isClassicTheme;
 
   private final Handler androidUIHandler = new Handler();
 
@@ -139,9 +145,12 @@ public class Form extends Activity
   private String aboutScreen;
   private boolean showStatusBar = true;
   private boolean showTitle = true;
+  protected String title = "";
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
+  private boolean usesDefaultBackground;
+  private boolean usesDarkTheme;
 
   // Layout
   private LinearLayout viewLayout;
@@ -157,6 +166,11 @@ public class Form extends Activity
   private String openAnimType;
   private String closeAnimType;
 
+  // Syle information
+  private int primaryColor = DEFAULT_PRIMARY_COLOR;
+  private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
+  private int accentColor = DEFAULT_ACCENT_COLOR;
+
   private FrameLayout frameLayout;
   private boolean scrollable;
 
@@ -168,6 +182,7 @@ public class Form extends Activity
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
+  private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
@@ -198,6 +213,7 @@ public class Form extends Activity
   private int formWidth;
   private int formHeight;
 
+  private boolean actionBarEnabled = false;
   private boolean keyboardShown = false;
 
   private ProgressDialog progress;
@@ -330,18 +346,29 @@ public class Form extends Activity
   }
 
   private void defaultPropertyValues() {
+    if (isRepl()) {
+      ActionBar(actionBarEnabled);
+    } else {
+      ActionBar(getSupportActionBar() != null);
+    }
     Scrollable(false);       // frameLayout is created in Scrollable()
     Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
-    BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
     ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
+    ActionBar(false);
+    AccentColor(DEFAULT_ACCENT_COLOR);
+    PrimaryColor(DEFAULT_PRIMARY_COLOR);
+    PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
+    Theme(ComponentConstants.DEFAULT_THEME);
+    ScreenOrientation("unspecified");
+    BackgroundColor(Component.COLOR_DEFAULT);
   }
 
   @Override
@@ -374,8 +401,8 @@ public class Form extends Activity
             final FrameLayout savedLayout = frameLayout;
             androidUIHandler.postDelayed(new Runnable() {
                 public void run() {
-                  if (frameLayout != null) {
-                    frameLayout.invalidate();
+                  if (savedLayout != null) {
+                    savedLayout.invalidate();
                   }
                 }
               }, 100);          // Redraw the whole screen in 1/10 second
@@ -415,7 +442,9 @@ public class Form extends Activity
   @Override
   public void onGlobalLayout() {
     int heightDiff = scaleLayout.getRootView().getHeight() - scaleLayout.getHeight();
-    int contentViewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+    int[] position = new int[2];
+    scaleLayout.getLocationInWindow(position);
+    int contentViewTop = position[1];
     Log.d(LOG_TAG, "onGlobalLayout(): heightdiff = " + heightDiff + " contentViewTop = " +
       contentViewTop);
 
@@ -625,6 +654,10 @@ public class Form extends Activity
 
   public void registerForOnStop(OnStopListener component) {
     onStopListeners.add(component);
+  }
+
+  public void registerForOnClear(OnClearListener component) {
+    onClearListeners.add(component);
   }
 
   @Override
@@ -883,6 +916,27 @@ public class Form extends Activity
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
+    frameWithTitle.removeAllViews();
+    if (isAppCompatMode() && !isClassicTheme && titleBar != null) {
+      try {
+        frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+      } catch(IllegalStateException e) {
+        // Whoops!
+      }
+    }
+
+    // Layout
+    // ------frameWithTitle------
+    // | [======titleBar======] |
+    // | ------scaleLayout----- |
+    // | | ----frameLayout--- | |
+    // | | |                | | |
+    // | | ------------------ | |
+    // | ---------------------- |
+    // --------------------------
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
@@ -896,7 +950,9 @@ public class Form extends Activity
     scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
-    setContentView(scaleLayout);
+    frameWithTitle.addView(scaleLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
     frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
     scaleLayout.requestLayout();
     androidUIHandler.post(new Runnable() {
@@ -909,7 +965,7 @@ public class Form extends Activity
           }
           ReplayFormOrientation(); // Re-do Form layout because percentage code
                                    // needs to recompute objects sizes etc.
-          frameLayout.requestLayout();
+          frameWithTitle.requestLayout();
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -937,7 +993,12 @@ public class Form extends Activity
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
-    backgroundColor = argb;
+    if (argb == Component.COLOR_DEFAULT) {
+      usesDefaultBackground = true;
+    } else {
+      usesDefaultBackground = false;
+      backgroundColor = argb;
+    }
     // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
     setBackground(frameLayout);
   }
@@ -1001,7 +1062,12 @@ public class Form extends Activity
       defaultValue = "")
   @SimpleProperty
   public void Title(String title) {
+    this.title = title;
+    if (titleBar != null) {
+      titleBar.setText(title);
+    }
     setTitle(title);
+    updateTitle();
   }
 
 
@@ -1052,14 +1118,19 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void TitleVisible(boolean show) {
     if (show != showTitle) {
-      View v = (View)findViewById(android.R.id.title).getParent();
-      if (v != null) {
-        if (show) {
-          v.setVisibility(View.VISIBLE);
-        } else {
-          v.setVisibility(View.GONE);
+      if (actionBarEnabled) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+          if (show) {
+            actionBar.show();
+          } else {
+            actionBar.hide();
+          }
+          showTitle = show;
         }
+      } else {
         showTitle = show;
+        maybeShowTitleBar();
       }
     }
   }
@@ -1188,6 +1259,34 @@ public class Form extends Activity
     }
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false)
+  public void ActionBar(boolean enabled) {
+    if (actionBarEnabled != enabled) {
+      setActionBarEnabled(enabled);
+      if (enabled) {
+        hideTitleBar();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+          dispatchErrorOccurredEvent(this, "ActionBar", ErrorMessages.ERROR_ACTIONBAR_NOT_SUPPORTED);
+          actionBarEnabled = false;
+          return;
+        } else if (showTitle) {
+          actionBar.show();
+        } else {
+          actionBar.hide();
+        }
+      } else {
+        maybeShowTitleBar();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+          actionBar.hide();
+        }
+      }
+      actionBarEnabled = enabled;
+    }
+  }
 
   // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
   // I did not see a clean way to abstract it.  Someone should have a look.
@@ -1462,6 +1561,70 @@ public class Form extends Activity
       "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the primary color used for " +
+      "Material UI elements, such as the ActionBar.", category = PropertyCategory.APPEARANCE)
+  public void PrimaryColor(final int color) {
+    setPrimaryColor(color);
+  }
+
+  @SimpleProperty()
+  public int PrimaryColor() {
+    return primaryColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the primary color used for darker " +
+      "elements in Material UI.", category = PropertyCategory.APPEARANCE)
+  public void PrimaryColorDark(int color) {
+    primaryColorDark = color;
+  }
+
+  @SimpleProperty()
+  public int PrimaryColorDark() {
+    return primaryColorDark;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_ACCENT_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the accent color used for " +
+      "highlights and other user interface accents.", category = PropertyCategory.APPEARANCE)
+  public void AccentColor(int color) {
+    accentColor = color;
+  }
+
+  @SimpleProperty()
+  public int AccentColor() {
+    return accentColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
+      defaultValue = ComponentConstants.DEFAULT_THEME)
+  @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
+  public void Theme(String theme) {
+    if (usesDefaultBackground) {
+      if (theme.equalsIgnoreCase("AppTheme")) {
+        backgroundColor = Component.COLOR_BLACK;
+      } else {
+        backgroundColor = Component.COLOR_WHITE;
+      }
+      setBackground(frameLayout);
+    }
+    usesDarkTheme = false;
+    if (theme.equals("Classic")) {
+      setAppInventorTheme(Theme.CLASSIC);
+    } else if (theme.equals("AppTheme.Light.DarkActionBar")) {
+      setAppInventorTheme(Theme.DEVICE_DEFAULT);
+    } else if (theme.equals("AppTheme.Light")) {
+      setAppInventorTheme(Theme.BLACK_TITLE_TEXT);
+    } else if (theme.equals("AppTheme")) {
+      usesDarkTheme = true;
+      setAppInventorTheme(Theme.DARK);
+    }
   }
 
   /**
@@ -1891,9 +2054,12 @@ public class Form extends Activity
 
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
+    Log.d(LOG_TAG, "Form " + formName + " clear called");
     viewLayout.getLayoutManager().removeAllViews();
-    frameLayout.removeAllViews();
-    frameLayout = null;
+    if (frameLayout != null) {
+      frameLayout.removeAllViews();
+      frameLayout = null;
+    }
     // Set all screen properties to default values.
     defaultPropertyValues();
     onStopListeners.clear();
@@ -1905,6 +2071,12 @@ public class Form extends Activity
     onCreateOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
+    // Notifiy those who care
+    for (OnClearListener onClearListener : onClearListeners) {
+      onClearListener.onClear();
+    }
+    // And reset the list
+    onClearListeners.clear();
     System.err.println("Form.clear() About to do moby GC!");
     System.gc();
     dimChanges.clear();
@@ -2068,11 +2240,37 @@ public class Form extends Activity
   @SimpleFunction(description = "Hide the onscreen soft keyboard.")
   public void HideKeyboard() {
     View view = this.getCurrentFocus();
-    if (view != null) {
-      InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    } else {
-      dispatchErrorOccurredEvent(this, "HideKeyboard", ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND);
+    if (view == null) {
+      view = frameLayout;
     }
+    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
+  }
+
+  protected void updateTitle() {
+    final ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle(title);
+    }
+  }
+
+  private void hideActionBar() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.hide();
+    }
+  }
+
+  @Override
+  protected void maybeShowTitleBar() {
+    if (showTitle) {
+      super.maybeShowTitleBar();
+    } else {
+      super.hideTitleBar();
+    }
+  }
+
+  public boolean isDarkTheme() {
+    return usesDarkTheme;
   }
 }

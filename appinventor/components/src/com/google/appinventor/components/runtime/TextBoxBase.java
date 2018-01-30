@@ -110,7 +110,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
     FontSize(Component.FONT_DEFAULT_SIZE);
     Hint("");
     Text("");
-    TextColor(Component.COLOR_BLACK);
+    TextColor(Component.COLOR_DEFAULT);
   }
 
   @Override
@@ -446,7 +446,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
+      TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? COLOR_WHITE : Component.COLOR_BLACK);
     }
   }
 

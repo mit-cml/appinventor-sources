@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -51,6 +51,7 @@ import java.util.Map;
     LAYOUT("Layout"),
     MEDIA("Media"),
     ANIMATION("Drawing and Animation"),
+    MAPS("Maps"),
     SENSORS("Sensors"),
     SOCIAL("Social"),
     STORAGE("Storage"),
@@ -71,6 +72,7 @@ import java.util.Map;
       DOC_MAP.put("Layout", "layout");
       DOC_MAP.put("Media", "media");
       DOC_MAP.put("Drawing and Animation", "animation");
+      DOC_MAP.put("Maps", "maps");
       DOC_MAP.put("Sensors", "sensors");
       DOC_MAP.put("Social", "social");
       DOC_MAP.put("Storage", "storage");

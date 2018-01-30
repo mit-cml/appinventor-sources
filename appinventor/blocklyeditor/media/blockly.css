@@ -126,6 +126,7 @@
   border: 0;
   resize: none;
   background-color: #ffc;
+  overflow: hidden;
 }
 .blocklyHtmlInput {
   font-family: sans-serif;

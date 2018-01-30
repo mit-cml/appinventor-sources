@@ -12,6 +12,8 @@
 
 goog.provide('Blockly.Blocks.mutators');
 
+goog.require('AI.Blockly.Instrument');
+
 //container block for all mutators
 Blockly.Blocks['mutator_container'] = {
   // Container.
@@ -140,3 +142,13 @@ Blockly.Mutator.prototype.createEditor_ = (function(func) {
     return wrappedFunc;
   }
 })(Blockly.Mutator.prototype.createEditor_);
+
+if (Blockly.Instrument.useRenderDown) {
+  /**
+   * Override's the render function in the mutator to take advantage of the
+   * render down functionality.
+   */
+  Blockly.Mutator.prototype.renderWorkspace = function() {
+    this.rootBlock_.render();
+  };
+}

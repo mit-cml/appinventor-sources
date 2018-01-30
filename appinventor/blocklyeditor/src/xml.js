@@ -79,6 +79,29 @@ Blockly.Xml.domToWorkspaceHeadless = function(xml, workspace) {
   workspace.updateVariableList(false);
 };
 
+/**
+ * Encode a block subtree as XML with XY coordinates.
+ * @param {!Blockly.Block} block The root block to encode.
+ * @param {boolean} opt_noId True if the encoder should skip the block id.
+ * @return {!Element} Tree of XML elements.
+ */
+Blockly.Xml.blockToDomWithXY = (function(f) {
+  return function(block, opt_noId) {
+    var element = f(block, opt_noId);
+    if (!Blockly.Block.isRenderingOn) {
+      // isRenderingOn is off during loading, so we are serializing in the middle of loading a file.
+      // Save the XY coordinate of the block so that we don't end up with all blocks at (0, 0).
+      // App Inventor only positions the blocks at the very end to reduce repositioning churn going
+      // to/from the Blockly workspace representation. Ideally we wouldn't go between the two
+      // representation because DOM manipulations are costly.
+      var width = block.workspace.RTL ? block.workspace.getWidth() : 0;
+      element.setAttribute('x', block.workspace.RTL ? width - block.x : block.x);
+      element.setAttribute('y', block.y);
+    }
+    return element;
+  };
+})(Blockly.Xml.blockToDomWithXY);
+
 if (Blockly.Instrument.isOn) {
 
 Blockly.Xml.domToWorkspace = (function(func) {

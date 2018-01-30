@@ -13,7 +13,7 @@ public final class EventHelper {
   }
 
   /**
-   * Determine whether an event from the native JavaScript (e.g., Blockly).
+   * Determine whether an event from the native JavaScript (e.g., Blockly) is transient.
    *
    * @param event Native JavaScript event
    * @return true if the event can be determined to be transient, otherwise false.
@@ -32,5 +32,15 @@ public final class EventHelper {
         event.element == 'mutatorOpen' || event.element == 'warningOpen';
     }
     return false;
+  }-*/;
+
+  /**
+   * Determine whether an event from the native JavaScript (e.g., Blockly) is a UI event.
+   *
+   * @param event Native JavaScript event
+   * @return true if the event can be determined to be user interface event, otherwise false.
+   */
+  public static native boolean isUi(JavaScriptObject event)/*-{
+    return event && event.type === 'ui';
   }-*/;
 }
