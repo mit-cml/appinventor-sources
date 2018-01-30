@@ -4215,6 +4215,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("encoding")
   @Description("")
   String encodingParams();
+  
+  @DefaultMessage("decoding")
+  @Description("")
+  String decodingParams();
 
   @DefaultMessage("xmlText")
   @Description("")
