@@ -4216,10 +4216,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String encodingParams();
   
-  @DefaultMessage("decoding")
-  @Description("")
-  String decodingParams();
-
   @DefaultMessage("xmlText")
   @Description("")
   String xmlTextParams();
@@ -5513,6 +5509,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
+  
+  @DefaultMessage("")
+  @Description("")
+  String UriDecodeMethods();
 
   @DefaultMessage("CanGoBack")
   @Description("")
