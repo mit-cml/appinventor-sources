@@ -1,14 +1,9 @@
-//
-//  RetValManager.m
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/27/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 #import "RetValManager.h"
 
-#define TENSECONDS 10000
+#define TENSECONDS 10.0
 
 static RetValManager *_manager = nil;
 
@@ -69,7 +64,7 @@ static RetValManager *_manager = nil;
 - (void)pushScreen:(NSString *)screenName withValue:(NSObject *)value {
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"pushScreen", @"screen": screenName}];
   if (value) {
-    [output setValue:[value description] forKey:@"value"];
+    output[@"value"] = [value description];
   }
   [self addResult:output];
 }
@@ -77,7 +72,7 @@ static RetValManager *_manager = nil;
 - (void)popScreen:(NSString *)value {
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"popScreen"}];
   if (value) {
-    [output setValue:value forKey:@"value"];
+    output[@"value"] = value;
   }
   [self addResult:output];
 }
