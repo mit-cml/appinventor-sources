@@ -36,6 +36,8 @@ open class ButtonBase: ViewComponent {
     BackgroundColor = Int32(Color.default.rawValue)
     Enabled = true
     FontSize = kFontSizeDefault
+    FontBold = _bold
+    FontItalic = _italic
     Image = ""
     Shape = ButtonShape.normal.rawValue
     Text = ""
@@ -73,12 +75,50 @@ open class ButtonBase: ViewComponent {
     }
   }
   
+  open var FontBold: Bool {
+    get {
+      return _bold
+    }
+    set(shouldBold){
+      _bold = shouldBold
+      setTrait(trait: .traitBold, shouldSet: shouldBold)
+    }
+  }
+
+  open var FontItalic: Bool {
+    get {
+      return _italic
+    }
+    set(shouldItalic){
+      _italic = shouldItalic
+      setTrait(trait: .traitItalic, shouldSet: shouldItalic)
+    }
+  }
+
+  fileprivate func setTrait(trait: UIFontDescriptorSymbolicTraits, shouldSet: Bool){
+    var fontDescriptor: UIFontDescriptor?
+    if let tempDiscriptor = _view.titleLabel?.font.fontDescriptor {
+      var fontOps = tempDiscriptor.symbolicTraits
+      if shouldSet {
+        fontOps.insert(trait)
+      } else {
+        fontOps.remove(trait)
+      }
+      fontDescriptor = tempDiscriptor.withSymbolicTraits(fontOps)
+    }
+    if let size = _view.titleLabel?.font.pointSize, let descriptor = fontDescriptor {
+      _view.titleLabel?.font = UIFont(descriptor: descriptor, size: size)
+    }
+  }
+  
   open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      _view.titleLabel?.font = _view.titleLabel?.font.withSize(CGFloat(size))
+      if let descriptor = _view.titleLabel?.font.fontDescriptor {
+        _view.titleLabel?.font = UIFont(descriptor: descriptor, size: CGFloat(size))
+      }
     }
   }
 
