@@ -16,6 +16,8 @@
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
 
+static size_t BUFSIZE = 4096;
+
 @class ProtocolWrapper;
 
 /** Used to maintain references to objects GCed by Picrin */
@@ -287,7 +289,6 @@ yail_set_current_form(pic_state *pic, pic_value form) {
 
 pic_value
 yail_make_instance(pic_state *pic) {
-  //TODO: implementation
   pic_value native_class, *args;
   int argc;
   
@@ -299,11 +300,12 @@ yail_make_instance(pic_state *pic) {
     selector[j] = ':';
   }
   selector[4+argc] = '\0';
-  
-  SCMMethod *init = [SCMNameResolver naryInitializerForClass:yail_native_class_ptr(pic, native_class)->class_ withName:"init" argCount:argc];
+
+  Class clazz = yail_native_class_ptr(pic, native_class)->class_;
+  SCMMethod *init = [SCMNameResolver naryInitializerForClass:clazz withName:"init" argCount:argc];
   if (init) {
     free(selector);
-    NSInvocation *invocation = [init invocationForInstance:yail_native_class_ptr(pic, native_class)->class_];
+    NSInvocation *invocation = [init invocationForInstance:clazz];
     [invocation retainArguments];
     for (int i = 0, j = 2; i < argc; ++i, ++j) {
       if (pic_float_p(pic, args[i])) {
@@ -326,16 +328,17 @@ yail_make_instance(pic_state *pic) {
         id object = yail_native_instance_ptr(pic, args[i])->object_;
         [invocation setArgument:&object atIndex:j];
       } else {
-        pic_error(pic, "incompatible yail type received %s", 1, pic_typename(pic, pic_type(pic, args[i])));
+        pic_error(pic, "incompatible yail type received", 1, pic_typename(pic, pic_type(pic, args[i])));
       }
     }
     id result = nil;
     @try {
-      result = [yail_native_class_ptr(pic, native_class)->class_ alloc];
+      result = [clazz alloc];
       [invocation performSelectorOnMainThread:@selector(invokeWithTarget:) withObject:result waitUntilDone:YES];
       [invocation getReturnValue:&result];
     } @catch(NSException *e) {
-      pic_error(pic, "native exception %s", 1, [e debugDescription]);
+      const char *msg = [[e description] UTF8String];
+      pic_error(pic, "native exception", 1, pic_cstr_value(pic, msg));
     }
     if (result) {
       return yail_make_native_instance(pic, result);
@@ -343,10 +346,9 @@ yail_make_instance(pic_state *pic) {
       return pic_undef_value(pic);
     }
   } else {
-    pic_value str = pic_str_value(pic, selector, (int) strlen(selector));
+    pic_value str = pic_cstr_value(pic, selector);
     free(selector);
-    pic_error(pic, "undefined initializer %s", 1, str);
-    //TODO: handle leaking selector
+    pic_error(pic, "undefined initializer", 2, native_class, str);
   }
   
   return pic_undef_value(pic);
@@ -612,7 +614,7 @@ yail_invoke(pic_state *pic) {
       pic_error(pic, "yail error: unknown return type for method", 1, native_method);
     }
   } @catch(NSException *e) {
-    pic_error(pic, [e debugDescription].UTF8String, 0);
+    pic_error(pic, [e description].UTF8String, 0);
   }
   
   return pic_undef_value(pic);

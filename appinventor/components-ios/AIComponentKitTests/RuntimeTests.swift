@@ -92,4 +92,12 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("RuntimeError", (interpreter.exception?.name)! as NSString)
     XCTAssertTrue((interpreter.exception?.reason?.contains("testYailGenerateRuntimeTypeError"))!)
   }
+
+  func testYailError() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertNil(interpreter.exception)
+    interpreter.evalForm("(yail:make-instance AIComponentKit.Button 1 2 3)")
+    XCTAssertNotNil(interpreter.exception)
+    XCTAssertFalse((interpreter.exception?.reason?.contains("%s"))!)
+  }
 }
