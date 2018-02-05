@@ -102,6 +102,7 @@
 		DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */; };
 		DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBEC451FB288C800B6848E /* Spinner.swift */; };
 		DEE8A98D1FAF9E59000C7E6B /* EmailPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE8A98C1FAF9E59000C7E6B /* EmailPicker.swift */; };
+		CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB96609B1F95489F009746C3 /* LocationSensor.swift */; };
 		F1822B232186EC6A486D9F46 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -219,6 +220,7 @@
 		DED066B11FE0846F009C8165 /* webview-error.html */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.html; path = "webview-error.html"; sourceTree = "<group>"; tabWidth = 2; };
 		DEDBEC451FB288C800B6848E /* Spinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spinner.swift; sourceTree = "<group>"; };
 		DEE8A98C1FAF9E59000C7E6B /* EmailPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = EmailPicker.swift; sourceTree = "<group>"; wrapsLines = 1; };
+		CB96609B1F95489F009746C3 /* LocationSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = LocationSensor.swift; sourceTree = "<group>"; tabWidth = 2; };
 		ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -457,6 +459,7 @@
 				06B215FF1DB95122000B3366 /* TinyDB.swift */,
 				CB9660841F69BC8C009746C3 /* TinyWebDB.swift */,
 				06B215FD1DB95116000B3366 /* Web.swift */,
+				CB96609B1F95489F009746C3 /* LocationSensor.swift */,
 				DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */,
 			);
 			name = nonvisible;
@@ -834,6 +837,7 @@
 				068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */,
 				06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
+				CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

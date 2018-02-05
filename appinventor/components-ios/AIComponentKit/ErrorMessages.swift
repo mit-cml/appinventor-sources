@@ -7,7 +7,14 @@ import Foundation
  * `case ERROR_NAME = code`
  * (code is now the error's rawValue)
  */
+
 @objc public enum ErrorMessage: Int, Error {
+  // LocationSensor Errors
+  case ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101
+  case ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102
+  case ERROR_LOCATION_SENSOR_PERMISSION_DENIED = 103
+  case ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR = 104
+  
   // ActivityStarter Errors
   case ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601
   case ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602
@@ -71,6 +78,16 @@ import Foundation
   
   public var message: String {
     switch self {
+    // LocationSensor Errors
+    case .ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND:
+      return "Unable to find latitude from %s."
+    case .ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND:
+      return "Unable to find longitude from %s."
+    case .ERROR_LOCATION_SENSOR_PERMISSION_DENIED:
+      return "User denied location services permission."
+    case .ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR:
+      return "An unexpected error occurred when using location services: %s."
+      
     // ActivityStarter Errors
     case .ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY:
       return "No corresponding activity was found."
