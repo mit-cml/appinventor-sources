@@ -190,6 +190,8 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
   fileprivate var _result = ""
   fileprivate var _viewController: BarcodeScannerViewController?
   fileprivate var _navController: UINavigationController?
+  fileprivate static var errorSeen = false
+  fileprivate static let UILock = DispatchSemaphore(value: 1) //in the event that multiple BarcodeScanner items exist, to prevent multiple alerts
 
   public override init(_ container: ComponentContainer) {
     self._container = container
@@ -202,13 +204,56 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
+  open func HasPermission() -> Bool {
+    if let result = PermissionHandler.HasPermission(for: .camera) {
+      return result
+    } else {
+      return false
+    }
+  }
+
+  open func RequestPermission() {
+    doRequestPermission()
+  }
+
+  fileprivate func doRequestPermission(completionHandler: ((Bool, Bool) -> ())? = nil) {
+    PermissionHandler.RequestPermission(for: .camera, with: completionHandler)
+  }
+
+  open func PermissionChange(_ allowed: Bool){
+    EventDispatcher.dispatchEvent(of: self, called: "PermissionChange", arguments: allowed as AnyObject)
+  }
+
   open func DoScan() {
-    _viewController = BarcodeScannerViewController()
-    _navController = UINavigationController(rootViewController: _viewController!)
-    _navController?.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-    _navController?.modalTransitionStyle = UIModalTransitionStyle.coverVertical
-    _viewController?.barcodeDelegate = self
-    UIApplication.shared.keyWindow?.rootViewController?.present(_navController!, animated: true, completion: {})
+    doRequestPermission() { allowed, changed in
+      if changed {
+        self.PermissionChange(allowed)
+      }
+      DispatchQueue.main.async {
+        if allowed {
+          BarcodeScanner.UILock.wait()
+          self._viewController = BarcodeScannerViewController()
+          self._navController = UINavigationController(rootViewController: self._viewController!)
+          self._navController?.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+          self._navController?.modalTransitionStyle = UIModalTransitionStyle.coverVertical
+          self._viewController?.barcodeDelegate = self
+          UIApplication.shared.keyWindow?.rootViewController?.present(self._navController!, animated: true, completion: {})
+          BarcodeScanner.errorSeen = false
+          BarcodeScanner.UILock.signal()
+        } else {
+          BarcodeScanner.UILock.wait()
+          if !BarcodeScanner.errorSeen {
+            let alert = UIAlertController(title: "Camera Access Denied", message: "Because AppInventor does not have permission to access the camera, Barcode Scanner components will not open.", preferredStyle: .alert)
+            let close = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(close)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: {})
+          }
+
+          BarcodeScanner.errorSeen = true
+          BarcodeScanner.UILock.signal()
+        }
+      }
+    }
   }
 
   open func AfterScan(_ result: String) {

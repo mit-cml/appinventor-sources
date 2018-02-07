@@ -95,10 +95,11 @@
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
 		CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC7868520113A3C005363A3 /* CircularBuffer.swift */; };
+		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
 		DE5CBD281FE36C8B00F5EDDE /* webviewer.js in Resources */ = {isa = PBXBuildFile; fileRef = DE5CBD271FE36C8B00F5EDDE /* webviewer.js */; };
 		DE67C49D1FCE5A8A004F0D35 /* WebViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */; };
-		DED066B21FE0846F009C8165 /* webview-error.html in Resources */ = {isa = PBXBuildFile; fileRef = DED066B11FE0846F009C8165 /* webview-error.html */; };
 		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
+		DED066B21FE0846F009C8165 /* webview-error.html in Resources */ = {isa = PBXBuildFile; fileRef = DED066B11FE0846F009C8165 /* webview-error.html */; };
 		DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */; };
 		DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBEC451FB288C800B6848E /* Spinner.swift */; };
 		DEE8A98D1FAF9E59000C7E6B /* EmailPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE8A98C1FAF9E59000C7E6B /* EmailPicker.swift */; };
@@ -212,9 +213,10 @@
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		CB9660841F69BC8C009746C3 /* TinyWebDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TinyWebDB.swift; sourceTree = "<group>"; };
+		CBC7868520113A3C005363A3 /* CircularBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularBuffer.swift; sourceTree = "<group>"; };
+		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
 		DE5CBD271FE36C8B00F5EDDE /* webviewer.js */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.javascript; path = webviewer.js; sourceTree = "<group>"; tabWidth = 2; };
 		DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = WebViewer.swift; sourceTree = "<group>"; tabWidth = 2; };
-		CBC7868520113A3C005363A3 /* CircularBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularBuffer.swift; sourceTree = "<group>"; };
 		DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPicker.swift; sourceTree = "<group>"; };
 		DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YandexTranslate.swift; sourceTree = "<group>"; };
 		DED066B11FE0846F009C8165 /* webview-error.html */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.html; path = "webview-error.html"; sourceTree = "<group>"; tabWidth = 2; };
@@ -389,6 +391,7 @@
 				068AA8181DE61D8E0011CC74 /* Application.swift */,
 				068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
+				CBC7868520113A3C005363A3 /* CircularBuffer.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
 				06AEDC571E04C12900371E72 /* FormatUtil.swift */,
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
@@ -403,11 +406,11 @@
 				06E59EA81D92C7E800C42804 /* NetworkUtils.m */,
 				06D151991DC4736800FC981E /* NSString_SHA1.h */,
 				06D1519A1DC4736800FC981E /* NSString_SHA1.m */,
+				DE033B4220179A9300544E5F /* PermissionHandler.swift */,
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
-				CBC7868520113A3C005363A3 /* CircularBuffer.swift */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -766,6 +769,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
+				DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */,
 				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,
 				CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */,
 				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
