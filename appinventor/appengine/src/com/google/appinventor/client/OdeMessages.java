@@ -6306,6 +6306,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String switchToDutch();
 
+  @DefaultMessage("Wikang Filipino")
+  @Description("")
+  String switchToFilipino();
+
   @DefaultMessage("Progress Bar")
   @Description("")
   String ProgressBarFor();
