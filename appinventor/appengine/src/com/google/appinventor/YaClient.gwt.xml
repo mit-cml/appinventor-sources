@@ -130,5 +130,6 @@
   <extend-property name="locale" values="pt_BR"/>
 
   <set-property-fallback name="locale" value="en"/>
+  <collapse-all-properties />
 
 </module>
