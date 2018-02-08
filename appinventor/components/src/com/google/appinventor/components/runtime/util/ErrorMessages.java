@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -97,6 +97,7 @@ public final class ErrorMessages {
   public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
   public static final int ERROR_SOUND_NOT_READY = 710;
   public static final int ERROR_OUT_OF_MEMORY_LOADING_MEDIA = 711;
+  public static final int ERROR_PLAYER_INVALID_VOLUME = 712;
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
@@ -110,6 +111,7 @@ public final class ErrorMessages {
   public static final int ERROR_SCREEN_BAD_VALUE_FOR_SENDING = 904;
   public static final int ERROR_SCREEN_INVALID_ANIMATION = 905;
   public static final int ERROR_NO_FOCUSABLE_VIEW_FOUND = 906;
+  public static final int ERROR_ACTIONBAR_NOT_SUPPORTED = 907;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
@@ -209,7 +211,29 @@ public final class ErrorMessages {
   // Extension errors are signalled from extensions
   public static final int ERROR_EXTENSION_ERROR = 3300;
 
-  // Start the next group of errors at 3400
+  // Map errors
+  public static final int ERROR_LINESTRING_TOO_FEW_POINTS = 3401;
+  public static final int ERROR_LINESTRING_PARSE_ERROR = 3402;
+  public static final int ERROR_LINESTRING_TOO_FEW_FIELDS = 3403;
+  public static final int ERROR_POLYGON_PARSE_ERROR = 3404;
+  public static final int ERROR_INVALID_POINT = 3405;
+  public static final int ERROR_INVALID_POINT_AT_INDEX = 3406;
+  public static final int ERROR_INVALID_TYPE_AT_INDEX = 3407;
+  public static final int ERROR_INVALID_NUMBER_OF_VALUES_IN_POINT_AT_INDEX = 3408;
+  public static final int ERROR_INVALID_NUMBER_OF_VALUES_IN_POINT = 3409;
+  public static final int ERROR_INVALID_TYPE = 3410;
+  public static final int ERROR_INVALID_GEOJSON = 3411;
+  public static final int ERROR_EXCEPTION_DURING_MAP_SAVE = 3412;
+  public static final int ERROR_INVALID_LATITUDE = 3413;
+  public static final int ERROR_INVALID_LONGITUDE = 3414;
+  public static final int ERROR_UNABLE_TO_CREATE_TILE_CACHE = 3415;
+  public static final int ERROR_INVALID_ANCHOR_VERTICAL = 3416;
+  public static final int ERROR_INVALID_ANCHOR_HORIZONTAL = 3417;
+  public static final int ERROR_INVALID_LATITUDE_IN_POINT_AT_INDEX = 3418;
+  public static final int ERROR_INVALID_LONGITUDE_IN_POINT_AT_INDEX = 3419;
+  public static final int ERROR_EXPECTED_ARRAY_AT_INDEX = 3420;
+
+  // Start the next group of errors at 3500
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -388,7 +412,8 @@ public final class ErrorMessages {
         "Unable to grant exclusive lock of audio output stream to %s.");
     errorMessages.put(ERROR_SOUND_NOT_READY, "The sound is not ready to play: %s.");
     errorMessages.put(ERROR_OUT_OF_MEMORY_LOADING_MEDIA, "Not Enough Memory to load: %s.");
-     // SoundRecorder errors
+    errorMessages.put(ERROR_PLAYER_INVALID_VOLUME, "Invalid volume: %s. Volume must be set to a number between 0 and 100.");  
+    // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
     errorMessages.put(ERROR_SOUND_RECORDER_ILLEGAL_STOP, "Stop() called when not recording.");
@@ -406,6 +431,8 @@ public final class ErrorMessages {
         "Bad value for screen open/close animation: %s");
     errorMessages.put(ERROR_NO_FOCUSABLE_VIEW_FOUND,
         "No Focusable View Found");
+    errorMessages.put(ERROR_ACTIONBAR_NOT_SUPPORTED,
+        "ActionBar is not supported on this device.");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
@@ -515,7 +542,47 @@ public final class ErrorMessages {
     // Extension errors
     errorMessages.put(ERROR_EXTENSION_ERROR,
         "Error %d in extension %s: %s");
-
+    // Map errors
+    errorMessages.put(ERROR_LINESTRING_TOO_FEW_POINTS,
+        "Need at least 2 points for a LineString. Got only %1$d.");
+    errorMessages.put(ERROR_LINESTRING_PARSE_ERROR,
+        "Parse error attempting to create LineString: %1$s.");
+    errorMessages.put(ERROR_LINESTRING_TOO_FEW_FIELDS,
+        "Too few fields in point. Expected 2, got %2$d.");
+    errorMessages.put(ERROR_POLYGON_PARSE_ERROR,
+        "Parse error attempting to create Polygon: %1$s.");
+    errorMessages.put(ERROR_INVALID_POINT,
+        "Invalid value for point (%1$s, %2$s).");
+    errorMessages.put(ERROR_INVALID_POINT_AT_INDEX,
+        "Invalid value for point at index %1$d (%2$s, %3$s).");
+    errorMessages.put(ERROR_INVALID_TYPE_AT_INDEX,
+        "Invalid type %2$s at index %1$d. Expected %3$s.");
+    errorMessages.put(ERROR_INVALID_NUMBER_OF_VALUES_IN_POINT_AT_INDEX,
+        "Invalid number of values in point at index %1$d. Expected %2$d but found %3$d.");
+    errorMessages.put(ERROR_INVALID_NUMBER_OF_VALUES_IN_POINT,
+        "Invalid number of values in point. Expected %1$d but found %2$d.");
+    errorMessages.put(ERROR_INVALID_TYPE,
+        "Invalid type %1$s. Expected %2$s.");
+    errorMessages.put(ERROR_INVALID_GEOJSON,
+        "Unable to parse GeoJSON content for the reason: %1$s.");
+    errorMessages.put(ERROR_EXCEPTION_DURING_MAP_SAVE,
+        "Unable to save Map due to an internal exception: %1$s.");
+    errorMessages.put(ERROR_INVALID_LATITUDE,
+        "Latitude %1$f was not in the expected range [-90, 90].");
+    errorMessages.put(ERROR_INVALID_LONGITUDE,
+        "Longitude %1$f was not in the expected range [-180, 180].");
+    errorMessages.put(ERROR_UNABLE_TO_CREATE_TILE_CACHE,
+        "Unable to create a tile cache for maps.");
+    errorMessages.put(ERROR_INVALID_ANCHOR_VERTICAL,
+        "Invalid value %1$d given for AnchorVertical. Valid settings are 1, 2, or 3.");
+    errorMessages.put(ERROR_INVALID_ANCHOR_HORIZONTAL,
+        "Invalid value %1$d given for AnchorHorizontal. Valid settings are 1, 2, or 3.");
+    errorMessages.put(ERROR_INVALID_LATITUDE_IN_POINT_AT_INDEX,
+        "Invalid latitude %2$s in point at index %1$d. Expected a value between [-90, 90].");
+    errorMessages.put(ERROR_INVALID_LONGITUDE_IN_POINT_AT_INDEX,
+        "Invalid longitude %2$s in point at index %1$d. Expected a value between [-180, 180].");
+    errorMessages.put(ERROR_EXPECTED_ARRAY_AT_INDEX,
+        "Expected an array of values at index %1$d, but got %2$s.");
   }
 
   private ErrorMessages() {

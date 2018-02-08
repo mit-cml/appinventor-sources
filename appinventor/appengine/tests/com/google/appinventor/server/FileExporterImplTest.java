@@ -141,11 +141,11 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     assertTrue(Arrays.equals(TARGET1_CONTENT, file.getContent()));
   }
 
-  public void testExportProjectOutputFileWithNonExistingTraget() throws IOException {
+  public void testExportProjectOutputFileWithNonExistingTarget() throws IOException {
     try {
       exporter.exportProjectOutputFile(USER_ID, projectId, "target3");
       fail();
-    } catch (IllegalArgumentException e) {
+    } catch (FileNotFoundException e) {
       // expected
     }
   }

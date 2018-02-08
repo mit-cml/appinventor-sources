@@ -266,9 +266,10 @@ public final class Player extends AndroidNonvisibleComponent
   public void Volume(int vol) {
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {
-        throw new IllegalArgumentError("Volume must be set to a number between 0 and 100");
+        form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol); 
+      } else {
+        player.setVolume(((float) vol) / 100, ((float) vol) / 100);
       }
-      player.setVolume(((float) vol) / 100, ((float) vol) / 100);
     }
   }
 

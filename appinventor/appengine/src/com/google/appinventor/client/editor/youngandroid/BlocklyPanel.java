@@ -570,12 +570,14 @@ public class BlocklyPanel extends HTMLPanel {
         block.rename(e.oldValue, e.newValue);
       }
       cb(e);
-      // [lyn 12/31/2013] Check for duplicate component event handlers before
-      // running any error handlers to avoid quadratic time behavior.
-      var handler = this.getWarningHandler();
-      if (handler) {
-        handler.determineDuplicateComponentEventHandlers();
-        this.requestErrorChecking(block);
+      if (workspace.rendered) {
+        var handler = this.getWarningHandler();
+        if (handler) {
+          // [lyn 12/31/2013] Check for duplicate component event handlers before
+          // running any error handlers to avoid quadratic time behavior.
+          handler.determineDuplicateComponentEventHandlers();
+          this.requestErrorChecking(block);
+        }
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
@@ -596,6 +598,9 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
     // Trigger a screen switch to send new YAIL.
     var parts = Blockly.mainWorkspace.formName.split(/_/);
+    if (Blockly.ReplMgr.isConnected()) {
+      Blockly.ReplMgr.pollYail(Blockly.mainWorkspace);
+    }
     Blockly.mainWorkspace.fireChangeListener(new AI.Events.ScreenSwitch(parts[0], parts[1]));
   }-*/;
 

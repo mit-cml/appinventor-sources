@@ -9,7 +9,6 @@ package com.google.appinventor.server;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-
 /**
  * Class supporting ODE GWT RPC, which ODE RPC
  * implementations should subclass instead of

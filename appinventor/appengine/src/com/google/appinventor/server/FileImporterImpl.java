@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -102,7 +102,8 @@ public final class FileImporterImpl implements FileImporter {
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
             String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-              projectName, qualifiedFormName, null, null, null, null, null, null, null, null);
+              projectName, qualifiedFormName, null, null, null, null, null, null, null, null,
+              null, null, null, null, null);
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -149,7 +150,8 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null, null, null, null);
+    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null,
+        null, null, null, null, null, null, null, null);
     long projectId = storageIo.createProject(userId, project, settings);
     return storageIo.getUserProject(userId, projectId);
   }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,11 +19,11 @@ import com.google.gwt.user.client.ui.Tree.Resources;
 public interface Images extends Resources {
 
   /**
-   * Android with arms raised for the welcome dialog created by
+   * Codi the Bee for the No Projects Dialog
    * {@link Ode#createWelcomeDialog(boolean)}
    */
-  @Source("com/google/appinventor/images/androidGreenSmall.png")
-  ImageResource androidGreenSmall();
+  @Source("com/google/appinventor/images/codi_vert.png")
+  ImageResource codiVert();
 
   /**
    * App Inventor Logo
@@ -537,5 +537,53 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
+
+  /**
+   * Designer palette item: cloudDB component
+   */
+  @Source("com/google/appinventor/images/cloudDB.png")
+  ImageResource cloudDB();
+
+  /**
+   * Designer palette item: Map
+   */
+  @Source("com/google/appinventor/images/map.png")
+  ImageResource map();
+
+  /**
+   * Designer palette item: Marker
+   */
+  @Source("com/google/appinventor/images/marker.png")
+  ImageResource marker();
+
+  /**
+   * Designer palette item: Circle
+   */
+  @Source("com/google/appinventor/images/circle.png")
+  ImageResource circle();
+
+  /**
+   * Designer palette item: FeatureCollection
+   */
+  @Source("com/google/appinventor/images/featurecollection.png")
+  ImageResource featurecollection();
+
+  /**
+   * Designer palette item: LineString
+   */
+  @Source("com/google/appinventor/images/linestring.png")
+  ImageResource linestring();
+
+  /**
+   * Designer palette item: Polygon
+   */
+  @Source("com/google/appinventor/images/polygon.png")
+  ImageResource polygon();
+
+  /**
+   * Designer palette item: Rectangle
+   */
+  @Source("com/google/appinventor/images/rectangle.png")
+  ImageResource rectangle();
 
 }

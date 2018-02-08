@@ -70,6 +70,11 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
                            .add("galleryId", galleryId)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >中文</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
+                           .add("locale", "pt")
+                           .add("repo", repo)
+                           .add("galleryId", galleryId)
+                           .add("redirect", redirect).build() %>"  style="text-decoration:none;" >Português</a>&nbsp;
+<a href="<%= new UriBuilder("/login")
                    .add("locale", "en")
                    .add("repo", repo)
                    .add("galleryId", galleryId)

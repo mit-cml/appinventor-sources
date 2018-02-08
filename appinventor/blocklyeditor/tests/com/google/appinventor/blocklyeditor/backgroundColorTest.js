@@ -1,3 +1,7 @@
+// -*- mode: javascript; js-indent-level: 2; -*-
+// Copyright © 2013-2017 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /*
  * Author: Edwin (ehzhang@mit.edu)
  */
@@ -8,13 +12,13 @@ var system = require('system');
 var args = system.args;
 
 //Read files from filesystem
-var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/Screen1.scm');
+var formJson = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/Screen1.scm');
 // strip off leading "#|\n$JSON\n" and trailing "|#"
 formJson = formJson.substring(9, formJson.length-2);
 
-var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/Screen1.bky');
+var blocks = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/Screen1.bky');
 
-var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/backgroundColorExpected.yail');
+var expected = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/backgroundColor/backgroundColorExpected.yail');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
@@ -29,7 +33,7 @@ page.onError = function (msg, trace) {
 
 // Open the actual page and load all the JavaScript in it
 // if success is true, all went well
-page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(status) {
+page.open('src/demos/yail/yail_testing_index.html', function(status) {
   //The evaluate function has arguments passed after the callback
   //in this case we are passing formJson and blocks
 

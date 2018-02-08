@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2018 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -153,6 +153,10 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   var preUpgradeComponentVersionDict = Blockly.Versioning.makeComponentVersionDict(preUpgradeFormJsonObject);
   for (var componentType in preUpgradeComponentVersionDict) {
     if (!preUpgradeComponentVersionDict.hasOwnProperty(componentType)) continue;
+
+    // Cannot upgrade extensions as they are not part of the system
+    if (Blockly.Versioning.isExternal(componentType, opt_workspace)) continue;
+
     var preUpgradeVersion = preUpgradeComponentVersionDict[componentType];
     var systemVersion = Blockly.Versioning.getSystemComponentVersion(componentType, opt_workspace);
     blocksRep = upgradeComponentType(componentType, preUpgradeVersion, systemVersion, blocksRep);
@@ -411,6 +415,15 @@ Blockly.Versioning.getSystemComponentVersion = function (componentType, workspac
     return parseInt(versionString);
   } else {
     throw "Blockly.Versioning.getSystemComponentVersion: No version for component type " + componentType;
+  }
+};
+
+Blockly.Versioning.isExternal = function(componentType, workspace) {
+  var description = workspace.getComponentDatabase().getType(componentType);
+  if (description && description.componentInfo) {
+    return 'true' === description.componentInfo.external;
+  } else {
+    return false;
   }
 };
 
@@ -864,6 +877,28 @@ Blockly.Versioning.addDefaultMethodArgument = function(componentType, methodName
 };
 
 /**
+ * Rename all event handler blocks for a given component type and event name.
+ * @param componentType: name of component type for event
+ * @param oldEventName: name of event
+ * @param newEventName: new name of event
+ * @returns {function(Element|Blockly.Workspace)} a function that maps a blocksRep (an XML DOM or
+ *   workspace) to a modified DOM in which every specified event block has been renamed.
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
+Blockly.Versioning.changeEventName = function(componentType, oldEventName, newEventName) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var eventHandlerBlocks = Blockly.Versioning.findAllEventHandlers(dom, componentType, oldEventName);
+    for (var b = 0, eventBlock; eventBlock = eventHandlerBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(eventBlock, 'mutation');
+      mutation.setAttribute('event_name', newEventName);
+    }
+    return dom;
+  };
+};
+
+/**
  * Rename all method call blocks for a given component type and method name.
  * @param componentType: name of component type for method
  * @param oldMethodName: name of method
@@ -917,6 +952,34 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
     }
     return dom; // Return the modified dom, as required by the upgrading structure.
   }
+};
+
+/**
+ * Returns the list of top-level blocks that are event handlers for the given eventName for
+ * componentType.
+ * @param dom  DOM for XML workspace
+ * @param componentType  name of the component type for event
+ * @param eventName  name of event
+ * @returns {Array.<Element>}  a list of XML elements for the specified event handler blocks.
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
+Blockly.Versioning.findAllEventHandlers = function (dom, componentType, eventName) {
+  var eventBlocks = [];
+  for (var i = 0; i < dom.children.length; i++) {
+    var block = dom.children[i];
+    if (block.tagName === 'block' && block.getAttribute('type') === 'component_event') {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, 'mutation');
+      if (!mutation) {
+        throw 'Did not find expected mutation child in Blockly.Versioning.findAllEventHandlers ' +
+          'with componentType = ' + componentType + ' and eventName = ' + eventName;
+      } else if ((mutation.getAttribute('component_type') === componentType) &&
+          (mutation.getAttribute('event_name') === eventName)) {
+        eventBlocks.push(block);
+      }
+    }
+  }
+  return eventBlocks;
 };
 
 /**
@@ -1078,7 +1141,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: AccelerometerSensor.Sensitivty property was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: LegacyMode property was added.
+    4: "noUpgrade"
 
   }, // End Accelerometer upgraders
 
@@ -1342,6 +1408,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Clock upgraders
 
+  "CloudDB": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  },
+
   "ContactPicker": {
 
     // AI1: The Alignment property was renamed to TextAlignment.
@@ -1395,6 +1468,21 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade"
 
   }, // End EmailPicker upgraders
+
+  "FeatureCollection": {
+
+    // AI2:
+    // - The GeoJSONError event was renamed to LoadError
+    // - The GotGeoJSON event was renamed to GotFeatures
+    // - The ErrorLoadingFeatureCollection event was removed in favor of LoadError
+    // - The LoadedFeatureCollection event was removed in favor of GotFeatures
+    2: [
+      Blockly.Versioning.changeEventName('FeatureCollection', 'GeoJSONError', 'LoadError'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'GeoGeoJSON', 'GotFeatures'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'ErrorLoadingFeatureCollection', 'LoadError'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'LoadedFeatureCollection', 'GotFeatures')
+    ]
+  },
 
   "File": {
 
@@ -1667,7 +1755,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 20// Rename 'obsufcated_text' text block to 'obfuscated_text'
-    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text')
+    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text'),
+
+    // AI2: Added is a string? block to test whether values are strings.
+    21: "noUpgrade"
 
 
   }, // End Language upgraders
@@ -1735,6 +1826,34 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade"
 
   }, // End LocationSensor upgraders
+
+  "Map": {
+
+    // AI2:
+    // - The Markers property was renamed to Features
+    // - The LoadGeoJSONFromURL method was renamed to LoadFromURL
+    // - The FeatureFromGeoJSONDescription method was renamed to FeatureFromDescription
+    2: [
+      Blockly.Versioning.changePropertyName('Map', 'Markers', 'Features'),
+      Blockly.Versioning.changeMethodName('Map', 'LoadGeoJSONFromUrl', 'LoadFromURL'),
+      Blockly.Versioning.changeMethodName('Map', 'FeatureFromGeoJSONDescription', 'FeatureFromDescription')
+    ],
+
+    // AI2:
+    // - The GotGeoJSON event was renamed to GotFeatures
+    // - The GeoJSONError event was renamed to LoadError
+    3: [
+      Blockly.Versioning.changeEventName('Map', 'GotGeoJSON', 'GotFeatures'),
+      Blockly.Versioning.changeEventName('Map', 'GeoJSONError', 'LoadError')
+    ]
+
+  }, // End Map upgraders
+
+  "Marker": {
+    // AI2:
+    // - The ShowShadow property was removed
+    2: "noUpgrade"
+  }, // End Marker upgraders
 
   "NearField": {
 
@@ -1907,7 +2026,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // RequestFocus was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // PasswordVisible was added
+    4: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -2083,7 +2205,19 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 20:
     // - The Screen1.ShowListsAsJson property was added and no block needs to be changed.
-    20: "noUpgrade"
+    20: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 21:
+    // - The AccentColor, PrimaryColor, PrimaryColorDark, and Theme properties were added to Screen, and no block needs to be changed.
+    21: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 22:
+    // - The Classic option was added to the Theme property. No blocks need to be changed
+    22: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 23:
+    // - The ActionBar designer property was hidden and tied to the Theme property. No blocks need to be changed.
+    23: "noUpgrade"
 
 
   }, // End Screen

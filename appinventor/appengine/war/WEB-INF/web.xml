@@ -251,6 +251,20 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
+  <!-- cloudDBAuth -->
+  <servlet>
+    <servlet-name>cloudDBAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.cloudDBAuth.CloudDBAuthServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cloudDBAuthService</servlet-name>
+    <url-pattern>/ode/cloudDBAuth</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>cloudDBAuthService</servlet-name>
+  </filter-mapping>
+
   <!-- android -->
   <servlet>
     <servlet-name>androidServlet</servlet-name>

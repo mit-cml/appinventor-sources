@@ -98,6 +98,32 @@ public class ChoicePropertyEditor extends PropertyEditor {
     initWidget(dropDownButton);
   }
 
+  /**
+   * Creates a new instance of the property editor with choice names.
+   * Each choice name is treated as both the captain and the value of a choice.
+   *
+   * @param choiceNames  array of choice names to choose from
+   */
+  public ChoicePropertyEditor(String[] choiceNames) {
+    this.choices = new Choice[choiceNames.length];
+    for (int idx = 0; idx < choiceNames.length; idx += 1)
+      this.choices[idx] = new Choice(choiceNames[idx], choiceNames[idx]);
+
+    List<DropDownItem> items = Lists.newArrayList();
+    for(final Choice choice : choices) {
+      items.add(new DropDownItem("Choice Property Editor", choice.caption, new Command() {
+        @Override
+        public void execute() {
+          property.setValue(choice.value);
+        }
+      }));
+    }
+    dropDownButton = new DropDownButton("Choice Property Editor", choices[0].caption, items, false);
+    dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
+
+    initWidget(dropDownButton);
+  }
+
   @Override
   protected void updateValue() {
     String propertyValue = property.getValue();
@@ -108,7 +134,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
       }
     }
   }
-  
+
   /**
    * Enables the dropdown selector for this property
    */

@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +35,7 @@ import android.view.inputmethod.InputMethodManager;
  * @author sharon@google.com (Sharon Perl)
  * @author M. Hossein Amerkashi (kkashi01@gmail.com)
  */
-public class ListPickerActivity extends Activity implements AdapterView.OnItemClickListener {
+public class ListPickerActivity extends AppInventorCompatActivity implements AdapterView.OnItemClickListener {
 
   private String closeAnim = "";
   private ListView listView;
@@ -52,6 +52,8 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    styleTitleBar();
 
     LinearLayout viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.VERTICAL);
@@ -96,6 +98,9 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
       txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
       txtSearchBox.setPadding(10, 10, 10, 10);
       txtSearchBox.setHint("Search list...");
+      if (!isClassicMode()) {
+        txtSearchBox.setBackgroundColor(Color.WHITE);
+      }
 
       if (showFilterBar == null || !showFilterBar.equalsIgnoreCase("true")) {
         txtSearchBox.setVisibility(View.GONE);

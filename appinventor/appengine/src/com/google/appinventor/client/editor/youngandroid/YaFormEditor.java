@@ -474,8 +474,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
-
-      Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+      Ode ode = Ode.getInstance();
+      if (ode.isReadOnly()) {   // Do not attempt to save out the project if we are in readonly mode
+        if (afterUpgradeComplete != null) {
+          afterUpgradeComplete.execute(); // But do call the afterUpgradeComplete call
+        }
+      } else {
+        Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
           getProjectId(), getFileId(), upgradedContent,
           new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
             @Override
@@ -486,6 +491,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
               }
             }
           });
+      }
     } else {
       // No upgrade was necessary.
       // Execute the afterUpgradeComplete command if one was given.

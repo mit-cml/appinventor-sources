@@ -372,7 +372,7 @@ Blockly.Blocks.component_method = {
     if(!this.isGeneric) {
       container.setAttribute('instance_name', this.instanceName);//instance name not needed
     }
-    if (this.typeName == "Clock" && Blockly.ComponentBlock.isClockMethodName(this.methodName)) {
+    if (!this.isGeneric && this.typeName == "Clock" && Blockly.ComponentBlock.isClockMethodName(this.methodName)) {
       var timeUnit = this.getFieldValue('TIME_UNIT');
       container.setAttribute('method_name', 'Add' + timeUnit);
       container.setAttribute('timeUnit', timeUnit);
@@ -549,11 +549,10 @@ Blockly.Blocks.component_method = {
   typeblock : function(){
     var componentDb = Blockly.mainWorkspace.getComponentDatabase();
     var tb = [];
-    var typeName;
     var typeNameDict = {};
     componentDb.forEachInstance(function(instance) {
       typeNameDict[instance.typeName] = true;
-      componentDb.forMethodInType(typeName, function(_, methodName) {
+      componentDb.forMethodInType(instance.typeName, function(_, methodName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instance.name +
           '.' + componentDb.getInternationalizedMethodName(methodName),
@@ -573,7 +572,7 @@ Blockly.Blocks.component_method = {
           componentDb.getInternationalizedComponentType(componentType) + '.' +
           componentDb.getInternationalizedMethodName(methodName),
           mutatorAttributes: {
-            component_type: typeName,
+            component_type: componentType,
             method_name: methodName,
             is_generic: 'true'
           }
@@ -723,8 +722,13 @@ Blockly.Blocks.component_set_get = {
       function(selection) {
         this.setValue(selection);
         thisBlock.propertyName = selection;
+        thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
-        thisBlock.setTooltip(tooltipDescription);
+        if (thisBlock.propertyObject) {
+          thisBlock.setTooltip(thisBlock.propertyObject.description);
+        } else {
+          thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
+        }
       }
     );
 

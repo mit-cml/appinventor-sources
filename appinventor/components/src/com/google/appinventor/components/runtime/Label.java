@@ -107,7 +107,7 @@ public final class Label extends AndroidViewComponent {
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
-    TextColor(Component.COLOR_BLACK);
+    TextColor(Component.COLOR_DEFAULT);
     HTMLFormat(false);
     HasMargins(true);
   }
@@ -428,7 +428,7 @@ private void setLabelMargins(boolean hasMargins) {
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
+      TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
   }
 }

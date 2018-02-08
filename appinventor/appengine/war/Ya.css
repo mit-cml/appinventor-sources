@@ -1,5 +1,9 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
 /*
- * Copyright 2007 Google Inc. All Rights Reserved.
+ * Copyright 2007-2011 Google Inc. All Rights Reserved.
+ * Copyright 2011-2017 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 /*
@@ -301,27 +305,24 @@ select {
 }
 
 .ode-Logo {
-  margin: 8px 4px 4px 4px;
-  -webkit-filter: drop-shadow(0px 0px 1px #222);
-  filter:         drop-shadow(0px 0px 1px #222);
+  margin: 0px 0px 4px 4px;
+/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
+  filter:         drop-shadow(0px 0px 1px #222); */
 }
 
+/*
 .ode-Logo:hover {
   -webkit-filter: drop-shadow(0px 0px 3px #222);
   filter:         drop-shadow(0px 0px 3px #222);
 }
+*/
 
 .ode-LogoText {
   font-size: 16px;
   color: grey;
   font-weight: 500;
   text-shadow: 0px 0px 0px #404040;
-}
-
-.ode-LogoVersion {
-  font-size: 12px;
-  color: grey;
-  text-shadow: 0px 0px 0px #404040;
+  margin-bottom: 15px;
 }
 
 .ode-TopPanelAccount {
@@ -972,6 +973,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockForm {
+  height: auto !important;
   background-color: #d2e0a6;
   border: 2px solid black;
 }
@@ -982,7 +984,15 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockFormTitleBar {
   background-color: dimgray;
+  color: white;
+  font-size: 90%;
   border-bottom: 1px solid lightgray;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar {
+  background-color: #a5cf47;
+  color: white;
+  font-size: 20px;
 }
 
 .ode-SimpleMockFormPhoneBar {
@@ -990,8 +1000,31 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormTitle {
+  padding: 0;
+  top: 4px;
+  left: 12px;
+  position: absolute;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormTitle {
+  padding: 16px;
+  top: 0;
+  left: 0;
+}
+
+.ode-SimpleMockFormMenuButton {
+  right: 0;
+  padding: 16px;
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  font: 20px Roboto bold;
   color: white;
-  font-size: 90%;
+  display: none;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
+  display: inline-block;
 }
 
 .ode-SimpleMockContainer {
@@ -1017,13 +1050,75 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
+.ode-SimpleMockMapFeature-selected svg * {
+  stroke: #8fc202;
+  stroke-opacity: 1;
+}
+
+path.ode-SimpleMockMapFeature-selected {
+  stroke: #8fc202;
+  stroke-opacity: 1;
+}
+
+.ode-SimpleMockMapFeature img {
+  padding: 2px;
+}
+
+.ode-SimpleMockMapFeature-selected img {
+  padding: 0;
+  border: 2px solid #8fc202;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon {
+  color: #888;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon:hover {
+  color: #0078A8;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked .fa-unlock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-lock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked .fa-lock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-unlock {
+  display: none;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-unlock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-lock {
+  display: inline-block;
+}
+
+.ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location img {
+    position: relative;
+    top: -50%;
+    left: -50%;
+    width: 32px;
+    height: 32px;
+}
+
 .ode-SimpleMockContainer-centerContents {
   text-align: center;
 }
 
 .ode-SimpleMockButton {
-  /* When updating this color also update MockButtonBase.setBackgroundColorProperty() */
-  background-color: #E8E8E8;
+  padding: 4px 8px;
+  text-shadow: none;
+  border: 0;
+  border-radius: 2px;
+  background-color: #d6d7d7;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.ode-SimpleMockForm-Dark .ode-SimpleMockButton {
+  background-color: #5a595b;
+  color: #fff;
 }
 
 /* class for the ListView Mock component */
@@ -1065,6 +1160,7 @@ select.ode-PropertyEditor[disabled] {
   border-bottom: 4px solid #8fc202;
   width: 20%;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
+  z-index: 1000;
 }
 
 .ode-ComponentHelpPopup-TitleBar {
@@ -1184,7 +1280,7 @@ select.ode-PropertyEditor[disabled] {
   border-left: 4px solid #8fc202;
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1337,6 +1433,10 @@ a.ode-ExtensionAnchor:hover {
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding;
   background-clip: padding-box;
+}
+
+.gwt-PopupPanelGlass {
+  z-index: 1000;
 }
 
 /*
@@ -2417,4 +2517,15 @@ textarea::-webkit-input-placeholder {
 .ai_type_block {
   position: absolute;
   z-index: 2000;
+}
+
+.goog-hsva-palette, .goog-hsva-palette-sm {
+  border: 0;
+}
+
+div.vector-marker>svg, div.leaflet-marker-icon>img {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2px;
 }

@@ -68,6 +68,7 @@ public final class ComponentHelpWidget extends Image {
       // GWT supported String.format.
       String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();
       String url = null;
+      int version = -1;
       if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2
         url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();
         if (url != null) {
@@ -80,6 +81,7 @@ public final class ComponentHelpWidget extends Image {
                 .replaceAll("\"", "%22");
           }
         }
+        version = scd.getVersion();
       } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
         if (!referenceComponentsUrl.endsWith("/")) {
           referenceComponentsUrl += "/";
@@ -88,6 +90,11 @@ public final class ComponentHelpWidget extends Image {
         url = (categoryDocUrlString == null)
             ? referenceComponentsUrl + "index.html"
             : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+      }
+      if (version > 0) {
+        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
+        html.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(html);
       }
       if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +

@@ -74,7 +74,7 @@ public final class CheckBox extends AndroidViewComponent
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
-    TextColor(Component.COLOR_BLACK);
+    TextColor(Component.COLOR_DEFAULT);
     Checked(false);
   }
 
@@ -324,7 +324,7 @@ public final class CheckBox extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
+      TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
   }
 

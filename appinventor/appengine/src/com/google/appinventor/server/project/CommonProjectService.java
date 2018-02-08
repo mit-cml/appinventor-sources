@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,10 +13,16 @@ import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.util.Base64Util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -333,4 +339,42 @@ public abstract class CommonProjectService {
    *           -1: Build is not yet done.
    */
   public abstract RpcResult getBuildResult(User user, long projectId, String target);
+
+  public TextFile importMedia(String userId, long projectId, String urlString, boolean save) throws IOException {
+    InputStream is = null;
+    try {
+      final int BUFSIZE = 4096;
+      URL url = new URL(urlString);
+      byte[] buffer = new byte[BUFSIZE];
+      int read = 0;
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      is = url.openStream();
+      while ( ( read = is.read(buffer) ) > 0 ) {
+        baos.write(buffer, 0, read);
+      }
+      byte[] bytes = baos.toByteArray();
+      baos.flush();
+      String filename = null;
+      if (save) {
+        String[] parts = url.getPath().split("/");
+        filename = parts[parts.length - 1];
+        if (filename.length() == 0) {
+          throw new IOException("Cannot determine name when saving media resource.");
+        }
+        filename = "assets/" + filename;
+        storageIo.uploadRawFileForce(projectId, filename, userId, bytes);
+      }
+      return new TextFile(filename, Base64Util.encodeLines(bytes));
+    } catch(MalformedURLException e) {
+      throw new IOException("Unable to import from malformed URL", e);
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch(IOException e) {
+          // suppress error on close
+        }
+      }
+    }
+  }
 }

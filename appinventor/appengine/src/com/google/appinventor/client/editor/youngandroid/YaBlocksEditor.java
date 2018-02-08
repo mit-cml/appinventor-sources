@@ -296,7 +296,9 @@ public final class YaBlocksEditor extends FileEditor
     if (!EventHelper.isTransient(event)) {
       Ode.getInstance().getEditorManager().scheduleAutoSave(this);
     }
-    sendComponentData();
+    if (!EventHelper.isUi(event)) {
+      sendComponentData();
+    }
   }
 
   @Override

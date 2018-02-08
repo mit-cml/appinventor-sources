@@ -1,3 +1,7 @@
+// -*- mode: javascript; js-indent-level: 2; -*-
+// Copyright © 2013-2017 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * Author: Jos (josmasflores@gmail.com)
  */
@@ -18,7 +22,7 @@ page.onError = function (msg, trace) {
 
 // Open the actual page and load all the JavaScript in it
 // if success is true, all went well
-page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(status) {
+page.open('src/demos/yail/yail_testing_index.html', function(status) {
   //The evaluate function has arguments passed after the callback
   //in this case we are passing the expected value defined earlier
   if (status !== 'success') {
