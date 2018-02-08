@@ -10,6 +10,7 @@ import com.google.appinventor.components.runtime.LocationSensor.LocationSensorLi
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
+import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.osmdroid.util.BoundingBox;
@@ -402,10 +403,10 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
 
   @SimpleProperty
   public void BoundingBox(YailList boundingbox) {
-    double latNorth = (Double)((YailList)boundingbox.get(1)).get(1);
-    double longWest = (Double)((YailList)boundingbox.get(1)).get(2);
-    double latSouth = (Double)((YailList)boundingbox.get(2)).get(1);
-    double longEast = (Double)((YailList)boundingbox.get(2)).get(2);
+    double latNorth = GeometryUtil.coerceToDouble(((YailList) boundingbox.get(1)).get(1));
+    double longWest = GeometryUtil.coerceToDouble(((YailList)boundingbox.get(1)).get(2));
+    double latSouth = GeometryUtil.coerceToDouble(((YailList)boundingbox.get(2)).get(1));
+    double longEast = GeometryUtil.coerceToDouble(((YailList)boundingbox.get(2)).get(2));
     mapController.setBoundingBox(new BoundingBox(latNorth, longEast, latSouth, longWest));
   }
 
