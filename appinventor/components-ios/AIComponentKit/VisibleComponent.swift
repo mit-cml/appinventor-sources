@@ -10,7 +10,7 @@ import Foundation
 
 @objc public protocol VisibleComponent: Component {
   var Width: Int32 { get set }
-  func WidthPercent(_ toPercent: Int32)
+  func setWidthPercent(_ toPercent: Int32)
   var Height: Int32 { get set }
-  func HeightPercent(_ toPercent: Int32)
+  func setHeightPercent(_ toPercent: Int32)
 }

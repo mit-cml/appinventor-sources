@@ -20,6 +20,7 @@ import Foundation
   case ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602
   
   // Media Errors
+  case ERROR_UNABLE_TO_LOAD_MEDIA = 701
   case ERROR_UNABLE_TO_PREPARE_MEDIA = 702
   
   // ContactPicker and PhoneNumberPicker Errors
@@ -96,6 +97,8 @@ import Foundation
       return "No Action information in ActivityStarter was found."
       
     // Media Errors
+    case .ERROR_UNABLE_TO_LOAD_MEDIA:
+      return "Unable to load media."
     case .ERROR_UNABLE_TO_PREPARE_MEDIA:
       return "Unable to prepare %s."
       

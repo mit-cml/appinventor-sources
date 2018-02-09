@@ -62,8 +62,14 @@ open class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  open func WidthPercent(_ toPercent: Int32) {
-    //TODO: implementation
+  open func setWidthPercent(_ toPercent: Int32) {
+    if toPercent > 100 {
+      Width = -1100
+    } else if toPercent < 1 {
+      Width = -1001
+    } else {
+      Width = -(1000 + toPercent)
+    }
   }
 
   open var Height: Int32 {
@@ -76,8 +82,53 @@ open class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  open func HeightPercent(_ toPercent: Int32) {
-    //TODO: implementation
+  open func setHeightPercent(_ toPercent: Int32) {
+    if toPercent > 100 {
+      Height = -1100
+    } else if toPercent < 1 {
+      Height = -1001
+    } else {
+      Height = -(1000 + toPercent)
+    }
+  }
+
+  open func setNestedViewHeight(nestedView: UIView, height: Int32, shouldAddConstraints: Bool){
+    resetNestedViewConstraints(for: nestedView, width: Width, height: height, shouldAddConstraint: shouldAddConstraints)
+  }
+
+  open func setNestedViewWidth(nestedView: UIView, width: Int32, shouldAddConstraints: Bool){
+    resetNestedViewConstraints(for: nestedView, width: width, height: Height, shouldAddConstraint: shouldAddConstraints)
+  }
+
+  open func resetNestedViewConstraints(for nestedView: UIView, width: Int32, height: Int32, shouldAddConstraint: Bool) {
+    let constraintsToRemove = _container.form.view.constraints.filter { constraint in
+      if let vi = constraint.firstItem, type(of: vi) == type(of: view) {
+        let tempView = vi as! UIView
+        if tempView == nestedView || tempView == view {
+          return true
+        } else if let secondView = constraint.secondItem, type(of: secondView) == type(of: view) {
+          let tempView2 = secondView as! UIView
+          if tempView2 == nestedView || tempView2 == view{
+            return true
+          }
+        }
+      }
+      return false
+    }
+
+    _container.form.view.removeConstraints(constraintsToRemove)
+    _lastSetHeight = height
+    _container.setChildHeight(of: self, height: height)
+    _lastSetWidth = width
+    _container.setChildWidth(of: self, width: width)
+    if shouldAddConstraint {
+      nestedView.frame = view.bounds
+      let topAnchor = nestedView.topAnchor.constraint(equalTo: view.topAnchor)
+      let bottomAnchor = nestedView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+      let leftAnchor = nestedView.leftAnchor.constraint(equalTo: view.leftAnchor)
+      let rightAnchor = nestedView.rightAnchor.constraint(equalTo: view.rightAnchor)
+      view.addConstraints([topAnchor, bottomAnchor, leftAnchor, rightAnchor])
+    }
   }
 
   open var Column: Int32 {
