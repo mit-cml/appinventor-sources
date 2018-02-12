@@ -43,6 +43,8 @@
 	<string>App Inventor accesses your contacts when you include a ContactPicker component in your app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App Inventor accesses your location when you include a WebViewer component in your app and navigate to a website that requests your location</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App Inventor accesses your microphone when you include a SoundRecorder component in yuor app.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

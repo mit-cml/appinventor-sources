@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		04248DD6201927C700688ED0 /* TimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04248DD5201927C700688ED0 /* TimePicker.swift */; };
 		043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043ACD8A20104F52002C74DD /* DatePicker.swift */; };
+		0417585020093AE5007D2C31 /* FileError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0417584F20093AE5007D2C31 /* FileError.swift */; };
+		041758532009417D007D2C31 /* String+ChopAffix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041758522009417D007D2C31 /* String+ChopAffix.swift */; };
 		0417585720098EE0007D2C31 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0417585620098EE0007D2C31 /* LinkedList.swift */; };
 		060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060119DD1DC24126000FC1E2 /* ListPicker.swift */; };
 		060395451F342ADE006D6E66 /* language-codes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 060395431F342ADE006D6E66 /* language-codes.plist */; };
@@ -101,6 +103,9 @@
 		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
 		DE999D34201272DA0023DA47 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE999D33201272DA0023DA47 /* VideoPlayer.swift */; };
 		DED066B21FE0846F009C8165 /* webview-error.html in Resources */ = {isa = PBXBuildFile; fileRef = DED066B11FE0846F009C8165 /* webview-error.html */; };
+		CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC786812006AD2F005363A3 /* FileUtil.swift */; };
+		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
+		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
 		DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */; };
 		DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBEC451FB288C800B6848E /* Spinner.swift */; };
 		DEE8A98D1FAF9E59000C7E6B /* EmailPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE8A98C1FAF9E59000C7E6B /* EmailPicker.swift */; };
@@ -121,6 +126,8 @@
 /* Begin PBXFileReference section */
 		04248DD5201927C700688ED0 /* TimePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePicker.swift; sourceTree = "<group>"; };
 		043ACD8A20104F52002C74DD /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
+		0417584F20093AE5007D2C31 /* FileError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileError.swift; sourceTree = "<group>"; };
+		041758522009417D007D2C31 /* String+ChopAffix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ChopAffix.swift"; sourceTree = "<group>"; };
 		0417585620098EE0007D2C31 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		060119DD1DC24126000FC1E2 /* ListPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPicker.swift; sourceTree = "<group>"; };
 		060395431F342ADE006D6E66 /* language-codes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "language-codes.plist"; sourceTree = "<group>"; };
@@ -218,6 +225,8 @@
 		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
 		DE5CBD271FE36C8B00F5EDDE /* webviewer.js */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.javascript; path = webviewer.js; sourceTree = "<group>"; tabWidth = 2; };
 		DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = WebViewer.swift; sourceTree = "<group>"; tabWidth = 2; };
+		CBC786812006AD2F005363A3 /* FileUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtil.swift; sourceTree = "<group>"; };
+		CBE5DE991FE1C421009A139F /* SoundRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundRecorder.swift; sourceTree = "<group>"; };
 		DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPicker.swift; sourceTree = "<group>"; };
 		DE999D33201272DA0023DA47 /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		DEDA5AE7201247FA00C5287E /* YandexTranslate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YandexTranslate.swift; sourceTree = "<group>"; };
@@ -255,6 +264,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0417585120093F24007D2C31 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				041758522009417D007D2C31 /* String+ChopAffix.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -388,6 +405,7 @@
 		06DA9F571D8D0B4B00389B04 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				0417585120093F24007D2C31 /* Extensions */,
 				06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */,
 				06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */,
 				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
@@ -400,6 +418,8 @@
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
 				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
+				0417584F20093AE5007D2C31 /* FileError.swift */,
+				CBC786812006AD2F005363A3 /* FileUtil.swift */,
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
@@ -460,6 +480,7 @@
 				0644F6BF1F37CAD800642E4D /* Player.swift */,
 				068E0EB41DC251A20086FFDA /* Sharing.swift */,
 				06E59EAE1D92D14F00C42804 /* Sound.swift */,
+				CBE5DE991FE1C421009A139F /* SoundRecorder.swift */,
 				068E0EB81DC251E90086FFDA /* Texting.swift */,
 				06473B841F327E5400A9A29B /* TextToSpeech.swift */,
 				06B215FF1DB95122000B3366 /* TinyDB.swift */,
@@ -781,6 +802,7 @@
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,
+				0417585020093AE5007D2C31 /* FileError.swift in Sources */,
 				068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */,
 				082778F720112FE300ACC99A /* ImagePicker.swift in Sources */,
 				068E0EAF1DC251090086FFDA /* ActivityStarter.swift in Sources */,
@@ -800,6 +822,7 @@
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
 				0618D2751F34DC3400A127A2 /* ListView.swift in Sources */,
+				CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */,
 				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
@@ -817,6 +840,7 @@
 				CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */,
 				06E59EB31D92D19600C42804 /* Label.swift in Sources */,
 				06B215FE1DB95116000B3366 /* Web.swift in Sources */,
+				041758532009417D007D2C31 /* String+ChopAffix.swift in Sources */,
 				0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */,
 				062832981DBE95A7009605D5 /* Layout.swift in Sources */,
 				06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */,
@@ -833,6 +857,7 @@
 				06B215FA1DB950F6000B3366 /* HorizontalArrangement.swift in Sources */,
 				068E0EB31DC251890086FFDA /* PhoneCall.swift in Sources */,
 				06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */,
+				CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				06E59EAA1D92C7E800C42804 /* NetworkUtils.m in Sources */,

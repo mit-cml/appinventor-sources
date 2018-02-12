@@ -137,4 +137,11 @@ open class AssetManager: NSObject {
     }
     return nil
   }
+  
+  public func transformPotentialAndroidPath(path: String) -> String {
+    let relativePathComp = path.components(separatedBy: "sdcard/").last!
+    let relativePath = relativePathComp[relativePathComp.startIndex] == "/" ? relativePathComp.chopPrefix() : relativePathComp
+    let iOSPath = relativePathComp == path ? AssetManager.shared.pathForPrivateAsset(relativePath) : AssetManager.shared.pathForPublicAsset(relativePath)
+    return iOSPath
+  }
 }

@@ -23,6 +23,11 @@ import Foundation
   case ERROR_UNABLE_TO_LOAD_MEDIA = 701
   case ERROR_UNABLE_TO_PREPARE_MEDIA = 702
   
+  // SoundRecorder Errors
+  case ERROR_SOUND_RECORDER = 801
+  case ERROR_SOUND_RECORDER_CANNOT_CREATE = 802
+  case ERROR_SOUND_RECORDER_PERMISSION_DENIED = 806
+  
   // ContactPicker and PhoneNumberPicker Errors
   // "Error message for when contact data cannot be used on the device."
   case ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107
@@ -92,7 +97,6 @@ import Foundation
     // ActivityStarter Errors
     case .ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY:
       return "No corresponding activity was found."
-      
     case .ERROR_ACTIVITY_STARTER_NO_ACTION_INFO:
       return "No Action information in ActivityStarter was found."
       
@@ -101,6 +105,14 @@ import Foundation
       return "Unable to load media."
     case .ERROR_UNABLE_TO_PREPARE_MEDIA:
       return "Unable to prepare %s."
+      
+    // SoundRecorder Errors
+    case .ERROR_SOUND_RECORDER:
+      return "An unexpected error occurred while recording sound."
+    case .ERROR_SOUND_RECORDER_CANNOT_CREATE:
+      return "Cannot start recording: %s"
+    case .ERROR_SOUND_RECORDER_PERMISSION_DENIED:
+      return "Permission to record audio was denied."
       
     // ContactPicker and PhoneNumberPicker Errors
     case .ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER:
