@@ -1111,7 +1111,7 @@ public interface OdeMessages extends Messages {
   String horizontalAlignmentChoiceLeft();
 
   @DefaultMessage("Right")
-  @Description("Text for horizontal alignemt choice 'Right'")
+  @Description("Text for horizontal alignment choice 'Right'")
   String horizontalAlignmentChoiceRight();
 
   @DefaultMessage("Center")
