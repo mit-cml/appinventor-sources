@@ -671,11 +671,11 @@ list, use the make-yail-list constructor with no arguments.
 ;; Yail lists can appear in the runtime only if their components are either yail lists
 ;; or sanitized atomic objects.
 (define (kawa-list->yail-list x)
-  (cond ((null? x) (make YailList))
+  (cond ((null? x) (list *yail-list*))
         ;;TODO(halabeslon): Do we really need to sanitize atomic elements here?
         ((not (pair? x)) (sanitize-atomic x))
         ((yail-list? x) x)
-        (else (YailList:makeList (map kawa-list->yail-list x)))))
+        (else (cons *yail-list* (map kawa-list->yail-list x)))))
 
 ;;; To transform a yail list to a kawa-list,  strip off the *list* header at each node of the tree
 (define (yail-list->kawa-list data)
@@ -1259,7 +1259,7 @@ list, use the make-yail-list constructor with no arguments.
            (add-to-global-vars 'var-name
                                (lambda () value)))))))
 (define (make-yail-list . args)
-  args)
+  (cons *yail-list* args))
 
 (define (add-global-var-to-current-form-environment name object)
   (begin
