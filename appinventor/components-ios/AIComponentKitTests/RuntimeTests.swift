@@ -4,26 +4,26 @@
 import XCTest
 @testable import AIComponentKit
 
-class RuntimeTests: XCTestCase {
-
-  func getInterpreterForTesting() throws -> SCMInterpreter {
-    let interpreter = SCMInterpreter()
-    if let runtimeUrl = Bundle(for: ReplForm.self).url(forResource: "runtime", withExtension: "scm") {
-      do {
-        let text = try String(contentsOf: runtimeUrl, encoding: String.Encoding.utf8)
-        interpreter.evalForm(text)
-        interpreter.evalForm("(set! *testing* #t)")
-      } catch {
-        XCTFail("Unable to load runtime.scm")
-        throw TestFailure()
-      }
-      if let exception = interpreter.exception {
-        XCTFail("Exception: \(exception.name.rawValue) (\(exception))")
-        throw TestFailure()
-      }
+public func getInterpreterForTesting() throws -> SCMInterpreter {
+  let interpreter = SCMInterpreter()
+  if let runtimeUrl = Bundle(for: ReplForm.self).url(forResource: "runtime", withExtension: "scm") {
+    do {
+      let text = try String(contentsOf: runtimeUrl, encoding: String.Encoding.utf8)
+      interpreter.evalForm(text)
+      interpreter.evalForm("(set! *testing* #t)")
+    } catch {
+      XCTFail("Unable to load runtime.scm")
+      throw TestFailure()
     }
-    return interpreter
+    if let exception = interpreter.exception {
+      XCTFail("Exception: \(exception.name.rawValue) (\(exception))")
+      throw TestFailure()
+    }
   }
+  return interpreter
+}
+
+class RuntimeTests: XCTestCase {
 
   func testYailEqualBool() throws {
     let interpreter = try getInterpreterForTesting()
