@@ -174,6 +174,37 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var xmlArray = [];
   var typeName = instanceRecord.typeName;
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
+  var instanceName = instanceRecord.name;
+
+  if(typeName == "WebViewer"){
+      var formName = Blockly.mainWorkspace.formName;
+
+      var jsonDataString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName , instanceName , "JSONBlocks");
+      var jsonDataArray = [];
+
+      // If jsonDataString is not the right format, JSON.parse(jsonDataString) will make an error.
+      // In this case ensure only WebViewer blocks come out safely without any error by using try...catch.
+      try {
+          jsonDataArray = JSON.parse(jsonDataString);
+      }
+      catch(err){
+      }
+
+
+      // Below code in the for loop will only execute when JSON.parse(jsonDataString) have returned an array safely.
+      for(var i=0; i<jsonDataArray.length; i++){
+          var jsonData = JSON.stringify(jsonDataArray[i]);
+          var encodedURI = encodeURIComponent(jsonData); //what about ''?
+
+          var xmlString = '<xml><block xmlns="http://www.w3.org/1999/xhtml" type="customizable_block" '
+              + '><mutation block_info=' + '\"'+encodedURI +'\"'
+              + ' webviewer_name=' + '\"'+instanceName+'\"'
+              + '></mutation></block></xml>';
+
+          var xmlFromString = Blockly.Xml.textToDom(xmlString).children[0];
+          xmlArray.push(xmlFromString);
+      }
+  }
 
   //create event blocks
   goog.object.forEach(componentInfo.eventDictionary, function(event, name) {

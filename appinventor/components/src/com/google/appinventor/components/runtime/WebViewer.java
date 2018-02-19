@@ -89,6 +89,12 @@ public final class WebViewer extends AndroidViewComponent {
   // allows passing strings to javascript
   WebViewInterface wvInterface;
 
+  //path to javascript library uploaded by user
+  private String jsLibraryPath = "";
+
+  //JSON string for creating new blocks
+  private String userBlockInformation = "";
+
   /**
    * Creates a new WebViewer component.
    *
@@ -133,6 +139,7 @@ public final class WebViewer extends AndroidViewComponent {
     HomeUrl("");
     Width(LENGTH_FILL_PARENT);
     Height(LENGTH_FILL_PARENT);
+    JSONBlocks("");
   }
 
   /**
@@ -205,6 +212,19 @@ public final class WebViewer extends AndroidViewComponent {
   public String HomeUrl() {
     return homeUrl;
   }
+
+  /**
+   * User specifies the type of block they want to make
+   *
+   * @param userBlockInformation information of JSON format of the block user wants to make
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+          defaultValue = "")
+  @SimpleProperty()
+  public void JSONBlocks(String userBlockInformation){
+    this.userBlockInformation = userBlockInformation;
+  }
+
 
   /**
    * Specifies the URL of the page the WebVewier should load
@@ -420,6 +440,15 @@ public final class WebViewer extends AndroidViewComponent {
       EclairUtil.clearWebViewGeoLoc();
   }
 
+  /*
+*  Takes a JS function name and calls that function in the webViewer.
+*/
+  @SimpleFunction(description = "Run JavaScript method.")
+  public void RunJavaScript(String functionName, String inputs) {
+
+    webview.loadUrl("javascript:window.AppInventor.runMethod(" + functionName + "(" + inputs + "))");
+  }
+
   private void resetWebViewClient() {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
       webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
@@ -447,11 +476,13 @@ public final class WebViewer extends AndroidViewComponent {
   public class WebViewInterface {
     Context mContext;
     String webViewString;
+    String returnString;
 
     /** Instantiate the interface and set the context */
     WebViewInterface(Context c) {
       mContext = c;
       webViewString = " ";
+      returnString = " ";
     }
 
     /**
@@ -470,6 +501,15 @@ public final class WebViewer extends AndroidViewComponent {
     public void setWebViewString(String newString) {
       webViewString = newString;
     }
+
+    /**
+     * Set returnString to value returned by JavaScript method.
+     */
+    @JavascriptInterface
+    public void runMethod(String value) {
+      returnString = value;
+    }
+
 
   }
 }

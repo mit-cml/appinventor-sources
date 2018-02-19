@@ -2895,6 +2895,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsLoopingProperties();
 
+  @DefaultMessage("JSONBlocks")
+  @Description("")
+  String JSONBlocksProperties();
+
   @DefaultMessage("KeyFile")
   @Description("")
   String KeyFileProperties();
@@ -4188,6 +4192,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String urlParams();
 
+  @DefaultMessage("inputs")
+  @Description("")
+  String inputsParams();
+
   @DefaultMessage("responseCode")
   @Description("")
   String responseCodeParams();
@@ -4821,6 +4829,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ReceiveUnsignedBytes")
   @Description("")
   String ReceiveUnsignedBytesMethods();
+
+  @DefaultMessage("RunJavaScript")
+  @Description("")
+  String RunJavaScriptMethods();
 
   @DefaultMessage("Send1ByteNumber")
   @Description("")
