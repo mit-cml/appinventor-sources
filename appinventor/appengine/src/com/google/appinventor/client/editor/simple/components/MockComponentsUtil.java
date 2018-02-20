@@ -279,7 +279,7 @@ public final class MockComponentsUtil {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
-    String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "lineHeight");
     if (widthStyle != null) {
       DOM.setStyleAttribute(element, "width", null);
     }
