@@ -523,13 +523,13 @@ public class MediaUtil {
    *
    */
   public static Drawable getNinePatchDrawable(Form form, String path) throws IOException {
-    if(path.length()==0 || path==null){
+    if (path.length()==0 || path==null) {
       return null;
     }
-    InputStream is=MediaUtil.openMedia(form, path);
-    Bitmap bitmap=BitmapFactory.decodeStream(is);
-    BitmapType type=BitmapType.determineBitmapType(bitmap);
-    switch(type){
+    InputStream is = MediaUtil.openMedia(form, path);
+    Bitmap bitmap = BitmapFactory.decodeStream(is);
+    BitmapType type = BitmapType.determineBitmapType(bitmap);
+    switch (type) {
       case NULL:
         return null;
       case NinePatch:

@@ -315,7 +315,8 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Load image from file.
     if (imagePath.length() > 0) {
       try {
-        if(imagePath.length()>=6 && imagePath.substring(imagePath.length()-6, imagePath.length()).equals(".9.png")){
+        if (imagePath.length() >= 6 && 
+            imagePath.substring(imagePath.length()-6, imagePath.length()).equals(".9.png")) {
           // file path end with ".9.png" which reprecent nine-patch file
           backgroundImageDrawable = MediaUtil.getNinePatchDrawable(container.$form(), imagePath);
         }else{
