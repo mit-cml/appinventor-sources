@@ -349,6 +349,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               HideKeyboard((View) input);
+              //User pressed CANCEL. Raise AfterTextInput with CANCEL
+              AfterTextInput(cancelButtonText);
               TextInputCanceled();
             }
           });
