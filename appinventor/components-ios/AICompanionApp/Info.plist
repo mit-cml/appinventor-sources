@@ -29,6 +29,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>scanning barcodes and taking pictures</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App Inventor accesses your microphone when you take a video with the Camcorder component</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

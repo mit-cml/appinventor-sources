@@ -38,6 +38,10 @@ import Foundation
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
 
+  // Camcorder Errors
+  case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
+  case ERROR_CAMCORDER_CANNOT_SAVE_FILE = 1202
+
   // ImagePicker Errors
   case ERROR_CANNOT_COPY_MEDIA = 1602
 
@@ -127,6 +131,12 @@ import Foundation
       return "The specified request headers are not valid: element %s is not a list"
     case .ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS:
       return "The specified request headers are not valid: element %s does not contain two elements"
+
+    // Camcorder Errors
+    case .ERROR_CAMCORDER_NO_CLIP_RETURNED:
+      return "Unable to find clip from camcorder"
+    case .ERROR_CAMCORDER_CANNOT_SAVE_FILE:
+      return "Cannot save media file"
 
     // WebViewer Errors
     case .ERROR_WEB_VIEWER_UNKNOWN_ERROR:
