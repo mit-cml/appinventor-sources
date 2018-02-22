@@ -2422,6 +2422,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String cameraComponentPallette();
 
+  @DefaultMessage("Look")
+  @Description("")
+  String lookComponentPallette();
+
   @DefaultMessage("ImagePicker")
   @Description("")
   String imagePickerComponentPallette();
@@ -4761,6 +4765,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SensorValueChangedEvents();
 
+  @DefaultMessage("GotClassification")
+  @Description("")
+  String GotClassificationEvents();
+
+  @DefaultMessage("ClassificationFailed")
+  @Description("")
+  String ClassificationFailedEvents();
+
   //Methods
   @DefaultMessage("ResolveActivity")
   @Description("")
@@ -5843,6 +5855,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DatePickerHelpStringComponentPallette();
 
+  @DefaultMessage("Component for classifying images.")
+  @Description("")
+  String LookHelpStringComponentPallette();
+
   @DefaultMessage("An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>\n <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>\n<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.")
   @Description("")
   String EmailPickerHelpStringComponentPallette();
@@ -6616,6 +6632,10 @@ public interface OdeMessages extends Messages {
   @Description("On map ready, do...")
   String ReadyEvents();
 
+  @DefaultMessage("ClassifierReady")
+  @Description("On classifier ready, do...")
+  String ClassifierReadyEvents();
+
   @DefaultMessage("ZoomChange")
   @Description("On zoom change, do...")
   String ZoomChangeEvents();
@@ -6934,6 +6954,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String errorMessageParams();
 
+  @DefaultMessage("errorCode")
+  @Description("")
+  String errorCodeParams();
+
+  @DefaultMessage("data")
+  @Description("")
+  String dataParams();
+
   @DefaultMessage("Rectangle")
   @Description("")
   String rectangleComponentPallette();
@@ -7003,4 +7031,40 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetCenter")
   @Description("")
   String SetCenterMethods();
+
+  @DefaultMessage("StartVideo")
+  @Description("")
+  String StartVideoMethods();
+
+  @DefaultMessage("StopVideo")
+  @Description("")
+  String StopVideoMethods();
+
+  @DefaultMessage("ToggleCameraFacingMode")
+  @Description("")
+  String ToggleCameraFacingModeMethods();
+
+  @DefaultMessage("ClassifyImageData")
+  @Description("")
+  String ClassifyImageDataMethods();
+
+  @DefaultMessage("ClassifyVideoData")
+  @Description("")
+  String ClassifyVideoDataMethods();
+
+  @DefaultMessage("ShowImage")
+  @Description("")
+  String ShowImageMethods();
+
+  @DefaultMessage("HideImage")
+  @Description("")
+  String HideImageMethods();
+
+  @DefaultMessage("inputMode")
+  @Description("")
+  String inputModeParams();
+
+  @DefaultMessage("SetInputWidth")
+  @Description("")
+  String SetInputWidthMethods();
 }
