@@ -519,11 +519,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     visibleComponentsPanel.setForm(form);
     form.select();
 
-    Map<String, JSONValue> properties = propertiesObject.getProperties();
-    JSONObject screenprops = propertiesObject.get("Properties").asObject();
-    JSONValue subset = screenprops.getProperties().get("SubsetJSON");
+    //Lynda: TODO
+    OdeLog.log(form.getPropertyValue("SubsetJSON"));
+    // Map<String, JSONValue> properties = propertiesObject.getProperties();
+    // JSONObject screenprops = propertiesObject.get("Properties").asObject();
+    // JSONValue subset = screenprops.getProperties().get("SubsetJSON");
+    // OdeLog.log("loading subsetJson");
+    // OdeLog.log(subset.toJson());
     try {
-      String subsetjson = subset.toJson();
+      //String subsetjson = subset.toJson();
+      String subsetjson = form.getPropertyValue("SubsetJSON");
       String shownComponentsStr = getShownComponents(subsetjson);
       //OdeLog.log(shownComponentsStr);
       String[] shownComponents = shownComponentsStr.split(",");
@@ -540,7 +545,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   private native String getShownComponents(String subsetString)/*-{
-    var jsonObj = JSON.parse(JSON.parse(subsetString));
+    var jsonObj = JSON.parse(subsetString);
     var shownComponentTypes = jsonObj["shownComponentTypes"];
     var shownString = "";
     for (var category in shownComponentTypes) {
