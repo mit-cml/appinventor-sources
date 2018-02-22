@@ -2,6 +2,7 @@
         (scheme write)
         (scheme cxr)
         (scheme lazy)
+        (scheme r5rs)
         (picrin base)
         (yail))
 
@@ -659,6 +660,24 @@
            (string-append "Bad argument to OR"))))))
   (or-proc delayed-args))
 
+(define (random-integer low high)
+  (define (random-integer-int-args low high)
+    (if (> low high)
+        (random-integer-int-args high low)
+      (let ((clow (clip-to-java-int-range low))
+            (chigh (clip-to-java-int-range high)))
+        (inexact->exact (+ (yail:random-int (+ 1 (- chigh clow)))
+                        clow)))))
+  (random-integer-int-args (ceiling low) (floor high)))
+
+;;; If low and high are in the range from (-2)^30 to 2^30, then high-low will be
+;;; less than 2^31 - 1
+(define clip-to-java-int-range
+  (let* ((highest (- (expt 2 30) 1))
+         (lowest (- highest)))
+    (lambda (x)
+      (max lowest (min x highest)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
 List implementation.
@@ -708,8 +727,7 @@ list, use the make-yail-list constructor with no arguments.
 
 ;; Implements the Blocks is-a-list? operation
 (define (yail-list? x)
-  (and (yail-list-candidate? x)
-       (instance? x YailList)))
+  (yail-list-candidate? x))
 
 (define (yail-list-candidate? x)
   (and (pair? x) (equal? (car x) *yail-list*)))
@@ -755,16 +773,13 @@ list, use the make-yail-list constructor with no arguments.
   (and (yail-list? x) (null? (yail-list-contents x))))
 
 
-(define (make-yail-list . args)
-  (YailList:makeList args))
-
 ;;; does a deep copy of the yail list yl
 ;;; assumes yl is a real yail list, with all
 ;;; atomic elements sanitized
 (define (yail-list-copy yl)
   (cond ((yail-list-empty? yl) (make YailList))
         ((not (pair? yl)) yl)
-        (else (YailList:makeList (map yail-list-copy (yail-list-contents yl))))))
+        (else (cons *yail-list* (map yail-list-copy (yail-list-contents yl))))))
 
 ;;; converts a yail list to a CSV-formatted table and returns the text.
 ;;; yl should be a YailList, each element of which is a YailList as well.
@@ -773,7 +788,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (yail-list-to-csv-table yl)
   (if (not (yail-list? yl))
     (signal-runtime-error "Argument value to \"list to csv table\" must be a list" "Expecting list")
-    (CsvUtil:toCsvTable (apply make-yail-list (map convert-to-strings-for-csv (yail-list-contents yl))))))
+    (yail:invoke AIComponentKit.CsvUtil 'toCsvTable (apply make-yail-list (map convert-to-strings-for-csv (yail-list-contents yl))))))
 
 ;;; converts a yail list to a CSV-formatted row and returns the text.
 ;;; yl should be a YailList
@@ -782,7 +797,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (yail-list-to-csv-row yl)
   (if (not (yail-list? yl))
     (signal-runtime-error "Argument value to \"list to csv row\" must be a list" "Expecting list")
-    (CsvUtil:toCsvRow (convert-to-strings-for-csv yl))))
+  (yail:invoke AIComponentKit.CsvUtil 'toCsvRow (yail-list-contents yl))))
 
 ;; convert each element of YailList yl to a string and return the resulting YailList
 (define (convert-to-strings-for-csv yl)
@@ -793,7 +808,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;; converts a CSV-formatted table text to a yail list of lists
 (define (yail-list-from-csv-table str)
   (try-catch
-    (CsvUtil:fromCsvTable str)
+    (yail:invoke AIComponentKit.CsvUtil 'fromCsvTable str)
     (exception java.lang.Exception
       (signal-runtime-error
         "Cannot parse text argument to \"list from csv table\" as a CSV-formatted table"
@@ -802,7 +817,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;; converts a CSV-formatted row text to a yail list of fields
 (define (yail-list-from-csv-row str)
   (try-catch
-    (CsvUtil:fromCsvRow str)
+    (yail:invoke AIComponentKit.CsvUtil 'fromCsvRow str)
     (exception java.lang.Exception
       (signal-runtime-error
         "Cannot parse text argument to \"list from csv row\" as CSV-formatted row"
@@ -1090,8 +1105,6 @@ list, use the make-yail-list constructor with no arguments.
 ;;; JSON objects and whether jsonutils.decode.
 
 (define (yail-alist-lookup key yail-list-of-pairs default)
-  (android-log
-   (format #f "List alist lookup key is  ~A and table is ~A" key yail-list-of-pairs))
   (let loop ((pairs-to-check (yail-list-contents yail-list-of-pairs)))
     (cond ((null? pairs-to-check) default)
           ((not (pair-ok? (car pairs-to-check)))
@@ -1339,6 +1352,7 @@ list, use the make-yail-list constructor with no arguments.
            (add-global-var-to-current-form-environment 'var-name value)
            (add-to-global-vars 'var-name
                                (lambda () value)))))))
+
 (define (make-yail-list . args)
   (cons *yail-list* args))
 

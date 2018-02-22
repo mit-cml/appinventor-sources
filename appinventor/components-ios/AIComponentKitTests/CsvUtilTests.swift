@@ -1,9 +1,66 @@
-//
-//  CsvUtilTests.swift
-//  AIComponentKitTests
-//
-//  Created by Evan Patton on 2/21/18.
-//  Copyright © 2018 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
+import XCTest
+@testable import AIComponentKit
+
+class CsvUtilTests: XCTestCase {
+  func testFromCsvRow() throws {
+    let result = try CsvUtil.fromCsvRow("\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"")
+    XCTAssertEqual(["Entry", "5", "true", "[\"Sample List\"]"], result)
+  }
+
+  func testFromCsvTable() throws {
+    let parsed = try CsvUtil.fromCsvTable("\"Header1\",\"Header2\",\"Header3\",\"Header4\"\r\n" +
+      "\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"\r\n")
+    let expected = [["Header1", "Header2", "Header3", "Header4"],
+                    ["Entry", "5", "true", "[\"Sample List\"]"]]
+    assertTablesEqual(expected, parsed)
+  }
+
+  func testFromCsvTableCR() throws {
+    let parsed = try CsvUtil.fromCsvTable("\"foo\",\"bar\"\r\"1\",\"2\"\r")
+    let expected = [["foo", "bar"], ["1", "2"]]
+    assertTablesEqual(expected, parsed)
+  }
+
+  func testFromCsvTableLF() throws {
+    let parsed = try CsvUtil.fromCsvTable("\"foo\",\"bar\"\n\"1\",\"2\"\n")
+    let expected = [["foo", "bar"], ["1", "2"]]
+    assertTablesEqual(expected, parsed)
+  }
+
+  func testFromCsvTableMixed() throws {
+    let parsed = try CsvUtil.fromCsvTable("\"foo\",\"bar\"\r\n\"1\",\"2\"\r\"3\",\"4\"\n\"5\",\"6\"")
+    let expected = [["foo", "bar"], ["1", "2"], ["3", "4"], ["5", "6"]]
+    assertTablesEqual(expected, parsed)
+  }
+
+  func testFromCsvTableWithoutFinalLineEnding() throws {
+    let parsed = try CsvUtil.fromCsvTable("\"foo\",\"bar\"\r\n\"1\",\"2\"")
+    let expected = [["foo", "bar"], ["1", "2"]]
+    assertTablesEqual(expected, parsed)
+  }
+
+  func testToCsvRow() {
+    let result = CsvUtil.toCsvRow(["Entry", 5, true, ["Sample List"]])
+    XCTAssertEqual("\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"", result)
+  }
+
+  func testToCsvTable() {
+    let result = CsvUtil.toCsvTable([
+      ["Header1", "Header2", "Header3", "Header4"],
+      ["Entry", 5, true, ["Sample List"]]
+      ])
+    XCTAssertEqual("\"Header1\",\"Header2\",\"Header3\",\"Header4\"\r\n" +
+      "\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"\r\n", result)
+  }
+
+  func assertTablesEqual(_ expected: [[String]], _ actual: [[String]]) {
+    XCTAssertEqual(expected.count, actual.count)
+    for i in 0..<expected.count {
+      XCTAssertEqual(expected[i], actual[i])
+    }
+  }
+}

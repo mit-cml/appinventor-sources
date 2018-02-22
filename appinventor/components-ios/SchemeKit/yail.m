@@ -15,6 +15,7 @@
 #include "picrin/extra.h"
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
+#include <stdlib.h>
 
 static size_t BUFSIZE = 4096;
 
@@ -394,7 +395,7 @@ nsarray_to_yail(pic_state *pic, NSArray *array) {
   }
   pic_value result = pic_make_list(pic, (int) i, values);
   free(values);
-  return result;
+  return pic_cons(pic, pic_intern_cstr(pic, "*list*"), result);
 }
 
 static pic_value
@@ -414,6 +415,12 @@ static id
 yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
   if (pic_pair_p(pic, value)) {
     NSMutableArray *result = [NSMutableArray array];
+    if (pic_nil_p(pic, value)) {
+      return result;
+    } else if (pic_sym_p(pic, pic_car(pic, value))) {
+      // skip *list*
+      value = pic_cdr(pic, value);
+    }
     while (!pic_nil_p(pic, value)) {
       pic_value car = pic_car(pic, value);
       NSNumber *addr = [NSNumber numberWithUnsignedLongLong:car];
@@ -435,7 +442,16 @@ yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
     return result;
   } else if (pic_str_p(pic, value)) {
     return [NSString stringWithCString:pic_str(pic, value) encoding:NSUTF8StringEncoding];
+  } else if (pic_int_p(pic, value)) {
+    return [NSNumber numberWithInt:pic_int(pic, value)];
+  } else if (pic_float_p(pic, value)) {
+    return [NSNumber numberWithDouble:pic_float_p(pic, value)];
+  } else if (pic_true_p(pic, value)) {
+    return [NSNumber numberWithBool:YES];
+  } else if (pic_false_p(pic, value)) {
+    return [NSNumber numberWithBool:NO];
   } else {
+    NSLog(@"Unknown type to convert in yail_to_objc: %s", pic_typename(pic, pic_type(pic, value)));
     return nil;
   }
 }
@@ -722,6 +738,25 @@ yail_string_index_of(pic_state *pic) {
   return pic_int_value(pic, -1);
 }
 
+pic_value
+yail_primitive_throw(pic_state *pic) {
+  pic_value ex;
+
+  pic_get_args(pic, "o", &ex);
+  id exception = yail_native_instance_ptr(pic, ex)->object_;
+
+  @throw exception;
+}
+
+pic_value
+yail_random_int(pic_value *pic) {
+  int bound;
+
+  pic_get_args(pic, "i", &bound);
+
+  return pic_int_value(pic, (int) arc4random_uniform((uint32_t) bound));
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -743,6 +778,8 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
   pic_defun(pic, "string-index-of", yail_string_index_of);
+  pic_defun(pic, "primitive-throw", yail_primitive_throw);
+  pic_defun(pic, "yail:random-int", yail_random_int);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }

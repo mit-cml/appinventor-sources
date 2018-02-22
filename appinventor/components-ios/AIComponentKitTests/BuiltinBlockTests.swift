@@ -104,7 +104,7 @@ class BuiltinBlockTests: XCTestCase {
   }
 
   func testListBlocks() throws {
-//    try runTestsFromYail(path: "lists.yail")
+    try runTestsFromYail(path: "lists.yail")
   }
 
   func testColorBlocks() throws {
