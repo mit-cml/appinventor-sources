@@ -219,8 +219,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         new Runnable() {public void run() {AfterChoosing(button2Text);}},
         new Runnable() {
           public void run() {
-            AfterChoosing(activity.getString(android.R.string.cancel)); // backward compatible
             ChoosingCanceled();
+            AfterChoosing(activity.getString(android.R.string.cancel)); // backward compatible
           }
         }
     );
@@ -349,9 +349,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               HideKeyboard((View) input);
+              TextInputCanceled();
               //User pressed CANCEL. Raise AfterTextInput with CANCEL
               AfterTextInput(cancelButtonText);
-              TextInputCanceled();
             }
           });
     }
