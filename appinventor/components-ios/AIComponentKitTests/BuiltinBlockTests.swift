@@ -87,6 +87,30 @@ class BuiltinBlockTests: XCTestCase {
     print("Failed: \(failing)")
   }
 
+  func testBitwiseAnd() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("255", interpreter.evalForm("(bitwise-and 255 255)"))
+    XCTAssertEqual("0", interpreter.evalForm("(bitwise-and 0 255)"))
+    XCTAssertEqual("255", interpreter.evalForm("(bitwise-and (bitwise-arithmetic-shift-right 65280 8) 255)"))
+  }
+
+  func testBitwiseArithmetic() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("255", interpreter.evalForm("(bitwise-arithmetic-shift-right 65280 8)"))
+    XCTAssertEqual("65280", interpreter.evalForm("(bitwise-arithmetic-shift-left 255 8)"))
+  }
+
+  func testKawaListToYailList() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("(*list* 255 255 0 0)", interpreter.evalForm("(kawa-list->yail-list (list 255 255 0 0))"))
+  }
+
+  func testSplitColor() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(call-yail-primitive split-color (*list-for-runtime* -65536) '(number) \"split-color\")")
+    NSLog("result = \(result)")
+  }
+
   func testControlBlocks() throws {
     try runTestsFromYail(path: "control.yail")
   }

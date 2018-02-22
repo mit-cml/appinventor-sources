@@ -757,6 +757,54 @@ yail_random_int(pic_value *pic) {
   return pic_int_value(pic, (int) arc4random_uniform((uint32_t) bound));
 }
 
+pic_value
+yail_bitwise_arithmetic_shift_left(pic_state *pic) {
+  int value, bits, result;
+
+  pic_get_args(pic, "ii", &value, &bits);
+
+  result = value << bits;
+
+  return pic_int_value(pic, result);
+}
+
+pic_value
+yail_bitwise_arithmetic_shift_right(pic_state *pic) {
+  int value, bits, result;
+
+  pic_get_args(pic, "ii", &value, &bits);
+
+  result = value >> bits;
+
+  return pic_int_value(pic, result);
+}
+
+pic_value
+yail_bitwise_and(pic_state *pic) {
+  pic_value *args;
+  int argc, result = -1;
+
+  pic_get_args(pic, "*", &argc, &args);
+  for (int i = 0; i < argc; i++) {
+    result &= pic_int(pic, args[i]);
+  }
+
+  return pic_int_value(pic, result);
+}
+
+pic_value
+yail_bitwise_ior(pic_state *pic) {
+  pic_value *args;
+  int argc, result = 0;
+
+  pic_get_args(pic, "*", &argc, &args);
+  for (int i = 0; i < argc; i++) {
+    result |= pic_int(pic, args[i]);
+  }
+
+  return pic_int_value(pic, result);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -780,6 +828,10 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "string-index-of", yail_string_index_of);
   pic_defun(pic, "primitive-throw", yail_primitive_throw);
   pic_defun(pic, "yail:random-int", yail_random_int);
+  pic_defun(pic, "bitwise-arithmetic-shift-left", yail_bitwise_arithmetic_shift_left);
+  pic_defun(pic, "bitwise-arithmetic-shift-right", yail_bitwise_arithmetic_shift_right);
+  pic_defun(pic, "bitwise-and", yail_bitwise_and);
+  pic_defun(pic, "bitwise-ior", yail_bitwise_ior);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }
