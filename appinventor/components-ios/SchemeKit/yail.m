@@ -805,6 +805,41 @@ yail_bitwise_ior(pic_state *pic) {
   return pic_int_value(pic, result);
 }
 
+pic_value
+yail_bitwise_xor(pic_state *pic) {
+  pic_value *args;
+  int argc, result = 0;
+
+  pic_get_args(pic, "i*", &result, &argc, &args);
+  for (int i = 0; i < argc; i++) {
+    result ^= pic_int(pic, args[i]);
+  }
+
+  return pic_int_value(pic, result);
+}
+
+pic_value
+yail_string_to_uppercase(pic_state *pic) {
+  char *str;
+
+  pic_get_args(pic, "z", &str);
+  NSString *upper = [[NSString stringWithUTF8String:str] uppercaseString];
+  const char *str2 = [upper cStringUsingEncoding:NSUTF8StringEncoding];
+
+  return pic_str_value(pic, str2, strlen(str2));
+}
+
+pic_value
+yail_string_to_lowercase(pic_state *pic) {
+  char *str;
+
+  pic_get_args(pic, "z", &str);
+  NSString *lower = [[NSString stringWithUTF8String:str] lowercaseString];
+  const char *str2 = [lower cStringUsingEncoding:NSUTF8StringEncoding];
+
+  return pic_str_value(pic, str2, strlen(str2));
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -826,12 +861,15 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
   pic_defun(pic, "string-index-of", yail_string_index_of);
+  pic_defun(pic, "string-to-upper-case", yail_string_to_uppercase);
+  pic_defun(pic, "string-to-lower-case", yail_string_to_lowercase);
   pic_defun(pic, "primitive-throw", yail_primitive_throw);
   pic_defun(pic, "yail:random-int", yail_random_int);
   pic_defun(pic, "bitwise-arithmetic-shift-left", yail_bitwise_arithmetic_shift_left);
   pic_defun(pic, "bitwise-arithmetic-shift-right", yail_bitwise_arithmetic_shift_right);
   pic_defun(pic, "bitwise-and", yail_bitwise_and);
   pic_defun(pic, "bitwise-ior", yail_bitwise_ior);
+  pic_defun(pic, "bitwise-xor", yail_bitwise_xor);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }

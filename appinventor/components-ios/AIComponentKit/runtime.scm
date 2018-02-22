@@ -1133,15 +1133,6 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#|
-(define (make-disjunct x)
-  (cond ((null? (cdr x)) (Pattern:quote (car x)))
-        (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
-
-
-(define (array->list arr) (insert-yail-list-header (gnu.lists.LList:makeList arr 0)))
-|#
-
 (define (string-starts-at text piece)
   (+ (string-index-of text piece) 1))
 
@@ -1150,34 +1141,48 @@ list, use the make-yail-list constructor with no arguments.
       #f
       #t))
 
-#|
+(define (string-split-helper text ats count)
+  (let ((at-lens (map string-length ats))
+        (text-len (string-length text)))
+    (define (check i ats lens)
+      (cond ((null? ats) #f)
+            ((> (+ i (car lens)) text-len) #f)
+            ((equal? (car ats) (substring text i (+ i (car lens)))) (car lens))
+            (else (check i (cdr ats) (cdr lens)))))
+    (define (chunk s i count)
+      (cond ((>= s text-len) '())
+            ((= count 0) (list (substring text s)))
+            ((>= i text-len) (list (substring text s)))
+            (else
+              (let ((adv (check i ats at-lens)))
+                (if adv
+                    (cons (substring text s i) (chunk (+ i adv) (+ i adv) (- count 1)))
+                  (chunk s (+ i 1) count))))))
+    (cons *yail-list* (chunk 0 0 (- count 1)))))
+
 (define (string-split-at-first text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at) 2)))
+  (string-split-helper text (list at) 2))
 
 (define (string-split-at-first-of-any text at)
-  (if (null? (yail-list-contents at))
-      (signal-runtime-error
-       "split at first of any: The list of places to split at is empty."
-       "Invalid text operation")
-      (array->list
-       ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
+  (string-split-helper text (yail-list-contents at) 2))
 
 (define (string-split text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at))))
+  (string-split-helper text (list at) -1))
 
 (define (string-split-at-any text at)
-  (if (null? (yail-list-contents at))
-      (signal-runtime-error
-       "split at any: The list of places to split at is empty."
-       "Invalid text operation")
-      (array->list
-       ((text:toString):split (make-disjunct (yail-list-contents at)) -1))))
+  (string-split-helper text (yail-list-contents at) -1))
 
 (define (string-split-at-spaces text)
-  (array->list
-   (((text:toString):trim):split "\\s+" -1)))
+  (let ((text-len (string-length text)))
+    (define (chunk s i)
+      (cond ((>= s text-len) '())
+            ((= i text-len) (list (substring text s)))
+            ((let ((c (string-ref text i))) (or (eq? c #\tab) (eq? c #\newline) (eq? c #\return) (eq? c #\space)))
+             (if (not (= s i))
+                 (cons (substring text s i) (chunk (+ i 1) (+ i 1)))
+               (chunk (+ i 1) (+ i 1))))
+            (else (chunk s (+ i 1)))))
+    (cons *yail-list* (chunk 0 0))))
 
 (define (string-substring wholestring start length)
   (let ((len (string-length wholestring)))
@@ -1195,13 +1200,16 @@ list, use the make-yail-list constructor with no arguments.
         "Invalid text operation"))
       (#t  (substring wholestring (- start 1) (+ (- start 1) length))))))
 
-(define (string-trim text)
-   ((text:toString):trim))
-
-;;; It seems simpler for users to not use regexp patterns here, even though
-;;; some people might want that feature.
-(define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+(define (string-replace-all text needle replacement)
+  (let* ((text-len (string-length text))
+         (needle-len (string-length needle)))
+    (define (chunk s i)
+      (cond ((>= s text-len) '())
+            ((> (+ i needle-len) text-len) (cons (substring text s) '()))
+            ((equal? needle (substring text i (+ i needle-len)))
+             (cons (substring text s i) (cons replacement (chunk (+ i needle-len) (+ i needle-len)))))
+            (else (chunk s (+ i 1)))))
+    (apply string-append (chunk 0 0))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))
@@ -1224,7 +1232,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-|#
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Color implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1420,7 +1428,10 @@ list, use the make-yail-list constructor with no arguments.
         (start 0) (end 0))
     (do ((i 0 (+ i 1)))
         ((= i len) (string-copy s start end))
-      (if (eq? #\space (string-ref s i))
+        (if (or (eq? #\space (string-ref s i))
+                (eq? #\return (string-ref s i))
+                (eq? #\newline (string-ref s i))
+                (eq? #\tab (string-ref s i)))
           (if (= end start)
               (begin
                 (set! start (+ 1 start))

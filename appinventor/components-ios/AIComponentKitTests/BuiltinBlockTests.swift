@@ -124,7 +124,7 @@ class BuiltinBlockTests: XCTestCase {
   }
 
   func testTextBlocks() throws {
-//    try runTestsFromYail(path: "text.yail")
+    try runTestsFromYail(path: "text.yail")
   }
 
   func testListBlocks() throws {
