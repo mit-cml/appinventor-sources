@@ -84,11 +84,11 @@ public interface UserInfoServiceAsync {
   /**
    * @see UserInfoService#getSharedBackpack(String)
    */
-  void getSharedBackpack(String BackPackId, AsyncCallback<String> callback);
+  void getSharedBackpack(String backPackId, AsyncCallback<String> callback);
 
   /**
    * @see UserInfoService#storeSharedBackpack(String, String)
    */
-  void storeSharedBackpack(String BackPackId, String content, AsyncCallback<Void> callback);
+  void storeSharedBackpack(String backPackId, String content, AsyncCallback<Void> callback);
 
 }

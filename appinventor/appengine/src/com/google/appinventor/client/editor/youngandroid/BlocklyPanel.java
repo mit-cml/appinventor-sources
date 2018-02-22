@@ -895,7 +895,7 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.Backpack.contents = JSON.parse(backpack);
   }-*/;
 
-  public static native void setBackpackShared(String backPackId)/*-{
+  public static native void setSharedBackpackId(String backPackId)/*-{
     Blockly.Backpack.backPackId = backPackId;
   }-*/;
 

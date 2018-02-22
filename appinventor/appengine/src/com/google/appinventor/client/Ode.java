@@ -745,7 +745,7 @@ public class Ode implements EntryPoint {
           loadBackpack();
           OdeLog.log("backpack: No shared backpack");
         } else {
-          BlocklyPanel.setBackpackShared(backPackId);
+          BlocklyPanel.setSharedBackpackId(backPackId);
           OdeLog.log("Have a shared backpack backPackId = " + backPackId);
         }
 

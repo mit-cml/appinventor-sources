@@ -203,8 +203,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    */
 
   @Override
-  public String getSharedBackpack(String BackPackId) {
-    return storageIo.downloadBackpack(BackPackId);
+  public String getSharedBackpack(String backPackId) {
+    return storageIo.downloadBackpack(backPackId);
   }
 
   /**
@@ -218,8 +218,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    */
 
   @Override
-  public void storeSharedBackpack(String BackPackId, String content) {
-    storageIo.uploadBackpack(BackPackId, content);
+  public void storeSharedBackpack(String backPackId, String content) {
+    storageIo.uploadBackpack(backPackId, content);
   }
 
 }

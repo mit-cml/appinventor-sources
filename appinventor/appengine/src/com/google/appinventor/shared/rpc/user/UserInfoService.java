@@ -103,12 +103,12 @@ public interface UserInfoService extends RemoteService {
   /**
    * Retrieve the contents of a shared backpack.
    */
-  public String getSharedBackpack(String BackPackId);
+  public String getSharedBackpack(String backPackId);
 
   /**
    * Store the contents of a shared backpack.
    */
 
-  public void storeSharedBackpack(String BackPackId, String content);
+  public void storeSharedBackpack(String backPackId, String content);
 
 }

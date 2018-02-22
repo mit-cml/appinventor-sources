@@ -56,6 +56,10 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
   }
   this.workspace_ = targetWorkspace;
   this.flyout_ = new Blockly.BackpackFlyout(this.options);
+  // _NoAsync: A flag for getContents(). If true, getContents will use the
+  // already fetched backpack contents even when using a shared backpack
+  // this is used by addAllToBackpack()
+  this._NoAsync = false;
 };
 
 /**
@@ -310,13 +314,15 @@ Blockly.Backpack.prototype.checkValidBlockTypes = function(block, arr) {
  *
  */
 Blockly.Backpack.prototype.addAllToBackpack = function() {
-  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
   var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
   var p = this;
   this.getContents(function(contents) {
+    var saveAsync = p._NoAsync;
+    p._NoAsync = true;
     for (var x = 0; x < topBlocks.length; x++) {
-      this.addToBackpack(topBlocks[x], false);
+      p.addToBackpack(topBlocks[x], false);
     }
+    p._NoAsync = saveAsync;
     p.setContents(Blockly.Backpack.contents, true);
   });
 };
@@ -569,10 +575,16 @@ Blockly.Backpack.prototype.count = function() {
  * @returns {string[]} Backpack contents encoded as an array of XML strings.
  */
 Blockly.Backpack.prototype.getContents = function(callback) {
-  // Otherwise fetch the backpack from the server and call the
-  // the callback with it.
+  // If we are using a shared backpack, we need to fetch the contents
+  // from the App Inventor server because another user may have modified
+  // it. But if we are using our own personal backpack, we can use the
+  // copy loaded when we logged in.
+  //
+  // Also, it we are running in a context where we know we recently
+  // fetched the contents, then we do not have to do it again. This
+  // happens in addAllToBackpack()
   var p = this;
-  if (Blockly.Backpack.backPackId) {
+  if (Blockly.Backpack.backPackId && !this._NoAsync) {
     top.BlocklyPanel_getSharedBackpack(Blockly.Backpack.backPackId, function(content) {
       if (!content) {
         Blockly.Backpack.contents = [];
