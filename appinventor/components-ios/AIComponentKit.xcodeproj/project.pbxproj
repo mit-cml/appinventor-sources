@@ -38,6 +38,11 @@
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
 		0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD71F9719920052065A /* RuntimeTests.swift */; };
 		0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD91F971BA70052065A /* TestFailure.swift */; };
+		0658E9BD20126FFA009D6A15 /* control.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BB20126FFA009D6A15 /* control.yail */; };
+		0658E9BE20126FFA009D6A15 /* logic.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BC20126FFA009D6A15 /* logic.yail */; };
+		0658E9C1201399FA009D6A15 /* math.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BF201399F9009D6A15 /* math.yail */; };
+		0658E9C2201399FA009D6A15 /* text.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C0201399FA009D6A15 /* text.yail */; };
+		0658E9C42013D19A009D6A15 /* colors.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C32013D19A009D6A15 /* colors.yail */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
@@ -87,6 +92,8 @@
 		06DA9F5E1D8D0CAA00389B04 /* AppInvHTTPD.h in Headers */ = {isa = PBXBuildFile; fileRef = 06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */; };
 		06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F601D8D0DFC00389B04 /* ReplForm.swift */; };
+		06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */; };
+		06E2D5FF1FDB16C500A1D52A /* lists.yail in Resources */ = {isa = PBXBuildFile; fileRef = 06E2D5FE1FDB16C500A1D52A /* lists.yail */; };
 		06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EA31D92C68900C42804 /* PhoneStatus.swift */; };
 		06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EA51D92C6C300C42804 /* NonvisibleComponent.swift */; };
 		06E59EA91D92C7E800C42804 /* NetworkUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 06E59EA71D92C7E800C42804 /* NetworkUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -167,6 +174,11 @@
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		0653CBD71F9719920052065A /* RuntimeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeTests.swift; sourceTree = "<group>"; };
 		0653CBD91F971BA70052065A /* TestFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestFailure.swift; sourceTree = "<group>"; };
+		0658E9BB20126FFA009D6A15 /* control.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = control.yail; sourceTree = "<group>"; };
+		0658E9BC20126FFA009D6A15 /* logic.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = logic.yail; sourceTree = "<group>"; };
+		0658E9BF201399F9009D6A15 /* math.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = math.yail; sourceTree = "<group>"; };
+		0658E9C0201399FA009D6A15 /* text.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = text.yail; sourceTree = "<group>"; };
+		0658E9C32013D19A009D6A15 /* colors.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = colors.yail; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
@@ -209,6 +221,8 @@
 		06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInvHTTPD.h; sourceTree = "<group>"; };
 		06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInvHTTPD.m; sourceTree = "<group>"; };
 		06DA9F601D8D0DFC00389B04 /* ReplForm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplForm.swift; sourceTree = "<group>"; };
+		06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinBlockTests.swift; sourceTree = "<group>"; };
+		06E2D5FE1FDB16C500A1D52A /* lists.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lists.yail; sourceTree = "<group>"; };
 		06E59EA31D92C68900C42804 /* PhoneStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneStatus.swift; sourceTree = "<group>"; };
 		06E59EA51D92C6C300C42804 /* NonvisibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonvisibleComponent.swift; sourceTree = "<group>"; };
 		06E59EA71D92C7E800C42804 /* NetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkUtils.h; sourceTree = "<group>"; };
@@ -312,6 +326,7 @@
 		0618A2901D8CF4EE0013A191 /* AIComponentKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				06E2D6001FDB16CC00A1D52A /* yail */,
 				0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */,
 				0618A2931D8CF4EE0013A191 /* Info.plist */,
 				06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */,
@@ -320,6 +335,7 @@
 				0653CBD91F971BA70052065A /* TestFailure.swift */,
 				061F8571203F28AC00683091 /* AppInventorTestCase.swift */,
 				0602B26F203481F900ED60A8 /* FormTests.swift */,
+				06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */,
 			);
 			path = AIComponentKitTests;
 			sourceTree = "<group>";
@@ -443,6 +459,19 @@
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
 			);
 			name = util;
+			sourceTree = "<group>";
+		};
+		06E2D6001FDB16CC00A1D52A /* yail */ = {
+			isa = PBXGroup;
+			children = (
+				0658E9BB20126FFA009D6A15 /* control.yail */,
+				0658E9BC20126FFA009D6A15 /* logic.yail */,
+				0658E9BF201399F9009D6A15 /* math.yail */,
+				0658E9C0201399FA009D6A15 /* text.yail */,
+				06E2D5FE1FDB16C500A1D52A /* lists.yail */,
+				0658E9C32013D19A009D6A15 /* colors.yail */,
+			);
+			path = yail;
 			sourceTree = "<group>";
 		};
 		06E59EA21D92C66B00C42804 /* components */ = {
@@ -693,6 +722,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0658E9C42013D19A009D6A15 /* colors.yail in Resources */,
+				0658E9C1201399FA009D6A15 /* math.yail in Resources */,
+				0658E9BD20126FFA009D6A15 /* control.yail in Resources */,
+				06E2D5FF1FDB16C500A1D52A /* lists.yail in Resources */,
+				0658E9BE20126FFA009D6A15 /* logic.yail in Resources */,
+				0658E9C2201399FA009D6A15 /* text.yail in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -889,6 +924,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */,
+				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
 				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
