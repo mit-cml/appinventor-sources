@@ -100,4 +100,28 @@ class RuntimeTests: XCTestCase {
     XCTAssertNotNil(interpreter.exception)
     XCTAssertFalse((interpreter.exception?.reason?.contains("%s"))!)
   }
+
+  func testIsBase10() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(is-decimal? \"12345\")"))
+    XCTAssertEqual("#f", interpreter.evalForm("(is-decimal? \"123abc\")"))
+    XCTAssertEqual("#t", interpreter.evalForm("(is-decimal? \"101010\")"))
+    XCTAssertEqual("#f", interpreter.evalForm("(is-decimal? \"foobar\")"))
+  }
+
+  func testIsBase16() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(is-hexadecimal? \"12345\")"))
+    XCTAssertEqual("#t", interpreter.evalForm("(is-hexadecimal? \"123abc\")"))
+    XCTAssertEqual("#t", interpreter.evalForm("(is-hexadecimal? \"101010\")"))
+    XCTAssertEqual("#f", interpreter.evalForm("(is-hexadecimal? \"foobar\")"))
+  }
+
+  func testIsBase2() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#f", interpreter.evalForm("(is-binary? \"12345\")"))
+    XCTAssertEqual("#f", interpreter.evalForm("(is-binary? \"123abc\")"))
+    XCTAssertEqual("#t", interpreter.evalForm("(is-binary? \"101010\")"))
+    XCTAssertEqual("#f", interpreter.evalForm("(is-binary? \"foobar\")"))
+  }
 }

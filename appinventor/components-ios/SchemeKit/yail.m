@@ -749,12 +749,28 @@ yail_primitive_throw(pic_state *pic) {
 }
 
 pic_value
-yail_random_int(pic_value *pic) {
+yail_set_seed(pic_state *pic) {
+  double seed;
+
+  pic_get_args(pic, "f", &seed);
+
+  srand48((long) seed);
+
+  return pic_undef_value(pic);
+}
+
+pic_value
+yail_random_fraction(pic_state *pic) {
+  return pic_float_value(pic, drand48());
+}
+
+pic_value
+yail_random_int(pic_state *pic) {
   int bound;
 
   pic_get_args(pic, "i", &bound);
 
-  return pic_int_value(pic, (int) arc4random_uniform((uint32_t) bound));
+  return pic_int_value(pic, (int) (lrand48() / (double)UINT_MAX * bound));
 }
 
 pic_value
@@ -819,6 +835,24 @@ yail_bitwise_xor(pic_state *pic) {
 }
 
 pic_value
+yail_format_places(pic_state *pic) {
+  int places;
+  double value;
+  char buffer[18];
+  char buffer2[6];
+
+  pic_get_args(pic, "if", &places, &value);
+
+  memset(buffer2, 0, 6);
+  memset(buffer, 0, 18);
+
+  snprintf(buffer2, 6, "%%.%df", places);
+  snprintf(buffer, 18, buffer2, value);
+
+  return pic_cstr_value(pic, buffer);
+}
+
+pic_value
 yail_string_to_uppercase(pic_state *pic) {
   char *str;
 
@@ -864,12 +898,15 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "string-to-upper-case", yail_string_to_uppercase);
   pic_defun(pic, "string-to-lower-case", yail_string_to_lowercase);
   pic_defun(pic, "primitive-throw", yail_primitive_throw);
+  pic_defun(pic, "yail:set-seed", yail_set_seed);
+  pic_defun(pic, "random-fraction", yail_random_fraction);
   pic_defun(pic, "yail:random-int", yail_random_int);
   pic_defun(pic, "bitwise-arithmetic-shift-left", yail_bitwise_arithmetic_shift_left);
   pic_defun(pic, "bitwise-arithmetic-shift-right", yail_bitwise_arithmetic_shift_right);
   pic_defun(pic, "bitwise-and", yail_bitwise_and);
   pic_defun(pic, "bitwise-ior", yail_bitwise_ior);
   pic_defun(pic, "bitwise-xor", yail_bitwise_xor);
+  pic_defun(pic, "format-places", yail_format_places);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }

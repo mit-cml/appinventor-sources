@@ -120,7 +120,7 @@ class BuiltinBlockTests: XCTestCase {
   }
 
   func testMathBlocks() throws {
-//    try runTestsFromYail(path: "math.yail")
+    try runTestsFromYail(path: "math.yail")
   }
 
   func testTextBlocks() throws {

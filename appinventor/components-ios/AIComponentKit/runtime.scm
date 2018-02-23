@@ -242,6 +242,16 @@
 
 (define (is-coercible? x) (not (eq? x *non-coercible-value*)))
 
+;; b here should be true or false
+;; note that the resulting strings are strings: it would
+;; be ans error to test them as true or false.  Maybe we should
+;; convert them to actual true and false, but I'm not doing that yet
+;; until there's a plausible use case.
+(define (boolean->string b)
+  (if b
+      "true"
+      "false"))
+
 (define (coerce-arg arg type)
   (let ((arg (sanitize-atomic arg)))
     (cond
@@ -660,6 +670,33 @@
            (string-append "Bad argument to OR"))))))
   (or-proc delayed-args))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Math implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (yail-floor x)
+  (inexact->exact (floor x)))
+
+(define (yail-ceiling x)
+  (inexact->exact (ceiling x)))
+
+(define (yail-round x)
+  (inexact->exact (round x)))
+
+(define (random-set-seed seed)
+  (cond ((number? seed)
+         (yail:set-seed seed))
+        ((string? seed)
+         (random-set-seed (padded-string->number seed)))
+        ((list? seed)
+         (random-set-seed (car seed)))
+        ((eq? #t seed)
+         (random-set-seed 1))
+        ((eq? #f seed)
+         (random-set-seed 0))
+        (else
+         (random-set-seed 0))))
+
 (define (random-integer low high)
   (define (random-integer-int-args low high)
     (if (> low high)
@@ -677,6 +714,200 @@
          (lowest (- highest)))
     (lambda (x)
       (max lowest (min x highest)))))
+
+(define (yail-divide n d)
+  ;; For divide by 0 exceptions, we show a notification to the user, but still return
+  ;; a result.  The app developer can
+  ;; change the error  action using the Screen.ErrorOccurred event handler.
+  (cond ((and (= d 0) (= n 0))
+         ;; Treat 0/0 as a special case, returning 0.
+         ;; We do this because Kawa throws an exception of its own if you divide
+         ;; 0 by 0. Whereas it returns "1/0" or +-Inf.0 if the numerator is non-zero.
+         (begin (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+           ;; return 0 in this case.  The zero was chosen arbitrarily.
+           n))
+        ((= d 0)
+         (begin
+           ;; If numerator is not zero, but we're deviding by 0, we show the warning, and
+           ;; Let Kawa do the dvision and return the result, which will be plus or minus infinity.
+           ;; Note that division by zero does not produce a Kawa exception.
+           ;; We also convert the result to inexact, to code around the complexity (or Kawa bug?) that
+           ;; inexact infinity is different from exact infinity.  For example
+           ;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
+           (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+           (exact->inexact (/ n d))))
+        (else
+         ;; Otherise, return the result of the Kawa devision.
+         ;; We force inexactness so that integer division does not produce
+         ;; rationals, which is simpler for App Inventor users.
+         ;; In most cases, rationals are converted to decimals anyway at higher levels
+         ;; of the system, so that the forcing to inexact would be unnecessary.  But
+         ;; there are places where the conversion doesn't happen.  For example, if we
+         ;; were to insert the result of dividing 2 by 3 into a ListView or a picker,
+         ;; which would appear as the string "2/3" if the division produced a rational.
+         (exact->inexact (/ n d)))))
+
+;;; Trigonometric functions
+(define *pi* 3.14159265)
+
+;; Direct conversion from degrees to radians with no restrictions on range
+(define (degrees->radians-internal degrees)
+  (/ (* degrees *pi*)
+     180))
+
+;; Direct conversion from radians to degreees with no restrictions on range
+(define (radians->degrees-internal radians)
+  (/ (* radians 180)
+     *pi*))
+
+;; Conversion from degrees to radians with result in range [-Pi, +Pi)
+(define (degrees->radians degrees)
+  ;; Does someone know a more elegant way to ensure the range?  -- Ellen
+  (let ((rads (modulo (degrees->radians-internal degrees)
+                      (* 2 *pi*))))
+    (if (>= rads *pi*)
+        (- rads (* 2 *pi*))
+      rads)))
+
+;; Conversion from radians to degrees with result in range [0, 360)
+(define (radians->degrees radians)
+  (modulo (radians->degrees-internal radians)
+          360))
+
+(define (sin-degrees degrees)
+  (sin (degrees->radians-internal degrees)))
+
+(define (cos-degrees degrees)
+  (cos (degrees->radians-internal degrees)))
+
+(define (tan-degrees degrees)
+  (tan (degrees->radians-internal degrees)))
+
+;; Result should be in the range [-90, +90].
+(define (asin-degrees y)
+  (radians->degrees-internal (asin y)))
+
+;; Result should be in the range [0, 180].
+(define (acos-degrees y)
+  (radians->degrees-internal (acos y)))
+
+;; Result should be in the range  [-90, +90].
+(define (atan-degrees ratio)
+  (radians->degrees-internal (atan ratio)))
+
+;; Result should be in the range (-180, +180].
+(define (atan2-degrees y x)
+  (radians->degrees-internal (atan y x)))
+
+;;; returns a string that is the number formatted with a
+;;; specified number of decimal places
+(define (format-as-decimal number places)
+  ;; if places is zero, print without a decimal point
+  (if (= places 0)
+      (yail-round number)
+      (if (and (integer? places) (> places 0))
+          (format-places places number)
+          (signal-runtime-error
+           (string-append
+            "format-as-decimal was called with "
+            (get-display-representation places)
+            " as the number of decimal places.  This number must be a non-negative integer.")
+           "Bad number of decimal places for format as decimal"))))
+
+
+;;; We need to explicitly return #t or #f because the value
+;;; gets passed to a receiving block.
+(define (is-number? arg)
+  (if (or (number? arg)
+          (and (string? arg) (padded-string->number arg)))
+      #t
+      #f))
+
+;;; We can call the patterrn matcher here, becuase the blocks declare the arg type to
+;;; be text and therefore the arg will be a string when the procedure is called.
+
+(define (is-decimal? arg)
+  (let ((arg-len (string-length arg)))
+    (define (base10-chars? i)
+      (cond ((= i arg-len) #t)
+            ((<= #x30 (char->integer (string-ref arg i)) #x39) (base10-chars? (+ i 1)))
+            (else #f)))
+    (and (not (string-empty? arg)) (base10-chars? 0))))
+
+(define (is-hexadecimal? arg)
+  (let ((arg-len (string-length arg)))
+    (define (base16-chars? i)
+      (cond ((= i arg-len) #t)
+            ((let ((c (char->integer (string-ref arg i))))
+               (or (<= #x30 c #x39)
+                   (<= #x41 c #x46)
+                   (<= #x61 c #x66)))
+             (base16-chars? (+ i 1)))
+            (else #f)))
+    (and (not (string-empty? arg)) (base16-chars? 0))))
+
+(define (is-binary? arg)
+  (let ((arg-len (string-length arg)))
+    (define (base2-chars? i)
+      (cond ((= i arg-len) #t)
+            ((<= #x30 (char->integer (string-ref arg i)) #x31) (base2-chars? (+ i 1)))
+            (else #f)))
+    (and (not (string-empty? arg)) (base2-chars? 0))))
+
+;;; Math-convert procedures do not need their arg explicitly sanitized because
+;;; the blocks delare the arg type as string
+
+(define (math-convert-dec-hex x)
+  (if (is-decimal? x)
+    (string-to-upper-case (number->string (string->number x) 16))
+    (signal-runtime-error
+      (format #f "Convert base 10 to hex: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+(define (math-convert-hex-dec x)
+  (if (is-hexadecimal? x)
+    (string->number (string-to-upper-case x) 16)
+    (signal-runtime-error
+      (format #f "Convert hex to base 10: '~A' is not a hexadecimal number"
+       (get-display-representation x)
+      )
+      "Invalid hexadecimal number"
+    )
+  )
+)
+
+(define (math-convert-bin-dec x)
+  (if (is-binary? x)
+    (string->number x 2)
+    (signal-runtime-error
+      (format #f "Convert binary to base 10: '~A' is not a  binary number"
+       (get-display-representation x)
+      )
+      "Invalid binary number"
+    )
+  )
+)
+
+(define (math-convert-dec-bin x)
+  (if (is-decimal? x)
+    (number->string (string->number x) 2)
+    (signal-runtime-error
+      (format #f "Convert base 10 to binary: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Math implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
