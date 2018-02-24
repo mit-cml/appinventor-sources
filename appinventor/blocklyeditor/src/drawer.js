@@ -560,5 +560,5 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
         '</block>' +
         '</xml>';}}
-     ]
+  ]
 };
