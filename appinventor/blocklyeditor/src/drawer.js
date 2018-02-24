@@ -319,7 +319,7 @@ Blockly.Drawer.compareDeclarationsByName = function (decl1, decl2) {
 // [lyn, 10/22/13] return an XML string for a caller block for the give procedure declaration block
 // Here's an example:
 //   <block type="procedures_callnoreturn" inline="false">
-//     <title name="PROCNAME">p2</title>
+//     <field name="PROCNAME">p2</field>
 //     <mutation name="p2">
 //       <arg name="b"></arg>
 //       <arg name="c"></arg>
@@ -330,7 +330,7 @@ Blockly.Drawer.procedureCallerBlockString = function(procDeclBlock) {
   var callerType = (declType == 'procedures_defreturn') ? 'procedures_callreturn' : 'procedures_callnoreturn';
   var blockString = '<block type="' + callerType + '" inline="false">'
   var procName = procDeclBlock.getFieldValue('NAME');
-  blockString += '<title name="PROCNAME">' + procName + '</title>';
+  blockString += '<field name="PROCNAME">' + procName + '</field>';
   var mutationDom = procDeclBlock.mutationToDom();
   mutationDom.setAttribute('name', procName); // Decl doesn't have name attribute, but caller does
   blockString += Blockly.Xml.domToText(mutationDom);
@@ -388,17 +388,17 @@ Blockly.Drawer.defaultBlockXMLStrings = {
   controls_forRange: {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
-      '<value name="START"><block type="math_number"><title name="NUM">1</title></block></value>' +
-      '<value name="END"><block type="math_number"><title name="NUM">5</title></block></value>' +
-      '<value name="STEP"><block type="math_number"><title name="NUM">1</title></block></value>' +
+      '<value name="START"><block type="math_number"><field name="NUM">1</field></block></value>' +
+      '<value name="END"><block type="math_number"><field name="NUM">5</field></block></value>' +
+      '<value name="STEP"><block type="math_number"><field name="NUM">1</field></block></value>' +
     '</block>' +
   '</xml>' },
 
    math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
-    '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
-    '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
+    '<value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value>' +
+    '<value name="TO"><block type="math_number"><field name="NUM">100</field></block></value>' +
     '</block>' +
   '</xml>'},
   color_make_color: {xmlString:
@@ -407,9 +407,9 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="COLORLIST">' +
         '<block type="lists_create_with" inline="false">' +
           '<mutation items="3"></mutation>' +
-          '<value name="ADD0"><block type="math_number"><title name="NUM">255</title></block></value>' +
-          '<value name="ADD1"><block type="math_number"><title name="NUM">0</title></block></value>' +
-          '<value name="ADD2"><block type="math_number"><title name="NUM">0</title></block></value>' +
+          '<value name="ADD0"><block type="math_number"><field name="NUM">255</field></block></value>' +
+          '<value name="ADD1"><block type="math_number"><field name="NUM">0</field></block></value>' +
+          '<value name="ADD2"><block type="math_number"><field name="NUM">0</field></block></value>' +
         '</block>' +
       '</value>' +
     '</block>' +
@@ -426,7 +426,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
    lists_lookup_in_pairs: {xmlString:
   '<xml>' +
     '<block type="lists_lookup_in_pairs">' +
-    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '<value name="NOTFOUND"><block type="text"><field name="TEXT">not found</field></block></value>' +
     '</block>' +
   '</xml>'},
 
@@ -438,7 +438,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<block type="component_method">' +
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-         '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+         '<value name="ARG1"><block type="text"><field name="TEXT"></field></block></value>' +
          '</block>' +
          '</xml>';}},
 
@@ -449,7 +449,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
             '<block type="component_method">' +
               //mutator generator
             Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-            '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+            '<value name="ARG1"><block type="text"><field name="TEXT"></field></block></value>' +
             '</block>' +
             '</xml>';}},
 
@@ -461,7 +461,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<block type="component_method">' +
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-         '<value name="ARG2"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '<value name="ARG2"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
 
@@ -473,7 +473,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<block type="component_method">' +
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-         '<value name="ARG4"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '<value name="ARG4"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
 
@@ -485,7 +485,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<block type="component_method">' +
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-         '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '<value name="ARG3"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
 
