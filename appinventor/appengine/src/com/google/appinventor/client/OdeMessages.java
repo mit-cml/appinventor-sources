@@ -3638,6 +3638,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String displacementParams();
 
+  @DefaultMessage("animated")
+  @Description("")
+  String animatedParams();
 
   @DefaultMessage("xAccel")
   @Description("")
@@ -4389,7 +4392,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ReachBottomEvents();
 
-
   @DefaultMessage("AccelerationChanged")
   @Description("")
   String AccelerationChangedEvents();
@@ -4854,7 +4856,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ScrollBottom")
   @Description("")
   String ScrollBottomMethods();
-
 
   @DefaultMessage("ResolveActivity")
   @Description("")

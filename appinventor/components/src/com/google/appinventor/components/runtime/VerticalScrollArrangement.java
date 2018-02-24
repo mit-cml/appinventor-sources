@@ -142,24 +142,22 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     getScrollView().pageScroll(ScrollView.FOCUS_DOWN);
   }
 
-  @SimpleFunction(description = "Scroll to a specific position (without animation)")
-  public void ScrollTo(int position) {
-    getScrollView().scrollTo(0, px2dx(position));
+  @SimpleFunction(description = "Scroll to a specific position")
+  public void ScrollTo(int position, boolean animated) {
+    if (animated) {
+      getScrollView().smoothScrollTo(0, px2dx(position));
+    } else {
+      getScrollView().scrollTo(0, px2dx(position));
+    }
   }
 
-  @SimpleFunction(description = "Scroll to a specific position (with animation)")
-  public void SmoothScrollTo(int position) {
-    getScrollView().smoothScrollTo(0, px2dx(position));
-  }
-
-  @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative (without animation)")
-  public void ScrollBy(int displacement) {
-    getScrollView().scrollBy(0, px2dx(displacement));
-  }
-
-  @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative (with animation)")
-  public void SmoothScrollBy(int displacement) {
-    getScrollView().smoothScrollBy(0, px2dx(displacement));
+  @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative")
+  public void ScrollBy(int displacement, boolean animated) {
+    if (animated) {
+      getScrollView().smoothScrollBy(0, px2dx(displacement));
+    } else {
+      getScrollView().scrollBy(0, px2dx(displacement));
+    }
   }
 
 }

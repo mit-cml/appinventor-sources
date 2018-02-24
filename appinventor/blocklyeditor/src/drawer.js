@@ -511,6 +511,54 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
          '</block>' +
-         '</xml>';}}
-  ]
+         '</xml>';}},
+
+    // HorizontalScrollArrangement.ScrollTo has animated default to TRUE
+    {matchingMutatorAttributes:{component_type:"HorizontalScrollArrangement", method_name:"ScrollTo"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+    // HorizontalScrollArrangement.ScrollBy has animated default to TRUE
+    {matchingMutatorAttributes:{component_type:"HorizontalScrollArrangement", method_name:"ScrollBy"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+    // VerticalScrollArrangement.ScrollTo has animated default to TRUE
+    {matchingMutatorAttributes:{component_type:"VerticalScrollArrangement", method_name:"ScrollTo"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+    // VerticalScrollArrangement.ScrollBy has animated default to TRUE
+    {matchingMutatorAttributes:{component_type:"VerticalScrollArrangement", method_name:"ScrollBy"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+        '</block>' +
+        '</xml>';}}
+     ]
 };

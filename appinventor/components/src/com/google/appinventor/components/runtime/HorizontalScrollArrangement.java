@@ -141,23 +141,21 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
   }
 
   @SimpleFunction(description = "Scroll to a specific position (without animation)")
-  public void ScrollTo(int position) {
-    getScrollView().scrollTo(px2dx(position), 0);
+  public void ScrollTo(int position, boolean animated) {
+    if (animated) {
+      getScrollView().smoothScrollTo(px2dx(position), 0);
+    } else {
+      getScrollView().scrollTo(px2dx(position), 0);
+    }
   }
 
-  @SimpleFunction(description = "Scroll to a specific position (with animation)")
-  public void SmoothScrollTo(int position) {
-    getScrollView().smoothScrollTo(px2dx(position), 0);
-  }
-
-  @SimpleFunction(description = "Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative (without animation)")
-  public void ScrollBy(int displacement) {
-    getScrollView().scrollBy(px2dx(displacement), 0);
-  }
-
-  @SimpleFunction(description = "Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative (with animation)")
-  public void SmoothScrollBy(int displacement) {
-    getScrollView().smoothScrollBy(px2dx(displacement), 0);
+  @SimpleFunction(description = "Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative")
+  public void ScrollBy(int displacement, boolean animated) {
+    if (animated) {
+      getScrollView().smoothScrollBy(px2dx(displacement), 0);
+    } else {
+      getScrollView().scrollBy(px2dx(displacement), 0);
+    }
   }
 
 }
