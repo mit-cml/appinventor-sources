@@ -71,7 +71,8 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     }
   }
 
-  @SimpleEvent(description = "Notice that if blocks like \"ScrollBy\" is excuted, this event would be called")
+  @SimpleEvent(description = "Runs when the scroll position of the arrangement changes. " +
+      "Notice that if blocks like \"ScrollBy\" is executed, this event would be called")
   public void ScrollChanged(int scrollPosition) {
     EventDispatcher.dispatchEvent(this, "ScrollChanged", scrollPosition);
     if (scrollPosition == 0) {
@@ -83,19 +84,22 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     }
   }
 
-  @SimpleEvent(description = "Notice that if blocks like \"ScrollTop\" is excuted, this event would be called")
+  @SimpleEvent(description = "Runs when the arrangement scrolled to the top. " +
+      "Notice that if blocks like \"ScrollTop\" is executed, this event would be called")
   public void ReachTop() {
     EventDispatcher.dispatchEvent(this, "ReachTop");
   }
 
-  @SimpleEvent(description = "Notice that if blocks like \"ScrollBottom\" is excuted, this event would be called")
+  @SimpleEvent(description = "Runs when the arrangement scrolled to the bottom. " +
+      "Notice that if blocks like \"ScrollBottom\" is executed, this event would be called")
   public void ReachBottom() {
     EventDispatcher.dispatchEvent(this, "ReachBottom");
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "The scroll position is the same as the number of pixels that "
-      + "are hidden from view above the scrollable area. "
-      + "If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The scroll position is the same as the number of pixels that " +
+      "are hidden from view above the scrollable area. " +
+      "If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.")
   public int ScrollPosition() {
     int dxPosition = getView().getScrollY();
     if (dxPosition < 0) {
@@ -106,7 +110,8 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     return dx2px(dxPosition);
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Return the maximum position that the ScrollArrangement can reach")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "Return the maximum position that the ScrollArrangement can reach")
   public int MaxScrollPosition() {
     View view = (View) getScrollView().getChildAt(getScrollView().getChildCount() - 1);
     return dx2px(view.getBottom() - getView().getHeight());
@@ -151,7 +156,8 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     }
   }
 
-  @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative")
+  @SimpleFunction(description = "Scroll downward so for a specific displacement, " +
+      "scroll upward if diaplacement is negative")
   public void ScrollBy(int displacement, boolean animated) {
     if (animated) {
       getScrollView().smoothScrollBy(0, px2dx(displacement));
