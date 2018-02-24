@@ -70,6 +70,9 @@ class BuiltinBlockTests: XCTestCase {
         } else if parts[0] == "obfuscated" {
           parts[1] = "obfuscated"
           parts[0] = "text"
+        } else if parts[0] == "global" || parts[0] == "lexical" || parts[0] == "local" {
+          parts[0] = "variables"
+          parts[1] = block
         }
         let key = String(parts[0])
         if var data = coverageData[key] {
@@ -133,5 +136,9 @@ class BuiltinBlockTests: XCTestCase {
 
   func testColorBlocks() throws {
     try runTestsFromYail(path: "colors.yail")
+  }
+
+  func testVariableBlocks() throws {
+    try runTestsFromYail(path: "variables.yail")
   }
 }
