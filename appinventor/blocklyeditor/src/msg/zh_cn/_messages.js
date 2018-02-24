@@ -1349,6 +1349,22 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.TIME_MINUTES = "分";
     Blockly.Msg.TIME_SECONDS = "秒";
     Blockly.Msg.TIME_DURATION = "时段";
+
+// HorizontalScrollArrangement Component Menu Items
+    Blockly.Msg.H_SCROLL_OPREATION_SCROLL_LEFT_END = "滚动到最左端";
+    Blockly.Msg.H_SCROLL_OPREATION_SCROLL_RIGHT_END = "滚动到最右端";
+    Blockly.Msg.H_SCROLL_OPREATION_ARROW_SCROLL_LEFTWARD = "向左滚动半页";
+    Blockly.Msg.H_SCROLL_OPREATION_ARROW_SCROLL_RIGHTWARD = "向右滚动半页";
+    Blockly.Msg.H_SCROLL_OPREATION_PAGE_SCROLL_LEFTWARD = "向左滚动一页";
+    Blockly.Msg.H_SCROLL_OPREATION_PAGE_SCROLL_RIGHTWARD = "向右滚动一页";
+
+// VerticalScrollArrangement Component Menu Items
+    Blockly.Msg.V_SCROLL_OPREATION_SCROLL_TOP = "滚动到最顶端";
+    Blockly.Msg.V_SCROLL_OPREATION_SCROLL_BOTTOM = "滚动到最底端";
+    Blockly.Msg.V_SCROLL_OPREATION_ARROW_SCROLL_UPWARD = "向上滚动半页";
+    Blockly.Msg.V_SCROLL_OPREATION_ARROW_SCROLL_DOWNWARD = "向下滚动半页";
+    Blockly.Msg.V_SCROLL_OPREATION_PAGE_SCROLL_UPWARD = "向上滚动一页";
+    Blockly.Msg.V_SCROLL_OPREATION_PAGE_SCROLL_DOWNWARD = "向下滚动一页";
   }
 };
 
