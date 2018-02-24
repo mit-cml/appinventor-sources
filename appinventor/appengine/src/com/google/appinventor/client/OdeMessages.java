@@ -3634,9 +3634,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String positionParams();
 
-  @DefaultMessage("displacement")
+  @DefaultMessage("amount")
   @Description("")
-  String displacementParams();
+  String amountParams();
 
   @DefaultMessage("animated")
   @Description("")

@@ -156,13 +156,13 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
     }
   }
 
-  @SimpleFunction(description = "Scroll downward so for a specific displacement, " +
+  @SimpleFunction(description = "Scroll downward so for a specific amount, " +
       "scroll upward if diaplacement is negative")
-  public void ScrollBy(int displacement, boolean animated) {
+  public void ScrollBy(int amount, boolean animated) {
     if (animated) {
-      getScrollView().smoothScrollBy(0, px2dx(displacement));
+      getScrollView().smoothScrollBy(0, px2dx(amount));
     } else {
-      getScrollView().scrollBy(0, px2dx(displacement));
+      getScrollView().scrollBy(0, px2dx(amount));
     }
   }
 
