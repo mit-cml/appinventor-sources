@@ -1376,6 +1376,22 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.TIME_MINUTES = "Minutes";
     Blockly.Msg.TIME_SECONDS = "Seconds";
     Blockly.Msg.TIME_DURATION = "Duration";
+
+// HorizontalScrollArrangement Component Menu Items
+    Blockly.Msg.H_SCROLL_OPREATION_SCROLL_LEFT_END = "ScrollLeftEnd";
+    Blockly.Msg.H_SCROLL_OPREATION_SCROLL_RIGHT_END = "ScrollRightEnd";
+    Blockly.Msg.H_SCROLL_OPREATION_ARROW_SCROLL_LEFTWARD = "ArrowScrollLeftward";
+    Blockly.Msg.H_SCROLL_OPREATION_ARROW_SCROLL_RIGHTWARD = "ArrowScrollRightward";
+    Blockly.Msg.H_SCROLL_OPREATION_PAGE_SCROLL_LEFTWARD = "PageScrollLeftward";
+    Blockly.Msg.H_SCROLL_OPREATION_PAGE_SCROLL_RIGHTWARD = "PageScrollRightward";
+
+// VerticalScrollArrangement Component Menu Items
+    Blockly.Msg.V_SCROLL_OPREATION_SCROLL_TOP = "ScrollTop";
+    Blockly.Msg.V_SCROLL_OPREATION_SCROLL_BOTTOM = "ScrollBottom";
+    Blockly.Msg.V_SCROLL_OPREATION_ARROW_SCROLL_UPWARD = "ArrowScrollUpward";
+    Blockly.Msg.V_SCROLL_OPREATION_ARROW_SCROLL_DOWNWARD = "ArrowScrollDownward";
+    Blockly.Msg.V_SCROLL_OPREATION_PAGE_SCROLL_UPWARD = "PageScrollUpward";
+    Blockly.Msg.V_SCROLL_OPREATION_PAGE_SCROLL_DOWNWARD = "PageScrollDownward";
   }
 };
 
