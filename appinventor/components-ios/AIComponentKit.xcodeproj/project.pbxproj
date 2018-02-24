@@ -48,6 +48,7 @@
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
 		067D2BCF2040FB4B00D1EB16 /* variables.yail in Resources */ = {isa = PBXBuildFile; fileRef = 067D2BCE2040FB4B00D1EB16 /* variables.yail */; };
+		067D2BD12040FE0500D1EB16 /* procedures.yail in Resources */ = {isa = PBXBuildFile; fileRef = 067D2BD02040FE0500D1EB16 /* procedures.yail */; };
 		0680ED591E012A2100732883 /* TableArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED581E012A2100732883 /* TableArrangement.swift */; };
 		0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0685B5B22003C931005153ED /* ThemeEnum.swift */; };
 		068AA8191DE61D8E0011CC74 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA8181DE61D8E0011CC74 /* Application.swift */; };
@@ -186,6 +187,7 @@
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		067D2BCE2040FB4B00D1EB16 /* variables.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = variables.yail; sourceTree = "<group>"; };
+		067D2BD02040FE0500D1EB16 /* procedures.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = procedures.yail; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
 		0685B5B22003C931005153ED /* ThemeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEnum.swift; sourceTree = "<group>"; };
 		068AA8181DE61D8E0011CC74 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 				06E2D5FE1FDB16C500A1D52A /* lists.yail */,
 				0658E9C32013D19A009D6A15 /* colors.yail */,
 				067D2BCE2040FB4B00D1EB16 /* variables.yail */,
+				067D2BD02040FE0500D1EB16 /* procedures.yail */,
 			);
 			path = yail;
 			sourceTree = "<group>";
@@ -732,6 +735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0658E9C42013D19A009D6A15 /* colors.yail in Resources */,
+				067D2BD12040FE0500D1EB16 /* procedures.yail in Resources */,
 				0658E9C1201399FA009D6A15 /* math.yail in Resources */,
 				0658E9BD20126FFA009D6A15 /* control.yail in Resources */,
 				06E2D5FF1FDB16C500A1D52A /* lists.yail in Resources */,

@@ -57,7 +57,8 @@ class BuiltinBlockTests: XCTestCase {
     let testNames = try loadTestYail(path: path, into: interpreter)
     for test in testNames {
       let result = interpreter.evalForm("((get-var \(test)))")
-      if result == "#t" && interpreter.exception == nil {
+      let success = result == "#t" && interpreter.exception == nil
+      if success {
         passing += 1
       } else {
         failing += 1
@@ -76,13 +77,30 @@ class BuiltinBlockTests: XCTestCase {
         }
         let key = String(parts[0])
         if var data = coverageData[key] {
-          data[String(block)] = result == "#t" && interpreter.exception == nil
+          data.updateValue(success, forKey: String(block))
+          if key == "procedures" {
+            data.updateValue(success, forKey: String(block.replacingOccurrences(of: "call", with: "def")))
+            if success {
+              passing += 1
+            } else {
+              failing += 1
+            }
+          }
+          coverageData[key] = data
         } else {
-          coverageData[key] = [String(block): result == "#t" && interpreter.exception == nil]
+          var data = [String(block): result == "#t" && interpreter.exception == nil]
+          if key == "procedures" {
+            data.updateValue(success, forKey: String(block.replacingOccurrences(of: "call", with: "def")))
+            if success {
+              passing += 1
+            } else {
+              failing += 1
+            }
+          }
+          coverageData[key] = data
         }
       } else {
-        XCTAssertTrue(result == "#t" && interpreter.exception == nil,
-                      "\(test) failed." + optionallyPrint(interpreter.exception))
+        XCTAssertTrue(success, "\(test) failed." + optionallyPrint(interpreter.exception))
       }
       interpreter.clearException()
     }
@@ -140,5 +158,9 @@ class BuiltinBlockTests: XCTestCase {
 
   func testVariableBlocks() throws {
     try runTestsFromYail(path: "variables.yail")
+  }
+
+  func testProcedureBlocks() throws {
+    try runTestsFromYail(path: "procedures.yail")
   }
 }
