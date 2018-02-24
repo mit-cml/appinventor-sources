@@ -64,8 +64,8 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
       scrollX = 0;
     }
     if (oldScrollX != scrollX) {
-      ScrollChanged(scrollX);
       oldScrollX = scrollX;
+      ScrollChanged(scrollX);
     }
   }
 
@@ -111,7 +111,7 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Return the maximum position that the ScrollArrangement can reach")
   public int MaxScrollPosition() {
-    View view = (View) getScrollView().getChildAt(getScrollView().getChildCount() - 1);
+    View view = getScrollView().getChildAt(getScrollView().getChildCount() - 1);
     return dx2px(view.getRight() - getView().getWidth());
   }
 

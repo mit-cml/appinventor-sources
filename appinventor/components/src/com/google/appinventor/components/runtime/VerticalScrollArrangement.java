@@ -66,14 +66,14 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
       scrollY = 0;
     }
     if (oldScrollY != scrollY) {
-      ScrollChanged(scrollY);
       oldScrollY = scrollY;
+      ScrollChanged(scrollY);
     }
   }
 
   @SimpleEvent(description = "Runs when the scroll position of the arrangement changes. " +
       "Notice that if blocks like \"ScrollBy\" is executed, this event would be called")
-  public void ScrollChanged(int scrollPosition) {
+  public void ScrollChanged(final int scrollPosition) {
     EventDispatcher.dispatchEvent(this, "ScrollChanged", scrollPosition);
     if (scrollPosition == 0) {
       ReachTop();
@@ -113,7 +113,7 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Return the maximum position that the ScrollArrangement can reach")
   public int MaxScrollPosition() {
-    View view = (View) getScrollView().getChildAt(getScrollView().getChildCount() - 1);
+    View view = getScrollView().getChildAt(getScrollView().getChildCount() - 1);
     return dx2px(view.getBottom() - getView().getHeight());
   }
 
