@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.Spannable;
@@ -14,11 +15,13 @@ import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import android.widget.LinearLayout.LayoutParams;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -102,6 +105,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
     txtSearchBox.setPadding(10, 10, 10, 10);
     txtSearchBox.setHint("Search list...");
+    if (!AppInventorCompatActivity.isClassicMode()) {
+      txtSearchBox.setBackgroundColor(Color.WHITE);
+    }
 
     //set up the listener
     txtSearchBox.addTextChangedListener(new TextWatcher() {

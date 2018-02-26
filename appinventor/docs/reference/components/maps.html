@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Map Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: 180px;
+      height: 40px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+      /* Documentation styles */
+      dt {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      dt:after, dt i:after {
+      font-size: 85%;
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: #444;
+      color: white;
+      padding: 1pt 4pt 1.5pt 3pt;
+      border-radius: 4pt;
+      user-select: none;
+      vertical-align: top;
+      font-style: normal;
+      margin-left: 4pt;
+      }
+      dt.ro:after { content: "read-only"; }
+      dt.wo:after { content: "write-only"; }
+      dt.bo:after { content: "blocks-only"; }
+      dt.do:after { content: "designer-only"; }
+      dt.ro.bo:after { content: "read-only, blocks-only"; }
+      dt.wo.bo:after { content: "write-only, blocks-only"; }
+      dt.wo.do:after { content: "write-only, designer-only"; }
+      dt.boolean i:after { background-color: #92b55f; content: "boolean"; }
+      dt.number i:after { background-color: #5c84bd; content: "number"; }
+      dt.text i:after { background-color: #b34d71; content: "text"; }
+      dt.list i:after { background-color: #70b3d8; content: "list"; }
+      dt.component i:after { background-color: #5a9773; content: "component"; }
+      dt.any i:after { background-color: #ce7947; content: "any"; }
+      dt.color i:after { background-color: #909090; content: "color"; }
+      span.list { background-color: #70b3d8; }
+      span.ro { background-color: #f88; color: black; }
+      span.wo { background-color: #8f8; color: black; }
+      span.bo { background-color: #88f; color: black; }
+      span.do { background-color: #ff8; color: black; }
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/codi_long.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+
+                    <h1>Maps Components - App Inventor for Android</h1>
+
+                    <!-- CONTENT -->
+                    <h2>Table of Contents</h2>
+                    <ul>
+                      <li><a href="#Circle">Circle</a></li>
+                      <li><a href="#FeatureCollection">FeatureCollection</a></li>
+                      <li><a href="#LineString">LineString</a></li>
+                      <li><a href="#Map">Map</a></li>
+                      <li><a href="#Marker">Marker</a></li>
+                      <li><a href="#Polygon">Polygon</a></li>
+                      <li><a href="#Rectangle">Rectangle</a></li>
+                    </ul>
+
+                 <h2 id="Circle">Circle</h2>
+                    <p>The Circle component visualizes a circle of a given radius, in meters, at a latitude and
+                      longitude. The circle's appearnce can be customized using properties such
+                      as <a href="#Circle.FillColor"><code>FillColor</code></a>, <a href="#Circle.StrokeColor"><code>StrokeColor</code></a>,
+                      and <a href="#Circle.StrokeWidth"><code>StrokeWidth</code></a>.</p>
+                    <p>The Circle component can also be used to implement features such as geofencing, a mechanism where
+                      the user's presence within an area is used to trigger other behaviors. Using
+                      the <a href="#Circle.DistanceToPoint"><code>DistanceToPoint</code></a> method combined with
+                      the <a href="sensors.html#LocationSensor">LocationSensor</a>, you can determine whether a user's
+                      location is inside or outside of the circle. You can use this feature to trigger additional actions.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="text" id="Circle.Description">Description<i></i></dt>
+                   <dd>Sets or gets the description displayed in the info window. The info window appears when the user
+                     taps on the circle.</dd>
+                   <dt class="boolean" id="Circle.Draggable">Draggable<i></i></dt>
+                   <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+                     long-pressing and then dragging the circle to a new location.</dd>
+                   <dt class="boolean" id="Circle.EnableInfobox">EnableInfobox<i></i></dt>
+                   <dd>Enables or disables the infobox window display when the user taps the circle.</dd>
+                   <dt class="color" id="Circle.FillColor">FillColor<i></i></dt>
+                   <dd>Sets or gets the color used to fill in the circle.</dd>
+                   <dt class="number" id="Circle.Latitude">Latitude<i></i></dt>
+                   <dd>Sets or gets the latitude of the center of the circle, in degrees. Positive values representing
+                     north of the equator and negative values representing south of the equator. To update the latitude
+                     and longitude simultaneously, use the <a href="#Circle.SetLocation"><code>SetLocation</code></a>
+                     method.</dd>
+                   <dt class="number" id="Circle.Longitude">Longitude<i></i></dt>
+                   <dd>Sets or gets the longitude of the center of the circle, in degrees. Positive values representing
+                     east of the prime meridian and negative values representing west of the prime meridian. To update
+                     the latitude and longitude simultaneously, use
+                     the <a href="#Circle.SetLocation"><code>SetLocation</code></a> method.</dd>
+                   <dt class="number" id="Circle.Radius">Radius<i></i></dt>
+                   <dd>Sets or gets the radius of the circle, in meters.</dd>
+                   <dt class="color" id="Circle.StrokeColor">StrokeColor<i></i></dt>
+                   <dd>Sets or gets the color used to outline the circle.</dd>
+                   <dt class="number" id="Circle.StrokeWidth">StrokeWidth<i></i></dt>
+                   <dd>Sets or gets the width of the stroke used to outline the circle.</dd>
+                   <dt class="text" id="Circle.Title">Title<i></i></dt>
+                   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the map feature.</dd>
+                   <dt class="text ro bo" id="Circle.Type">Type<i></i></dt>
+                   <dd>Gets the type of the feature. For Circle, this will always be &quot;Circle&quot;,</dd>
+                   <dt class="boolean" id="Circle.Visible">Visible<i></i></dt>
+                   <dd>Sets or gets whether the component should be visible on the screen. Value is true if the component
+                     is showing and false if hidden.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt id="Circle.Click">Click</dt>
+                   <dd>Runs when the user taps on the circle.</dd>
+                   <dt id="Circle.Drag">Drag</dt>
+                   <dd>Runs during drag operations.</dd>
+                   <dt id="Circle.LongClick">LongClick</dt>
+                   <dd>Runs after the user long clicks on the circle but does not trigger a drag. Note that this event
+                     will only trigger if <a href="#Circle.Draggable"><code>Draggable</code></a> is false.</dd>
+                   <dt id="Circle.StartDrag">StartDrag</dt>
+                   <dd>Runs before a drag operation begins. Use this to save the current position of the circle, for example.</dd>
+                   <dt id="Circle.StopDrag">StopDrag</dt>
+                   <dd>Runs after a drag operation completes. Use this to save the new position of the circle, for example.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt id="Circle.DistanceToFeature">number DistanceToFeature(component mapFeature, boolean centroids)</dt>
+                   <dd>Computes the distance between the Circle and the given mapFeature. If <code>centroids</code> is
+                     true, the computation is done between the centroids of the two features. Otherwise, the distance
+                     will be computed between the two features based on the closest points. Further,
+                     when <code>centroids</code> is false, this method will return 0 if the circle intersects or
+                     contains the <code>mapFeature</code>. If an error occurs, this method will return -1.</dd>
+                   <dt id="Circle.DistanceToPoint">number DistanceToPoint(number latitude, number longitude, boolean centroids)</dt>
+                   <dd>Computes the distance between the Circle and the given latitude and
+                     longitude. If <code>centroids</code> is true, the distance is computed from the center of the
+                     circle to the given point. Otherwise, the distance is computed from the closest point on the circle
+                     to the given point. Further, this method will return 0 if <code>centroids</code> is false and the
+                     point is in the circle. If an error occurs, -1 will be returned.</dd>
+                   <dt id="Circle.HideInfoBox">HideInfobox</dt>
+                   <dd>Hides the circle's info box if it is visible. Otherwise, no action is taken.</dd>
+                   <dt id="Circle.SetLocation">SetLocation(number latitude, number longitude)</dt>
+                   <dd>Moves the center of the circle to the given latitude and longitude. This method is more efficient
+                     than setting latitude and longitude separately.</dd>
+                   <dt id="Circle.ShowInfobox">ShowInfobox</dt>
+                   <dd>Shows the info box for the circle if it is not visible. Otherwise, this method has no
+                     effect. This method can be used to show the info box even
+                     if <a href="#Circle.EnableInfobox"><code>EnableInfobox</code></a> is false.</dd>
+                 </dl>
+
+                 <h2 id="FeatureCollection">FeatureCollection</h2>
+                    <p>A FeatureCollection groups one or more map features together. Any events that occur within a
+                      feature in the collection will also trigger the corresponding event in the collection
+                      component. FeatureCollections can be loaded from exernal resources to populate Maps
+                      with content. GeoJSON is the only format supported at this time.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="list" id="FeatureCollection.Features">Features<i></i></dt>
+                   <dd>Returns a list of features present in the feature collection, if any.</dd>
+                   <dt class="text wo" id="FeatureCollection.FeaturesFromGeoJSON">FeaturesFromGeoJSON<i></i></dt>
+                   <dd>Populates the feature collection from a string containing GeoJSON content. Given the size of such
+                     strings, it is recommended to load the feature collection from assets or the web using the Source
+                     property.</dd>
+                   <dt class="text ro" id="FeatureCollection.Source">Source<i></i></dt>
+                   <dd>The source of the content for the feature collection, such as a filename or a URL.</dd>
+                   <dt class="boolean" id="FeatureCollection.Visible">Visible<i></i></dt>
+                   <dd>Specifies whether the component should be visible on the screen. Value is true if the component
+                     is showing and false if hidden.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt id="FeatureCollection.FeatureClick">FeatureClick(component feature)</dt>
+                   <dd>When a feature is clicked, the feature collection containing it (if any) will also receive a
+                     <code>FeatureClick</code> event. The feature parameter indicates which child feature was clicked.</dd>
+                   <dt id="FeatureCollection.FeatureDrag">FeatureDrag(component feature)</dt>
+                   <dd>When a feature is dragged, the parent collection will also receive a <code>FeatureDrag</code>
+                     event. The feature parameter indicates which child feature was dragged.</dd>
+                   <dt id="FeatureCollection.FeatureLongClick">FeatureLongClick(component feature)</dt>
+                   <dd>When a feature is long clicked, the parent collection will also receive a
+                     <code>FeatureLongClick</code> event. The feature parameter indicates which child feature was long clicked.</dd>
+                   <dt id="FeatureCollection.FeatureStartDrag">FeatureStartDrag(component feature)</dt>
+                   <dd>When the user begins dragging a feature, the parent collection will also receive
+                     a <code>FeatureStartDrag</code> event. The feature parameter indicates which child feature was
+                     dragged.</dd>
+                   <dt id="FeatureCollection.FeatureStopDrag">FeatureStopDrag(component feature)</dt>
+                   <dd>When the user stops dragging a feature, the parent collection will also receive
+                     a <code>FeatureStopDrag</code> event. The feature parameter indicates which child feature was
+                     dragged.</dd>
+                   <dt id="FeatureCollection.GotFeatures">GotFeatures(text url, list features)</dt>
+                   <dd>The GotFeatures event is run when when a feature collection is successfully read from the
+                     given <code>url</code>. The <code>features</code> parameter will be a list of feature descriptions
+                     that can be converted into components using
+                     the <a href="#FeatureCollection.FeatureFromDescription"><code>FeatureFromDescription</code></a>
+                     method.</dd>
+                   <dt id="FeatureCollection.LoadError">LoadError(text url, list features)</dt>
+                   <dd>The LoadError event is run when an error occurs while processing a feature collection document at the
+                     given <code>url</code>. The <code>responseCode</code> parameter will contain an HTTP status code and
+                     the <code>errorMessage</code> parameter will contain a detailed error message.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt id="FeatureCollection.FeatureFromDescription">any FeatureFromDescription(list description)</dt>
+                   <dd>Returns a new component based on the description provided. If there is an error in the
+                     properties, such as incorrectly formatted data, then the method will return text describing the
+                     error. Use
+                     the <a href="http://appinventor.mit.edu/explore/ai2/support/blocks/text.html#istext"><code>is-text?</code></a>
+                     block to test whether the result is an error message.  is an error or not. Properties of features
+                     are converted into App Inventor properties using the following case-insensitive mapping:
+                     <ul>
+                       <li>description &rarr; Description</li>
+                       <li>draggable &rarr; Draggable</li>
+                       <li>infobox &rarr; EnableInfobox</li>
+                       <li>fill &rarr; FillColor</li>
+                       <li>image &rarr; ImageAsset</li>
+                       <li>stroke &rarr; StrokeColor</li>
+                       <li>stroke-width &rarr; StrokeWidth</li>
+                       <li>title &rarr; Title</li>
+                       <li>visible &rarr; Visible</li>
+                     </ul>
+                   </dd>
+                   <dt id="FeatureCollection.LoadFromURL">LoadFromURL(text url)</dt>
+                   <dd>Call this method to load a GeoJSON description of a feature collection from a URL (including file
+                     URLs). If successful, the set of features managed by the feature collection will be replaced by the
+                     new features and LoadFeatureCollection event will be run. If an error occurs, the
+                     ErrorLoadingFeatureCollection event will be run instead.</dd>
+                 </dl>
+
+                 <h2 id="LineString">LineString</h2>
+
+                    <p>LineString is a component for drawing an open, continuous sequence of lines on a Map. To add new
+                      points to a LineString, drag the midpoint of any segment away from the line to introduce a new
+                      vertex. Move a vertex by clicking and dragging the vertex to a new location. Clicking on a vertex
+                      will delete the vertex.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="text" id="LineString.Description">Description<i></i></dt>
+                   <dd>The description displayed in the info window that appears when the user clicks on the map
+                     feature.</dd>
+                   <dt class="boolean" id="LineString.Draggable">Draggable<i></i></dt>
+                   <dd>Sets or gets whether or not the user can drag a line string by long-pressing and then dragging it
+                     to a new location.</dd>
+                   <dt class="boolean" id="LineString.EnableInfobox">EnableInfobox<i></i></dt>
+                   <dd>Enable or disable the infobox window display when the user taps the feature.</dd>
+                   <dt class="list" id="LineString.Points">Points<i></i></dt>
+                   <dd>The list of points, as pairs of latitudes and longitudes, in the LineString.</dd>
+                   <dt class="text wo" id="LineString.PointsFromString">PointsFromString<i></i></dt>
+                   <dd>A GeoJSON-encoded string of points to populate the LineString. Editing the LineString in the
+                     designer will update this property.</dd>
+                   <dt class="color" id="LineString.StrokeColor">StrokeColor<i></i></dt>
+                   <dd>The paint color used to outline the map feature.</dd>
+                   <dt class="number" id="LineString.StrokeWidth">StrokeWidth<i></i></dt>
+                   <dd>The width of the stroke used to outline the map feature.</dd>
+                   <dt class="text" id="LineString.Title">Title<i></i></dt>
+                   <dd>The title displayed in the info window that appears when the user clicks on the map feature.</dd>
+                   <dt class="text ro" id="LineString.Type">Type<i></i></dt>
+                   <dd>Gets the type of the feature. For LineString, this will always be &quot;LineString&quot;,</dd>
+                   <dt class="boolean" id="LineString.Visible">Visible<i></i></dt>
+                   <dd>Specifies whether the component should be visible on the screen. Value is true if the component
+                     is showing and false if hidden.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt id="LineString.Click">Click</dt>
+                   <dd>Runs when the user taps on or very close to the line string.</dd>
+                   <dt id="LineString.Drag">Drag</dt>
+                   <dd>Runs during a drag operation.</dd>
+                   <dt id="LineString.LongClick">LongClick</dt>
+                   <dd>Runs after the user long clicks on the line string but does not trigger a drag (within a given threshold).</dd>
+                   <dt id="LineString.StartDrag">StartDrag</dt>
+                   <dd>Runs immediately after the user begins a drag operation but before any Drag events.</dd>
+                   <dt id="LineSTring.StopDrag">StopDrag</dt>
+                   <dd>Runs after the user releases the LineString from a Drag operation.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt id="LineString.DistanceToFeature">
+                     number DistanceToFeature(component mapFeature, boolean centroids)
+                   </dt>
+                   <dd>Computes the distance between the LineString and the
+                     given <code>mapFeature</code>. If <code>centroids</code> is true, the computation is done between
+                     the centroids of the two features. If false, the distance will be computed between the two features
+                     based on the closests points. If the linestring intersects the <code>mapFeature</code>, this method
+                     will return 0. If an error occurs, -1 will be returned.</dd>
+                   <dt id="LineString.DistanceToPoint">
+                     number DistanceToPoint(number latitude, number longitude, boolean centroids)
+                   </dt>
+                   <dd>Computes the distance between the LineString and the given <code>latitude</code>
+                     and <code>longitude</code>. If <code>centroids</code> is true, the computation is done between the
+                     weighted midpoint of the LineString to the point. If false, the distance is computed from the
+                     closest point on the LineString to the point. If the point is on the LineString, this method will
+                     return 0. If an error occurs -1 will be returned.</dd>
+                   <dt id="LineString.HideInfobox">HideInfobox</dt>
+                   <dd>Hides the line string's info box if it is visible. Otherwise, this method has no effect.</dd>
+                   <dt id="LineString.ShowInfobox">ShowInfobox</dt>
+                   <dd>Shows the info box for the line string if it is not visible. Otherwise, this method has no
+                     effect. This method can be used to show the info box even
+                     if <a href="#LineString.EnableInfobox"><code>EnableInfobox</code></a> is false.</dd>
+                 </dl>
+
+                 <h2 id="Map">Map</h2>
+
+                    <p>A two-dimensional container that renders map tiles in the background and
+                      allows for multiple Marker elements to identify points on the map. Map tiles are supplied
+                      by OpenStreetMap contributors and the United States Geological Survey.</p>
+                    <p>The Map component provides three utilities for manipulating its boundaries within App
+                      Inventor. First, a locking mechanism allows the map to be moved relative to
+                      other components on the Screen. Second, when unlocked, the user can pan the Map to any
+                      location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed
+                      to save the current Map coordinates to its properties. Lastly, if the Map is moved to a
+                      different location, for example to add Markers off-screen, then the &quot;Reset Map to
+                      Initial Bounds&quot; button can be used to recenter the Map at the starting location.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="list bo" id="Map.BoundingBox">BoundingBox<i></i></dt>
+                   <dd>Sets or gets the current boundary for the map's drawn view. The value is a list of lists
+                     containing the northwest and southeast coordinates of the current view in the
+                     form <code>((North&nbsp;West)&nbsp;(South&nbsp;East))</code>.</dd>
+                   <dt class="text wo" id="Map.CenterFromString">CenterFromString<i></i></dt>
+                   <dd>Sets the center of the map from a given &quot;latitude, longitude&quot; string. This is used
+                     mainly to populate the center of the Map from the designer. See also
+                     the <a href="#Map.PanTo"><code>PanTo</code></a> method to animate a change to the Map center.</dd>
+                   <dt class="boolean" id="Map.EnablePan">EnablePan<i></i></dt>
+                   <dd>Enables or disables the ability of the user to move the Map.</dd>
+                   <dt class="boolean" id="Map.EnableRotation">EnableRotation<i></i></dt>
+                   <dd>Enables or disables the two-finger rotation gesture to rotate the Map.</dd>
+                   <dt class="boolean" id="Map.EnableZoom">EnableZoom<i></i></dt>
+                   <dd>Enables or disables the two-finger pinch gesture to zoom the Map.</dd>
+                   <dt class="list bo" id="Map.Features">Features<i></i></dt>
+                   <dd>Sets or gets a list of features present on the Map. Setting this to an empty list will clear the
+                     Map.</dd>
+                   <dt class="number" id="Map.Height">Height<i></i></dt>
+                   <dd>Sets or gets the height of the Map.</dd>
+                   <dt class="number wo bo" id="Map.HeightPercent">HeightPercent<i></i></dt>
+                   <dd>Sets the height of the Map to a percentage of the Screen.</dd>
+                   <dt class="number ro" id="Map.Latitude">Latitude<i></i></dt>
+                   <dd>Gets the latitude of the center of the Map. To change the latitude, use
+                     the <a href="#Map.PanTo"><code>PanTo</code></a> method.</dd>
+                   <dt class="component wo" id="Map.LocationSensor">LocationSensor<i></i></dt>
+                   <dd>Uses the provided LocationSensor for user location data rather than the built-in location provider.</dd>
+                   <dt class="number ro" id="Map.Longitude">Longitude<i></i></dt>
+                   <dd>Gets the longitude of the center of the Map. To change the longitude, use
+                     the <a href="#Map.PanTo"><code>PanTo</code></a> method.</dd>
+                   <dt class="number" id="Map.MapType">MapType<i></i></dt>
+                   <dd>Sets or gets the tile layer used to draw the Map background. Defaults to Roads. Valid values are
+                   1 (Roads), 2 (Aerial), or 3 (Terrain). Road layers are provided by OpenStreetMap and aerial and
+                   terrain layers are provided by the U.S. Geological Survey.</dd>
+                   <dt class="boolean" id="Map.ShowCompass">ShowCompass<i></i></dt>
+                   <dd>Shows or hides a compass overlay on the Map. The compass will be rotated based on the
+                   device&apos;s orientation if a digital compass is present in hardware.</dd>
+                   <dt class="boolean" id="Map.ShowUser">ShowUser<i></i></dt>
+                   <dd>Shows or hides an icon indicating the user&apos;s current location on the Map. The availability
+                   and accuracy of this feature will depend on whether the user has location services enabled and which
+                   location providers are available.</dd>
+                   <dt class="boolean" id="Map.ShowZoom">ShowZoom<i></i></dt>
+                   <dd>Shows or hides the Android native zoom buttons to allow the user to zoom the Map in or out. This
+                   can be used in place of the two-finger pinch-to-zoom gesture.</dd>
+                   <dt class="number ro bo" id="Map.UserLatitude">UserLatitude<i></i></dt>
+                   <dd>Returns the user's latitude if ShowUser is enabled.</dd>
+                   <dt class="number ro bo" id="Map.UserLongitude">UserLongitude<i></i></dt>
+                   <dd>Returns the user's longitude if ShowUser is enabled.</dd>
+                   <dt class="boolean" id="Map.Visible">Visible<i></i></dt>
+                   <dd>Sets or gets whether the Map is visible.</dd>
+                   <dt class="number" id="Map.Width">Width<i></i></dt>
+                   <dd>Sets or gets the width of the Map.</dd>
+                   <dt class="number wo bo" id="Map.WidthPercent">WidthPercent<i></i></dt>
+                   <dd>Sets the Width of the Map to a percentage of the Screen.</dd>
+                   <dt class="number" id="Map.ZoomLevel">ZoomLevel<i></i></dt>
+                   <dd>Gets or sets the zoom level for the Map. Valid values range from 1-20. Not all tile layers will
+                     support each zoom level at every location. For example, detailed aerial photography is likely not
+                     available for tiles in the middle of the ocean or at the poles. Highest zoom levels will likely
+                     occur in major city centers due to the amount of detailed data available.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt id="Map.BoundsChange">BoundsChange</dt>
+                   <dd>Runs when the user changes the map bounds, either by zooming, panning, or rotating the view.</dd>
+                   <dt id="Map.DoubleTapAtPoint">DoubleTapAtPoint(number latitude, number longitude)</dt>
+                   <dd>Runs when the user double-taps at a point on the map. <code>latitude</code>
+                     and <code>longitude</code> indicate the location of the tap event in map coordinates. This event
+                     may be followed by a <a href="#Map.ZoomChange"><code>ZoomChange</code></a> event if zooming
+                     gestures are enabled and the map is not at the highest possible zoom level.</dd>
+                   <dt id="Map.FeatureClick">FeatureClick(component feature)</dt>
+                   <dd>When a feature is clicked, the parent map will also receive a <code>FeatureClick</code>
+                     event. The <code>feature</code> parameter indicates which child feature was clicked.</dd>
+                   <dt id="Map.FeatureDrag">FeatureDrag(component feature)</dt>
+                   <dd>When a feature is dragged, the parent map will also receive a <code>FeatureDrag</code> event. The
+                     <code>feature</code> parameter indicates which child feature was dragged.</dd>
+                   <dt id="Map.FeatureLongClick">FeatureLongClick(component feature)</dt>
+                   <dd>When a feature is long clicked, the parent map will also receive a <code>FeatureLongClick</code>
+                     event. The <code>feature</code> parameter indicates which child feature was long clicked.</dd>
+                   <dt id="Map.FeatureStartDrag">FeatureStartDrag(component feature)</dt>
+                   <dd>When the user begins dragging a feature, the parent map will also receive a
+                     <code>FeatureStartDrag</code> event. The <code>feature</code> parameter indicates which child
+                     feature was dragged.</dd>
+                   <dt id="Map.FeatureStopDrag">FeatureStopDrag(component feature)</dt>
+                   <dd>When the user stops dragging a feature, the parent map will also receive
+                     a <code>FeatureStopDrag</code> event. The <code>feature</code> parameter indicates which child
+                     feature was dragged.</dd>
+                   <dt id="Map.GotFeatures">GotFeatures(text url, list features)</dt>
+                   <dd>The <code>GotFeatures</code> event runs after a call
+                     to <a href="#Map.LoadFromURL"><code>LoadFromURL</code></a> successfully reads feature description
+                     from <code>url</code>. The <code>features</code> parameter will be a list of feature descriptions
+                     that can be converted into components using
+                     the <a href="#FeatureCollection.FeatureFromDescription"><code>FeatureFromDescription</code></a>
+                     method.</dd>
+                   <dt id="Map.InvalidPoint">InvalidPoint(text message)</dt>
+                   <dd>Runs when the program encounters an invalid point while processing geographical data. Points are
+                     considered invalid when the latitude or longitude for the point is outside the acceptable range ([-90,
+                     90] and [-180, 180], respectively). The <code>message</code> parameter will contain an explanation
+                     for the error.</dd>
+                   <dt id="Map.LoadError">LoadError(text url, number responseCode, text errorMessage)</dt>
+                   <dd>The LoadError event runs when processing a feature collection document at the
+                     given <code>url</code> produces an error. The <code>responseCode</code> parameter will contain an
+                     HTTP status code and the <code>errorMessage</code> parameter will contain a detailed error
+                     message.</dd>
+                   <dt id="Map.LongPressAtPoint">LongPressAtPoint(number latitude, number longitude)</dt>
+                   <dd>Runs when the user long presses a point on the map. <code>Latitude</code>
+                     and <code>longitude</code> indicate the location of the long press in map coordinates. Note that
+                     this event will not trigger if <a href="#Map.EnablePan"><code>EnablePan</code></a> is true as a
+                     long press causes a panning event instead.</dd>
+                   <dt id="Map.Ready">Ready</dt>
+                   <dd>Runs when the map has initalized and is ready for use.</dd>
+                   <dt id="Map.TapAtPoint">TapAtPoint(number latitude, number longitude)</dt>
+                   <dd>Runs when the user taps at a point on the map. The tapped location will be reported in map
+                     coordinates via the <code>latitude</code> and <code>longitude</code> parameters.</dd>
+                   <dt id="Map.ZoomChange">ZoomChange</dt>
+                   <dd>Runs when the user changes the zoom level, such as through a pinch gesture or double-tapping.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt id="Map.CreateMarker">component CreateMarker(number latitude, number longitude)</dt>
+                   <dd>Creates a new marker on the map at the given <code>latitude</code>
+                     and <code>longitude</code>. The marker can be manipulated using the "any component" blocks.</dd>
+                   <dt id="Map.FeatureFromDescription">any FeatureFromDescription(list description)</dt>
+                   <dd>Returns a new component based on the description provided. If there is an error in the
+                     properties, such as incorrectly formatted data, then the method will return text describing the
+                     error. Use
+                     the <a href="http://appinventor.mit.edu/explore/ai2/support/blocks/text.html#istext"><code>is-text?</code></a>
+                     block to test whether you get an error. Feature properties converted into App Inventor properties
+                     use the following case-insentive mapping:
+                     <ul>
+                       <li>description &rarr; Description</li>
+                       <li>draggable &rarr; Draggable</li>
+                       <li>infobox &rarr; EnableInfobox</li>
+                       <li>fill &rarr; FillColor</li>
+                       <li>image &rarr; ImageAsset</li>
+                       <li>stroke &rarr; StrokeColor</li>
+                       <li>stroke-width &rarr; StrokeWidth</li>
+                       <li>title &rarr; Title</li>
+                       <li>visible &rarr; Visible</li>
+                     </ul>
+                   </dd>
+                   <dt id="Map.LoadFromURL">LoadFromURL(text url)</dt>
+                   <dd>Call this method to load a feature collection from a URL (including file URLs). If the event is
+                     successful, the feature descriptions are passed as a list to
+                     the <a href="#Map.GotFeatures"><code>GotFeatures</code></a> event. If it fails,
+                     the <a href="#Map.LoadError"><code>LoadError</code></a> event will be run. At this time, GeoJSON is
+                     the only supported format.</dd>
+                   <dt id="Map.PanTo">PanTo(number latitude, number longitude, number zoom)</dt>
+                   <dd>Pans the map center to the given <code>(Latitude Longitude)</code> and zooms to the
+                     given <code>zoom</code>. The movement is animated.</dd>
+                   <dt id="Map.Save">Save(text path)</dt>
+                   <dd>Saves descriptions of the map contents to the given path. Currently, this will only save the
+                     features using the GeoJSON format.</dd>
+                 </dl>
+
+                 <h2 id="Marker">Marker</h2>
+                    <p>The Marker component indicates points on a Map, such as buildings or points of interest. Markers
+                    can be customized in many ways, such as using custom images from the app's assets. Markers can also
+                    be created dynamically using the <a href="#Map.CreateMarker"><code>CreateMarker</code></a> method
+                    and configured using the "Any Component" blocks.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="number" id="Marker.AnchorHorizontal">AnchorHorizontal<i></i></dt>
+                   <dd>Sets or gets the horizontal offset of the marker center relative to its image. Valid values are 1
+                     (Left), 2 (Right), 3 (Center)</dd>
+                   <dt class="number" id="Marker.AnchorVertical">AnchorVertical<i></i></dt>
+                   <dd>Sets or gets the vertical offset of the marker center relative to its image. Valid values are 1
+                     (Top), 2 (Center), 3 (Bottom).</dd>
+                   <dt class="text" id="Marker.Description">Description<i></i></dt>
+                   <dd>Sets or gets the description displayed in the info window that appears when the user taps on the
+                     marker.</dd>
+                   <dt class="boolean" id="Marker.Draggable">Draggable<i></i></dt>
+                   <dd>The Draggable property is used to control whether or not the user can drag the marker by
+                     long-pressing and then dragging the marker to a new location.</dd>
+                   <dt class="boolean" id="Marker.EnableInfobox">EnableInfobox<i></i></dt>
+                   <dd>Enables or disables the infobox window display when the user taps the marker.</dd>
+                   <dt class="color" id="Marker.FillColor">FillColor<i></i></dt>
+                   <dd>Sets or gets the color used to fill in the marker. This property only applies for markers using
+                     vector image assets, including the default icon.</dd>
+                   <dt class="number" id="Marker.Height">Height<i></i></dt>
+                   <dd>Sets or gets the height of the marker, in pixels.</dd>
+                   <dt class="number wo bo" id="Marker.HeightPercent">HeightPercent<i></i></dt>
+                   <dd>Sets the height of the marker as a percentage of the screen height.</dd>
+                   <dt class="text" id="Marker.ImageAsset">ImageAsset<i></i></dt>
+                   <dd>Sets or gets the image shown for the marker. If set to the empty string <code>""</code>, then the
+                     default marker icon will be used.</dd>
+                   <dt class="number" id="Marker.Latitude">Latitude<i></i></dt>
+                   <dd>Sets or gets the latitude of the marker, in degrees, with positive values representing north of
+                     the equator and negative values representing south of the equator. To update the latitude and
+                     longitude simultaneously, use the <a href="#Marker.SetLocation"><code>SetLocation</code></a>
+                     method.</dd>
+                   <dt class="number" id="Marker.Longitude">Longitude<i></i></dt>
+                   <dd>Sets or gets the longitude of the marker, in degrees, with positive values representing east of
+                     the prime meridian and negative values representing west of the prime meridian. To update the
+                     latitude and longitude simultaneously, use
+                     the <a href="#Marker.SetLocation"><code>SetLocation</code></a> method.</dd>
+                   <dt class="color" id="Marker.StrokeColor">StrokeColor<i></i></dt>
+                   <dd>Sets or gets the color used to outline the marker.</dd>
+                   <dt class="number" id="Marker.StrokeWidth">StrokeWidth<i></i></dt>
+                   <dd>Sets or gets the width of the stroke used to outline the marker.</dd>
+                   <dt class="text" id="Marker.Title">Title<i></i></dt>
+                   <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the marker.</dd>
+                   <dt class="text ro" id="Marker.Type">Type<i></i></dt>
+                   <dd>Gets the type of the feature. For Marker, this will always be &quot;Marker&quot;,</dd>
+                   <dt class="boolean" id="Marker.Visible">Visible<i></i></dt>
+                   <dd>Sets or gets whether the component should be visible on the screen. Value is true if the component
+                     is showing and false if hidden.</dd>
+                   <dt class="number" id="Marker.Width">Width<i></i></dt>
+                   <dd>Sets or gets the width of the marker, in pixels.</dd>
+                   <dt class="number wo bo" id="Marker.WidthPercent">WidthPercent<i></i></dt>
+                   <dd>Sets the width of the marker as a percentage of the screen width.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt id="Marker.Click">Click</dt>
+                   <dd>Runs when the user taps on the marker.</dd>
+                   <dt id="Marker.Drag">Drag</dt>
+                   <dd>Runs continuously while a user is dragging the marker.</dd>
+                   <dt id="Marker.LongClick">LongClick</dt>
+                   <dd>Runs when the user long-clicks on the marker but does not trigger a drag. Note that this event
+                     will only run if <a href="#Marker.Draggable"><code>Draggable</code></a> is false.</dd>
+                   <dt id="Marker.StartDrag">StartDrag</dt>
+                   <dd>Runs before a drag operation begins.</dd>
+                   <dt id="Marker.StopDrag">StopDrag</dt>
+                   <dd>Runs after a drag operation completes.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt id="Marker.BearingToFeature">number BearingToFeature(component mapFeature, boolean centroids)</dt>
+                   <dd>Returns the bearing from the Marker to the given <code>mapFeature</code>, in degrees from due
+                     north. If the <code>centroids</code> paremter is true, the bearing will be to the center of the map
+                     feature. Otherwise, the bearing will be computed to the point in the feature nearest the
+                     Marker.</dd>
+                   <dt id="Marker.BearingToPoint">number BearingToPoint(number latitude, number longitude, boolean centroids)</dt>
+                   <dd>Returns the bearing from the Marker to the given latitude and longitude, in degrees from due
+                     north.</dd>
+                   <dt id="Marker.DistanceToFeature">number DistanceToFeature(component mapFeature, boolean centroids)</dt>
+                   <dd>Computes the distance between the Marker and the
+                     given <code>mapFeature</code>. If <code>centroids</code> is true, the computation is done between
+                     the centroids of the two features. Otherwise, the distance will be computed between the two
+                     features based on the closest points. Further, when <code>centroids</code> is false, this method
+                     will return 0 if the marker intersects or contains the <code>mapFeature</code>. If an error occurs,
+                     this method will return -1.</dd>
+                   <dt id="Marker.DistanceToPoint">number DistanceToPoint(number latitude, number longitude, boolean centroids)</dt>
+                   <dd>Computes the distance between the Marker and the given latitude and
+                     longitude. If <code>centroids</code> is true, the distance is computed from the center of the
+                     circle to the given point. Otherwise, the distance is computed from the closest point on the marker
+                     to the given point. If an error occurs, -1 will be returned.</dd>
+                   <dt id="Marker.HideInfobox">HideInfobox</dt>
+                   <dd>Hides the circle's info box if it is visible. Otherwise, no action will be taken.</dd>
+                   <dt id="Marker.SetLocation">SetLocation(number latitude, number longitude)</dt>
+                   <dd>Moves the center of the circle to the given latitude and longitude. This method is more efficient
+                     than setting latitude and longitude separately.</dd>
+                   <dt id="Marker.ShowInfobox">ShowInfobox</dt>
+                   <dd>Shows the info box for the circle if it is not visible. Otherwise, no action will be taken. This
+                     method can be used to show the info box even if EnableInfobox is false.</dd>
+                 </dl>
+
+                 <h2 id="Polygon">Polygon</h2>
+                    <p>Polygon encloses an arbitrary 2-dimensional area on a Map. Polygons can be used for drawing a
+                    perimeter, such as a campus, city, or country. Polygons begin as basic triangles. New vertices can
+                    be created by dragging the midpoint of a polygon away from the edge. Clicking on a vertex will
+                    remove the vertex, but a minimum of 3 vertices must exist at all times.</p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt class="text" id="Polygon.Description">Description<i></i></dt>
+                    <dd>Sets or gets the description displayed in the info window that appears when the user taps on the
+                      polygon.</dd>
+                    <dt class="boolean" id="Polygon.Draggable">Draggable<i></i></dt>
+                    <dd>Sets or gets whether or not the user can drag the polygon by long-pressing and then dragging it
+                      to a new location.</dd>
+                    <dt class="boolean" id="Polygon.EnableInfobox">EnableInfobox<i></i></dt>
+                    <dd>Enables or disables the infobox window display when the user taps the polygon.</dd>
+                    <dt class="color" id="Polygon.FillColor">FillColor<i></i></dt>
+                    <dd>Sets or gets the color used to fill in the polygon.</dd>
+                    <dt class="list" id="Polygon.HolePoints">HolePoints<i></i></dt>
+                    <dd>Sets or gets the lists of points that comprise the polygon's holes. Points are given as <code>(Latitude Longitude)</code> pairs and should be given counterclockwise.</dd>
+                    <dt class="text wo" id="Polygon.HolePointsFromString">HolePointsFromString<i></i></dt>
+                    <dd>Sets the list of hole points from a string in GeoJSON format.</dd>
+                    <dt class="list" id="Polygon.Points">Points<i></i></dt>
+                    <dd>Sets or gets the list of points that comprise the polygon. Points are given as <code>(Latitude Longitude)</code> pairs and should be given clockwise.</dd>
+                    <dt class="text wo" id="Polygon.PointsFromString">PointsFromString<i></i></dt>
+                    <dd>Sets the list of points from a string in GeoJSON format.</dd>
+                    <dt class="color" id="Polygon.StrokeColor">StrokeColor<i></i></dt>
+                    <dd>Sets or gets the color used to outline the polygon.</dd>
+                    <dt class="number" id="Polygon.StrokeWidth">StrokeWidth<i></i></dt>
+                    <dd>Sets or gets the width of the stroke used to outline the polygon.</dd>
+                    <dt class="text" id="Polygon.Title">Title<i></i></dt>
+                    <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the map feature.</dd>
+                    <dt class="text ro bo" id="Polygon.Type">Type<i></i></dt>
+                    <dd>Gets the type of the feature. For Polygon, this will always be &quot;Polygon&quot;,</dd>
+                    <dt class="boolean" id="Polygon.Visible">Visible<i></i></dt>
+                    <dd>Sets or gets whether the component should be visible on the screen. Value is true if the component
+                      is showing and false if hidden.</dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt id="Polygon.Click">Click</dt>
+                    <dd>Runs when the user taps on the polygon.</dd>
+                    <dt id="Polygon.Drag">Drag</dt>
+                    <dd>Runs continuously while a user is dragging the polygon.</dd>
+                    <dt id="Polygon.LongClick">LongClick</dt>
+                    <dd>Runs when the user long-clicks on the polygon but does not trigger a drag. Note that this event
+                      will only run if <a href="#Polygon.Draggable"><code>Draggable</code></a> is false.</dd>
+                    <dt id="Polygon.StartDrag">StartDrag</dt>
+                    <dd>Runs before a drag operation begins.</dd>
+                    <dt id="Polygon.StopDrag">StopDrag</dt>
+                    <dd>Runs after a drag operation completes.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt id="Polygon.Centroid">list Centroid</dt>
+                    <dd>Returns the centroid of the polygon as a list of the form <code>(Latitude Longitude)</code>.</dd>
+                    <dt id="Polygon.DistanceToFeature">number DistanceToFeature(component mapFeature, boolean centroid)</dt>
+                    <dd>Computes the distance between the polygon and the given mapFeature. If centroids is true, the
+                      computation is done between the centroids of the two features. Otherwise, the distance will be
+                      computed between the two features based on the closest points. Further, if centroids is false,
+                      this method will return 0 if the polygon intersects or contains the mapFeature. If an error occurs,
+                      this method will return -1.</dd>
+                    <dt id="Polygon.DistanceToPoint">number DistanceToPoint(number latitude, number longtitude, boolean centroid)</dt>
+                    <dd>Computes the distance between the Polygon and the given latitude and longitude. If centroids is
+                      true, the distance is computed from the center of the polygon to the given point. Otherwise, the
+                      distance is computed from the closest point on the polygon to the given point. Further, this
+                      method will return 0 if centroids is false and the point is in the polygon. If an error occurs, -1
+                      will be returned.</dd>
+                    <dt id="Polygon.HideInfobox">HideInfobox</dt>
+                    <dd>Hides the polygon's info box if it is visible. Otherwise, this method has no effect.</dd>
+                    <dt id="Polygon.ShowInfobox">ShowInfobox</dt>
+                    <dd>Shows the info box for the polygon if it is not visible. Otherwise, this method has no
+                      effect. This method can be used to show the info box even
+                      if <a href="#Polygon.EnableInfobox"><code>EnableInfobox</code></a> is false.</dd>
+                  </dl>
+
+                  <h2 id="Rectangle">Rectangle</h2>
+                    <p>Rectangles are polygons with fixed latitudes and longitudes for the north, south, east, and west
+                    boundaries. Moving a vertex of the rectangle updates the appropriate edges accordingly.</p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt class="text" id="Rectangle.Description">Description<i></i></dt>
+                    <dd>Sets or gets the description displayed in the info window that appears when the user taps on the
+                      rectangle.</dd>
+                    <dt class="boolean" id="Rectangle.Draggable">Draggable<i></i></dt>
+                    <dd>Sets or gets whether or not the user can drag a map feature by long-pressing and then dragging
+                      the rectangle to a new location.</dd>
+                    <dt class="number" id="Rectangle.EastLongitude">EastLongitude<i></i></dt>
+                    <dd>Sets or gets the longitude bounding the rectangle on the east. Range: [-180, 180]</dd>
+                    <dt class="boolean" id="Rectangle.EnableInfobox">EnableInfobox<i></i></dt>
+                    <dd>Enables or disables the infobox window display when the user taps the rectangle.</dd>
+                    <dt class="color" id="Rectangle.FillColor">FillColor<i></i></dt>
+                    <dd>Sets or gets the color used to fill in the rectangle.</dd>
+                    <dt class="number" id="Rectangle.NorthLatitude">NorthLatitude<i></i></dt>
+                    <dd>Sets or gets the latitude, in degrees, bounding the rectangle on the north. Range: [-90, 90]</dd>
+                    <dt class="number" id="Rectangle.SouthLatitude">SouthLatitude<i></i></dt>
+                    <dd>Sets or gets the latitude, in degrees, bounding the rectangle on the south. Range: [-90, 90]</dd>
+                    <dt class="color" id="Rectangle.StrokeColor">StrokeColor<i></i></dt>
+                    <dd>Sets or gets the color used to outline the rectangle.</dd>
+                    <dt class="number" id="Rectangle.StrokeWidth">StrokeWidth<i></i></dt>
+                    <dd>Sets or gets the width of the stroke used to outline the rectangle.</dd>
+                    <dt class="text" id="Rectangle.Title">Title<i></i></dt>
+                    <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the rectangle.</dd>
+                    <dt class="text ro bo" id="Rectangle.Type">Type<i></i></dt>
+                    <dd>Gets the type of the feature. For Rectangle, this will always be &quot;Rectangle&quot;,</dd>
+                    <dt class="boolean" id="Rectangle.Visible">Visible<i></i></dt>
+                    <dd>Sets or gets whether the component should be visible on the screen. Value is true if the component
+                      is showing and false if hidden.</dd>
+                    <dt class="number" id="WestLongitude">WestLongitude<i></i></dt>
+                    <dd>Sets or gets the longitude, in degrees, bouding the rectangle on the west. Range: [-180, 180]</dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt id="Rectangle.Click">Click</dt>
+                    <dd>Runs when the user taps on the rectangle.</dd>
+                    <dt id="Rectangle.Drag">Drag</dt>
+                    <dd>Runs continuously while a user is dragging the rectangle.</dd>
+                    <dt id="Rectangle.LongClick">LongClick</dt>
+                    <dd>Runs when the user long-clicks on the rectangle but does not trigger a drag. Note that this
+                      event will only run if <a href="#Rectangle.Draggable"><code>Draggable</code></a> is false.</dd>
+                    <dt id="Rectangle.StartDrag">StartDrag</</dt>
+                    <dd>Runs before a drag operation begins.</dd>
+                    <dt id="Rectangle.StopDrag">StopDrag</dt>
+                    <dd>Runs after a drag operation completes.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt id="Rectangle.Bounds">list Bounds</dt>
+                    <dd>Returns the bounding box of the Rectangle in the format <code>((North West) (South East))</code>.
+                    <dt id="Rectangle.Center">list Center</dt>
+                    <dd>Returns the center of the Rectangle as a list of the form <code>(Latitude Longitude)</code>.</dd>
+                    <dt id="Rectangle.DistanceToFeature">number DistanceToFeature(component mapFeature, boolean centroids)</dt>
+                    <dd>Computes the distance between the Rectangle and the given mapFeature. If centroids is true, the
+                      computation is done between the centroids of the two features. Otherwise, the distance will be
+                      computed between the two features based on the closest points. Further, when centroids is false,
+                      this method will return 0 if the rectangle intersects or contains the <code>mapFeature</code>. If
+                      an error occurs, this method will return -1.</dd>
+                    <dt id="Rectangle.DistanceToPoint">number DistanceToPoint(number latitude, number longitude, boolean centroids)</dt>
+                    <dd>Computes the distance between the Rectangle and the given latitude and longitude. If centroids
+                     is true, the distance is computed from the center of the rectangle to the given point. Otherwise,
+                     the distance is computed from the closest point on the rectangle to the given point. Further, this
+                     method will return 0 if centroids is false and the point is in the rectangle. If an error occurs,
+                     -1 will be returned.</dd>
+                    <dt id="Rectangle.HideInfobox">HideInfobox</dt>
+                    <dd>Hides the rectangle's info box if it is visible. Otherwise, this method has no effect.</dd>
+                    <dt id="Rectangle.SetCenter">SetCenter(number latitude, number longitude)</dt>
+                    <dd>Moves the Rectangle so that it is centered on the given <code>latitude</code>
+                      and <code>longitude</code> while attempting to maintain the width and height of the Rectangle as
+                      measured from the center to the edges.</dd>
+                    <dt id="Rectangle.ShowInfobox">ShowInfobox</dt>
+                    <dd>Shows the info box for the rectangle if it is not visible. Otherwise, this method has no
+                      effect. This method can be used to show the info box even if EnableInfobox is false.</dd>
+                  </dl>
+
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2017 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>

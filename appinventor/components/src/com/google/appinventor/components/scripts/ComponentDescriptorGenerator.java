@@ -140,7 +140,28 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(dp.editorType());
     sb.append("\", \"defaultValue\": \"");
     sb.append(dp.defaultValue().replace("\"", "\\\""));
-    sb.append("\"}");
+
+    sb.append("\", \"editorArgs\": ");
+    String[] editorArgs = dp.editorArgs();
+    for (int idx = 0; idx < editorArgs.length; idx += 1)
+      editorArgs[idx] = "\"" + editorArgs[idx].replace("\"", "\\\"") + "\"";
+
+    StringBuilder listLiteralBuilder = new StringBuilder();
+    listLiteralBuilder.append("[");
+
+    if (editorArgs.length > 0) {
+      listLiteralBuilder.append(editorArgs[0]);
+
+      for (int ind = 1; ind < editorArgs.length; ind += 1) {
+        listLiteralBuilder.append(", ");
+        listLiteralBuilder.append(editorArgs[ind]);
+      }
+    }
+
+    listLiteralBuilder.append("]");
+
+    sb.append(listLiteralBuilder.toString());
+    sb.append("}");
   }
 
   private void outputBlockProperty(String propertyName, Property prop, StringBuilder sb) {

@@ -28,6 +28,7 @@ $Source $Yail
  (set-and-coerce-property! 'Screen1 'PrimaryColorDark #xFF516623 'number)
  (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
  (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2" 'text)
+ (set-and-coerce-property! 'Screen1 'Theme "AppTheme.Light.DarkActionBar" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)

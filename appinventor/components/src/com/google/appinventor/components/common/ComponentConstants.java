@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -84,10 +84,24 @@ public class ComponentConstants {
   /**
    * Themeing
    */
-  public static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
+  public static final String DEFAULT_THEME = "Classic";
   public static final String DEFAULT_PRIMARY_COLOR = "&HFF3F51B5";
   public static final String DEFAULT_PRIMARY_DARK_COLOR = "&HFF303F9F";
   public static final String DEFAULT_ACCENT_COLOR = "&HFFFF4081";
+
+  /**
+   * Map Components
+   */
+  public static final int MAP_PREFERRED_WIDTH = 176;
+  public static final int MAP_PREFERRED_HEIGHT = 144;
+  public static final int MARKER_PREFERRED_WIDTH = 30;
+  public static final int MARKER_PREFERRED_HEIGHT = 50;
+  public static final int CIRCLE_PREFERRED_RADIUS = 30;
+  public static final int LINESTRING_PREFERRED_LENGTH = 60;
+  public static final int POLYGON_PREFERRED_WIDTH = 50;
+  public static final int POLYGON_PREFERRED_HEIGHT = 30;
+  public static final int RECTANGLE_PREFERRED_WIDTH = 50;
+  public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
 
 }
 

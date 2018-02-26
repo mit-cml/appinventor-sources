@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -459,11 +459,15 @@ public final class Compiler {
     return name.replace("&", "and");
   }
 
-  private String cleanColor(String color) {
-    if (color.startsWith("&H")) {
-      return "#" + color.substring(2);
+  private String cleanColor(String color, boolean makeOpaque) {
+    String result = color;
+    if (color.startsWith("&H") || color.startsWith("&h")) {
+      result =  "#" + color.substring(2);
     }
-    return color;
+    if (makeOpaque && result.length() == 9) {  // true for #AARRGGBB strings
+      result = "#" + result.substring(3);  // remove any alpha value
+    }
+    return result;
   }
 
   /**
@@ -480,6 +484,23 @@ public final class Compiler {
     out.write("\" parent=\"");
     out.write(parent);
     out.write("\">\n");
+    out.write("<item name=\"windowActionBar\">true</item>\n");
+    out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
+    out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    // Handles theme for Notifier
+    out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
+    // Handles theme for DatePicker/TimePicker
+    out.write("<item name=\"android:alertDialogTheme\">@style/AIAlertDialog</item>\n");
+    out.write("</style>\n");
+  }
+
+  private static void writeDialogTheme(Writer out, String name, String parent) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
@@ -489,11 +510,11 @@ public final class Compiler {
   /**
    * Create the default color and styling for the app.
    */
-  private boolean createValuesXml(File valuesDir) {
+  private boolean createValuesXml(File valuesDir, String suffix) {
     String colorPrimary = project.getPrimaryColor() == null ? "#A5CF47" : project.getPrimaryColor();
     String colorPrimaryDark = project.getPrimaryColorDark() == null ? "#41521C" : project.getPrimaryColorDark();
     String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
-    String theme = project.getTheme() == null ? "AppTheme" : project.getTheme();
+    String theme = project.getTheme() == null ? "Classic" : project.getTheme();
     String actionbar = project.getActionBar();
     String parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
     if (!"true".equalsIgnoreCase(actionbar)) {
@@ -503,11 +524,11 @@ public final class Compiler {
         parentTheme += ".NoActionBar";
       }
     }
-    colorPrimary = cleanColor(colorPrimary);
-    colorPrimaryDark = cleanColor(colorPrimaryDark);
-    colorAccent = cleanColor(colorAccent);
-    File colorsXml = new File(valuesDir, "colors.xml");
-    File stylesXml = new File(valuesDir, "styles.xml");
+    colorPrimary = cleanColor(colorPrimary, true);
+    colorPrimaryDark = cleanColor(colorPrimaryDark, true);
+    colorAccent = cleanColor(colorAccent, true);
+    File colorsXml = new File(valuesDir, "colors" + suffix + ".xml");
+    File stylesXml = new File(valuesDir, "styles" + suffix + ".xml");
     try {
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(colorsXml), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
@@ -526,7 +547,16 @@ public final class Compiler {
       out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      writeTheme(out, "AppTheme", parentTheme);
+      if (!parentTheme.startsWith("Classic")) {
+        writeTheme(out, "AppTheme", parentTheme);
+        if (parentTheme.contains("Light")) {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
+        } else {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
+        }
+      }
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
       out.write("<item name=\"textAllCaps\">false</item>\n");
       out.write("</style>\n");
@@ -638,7 +668,10 @@ public final class Compiler {
       } else {
         out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
-      out.write("android:theme=\"@style/AppTheme\" ");
+      // Write theme info if we are not using the "Classic" theme (i.e., no theme)
+      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
+        out.write("android:theme=\"@style/AppTheme\" ");
+      }
       out.write(">\n");
 
       for (Project.SourceDescriptor source : project.getSources()) {
@@ -813,7 +846,9 @@ public final class Compiler {
     // Create values directory and style xml files
     out.println("________Creating style xml");
     File styleDir = createDir(resDir, "values");
-    if (!compiler.createValuesXml(styleDir)) {
+    File style21Dir = createDir(resDir, "values-v21");
+    if (!compiler.createValuesXml(styleDir, "") ||
+        !compiler.createValuesXml(style21Dir, "-v21")) {
       return false;
     }
 
@@ -1736,7 +1771,9 @@ public final class Compiler {
         Set<String> infoSet = Sets.newHashSet();
         for (int j = 0; j < infoArray.length(); ++j) {
           String info = infoArray.getString(j);
-          infoSet.add(info);
+          if (!info.isEmpty()) {
+            infoSet.add(info);
+          }
         }
 
         if (!infoSet.isEmpty()) {

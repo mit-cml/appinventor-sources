@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -33,6 +34,9 @@ import android.widget.EditText;
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class PasswordTextBox extends TextBoxBase {
+    
+  private boolean passwordVisible;
+    
   /**
    * Creates a new PasswordTextBox component.
    *
@@ -40,9 +44,6 @@ public final class PasswordTextBox extends TextBoxBase {
    */
   public PasswordTextBox(ComponentContainer container) {
     super(container, new EditText(container.$context()));
-
-    // Disable auto-suggestion.
-    view.setRawInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
     // make the box single line
     view.setSingleLine(true);
@@ -53,5 +54,22 @@ public final class PasswordTextBox extends TextBoxBase {
     // make sure the done action is Done and not Next.  See comment in Textbox.java
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
+    PasswordVisible(false);
+    
   }
+  
+  @SimpleProperty(description = "Visibility of password.")
+  public void PasswordVisible(boolean visible){
+    passwordVisible=visible;
+    if(visible){
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+    }else{
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
+  }
+  @SimpleProperty(description = "Visibility of password.")
+  public boolean PasswordVisible(){
+    return passwordVisible;
+  }
+
 }

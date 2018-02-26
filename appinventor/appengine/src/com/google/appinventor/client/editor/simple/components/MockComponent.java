@@ -39,6 +39,8 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -46,6 +48,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -247,6 +250,20 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       contentPanel.setSize("320px", "100%");
 
       add(contentPanel);
+    }
+    @Override
+    protected void onPreviewNativeEvent(NativePreviewEvent event) {
+      super.onPreviewNativeEvent(event);
+      switch (event.getTypeInt()) {
+        case Event.ONKEYDOWN:
+          if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+            hide();
+          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+            hide();
+            MockComponent.this.delete();
+          }
+          break;
+      }
     }
   }
 
@@ -805,7 +822,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Invoked by GWT whenever a browser event is dispatched to this component.
    */
   @Override
-  public final void onBrowserEvent(Event event) {
+  public void onBrowserEvent(Event event) {
+    if (!shouldCancel(event)) return;
     switch (event.getTypeInt()) {
       case Event.ONMOUSEDOWN:
       case Event.ONMOUSEUP:
@@ -1097,7 +1115,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
-        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor);
+        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), propertyEditor);
       }
     }
@@ -1114,6 +1132,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition
   }
 
+  public native void setShouldCancel(Event event, boolean cancelable)/*-{
+    event.shouldNotCancel = !cancelable;
+  }-*/;
 
+  public native boolean shouldCancel(Event event)/*-{
+    return !event.shouldNotCancel;
+  }-*/;
 
 }

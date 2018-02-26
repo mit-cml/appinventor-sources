@@ -1,13 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017 MIT, All rights reserved
+// Copyright 2017-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.internal.widget.TintImageView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +36,7 @@ public final class ImageViewUtil {
 
   private ImageViewUtil() {}
 
-  public static void setMenuButtonColor(AppCompatActivity activity, int color) {
+  public static void setMenuButtonColor(Activity activity, int color) {
     if (canUpdate) {
       TintImageView overflowMenuView = findOverflowMenuView(activity);
       if (overflowMenuView != null) {
@@ -51,7 +51,7 @@ public final class ImageViewUtil {
     }
   }
 
-  private static TintImageView findOverflowMenuView(AppCompatActivity activity) {
+  private static TintImageView findOverflowMenuView(Activity activity) {
     TintImageView overflowMenuView = null;
     ViewGroup vg = (ViewGroup) activity.getWindow().getDecorView();
     Queue<ViewGroup> children = new LinkedList<ViewGroup>();
