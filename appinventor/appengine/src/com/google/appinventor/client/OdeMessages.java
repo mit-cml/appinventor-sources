@@ -2919,6 +2919,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MultiLineProperties();
 
+  @DefaultMessage("Namespace")
+  @Description("")
+  String NamespaceProperties();
+
   @DefaultMessage("NumbersOnly")
   @Description("")
   String NumbersOnlyProperties();
