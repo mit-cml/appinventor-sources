@@ -1108,7 +1108,9 @@ public class YaVersion {
   // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
   // For WEB_COMPONENT_VERSION 4:
   // - Added method XMLTextDecode
-  public static final int WEB_COMPONENT_VERSION = 4;
+  // For WEB_COMPONENT_VERSION 5:
+  // - Added method UriDecode
+  public static final int WEB_COMPONENT_VERSION = 5;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

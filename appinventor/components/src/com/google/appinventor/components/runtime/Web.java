@@ -53,6 +53,7 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -699,6 +700,26 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+    
+  /**
+   * Decodes the encoded text value.
+   *
+   * @param text the text to encode
+   * @return the decoded text
+   */
+  @SimpleFunction
+  public String UriDecode(String text) {
+    try {
+      return URLDecoder.decode(text, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // If UTF-8 is not supported, we're in big trouble!
+      // According to Javadoc and Android documentation for java.nio.charset.Charset, UTF-8 is
+      // available on every Java implementation.
+      Log.e(LOG_TAG, "UTF-8 is unsupported?", e);
+      return "";
+    }
+  }
+    
   /**
    * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
    * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,

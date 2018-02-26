@@ -2506,7 +2506,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // AI2: Added method XMLTextDecode
-    4: "noUpgrade"
+    4: "noUpgrade",
+      
+    // AI2: Added method UriDecode
+    5: "noUpgrade"
 
   }, // End Web upgraders
 

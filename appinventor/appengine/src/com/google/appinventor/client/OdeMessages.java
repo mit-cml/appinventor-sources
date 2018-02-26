@@ -5509,6 +5509,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
+  
+  @DefaultMessage("UriDecode")
+  @Description("")
+  String UriDecodeMethods();
 
   @DefaultMessage("CanGoBack")
   @Description("")
