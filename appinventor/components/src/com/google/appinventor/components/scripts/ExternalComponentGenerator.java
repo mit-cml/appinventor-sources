@@ -5,28 +5,35 @@
 
 package com.google.appinventor.components.scripts;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
-import java.io.File;
-import org.json.JSONException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
 * Tool to generate component.json for extension.
 *
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
+* @author 502470184@qq.com (ColinTree YANG)
 */
 
 public class ExternalComponentGenerator {
 
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
   private static String externalComponentsDirPath;
   private static String androidRuntimeClassDirPath;
@@ -48,8 +55,8 @@ public class ExternalComponentGenerator {
   * args[5]: the path to external componentsTemp directory
   */
   public static void main(String[] args) throws IOException, JSONException {
-    String simple_component_json = readFile(args[0], Charset.defaultCharset());
-    String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
+    String simple_component_json = readFile(args[0], DEFAULT_CHARSET);
+    String simple_component_build_info_json = readFile(args[1], DEFAULT_CHARSET);
     externalComponentsDirPath = args[2];
     androidRuntimeClassDirPath = args[3];
     buildServerClassDirPath = args[4];
@@ -131,32 +138,15 @@ public class ExternalComponentGenerator {
     String components = sb.toString();
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     new File(extensionDirPath).mkdirs();
-    FileWriter jsonWriter = null;
-    try {
-      jsonWriter = new FileWriter(extensionDirPath + File.separator + "components.json");
-      jsonWriter.write(components);
-    } catch(IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (jsonWriter != null) {
-        jsonWriter.close();
-      }
-    }
+    writeFile(extensionDirPath + File.separator + "components.json", components, DEFAULT_CHARSET);
     // Write legacy format to transition developers
-    try {
-      jsonWriter = new FileWriter(extensionDirPath + File.separator + "component.json");
-      jsonWriter.write(infos.get(0).descriptor.toString(1));
-    } catch(IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (jsonWriter != null) {
-        jsonWriter.close();
-      }
-    }
+    writeFile(extensionDirPath + File.separator + "component.json",
+      infos.get(0).descriptor.toString(1), DEFAULT_CHARSET);
   }
 
 
-  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions) throws IOException {
+  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions)
+      throws IOException, JSONException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
     String  extensionFileDirPath = extensionDirPath + File.separator + "files";
@@ -179,30 +169,14 @@ public class ExternalComponentGenerator {
     if (!new File(extensionFileDirPath).mkdirs()) {
       throw new IOException("Unable to create path for component_build_info.json");
     }
-    FileWriter extensionBuildInfoFile = null;
-    try {
-      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_infos.json");
-      extensionBuildInfoFile.write(buildInfos.toString());
+    if(writeFile(extensionFileDirPath + File.separator + "component_build_infos.json",
+        buildInfos.toString(), DEFAULT_CHARSET)) {
       System.out.println("Extensions : Successfully created " + packageName + " build info file");
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (extensionBuildInfoFile != null) {
-        extensionBuildInfoFile.flush();
-        extensionBuildInfoFile.close();
-      }
     }
     // Write out legacy component_build_info.json to transition developers
-    try {
-      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
-      extensionBuildInfoFile.write(buildInfos.get(0).toString());
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (extensionBuildInfoFile != null) {
-        extensionBuildInfoFile.close();
-      }
+    if(writeFile(extensionFileDirPath + File.separator + "component_build_info.json",
+        buildInfos.get(0).toString(), DEFAULT_CHARSET)) {
+      System.out.println("Extensions : Successfully created " + packageName + " build info file");
     }
   }
 
@@ -236,15 +210,9 @@ public class ExternalComponentGenerator {
     // Create extension.properties
     StringBuilder extensionPropertiesString = new StringBuilder();
     extensionPropertiesString.append("type=external\n");
-    FileWriter extensionPropertiesFile = new FileWriter(extensionDirPath + File.separator + "extension.properties");
-    try {
-      extensionPropertiesFile.write(extensionPropertiesString.toString());
+    if (writeFile(extensionDirPath + File.separator + "extension.properties",
+        extensionPropertiesString.toString(), DEFAULT_CHARSET)) {
       System.out.println("Extensions : Successfully created " + packageName + " extension properties file");
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      extensionPropertiesFile.flush();
-      extensionPropertiesFile.close();
     }
   }
 
@@ -284,6 +252,31 @@ public class ExternalComponentGenerator {
     }
     return true;
   }
+  
+  /**
+   * Write a file and returns true if success
+   *
+   * @param path the path of the file to be read
+   * @param content thee content to write in
+   * @param encoding the encoding system
+   */
+  private static boolean writeFile(String path, String content, Charset encoding) throws IOException {
+    OutputStreamWriter osw = null;
+    boolean result = true;
+    try {
+      osw = new OutputStreamWriter(new FileOutputStream(path), encoding);
+      osw.write(content);
+    } catch (IOException e) {
+      e.printStackTrace();
+      result = false;
+    } finally {
+      if (osw != null) {
+        osw.close();
+      }
+    }
+    return result;
+  }
+ 
 
   /**
    * Copy a compiled classes related to a given extension in his package folder
