@@ -1029,7 +1029,7 @@ Blockly.LexicalVariable.getEventParam = function (block) {
          var componentDb = block.getTopWorkspace().getComponentDatabase();
          var untranslatedEventParams = parent.getParameters().map( function(param) {return param.name;});
          var translatedEventParams =  untranslatedEventParams.map(
-             function (name) {return componentDb.getInternationalizedParameterName(name); }
+             function (name) {return componentDb.getInternationalizedParameterName(block.typeName, name); }
          );
          var index = translatedEventParams.indexOf(name);
          if (index != -1) {

@@ -381,9 +381,10 @@ Blockly.WorkspaceSvg.prototype.renameComponent = function(uid, oldName, newName)
  * @param {Object.<string, string>} translations Translation dictionary provided by GWT
  * component information.
  */
-Blockly.WorkspaceSvg.prototype.populateComponentTypes = function(strComponentInfos, translations) {
+Blockly.WorkspaceSvg.prototype.populateComponentTypes = function(strComponentInfos, translations, extensionTranslations) {
   this.componentDb_.populateTypes(JSON.parse(strComponentInfos));
   this.componentDb_.populateTranslations(translations);
+  this.componentDb_.populateExtensionTranslations(extensionTranslations);
 };
 
 //noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java.

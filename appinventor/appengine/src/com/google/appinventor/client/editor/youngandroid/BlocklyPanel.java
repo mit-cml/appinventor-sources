@@ -820,7 +820,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public native void populateComponentTypes(String jsonComponentsStr) /*-{
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
-      .populateComponentTypes(jsonComponentsStr, @com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SIMPLE_COMPONENT_TRANSLATIONS);
+      .populateComponentTypes(jsonComponentsStr, @com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SIMPLE_COMPONENT_TRANSLATIONS, @com.google.appinventor.client.editor.youngandroid.BlocklyPanel::EXTENSION_COMPONENT_TRANSLATIONS);
   }-*/;
 
   /**

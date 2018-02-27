@@ -65,7 +65,7 @@ Blockly.Xml.domToWorkspaceHeadless = function(xml, workspace) {
     var block, blocks = workspace.getAllBlocks();
     for (i = 0; block = blocks[i]; i++) {
       if (block.eventparam) {
-        block.setFieldValue(workspace.getComponentDatabase().getInternationalizedParameterName(block.eventparam), 'VAR');
+        block.setFieldValue(workspace.getComponentDatabase().getInternationalizedParameterName(block.typeName, block.eventparam), 'VAR');
       }
     }
     if (!existingGroup) {
