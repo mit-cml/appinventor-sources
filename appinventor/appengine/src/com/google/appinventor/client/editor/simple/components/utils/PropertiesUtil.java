@@ -92,10 +92,16 @@ public class PropertiesUtil {
                                         YaFormEditor editor) {
 
     String componentType = mockComponent.getType();
+    String caption;
+    String translatedCaption;
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
-      mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          ComponentsTranslation.getPropertyName(property.getCaption()),
+      caption = property.getCaption();
+      translatedCaption = ComponentsTranslation.getExtensionPropertyName(componentType, caption);
+      if (translatedCaption == caption) { // probably not found
+        translatedCaption = ComponentsTranslation.getPropertyName(caption);
+      }
+      mockComponent.addProperty(property.getName(), property.getDefaultValue(), translatedCaption,
           PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor, property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
