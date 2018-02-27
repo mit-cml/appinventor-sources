@@ -449,7 +449,7 @@ Blockly.Blocks.component_method = {
       this.componentDropDown.setValue(this.instanceName);
     } else {
       this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + localizedMethodName);
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedMethodName);
       this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
         .setAlign(Blockly.ALIGN_RIGHT);
