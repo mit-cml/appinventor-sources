@@ -285,6 +285,10 @@ public class ExternalComponentGenerator {
       if (localeObject.has("component")) {
         rtnObject.put("COMPONENT-" + componentName, localeObject.getString("component"));
       }
+      // help string
+      if (localeObject.has("helpString")) {
+        rtnObject.put(componentName + "-helpString", localeObject.getString("helpString"));
+      }
       // properties
       transformTranslationsMapByType(localeObject.getJSONObject("properties"), "PROPERTY-", rtnObject);
       // events
