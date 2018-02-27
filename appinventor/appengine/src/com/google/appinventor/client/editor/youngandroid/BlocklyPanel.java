@@ -15,6 +15,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Callback;
@@ -64,6 +65,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   private static final String EDITOR_HTML = "<div id=\"FORM_NAME\" class=\"svg\" tabindex=\"-1\"></div>";
   private static final NativeTranslationMap SIMPLE_COMPONENT_TRANSLATIONS;
+  private static final ExtensionTranslationMap EXTENSION_COMPONENT_TRANSLATIONS;
 
   static {
     ((BlocklySource) GWT.create(BlocklySource.class)).initBlockly();
@@ -76,6 +78,15 @@ public class BlocklyPanel extends HTMLPanel {
     }
     addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
     SIMPLE_COMPONENT_TRANSLATIONS = NativeTranslationMap.transform(ComponentsTranslation.myMap);
+    EXTENSION_COMPONENT_TRANSLATIONS = ExtensionTranslationMap.make();
+  }
+
+  public static void appendExtensionTranslation(String componentName, Map<String, String> map) {
+    NativeTranslationMap componentTranslation = NativeTranslationMap.make();
+    for(Entry<String, String> entry : map.entrySet()) {
+      componentTranslation.put(entry.getKey(), entry.getValue());
+    }
+    EXTENSION_COMPONENT_TRANSLATIONS.put(componentName, componentTranslation);
   }
 
   /**
@@ -913,6 +924,18 @@ public class BlocklyPanel extends HTMLPanel {
       }
       return result;
     }
+  }
+  
+  private static class ExtensionTranslationMap extends JavaScriptObject {
+    protected ExtensionTranslationMap() {}
+
+    private static native ExtensionTranslationMap make()/*-{
+      return {};
+    }-*/;
+
+    private native void put(String key, NativeTranslationMap value)/*-{
+      this[key] = value;
+    }-*/;
   }
 
 }

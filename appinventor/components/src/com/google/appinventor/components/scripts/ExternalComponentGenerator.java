@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,6 +34,7 @@ import org.json.JSONObject;
 
 public class ExternalComponentGenerator {
 
+  private static final String TRANSLATION_FILE_NAME = "translation.json";
   private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
   private static String externalComponentsDirPath;
@@ -113,6 +115,7 @@ public class ExternalComponentGenerator {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
       String logComponentType =  "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
+      processTranslationScript(name, entry.getValue());
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.type, info.descriptor);
@@ -149,7 +152,7 @@ public class ExternalComponentGenerator {
       throws IOException, JSONException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
-    String  extensionFileDirPath = extensionDirPath + File.separator + "files";
+    String extensionFileDirPath = extensionDirPath + File.separator + "files";
     copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
@@ -202,6 +205,115 @@ public class ExternalComponentGenerator {
     } else {
       System.out.println("Extensions : Skipping missing icon " + icon);
     }
+  }
+  
+  private static void processTranslationScript(String packageName, List<ExternalComponentInfo> componentList) throws IOException, JSONException {
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File script = new File(sourceDir, TRANSLATION_FILE_NAME);
+    if (script.exists()) {
+      System.out.println("Extensions : Processing translation script");
+      String translation_script = readFile(script.getAbsolutePath(), DEFAULT_CHARSET);
+      Map<String, JSONObject> translations = TranslationTransformer.transformTranslationsMap(new JSONObject(translation_script));
+      JSONObject componentTranslations;
+      for (ExternalComponentInfo component : componentList) {
+        componentTranslations = translations.get(component.className);
+        component.descriptor.put("translations",
+          componentTranslations == null ? new JSONObject() : componentTranslations);
+      }
+    } else {
+      System.out.println("Extensions : Skipping missing translation script " + script);
+    }
+  }
+
+  private static class TranslationTransformer {
+
+    /**
+     * Converted translation.json into excepted form.
+     * 
+     * Sample json scriptObject:
+     * {
+     *   "COMPONENT-NAME": {
+     *     "LOCALE-NAME": {
+     *       "component":  "COMPONENT-NAME-TRANSLATION",
+     *       "properties": { "PROPERTY-NAME": "PROPERTY-TRANSLATION" },
+     *       "events":     { "EVENT-NAME": "EVENT-TRANSLATION" },
+     *       "methods":    { "METHOD-NAME": "METHOD-TRANSLATION" },
+     *       "params":     { "PARAM-NAME": "PARAM-TRANSLATION" }
+     *     }
+     *   }
+     * }
+     * 
+     * @param scriptObject JSONObject (componentName, JSONObject (locale, JSONObject (translationType, String|JSONObject (name, translation))))
+     * @return             HashMap (componentName, JSONObject (locale, JSONObject (name, translation)))
+     */
+    public static Map<String, JSONObject> transformTranslationsMap(JSONObject scriptObject) throws JSONException {
+      Map<String, JSONObject> rtnMap = new HashMap<String, JSONObject>();
+      Iterator<String> iterator = scriptObject.keys();
+      String componentName;
+      while (iterator.hasNext()) {
+        componentName = iterator.next();
+        rtnMap.put(componentName, transformTranslationsMapByComponent(scriptObject.getJSONObject(componentName), componentName));
+      }
+      return rtnMap;
+    }
+    
+    /**
+     * @param componentNameObject JSONObject (locale, JSONObject (translationType, String|JSONObject (name, translation)))
+     * @param componentName       The component name
+     * @return                    JSONObject (locale, JSONObject (name, translation))
+     */
+    private static JSONObject transformTranslationsMapByComponent(JSONObject componentNameObject, String componentName) throws JSONException {
+      JSONObject rtnObject = new JSONObject();
+      Iterator<String> iterator = componentNameObject.keys();
+      String locale;
+      while (iterator.hasNext()) {
+        locale = iterator.next();
+        rtnObject.put(locale, transformTranslationsMapByLocale(componentNameObject.getJSONObject(locale), componentName));
+      }
+      return rtnObject;
+    }
+
+    /**
+     * @param localeObject  JSONObject (translationType, String|JSONObject (name, translation))
+     * @param componentName The component name
+     * @return              JSONObject (name, translation)
+     */
+    private static JSONObject transformTranslationsMapByLocale(JSONObject localeObject, String componentName) throws JSONException {
+      JSONObject rtnObject = new JSONObject();
+      // component
+      if (localeObject.has("component")) {
+        rtnObject.put("COMPONENT-" + componentName, localeObject.getString("component"));
+      }
+      // properties
+      transformTranslationsMapByType(localeObject.getJSONObject("properties"), "PROPERTY-", rtnObject);
+      // events
+      transformTranslationsMapByType(localeObject.getJSONObject("events"), "EVENT-", rtnObject);
+      // methods
+      transformTranslationsMapByType(localeObject.getJSONObject("methods"), "METHOD-", rtnObject);
+      // params
+      transformTranslationsMapByType(localeObject.getJSONObject("params"), "PARAM-", rtnObject);
+      
+      return rtnObject;
+    }
+
+    /**
+     * @param localeObject JSONObject (name, translation)
+     * @param prefix       Prefix that added into JSONObject
+     * @param target       Target JSONObject (prefix+name, translation)
+     */
+    private static void transformTranslationsMapByType(JSONObject itemObject, String prefix, JSONObject target) throws JSONException {
+      if (itemObject == null) {
+        return;
+      }
+      Iterator<String> iterator = itemObject.keys();
+      String item;
+      while (iterator.hasNext()) {
+        item = iterator.next();
+        target.put(prefix + item, itemObject.getString(item));
+      }
+    }
+
   }
 
   private static void generateExternalComponentOtherFiles(String packageName) throws IOException {
