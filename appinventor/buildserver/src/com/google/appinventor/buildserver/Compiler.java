@@ -628,8 +628,6 @@ public final class Compiler {
         }
       }
 
-      minSdk = 22;
-
       // make permissions unique by putting them in one set
       Set<String> permissions = Sets.newHashSet();
       for (Set<String> compPermissions : permissionsNeeded.values()) {

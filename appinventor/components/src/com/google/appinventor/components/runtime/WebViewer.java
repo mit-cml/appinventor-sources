@@ -439,10 +439,9 @@ public final class WebViewer extends AndroidViewComponent {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.clearWebViewGeoLoc();
   }
-
-  /*
-*  Takes a JS function name and calls that function in the webViewer.
-*/
+  /**
+  *  Takes a JS function name and calls that function in the webViewer.
+  */
   @SimpleFunction(description = "Run JavaScript method.")
   public void RunJavaScript(String functionName, String inputs) {
 

@@ -1069,7 +1069,7 @@ Blockly.ComponentBlock.createClockAddDropDown = function(/*block*/){
 /*
   1.two versions!!!
   2. start with "move cube"
-  3. build cube --> create with XML --> mutation(domtomMutation, mutationtoDom)
+  3. build cube --> create with XML --> mutation(domToMutation, mutationtoDom)
 
   xml = Blockly.Xml.blockToDom_(Blockly.selected)
   text = Blockly.Xml.domToText(xml);
@@ -1089,37 +1089,33 @@ Blockly.ComponentBlock.createClockAddDropDown = function(/*block*/){
 
 // with socket for  number
 Blockly.Blocks['customizable_block'] = {
-
-    init:function(){
-        this.setColour(160);
-        this.setTooltip('customizable block with JSON format data');
-    },
-
-
-    mutationToDom: function(){
-        var container = document.createElement('mutation');
-        container.setAttribute('block_info', this.block_info);
-        container.setAttribute('webviewer_name', this.webviewer_name);
-        return container;
-    },
-
-    //this function gets called first!
-    domToMutation: function(xmlElement) {
-
-        this.block_info = xmlElement.getAttribute('block_info');
-        this.webviewer_name = xmlElement.getAttribute('webviewer_name');
-        var decoded_block_info = decodeURIComponent(this.block_info);
-        var info_object = JSON.parse(decoded_block_info);
-        this.jsonInit(info_object);
+  init:function(){
+    this.setColour(160);
+    this.setTooltip('customizable block with JSON format data');
+  },
 
 
-    },
+  mutationToDom: function(){
+    var container = document.createElement('mutation');
+    container.setAttribute('block_info', this.block_info);
+    container.setAttribute('webviewer_name', this.webviewer_name);
+    return container;
+  },
 
-    rename: function(oldname, newname){
-        if (this.webviewer_name == oldname){
-            this.webviewer_name = newname;
-        }
+  //this function gets called first!
+  domToMutation: function(xmlElement) {
+    this.block_info = xmlElement.getAttribute('block_info');
+    this.webviewer_name = xmlElement.getAttribute('webviewer_name');
+    var decoded_block_info = decodeURIComponent(this.block_info);
+    var info_object = JSON.parse(decoded_block_info);
+    this.jsonInit(info_object);
+  },
+
+  rename: function(oldname, newname){
+    if (this.webviewer_name == oldname){
+      this.webviewer_name = newname;
     }
+  }
 }
 
 
