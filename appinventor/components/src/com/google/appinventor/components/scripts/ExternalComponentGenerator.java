@@ -177,9 +177,8 @@ public class ExternalComponentGenerator {
       System.out.println("Extensions : Successfully created " + packageName + " build info file");
     }
     // Write out legacy component_build_info.json to transition developers
-    if(writeFile(extensionFileDirPath + File.separator + "component_build_info.json",
-        buildInfos.get(0).toString(), DEFAULT_CHARSET)) {
-    }
+    writeFile(extensionFileDirPath + File.separator + "component_build_info.json",
+      buildInfos.get(0).toString(), DEFAULT_CHARSET);
   }
 
   private static void copyIcon(String packageName, String type, JSONObject componentDescriptor) throws IOException, JSONException {
