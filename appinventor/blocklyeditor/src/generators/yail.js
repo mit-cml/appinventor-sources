@@ -35,6 +35,9 @@ Blockly.Yail.ORDER_NONE = 99;          // (...)
 Blockly.Yail.YAIL_ADD_COMPONENT = "(add-component ";
 Blockly.Yail.YAIL_ADD_TO_LIST = "(add-to-list ";
 Blockly.Yail.YAIL_BEGIN = "(begin ";
+// This "break" symbol must match the one that is inserted into the call to the
+// foreach macro.
+Blockly.Yail.YAIL_BREAK = "break";
 Blockly.Yail.YAIL_CALL_COMPONENT_METHOD = "(call-component-method ";
 Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD = "(call-component-type-method ";
 Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE = "(call-yail-primitive ";
@@ -54,8 +57,8 @@ Blockly.Yail.YAIL_DEFINE_FORM = "(define-form ";
 Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION = "(do-after-form-creation ";
 Blockly.Yail.YAIL_DOUBLE_QUOTE = "\"";
 Blockly.Yail.YAIL_FALSE = "#f";
-Blockly.Yail.YAIL_FOREACH = "(foreach ";
-Blockly.Yail.YAIL_FORRANGE = "(forrange ";
+Blockly.Yail.YAIL_FOREACH = "(foreach-with-break ";
+Blockly.Yail.YAIL_FORRANGE = "(forrange-with-break ";
 Blockly.Yail.YAIL_GET_COMPONENT = "(get-component ";
 Blockly.Yail.YAIL_GET_PROPERTY = "(get-property ";
 Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY = "(get-property-and-check  ";
@@ -82,7 +85,7 @@ Blockly.Yail.YAIL_SET_VARIABLE = "(set-var! ";
 Blockly.Yail.YAIL_SET_THIS_FORM = "(set-this-form)\n ";
 Blockly.Yail.YAIL_SPACER = " ";
 Blockly.Yail.YAIL_TRUE = "#t";
-Blockly.Yail.YAIL_WHILE = "(while ";
+Blockly.Yail.YAIL_WHILE = "(while-with-break ";
 Blockly.Yail.YAIL_LIST_CONSTRUCTOR = "*list-for-runtime*";
 
 Blockly.Yail.SIMPLE_HEX_PREFIX = "&H";

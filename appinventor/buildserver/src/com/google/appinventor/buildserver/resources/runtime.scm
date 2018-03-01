@@ -767,26 +767,57 @@
         (*:addParent (KawaEnvironment:getCurrent) *test-environment*)
         (set! *test-global-var-environment* (gnu.mapping.Environment:make 'test-global-var-env)))))
 
-(define-syntax foreach
+
+(define-syntax foreach-with-break
   (syntax-rules ()
-    ((_ lambda-arg-name body-form list)
-     (yail-for-each (lambda (lambda-arg-name) body-form) list))))
+    ((_ escapename arg-name bodyform list-of-args)
+     (call-with-current-continuation
+      (lambda (escapename)
+	(let ((proc (lambda (arg-name) bodyform)))
+	  (yail-for-each proc list-of-args)))))))
+
+  ;; To call this foreach-with-break macro, we must pass a symbol that will be the name of an escape procedure
+  ;; referenced in the body of the proc argument.  For example
+  ;; (foreach-with-break
+  ;;  break
+  ;;  x
+  ;;  (if (= x 17)
+  ;;      (begin (display "escape") (break #f))
+  ;;      (begin (display x) (display " "))
+  ;;      )
+  ;;  '(100 200 17 300))
 
 
-(define-syntax forrange
-  (syntax-rules ()
-    ((_ lambda-arg-name body-form start end step)
-     (yail-for-range (lambda (lambda-arg-name) body-form) start end step))))
+;; This yail procedure should be called only if "break" is not shadowed by 
+;; the break passed as the escape parameter in the loop macro.
+;; The blocks editor should give an error if the break block is placed
+;; outside of a loop.   So the only way this yail procedure
+;; would be called should be by running do-it on an isolated break block.
+;; See blocklyeditor/src/warninghandler.js checkIsNotInLoop
 
-(define-syntax while
+(define (break ignore)
+  (signal-runtime-error
+     "Break should be run only from within a loop"
+     "Bad use of Break"))
+
+(define-syntax forrange-with-break
   (syntax-rules ()
-    ((_ condition body ...)
-     (let loop ()
-       (if condition
-       (begin
-         body ...
-         (loop))
-       *the-null-value*)))))
+    ((_ escapename lambda-arg-name body-form start end step)
+     (call-with-current-continuation
+      (lambda (escapename)
+	(yail-for-range (lambda (lambda-arg-name) body-form) start end step))))))
+
+(define-syntax while-with-break
+  (syntax-rules ()
+    ((_ escapename condition body ...)
+     (call-with-current-continuation
+      (lambda (escapename)
+	(let loop ()
+	  (if condition
+	      (begin
+		body ...
+		(loop))
+	      *the-null-value*)))))))
 
 ;;; RUNTIME library
 
