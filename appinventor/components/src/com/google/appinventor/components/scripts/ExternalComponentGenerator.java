@@ -179,7 +179,6 @@ public class ExternalComponentGenerator {
     // Write out legacy component_build_info.json to transition developers
     if(writeFile(extensionFileDirPath + File.separator + "component_build_info.json",
         buildInfos.get(0).toString(), DEFAULT_CHARSET)) {
-      System.out.println("Extensions : Successfully created " + packageName + " build info file");
     }
   }
 
