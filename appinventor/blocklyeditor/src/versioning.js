@@ -1404,7 +1404,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // Duration Support was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // FixedInterval was added.
+    4: "noUpgrade"
 
   }, // End Clock upgraders
 

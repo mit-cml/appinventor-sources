@@ -2815,6 +2815,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ExtrasProperties();
 
+  @DefaultMessage("FixedInterval")
+  @Description("")
+  String FixedIntervalProperties();
+
   @DefaultMessage("FollowLinks")
   @Description("")
   String FollowLinksProperties();

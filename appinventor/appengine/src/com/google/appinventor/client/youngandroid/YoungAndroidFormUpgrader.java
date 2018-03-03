@@ -15,7 +15,6 @@ import com.google.appinventor.client.editor.simple.components.MockVisibleCompone
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -727,6 +726,12 @@ public final class YoungAndroidFormUpgrader {
       // (3) Duration Support was added
       // No properties need to be added to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The behaviour of the previous versions are not FixedInterval
+      componentProperties.put("FixedInterval", new ClientJsonString("False"));
+      // FixedInterval was added
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

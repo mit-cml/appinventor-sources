@@ -42,6 +42,7 @@ public final class Clock extends AndroidNonvisibleComponent
     implements Component, AlarmHandler, OnStopListener, OnResumeListener, OnDestroyListener,
                Deleteable {
   private static final int DEFAULT_INTERVAL = 1000;  // ms
+  private static final boolean DEFAULT_PRECISE_INTERVAL = true;
   private static final boolean DEFAULT_ENABLED = true;
 
   private TimerInternal timerInternal;
@@ -55,7 +56,7 @@ public final class Clock extends AndroidNonvisibleComponent
    */
   public Clock(ComponentContainer container) {
     super(container.$form());
-    timerInternal = new TimerInternal(this, DEFAULT_ENABLED, DEFAULT_INTERVAL);
+    timerInternal = new TimerInternal(this, DEFAULT_ENABLED, DEFAULT_INTERVAL, DEFAULT_PRECISE_INTERVAL);
 
     // Set up listeners
     form.registerForOnResume(this);
@@ -109,6 +110,35 @@ public final class Clock extends AndroidNonvisibleComponent
   @SimpleProperty
   public void TimerInterval(int interval) {
     timerInternal.Interval(interval);
+  }
+
+
+  /**
+   * FixedInterval property getter method.
+   * 
+   * @return {@code true} Used time of the previous event will be taken away from the next interval,
+   *         {@code false} intervals are count starts from the end of last event.
+   */
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR,
+    description = "Used time of the previous event will be taken away from the next interval (if true), or intervals start from the end of last event.")
+  public boolean FixedInterval() {
+    return timerInternal.FixedInterval();
+  }
+
+
+  /**
+   * Interval property setter method: sets wether to use fixed interval between timer events.
+   *
+   * @param fixedInterval {@code true} Used time of the previous event will be taken away from the next interval,
+   *                      {@code false} intervals are count starts from the end of last event.
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = DEFAULT_PRECISE_INTERVAL ? "True" : "False")
+  @SimpleProperty
+  public void FixedInterval(boolean fixedInterval) {
+    timerInternal.FixedInterval(fixedInterval);
   }
 
   /**

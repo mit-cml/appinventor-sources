@@ -643,7 +643,9 @@ public class YaVersion {
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
-  public static final int CLOCK_COMPONENT_VERSION = 3;
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - Added FixedInterval
+  public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

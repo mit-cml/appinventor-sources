@@ -25,6 +25,9 @@ public final class TimerInternal implements Runnable {
   // Interval between timer events in ms
   private int interval;  // set in constructor
 
+  // Fixed interval
+  private boolean fixedInterval;
+
   // Component that should be called by timer
   private AlarmHandler component;
 
@@ -41,6 +44,19 @@ public final class TimerInternal implements Runnable {
   }
 
   /**
+   * Timer constructor
+   *
+   * @param component the component whose {@link AlarmHandler#alarm()} method
+   *        should be called on timer intervals
+   * @param enabled whether it is initially enabled
+   * @param interval time in ms
+   * @param fixedInterval whether user prefer a fixed interval
+   */
+  public TimerInternal(AlarmHandler component, boolean enabled, int interval, boolean fixedInterval) {
+    this(component, enabled, interval, fixedInterval, new Handler());
+  }
+
+  /**
    * Timer constructor allowing injection of a mock Handler for test purposes
    *
    * @param component the component whose {@link AlarmHandler#alarm()} method
@@ -53,12 +69,30 @@ public final class TimerInternal implements Runnable {
    *        specified via {@link #Interval(int)}
    */
   public TimerInternal(AlarmHandler component, boolean enabled, int interval, Handler handler) {
+    this(component, enabled, interval, false, handler);
+  }
+
+  /**
+   * Timer constructor allowing injection of a mock Handler for test purposes
+   *
+   * @param component the component whose {@link AlarmHandler#alarm()} method
+   *        should be called on timer intervals
+   * @param enabled whether it is initially enabled
+   * @param interval time in ms
+   * @param fixedInterval {@code true} use fixed interval
+   * @param handler the handler whose {@link
+   *        android.os.Handler#postDelayed(Runnable, long)}
+   *        method is called to request calls of this after the delay
+   *        specified via {@link #Interval(int)}
+   */
+  public TimerInternal(AlarmHandler component, boolean enabled, int interval, boolean fixedInterval, Handler handler) {
     this.handler = handler;
     this.component = component;
 
     // Set properties to default values specified by caller.
     this.enabled = enabled;
     this.interval = interval;
+    this.fixedInterval = fixedInterval;
     if (enabled) {
       handler.postDelayed(this, interval);
     }
@@ -88,7 +122,7 @@ public final class TimerInternal implements Runnable {
 
   /**
    * Enabled property getter method.
-   *
+   * 
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
    */
@@ -113,16 +147,40 @@ public final class TimerInternal implements Runnable {
     }
   }
 
+  /**
+   * FixedInterval property getter method.
+   *
+   * @return  {@code true} Used time of the previous event will be taken away from the next interval,
+   *          {@code false} intervals are count starts from the end of last event.
+   */
+  public boolean FixedInterval() {
+    return fixedInterval;
+  }
+
+  /**
+   * Enabled property setter method: starts or stops the timer.
+   * 
+   * @param fixedInterval {@code true} Used time of the previous event will be taken away from the next interval,
+   *                      {@code false} intervals are count starts from the end of last event.
+   */
+  public void FixedInterval(boolean fixedInterval) {
+    this.fixedInterval = fixedInterval;
+  }
+
   // Runnable implementation
 
   public void run() {
     if (enabled) {
+      long startTimeMs = Dates.Timer();
+
       component.alarm();
 
       // During the call to component.alarm, the enabled field may have changed.
       // We need to make sure that enabled is still true before we call handler.postDelayed.
       if (enabled) {
-        handler.postDelayed(this, interval);
+        long usedTimeMs = Dates.Timer() - startTimeMs;
+        handler.postDelayed(this, 
+          fixedInterval ? Math.max(0, (interval - usedTimeMs)) : interval);
       }
     }
   }
