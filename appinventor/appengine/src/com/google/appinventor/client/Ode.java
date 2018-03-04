@@ -2261,7 +2261,8 @@ public class Ode implements EntryPoint {
                   next.run();
                 }
               }
-              public void OnFailure(Throwable caught) {
+              @Override
+              public void onFailure(Throwable caught) {
                 super.onFailure(caught);
                 if (deferred) {
                   next.run();
