@@ -5,9 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
-import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor.Choice;
 
 /**
  * Property editor for sensor distance notification intervals

@@ -13,14 +13,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -108,12 +110,12 @@ public final class ComponentHelpWidget extends Image {
       // When the panel is closed, save the time in milliseconds.
       // This will help us avoid immediately reopening it if the user
       // closed it by clicking on the question-mark icon.
-      addPopupListener(new PopupListener() {
-          @Override
-          public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
-            lastClosureTime = System.currentTimeMillis();
-          }
-        });
+      addCloseHandler(new CloseHandler<PopupPanel>(){
+        @Override
+        public void onClose(CloseEvent<PopupPanel> event) {
+          lastClosureTime = System.currentTimeMillis();
+        }
+      });
 
       // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
       // avoid the Google Chrome Pinch Zoom bug.
@@ -146,14 +148,13 @@ public final class ComponentHelpWidget extends Image {
       imageResource = images.help();
     }
     AbstractImagePrototype.create(imageResource).applyTo(this);
-    addClickListener(new ClickListener() {
+    addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           final long MINIMUM_MS_BETWEEN_SHOWS = 250;  // .25 seconds
 
-          if (System.currentTimeMillis() - lastClosureTime >=
-              MINIMUM_MS_BETWEEN_SHOWS) {
-            new ComponentHelpPopup(scd, sender);
+          if (System.currentTimeMillis() - lastClosureTime >= MINIMUM_MS_BETWEEN_SHOWS) {
+            new ComponentHelpPopup(scd, (Widget)event.getSource());
           }
         }
       }

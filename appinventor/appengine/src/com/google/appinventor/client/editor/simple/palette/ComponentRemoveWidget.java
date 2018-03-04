@@ -8,14 +8,13 @@ package com.google.appinventor.client.editor.simple.palette;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -37,10 +36,9 @@ public class ComponentRemoveWidget extends Image {
     }
     this.scd = simpleComponentDescriptor;
     AbstractImagePrototype.create(imageResource).applyTo(this);
-    addClickListener(new ClickListener() {
-
+    addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget widget) {
+        public void onClick(ClickEvent event) {
           if (Window.confirm(MESSAGES.reallyRemoveComponent())) {
             long projectId = ode.getCurrentYoungAndroidProjectId();
             YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);

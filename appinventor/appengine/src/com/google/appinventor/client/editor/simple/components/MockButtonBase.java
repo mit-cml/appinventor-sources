@@ -132,16 +132,16 @@ abstract class MockButtonBase extends MockVisibleComponent {
         // The value 10 px was chosen strictly for style.
         // 10 px is the same as ROUNDED_CORNERS_RADIUS defined in
         // com.google.appinventor.components.runtime.ButtonBase.
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "10px");
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", "10px");
         break;
       case 2:
         // Rectangular Button
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", "0px");
         break;
       case 3:
         // Oval Button
-        String height = DOM.getStyleAttribute(buttonWidget.getElement(), "height");
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", height);
+        String height = buttonWidget.getElement().getStyle().getHeight();
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", height);
         break;
       default:
         // This should never happen
@@ -223,7 +223,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
       // setting the widget's background color to COLOR_NONE.
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget,
           "&H" + COLOR_NONE);
-      DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
+      buttonWidget.getElement().getStyle().setProperty("borderRadius", "0px");
     }
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);

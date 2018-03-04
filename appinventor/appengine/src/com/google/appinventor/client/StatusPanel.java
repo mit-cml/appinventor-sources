@@ -26,7 +26,7 @@ public class StatusPanel extends Composite {
     HorizontalPanel hpanel = new HorizontalPanel();
     hpanel.setWidth("100%");
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    String tosUrl = Ode.getInstance().getSystemConfig().getTosUrl();
+    String tosUrl = Ode.getSystemConfig().getTosUrl();
     if (!Strings.isNullOrEmpty(tosUrl)) {
       String appInventorFooter =
           "<a href=\"" + tosUrl + "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";

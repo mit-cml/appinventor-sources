@@ -216,7 +216,7 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       table.setWidget(0, 2, new Label(MESSAGES.projectDateModifiedHeader()));
 
       // Set the widgets for the rows representing previous checkpoints
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
       int row = 1;
       for (Project checkpointProject : checkpointProjects) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");

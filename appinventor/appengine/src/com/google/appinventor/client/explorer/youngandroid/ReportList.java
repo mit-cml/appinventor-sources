@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +61,6 @@ public class ReportList extends Composite  {
   private final CheckBox checkBox;
   private final VerticalPanel panel;
   private List<GalleryAppReport> reports;
-  private List<GalleryAppReport> selectedReports;
   private final List<GalleryAppReport> selectedGalleryAppReports;
   private final Map<GalleryAppReport, ReportWidgets> ReportWidgets;
   private DropDownButton templateButton;
@@ -143,7 +139,7 @@ public class ReportList extends Composite  {
                 refreshTable(reportListResult, false);
               }
           };
-          if(checkBox.isChecked()){
+          if(checkBox.getValue()){
             reportAllRecentCounter += NUMREPORTSSHOW;
             Ode.getInstance().getGalleryService().getAllAppReports(reportAllRecentCounter,NUMREPORTSSHOW,callback);
           }else{
@@ -276,7 +272,7 @@ public class ReportList extends Composite  {
       appLabel = new Label(report.getApp().getTitle());
       appLabel.addStyleName("primary-link");
 
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
       Date dateCreated = new Date(report.getTimeStamp());
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
 

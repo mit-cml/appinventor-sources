@@ -129,7 +129,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
       if (!enable){
         form.changePreviewSize(false);
         checkboxPhoneTablet.setText(MESSAGES.previewTabletSize());
-        checkboxPhoneTablet.setChecked(false);
+        checkboxPhoneTablet.setValue(false);
       }
     }
     checkboxPhoneTablet.setEnabled(enable);

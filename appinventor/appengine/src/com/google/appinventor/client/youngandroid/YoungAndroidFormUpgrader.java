@@ -15,16 +15,15 @@ import com.google.appinventor.client.editor.simple.components.MockVisibleCompone
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -1563,12 +1562,13 @@ public final class YoungAndroidFormUpgrader {
     message.setStyleName("DialogBox-message");
     VerticalPanel vPanel = new VerticalPanel();
     Button okButton = new Button("OK");
-    okButton.addClickListener(new ClickListener() {
-        @Override
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+    okButton.addClickHandler(new ClickHandler(){
+    
+      @Override
+      public void onClick(ClickEvent event) {
+        dialogBox.hide();
+      }
+    });
     vPanel.add(message);
     vPanel.add(okButton);
     dialogBox.setWidget(vPanel);

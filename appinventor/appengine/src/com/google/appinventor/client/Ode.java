@@ -107,7 +107,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -1605,18 +1604,19 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button ok = new Button(MESSAGES.createWelcomeDialogButton());
     final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());
-    ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          if (noshow.getValue()) { // User checked the box
-            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-                "" + splashConfig.version);
-            userSettings.saveSettings(null);
-          }
-          maybeShowNoProjectsDialog();
+    ok.addClickHandler(new ClickHandler(){
+      @Override
+      public void onClick(ClickEvent event) {
+        dialogBox.hide();
+        if (noshow.getValue()) { // User checked the box
+          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
+              "" + splashConfig.version);
+          userSettings.saveSettings(null);
         }
-      });
+        maybeShowNoProjectsDialog();
+      }
+    });
     holder.add(ok);
     holder.add(noshow);
     DialogBoxContents.add(message);
@@ -1688,8 +1688,8 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button takesurvey = new Button(MESSAGES.showSurveySplashButtonNow());
-    takesurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    takesurvey.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           // Update Splash Settings here
           userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
@@ -1702,16 +1702,16 @@ public class Ode implements EntryPoint {
       });
     holder.add(takesurvey);
     Button latersurvey = new Button(MESSAGES.showSurveySplashButtonLater());
-    latersurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    latersurvey.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           maybeShowSplash();
         }
       });
     holder.add(latersurvey);
     Button neversurvey = new Button(MESSAGES.showSurveySplashButtonNever());
-    neversurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    neversurvey.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           // Update Splash Settings here
           Settings settings =
@@ -1815,8 +1815,8 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button reloadSession = new Button(MESSAGES.reloadWindow());
-    reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    reloadSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           reloadWindow(true);
         }
@@ -1854,24 +1854,24 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button closeSession = new Button(MESSAGES.invalidSessionDialogButtonEnd());
-    closeSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    closeSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           finalDialog();
         }
       });
     holder.add(closeSession);
     Button reloadSession = new Button(MESSAGES.invalidSessionDialogButtonCurrent());
-    reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    reloadSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           reloadWindow(false);
         }
       });
     holder.add(reloadSession);
     Button continueSession = new Button(MESSAGES.invalidSessionDialogButtonContinue());
-    continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    continueSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           bashWarningDialog();
         }
@@ -1914,8 +1914,8 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());
-    continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    continueSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           sessionId = "force";  // OK, over-ride in place!
           // Because we ultimately got here from a failure in the save function...
@@ -1926,8 +1926,8 @@ public class Ode implements EntryPoint {
       });
     holder.add(continueSession);
     Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());
-    cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    cancelSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           invalidSessionDialog();
         }
@@ -1991,7 +1991,7 @@ public class Ode implements EntryPoint {
     dialogBox.show();
   }
 
-  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback callback) {
+  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback<Long> callback) {
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.blocksTruncatedDialogText());
@@ -2009,8 +2009,8 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());
-    continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    continueSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           // call save2 again, this time with force = true so the empty workspace will be written
           getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
@@ -2024,8 +2024,8 @@ public class Ode implements EntryPoint {
         reloadWindow(false);
       }
     };
-    cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    cancelSession.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           // Note: We do *not* remove the dialog, this locks the UI up (our intent)
           // Wait for a few seconds for other I/O to complete
           cancelSession.setEnabled(false); // Disable button to prevent further clicking
@@ -2076,8 +2076,8 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
-    okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+    okButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
         }
       });
@@ -2235,7 +2235,6 @@ public class Ode implements EntryPoint {
       next.run();
       return;
     }
-    String image = "";
     FileEditor editor = Ode.getInstance().getCurrentFileEditor();
     final long projectId = editor.getProjectId();
     final FileNode fileNode = editor.getFileNode();

@@ -5,8 +5,9 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.ResizableWidget;
 import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
@@ -143,20 +144,20 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
 
     // Create the outer shell
     setElement(DOM.createDiv());
-    DOM.setStyleAttribute(getElement(), "position", "relative");
+    getElement().getStyle().setProperty("position", "relative");
     setStyleName("gwt-ProgressBar-shell");
 
     // Create the bar element
     barElement = DOM.createDiv();
-    DOM.appendChild(getElement(), barElement);
-    DOM.setStyleAttribute(barElement, "height", "100%");
+    getElement().appendChild(barElement);
+    barElement.getStyle().setProperty("height", "100%");
     setBarStyleName("gwt-ProgressBar-bar");
 
     // Create the text element
     textElement = DOM.createDiv();
     DOM.appendChild(getElement(), textElement);
-    DOM.setStyleAttribute(textElement, "position", "absolute");
-    DOM.setStyleAttribute(textElement, "top", "0px");
+    textElement.getStyle().setProperty("position", "absolute");
+    textElement.getStyle().setProperty("top", "0px");
 
     //Set the current progress
     setProgress(curProgress);
@@ -235,9 +236,9 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
    */
   public void onResize(int width, int height) {
     if (textVisible) {
-      int textWidth = DOM.getElementPropertyInt(textElement, "offsetWidth");
+      int textWidth = Integer.parseInt(textElement.getStyle().getProperty("offsetWidth"));
       int left = (width / 2) - (textWidth / 2);
-      DOM.setStyleAttribute(textElement, "left", left + "px");
+      textElement.getStyle().setProperty("left", left + "px");
     }
   }
 
@@ -246,14 +247,14 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
    */
   public void redraw() {
     if (isAttached()) {
-      int width = DOM.getElementPropertyInt(getElement(), "clientWidth");
-      int height = DOM.getElementPropertyInt(getElement(), "clientHeight");
+      int width = Integer.parseInt(getElement().getStyle().getProperty("clientWidth"));
+      int height = Integer.parseInt(getElement().getStyle().getProperty("clientHeight"));
       onResize(width, height);
     }
   }
 
   public void setBarStyleName(String barClassName) {
-    DOM.setElementProperty(barElement, "className", barClassName);
+    barElement.setPropertyString("className", barClassName);
   }
 
   /**
@@ -290,8 +291,8 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
 
     // Calculate percent complete
     int percent = (int) (100 * getPercent());
-    DOM.setStyleAttribute(barElement, "width", percent + "%");
-    DOM.setElementProperty(textElement, "innerHTML", generateText(curProgress));
+    barElement.getStyle().setProperty("width", percent + "%");
+    textElement.setPropertyString("innerHTML", generateText(curProgress));
     updateTextStyle(percent);
 
     // Realign the text
@@ -330,10 +331,10 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   public void setTextVisible(boolean textVisible) {
     this.textVisible = textVisible;
     if (this.textVisible) {
-      DOM.setStyleAttribute(textElement, "display", "");
+      textElement.getStyle().setProperty("display", "");
       redraw();
     } else {
-      DOM.setStyleAttribute(textElement, "display", "none");
+      textElement.getStyle().setDisplay(Style.Display.NONE);
     }
   }
 
@@ -378,7 +379,7 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   @Override
   protected void onLoad() {
     // Reset the position attribute of the parent element
-    DOM.setStyleAttribute(getElement(), "position", "relative");
+    getElement().getStyle().setPosition(Style.Position.RELATIVE);
     ResizableWidgetCollection.get().add(this);
     redraw();
   }
@@ -403,10 +404,10 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   private void updateTextStyle(int percent) {
     // Set the style depending on the size of the bar
     if (percent < 50) {
-      DOM.setElementProperty(textElement, "className",
+      textElement.setPropertyString("className",
           textClassName + " " + textFirstHalfClassName);
     } else {
-      DOM.setElementProperty(textElement, "className",
+      textElement.setPropertyString("className",
           textClassName + " " + textSecondHalfClassName);
     }
   }

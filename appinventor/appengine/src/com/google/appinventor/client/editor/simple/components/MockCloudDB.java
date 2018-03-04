@@ -10,8 +10,6 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 
-import com.google.appinventor.client.output.OdeLog;
-
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
 import com.google.gwt.user.client.ui.Image;
@@ -64,7 +62,7 @@ public class MockCloudDB extends MockNonVisibleComponent {
 
     changeProperty(PROPERTY_NAME_PROJECT_ID, projectID);
     changeProperty(PROPERTY_NAME_ACCOUNT_NAME, accName);
-    String defaultRedisServer = Ode.getInstance().getSystemConfig().getDefaultCloudDBserver();
+    String defaultRedisServer = Ode.getSystemConfig().getDefaultCloudDBserver();
     changeProperty(PROPERTY_NAME_DEFAULT_REDISSERVER, defaultRedisServer);
     getTokenFromServer();       // Get Token from the server
   }

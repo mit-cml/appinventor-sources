@@ -59,7 +59,7 @@ public class BuildCommand extends ChainableCommand {
     final MessagesOutput messagesOutput = MessagesOutput.getMessagesOutput();
     messagesOutput.clear();
     messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(),
-        DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
+        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date())));
 
     OdeAsyncCallback<RpcResult> callback =
         new OdeAsyncCallback<RpcResult>(

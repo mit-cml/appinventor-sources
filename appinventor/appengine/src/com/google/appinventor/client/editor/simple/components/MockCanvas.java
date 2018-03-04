@@ -9,7 +9,6 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 import java.util.Comparator;
@@ -88,7 +87,7 @@ public final class MockCanvas extends MockContainer {
       // We set the background image of the canvasWidget so it displays the image. We do it inside
       // the if because we need to override the background-size property only for this case
       MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);
-      DOM.setStyleAttribute(canvasWidget.getElement(), "backgroundSize", "");
+      canvasWidget.getElement().getStyle().setProperty("backgroundSize", "");
     } else {
       ((MockCanvasLayout) layout).setBackgroundImageUrl(url);
       // We set the background image of the canvasWidget so it displays the image.

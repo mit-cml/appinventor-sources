@@ -150,7 +150,7 @@ public final class MockCheckBox extends MockWrapper {
    * Sets the checkbox's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
-    checkboxWidget.setChecked(Boolean.parseBoolean(text));
+    checkboxWidget.setValue(Boolean.parseBoolean(text));
   }
 
   // PropertyChangeListener implementation

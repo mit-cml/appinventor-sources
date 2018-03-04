@@ -7,14 +7,16 @@
 package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -85,9 +87,10 @@ public abstract class Wizard extends DialogBox {
     setStylePrimaryName("ode-DialogBox");
     setText(title);
 
-    ClickListener buttonListener = new ClickListener() {
+    ClickHandler buttonHandler = new ClickHandler(){
       @Override
-      public void onClick(Widget sender) {
+      public void onClick(ClickEvent event) {
+        Widget sender = (Widget) event.getSource();
         if (sender == cancelButton) {
           handleCancelClick();
         } else if (sender == nextButton) {
@@ -100,13 +103,13 @@ public abstract class Wizard extends DialogBox {
       }
     };
     cancelButton = new Button(MESSAGES.cancelButton());
-    cancelButton.addClickListener(buttonListener);
+    cancelButton.addClickHandler(buttonHandler);
     backButton = new Button(MESSAGES.backButton());
-    backButton.addClickListener(buttonListener);
+    backButton.addClickHandler(buttonHandler);
     nextButton = new Button(MESSAGES.nextButton());
-    nextButton.addClickListener(buttonListener);
+    nextButton.addClickHandler(buttonHandler);
     okButton = new Button(MESSAGES.okButton());
-    okButton.addClickListener(buttonListener);
+    okButton.addClickHandler(buttonHandler);
 
     buttonPanel = new HorizontalPanel();
     buttonPanel.add(cancelButton);
@@ -140,7 +143,7 @@ public abstract class Wizard extends DialogBox {
     // If this is a modal wizard then only allow it if the target element is a child of this wizard
     if (modal) {
       Element target = DOM.eventGetTarget(event);
-      return (target != null && DOM.isOrHasChild(getElement(), target));
+      return (target != null && getElement().isOrHasChild(target));
     } else {
       return super.onEventPreview(event);
     }
