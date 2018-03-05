@@ -56,10 +56,10 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
   }
   this.workspace_ = targetWorkspace;
   this.flyout_ = new Blockly.BackpackFlyout(this.options);
-  // _NoAsync: A flag for getContents(). If true, getContents will use the
+  // NoAsync_: A flag for getContents(). If true, getContents will use the
   // already fetched backpack contents even when using a shared backpack
   // this is used by addAllToBackpack()
-  this._NoAsync = false;
+  this.NoAsync_ = false;
 };
 
 /**
@@ -317,12 +317,15 @@ Blockly.Backpack.prototype.addAllToBackpack = function() {
   var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
   var p = this;
   this.getContents(function(contents) {
-    var saveAsync = p._NoAsync;
-    p._NoAsync = true;
-    for (var x = 0; x < topBlocks.length; x++) {
-      p.addToBackpack(topBlocks[x], false);
+    var saveAsync = p.NoAsync_;
+    try {
+      p.NoAsync_ = true;
+      for (var x = 0; x < topBlocks.length; x++) {
+        p.addToBackpack(topBlocks[x], false);
+      }
+    } finally {
+      p.NoAsync_ = saveAsync;
     }
-    p._NoAsync = saveAsync;
     p.setContents(Blockly.Backpack.contents, true);
   });
 };
@@ -584,7 +587,7 @@ Blockly.Backpack.prototype.getContents = function(callback) {
   // fetched the contents, then we do not have to do it again. This
   // happens in addAllToBackpack()
   var p = this;
-  if (Blockly.Backpack.backPackId && !this._NoAsync) {
+  if (Blockly.Backpack.backPackId && !this.NoAsync_) {
     top.BlocklyPanel_getSharedBackpack(Blockly.Backpack.backPackId, function(content) {
       if (!content) {
         Blockly.Backpack.contents = [];
