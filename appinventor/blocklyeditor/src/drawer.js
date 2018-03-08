@@ -437,9 +437,16 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
         console.log("added obj");
         console.log(obj);
         var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
-        console.log(xml);
         xmlArray.push(xml);
       }
+      //create component literal block
+      var obj = {type: "component_component_block"};
+      var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+      obj['mutatorNameToValue'] = mutatorAttributes;
+      var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
+      //console.log(xml);
+      xmlArray.push(xml);
+
     } else {
       //create event blocks
       goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
