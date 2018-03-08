@@ -122,7 +122,7 @@ public final class TimerInternal implements Runnable {
 
   /**
    * Enabled property getter method.
-   * 
+   *
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
    */
