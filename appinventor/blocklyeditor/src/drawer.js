@@ -489,6 +489,18 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '</block>' +
          '</xml>';}},
 
+    // Canvas.DrawShape has fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawShape"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
     // Clock.FormatDate has pattern default to MMM d, yyyy
     {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDate"},
      mutatorXMLStringFunction: function(mutatorAttributes) {

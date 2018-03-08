@@ -26,12 +26,14 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -1262,6 +1264,67 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     float correctedY2 = y2 * $form().deviceDensity();
     view.canvas.drawLine(correctedX1, correctedY1, correctedX2, correctedY2, paint);
     view.invalidate();
+  }
+
+  /**
+   * Draws a shape (filled in) on the canvas
+   *
+   * @param pointList  a list of points, points are represented by a sub-list with two number (x, y)
+   * @param fill  true for filled shape; false for shape outline
+   */
+  @SimpleFunction
+  public void DrawShape(YailList pointList, boolean fill) {
+    Path path = parsePath(parsePointList(pointList));
+    if (path == null) {
+      $form().dispatchErrorOccurredEvent(this, "DrawShape", ErrorMessages.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT);
+    }
+    path.close();
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    view.canvas.drawPath(path, p);
+    view.invalidate();
+  }
+
+  private Path parsePath(float[][] points) {
+    if (points == null) {
+      return null;
+    }
+    float scalingFactor = $form().deviceDensity();
+
+    Path path = new Path();
+    path.moveTo(points[0][0] * scalingFactor, points[0][1] * scalingFactor);
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i][0] * scalingFactor, points[i][1] * scalingFactor);
+    }
+
+    return path;
+  }
+
+  private float[][] parsePointList(YailList pointList) {
+    if (pointList == null) {
+      return null;
+    }
+    float[][] points = new float[pointList.size()][2];
+    int index = 0;
+    YailList pointYailList;
+    for (Object pointObject : pointList.toArray()) {
+      if (pointObject instanceof YailList) {
+        pointYailList = (YailList) pointObject;
+        if (pointYailList.size() == 2) {
+          try {
+            points[index][0] = Float.parseFloat(pointYailList.getString(0));
+            points[index][1] = Float.parseFloat(pointYailList.getString(1));
+            index++;
+            continue;
+          } catch (NullPointerException ok) {
+          } catch (NumberFormatException ok) {
+          }
+        }
+      }
+      // if continue is not trigered, null will be executed
+      return null;
+    }
+    return points;
   }
 
   /**

@@ -3636,6 +3636,10 @@ public interface OdeMessages extends Messages {
   String UnitProperties();
 
   //Params
+  @DefaultMessage("pointList")
+  @Description("")
+  String pointListParams();
+  
   @DefaultMessage("xAccel")
   @Description("")
   String xAccelParams();
@@ -4774,6 +4778,11 @@ public interface OdeMessages extends Messages {
   String SensorValueChangedEvents();
 
   //Methods
+
+  @DefaultMessage("DrawShape")
+  @Description("")
+  String DrawShapeMethods();
+
   @DefaultMessage("ResolveActivity")
   @Description("")
   String ResolveActivityMethods();
