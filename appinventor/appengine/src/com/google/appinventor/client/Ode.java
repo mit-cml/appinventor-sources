@@ -1604,19 +1604,19 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button ok = new Button(MESSAGES.createWelcomeDialogButton());
     final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());
-    ok.addClickHandler(new ClickHandler(){
-      @Override
-      public void onClick(ClickEvent event) {
-        dialogBox.hide();
-        if (noshow.getValue()) { // User checked the box
-          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-              "" + splashConfig.version);
-          userSettings.saveSettings(null);
+    ok.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          dialogBox.hide();
+          if (noshow.getValue()) { // User checked the box
+            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
+                "" + splashConfig.version);
+            userSettings.saveSettings(null);
+          }
+          maybeShowNoProjectsDialog();
         }
-        maybeShowNoProjectsDialog();
-      }
-    });
+      });
     holder.add(ok);
     holder.add(noshow);
     DialogBoxContents.add(message);

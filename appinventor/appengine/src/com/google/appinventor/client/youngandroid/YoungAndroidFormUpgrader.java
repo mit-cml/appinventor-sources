@@ -1562,13 +1562,12 @@ public final class YoungAndroidFormUpgrader {
     message.setStyleName("DialogBox-message");
     VerticalPanel vPanel = new VerticalPanel();
     Button okButton = new Button("OK");
-    okButton.addClickHandler(new ClickHandler(){
-    
-      @Override
-      public void onClick(ClickEvent event) {
-        dialogBox.hide();
-      }
-    });
+    okButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          dialogBox.hide();
+        }
+      });
     vPanel.add(message);
     vPanel.add(okButton);
     dialogBox.setWidget(vPanel);

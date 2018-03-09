@@ -302,7 +302,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private MockContainer container;
 
   private MouseListenerCollection mouseListeners = new MouseListenerCollection();
-  
+
   /**
    * Creates a new instance of the component.
    *

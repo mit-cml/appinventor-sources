@@ -130,7 +130,7 @@ public class AdminUserList extends Composite {
     searchPanel.add(searchText);
     searchPanel.add(searchButton);
     Button addUserButton = new Button("Add User");
-    addUserButton.addClickHandler(new ClickHandler(){
+    addUserButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         addUpdateUserDialog(null);
@@ -138,12 +138,12 @@ public class AdminUserList extends Composite {
     });
     searchPanel.add(addUserButton);
 
-    searchButton.addClickHandler(new ClickHandler(){
-      @Override
-      public void onClick(ClickEvent event) {
-        Ode.getInstance().getAdminInfoService().searchUsers(searchText.getText(), searchCallback);
-      }
-    });
+    searchButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().getAdminInfoService().searchUsers(searchText.getText(), searchCallback);
+        }
+      });
 
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");

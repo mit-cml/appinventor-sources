@@ -110,12 +110,12 @@ public final class ComponentHelpWidget extends Image {
       // When the panel is closed, save the time in milliseconds.
       // This will help us avoid immediately reopening it if the user
       // closed it by clicking on the question-mark icon.
-      addCloseHandler(new CloseHandler<PopupPanel>(){
-        @Override
-        public void onClose(CloseEvent<PopupPanel> event) {
-          lastClosureTime = System.currentTimeMillis();
-        }
-      });
+      addCloseHandler(new CloseHandler<PopupPanel>() {
+          @Override
+          public void onClose(CloseEvent<PopupPanel> event) {
+            lastClosureTime = System.currentTimeMillis();
+          }
+        });
 
       // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
       // avoid the Google Chrome Pinch Zoom bug.
