@@ -634,7 +634,9 @@ public class YaVersion {
   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
   // For CANVAS_COMPONENT_VERSION 10:
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
-  public static final int CANVAS_COMPONENT_VERSION = 10;
+  // For CANVAS_COMPONENT_VERSION 11:
+  // - DrawShape & DrawArc was added
+  public static final int CANVAS_COMPONENT_VERSION = 11;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
