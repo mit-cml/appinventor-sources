@@ -1267,9 +1267,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Draws a shape (filled in) on the canvas
+   * Draws a shape on the canvas, 
+   * point list should be a list contains sub-lists with two number which represents a coordinate
    *
-   * @param pointList  a list of points, points are represented by a sub-list with two number (x, y)
+   * @param pointList  a list of points, should contains sub-lists with two number which represents a coordinate
    * @param fill  true for filled shape; false for shape outline
    */
   @SimpleFunction
@@ -1329,7 +1330,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Draw an arc on Canvas, by drawing a arc from a specified oval
-   * (specified by left, top, right & bottom)
+   *   (specified by left, top, right & bottom),
+   * start angle is 0 when heading to the right, and increase when rotate clockwise.
    * 
    * @param left   the left end of the oval
    * @param top    the top of the oval
