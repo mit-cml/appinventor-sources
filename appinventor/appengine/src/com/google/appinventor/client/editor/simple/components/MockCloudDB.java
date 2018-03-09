@@ -26,7 +26,6 @@ public class MockCloudDB extends MockNonVisibleComponent {
 
   public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
-  private static final String PROPERTY_NAME_ACCOUNT_NAME = "AccountName";
   private static final String PROPERTY_NAME_TOKEN = "Token";
   private static final String PROPERTY_NAME_REDIS_SERVER = "RedisServer";
   private static final String PROPERTY_NAME_DEFAULT_REDISSERVER = "DefaultRedisServer";
@@ -46,14 +45,13 @@ public class MockCloudDB extends MockNonVisibleComponent {
   }
 
   /**
-   * Initializes the "ProjectID", "AccountName" properties dynamically.
+   * Initializes the "ProjectID" property dynamically.
    *
    * @param widget the iconImage for the MockCloudDB
    */
   @Override
   public final void initComponent(Widget widget) {
     super.initComponent(widget);
-    String accName = Ode.getInstance().getUser().getUserEmail() + "";
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     String projectID = "";
     if (currentProject != null) {
@@ -61,7 +59,6 @@ public class MockCloudDB extends MockNonVisibleComponent {
     }
 
     changeProperty(PROPERTY_NAME_PROJECT_ID, projectID);
-    changeProperty(PROPERTY_NAME_ACCOUNT_NAME, accName);
     String defaultRedisServer = Ode.getSystemConfig().getDefaultCloudDBserver();
     changeProperty(PROPERTY_NAME_DEFAULT_REDISSERVER, defaultRedisServer);
     getTokenFromServer();       // Get Token from the server
@@ -69,8 +66,7 @@ public class MockCloudDB extends MockNonVisibleComponent {
 
   @Override
   public boolean isPropertyforYail(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_ACCOUNT_NAME) ||
-      (propertyName.equals(PROPERTY_NAME_PROJECT_ID)) ||
+    if ((propertyName.equals(PROPERTY_NAME_PROJECT_ID)) ||
       (propertyName.equals(PROPERTY_NAME_DEFAULT_REDISSERVER)) ||
       (propertyName.equals(PROPERTY_NAME_TOKEN))) {
       return true;
