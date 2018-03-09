@@ -131,11 +131,11 @@ public class AdminUserList extends Composite {
     searchPanel.add(searchButton);
     Button addUserButton = new Button("Add User");
     addUserButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        addUpdateUserDialog(null);
-      }
-    });
+        @Override
+        public void onClick(ClickEvent event) {
+          addUpdateUserDialog(null);
+        }
+      });
     searchPanel.add(addUserButton);
 
     searchButton.addClickHandler(new ClickHandler() {

@@ -746,7 +746,7 @@ public class TopToolbar extends Composite {
 
       SimplePanel holder = new SimplePanel();
       Button ok = new Button("Close");
-      ok.addClickHandler(new ClickHandler(){
+      ok.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           db.hide();

@@ -66,7 +66,7 @@ public class MessageDialog {
     messageHtml.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button(OK);
-    okButton.addClickHandler(new ClickHandler(){
+    okButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();

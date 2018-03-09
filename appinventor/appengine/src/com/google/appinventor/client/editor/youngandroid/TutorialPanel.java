@@ -40,7 +40,7 @@ public class TutorialPanel extends Frame {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button ok = new Button("Close");
-    ok.addClickHandler(new ClickHandler(){
+    ok.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();
@@ -67,7 +67,7 @@ public class TutorialPanel extends Frame {
     VerticalPanel DialogBoxContents = new VerticalPanel();
     FlowPanel holder = new FlowPanel();
     Button ok = new Button("Close");
-    ok.addClickHandler(new ClickHandler(){
+    ok.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();

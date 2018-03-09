@@ -245,7 +245,7 @@ public class FileUploadWizard extends Wizard {
     VerticalPanel DialogBoxContents = new VerticalPanel();
     FlowPanel holder = new FlowPanel();
     Button ok = new Button ("OK");
-    ok.addClickHandler(new ClickHandler(){
+    ok.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();
@@ -259,7 +259,7 @@ public class FileUploadWizard extends Wizard {
     switch(e) {
       case AIAMEDIAASSET:
         Button info = new Button ("More Info");
-        info.addClickHandler(new ClickHandler(){
+        info.addClickHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
             Window.open(MESSAGES.aiaMediaAssetHelp(), "AIA Help", "");
