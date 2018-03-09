@@ -754,9 +754,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public void collectTypesAndIcons(Map<String, String> typesAndIcons) {
     String name = getVisibleTypeName();
     if (!isForm() && !typesAndIcons.containsKey(name)) {
-      String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
-          iconImage.getOriginTop(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT).getHTML();
-      typesAndIcons.put(name, imageHTML);
+      typesAndIcons.put(name, iconImage.getElement().getString());
     }
   }
 
