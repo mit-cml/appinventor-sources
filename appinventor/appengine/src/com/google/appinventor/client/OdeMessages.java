@@ -3639,6 +3639,34 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("pointList")
   @Description("")
   String pointListParams();
+
+  @DefaultMessage("left")
+  @Description("")
+  String leftParams();
+
+  @DefaultMessage("top")
+  @Description("")
+  String topParams();
+
+  @DefaultMessage("right")
+  @Description("")
+  String rightParams();
+
+  @DefaultMessage("bottom")
+  @Description("")
+  String bottomParams();
+
+  @DefaultMessage("startAngle")
+  @Description("")
+  String startAngleParams();
+
+  @DefaultMessage("sweepAngle")
+  @Description("")
+  String sweepAngleParams();
+
+  @DefaultMessage("useCenter")
+  @Description("")
+  String useCenterParams();
   
   @DefaultMessage("xAccel")
   @Description("")
@@ -4782,6 +4810,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("DrawShape")
   @Description("")
   String DrawShapeMethods();
+
+  @DefaultMessage("DrawArc")
+  @Description("")
+  String DrawArcMethods();
 
   @DefaultMessage("ResolveActivity")
   @Description("")

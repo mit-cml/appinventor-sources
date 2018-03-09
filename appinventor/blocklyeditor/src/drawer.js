@@ -501,6 +501,19 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '</block>' +
          '</xml>';}},
 
+    // Canvas.DrawArc has useCenter default to FLASE and fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawArc"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG6"><block type="logic_boolean"><field name="BOOL">FALSE</field></block></value>' +
+         '<value name="ARG7"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
     // Clock.FormatDate has pattern default to MMM d, yyyy
     {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDate"},
      mutatorXMLStringFunction: function(mutatorAttributes) {

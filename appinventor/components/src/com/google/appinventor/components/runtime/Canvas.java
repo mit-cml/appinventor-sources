@@ -1328,6 +1328,32 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
+   * Draw an arc on Canvas, by drawing a arc from a specified oval
+   * (specified by left, top, right & bottom)
+   * 
+   * @param left   the left end of the oval
+   * @param top    the top of the oval
+   * @param right  the right end of the oval
+   * @param bottom the bottom of the oval
+   * @param startAngle the start angle of the arc, rightward as 0, clockwise as positive, in degree
+   * @param sweepAngle the sweep angle of the arc, clockwise as positive, in degree
+   * @param useCenter  fill a sector instead of just a arc if arc (when true)
+   * @param fill  true for filled arc (or sector); false for arc outline
+   */
+  @SimpleFunction
+  public void DrawArc(int left, int top, int right, int bottom, 
+      float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
+    float scalingFactor = $form().deviceDensity();
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    view.canvas.drawArc(
+      scalingFactor * left, scalingFactor * top,
+      scalingFactor * right, scalingFactor * bottom,
+      startAngle, sweepAngle, useCenter, p);
+    view.invalidate();
+  }
+
+  /**
    * Draws the specified text relative to the specified coordinates
    * using the values of the {@link #FontSize(float)} and
    * {@link #TextAlignment(int)} properties.
