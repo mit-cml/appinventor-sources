@@ -1758,7 +1758,10 @@ Blockly.Versioning.AllUpgradeMaps =
     20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text'),
 
     // AI2: Added is a string? block to test whether values are strings.
-    21: "noUpgrade"
+    21: "noUpgrade",
+
+    // AI2: Added Break Block
+    22: "noUpgrade"
 
 
   }, // End Language upgraders
