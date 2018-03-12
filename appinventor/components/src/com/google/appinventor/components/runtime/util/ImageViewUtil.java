@@ -7,13 +7,15 @@ package com.google.appinventor.components.runtime.util;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.support.v7.internal.widget.TintImageView;
+import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
+import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 public final class ImageViewUtil {
 
@@ -22,37 +24,18 @@ public final class ImageViewUtil {
    * the menu button. If true, we will attempt to update. Otherwise, the button will get out of
    * sync, but this will only happen in the companion so it shouldn't be too much of a problem.
    */
-  private static final boolean canUpdate;
-
-  static {
-    boolean updateable = false;
-    try {
-      TintImageView.class.getMethod("setImageTintMode", PorterDuff.Mode.class);
-      updateable = true;
-    } catch(NoSuchMethodException e) {
-    }
-    canUpdate = updateable;
-  }
-
   private ImageViewUtil() {}
 
   public static void setMenuButtonColor(Activity activity, int color) {
-    if (canUpdate) {
-      TintImageView overflowMenuView = findOverflowMenuView(activity);
-      if (overflowMenuView != null) {
-        ColorStateList stateList = new ColorStateList(new int[][]{new int[]{}}, new int[]{color});
-        try {
-          overflowMenuView.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-          overflowMenuView.setImageTintList(stateList);
-        } catch (NoSuchMethodError e) {
-          // extra insurance in case the canUpdate flag is lying...
-        }
-      }
+    ColorStateList stateList = new ColorStateList(new int[][]{new int[]{}}, new int[]{color});
+    ImageView view = findOverflowMenuView(activity);
+    if (view != null) {
+      ImageViewCompat.setImageTintMode(view, MULTIPLY);
+      ImageViewCompat.setImageTintList(view, stateList);
     }
   }
 
-  private static TintImageView findOverflowMenuView(Activity activity) {
-    TintImageView overflowMenuView = null;
+  private static ImageView findOverflowMenuView(Activity activity) {
     ViewGroup vg = (ViewGroup) activity.getWindow().getDecorView();
     Queue<ViewGroup> children = new LinkedList<ViewGroup>();
     children.add(vg);
@@ -60,14 +43,13 @@ public final class ImageViewUtil {
       vg = children.poll();
       for (int i = 0; i < vg.getChildCount(); i++) {
         View child = vg.getChildAt(i);
-        if (child instanceof TintImageView) {
-          overflowMenuView = (TintImageView) child;
-          return overflowMenuView;
+        if (child instanceof ImageView) {
+          return (ImageView) child;
         } else if (child instanceof ViewGroup) {
           children.add((ViewGroup) child);
         }
       }
     }
-    return overflowMenuView;
+    return null;
   }
 }
