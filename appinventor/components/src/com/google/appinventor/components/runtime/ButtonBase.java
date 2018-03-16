@@ -380,7 +380,7 @@ public abstract class ButtonBase extends AndroidViewComponent
            *    TextViewUtil.setBackgroundColor(view, backgroundColor);
            * We ignore this and do a little bit code magic
            * 
-           * @Author NMD (Next Mobile Development) (c)2018
+           * @Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com] 
            */
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
