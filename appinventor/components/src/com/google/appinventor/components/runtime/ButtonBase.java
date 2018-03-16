@@ -25,6 +25,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -373,8 +374,15 @@ public abstract class ButtonBase extends AndroidViewComponent
         } else {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
-          // Set to the specified color (possibly COLOR_NONE for transparent).
-          TextViewUtil.setBackgroundColor(view, backgroundColor);
+          //Now we set again the default drawable
+          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          /* Below removes the nice touch/ripple effect.
+           *    TextViewUtil.setBackgroundColor(view, backgroundColor);
+           * We ignore this and do a little bit code magic
+           * 
+           * @Author NMD (Next Mobile Developments) (c)2018
+           */
+          view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
       } else {
         // If there is no background image and the shape is something other than default,
