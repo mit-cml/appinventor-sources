@@ -376,12 +376,7 @@ public abstract class ButtonBase extends AndroidViewComponent
           ViewUtil.setBackgroundDrawable(view, null);
           //Now we set again the default drawable
           ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
-          /* Below removes the nice touch/ripple effect.
-           *    TextViewUtil.setBackgroundColor(view, backgroundColor);
-           * We ignore this and do a little bit code magic
-           * 
-           * @Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com] 
-           */
+          //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
       } else {
