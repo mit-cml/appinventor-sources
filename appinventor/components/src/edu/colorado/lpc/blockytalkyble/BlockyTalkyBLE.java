@@ -9,6 +9,7 @@ import android.app.Activity;
 
 import android.content.pm.PackageManager;
 
+import android.util.StringBuilderPrinter;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -41,25 +42,24 @@ import java.util.*;
 @SimpleObject(external = true)
 public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
   // private BluetoothLE bleConnection = null;
-  private static final String LOG_TAG = "BlockyTalkyBLE";
+
 
   private final Activity activity;
   private final ComponentContainer container;
   private final Form form;
-  private BluetoothLEint innerBLE;
-
-  private static final String UART_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
-  private static final String TX_CHARACTERISTIC_CHARACTERISTIC_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
-  private static final String RX_CHARACTERISTIC_CHARACTERISTIC_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
-
-  private static final String DELIMITER = "^";
-  private static final String TERMINATOR = "#";
-  private static final String TYPE_INTEGER = "I";
-  private static final String TYPE_STRING = "S";
-  private static final String TYPE_NONE = "0";
+  private edu.colorado.lpc.blockytalkyble.BluetoothLEint innerBLE;
+  private final String finalChunkIndicator = ">";
 
   public static abstract class BLEResponseHandler<T> {
     public void onReceive(String serviceUuid, String characteristicUuid, List<T> values) {
+    }
+
+    public void onStringReceive() {
+
+    }
+
+    public void onNumberReceive() {
+
     }
 
     public void onWrite(String serviceUuid, String characteristicUuid, List<T> values) {
@@ -71,42 +71,52 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     public void onReceive(String serviceUuid, String characteristicUuid, List<Integer> values) {
       // assume these values is the string, also assume they are valid UTF-8 (??)
       //char[] temp = new char[values.size()+1];
-      StringBuilder sb = new StringBuilder(values.size());
+      StringBuilder builder = new StringBuilder(values.size());
       for (Integer x : values) {
-        sb.append(Character.toChars(x));
+        builder.append(Character.toChars(x));
       }
-      String keyValStr = sb.toString();
+      String keyValueString = builder.toString();
 
       final String specialCharacters = "^\\$[]+";
       String toSplitOn = null;
-      if (specialCharacters.indexOf(DELIMITER) == -1) {
-        toSplitOn = DELIMITER;
+      if (specialCharacters.indexOf(BlockyTalkyBLEConstants.DELIMITER) == -1) {
+        toSplitOn = BlockyTalkyBLEConstants.DELIMITER;
       } else {
-        toSplitOn = "\\" + DELIMITER;
+        toSplitOn = "\\" + BlockyTalkyBLEConstants.DELIMITER;
       }
 
-      String[] parts = keyValStr.split(toSplitOn);
-
-      String key = parts[0];
-      String value = parts[1].substring(0, parts[1].length() - 1);
-      //Log.d(LOG_TAG,"XonRecv:"+"->"+keyValStr+"->"+parts[0]+"->"+parts[1]+"<-");
+      String[] parts = keyValueString.split(toSplitOn);
+      ValueType type = null;
+      String key;
+      String value;
+      if(parts.length > 2) {
+        type = typeFromString(parts[0]);
+        key = parts[1];
+        value = parts[2].substring(0, parts[2].length() - 1);
+      } else {
+        key = parts[0];
+        value = parts[1].substring(0, parts[1].length() -1);
+      }
+      //Log.d(LOG_TAG,"XonRecv:"+"->"+keyValueString+"->"+parts[0]+"->"+parts[1]+"<-");
 
       String s = "onReceivevalues:";
       for (Integer x : values) {
         s += "," + x;
       }
 
-      Log.d(LOG_TAG, s + "->" + key + " " + value);
-
-      MsgReceivedfromMicrobit(key, value);
-
+      Log.d(BlockyTalkyBLEConstants.LOG_TAG, s + "->" + type + "->" + key + " " + value);
+      if (type== ValueType.NUMBER) {
+        NumberReceivedfromMicrobit(key,Integer.parseInt(value));
+      } else if (type == ValueType.STRING) {
+        StringReceivedfromMicrobit(key, value);
+      }
     }
   };
 
   private final BLEResponseHandler<Integer> rXCharacteristicWriteHandler = new BLEResponseHandler<Integer>() {
     @Override
     public void onWrite(String serviceUuid, String characteristicUuid, List<Integer> values) {
-      Log.d(LOG_TAG, "rXCharacteristicWriteHandler called");
+      Log.d(BlockyTalkyBLEConstants.LOG_TAG, "rXCharacteristicWriteHandler called");
       WroteRXCharacteristic(values);
     }
   };
@@ -114,7 +124,7 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
   // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT)
   // @SimpleProperty
   // public void BluetoothDevice(BluetoothLE bluetoothLE) {
-  //   bleConnection = bluetoothLE; 
+  //   bleConnection = bluetoothLE;
   //   bluetoothLE.SetMicrobitBT(this) ;
   //    }
 
@@ -138,33 +148,33 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     // If this test does not pass, we log an advanced warning then proceed.
     // Individualized errors are signaled in each @SimpleFunction.
     if (!container.$form().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-      Log.e(LOG_TAG, "Bluetooth LE is unsupported on this hardware. " + "Any subsequent function calls will complain.");
+      Log.e(BlockyTalkyBLEConstants.LOG_TAG, "Bluetooth LE is unsupported on this hardware. " + "Any subsequent function calls will complain.");
     } else if (SdkLevel.getLevel() < SdkLevel.LEVEL_LOLLIPOP) {
-      Log.e(LOG_TAG, "The BluetoothLE extension is unsupported at this API Level. "
+      Log.e(BlockyTalkyBLEConstants.LOG_TAG, "The BluetoothLE extension is unsupported at this API Level. "
           + "Any subsequent function calls will complain.");
     } else {
-      Log.d(LOG_TAG, "Appear to have Bluetooth LE support, continuing...");
+      Log.d(BlockyTalkyBLEConstants.LOG_TAG, "Appear to have Bluetooth LE support, continuing...");
     }
 
-    innerBLE = new BluetoothLEint(this, activity, container);
+    innerBLE = new edu.colorado.lpc.blockytalkyble.BluetoothLEint(this, activity, container);
     innerBLE.StartScanning();
   }
 
   // @SimpleFunction
   public void ReceiveMsgsFromMicrobit() {
-    innerBLE.RegisterForByteValues(UART_SERVICE_UUID, TX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
+    innerBLE.RegisterForByteValues(BlockyTalkyBLEConstants.UART_SERVICE_UUID, BlockyTalkyBLEConstants.TX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
         txCharacteristicHandler);
   }
 
   //@SimpleFunction
   public void RequestTXCharacteristic() {
-    innerBLE.RegisterForByteValues(UART_SERVICE_UUID, TX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
+    innerBLE.RegisterForByteValues(BlockyTalkyBLEConstants.UART_SERVICE_UUID, BlockyTalkyBLEConstants.TX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
         txCharacteristicHandler);
   }
 
   //@SimpleFunction
   public void StopTXCharacteristicUpdates() {
-    innerBLE.UnregisterForValues(UART_SERVICE_UUID, TX_CHARACTERISTIC_CHARACTERISTIC_UUID, txCharacteristicHandler);
+    innerBLE.UnregisterForValues(BlockyTalkyBLEConstants.UART_SERVICE_UUID, BlockyTalkyBLEConstants.TX_CHARACTERISTIC_CHARACTERISTIC_UUID, txCharacteristicHandler);
   }
 
   // @SimpleEvent
@@ -172,39 +182,69 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
   //   EventDispatcher.dispatchEvent(this, "TXCharacteristicReceived", UART_TX_Field);
   // }
 
-  @SimpleEvent
+  /*@SimpleEvent
   public void MsgReceivedfromMicrobit(final String key, final String value) {
-    Log.d(LOG_TAG, "MsgReceivedfrom:" + key + "_" + value + "<-");
+    Log.d(BlockyTalkyBLEConstants.LOG_TAG, "MsgReceivedfrom:" + key + "_" + value + "<-");
     EventDispatcher.dispatchEvent(this, "MsgReceivedfromMicrobit", key, value);
+  }*/
 
+  @SimpleEvent
+  public void StringReceivedfromMicrobit(final String key, final String value) {
+    Log.d(BlockyTalkyBLEConstants.LOG_TAG, "StringReceivedfrom:" + key + "_" + value + "<-");
+    EventDispatcher.dispatchEvent(this,"StringReceivedfromMicrobit", key, value);
+  }
+
+  @SimpleEvent
+  public void NumberReceivedfromMicrobit(final String key, final int value) {
+    Log.d(BlockyTalkyBLEConstants.LOG_TAG, "NumberReceivedfrom:" + key + "_" + value + "<-");
+    EventDispatcher.dispatchEvent(this,"NumberReceivedfromMicrobit", key, value);
   }
 
   // starting with one string
-  @SimpleFunction
+  /*@SimpleFunction
   public void SendKeyValue(final String key, final String value) {
     // convert string to bytes need to be an object?
-    String mes = key + DELIMITER + value + TERMINATOR;
+    String message = key + BlockyTalkyBLEConstants.DELIMITER + value + BlockyTalkyBLEConstants.TERMINATOR;
     // innerBLE.WriteByteValuesWithResponse(UART_SERVICE_UUID, RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false, mes, rXCharacteristicWriteHandler);
     if (innerBLE.IsDeviceConnected()) {
-      innerBLE.WriteByteValuesWithResponse(UART_SERVICE_UUID, RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
-          toList(Integer.class, mes, 1), rXCharacteristicWriteHandler);
+      innerBLE.WriteByteValuesWithResponse(BlockyTalkyBLEConstants.UART_SERVICE_UUID, BlockyTalkyBLEConstants.RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
+          toList(Integer.class, message, 1), rXCharacteristicWriteHandler);
     } else {
-      signalError("SendKeyValue", ERROR_NOT_CURRENTLY_CONNECTED);
-      Log.e(LOG_TAG, "No connect microbit to write to ");
+      signalError("SendKeyValue", BlockyTalkyBLEError.ERROR_NOT_CURRENTLY_CONNECTED);
+      Log.e(BlockyTalkyBLEConstants.LOG_TAG, "No connect microbit to write to ");
     }
-
-    // TODO - add an error no device connected
     // byte[] content = mes.getBytes("UTF-8");
 
-    // innerBLE.WriteByteValuesWithResponse(UART_SERVICE_UUID, RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false, 
+    // innerBLE.WriteByteValuesWithResponse(UART_SERVICE_UUID, RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
     //           checkedCast(Integer.class, toIntList(content)), rXCharacteristicWriteHandler);
+  }*/
 
+  public void sendTypedMessage(final String key, final String value, ValueType type) {
+    String message = type.getIndicator() + BlockyTalkyBLEConstants.DELIMITER + key + BlockyTalkyBLEConstants.DELIMITER + value + BlockyTalkyBLEConstants.TERMINATOR;
+    Log.i(BlockyTalkyBLEConstants.LOG_TAG, "Sending following message: " + message);
+    if (innerBLE.IsDeviceConnected()) {
+      innerBLE.WriteByteValuesWithResponse(BlockyTalkyBLEConstants.UART_SERVICE_UUID, BlockyTalkyBLEConstants.RX_CHARACTERISTIC_CHARACTERISTIC_UUID, false,
+              toList(Integer.class, message, 1), rXCharacteristicWriteHandler);
+    } else {
+      signalError("SendTypedMessage:" + type.name(), BlockyTalkyBLEError.ERROR_NOT_CURRENTLY_CONNECTED);
+      Log.e(BlockyTalkyBLEConstants.LOG_TAG, "No connected microbit to write to ");
+    }
+  }
+
+  @SimpleFunction
+  public void sendStringKeyValue(final String key, final String value) {
+    sendTypedMessage(key, value, ValueType.STRING);
+  }
+
+  @SimpleFunction
+  public void sendNumberKeyValue(final String key, final int value) {
+    sendTypedMessage(key, String.valueOf(value), ValueType.NUMBER);
   }
 
   // Kari - is this an event we should see?? TODO - try it
   // @SimpleEvent
   public void WroteRXCharacteristic(final List<Integer> UART_TX_Field) {
-    Log.d(LOG_TAG, "WroteRXCharacteristic");
+    Log.d(BlockyTalkyBLEConstants.LOG_TAG, "WroteRXCharacteristic");
     EventDispatcher.dispatchEvent(this, "WroteRXCharacteristic", UART_TX_Field);
   }
 
@@ -259,7 +299,7 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     YailList aList = new YailList(); // empty list
     if (innerBLE != null) {
       ArrayList mBits = innerBLE.DeviceList();
-      Log.d(LOG_TAG, "MicrobitList:list passed in arrayList len = " + mBits.size());
+      Log.d(BlockyTalkyBLEConstants.LOG_TAG, "MicrobitList:list passed in arrayList len = " + mBits.size());
       Object[] strArray = mBits.toArray();
       aList = YailList.makeList(mBits);
     }
@@ -282,6 +322,16 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     if (innerBLE != null) {
       innerBLE.StopScanning();
     }
+  }
+
+  public ValueType typeFromString(String typeString) {
+      if(typeString.equals("N")) {
+        return ValueType.NUMBER;
+      } else if (typeString.equals("S")){
+        return ValueType.STRING;
+      } else {
+        return null;
+      }
   }
 
   public void ByteValuesReceived(final String serviceUuid, final String characteristicUuid, final YailList byteValues) {
@@ -332,6 +382,8 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     EventDispatcher.dispatchEvent(this, "ByteValuesWritten", serviceUuid, characteristicUuid, byteValues);
   }
 
+  // EVERYTHING BELOW HERE IS UTILS AND SHOULD PROBABLY BE IN A SEPARATE CLASS
+
   /**
    * Convert an unknown object type to a list of a certain type,
    * casting when available/appropriate.
@@ -375,7 +427,7 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
         return Collections.emptyList();
       } catch (UnsupportedEncodingException e) {
         // Both UTF-8 and UTF-16LE are required by JVM. This should never happen
-        Log.wtf(LOG_TAG, "No support for UTF-8 or UTF-16", e);
+        Log.wtf(BlockyTalkyBLEConstants.LOG_TAG, "No support for UTF-8 or UTF-16", e);
         return Collections.emptyList();
       }
     } else if (value instanceof FString) {
@@ -459,48 +511,16 @@ public class BlockyTalkyBLE extends AndroidNonvisibleComponent {
     return result;
   }
 
-  private void signalError(final String functionName, final int errorNumber, final Object... messageArgs) {
-    final String errorMessage = String.format(errorMessages.get(errorNumber), messageArgs);
-    Log.e(LOG_TAG, errorMessage);
+  private void signalError(final String functionName, final BlockyTalkyBLEError errorName, final Object... messageArgs) {
+    final String errorMessage = String.format(errorName.getErrorMessage(), messageArgs);
+    Log.e(BlockyTalkyBLEConstants.LOG_TAG, errorMessage);
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Log.d(LOG_TAG, "putting error on screen" + errorMessage);
-        container.$form().ErrorOccurredDialog(BlockyTalkyBLE.this, functionName, errorNumber, errorMessage, "BluetoothLE",
+        Log.d(BlockyTalkyBLEConstants.LOG_TAG, "putting error on screen" + errorMessage);
+        container.$form().ErrorOccurredDialog(BlockyTalkyBLE.this, functionName, errorName.getErrorCode(), errorMessage, "BluetoothLE",
             "Dismiss");
       }
     });
   }
-
-  private static final Map<Integer, String> errorMessages;
-  private static final int ERROR_BLUETOOTH_LE_NOT_SUPPORTED = 9001;
-  private static final int ERROR_BLUETOOTH_LE_NOT_ENABLED = 9002;
-  private static final int ERROR_API_LEVEL_TOO_LOW = 9003;
-  private static final int ERROR_NO_DEVICE_SCAN_IN_PROGRESS = 9004;
-  private static final int ERROR_NOT_CURRENTLY_CONNECTED = 9005;
-  private static final int ERROR_INDEX_OUT_OF_BOUNDS = 9006;
-  private static final int ERROR_DEVICE_LIST_EMPTY = 9007;
-  private static final int ERROR_INVALID_UUID_CHARACTERS = 9008;
-  private static final int ERROR_INVALID_UUID_FORMAT = 9009;
-  private static final int ERROR_ADVERTISEMENTS_NOT_SUPPORTED = 9010;
-
-  static {
-    errorMessages = new HashMap<Integer, String>();
-    errorMessages.put(ERROR_BLUETOOTH_LE_NOT_SUPPORTED, "BluetoothLE is not supported on your phone's hardware!");
-    errorMessages.put(ERROR_BLUETOOTH_LE_NOT_ENABLED, "BluetoothLE is not enabled!");
-    errorMessages.put(ERROR_API_LEVEL_TOO_LOW, "BluetoothLE requires Android 5.0 or newer!");
-    errorMessages.put(ERROR_NO_DEVICE_SCAN_IN_PROGRESS,
-        "StopScan cannot be called before StartScan! There is no scan currently in progress.");
-    errorMessages.put(ERROR_NOT_CURRENTLY_CONNECTED, "No connected Microbit, so cannot write.");
-    errorMessages.put(ERROR_INDEX_OUT_OF_BOUNDS,
-        "Block %1s attempted to access %2s with an invalid index. Index out of bounds!");
-    errorMessages.put(ERROR_DEVICE_LIST_EMPTY,
-        "You cannot connect to a device when the device list is empty! Try scanning again.");
-    errorMessages.put(ERROR_INVALID_UUID_CHARACTERS, "%1s UUID string in block %2s contains invalid characters! "
-        + "Try typing it in again and rebuilding your app.");
-    errorMessages.put(ERROR_INVALID_UUID_FORMAT, "%1s UUID string in block %2s does not use the proper format! "
-        + "Try typing it in again and rebuilding your app.");
-    errorMessages.put(ERROR_ADVERTISEMENTS_NOT_SUPPORTED, "Bluetooth Advertisements not supported!");
-  }
-
 }
