@@ -127,6 +127,7 @@ class RuntimeTests: XCTestCase {
 
   func testListsAsRetvals() throws {
     let interpreter = try getInterpreterForTesting()
+    RetValManager.shared().fetch(false)  // clear any return values from other tests
     interpreter.evalForm("(send-to-block \"1\" (list \"OK\" (*list-for-runtime* (*list-for-runtime* 30.5 10.5) (*list-for-runtime* 31.5 11.5))))")
     if let exception = interpreter.exception {
       print(exception)
