@@ -124,4 +124,15 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("#t", interpreter.evalForm("(is-binary? \"101010\")"))
     XCTAssertEqual("#f", interpreter.evalForm("(is-binary? \"foobar\")"))
   }
+
+  func testListsAsRetvals() throws {
+    let interpreter = try getInterpreterForTesting()
+    interpreter.evalForm("(send-to-block \"1\" (list \"OK\" (*list-for-runtime* (*list-for-runtime* 30.5 10.5) (*list-for-runtime* 31.5 11.5))))")
+    if let exception = interpreter.exception {
+      print(exception)
+    }
+    let result = RetValManager.shared().fetch(false)
+    XCTAssertNotNil(result)
+    XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"((30.500000 10.500000) (31.500000 11.500000))\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
+  }
 }

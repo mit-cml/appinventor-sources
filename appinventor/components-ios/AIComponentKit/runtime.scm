@@ -1697,5 +1697,5 @@ list, use the make-yail-list constructor with no arguments.
   (if message
       (let* ((good (car message))
              (value (cadr message)))
-        (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue value blockid good))
+        (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue (coerce-to-string value) blockid good))
       (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue "No message received" blockid "NOK")))
