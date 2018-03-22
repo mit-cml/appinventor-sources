@@ -421,12 +421,12 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.name = name;
             datastore.put(userData);
-            String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);  // Flush cached copy because it changed
           }
         }
       }, true);
@@ -442,12 +442,12 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.link = link;
             datastore.put(userData);
-            String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);  // Flush cached copy because it changed
           }
         }
       }, true);
@@ -462,12 +462,12 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.emailFrequency = emailFrequency;
             datastore.put(userData);
-            String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);  // Flush cached copy because it changed
           }
         }
       }, true);
@@ -482,12 +482,12 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.sessionid = sessionId;
             datastore.put(userData);
-            String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);  // Flush cached copy because it changed
           }
         }
       }, false);
@@ -502,12 +502,12 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.password = password;
             datastore.put(userData);
-            String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);  // Flush cached copy because it changed
           }
         }
       }, true);
