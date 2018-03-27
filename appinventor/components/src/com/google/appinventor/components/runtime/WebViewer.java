@@ -97,7 +97,7 @@ public final class WebViewer extends AndroidViewComponent {
     super(container);
     
     if(container.$form() instanceof ReplForm) {
-    		isRepl = true;
+      isRepl = true;
     }
 
     webview = new WebView(container.$context());
