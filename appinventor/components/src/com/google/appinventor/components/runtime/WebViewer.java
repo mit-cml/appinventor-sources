@@ -477,26 +477,26 @@ public final class WebViewer extends AndroidViewComponent {
   }
   
   /**
-   * Fitting url from webview，support read file from assets.
+   * Fitting url for webview，support read file from assets.
    * @param url
    */
   private void loadUrl(String url) {
-	  if(url != null && (url = url.trim()).length() > 0) {
-		  if(url.indexOf("/") < 0) {
-			  url = "//" + url;
-		  }
-		  if(url.startsWith("//")) {
-			  if(isRepl) {
-				  url = "file://" + Environment.getExternalStorageDirectory().getAbsolutePath() +
-						    "/AppInventor/assets" + url.substring(1);
-			  }else {
-				  url = "file:///android_asset" + url.substring(1);
-			  }
-		  }else if(url.startsWith("/")) {
-			  url = "file://" + url;
-		  }
-	  }
-	  webview.loadUrl(url);
+    if(url != null && (url = url.trim()).length() > 0) {
+      if(url.indexOf("/") < 0) {
+        url = "//" + url;
+      }
+      if(url.startsWith("//")) {
+        if(isRepl) {
+          url = "file://" + Environment.getExternalStorageDirectory().getAbsolutePath() +
+            "/AppInventor/assets" + url.substring(1);
+        }else {
+          url = "file:///android_asset" + url.substring(1);
+        }
+      }else if(url.startsWith("/")) {
+        url = "file://" + url;
+      }
+    }
+    webview.loadUrl(url);
   }
 }
 
