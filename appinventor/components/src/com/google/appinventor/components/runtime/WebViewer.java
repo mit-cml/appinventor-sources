@@ -362,7 +362,7 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleFunction(
       description = "Load the page at the given URL.")
   public void GoToUrl(String url) {
-	loadUrl(url);
+    oadUrl(url);
   }
 
   /**
