@@ -83,7 +83,6 @@ public final class WebViewer extends AndroidViewComponent {
 
   private boolean ignoreSslErrors = false;
   
-  //XXX
   private boolean isRepl = false;
 
   // allows passing strings to javascript
@@ -107,24 +106,9 @@ public final class WebViewer extends AndroidViewComponent {
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
     wvInterface = new WebViewInterface(webview.getContext());
-    //XXX webview.addJavascriptInterface(wvInterface, "AppInventor");
-    try{
-		WebView.class.getMethod("add" + "JavascriptInterface", Object.class, String.class)
-    			.invoke(webview, wvInterface, "AppInventor");
-    }catch (Exception e) {
-		//IGNORE
-	}
+    webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
-    //XXX
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_JELLYBEAN_MR2){
-		webview.getSettings().setSavePassword(false);
-    }
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB){
-	    webview.removeJavascriptInterface("searchBoxJavaBridge_");
-	    webview.removeJavascriptInterface("accessibilityTraversal");
-	    webview.removeJavascriptInterface("accessibility");
-    }
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
