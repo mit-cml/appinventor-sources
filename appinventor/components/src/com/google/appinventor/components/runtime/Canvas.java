@@ -1278,6 +1278,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     Path path = parsePath(parsePointList(pointList));
     if (path == null) {
       $form().dispatchErrorOccurredEvent(this, "DrawShape", ErrorMessages.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT);
+      return;
     }
     path.close();
     Paint p = new Paint(paint);
