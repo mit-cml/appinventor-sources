@@ -328,12 +328,14 @@ public class BlocklyPanel extends HTMLPanel {
    * @param mess       The message to display
    * @param buttonName The string to display in the "OK" button.
    * @param size       0 or 1. 0 makes a smaller box 1 makes a larger box.
+   * @param destructive Indicates if the button should be styled as a destructive action.
    * @param callback   an opague JavaScriptObject that contains the
    *                   callback function provided by the Javascript code.
    * @return The created dialog box.
    */
 
-  public static DialogBox createDialog(String title, String mess, final String buttonName, final String cancelButtonName, int size, final JavaScriptObject callback) {
+  public static DialogBox createDialog(String title, String mess, final String buttonName, Boolean destructive,
+                                       final String cancelButtonName, int size, final JavaScriptObject callback) {
     final DialogBox dialogBox = new DialogBox();
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(title);
@@ -350,16 +352,6 @@ public class BlocklyPanel extends HTMLPanel {
     HTML message = new HTML(mess);
     message.setStyleName("DialogBox-message");
     HorizontalPanel holder = new HorizontalPanel();
-    if (buttonName != null) {           // If buttonName and cancelButtonName are null
-      Button ok = new Button(buttonName); // We won't have any buttons and other
-      ok.addClickHandler(new ClickHandler() { // code is needed to dismiss us
-        @Override
-        public void onClick(ClickEvent event) {
-          doCallBack(callback, buttonName);
-        }
-      });
-      holder.add(ok);
-    }
     if (cancelButtonName != null) {
       Button cancel = new Button(cancelButtonName);
       cancel.addClickHandler(new ClickHandler() {
@@ -369,6 +361,19 @@ public class BlocklyPanel extends HTMLPanel {
         }
       });
       holder.add(cancel);
+    }
+    if (buttonName != null) {           // If buttonName and cancelButtonName are null
+      Button ok = new Button(buttonName); // We won't have any buttons and other
+      if (destructive) {
+        ok.addStyleName("destructive-action");
+      }
+      ok.addClickHandler(new ClickHandler() { // code is needed to dismiss us
+        @Override
+        public void onClick(ClickEvent event) {
+          doCallBack(callback, buttonName);
+        }
+      });
+      holder.add(ok);
     }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -574,7 +579,7 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_popScreen =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
     $wnd.BlocklyPanel_createDialog =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
+        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_hideDialog =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =

@@ -406,7 +406,7 @@ Blockly.Backpack.prototype.openBackpackDoc = function(e) {
   backpackDoc.callback = function() {
     var dialog = new Blockly.Util.Dialog(Blockly.Msg.BACKPACK_DOC_TITLE,
                                          Blockly.Msg.BACKPACK_DOCUMENTATION,
-                                         Blockly.Msg.REPL_OK, null, 0,
+                                         Blockly.Msg.REPL_OK, false, null, 0,
                                          function() {
                                            dialog.hide();
                                          });

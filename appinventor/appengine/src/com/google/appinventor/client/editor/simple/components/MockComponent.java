@@ -246,8 +246,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           hide();
         }
       });
-      Button okButton = new Button(MESSAGES.okButton());
-      okButton.addClickHandler(new ClickHandler() {
+      Button deleteButton = new Button(MESSAGES.deleteButton());
+      deleteButton.addStyleName("destructive-action");
+      deleteButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           hide();
@@ -256,7 +257,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       });
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.add(cancelButton);
-      buttonPanel.add(okButton);
+      buttonPanel.add(deleteButton);
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
