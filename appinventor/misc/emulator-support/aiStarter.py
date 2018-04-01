@@ -28,8 +28,6 @@ def ping():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     response.headers['Content-Type'] = 'application/json'
-    # return {
-    # "status" : "OK", "version" : "{VERSION}" }}'
     return {
         "status": "OK",
         "version": VERSION
