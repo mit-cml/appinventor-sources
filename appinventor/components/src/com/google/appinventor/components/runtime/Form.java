@@ -94,7 +94,9 @@ import org.json.JSONException;
     androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar")
+@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar, animated-vector-drawable.aar, " +
+    "runtime.aar, support-compat.aar, support-core-ui.aar, support-core-utils.aar, " +
+    "support-fragment.aar, support-vector-drawable.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
 public class Form extends AppInventorCompatActivity

@@ -132,10 +132,19 @@ public final class Compiler {
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
   private static final String[] SUPPORT_JARS = new String[] {
-    RUNTIME_FILES_DIR + "appcompat-v7.jar",
-    RUNTIME_FILES_DIR + "internal_impl.jar",
-    RUNTIME_FILES_DIR + "support-annotations.jar",
-    RUNTIME_FILES_DIR + "support-v4.jar"
+      RUNTIME_FILES_DIR + "animated-vector-drawable.jar",
+      RUNTIME_FILES_DIR + "appcompat-v7.jar",
+      RUNTIME_FILES_DIR + "core-common.jar",
+      RUNTIME_FILES_DIR + "lifecycle-common.jar",
+      RUNTIME_FILES_DIR + "runtime.jar",
+      RUNTIME_FILES_DIR + "support-annotations.jar",
+      RUNTIME_FILES_DIR + "support-compat.jar",
+      RUNTIME_FILES_DIR + "support-core-ui.jar",
+      RUNTIME_FILES_DIR + "support-core-utils.jar",
+      RUNTIME_FILES_DIR + "support-fragment.jar",
+      RUNTIME_FILES_DIR + "support-media-compat.jar",
+      RUNTIME_FILES_DIR + "support-v4.jar",
+      RUNTIME_FILES_DIR + "support-vector-drawable.jar"
   };
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -646,7 +655,7 @@ public final class Compiler {
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
-      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"26\" />\n");
 
       out.write("  <application ");
 

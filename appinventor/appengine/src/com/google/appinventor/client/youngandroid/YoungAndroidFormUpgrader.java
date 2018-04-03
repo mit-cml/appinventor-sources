@@ -320,6 +320,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("TinyDB")) {
+        srcCompVersion = upgradeTinyDBProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TinyWebDB")) {
         srcCompVersion = upgradeTinyWebDBProperties(componentProperties, srcCompVersion);
 
@@ -1296,6 +1299,15 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeTinyDBProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added Property: Namespace
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeTinyWebDBProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1460,6 +1472,11 @@ public final class YoungAndroidFormUpgrader {
       // The XMLTextDecode method was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The UriDecode method was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
