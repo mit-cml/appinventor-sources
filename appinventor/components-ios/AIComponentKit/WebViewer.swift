@@ -188,13 +188,15 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
 
   //TODO: add support for other languages (for the generic error message)
   open func webView(_ webView: WKWebView, didFailProvisionalNavigation: WKNavigation!, withError: Error) {
-    _wantLoad = true
-    do {
-      if let errorPath = Bundle(for: WebViewer.self).url(forResource: "webview-error", withExtension: "html") {
-        let contents = try String(format: String(contentsOf: errorPath), "An error occured when trying to load", _temporaryLink, withError.localizedDescription)
-        _view.loadHTMLString(contents, baseURL: nil)
-      }
-    } catch {}
+    if (withError as NSError).code != NSURLErrorCancelled {
+      _wantLoad = true
+      do {
+        if let errorPath = Bundle(for: WebViewer.self).url(forResource: "webview-error", withExtension: "html") {
+          let contents = try String(format: String(contentsOf: errorPath), "An error occured when trying to load", _temporaryLink, withError.localizedDescription)
+          _view.loadHTMLString(contents, baseURL: nil)
+        }
+      } catch {}
+    }
   }
 
   open func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
