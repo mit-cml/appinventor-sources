@@ -47,6 +47,10 @@
   </target>
 
   <target name="tests" depends="components-ios,Companion">
+    <ai.xcbuild scheme="SchemeKit" action="test">
+      <arg value="-destination" />
+      <arg value="platform=iOS Simulator,name=iPhone 6,OS=10.3.1" />
+    </ai.xcbuild>
     <ai.xcbuild scheme="AIComponentKit" action="test">
       <arg value="-destination" />
       <arg value="platform=iOS Simulator,name=iPhone 6,OS=10.3.1" />

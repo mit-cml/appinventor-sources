@@ -74,6 +74,9 @@
 		065ECF891D94A02000C749A1 /* object.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF831D94A02000C749A1 /* object.h */; };
 		065ECF8A1D94A02000C749A1 /* state.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF841D94A02000C749A1 /* state.h */; };
 		065ECF8B1D94A02000C749A1 /* vm.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF851D94A02000C749A1 /* vm.h */; };
+		068B4F18207553060050A8BE /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F17207553060050A8BE /* runtime.scm */; };
+		068B4F1A207553DF0050A8BE /* HelloPurr.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F19207553DF0050A8BE /* HelloPurr.yail */; };
+		068B4F20207562880050A8BE /* Screen1.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F1F207562880050A8BE /* Screen1.yail */; };
 		06AC1CC41DB3CF2000A59EB3 /* SCMInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06AC1CC51DB3CF2000A59EB3 /* SCMInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */; };
 		06BEC1791D961AE100B62630 /* emyg_atod.c in Sources */ = {isa = PBXBuildFile; fileRef = 06BEC1751D961AE100B62630 /* emyg_atod.c */; };
@@ -172,6 +175,9 @@
 		065ECF831D94A02000C749A1 /* object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = object.h; path = picrin/extlib/benz/include/picrin/private/object.h; sourceTree = "<group>"; };
 		065ECF841D94A02000C749A1 /* state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = state.h; path = picrin/extlib/benz/include/picrin/private/state.h; sourceTree = "<group>"; };
 		065ECF851D94A02000C749A1 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm.h; path = picrin/extlib/benz/include/picrin/private/vm.h; sourceTree = "<group>"; };
+		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
+		068B4F19207553DF0050A8BE /* HelloPurr.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HelloPurr.yail; sourceTree = "<group>"; };
+		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
 		06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMInterpreter.h; sourceTree = "<group>"; };
 		06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMInterpreter.m; sourceTree = "<group>"; };
 		06BEC1751D961AE100B62630 /* emyg_atod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_atod.c; path = picrin/contrib/10.roundtrip/emyg_atod.c; sourceTree = "<group>"; };
@@ -373,6 +379,9 @@
 		06FCDEED1D94383000199DD4 /* SchemeKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				068B4F1F207562880050A8BE /* Screen1.yail */,
+				068B4F19207553DF0050A8BE /* HelloPurr.yail */,
+				068B4F17207553060050A8BE /* runtime.scm */,
 				06FCDEEE1D94383000199DD4 /* SchemeKitTests.m */,
 				06FCDEF01D94383000199DD4 /* Info.plist */,
 				061609101D96112D00D145C4 /* MockComponent.swift */,
@@ -464,6 +473,7 @@
 				06FCDEE51D94383000199DD4 /* Sources */,
 				06FCDEE61D94383000199DD4 /* Frameworks */,
 				06FCDEE71D94383000199DD4 /* Resources */,
+				068B4F232075693F0050A8BE /* ShellScript */,
 				43E2BD673167E2AC575AB10D /* [CP] Embed Pods Frameworks */,
 				553DAC2DCF20DA2CCA7A5FF4 /* [CP] Copy Pods Resources */,
 			);
@@ -527,12 +537,28 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				068B4F1A207553DF0050A8BE /* HelloPurr.yail in Resources */,
+				068B4F18207553060050A8BE /* runtime.scm in Resources */,
+				068B4F20207562880050A8BE /* Screen1.yail in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		068B4F232075693F0050A8BE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp ${SRCROOT}/../buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm ${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/android-runtime.scm";
+		};
 		07633F38ACC56D00BA74B8E6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

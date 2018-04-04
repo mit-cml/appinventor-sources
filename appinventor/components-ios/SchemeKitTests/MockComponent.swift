@@ -8,10 +8,13 @@
 
 import Foundation
 
-@objc class MockContainer: NSObject {
+@objc class MockContainer: NSObject, NSCopying {
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
+  }
 }
 
-@objc class MockComponent: NSObject {
+@objc class MockComponent: NSObject, NSCopying {
   private var _a: Bool = false
   private var _b: Int = 0
   private var _c: Double = 0.0
@@ -119,5 +122,9 @@ import Foundation
 
   public static func makeMockComponent(_ parent: MockContainer) -> MockComponent {
     return MockComponent(parent);
+  }
+
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
   }
 }

@@ -49,6 +49,54 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 
 @end
 
+@interface CopyableReference : NSObject<NSCopying> {
+@public
+  id ref;
+}
+
++ (instancetype)referenceWithObject:(id)object;
+
+@end
+
+@implementation CopyableReference
+
+- (instancetype)initWithObject:(id)object {
+  if (self = [super init]) {
+    self->ref = object;
+  }
+  return self;
+}
+
++ (instancetype)referenceWithObject:(id)object {
+  return [[CopyableReference alloc] initWithObject:object];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
+}
+
+- (NSUInteger)hash {
+  if (self->ref == nil) {
+    return 0;
+  }
+  return [self->ref hash];
+}
+
+- (BOOL)isEqual:(id)object {
+  if (object == nil) {
+    return NO;
+  }
+  if ([object isKindOfClass:[CopyableReference class]]) {
+    object = ((CopyableReference *)object)->ref;
+  }
+  if (object == self->ref) {
+    return YES;
+  } else {
+    return [object isEqual:self->ref];
+  }
+}
+
+@end
 
 struct native_class {
   OBJECT_HEADER
@@ -232,7 +280,7 @@ yail_make_native_instance(pic_state *pic, id object) {
   native_instance *native = (native_instance *)pic_obj_alloc(pic, offsetof(native_instance, object_), YAIL_TYPE_INSTANCE);
   native->object_ = object;
   pic_value value = pic_obj_value(native);
-  objects[object] = [NSNumber numberWithUnsignedLongLong:value];
+  objects[[CopyableReference referenceWithObject:object]] = [NSNumber numberWithUnsignedLongLong:value];
   return value;
 }
 
@@ -246,7 +294,7 @@ yail_native_instance_typename(pic_state *PIC_UNUSED(pic), struct native_instance
 
 void
 yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
-  [objects removeObjectForKey:instance->object_];
+  [objects removeObjectForKey:[CopyableReference referenceWithObject:instance->object_]];
 }
 
 int

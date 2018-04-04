@@ -167,7 +167,7 @@ pic_init_picrin(pic_state *pic)
 - (void)testParsingHelloPurr {
   char t;
   NSError *err = nil;
-  NSString *hellopurr = [NSString stringWithContentsOfFile:@"/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/SchemeKit/HelloPurr.scm" encoding:NSUTF8StringEncoding error:&err];
+  NSString *hellopurr = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[SchemeKitTests class]] URLForResource:@"HelloPurr" withExtension:@"yail"] encoding:NSUTF8StringEncoding error:&err];
   XCTAssertNil(err);
   pic_state *pic;
   pic_value port, form, e;
@@ -197,7 +197,7 @@ pic_init_picrin(pic_state *pic)
 - (void)testParsingCompanion {
   char t;
   NSError *err = nil;
-  NSString *companion = [NSString stringWithContentsOfFile:@"/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail" encoding:NSUTF8StringEncoding error:&err];
+  NSString *companion = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[SchemeKitTests class]] URLForResource:@"Screen1" withExtension:@"yail"] encoding:NSUTF8StringEncoding error:&err];
   XCTAssertNil(err);
   pic_state *pic;
   pic_value port, form, e;
@@ -227,7 +227,7 @@ pic_init_picrin(pic_state *pic)
 - (void)testParsingRuntime {
   char t;
   NSError *err = nil;
-  NSString *runtime = [NSString stringWithContentsOfFile:@"/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm" encoding:NSUTF8StringEncoding error:&err];
+  NSString *runtime = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[SchemeKitTests class]] URLForResource:@"android-runtime" withExtension:@"scm"] encoding:NSUTF8StringEncoding error:&err];
   XCTAssertNil(err);
   pic_state *pic;
   pic_value port, form, e;
@@ -256,7 +256,7 @@ pic_init_picrin(pic_state *pic)
 
 - (void)testNativeMethods {
   char t;
-  const char *yail = "(begin (import (scheme base) (yail))(define x (yail:make-instance NSMutableArray))(define y (yail:make-instance NSObject))(yail:invoke x 'addObject y)(yail:invoke x 'count))";
+  const char *yail = "(begin (import (scheme base) (yail))(define x (yail:make-instance NSMutableArray))(define y (yail:make-instance NSString))(yail:invoke x 'addObject y)(yail:invoke x 'count))";
   pic_state *pic;
   pic_value port, form, e;
   picrin_native_stack_start = &t;
@@ -285,7 +285,7 @@ pic_init_picrin(pic_state *pic)
 - (void)testParsingIOSRuntime {
   char t;
   NSError *err = nil;
-  NSString *platform = [NSString stringWithContentsOfFile:@"/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/buildserver/src/com/google/appinventor/buildserver/resources/ios-runtime.scm" encoding:NSUTF8StringEncoding error:&err];
+  NSString *platform = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[SchemeKitTests class]] URLForResource:@"runtime" withExtension:@"scm"] encoding:NSUTF8StringEncoding error:&err];
   XCTAssertNil(err);
   pic_state *pic;
   pic_value port, form, e;

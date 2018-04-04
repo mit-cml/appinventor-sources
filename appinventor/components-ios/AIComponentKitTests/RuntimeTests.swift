@@ -23,6 +23,27 @@ public func getInterpreterForTesting() throws -> SCMInterpreter {
   return interpreter
 }
 
+@objc class CoercionTestHelper: NSObject {
+
+  var result: Any? = nil
+
+  func callAsDouble(_ result: Double) {
+    self.result = result
+  }
+
+  func callAsFloat(_ result: Float32) {
+    self.result = result
+  }
+
+  func callAsUInt64(_ result: UInt64) {
+    self.result = result
+  }
+
+  func callAsInt64(_ result: Int64) {
+    self.result = result
+  }
+}
+
 class RuntimeTests: XCTestCase {
 
   func testYailEqualBool() throws {
