@@ -23,6 +23,97 @@ pic_init_picrin(pic_state *pic)
   pic_init_yail(pic);
 }
 
+typedef union {
+  double dVal;
+  float fVal;
+  unsigned long long ullVal;
+  long long llVal;
+  unsigned long ulVal;
+  long lVal;
+  unsigned int uiVal;
+  int iVal;
+  unsigned short usVal;
+  short sVal;
+  unsigned char ucVal;
+  char cVal;
+} primitive_types;
+
+@interface CoercionTestHelper: NSObject<NSCopying> {
+  @public
+  primitive_types result;
+  NSString *strResult;
+}
+
+@end
+
+@implementation CoercionTestHelper
+
++ (instancetype)helper {
+  return [[CoercionTestHelper alloc] init];
+}
+
+- (void)setDouble:(double)result {
+  self->result.dVal = result;
+}
+
+- (void)setFloat:(float)result {
+  self->result.fVal = result;
+}
+
+- (void)setUnsignedLongLong:(unsigned long long)result {
+  self->result.ullVal = result;
+}
+
+- (void)setLongLong:(long long)result {
+  self->result.llVal = result;
+}
+
+- (void)setUnsignedLong:(unsigned long)result {
+  self->result.ulVal = result;
+}
+
+- (void)setLong:(long)result {
+  self->result.lVal = result;
+}
+
+- (void)setUnsignedInt:(unsigned int)result {
+  self->result.uiVal = result;
+}
+
+- (void)setInt:(int)result {
+  self->result.iVal = result;
+}
+
+- (void)setUnsignedShort:(unsigned short)result {
+  self->result.usVal = result;
+}
+
+- (void)setShort:(short)result {
+  self->result.sVal = result;
+}
+
+- (void)setUnsignedChar:(unsigned char)result {
+  self->result.ucVal = result;
+}
+
+- (void)setChar:(char)result {
+  self->result.cVal = result;
+}
+
+- (void)setString:(NSString *)result {
+  self->strResult = result;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
+}
+
+- (id)copy {
+  return self;
+}
+
+@end
+
 @interface SchemeKitTests : XCTestCase
 
 @end
@@ -351,6 +442,124 @@ pic_init_picrin(pic_state *pic)
   XCTAssertNotNil(result);
   XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
   XCTAssertEqual(3.75, [(NSNumber *)result doubleValue]);
+}
+
+- (void)testYailDoubleToObjCDoubleConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setDouble 0.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqualWithAccuracy(0.25, helper->result.dVal, 1e-7);
+}
+
+- (void)testYailDoubleToObjCFloatConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setFloat 0.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqualWithAccuracy(0.25, helper->result.fVal, 1e-7);
+}
+
+- (void)testYailDoubleToObjCUnsignedLongLongConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setUnsignedLongLong 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(42, helper->result.ullVal);
+}
+
+- (void)testYailDoubleToObjCLongLongConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setLongLong -42.45)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(-42, helper->result.llVal);
+}
+
+- (void)testYailDoubleToObjCUnsignedLongConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setUnsignedLong 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(42, helper->result.ulVal);
+}
+
+- (void)testYailDoubleToObjCLongConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setLong -42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(-42, helper->result.lVal);
+}
+
+- (void)testYailDoubleToObjCUnsignedIntConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setUnsignedInt 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(42, helper->result.uiVal);
+}
+
+- (void)testYailDoubleToObjCIntConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setInt -42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(-42, helper->result.iVal);
+}
+
+- (void)testYailDoubleToObjCUnsignedShortConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setUnsignedShort 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(42, helper->result.usVal);
+}
+
+- (void)testYailDoubleToObjCShortConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setShort -42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(-42, helper->result.sVal);
+}
+
+- (void)testYailDoubleToObjCUnsignedCharConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setUnsignedChar 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(42, helper->result.ucVal);
+}
+
+- (void)testYailDoubleToObjCCharConversion {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setChar -42.25)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertEqual(-42, helper->result.cVal);
+}
+
+- (void)testYailDoubleToObjCString {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  CoercionTestHelper *helper = [CoercionTestHelper helper];
+  [interpreter setValue:helper forSymbol:@"test-helper"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setString 42.25)"];
+  XCTAssertNil(interpreter.exception);
+  NSLog(@"Result: %@", helper->strResult);
+  XCTAssertTrue([@"42.250000" isEqualToString:helper->strResult]);
 }
 
 @end

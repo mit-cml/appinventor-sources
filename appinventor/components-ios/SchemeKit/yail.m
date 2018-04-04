@@ -559,6 +559,56 @@ yail_invoke(pic_state *pic) {
           [invocation setArgument:&value atIndex:j];
           break;
         }
+        case 'q': {
+          long long value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'Q': {
+          unsigned long long value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'l': {
+          long value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'L': {
+          unsigned long value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'i': {
+          int value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'I': {
+          unsigned int value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 's': {
+          short value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'S': {
+          unsigned short value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'c': {
+          char value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'C': {
+          unsigned char value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
         default: {
           double value = pic_float(pic, args[i]);
           [invocation setArgument:&value atIndex:j];
@@ -578,6 +628,36 @@ yail_invoke(pic_state *pic) {
         }
         case '@': {
           NSString *value = [NSString stringWithFormat:@"%d", pic_int(pic, args[i])];
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'q': {
+          long long value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'Q': {
+          unsigned long long value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 's': {
+          short value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'S': {
+          unsigned short value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'c': {
+          char value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'C': {
+          unsigned char value = pic_int(pic, args[i]);
           [invocation setArgument:&value atIndex:j];
           break;
         }

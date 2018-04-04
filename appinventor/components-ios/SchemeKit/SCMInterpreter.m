@@ -251,4 +251,15 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
   }
 }
 
+- (void)setValue:(id)value forSymbol:(NSString *)symname {
+  pic_state *pic = pic_;
+  pic_value e;
+  const char *c_symname = [symname cStringUsingEncoding:NSUTF8StringEncoding];
+  pic_try {
+    pic_define(pic, "yail", c_symname, [self picValueForObjCValue:value]);
+  } pic_catch(e) {
+    exception_ = exception_from_pic_error(pic, e);
+  }
+}
+
 @end

@@ -11,6 +11,7 @@
 - (id _Nullable)invokeMethod:(NSString * _Nonnull)name withArgArray:(NSArray * _Nonnull)args;
 - (void)clearException;
 - (void)setCurrentForm:(id _Nonnull)form;
+- (void)setValue:(id _Nullable)value forSymbol:(NSString * _Nonnull)symname;
 
 @property (readonly) NSException * _Nullable exception;
 
