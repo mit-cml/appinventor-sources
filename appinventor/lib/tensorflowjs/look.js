@@ -11,7 +11,9 @@ const TOPK_PREDICTIONS = 10;
 let mobilenet;
 const mobilenetDemo = async () => {
   mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
-  mobilenet.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3])).dispose();
+  const zeros = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
+  mobilenet.predict(zeros).dispose();
+  zeros.dispose();
   console.log('Look: Mobilenet ready');
   Look.ready();
 };
@@ -25,6 +27,7 @@ async function predict(imgElement) {
     return mobilenet.predict(batched);
   });
   const classes = await getTopKClasses(logits, TOPK_PREDICTIONS);
+  logits.dispose();
   var result = [];
   for (let i = 0; i < classes.length; i++) {
     result.push([classes[i].className, classes[i].probability.toFixed(5)]);
