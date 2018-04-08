@@ -81,7 +81,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @SimpleProperty(description = "Namespace for storing data.", category = PropertyCategory.BEHAVIOR)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = DEFAULT_NAMESPACE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = DEFAULT_NAMESPACE)
   public void Namespace(String namespace) {
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
