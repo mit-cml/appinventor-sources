@@ -1758,7 +1758,10 @@ Blockly.Versioning.AllUpgradeMaps =
     20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text'),
 
     // AI2: Added is a string? block to test whether values are strings.
-    21: "noUpgrade"
+    21: "noUpgrade",
+
+    // AI2: Added Break Block
+    22: "noUpgrade"
 
 
   }, // End Language upgraders
@@ -2364,7 +2367,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "TinyDB": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    //Added Property: Namespace
+    2: "noUpgrade"
 
   }, // End TinyDB upgraders
 
@@ -2506,7 +2512,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // AI2: Added method XMLTextDecode
-    4: "noUpgrade"
+    4: "noUpgrade",
+      
+    // AI2: Added method UriDecode
+    5: "noUpgrade"
 
   }, // End Web upgraders
 
