@@ -56,12 +56,12 @@ public final class Look extends AndroidViewComponent implements Component {
      *
      * @param form the container that this component will be placed in
      */
-    public Look(Form form) {
-        super(form);
-        this.form = form;
+    public Look(ComponentContainer container) {
+        super(container);
+        this.form = container.$form();
         startHTTPD();
-        Log.d(LOG_TAG, form.$context().getFilesDir().getAbsolutePath());
-        webview = new WebView(form);
+        // Log.d(LOG_TAG, form.$context().getFilesDir().getAbsolutePath());
+        webview = new WebView(container.$context());
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
         // adds a way to send strings to the javascript
@@ -81,7 +81,7 @@ public final class Look extends AndroidViewComponent implements Component {
         });
         webview.loadUrl("http://localhost:" + String.valueOf(PORT) + "/look.html");
         Log.d(LOG_TAG, "Created Look component");
-        form.$add(this);
+        container.$add(this);
     }
 
     private void startHTTPD() {
