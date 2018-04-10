@@ -2,7 +2,7 @@
 
 console.log('Look: Using Tensorflow.js version ' + tf.version.tfjs);
 
-//const MOBILENET_MODEL_PATH = 'https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json';
+// const MOBILENET_MODEL_PATH = 'https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json';
 const MOBILENET_MODEL_PATH = 'model.json';
 
 const IMAGE_SIZE = 224;
