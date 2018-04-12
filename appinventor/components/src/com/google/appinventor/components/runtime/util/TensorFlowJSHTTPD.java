@@ -9,7 +9,6 @@ package com.google.appinventor.components.runtime.util;
 
 import android.content.Context;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
