@@ -455,8 +455,9 @@
 <h1>Experimental Components - App Inventor for Android</h1>
 <h2>Table of Contents</h2>
 <ul>
-  <li> <a href="#CloudDB">CloudDB</a</li>
+  <li> <a href="#CloudDB">CloudDB</a></li>
   <li> <a href="#FirebaseDB">FirebaseDB</a></li>
+  <li> <a href="#Look">Look</a></li>
 </ul>
 <h2 id="CloudDB">CloudDB</h2>
 
@@ -562,6 +563,54 @@
   <dd>Asks Firebase to store the given value under the given tag.</dd>
   <dd>If you are having difficulty with the Companion and you are switching between different Firebase accounts, you may need to use this function to clear internal Firebase caches. You can just use the "Do It" function on this block in the blocks editor. Note: You should not normally need to use this block as part of an application.</dd>
 </dl>
+<h2 id="Look">Look</h2>
+
+<p>Component that classifies images. There are two input modes: image (default) and video. When in image mode, users can classify an image at a given filepath. When in video mode, users can classify live video from the device camera.</p>
+
+<h3 id="lookproperties">Properties</h3>
+<dl>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+</dl>
+
+<h3 id="lookevents">Events</h3>
+<dl>
+  <dt><code>ClassificationFailed</code></dt>
+  <dd>Indicates that classification has failed.</dd>
+  <dt><code>ClassifierReady</code></dt>
+  <dd>Indicates that the classifier is ready.</dd>
+  <dt><code>GotClassification(list result)</code></dt>
+  <dd>Indicates that classification has finished successfully.<br>
+  Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].</dd>
+</dl>
+
+<h3 id="lookmethods">Methods</h3>
+<dl>
+  <dt><code>ClassifyImageData(text image)</code></dt>
+  <dd>Performs classification on the image at the given path and triggers "GotClassification" event when classification is finished successfully.</dd>
+  <dt><code>ClassifyVideoData()</code></dt>
+  <dd>Performs classification on current video frame and triggers "GotClassification" event when classification is finished successfully.</dd>
+  <dt><code>HideImage()</code></dt>
+  <dd>Hides the image that was last classified. Does nothing if inputMode is set to video.</dd>
+  <dt><code>SetInputMode(text inputMode)</code></dt>
+  <dd>Sets the input mode to image if inputMode is <code>image</code> or video if inputMode is <code>video</code>.</dd>
+  <dt><code>SetInputWidth(number width)</code></dt>
+  <dd>Sets the image or video width to the specified value (in pixels).</dd>
+  <dt><code>ShowImage()</code></dt>
+  <dd>Shows the image that was last classified if input mode is image.</dd>
+  <dt><code>StartVideo()</code></dt>
+  <dd>Starts the video if input mode has been set to video. Does nothing if inputMode is set to image.</dd>
+  <dt><code>StopVideo()</code></dt>
+  <dd>Stops the video.</dd>
+  <dt><code>ToggleCameraFacingMode()</code></dt>
+  <dd>Toggles between user-facing and environment-facing camera.</dd>
+</dl>
+
+
 
 <!-- Content ----------------------- -->
 </div>

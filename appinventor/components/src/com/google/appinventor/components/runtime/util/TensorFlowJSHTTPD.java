@@ -20,18 +20,18 @@ import java.net.Socket;
 
 import android.util.Log;
 
-public class TensorflowJSHTTPD extends NanoHTTPD {
+public class TensorFlowJSHTTPD extends NanoHTTPD {
 
   private File rootDir;
   private Context context;
   private List<String> componentList;
 
-  public TensorflowJSHTTPD(int port, File wwwroot, Context context) throws IOException {
+  public TensorFlowJSHTTPD(int port, File wwwroot, Context context) throws IOException {
     super(port, wwwroot);
     this.rootDir = wwwroot;
     this.context = context;
     this.componentList = Arrays.asList(context.getAssets().list("component"));
-    Log.d("TensorflowJSHTTPD", Arrays.toString(context.getAssets().list("component")));
+    Log.d("TensorFlowJSHTTPD", Arrays.toString(context.getAssets().list("component")));
   }
 
   public Response serve(String uri, String method, Properties header, Properties params, Properties files, Socket mySocket) {
@@ -48,11 +48,11 @@ public class TensorflowJSHTTPD extends NanoHTTPD {
         } else {
           mimeType = "application/octet-stream";
         }
-        Log.d("TensorflowJSHTTD", uri + " with type " + mimeType);
+        Log.d("TensorFlowJSHTTD", uri + " with type " + mimeType);
         inputStream = context.getAssets().open("component" + uri);
         return new Response(HTTP_OK, mimeType, inputStream);
       } else {
-        Log.d("TensorflowJSHTTPD", uri + " not found");
+        Log.d("TensorFlowJSHTTPD", uri + " not found");
         return new Response(HTTP_NOTFOUND, MIME_PLAINTEXT, "404");
       }
     } catch (IOException e) {
