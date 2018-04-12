@@ -22,13 +22,11 @@ import android.util.Log;
 
 public class TensorFlowJSHTTPD extends NanoHTTPD {
 
-  private File rootDir;
   private Context context;
   private List<String> componentList;
 
   public TensorFlowJSHTTPD(int port, File wwwroot, Context context) throws IOException {
     super(port, wwwroot);
-    this.rootDir = wwwroot;
     this.context = context;
     this.componentList = Arrays.asList(context.getAssets().list("component"));
     Log.d("TensorFlowJSHTTPD", Arrays.toString(context.getAssets().list("component")));
