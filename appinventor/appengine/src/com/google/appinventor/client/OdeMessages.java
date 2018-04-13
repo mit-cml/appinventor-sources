@@ -6954,10 +6954,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String errorMessageParams();
 
-  @DefaultMessage("errorCode")
-  @Description("")
-  String errorCodeParams();
-
   @DefaultMessage("Rectangle")
   @Description("")
   String rectangleComponentPallette();
