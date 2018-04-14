@@ -1267,13 +1267,20 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Draws a shape on the canvas, 
-   * point list should be a list contains sub-lists with two number which represents a coordinate
+   * Draws a shape on the canvas.
+   * pointList should be a list contains sub-lists with two number which represents a coordinate.
+   * The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+   * When fill is true, the shape will be filled.
    *
-   * @param pointList  a list of points, should contains sub-lists with two number which represents a coordinate
+   * @param pointList  A list of points, should contains sub-lists with two number which represents a coordinate.
+   *                   The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
    * @param fill  true for filled shape; false for shape outline
    */
-  @SimpleFunction
+  @SimpleFunction(description = 
+      "Draws a shape on the canvas. " +
+      "pointList should be a list contains sub-lists with two number which represents a coordinate. " +
+      "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
+      "When fill is true, the shape will be filled.")
   public void DrawShape(YailList pointList, boolean fill) {
     Path path = parsePath(parsePointList(pointList));
     if (path == null) {
@@ -1330,9 +1337,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Draw an arc on Canvas, by drawing a arc from a specified oval
-   *   (specified by left, top, right & bottom),
-   * start angle is 0 when heading to the right, and increase when rotate clockwise.
+   * Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
+   * Start angle is 0 when heading to the right, and increase when rotate clockwise.
+   * When useCenter is true, a sector will be drawed instead of an arc.
+   * When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
    * 
    * @param left   the left end of the oval
    * @param top    the top of the oval
@@ -1340,10 +1348,14 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param bottom the bottom of the oval
    * @param startAngle the start angle of the arc, rightward as 0, clockwise as positive, in degree
    * @param sweepAngle the sweep angle of the arc, clockwise as positive, in degree
-   * @param useCenter  fill a sector instead of just a arc if arc (when true)
-   * @param fill  true for filled arc (or sector); false for arc outline
+   * @param useCenter  fill a sector instead of just an arc (when true)
+   * @param fill  true for filled arc (or sector); false for outline only
    */
-  @SimpleFunction
+  @SimpleFunction(description = 
+      "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). " +
+      "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
+      "When useCenter is true, a sector will be drawed instead of an arc. " +
+      "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
   public void DrawArc(int left, int top, int right, int bottom, 
       float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
     float scalingFactor = $form().deviceDensity();
