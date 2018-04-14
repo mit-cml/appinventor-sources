@@ -501,7 +501,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '</block>' +
          '</xml>';}},
 
-    // Canvas.DrawArc has useCenter default to FLASE and fill default to TRUE
+    // Canvas.DrawArc has useCenter default to FALSE and fill default to TRUE
     {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawArc"},
      mutatorXMLStringFunction: function(mutatorAttributes) {
        return '' +
