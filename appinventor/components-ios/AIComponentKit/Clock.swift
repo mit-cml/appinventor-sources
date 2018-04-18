@@ -11,7 +11,7 @@ import Foundation
 open class Clock: NonvisibleComponent {
   fileprivate var _timer: Timer?
   fileprivate var _interval: Int32 = 1000
-  fileprivate var _enabled = true
+  fileprivate var _enabled = false
   fileprivate var _alwaysFires = true
   fileprivate var _onScreen = false
 
@@ -27,6 +27,7 @@ open class Clock: NonvisibleComponent {
     }
     set(interval) {
       _interval = interval
+      restartTimer()
     }
   }
 
@@ -35,13 +36,9 @@ open class Clock: NonvisibleComponent {
       return _enabled
     }
     set(enabled) {
-      _enabled = enabled
-      _timer?.invalidate()
-      if _enabled {
-        _timer = Foundation.Timer(timeInterval: TimeInterval(Double(_interval) / 1000.0), target: self, selector: #selector(self.timerFired(_:)), userInfo: nil, repeats: true)
-        RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
-      } else {
-        _timer = nil
+      if _enabled != enabled {
+        _enabled = enabled
+        restartTimer()
       }
     }
   }
@@ -71,8 +68,19 @@ open class Clock: NonvisibleComponent {
     }
   }
 
+  // MARK: Private implementation
   func timerFired(_ timer: Timer) {
     self.performSelector(onMainThread: #selector(self.Timer), with: nil, waitUntilDone: false)
+  }
+
+  func restartTimer() {
+    _timer?.invalidate()
+    if _enabled {
+      _timer = Foundation.Timer(timeInterval: TimeInterval(Double(_interval) / 1000.0), target: self, selector: #selector(self.timerFired(_:)), userInfo: nil, repeats: true)
+      RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
+    } else {
+      _timer = nil
+    }
   }
 
   // MARK: Clock class functions
