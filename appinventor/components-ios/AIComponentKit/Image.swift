@@ -1,10 +1,5 @@
-//
-//  Image.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/20/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -13,6 +8,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _image: UIImage? = nil
   fileprivate var _picturePath = ""
   fileprivate var _rotationAngle = 0.0
+  fileprivate var _scaleToFit = false
   
   public override init(_ parent: ComponentContainer) {
     _view.isUserInteractionEnabled = true
@@ -64,6 +60,18 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     set(rotationAngle) {
       if (_rotationAngle == rotationAngle) {
         return  // Don't waste cycles
+      }
+    }
+  }
+
+  open var ScalePictureToFit: Bool {
+    get {
+      return _scaleToFit
+    }
+    set(scale) {
+      if _scaleToFit != scale {
+        _scaleToFit = scale
+        _view.contentMode = _scaleToFit ? .scaleAspectFit : .topLeft
       }
     }
   }
