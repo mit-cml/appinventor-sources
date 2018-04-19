@@ -213,6 +213,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     self.title = ""
     ShowStatusBar = true
     TitleVisible = true
+    ShowListsAsJson = false
   }
   
   // MARK: Form Properties

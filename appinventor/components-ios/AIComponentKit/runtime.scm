@@ -322,8 +322,11 @@
         ((boolean? arg) (boolean->string arg))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((list? arg)
-         (let ((pieces (map coerce-to-string arg)))
-            (call-with-output-string (lambda (port) (display pieces port)))))
+         (if (use-json-format)
+             (let ((pieces (map get-json-display-representation arg)))
+               (string-append "[" (join-strings pieces ", ") "]"))
+             (let ((pieces (map coerce-to-string arg)))
+               (call-with-output-string (lambda (port) (display pieces port))))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
@@ -382,6 +385,12 @@
              (let ((pieces (map get-json-display-representation arg)))
               (string-append "[" (join-strings pieces ", ") "]")))
             (else (call-with-output-string (lambda (port) (display arg port))))))))
+
+(define (join-strings list-of-strings separator)
+  (cond ((null? list-of-strings) "")
+        ((null? (cdr list-of-strings)) (car list-of-strings))
+        (else
+         (string-append (car list-of-strings) separator (join-strings (cdr list-of-strings) separator)))))
 
 (define (coerce-to-yail-list arg)
   (cond
@@ -1691,7 +1700,7 @@ list, use the make-yail-list constructor with no arguments.
                      (lambda (k)
                        (with-exception-handler
                         (lambda (ex) (k (list "NOK" (call-with-output-string (lambda (port) (print-error-object-to-port ex port))))))
-                        (lambda () (k (list "OK" (force promise)))))))))))
+                        (lambda () (k (list "OK" (get-display-representation (force promise))))))))))))
 
 (define (send-to-block blockid message)
   (if message
