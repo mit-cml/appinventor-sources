@@ -189,11 +189,15 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
 //    horizontal.addItem(_verticalItem)
     defaultPropertyValues()
   }
-  
+
   open func callInitialize(_ component: Component) {
-    //TODO: implementation
+    if let obj = component as? NSObject {
+      if obj.responds(to: #selector(Initialize)) {
+        obj.perform(#selector(Initialize))
+      }
+    }
   }
-  
+
   fileprivate func defaultPropertyValues() {
     AccentColor = Int32(bitPattern: 0xFFFF4081)
     PrimaryColor = Int32(bitPattern: 0xFF3F51B5)

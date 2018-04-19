@@ -50,6 +50,11 @@ open class ReplForm: Form {
     return false
   }
 
+  open override func Initialize() {
+    super.Initialize()
+    EventDispatcher.dispatchEvent(of: self, called: "Initialize")
+  }
+
   open func startHTTPD(_ secure: Bool) {
     if _httpdServer == nil {
       _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
