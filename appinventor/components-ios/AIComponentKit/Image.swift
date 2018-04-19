@@ -35,7 +35,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       _picturePath = path
       if path.isEmpty {
         updateImage(nil)
-      } else if let image = UIImage(contentsOfFile: AssetManager.shared.pathForAssetInBundle(filename: path)) {
+      } else if let image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
         updateImage(image)
       } else if let image = UIImage(named: path) {
         updateImage(image)
