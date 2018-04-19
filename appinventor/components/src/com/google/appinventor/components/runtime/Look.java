@@ -89,7 +89,7 @@ public final class Look extends AndroidViewComponent implements Component {
     }
   }
 
-  @SimpleFunction(description = "Performs classification on the image at the given path and triggers GotClassification event when classification is finished successfully.")
+  @SimpleFunction(description = "Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.")
   public void ClassifyImageData(final String image) {
     Log.d(LOG_TAG, "Entered Classify");
     Log.d(LOG_TAG, image);
@@ -117,7 +117,7 @@ public final class Look extends AndroidViewComponent implements Component {
     webview.evaluateJavascript("classifyImageData(\"" + imageEncodedbase64String + "\");", null);
   }
 
-  @SimpleFunction(description = "Starts the video if input mode has been set to video.")
+  @SimpleFunction(description = "Starts the video if input mode has been set to video. Does nothing if input mode is set to image.")
   public void StartVideo() {
     webview.evaluateJavascript("startVideo();", null);
   }
@@ -132,7 +132,7 @@ public final class Look extends AndroidViewComponent implements Component {
     webview.evaluateJavascript("toggleCameraFacingMode();", null);
   }
 
-  @SimpleFunction(description = "Performs classification on current video frame and triggers GotClassification event when classification is finished successfully.")
+  @SimpleFunction(description = "Performs classification on current video frame and triggers the GotClassification event when classification is finished successfully.")
   public void ClassifyVideoData() {
     webview.evaluateJavascript("classifyVideoData();", null);
   }
@@ -142,7 +142,7 @@ public final class Look extends AndroidViewComponent implements Component {
     webview.evaluateJavascript("showImage();", null);
   }
 
-  @SimpleFunction(description = "Hides the image that was last classified.")
+  @SimpleFunction(description = "Hides the image that was last classified. Does nothing if input mode is set to video.")
   public void HideImage() {
     webview.evaluateJavascript("hideImage();", null);
   }
@@ -152,7 +152,7 @@ public final class Look extends AndroidViewComponent implements Component {
     webview.evaluateJavascript("setInputMode(\"" + inputMode + "\");", null);
   }
 
-  @SimpleFunction(description = "Sets the image or video width to the specified value.")
+  @SimpleFunction(description = "Sets the image or video width to the specified value (in pixels).")
   public void SetInputWidth(final int width) {
     webview.evaluateJavascript("setInputWidth(" + width + ");", null);
   }
@@ -162,7 +162,7 @@ public final class Look extends AndroidViewComponent implements Component {
     EventDispatcher.dispatchEvent(this, "ClassifierReady");
   }
 
-  @SimpleEvent(description = "Event indicating that classification has finished successfully.<br>Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].")
+  @SimpleEvent(description = "Event indicating that classification has finished successfully. Result is of the form [[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]].")
   public void GotClassification(YailList result) {
     EventDispatcher.dispatchEvent(this, "GotClassification", result);
   }

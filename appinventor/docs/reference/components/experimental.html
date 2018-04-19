@@ -565,7 +565,7 @@
 </dl>
 <h2 id="Look">Look</h2>
 
-<p>Component that classifies images. There are two input modes: image (default) and video. When in image mode, users can classify an image at a given filepath. When in video mode, users can classify live video from the device camera.</p>
+<p>Component that classifies images. There are two input modes: image (default) and video. When in image mode, users can classify an image at a given filepath. When in video mode, users can classify live video from the device camera. Click <a href="classes.txt">here</a> for a list of the 1000 possible classifications.</p>
 
 <h3 id="lookproperties">Properties</h3>
 <dl>
@@ -591,19 +591,19 @@
 <h3 id="lookmethods">Methods</h3>
 <dl>
   <dt><code>ClassifyImageData(text image)</code></dt>
-  <dd>Performs classification on the image at the given path and triggers <code>GotClassification</code> event when classification is finished successfully.</dd>
+  <dd>Performs classification on the image at the given path and triggers the <code>GotClassification</code> event when classification is finished successfully.</dd>
   <dt><code>ClassifyVideoData()</code></dt>
-  <dd>Performs classification on current video frame and triggers <code>GotClassification</code> event when classification is finished successfully.</dd>
+  <dd>Performs classification on current video frame and triggers the <code>GotClassification</code> event when classification is finished successfully.</dd>
   <dt><code>HideImage()</code></dt>
-  <dd>Hides the image that was last classified. Does nothing if inputMode is set to video.</dd>
+  <dd>Hides the image that was last classified. Does nothing if input mode is set to video.</dd>
   <dt><code>SetInputMode(text inputMode)</code></dt>
-  <dd>Sets the input mode to image if inputMode is <code>image</code> or video if inputMode is <code>video</code>.</dd>
+  <dd>Sets the input mode to image if inputMode is "image" or video if inputMode is "video".</dd>
   <dt><code>SetInputWidth(number width)</code></dt>
   <dd>Sets the image or video width to the specified value (in pixels).</dd>
   <dt><code>ShowImage()</code></dt>
   <dd>Shows the image that was last classified if input mode is image.</dd>
   <dt><code>StartVideo()</code></dt>
-  <dd>Starts the video if input mode has been set to video. Does nothing if inputMode is set to image.</dd>
+  <dd>Starts the video if input mode has been set to video. Does nothing if input mode is set to image.</dd>
   <dt><code>StopVideo()</code></dt>
   <dd>Stops the video.</dd>
   <dt><code>ToggleCameraFacingMode()</code></dt>
