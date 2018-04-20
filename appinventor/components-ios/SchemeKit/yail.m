@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 static size_t BUFSIZE = 4096;
+static NSTimeZone *timeZone = nil;
 
 @class ProtocolWrapper;
 
@@ -1002,6 +1003,29 @@ yail_string_to_lowercase(pic_state *pic) {
   return pic_str_value(pic, str2, strlen(str2));
 }
 
+pic_value
+yail_format_date(pic_state *pic) {
+  pic_value picdate;
+
+  pic_get_args(pic, "o", &picdate);
+  NSDate *date = (NSDate *) yail_native_instance_ptr(pic, picdate)->object_;
+  if (date) {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZZZZZ";  // ISO8601 format
+    formatter.timeZone = timeZone;
+    NSString *datestr = [formatter stringFromDate:date];
+    const char *datecstr = [datestr cStringUsingEncoding:NSUTF8StringEncoding];
+    return pic_cstr_value(pic, datecstr);
+  } else {
+    return pic_false_value(pic);
+  }
+}
+
+void yail_set_time_zone(NSTimeZone *tz) {
+  timeZone = tz;
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -1035,6 +1059,8 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "bitwise-ior", yail_bitwise_ior);
   pic_defun(pic, "bitwise-xor", yail_bitwise_xor);
   pic_defun(pic, "format-places", yail_format_places);
+  pic_defun(pic, "yail:format-date", yail_format_date);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
+  timeZone = [NSTimeZone localTimeZone];
 }

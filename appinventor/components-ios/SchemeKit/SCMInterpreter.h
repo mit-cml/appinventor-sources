@@ -12,6 +12,7 @@
 - (void)clearException;
 - (void)setCurrentForm:(id _Nonnull)form;
 - (void)setValue:(id _Nullable)value forSymbol:(NSString * _Nonnull)symname;
+- (void)setTimeZone:(NSTimeZone * _Nonnull)tz;
 
 @property (readonly) NSException * _Nullable exception;
 

@@ -12,6 +12,7 @@ pic_value yail_make_native_class(pic_state *, Class);
 pic_value yail_make_native_method(pic_state *, SCMMethod *);
 pic_value yail_make_native_instance(pic_state *, id);
 id yail_to_native(pic_state *, pic_value);
+void yail_set_time_zone(NSTimeZone *tz);
 
 extern char *picrin_native_stack_start;
 
@@ -260,6 +261,10 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
   } pic_catch(e) {
     exception_ = exception_from_pic_error(pic, e);
   }
+}
+
+- (void)setTimeZone:(NSTimeZone *)tz {
+  yail_set_time_zone(tz);
 }
 
 @end

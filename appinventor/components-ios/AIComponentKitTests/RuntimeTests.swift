@@ -157,4 +157,30 @@ class RuntimeTests: XCTestCase {
     XCTAssertNotNil(result)
     XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"[[30.500000, 10.500000], [31.500000, 11.500000]]\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
   }
+
+  func testYailNSDateCoerceToString() throws {
+    let interpreter = try getInterpreterForTesting()
+    if let gmt = TimeZone(abbreviation: "GMT") {
+      interpreter.setTimeZone(gmt)
+    }
+    let date = NSDate(timeIntervalSince1970: 0)
+    interpreter.setValue(date, forSymbol: "test-date")
+    let result = interpreter.evalForm("(coerce-to-string test-date)")
+    XCTAssertNotNil(result)
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("1970-01-01T00:00:00Z", result)
+  }
+
+  func testYailNSDateGetDisplayRepresentation() throws {
+    let interpreter = try getInterpreterForTesting()
+    if let gmt = TimeZone(abbreviation: "GMT") {
+      interpreter.setTimeZone(gmt)
+    }
+    let date = NSDate(timeIntervalSince1970: 0)
+    interpreter.setValue(date, forSymbol: "test-date")
+    let result = interpreter.evalForm("(get-display-representation test-date)")
+    XCTAssertNotNil(result)
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("1970-01-01T00:00:00Z", result)
+  }
 }
