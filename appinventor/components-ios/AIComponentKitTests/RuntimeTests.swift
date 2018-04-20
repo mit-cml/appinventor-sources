@@ -155,6 +155,6 @@ class RuntimeTests: XCTestCase {
     }
     let result = RetValManager.shared().fetch(false)
     XCTAssertNotNil(result)
-    XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"((30.500000 10.500000) (31.500000 11.500000))\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
+    XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"[[30.500000, 10.500000], [31.500000, 11.500000]]\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
   }
 }
