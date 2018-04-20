@@ -32,6 +32,37 @@ open class FileUtil {
     return filePath
   }
   
+  /**
+   * Used to create absolute file names as specified by the File Component
+   */
+  open static func absoluteFileName(_ fileName: String, _ isRepl: Bool) throws -> String {
+    var filePath = ""
+    if fileName.starts(with: "//") {
+      let postSlashIndex = fileName.index(fileName.startIndex, offsetBy: 2)
+      if isRepl {
+        let file = fileName.substring(from: postSlashIndex)
+        let assetsFileName = "assets/\(file)"
+        filePath = AssetManager.shared.pathForExistingFileAsset(assetsFileName)
+        try createFullFilePath(filePath)
+      } else {
+        filePath = AssetManager.shared.pathForAssetInBundle(filename: fileName.substring(from: postSlashIndex))
+        try createFullFilePath(filePath)
+      }
+    } else if fileName.starts(with: "/") {
+      let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+      filePath = "\(path)\(fileName)"
+    } else {
+      if isRepl {
+        filePath = AssetManager.shared.pathForPublicAsset("data/\(fileName)")
+        try createFullFilePath(filePath)
+      } else {
+        let path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
+        filePath = "\(path)/\(fileName)"
+      }
+    }
+    return filePath
+  }
+  
   private static func getFile(_ directory: String, _ fileExtension: String) throws -> String {
     let currentTimeInMS = String(Int(NSDate().timeIntervalSince1970 * 1000))
     let relativePath = directory + "/" + FILENAME_PREFIX + currentTimeInMS + "." + fileExtension

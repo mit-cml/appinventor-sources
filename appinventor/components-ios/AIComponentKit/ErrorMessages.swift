@@ -57,7 +57,12 @@ import Foundation
   case ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901
   
   // File Errors
+  case ERROR_CANNOT_FIND_FILE = 2101
+  case ERROR_CANNOT_READ_FILE = 2102
+  case ERROR_CANNOT_CREATE_FILE = 2103
   case ERROR_CANNOT_WRITE_TO_FILE = 2104
+  case ERROR_CANNOT_DELETE_ASSET = 2105
+  case ERROR_CANNOT_WRITE_ASSET = 2106
 
   // Yandex.Translate errors
   case ERROR_TRANSLATE_NO_KEY_FOUND = 2201
@@ -73,6 +78,7 @@ import Foundation
   
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
+  case ERROR_CANNOT_ENCODE_TEXT_AS_UTF8 = 100002
 
   var code: Int32 {
     return Int32(self.rawValue)
@@ -169,8 +175,20 @@ import Foundation
       return "The date you entered is invalid."
     
     // File Errors
+    case .ERROR_CANNOT_FIND_FILE:
+      return "The file %s could not be found"
+    case .ERROR_CANNOT_READ_FILE:
+      return "The file %s could not be opened"
+    case .ERROR_CANNOT_CREATE_FILE:
+      return "The file %s could not be created"
     case .ERROR_CANNOT_WRITE_TO_FILE:
       return "Cannot write to file %s"
+    case .ERROR_CANNOT_DELETE_ASSET:
+      return "Cannot delete asset file at %s"
+    case .ERROR_CANNOT_WRITE_ASSET:
+      return "Cannot write asset file at %s"
+    case .ERROR_CANNOT_ENCODE_TEXT_AS_UTF8:
+      return "Cannot encode text as utf8 for file at %s"
 
     //Yandex.Translate Errors
     case .ERROR_TRANSLATE_NO_KEY_FOUND:
@@ -183,6 +201,8 @@ import Foundation
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
       return "Installing packages from URLs is not supported on iOS"
+    case .ERROR_CANNOT_ENCODE_TEXT_AS_UTF8:
+      return "Cannot encode text %s as utf8"
     }
   }
 }
