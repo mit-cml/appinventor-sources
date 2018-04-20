@@ -14,7 +14,11 @@ import Foundation
   case ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102
   case ERROR_LOCATION_SENSOR_PERMISSION_DENIED = 103
   case ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR = 104
-  
+
+  // Camera Errors
+  case ERROR_CAMERA_NO_IMAGE_RETURNED = 201
+  case ERROR_CAMERA_CANNOT_SAVE_FILE = 202
+
   // ActivityStarter Errors
   case ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601
   case ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602
@@ -103,7 +107,13 @@ import Foundation
       return "User denied location services permission."
     case .ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR:
       return "An unexpected error occurred when using location services: %s."
-      
+
+    // Camera errors
+    case .ERROR_CAMERA_NO_IMAGE_RETURNED:
+      return "The camera did not return an image."
+    case .ERROR_CAMERA_CANNOT_SAVE_FILE:
+      return "Camera could not save media image"
+
     // ActivityStarter Errors
     case .ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY:
       return "No corresponding activity was found."
