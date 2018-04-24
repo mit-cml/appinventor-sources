@@ -18,9 +18,9 @@ const mobilenetDemo = async () => {
   Look.ready();
 };
 
-async function predict(imgElement) {
+async function predict(pixels) {
   const logits = tf.tidy(() => {
-    const img = tf.image.resizeBilinear(tf.fromPixels(imgElement).toFloat(), [IMAGE_SIZE, IMAGE_SIZE]);
+    const img = tf.image.resizeBilinear(tf.fromPixels(pixels).toFloat(), [IMAGE_SIZE, IMAGE_SIZE]);
     const offset = tf.scalar(127.5);
     const normalized = img.sub(offset).div(offset);
     const batched = normalized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
@@ -61,6 +61,12 @@ async function getTopKClasses(logits, topK) {
   return topClassesAndProbs;
 }
 
+var img = document.createElement("img");
+img.width = 500;
+
+var isImageShowing = true;
+img.style.display = "block";
+
 var video = document.createElement("video");
 video.setAttribute("autoplay", "");
 video.setAttribute("playsinline", "");
@@ -71,17 +77,11 @@ var frontFacing = true;
 var isPlaying = false;
 var isVideoMode = false;
 
-var img = new Image();
-img.width = 500;
-
-var isImageShowing = true;
-img.style.display = "block";
-
-document.body.appendChild(video);
 document.body.appendChild(img);
+document.body.appendChild(video);
 
-video.addEventListener("loadedmetadata", function () {
-    video.height = this.videoHeight * video.width / this.videoWidth;
+video.addEventListener("loadedmetadata", function() {
+  video.height = this.videoHeight * video.width / this.videoWidth;
 }, false);
 
 function startVideo() {
@@ -108,18 +108,18 @@ function toggleCameraFacingMode() {
   startVideo();
 }
 
-function classifyVideoData() {
-  if (isPlaying && isVideoMode) {
-    predict(video);
-  }
-}
-
 function classifyImageData(imageData) {
   if (!isVideoMode) {
     img.onload = function() {
       predict(img);
     }
     img.src = "data:image/png;base64," + imageData;
+  }
+}
+
+function classifyVideoData() {
+  if (isPlaying && isVideoMode) {
+    predict(video);
   }
 }
 
@@ -138,11 +138,11 @@ function hideImage() {
 }
 
 function setInputMode(inputMode) {
-  if (inputMode == "image" && isVideoMode) {
+  if (inputMode === "image" && isVideoMode) {
     stopVideo();
     isVideoMode = false;
     showImage();
-  } else if (inputMode == "video" && !isVideoMode) {
+  } else if (inputMode === "video" && !isVideoMode) {
     hideImage();
     isVideoMode = true;
     startVideo();
