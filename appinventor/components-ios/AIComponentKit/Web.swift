@@ -14,7 +14,7 @@ open class Web: NonvisibleComponent {
   fileprivate let stringToEncoding: [String: String.Encoding] =
     ["uft8": .utf8, "utf-8": .utf8, "utf16": .utf16, "utf-16": .utf16, "utf32": .utf32,
      "utf-32": .utf32, "iso2022jp": .iso2022JP, "iso-2022-jp": .iso2022JP, "iso-8859-1": .isoLatin1,
-     "iso88591": .isoLatin1, "iso-8859-2": .isoLatin2, "iso-8859-2": .isoLatin2, "ascii": .ascii]
+     "iso88591": .isoLatin1, "iso-8859-2": .isoLatin2, "iso88592": .isoLatin2, "ascii": .ascii]
   
   private func stringToEncodedData(_ encoding: String, _ text: String) -> Data? {
     guard let encodingType = stringToEncoding[encoding.lowercased()] else {
