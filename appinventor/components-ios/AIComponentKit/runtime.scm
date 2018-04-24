@@ -317,6 +317,7 @@
 
 (define (coerce-to-string arg)
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+        ((eq? arg #undefined) *the-null-value-printed-rep*)
         ((string? arg) arg)
         ((number? arg) (appinventor-number->string arg))
         ((boolean? arg) (boolean->string arg))
@@ -349,6 +350,7 @@
         (-inf (/ -1.0 0)))
     (lambda (arg)
     (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+          ((eq? arg #undefined) *the-null-value-printed-rep*)
           ((symbol? arg)
            (symbol->string arg))
           ((string? arg)
@@ -374,6 +376,7 @@
         (-inf (/ -1.0 0)))
     (lambda (arg)
       (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+            ((eq? arg #undefined) *the-null-value-printed-rep*)
             ((symbol? arg)
              (symbol->string arg))
             ((string? arg) (string-append "\"" arg "\""))
