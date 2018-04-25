@@ -25,7 +25,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   }
   
   private func setupSliderView() {
-    _view.isContinuous = false
+    _view.isContinuous = true
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.minimumTrackTintColor = _leftColor
     _view.maximumTrackTintColor = _rightColor
