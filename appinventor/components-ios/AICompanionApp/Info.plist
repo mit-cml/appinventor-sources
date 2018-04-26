@@ -29,8 +29,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>scanning barcodes and taking pictures</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>App Inventor uses speech recognition when you include a SpeechRecognizer component in your app</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>App Inventor accesses your microphone when you take a video with the Camcorder component</string>
+	<string>App Inventor accesses your microphone to record videos or audio</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -44,9 +46,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>App Inventor accesses your contacts when you include a ContactPicker component in your app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App Inventor accesses your location when you include a WebViewer component in your app and navigate to a website that requests your location</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>App Inventor accesses your microphone when you include a SoundRecorder component in yuor app.</string>
+	<string>App Inventor accesses your location data when you include a LocationSensor component in your app.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -54,8 +54,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App Inventor accesses your location data when you include a LocationSensor component in your app.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>

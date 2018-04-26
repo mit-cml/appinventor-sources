@@ -84,6 +84,11 @@ import Foundation
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
   case ERROR_CANNOT_ENCODE_TEXT_AS_UTF8 = 100002
 
+  // iOS Specific SpeechRecognizer Errors
+  case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100010
+  case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100011
+  case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100012
+  
   var code: Int32 {
     return Int32(self.rawValue)
   }
@@ -213,6 +218,14 @@ import Foundation
       return "Installing packages from URLs is not supported on iOS"
     case .ERROR_CANNOT_ENCODE_TEXT_AS_UTF8:
       return "Cannot encode text %s as utf8"
+
+    // iOS Specific SpeechRecognizer Errors
+    case .ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED:
+      return "Speech recognition is not supported for iOS versions below 10.0"
+    case .ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE:
+      return "Speech recognition encountered an error and is currently unavailable"
+    case .ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR:
+      return "An error occured when attempting to process audio"
     }
   }
 }
