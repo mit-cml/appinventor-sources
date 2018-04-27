@@ -1,6 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,10 +15,18 @@ import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.PermissionRequest;
-import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.UsesAssets;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.*;
+import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.TensorFlowJSHTTPD;
+import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -31,6 +38,9 @@ import java.util.List;
 
 /**
  * Component that classifies images.
+ *
+ * @author kevinzhu@mit.edu (Kevin Zhu)
+ * @author kelseyc@mit.edu (Kelsey Chan)
  */
 
 @DesignerComponent(version = YaVersion.LOOK_COMPONENT_VERSION,
@@ -45,6 +55,13 @@ public final class Look extends AndroidViewComponent implements Component {
   public static final int IMAGE_QUALITY = 100;
   public static final int PORT = 8016;
 
+  // other error codes are defined in look.js
+  public static final int ERROR_CLASSIFICATION_NOT_SUPPORTED = -1;
+  public static final int ERROR_CLASSIFICATION_FAILED = -2;
+  public static final int ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE = -3;
+  public static final int ERROR_CANNOT_CLASSIFY_IMAGE_WHEN_IN_VIDEO_MODE = -4;
+  public static final int ERROR_CANNOT_CLASSIFY_VIDEO_WHEN_IN_IMAGE_MODE = -5;
+
   private final WebView webview;
   private final Form form;
   private static TensorFlowJSHTTPD httpdServer = null;
@@ -53,7 +70,6 @@ public final class Look extends AndroidViewComponent implements Component {
     super(container);
     this.form = container.$form();
     startHTTPD();
-    // Log.d(LOG_TAG, form.$context().getFilesDir().getAbsolutePath());
     webview = new WebView(container.$context());
     webview.getSettings().setJavaScriptEnabled(true);
     webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
@@ -117,16 +133,6 @@ public final class Look extends AndroidViewComponent implements Component {
     webview.evaluateJavascript("classifyImageData(\"" + imageEncodedbase64String + "\");", null);
   }
 
-  @SimpleFunction(description = "Starts the video if input mode has been set to video. Does nothing if input mode is set to image.")
-  public void StartVideo() {
-    webview.evaluateJavascript("startVideo();", null);
-  }
-
-  @SimpleFunction(description = "Stops the video.")
-  public void StopVideo() {
-    webview.evaluateJavascript("stopVideo();", null);
-  }
-
   @SimpleFunction(description = "Toggles between user-facing and environment-facing camera.")
   public void ToggleCameraFacingMode() {
     webview.evaluateJavascript("toggleCameraFacingMode();", null);
@@ -135,16 +141,6 @@ public final class Look extends AndroidViewComponent implements Component {
   @SimpleFunction(description = "Performs classification on current video frame and triggers the GotClassification event when classification is finished successfully.")
   public void ClassifyVideoData() {
     webview.evaluateJavascript("classifyVideoData();", null);
-  }
-
-  @SimpleFunction(description = "Shows the image that was last classified if input mode is image.")
-  public void ShowImage() {
-    webview.evaluateJavascript("showImage();", null);
-  }
-
-  @SimpleFunction(description = "Hides the image that was last classified. Does nothing if input mode is set to video.")
-  public void HideImage() {
-    webview.evaluateJavascript("hideImage();", null);
   }
 
   @SimpleFunction(description = "Sets the input mode to image if inputMode is \"image\" or video if inputMode is \"video\".")
@@ -167,9 +163,9 @@ public final class Look extends AndroidViewComponent implements Component {
     EventDispatcher.dispatchEvent(this, "GotClassification", result);
   }
 
-  @SimpleEvent(description = "Event indicating that classification has failed.")
-  public void ClassificationFailed() {
-    EventDispatcher.dispatchEvent(this, "ClassificationFailed");
+  @SimpleEvent(description = "Event indicating that an error has occurred.")
+  public void Error(final int errorCode) {
+    EventDispatcher.dispatchEvent(this, "Error", errorCode);
   }
 
   @Override
@@ -209,8 +205,19 @@ public final class Look extends AndroidViewComponent implements Component {
       } catch (JSONException e) {
         Log.d(LOG_TAG, "Entered catch of reportResult");
         e.printStackTrace();
-        ClassificationFailed();
+        Error(ERROR_CLASSIFICATION_FAILED);
       }
+    }
+
+    @JavascriptInterface
+    public void error(final int errorCode) {
+      Log.d(LOG_TAG, "Entered error: " + errorCode);
+      form.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          Error(errorCode);
+        }
+      });
     }
   }
 }

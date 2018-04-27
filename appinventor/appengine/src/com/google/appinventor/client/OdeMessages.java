@@ -4769,9 +4769,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotClassificationEvents();
 
-  @DefaultMessage("ClassificationFailed")
+  @DefaultMessage("Error")
   @Description("")
-  String ClassificationFailedEvents();
+  String ErrorEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -7024,14 +7024,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetCenterMethods();
 
-  @DefaultMessage("StartVideo")
-  @Description("")
-  String StartVideoMethods();
-
-  @DefaultMessage("StopVideo")
-  @Description("")
-  String StopVideoMethods();
-
   @DefaultMessage("ToggleCameraFacingMode")
   @Description("")
   String ToggleCameraFacingModeMethods();
@@ -7044,13 +7036,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ClassifyVideoDataMethods();
 
-  @DefaultMessage("ShowImage")
+  @DefaultMessage("errorCode")
   @Description("")
-  String ShowImageMethods();
-
-  @DefaultMessage("HideImage")
-  @Description("")
-  String HideImageMethods();
+  String errorCodeParams();
 
   @DefaultMessage("inputMode")
   @Description("")
