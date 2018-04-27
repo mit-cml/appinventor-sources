@@ -9,9 +9,7 @@ package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 
-import java.util.LinkedList;
 import java.text.DateFormat;
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -137,9 +135,9 @@ public final class Dates {
     for (String format : formats) {
       try {
         return new SimpleDateFormat(format).parse(value);
-      } catch (ParseException e) {}
-    }
-    throw new IllegalArgumentException("illegal date/time format in function DateValue()"); 
+        } catch (ParseException e) {}
+      }
+      throw new IllegalArgumentException("illegal date/time format in function DateValue()");
   }
 
   /**
