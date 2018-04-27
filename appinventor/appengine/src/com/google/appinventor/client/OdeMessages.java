@@ -2919,6 +2919,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MultiLineProperties();
 
+  @DefaultMessage("Namespace")
+  @Description("")
+  String NamespaceProperties();
+
   @DefaultMessage("NumbersOnly")
   @Description("")
   String NumbersOnlyProperties();
@@ -5509,6 +5513,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
+  
+  @DefaultMessage("UriDecode")
+  @Description("")
+  String UriDecodeMethods();
 
   @DefaultMessage("CanGoBack")
   @Description("")

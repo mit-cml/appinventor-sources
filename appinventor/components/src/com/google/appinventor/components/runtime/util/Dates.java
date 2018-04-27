@@ -9,7 +9,9 @@ package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 
+import java.util.LinkedList;
 import java.text.DateFormat;
+import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -126,26 +128,22 @@ public final class Dates {
   @SimpleFunction
   public static Calendar DateValue(String value) {
     Calendar date = new GregorianCalendar();
-    try {
-      DateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-      dateTimeFormat.setLenient(true);
-      date.setTime(dateTimeFormat.parse(value));
-    } catch (ParseException e) {
-      try {
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        dateFormat.setLenient(true);
-        date.setTime(dateFormat.parse(value));
-      } catch (ParseException e1) {
-        try {
-          DateFormat dateFormat = new SimpleDateFormat("HH:mm");
-          dateFormat.setLenient(true);
-          date.setTime(dateFormat.parse(value));
-        } catch (ParseException pe) {
-          throw new IllegalArgumentException("illegal date/time format in function DateValue()");
-        }
-      }
-    }
+    date.setTime(tryParseDate(value)); 
     return date;
+  }
+
+  private static Date tryParseDate(String value) {
+    LinkedList<String> formats = new LinkedList<String>();
+    formats.add("MM/dd/yyyy HH:mm:ss"); 
+    formats.add("MM/dd/yyyy HH:mm");
+    formats.add("MM/dd/yyyy");
+    formats.add("HH:mm");
+    for (String format : formats) {
+      try {
+        return new SimpleDateFormat(format).parse(value);
+      } catch (ParseException e) {}
+    }
+    throw new IllegalArgumentException("illegal date/time format in function DateValue()"); 
   }
 
   /**

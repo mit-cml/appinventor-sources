@@ -19,8 +19,6 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +61,10 @@ import org.json.JSONException;
 @SimpleObject
 public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable {
 
+  public static final String DEFAULT_NAMESPACE="TinyDB1";
+
   private SharedPreferences sharedPreferences;
+  private String namespace;
 
   private Context context;  // this was a local in constructor and final not private
 
@@ -76,7 +77,19 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   public TinyDB(ComponentContainer container) {
     super(container.$form());
     context = (Context) container.$context();
-    sharedPreferences = context.getSharedPreferences("TinyDB1", Context.MODE_PRIVATE);
+    Namespace(DEFAULT_NAMESPACE);
+  }
+
+  @SimpleProperty(description = "Namespace for storing data.", category = PropertyCategory.BEHAVIOR)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = DEFAULT_NAMESPACE)
+  public void Namespace(String namespace) {
+    this.namespace = namespace;
+    sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
+  }
+
+  @SimpleProperty(description = "Namespace for storing data.")
+  public String Namespace() {
+    return namespace;
   }
 
   /**
