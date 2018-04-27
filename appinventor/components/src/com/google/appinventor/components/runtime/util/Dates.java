@@ -133,11 +133,7 @@ public final class Dates {
   }
 
   private static Date tryParseDate(String value) {
-    LinkedList<String> formats = new LinkedList<String>();
-    formats.add("MM/dd/yyyy HH:mm:ss"); 
-    formats.add("MM/dd/yyyy HH:mm");
-    formats.add("MM/dd/yyyy");
-    formats.add("HH:mm");
+    String[] formats = {"MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy", "HH:mm"};
     for (String format : formats) {
       try {
         return new SimpleDateFormat(format).parse(value);
