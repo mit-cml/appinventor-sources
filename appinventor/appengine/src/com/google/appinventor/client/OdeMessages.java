@@ -7043,8 +7043,4 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("inputMode")
   @Description("")
   String inputModeParams();
-
-  @DefaultMessage("SetInputWidth")
-  @Description("")
-  String SetInputWidthMethods();
 }

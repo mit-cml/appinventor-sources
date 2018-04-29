@@ -2,8 +2,7 @@
 
 console.log("Look: Using Tensorflow.js version " + tf.version.tfjs);
 
-// const MOBILENET_MODEL_PATH = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json";
-const MOBILENET_MODEL_PATH = "model.json";
+const MOBILENET_MODEL_PATH = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json";
 
 const IMAGE_SIZE = 224;
 const TOPK_PREDICTIONS = 10;
@@ -12,19 +11,19 @@ const TOPK_PREDICTIONS = 10;
 const ERROR_CLASSIFICATION_NOT_SUPPORTED = -1;
 const ERROR_CLASSIFICATION_FAILED = -2;
 const ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE = -3;
-const ERROR_CANNOT_CLASSIFY_IMAGE_WHEN_IN_VIDEO_MODE = -4;
-const ERROR_CANNOT_CLASSIFY_VIDEO_WHEN_IN_IMAGE_MODE = -5;
+const ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE = -4;
+const ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
 
 let mobilenet;
 const mobilenetDemo = async () => {
-  mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
-  const zeros = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
   try {
+    mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
+    const zeros = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
     mobilenet.predict(zeros).dispose();
     zeros.dispose();
     console.log("Look: Mobilenet ready");
     Look.ready();
-  } catch(error) {
+  } catch (error) {
     console.log("Look: " + error);
     Look.error(ERROR_CLASSIFICATION_NOT_SUPPORTED);
   }
@@ -37,7 +36,7 @@ async function predict(pixels) {
       const offset = tf.scalar(127.5);
       const normalized = img.sub(offset).div(offset);
       const batched = normalized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-      return mobilenet.predict(batched);      
+      return mobilenet.predict(batched);
     });
     const classes = await getTopKClasses(logits, TOPK_PREDICTIONS);
     logits.dispose();
@@ -47,7 +46,7 @@ async function predict(pixels) {
     }
     console.log("Look: prediction is " + JSON.stringify(result));
     Look.reportResult(JSON.stringify(result));
-  } catch(error) {
+  } catch (error) {
     console.log("Look: " + error);
     Look.error(ERROR_CLASSIFICATION_NOT_SUPPORTED);
   }
@@ -79,14 +78,14 @@ async function getTopKClasses(logits, topK) {
 }
 
 var img = document.createElement("img");
-img.width = 500;
+img.width = window.innerWidth;
 
 img.style.display = "block";
 
 var video = document.createElement("video");
 video.setAttribute("autoplay", "");
 video.setAttribute("playsinline", "");
-video.width = 500;
+video.width = window.innerWidth;
 video.style.display = "none";
 
 var frontFacing = false;
@@ -132,7 +131,7 @@ function classifyImageData(imageData) {
     }
     img.src = "data:image/png;base64," + imageData;
   } else {
-    Look.error(ERROR_CANNOT_CLASSIFY_IMAGE_WHEN_IN_VIDEO_MODE);
+    Look.error(ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE);
   }
 }
 
@@ -140,7 +139,7 @@ function classifyVideoData() {
   if (isVideoMode) {
     predict(video);
   } else {
-    Look.error(ERROR_CANNOT_CLASSIFY_VIDEO_WHEN_IN_IMAGE_MODE);
+    Look.error(ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE);
   }
 }
 
@@ -156,10 +155,10 @@ function setInputMode(inputMode) {
   }
 }
 
-function setInputWidth(width) {
-  img.width = width;
-  video.width = width;
-  video.height = video.videoHeight * width / video.videoWidth;
-}
+window.addEventListener("resize", function() {
+  img.width = window.innerWidth;
+  video.width = window.innerWidth;
+  video.height = video.videoHeight * window.innerWidth / video.videoWidth;
+});
 
 mobilenetDemo();
