@@ -55,7 +55,7 @@ public final class Look extends AndroidViewComponent implements Component {
   private static final int IMAGE_WIDTH = 500;
   public static final int IMAGE_QUALITY = 100;
 
-  private static final String modelPrefix = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/";
+  private static final String MODEL_PREFIX = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/";
 
   // other error codes are defined in look.js
   public static final int ERROR_CLASSIFICATION_NOT_SUPPORTED = -1;
@@ -79,10 +79,10 @@ public final class Look extends AndroidViewComponent implements Component {
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         Log.d(LOG_TAG, "shouldInterceptRequest called");
-        if (url.contains(modelPrefix)) {
+        if (url.contains(MODEL_PREFIX)) {
           Log.d(LOG_TAG, "overriding " + url);
           try {
-            InputStream inputStream = form.$context().getAssets().open("component/" + url.substring(modelPrefix.length()));
+            InputStream inputStream = form.$context().getAssets().open("component/" + url.substring(MODEL_PREFIX.length()));
             if (url.endsWith(".json")) {
               return new WebResourceResponse("application/json", "UTF-8", inputStream);
             } else {

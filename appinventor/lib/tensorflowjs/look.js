@@ -79,7 +79,6 @@ async function getTopKClasses(logits, topK) {
 
 var img = document.createElement("img");
 img.width = window.innerWidth;
-
 img.style.display = "block";
 
 var video = document.createElement("video");
