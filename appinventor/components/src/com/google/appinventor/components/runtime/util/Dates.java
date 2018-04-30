@@ -135,9 +135,9 @@ public final class Dates {
     for (String format : formats) {
       try {
         return new SimpleDateFormat(format).parse(value);
-        } catch (ParseException e) {}
-      }
-      throw new IllegalArgumentException("illegal date/time format in function DateValue()");
+      } catch (ParseException e) {}
+    }
+    throw new IllegalArgumentException("illegal date/time format in function DateValue()");
   }
 
   /**
