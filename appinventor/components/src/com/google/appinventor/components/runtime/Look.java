@@ -15,7 +15,6 @@ import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.PermissionRequest;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleEvent;
