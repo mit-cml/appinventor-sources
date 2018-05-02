@@ -1,6 +1,6 @@
 "use strict";
 
-console.log("Look: Using Tensorflow.js version " + tf.version.tfjs);
+console.log("Look: Using TensorFlow.js version " + tf.version.tfjs);
 
 const MOBILENET_MODEL_PATH = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json";
 
@@ -13,6 +13,7 @@ const ERROR_CLASSIFICATION_FAILED = -2;
 const ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE = -3;
 const ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE = -4;
 const ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
+const ERROR_INVALID_INPUT_MODE = -6;
 
 let mobilenet;
 const mobilenetDemo = async () => {
@@ -151,6 +152,8 @@ function setInputMode(inputMode) {
     img.style.display = "none";
     isVideoMode = true;
     startVideo();
+  } else if (inputMode !== "image" && inputMode !== "video") {
+    Look.error(ERROR_INVALID_INPUT_MODE);
   }
 }
 

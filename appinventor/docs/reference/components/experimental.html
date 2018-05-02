@@ -583,7 +583,14 @@
   <dd>Indicates that the classifier is ready.</dd>
   <dt><code>Error(int errorCode)</code></dt>
   <dd>Indicates that an error has occurred.</dd>
-  <dd>errorCode values:<br>-1 if classification is not supported on the device.<br>-2 if the classification failed.<br>-3 if <code>ToggleCameraFacingMode</code> was called while in image mode.<br>-4 if <code>ClassifyImageData</code> was called while in video mode.<br>-5 if <code>ClassifyVideoData</code> was called while in image mode.</dd>
+  <dd>errorCode values:
+    <br>-1 if classification is not supported on the device.
+    <br>-2 if the classification failed.
+    <br>-3 if <code>ToggleCameraFacingMode</code> was called while in image mode.
+    <br>-4 if <code>ClassifyImageData</code> was called while in video mode.
+    <br>-5 if <code>ClassifyVideoData</code> was called while in image mode.
+    <br>-6 if <code>SetInputMode</code> was given an invalid input mode.
+  </dd>
   <dt><code>GotClassification(list result)</code></dt>
   <dd>Indicates that classification has finished successfully.</dd>
   <dd>Result is of the form <code>[[class1, confidence1], [class2, confidence2], ..., [class10, confidence10]]</code>.</dd>

@@ -53,16 +53,17 @@ import java.util.List;
 public final class Look extends AndroidViewComponent implements Component {
   private static final String LOG_TAG = Look.class.getSimpleName();
   private static final int IMAGE_WIDTH = 500;
-  public static final int IMAGE_QUALITY = 100;
+  private static final int IMAGE_QUALITY = 100;
 
   private static final String MODEL_PREFIX = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/";
 
   // other error codes are defined in look.js
-  public static final int ERROR_CLASSIFICATION_NOT_SUPPORTED = -1;
-  public static final int ERROR_CLASSIFICATION_FAILED = -2;
-  public static final int ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE = -3;
-  public static final int ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE = -4;
-  public static final int ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
+  private static final int ERROR_CLASSIFICATION_NOT_SUPPORTED = -1;
+  private static final int ERROR_CLASSIFICATION_FAILED = -2;
+  private static final int ERROR_CANNOT_TOGGLE_CAMERA_IN_IMAGE_MODE = -3;
+  private static final int ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE = -4;
+  private static final int ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
+  private static final int ERROR_INVALID_INPUT_MODE = -6;
 
   private final WebView webview;
   private final Form form;
