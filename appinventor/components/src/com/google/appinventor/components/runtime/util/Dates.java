@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -131,7 +132,17 @@ public final class Dates {
   }
 
   private static Date tryParseDate(String value) {
-    String[] formats = {"MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy", "HH:mm"};
+    String[] formats = {
+      "MM/dd/yyyy hh:mm:ss a", 
+      "MM/dd/yyyy HH:mm:ss", 
+      "MM/dd/yyyy hh:mm a",
+      "MM/dd/yyyy HH:mm", 
+      "MM/dd/yyyy", 
+      "hh:mm:ss a", 
+      "HH:mm:ss",
+      "hh:mm a", 
+      "HH:mm"
+    };
     for (String format : formats) {
       try {
         return new SimpleDateFormat(format).parse(value);
@@ -183,14 +194,14 @@ public final class Dates {
    * @see SimpleDateFormat
    *
    * @param date  date to format
-   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm
+   * @param pattern format of the date and time e.g. MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted date
    */
   @SimpleFunction
   public static String FormatDateTime(Calendar date, String pattern) {
     SimpleDateFormat formatdate = new SimpleDateFormat();
     if (pattern.length() == 0) {
-      formatdate.applyPattern("MMM d, yyyy HH:mm:ss a");
+      formatdate.applyPattern("MMM d, yyyy hh:mm:ss a");
     } else {
       formatdate.applyPattern(pattern);
     }
