@@ -66,6 +66,7 @@ fileprivate class SpinnerPhoneController: UIViewController, SpinnerController {
         modalPresentationStyle = .custom
         _pickerView.delegate = delegateDataSource
         _pickerView.dataSource = delegateDataSource
+        _pickerView.backgroundColor = .white
         _toolBar.barStyle = UIBarStyle.default
         let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissPicker))
         let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPicker))
@@ -92,16 +93,20 @@ fileprivate class SpinnerPhoneController: UIViewController, SpinnerController {
         view.backgroundColor = .clear
         view.addSubview(_toolBar)
         view.addSubview(_pickerView)
-        _pickerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.5 / 7).isActive = true
-        _toolBar.bottomAnchor.constraint(equalTo: _pickerView.topAnchor).isActive = true
-        _toolBar.heightAnchor.constraint(equalToConstant: 50)
-        _toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        _toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        _toolBar.translatesAutoresizingMaskIntoConstraints = false
-        _pickerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        _pickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        _pickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        _pickerView.translatesAutoresizingMaskIntoConstraints = false
+        setupLayoutConstraints()
+    }
+  
+    private func setupLayoutConstraints() {
+      _pickerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.5 / 7).isActive = true
+      _toolBar.bottomAnchor.constraint(equalTo: _pickerView.topAnchor).isActive = true
+      _toolBar.heightAnchor.constraint(equalToConstant: 50)
+      _toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+      _toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+      _toolBar.translatesAutoresizingMaskIntoConstraints = false
+      _pickerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+      _pickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+      _pickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+      _pickerView.translatesAutoresizingMaskIntoConstraints = false
     }
 
     public func cancelPicker() {

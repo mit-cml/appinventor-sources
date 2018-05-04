@@ -106,6 +106,7 @@ fileprivate class DatePickerPhoneController: UIViewController, DatePickerControl
     _toolBar.isUserInteractionEnabled = true
     _toolBar.sizeToFit()
     _pickerView.datePickerMode = .date
+    _pickerView.backgroundColor = .white
   }
   
   public required init?(coder aDecoder: NSCoder) {

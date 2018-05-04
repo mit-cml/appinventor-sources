@@ -106,6 +106,7 @@ fileprivate class TimePickerPhoneController: UIViewController, TimePickerControl
     _toolBar.isUserInteractionEnabled = true
     _toolBar.sizeToFit()
     _pickerView.datePickerMode = .time
+    _pickerView.backgroundColor = .white
   }
   
   public required init?(coder aDecoder: NSCoder) {
