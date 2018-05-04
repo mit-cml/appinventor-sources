@@ -84,7 +84,16 @@ open class Notifier: NonvisibleComponent {
       }
       dialog.addAction(cancelAction)
     }
-    _form.present(dialog, animated: true, completion: {})
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      dialog.modalPresentationStyle = .popover
+      dialog.isModalInPopover = !cancelable
+      if let popover = dialog.popoverPresentationController {
+        popover.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+        popover.sourceView = _form.view
+        popover.sourceRect = _form.view.bounds
+      }
+    }
+    _form.present(dialog, animated: true)
   }
 
   open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
@@ -92,7 +101,16 @@ open class Notifier: NonvisibleComponent {
     let okAction = UIAlertAction(title: buttonText, style: .default) { (action: UIAlertAction) in }
     dialog.addAction(okAction)
     dialog.preferredAction = okAction
-    _form.present(dialog, animated: true, completion: {})
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      dialog.modalPresentationStyle = .popover
+      dialog.isModalInPopover = true
+      if let popover = dialog.popoverPresentationController {
+        popover.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+        popover.sourceView = _form.view
+        popover.sourceRect = _form.view.bounds
+      }
+    }
+    _form.present(dialog, animated: true)
   }
 
   open func ShowProgressDialog(_ message: String, _ title: String) {
