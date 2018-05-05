@@ -2907,6 +2907,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LineWidthProperties();
 
+  @DefaultMessage("LoadingDialogMessage")
+  @Description("")
+  String LoadingDialogMessageProperties();
+
   @DefaultMessage("Message")
   @Description("")
   String MessageProperties();
@@ -3022,6 +3026,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ServiceURL")
   @Description("")
   String ServiceURLProperties();
+
+  @DefaultMessage("ShowLoadingDialog")
+  @Description("")
+  String ShowLoadingDialogProperties();
 
   @DefaultMessage("FirebaseURL")
   @Description("")
