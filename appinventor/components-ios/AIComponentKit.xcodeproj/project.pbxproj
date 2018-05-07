@@ -109,6 +109,7 @@
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
+		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
 		CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB96609B1F95489F009746C3 /* LocationSensor.swift */; };
 		CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC786812006AD2F005363A3 /* FileUtil.swift */; };
@@ -253,6 +254,7 @@
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
+		CB8539242075549A009E9030 /* ClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockTests.swift; sourceTree = "<group>"; };
 		CB9660841F69BC8C009746C3 /* TinyWebDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TinyWebDB.swift; sourceTree = "<group>"; };
 		CB96609B1F95489F009746C3 /* LocationSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = LocationSensor.swift; sourceTree = "<group>"; tabWidth = 2; };
 		CBC786812006AD2F005363A3 /* FileUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtil.swift; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 		0618A2901D8CF4EE0013A191 /* AIComponentKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				CB85392120755475009E9030 /* Unit Tests */,
 				06E2D6001FDB16CC00A1D52A /* yail */,
 				CBC78695202E0B73005363A3 /* Units Tests */,
 				0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */,
@@ -646,6 +649,7 @@
 			isa = PBXGroup;
 			children = (
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
+				CB8539242075549A009E9030 /* ClockTests.swift */,
 			);
 			path = nonvisible;
 			sourceTree = "<group>";
@@ -983,6 +987,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB8539252075549A009E9030 /* ClockTests.swift in Sources */,
 				061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */,
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,

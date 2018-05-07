@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc public class YailRuntimeError : NSException {
+@objc public class YailRuntimeError : NSException, Error {
   public init(_ message: String, _ errorType: String) {
     super.init(name: NSExceptionName(rawValue: errorType), reason: message, userInfo: nil)
   }
