@@ -37,16 +37,25 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
         updateImage(image)
       } else if let image = UIImage(contentsOfFile: path) {
         updateImage(image)
-      } else {
-        do {
-          if let url = URL(string: path), let image = try UIImage(data: Data(contentsOf: url)) {
-            updateImage(image)
-          } else {
-            updateImage(nil)
-          }
-        } catch {
+      } else if path.starts(with: "file://") {
+        if let image = UIImage(contentsOfFile: path.chopPrefix(count: 7).removingPercentEncoding ?? "") {
+          updateImage(image)
+        } else {
           updateImage(nil)
         }
+      } else if (path.starts(with: "http://") || path.starts(with: "https://")), let url = URL(string: path) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+          DispatchQueue.main.async {
+            guard let data = data, error == nil else {
+              self.updateImage(nil)
+              return
+            }
+            self.updateImage(UIImage(data: data))
+            self._container.form.view.setNeedsLayout()
+          }
+        }.resume()
+      } else {
+        updateImage(nil)
       }
       _container.form.view.setNeedsLayout()
       NSLog("Image size: \(_view.frame)")
