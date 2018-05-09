@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
 
@@ -96,6 +97,10 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     super(container);
     seekbar = new SeekBar(container.$context());
 
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+      seekbar.setSplitTrack(false);
+    }
+
     fullBar = (LayerDrawable) seekbar.getProgressDrawable();
     beforeThumb = fullBar.findDrawableByLayerId(R.id.progress);
 
@@ -142,15 +147,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    beforeThumb.setColorFilter(leftColor, PorterDuff.Mode.SRC);
  }
 
-  /**
-   * Given min, max, thumb position, this method determines where the thumb position would be
-   * within normal SeekBar 0-100 range
-   *
-   * @param min   value for slider
-   * @param max   value for slider
-   * @param thumb the slider thumb position
-   */
-
  // Set the seekbar position based on minValue, maxValue, and thumbPosition
  // seekbar position is an integer in the range [0,100] and is determined by MinValue,
  // MaxValue and ThumbPosition
@@ -181,8 +177,14 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (referenceGetThumb) {
       new SeekBarHelper().getThumb(alpha);
     }
-    seekbar.setEnabled(thumbEnabled);
 
+    // The Seekbar will respond to touch without the thumb. Consume the event with thumb disabled.
+    seekbar.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View view, MotionEvent motionEvent) {
+        return !thumbEnabled;
+      }
+    });
   }
 
   /**
