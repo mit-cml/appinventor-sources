@@ -562,4 +562,32 @@ typedef union {
   XCTAssertTrue([@"42.250000" isEqualToString:helper->strResult]);
 }
 
+- (void)testUTF8Support {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"(string-append \"Hello \" \"🌎\")"];
+  XCTAssertNil(interpreter.exception);
+  NSString *result2 = [interpreter evalForm:@"\"你好\""];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertNotNil(result2);
+  XCTAssertEqualObjects(@"Hello 🌎", result);
+  XCTAssertEqualObjects(@"你好", result2);
+}
+
+- (void)testMultipointUTFParsing {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"\"\\ud83d\\udc4b\""];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertEqualObjects(@"👋", result);
+}
+
+- (void)testSinglePointUTF16Parsing {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"\"\\u4f60\\u597d\""];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertEqualObjects(@"你好", result);
+}
+
 @end
