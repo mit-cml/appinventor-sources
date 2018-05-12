@@ -576,6 +576,7 @@ Blockly.Msg.ru.switch_language_to_russian = {
     Blockly.Msg.REPL_USB_CONNECTED_WAIT = 'Подключение по USB. Подождите';
     Blockly.Msg.REPL_VERIFYING_COMPANION = 'Проверяем, запущен ли Companion...';
     Blockly.Msg.REPL_YOUR_CODE_IS = 'Ваш код';
+    Blockly.Msg.REPL_RESET = "Сброс";
     Blockly.Msg.SHOW_WARNINGS = 'Показывать предупреждения';
     Blockly.Msg.SORT_C = 'Отсортировать блоки по категории';
     Blockly.Msg.SORT_H = 'Отсортировать блоки по высоте';

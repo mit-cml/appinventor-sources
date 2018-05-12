@@ -586,6 +586,7 @@ Blockly.Msg.sv.switch_language_to_swedish = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = "för tal i intervallet"
     Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = "kvadratrot"
     Blockly.Msg.LANG_MATH_COMPARE_EQ = "="
+    Blockly.Msg.REPL_RESET = "Återställa";
   }
 };
 

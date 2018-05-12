@@ -588,6 +588,7 @@ Blockly.Msg.pt.br.switch_language_to_portuguese_br = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'para cada número no intervalo';
     Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'raiz quadrada';
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
+    Blockly.Msg.REPL_RESET = "Restabelecer";
   }
 };
 

@@ -592,6 +592,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.REPL_YOUR_CODE_IS = "여러분의 코드는";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "정말입니까?";
     Blockly.Msg.REPL_FACTORY_RESET = '에뮬레이터를 "공장 초기화"상태로 돌려놓을 것입니다. 만약 이전에 에뮬레이터에서 컴패니언 앱을 업데이트 한 적이 있다면, 다시 업데이트를 해주어야 합니다.';
+    Blockly.Msg.REPL_RESET = "다시 놓기";
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "모든 %1 개의 블록을 지우시겠습니까?";
     Blockly.Msg.GENERATE_YAIL = "Yail 만들기";
     Blockly.Msg.DO_IT = "바로 실행";

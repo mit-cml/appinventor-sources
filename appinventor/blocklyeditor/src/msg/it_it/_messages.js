@@ -548,6 +548,7 @@ Blockly.Msg.it.switch_language_to_italian = {
     Blockly.Msg.REPL_YOUR_CODE_IS = "Il tuo codice è";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Davvero?";
     Blockly.Msg.REPL_FACTORY_RESET = 'Questo resetterà l\'Emulatore riportandolo allo stato "di fabbrica". Sarà necessario installare nuovamente l\'app Companion.';
+    Blockly.Msg.REPL_RESET = "Reset";
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Sei sicuro di voler cancellare tutti i %1 blocchi?";
     Blockly.Msg.GENERATE_YAIL = "Generazione Yail";
     Blockly.Msg.DO_IT = "Esegui";

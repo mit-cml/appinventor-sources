@@ -850,6 +850,7 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
     Blockly.Msg.REPL_OK_LOWER = "Ok";
     Blockly.Msg.REPL_GOT_IT = "Entendido";
     Blockly.Msg.REPL_UPDATE_INFO = 'Se está instalando la actualización en tu dispositivo. Mira la pantalla de tu dispositivo (o emulador) y autoriza la instalación del software cuando se te solicite.<br /><br />IMPORTANTE: Cuando finalice la actualización, pulsa "HECHO" (no pulses  "abrir"). A continuación abre la página de App Inventor en el navegador, haz clic en el menú “Conectar” y selecciona la opción “Reiniciar conexión”.';
+    Blockly.Msg.REPL_RESET = "Reiniciar";
 
     Blockly.Msg.REPL_UNABLE_TO_UPDATE = "No se ha podido enviar la actualización al dispositivo/emulador.";
     Blockly.Msg.REPL_UNABLE_TO_LOAD = "No se ha podido cargar la actualización desde el servidor de App Inventor";
