@@ -112,7 +112,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   
   @objc private func positionChanged(sender: UISlider, forEvent event: UIEvent) {
     _thumbPosition = (_maxValue - _minValue) * sender.value / 100
-    PositionChanged(_thumbPosition)
+    PositionChanged(_thumbPosition + _minValue)
   }
   
   open func PositionChanged(_ thumbPosition: Float) {
