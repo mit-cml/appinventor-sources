@@ -125,6 +125,10 @@ public final class LookExtension extends AndroidNonvisibleComponent implements C
   public void Container(VerticalArrangement verticalArrangement) {
     if (verticalArrangement != null) {
       ((ViewGroup) verticalArrangement.getView()).addView(this.webview, 500, 500);
+      ViewGroup.LayoutParams params = this.webview.getLayoutParams();
+      params.width = 500;
+      params.height = 500;
+      webview.requestLayout();
       try {
         webview.loadUrl(form.getAssetPathForExtension(this, "look.html"));
       } catch (FileNotFoundException e) {
