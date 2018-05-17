@@ -450,6 +450,18 @@ public interface Images extends Resources {
   ImageResource webviewerbig();
 
   /**
+   * Designer palette item: Look component
+   */
+  @Source("com/google/appinventor/images/look.png")
+  ImageResource look();
+
+  /**
+   * Designer item: Look component in designer
+   */
+  @Source("com/google/appinventor/images/lookbig.png")
+  ImageResource lookbig();
+
+  /**
    * Designer palette item: Web component
    */
   @Source("com/google/appinventor/images/web.png")

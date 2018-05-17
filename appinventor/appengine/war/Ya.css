@@ -725,6 +725,18 @@ select {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+.destructive-action {
+  background: red;
+  color: white;
+  text-shadow: none;
+}
+
+.destructive-action:hover {
+  background: #FF6666;
+  color: white;
+  text-shadow: none;
+}
+
 .ya-Toolbar .ode-TextButton {
   font-size: 11px;
 }

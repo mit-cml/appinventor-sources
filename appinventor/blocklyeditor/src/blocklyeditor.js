@@ -184,7 +184,7 @@ Blockly.unprefixName = function (name) {
                     Blockly.localNamePrefix,
                     Blockly.loopParameterPrefix,
                     Blockly.loopRangeParameterPrefix];
-    for (i=0; i < prefixes.length; i++) {
+    for (var i=0; i < prefixes.length; i++) {
       if (name.indexOf(prefixes[i]) == 0) {
         // name begins with prefix
         return [prefixes[i], name.substring(prefixes[i].length + Blockly.menuSeparator.length)]

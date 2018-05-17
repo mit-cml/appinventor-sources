@@ -30,6 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockLineString;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
+import com.google.appinventor.client.editor.simple.components.MockLook;
 import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.simple.components.MockMarker;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
@@ -406,6 +407,8 @@ public final class SimpleComponentDescriptor {
       return new MockVideoPlayer(editor);
     } else if (name.equals(MockWebViewer.TYPE)) {
       return new MockWebViewer(editor);
+    } else if (name.equals(MockLook.TYPE)) {
+      return new MockLook(editor, MockLook.TYPE);
     } else if (name.equals(MockSpinner.TYPE)) {
       return new MockSpinner(editor);
     } else if (name.equals(MockMap.TYPE)) {

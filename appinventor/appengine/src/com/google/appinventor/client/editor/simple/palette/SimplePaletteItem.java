@@ -14,6 +14,8 @@ import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -105,6 +107,12 @@ public class SimplePaletteItem extends DragSourcePanel {
     addMouseDownHandler(new MouseDownHandler() {
       @Override
       public void onMouseDown(MouseDownEvent arg0) {
+        select(getWidget());
+      }
+    });
+    addTouchStartHandler(new TouchStartHandler() {
+      @Override
+      public void onTouchStart(TouchStartEvent event) {
         select(getWidget());
       }
     });

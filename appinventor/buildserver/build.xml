@@ -68,6 +68,8 @@
       <!-- Map assets for build server -->
       <fileset dir="${lib.dir}/leaflet" includes="leaflet.js,leaflet.css" />
       <fileset dir="${lib.dir}/leaflet/assets" includes="*"/>
+      <!-- TensorFlow assets for build server -->
+      <fileset dir="${lib.dir}/tensorflowjs" includes="*"/>
       <!-- Component/extension assets (for testing) -->
       <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>

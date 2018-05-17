@@ -664,6 +664,7 @@ public final class Compiler {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:icon=\"@drawable/ya\" ");
+      out.write("android:hardwareAccelerated=\"true\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       } else {
@@ -884,8 +885,8 @@ public final class Compiler {
     File deployDir = createDir(buildDir, "deploy");
     String tmpPackageName = deployDir.getAbsolutePath() + SLASH +
         project.getProjectName() + ".ap_";
-    File srcJavaDir = createDirectory(buildDir, "generated/src");
-    File rJavaDir = createDirectory(buildDir, "generated/symbols");
+    File srcJavaDir = createDir(buildDir, "generated/src");
+    File rJavaDir = createDir(buildDir, "generated/symbols");
     if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName, srcJavaDir, rJavaDir)) {
       return false;
     }
@@ -919,7 +920,7 @@ public final class Compiler {
     // method of identifying via a hash of the path won't work when files
     // are copied into temporary storage) and processed via a hacked up version of
     // Android SDK's Dex Ant task
-    File tmpDir = createDirectory(buildDir, "tmp");
+    File tmpDir = createDir(buildDir, "tmp");
     String dexedClassesDir = tmpDir.getAbsolutePath();
     if (!compiler.runDx(classesDir, dexedClassesDir, false)) {
       return false;
@@ -1587,9 +1588,9 @@ public final class Compiler {
    * @return true on success, otherwise false
    */
   private boolean attachAarLibraries(File buildDir) {
-    final File explodedBaseDir = createDirectory(buildDir, "exploded-aars");
-    final File generatedDir = createDirectory(buildDir, "generated");
-    final File genSrcDir = createDirectory(generatedDir, "src");
+    final File explodedBaseDir = createDir(buildDir, "exploded-aars");
+    final File generatedDir = createDir(buildDir, "generated");
+    final File genSrcDir = createDir(generatedDir, "src");
     explodedAarLibs = new AARLibraries(genSrcDir);
     final Set<String> processedLibs = new HashSet<>();
 
@@ -1678,9 +1679,9 @@ public final class Compiler {
    */
   private boolean mergeResources(File mainResDir, File buildDir, String aaptTool) {
     // these should exist from earlier build steps
-    File intermediates = createDirectory(buildDir, "intermediates");
-    File resDir = createDirectory(intermediates, "res");
-    mergedResDir = createDirectory(resDir, "merged");
+    File intermediates = createDir(buildDir, "intermediates");
+    File resDir = createDir(intermediates, "res");
+    mergedResDir = createDir(resDir, "merged");
     PngCruncher cruncher = new AaptCruncher(getResource(aaptTool), null, null);
     return explodedAarLibs.mergeResources(mergedResDir, mainResDir, cruncher);
   }
@@ -1845,21 +1846,6 @@ public final class Compiler {
    */
   private static File createDir(File parentDir, String name) {
     File dir = new File(parentDir, name);
-    if (!dir.exists()) {
-      dir.mkdir();
-    }
-    return dir;
-  }
-
-  /**
-   * Creates a new directory (if it doesn't exist already).
-   *
-   * @param parentDirectory  parent directory of new directory
-   * @param name  name of new directory
-   * @return  new directory
-   */
-  private static File createDirectory(File parentDirectory, String name) {
-    File dir = new File(parentDirectory, name);
     if (!dir.exists()) {
       dir.mkdir();
     }

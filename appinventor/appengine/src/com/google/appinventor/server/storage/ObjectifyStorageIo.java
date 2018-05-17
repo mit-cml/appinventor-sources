@@ -25,6 +25,7 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
@@ -193,6 +194,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(CorruptionRecord.class);
     ObjectifyService.register(PWData.class);
     ObjectifyService.register(SplashData.class);
+    ObjectifyService.register(Backpack.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     String gcsBucket = Flag.createFlag("gcs.bucket", "").get();
@@ -419,16 +421,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.name = name;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,name, userData.link, userData.emailFrequency, userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -443,16 +442,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.link = link;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,userData.name,link,userData.emailFrequency,userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -466,16 +462,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.emailFrequency = emailFrequency;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,userData.name,userData.link,emailFrequency,userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -485,11 +478,12 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void setUserSessionId(final String userId, final String sessionId) {
-    String cachekey = User.usercachekey + "|" + userId;
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.sessionid = sessionId;
@@ -500,16 +494,16 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override
   public void setUserPassword(final String userId, final String password) {
-    String cachekey = User.usercachekey + "|" + userId;
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.password = password;
@@ -520,7 +514,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override
@@ -2466,6 +2459,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     return new Key<StoredData.PWData>(PWData.class, uid);
   }
 
+  private Key<StoredData.Backpack> backpackdataKey(String backPackId) {
+    return new Key<StoredData.Backpack>(Backpack.class, backPackId);
+  }
+
   // Create a name for a blob from a project id and file name. This is mostly
   // to help with debugging and viewing the blobstore via the admin console.
   // We don't currently use these blob names anywhere else.
@@ -2878,6 +2875,51 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  /* Store a shared backpack.
+   *
+   * We only store backpacks in the datastore (cached in
+   * memcache by Objectify). So backpacks are limited in
+   * size to what can be stored in a data store entity.
+   */
+
+  @Override
+  public String downloadBackpack(final String backPackId) {
+    final Result<Backpack> result = new Result<Backpack>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            Backpack backPack = datastore.find(backpackdataKey(backPackId));
+            if (backPack != null) {
+              result.t = backPack;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    if (result.t != null) {
+      return result.t.content;
+    } else {
+      return "[]";              // No shared backpack, return an empty backpack
+    }
+  }
+
+  @Override
+  public void uploadBackpack(String backPackId, String content) {
+    final Backpack backPack = new Backpack();
+    backPack.id = backPackId;
+    backPack.content = content;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            datastore.put(backPack);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
 }
-
-

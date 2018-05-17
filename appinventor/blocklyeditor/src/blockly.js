@@ -69,7 +69,7 @@ Blockly.confirmDeletion = function(callback) {
       var msg = Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount));
       var cancelButton = top.BlocklyPanel_getOdeMessage('cancelButton');
       var deleteButton = top.BlocklyPanel_getOdeMessage('deleteButton');
-      var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, cancelButton, 0, function(button) {
+      var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
         dialog.hide();
         if (button == deleteButton) {
           Blockly.mainWorkspace.playAudio('delete');

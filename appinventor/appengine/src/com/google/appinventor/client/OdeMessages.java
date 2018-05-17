@@ -1111,7 +1111,7 @@ public interface OdeMessages extends Messages {
   String horizontalAlignmentChoiceLeft();
 
   @DefaultMessage("Right")
-  @Description("Text for horizontal alignemt choice 'Right'")
+  @Description("Text for horizontal alignment choice 'Right'")
   String horizontalAlignmentChoiceRight();
 
   @DefaultMessage("Center")
@@ -2421,6 +2421,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Camera")
   @Description("")
   String cameraComponentPallette();
+
+  @DefaultMessage("Look")
+  @Description("")
+  String lookComponentPallette();
 
   @DefaultMessage("ImagePicker")
   @Description("")
@@ -4773,6 +4777,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SensorValueChangedEvents();
 
+  @DefaultMessage("GotClassification")
+  @Description("")
+  String GotClassificationEvents();
+
+  @DefaultMessage("Error")
+  @Description("")
+  String ErrorEvents();
+
   //Methods
   @DefaultMessage("ResolveActivity")
   @Description("")
@@ -5859,6 +5871,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DatePickerHelpStringComponentPallette();
 
+  @DefaultMessage("Component for classifying images.")
+  @Description("")
+  String LookHelpStringComponentPallette();
+
   @DefaultMessage("An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>\n <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>\n<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.")
   @Description("")
   String EmailPickerHelpStringComponentPallette();
@@ -6247,7 +6263,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("<p>It appears that <b>" + "%1" +
       "</b> has had all blocks removed.</p><p>" +
-      "<ul><li>You can save the enpty screen, and then all those blocks will be " +
+      "<ul><li>You can save the empty screen, and then all those blocks will be " +
       "permanently gone from the project.</li>" +
       "<li>Alternatively, you can restore the previously saved version " +
       "of the project.</li></ul></p>")
@@ -6631,6 +6647,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MapReady")
   @Description("On map ready, do...")
   String ReadyEvents();
+
+  @DefaultMessage("ClassifierReady")
+  @Description("On classifier ready, do...")
+  String ClassifierReadyEvents();
 
   @DefaultMessage("ZoomChange")
   @Description("On zoom change, do...")
@@ -7019,4 +7039,24 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetCenter")
   @Description("")
   String SetCenterMethods();
+
+  @DefaultMessage("ToggleCameraFacingMode")
+  @Description("")
+  String ToggleCameraFacingModeMethods();
+
+  @DefaultMessage("ClassifyImageData")
+  @Description("")
+  String ClassifyImageDataMethods();
+
+  @DefaultMessage("ClassifyVideoData")
+  @Description("")
+  String ClassifyVideoDataMethods();
+
+  @DefaultMessage("errorCode")
+  @Description("")
+  String errorCodeParams();
+
+  @DefaultMessage("inputMode")
+  @Description("")
+  String inputModeParams();
 }

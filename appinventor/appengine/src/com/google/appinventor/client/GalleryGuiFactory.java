@@ -186,6 +186,7 @@ public class GalleryGuiFactory {
       Label noComments = new Label("This app does not have any comments yet.");
       noComments.addStyleName("comment-nope");
       container.add(noComments);
+      return;
     }
 
     for ( GalleryComment c : comments) {

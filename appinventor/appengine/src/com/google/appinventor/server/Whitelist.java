@@ -94,8 +94,6 @@ public class Whitelist {
       LOG.severe("No whitelist found.");
     } catch (SecurityException e) {
       LOG.severe("Whitelist found, but wrong permission.");
-    } catch (IOException e) {
-      LOG.log(Level.SEVERE, "Unexpected whitelist error", e);
     }
   }
 
