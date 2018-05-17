@@ -26,6 +26,7 @@ target 'SchemeKit' do
     pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
     pod 'SwiftSVG', '~> 2.0'
     pod 'GEOSwift', '~> 3.1.0'
+    pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
 
     target 'AIComponentKitTests' do
     end
@@ -43,6 +44,7 @@ target 'SchemeKit' do
       pod 'Alamofire', '~> 4.8'
       pod 'SwiftSVG', '~> 2.0'
       pod 'GEOSwift', '~> 3.1.0'
+      pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
 
       target 'AICompanionAppTests' do
         inherit! :search_paths

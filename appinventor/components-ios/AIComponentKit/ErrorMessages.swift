@@ -107,6 +107,10 @@ import Foundation
   case ERROR_INVALID_ANCHOR_HORIZONTAL = 3417
   case ERROR_INVALID_MAP_TYPE = 3421
 
+  // CloudDB Errors
+  case ERROR_EMPTY_CLOUDDB_PROPERTY = 4001
+  case ERROR_CLOUDDB_JSON_MALFORMED = 4002
+
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
   case ERROR_CANNOT_ENCODE_TEXT_AS_UTF8 = 100002
@@ -288,6 +292,12 @@ import Foundation
     // Form Errors
     case .ERROR_DIVISION_BY_ZERO:
       return "Trying to divide %s by 0.  The result might not be valid."
+
+    // CloudDB Errors
+    case .ERROR_EMPTY_CLOUDDB_PROPERTY:
+      return "CloudDB %s property cannot be blank"
+    case .ERROR_CLOUDDB_JSON_MALFORMED:
+      return "The JSON is malformed and cannot be parsed: %s"
 
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:

@@ -1,5 +1,6 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
 // Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+
 import Foundation
 
 // let numberRegex = NSRegularExpression(pattern: "-?[1-9]?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
@@ -21,8 +22,8 @@ func getObjectFromJson(_ json: String?) throws -> AnyObject? {
   let json = "[\(json!)]"
   let result = try JSONSerialization.jsonObject(with: json.data(using: .utf8)!,
                                                 options: JSONSerialization.ReadingOptions.mutableContainers)
-  if result is NSArray {
-    return (result as! Array<AnyObject>)[0]
+  if let array = result as? Array<AnyObject> {
+    return array[0]
   }
   return nil
 }
@@ -31,6 +32,7 @@ func getPublicObjectFromJson(_ json: String?) throws -> AnyObject {
   let json = try getObjectFromJson(json)
   return convertJsonItem(json)
 }
+
 
 fileprivate func getListFromJsonObject(_ json: NSDictionary) -> [[AnyObject]] {
   var returnList = [[AnyObject]]()
@@ -75,4 +77,44 @@ fileprivate func convertJsonItem(_ item: AnyObject?) -> AnyObject {
     return number as AnyObject
   }
   return item.debugDescription as AnyObject
+}
+
+func getStringListFromJsonArray(_ jsonArray: AnyObject?) -> [String] {
+  if let array = jsonArray as? Array<String> {
+    return array
+  } else {
+    return [String]()
+  }
+}
+
+func writeFile(_ base64: String, _ fileExt: String) throws -> String {
+  let randpart = arc4random()
+  let resolvedPath = AssetManager.shared.pathForPrivateAsset("BinFile\(randpart)\(fileExt)")
+  if let data = Data(base64Encoded: base64, options: .ignoreUnknownCharacters) {
+    try data.write(to: URL(fileURLWithPath: resolvedPath))
+  }
+  return resolvedPath
+}
+
+func getJsonRepresentationIfValueFileName(_ value: AnyObject) -> String? {
+  do {
+    var valueList = [String]()
+    if let valueString = value as? String {
+      let valueJsonList = try getObjectFromJson(valueString)
+      valueList = getStringListFromJsonArray(valueJsonList)
+    } else if let valueArr = value as? Array<String> {
+      valueList = valueArr
+    } else {
+      return nil
+    }
+    if valueList.count == 2 {
+      if valueList[0].starts(with: ".") {
+        let outputPath = try writeFile(valueList[1], valueList[0])
+        return try getJsonRepresentation(outputPath as AnyObject)
+      }
+    }
+  } catch {
+    // Nothing to do here
+  }
+  return nil
 }

@@ -94,6 +94,9 @@ open class AssetManager: NSObject {
   }
 
   @objc open func pathForExistingFileAsset(_ filename: String) -> String {
+    if FileManager.default.fileExists(atPath: filename) {
+      return filename
+    }
     var path = pathForPrivateAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
