@@ -81,14 +81,14 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       _delegate?.view.isUserInteractionEnabled = enabled
     }
   }
-  
+
   open var FontBold: Bool {
     get {
       return _bold
     }
     set(bold) {
       _bold = bold
-      // TODO(ewpatton): Update with bolded font
+      _delegate.font = getFontTrait(font: _delegate.font, trait: .traitBold, shouldSet: bold)!
     }
   }
   
@@ -98,10 +98,10 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
     set(italic) {
       _italic = italic
-      // TODO(ewpatton): Update with italicized font
+      _delegate.font = getFontTrait(font: _delegate.font, trait: .traitItalic, shouldSet: italic)!
     }
   }
-  
+
   open var FontSize: Float32 {
     get {
       if let size = _delegate?.font.pointSize {

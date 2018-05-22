@@ -81,7 +81,7 @@ open class ButtonBase: ViewComponent {
     }
     set(shouldBold){
       _bold = shouldBold
-      setTrait(trait: .traitBold, shouldSet: shouldBold)
+      _view.titleLabel?.font = getFontTrait(font: _view.titleLabel?.font, trait: .traitBold, shouldSet: shouldBold)
     }
   }
 
@@ -91,26 +91,10 @@ open class ButtonBase: ViewComponent {
     }
     set(shouldItalic){
       _italic = shouldItalic
-      setTrait(trait: .traitItalic, shouldSet: shouldItalic)
+      _view.titleLabel?.font = getFontTrait(font: _view.titleLabel?.font, trait: .traitItalic, shouldSet: shouldItalic)
     }
   }
 
-  fileprivate func setTrait(trait: UIFontDescriptorSymbolicTraits, shouldSet: Bool){
-    var fontDescriptor: UIFontDescriptor?
-    if let tempDiscriptor = _view.titleLabel?.font.fontDescriptor {
-      var fontOps = tempDiscriptor.symbolicTraits
-      if shouldSet {
-        fontOps.insert(trait)
-      } else {
-        fontOps.remove(trait)
-      }
-      fontDescriptor = tempDiscriptor.withSymbolicTraits(fontOps)
-    }
-    if let size = _view.titleLabel?.font.pointSize, let descriptor = fontDescriptor {
-      _view.titleLabel?.font = UIFont(descriptor: descriptor, size: size)
-    }
-  }
-  
   open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)
