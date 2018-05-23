@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -7,6 +7,7 @@ fileprivate let kListViewDefaultBackgroundColor = Color.black
 fileprivate let kListViewDefaultSelectionColor = Color.lightGray
 fileprivate let kListViewDefaultTextColor = Color.white
 fileprivate let kDefaultTableCell = "UITableViewCell"
+fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 
 open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableViewDataSource, UITableViewDelegate {
   fileprivate final var _view: UITableView
@@ -18,6 +19,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textSize = Int32(22)
+  fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -28,6 +30,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     self.setDelegate(self)
     parent.add(self)
     Width = kLengthFillParent
+    _view.tableFooterView = UIView()
+    _view.backgroundView = nil
+    _view.backgroundColor = UIColor.black
+
+    // The intrinsic height of the ListView needs to be explicit because UITableView does not
+    // provide a value. We use a low priority constraint to configure the height, and size it based
+    // on the number of rows (min 1). Updates to the constant in the constraint are done in the
+    // Elements property setter.
+    _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
+    _automaticHeightConstraint.priority = UILayoutPriority(1.0)
+    _automaticHeightConstraint.isActive = true
   }
 
   open override var view: UIView {
@@ -47,7 +60,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       } else {
         _backgroundColor = backgroundColor
       }
-      // TODO: update the background color of the list view
+      _view.backgroundColor = argbToColor(_backgroundColor)
     }
   }
 
@@ -56,8 +69,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       return ""
     }
     set(elements) {
-      _elements = elements.split(",")
-      _view.reloadData()
+      Elements = elements.split(",")
     }
   }
 
@@ -67,6 +79,8 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
     set(elements) {
       _elements = elements
+      _automaticHeightConstraint.constant = _elements.isEmpty ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(_elements.count)
+      _view.reloadData()
     }
   }
 
@@ -94,16 +108,22 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       return _selectionColor
     }
     set(selectionColor) {
-
+      _selectionColor = selectionColor
+      _view.reloadData()
     }
   }
 
   open var SelectionIndex: Int32 {
     get {
-      return _selectionIndex
+      return _selectionIndex + 1
     }
     set(selectionIndex) {
-
+      _selectionIndex = selectionIndex - 1
+      if _selectionIndex < 0 {
+        _view.deselectRow(at: _view.indexPathForSelectedRow!, animated: true)
+      } else {
+        _view.selectRow(at: IndexPath(row: Int(_selectionIndex), section: 0), animated: true, scrollPosition: UITableViewScrollPosition.middle)
+      }
     }
   }
 
@@ -123,6 +143,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
     set(textColor) {
       _textColor = textColor
+      _view.reloadData()
     }
   }
 
