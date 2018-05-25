@@ -2922,4 +2922,23 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+
+  @Override
+  public void storeBuildStatus(String userId, long projectId, int progress) {
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    memcache.put(cacheKey, progress);
+  }
+
+  @Override
+  public int getBuildStatus(String userId, long projectId) {
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    Integer ival = (Integer) memcache.get(cacheKey);
+    if (ival == null) {         // not in memcache (or memcache service down)
+      return 50;
+    } else {
+      return ival.intValue();
+    }
+  }
 }
