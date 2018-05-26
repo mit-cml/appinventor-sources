@@ -683,6 +683,43 @@ public class BuildServer {
       System.exit(1);
     }
 
+    // Add a Shutdown Hook. In a container swarm, the swarm orchestrator
+    // may choose to shutdown a container (running a buildserver) as part
+    // of load balancing and other maintenance tasks. It will send a
+    // SIGTERM signal to the container which will send it to us. This
+    // shutdown hook causes us to wait until all build tasks are completed
+    // before we exit, ensuring that people's build jobs are not interrupted
+    // We combine this code with a configuration in the swarm service to *not*
+    // hard kill a container for a period of time (say 15 minutes) to give
+    // running jobs a chance to finish.
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+        @Override
+        public void run() {
+          shuttingTime = System.currentTimeMillis();
+          if (buildExecutor == null) {
+            /* We haven't really started up yet... */
+            return;
+          }
+          while (true) {
+            int tasks = buildExecutor.getActiveTaskCount();
+            if (tasks <= 0) {
+              try {
+                Thread.sleep(10000); // One final wait so people can get
+                                     // their barcode
+              } catch (InterruptedException e) {
+              }
+              return;
+            }
+            try {
+              Thread.sleep(1000); // Wait one second and try again
+            } catch (InterruptedException e) {
+              // XXX
+            }
+          }
+        }
+      });
+
+
     // Now that the command line options have been processed, we can create the buildExecutor.
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
