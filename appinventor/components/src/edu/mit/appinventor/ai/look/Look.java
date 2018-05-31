@@ -3,13 +3,15 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package edu.mit.appinventor.ai;
+package edu.mit.appinventor.ai.look;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
@@ -55,12 +57,13 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.LOOK_COMPONENT_VERSION,
         category = ComponentCategory.EXTENSION,
         description = "Component that classifies images.",
+        iconName = "aiwebres/glasses.png",
         nonVisible = true)
 @SimpleObject(external = true)
 @UsesAssets(fileNames = "look.html, look.js, group1-shard1of1, group10-shard1of1, group11-shard1of1, group12-shard1of1, group13-shard1of1, group14-shard1of1, group15-shard1of1, group16-shard1of1, group17-shard1of1, group18-shard1of1, group19-shard1of1, group2-shard1of1, group20-shard1of1, group21-shard1of1, group22-shard1of1, group23-shard1of1, group24-shard1of1, group25-shard1of1, group26-shard1of1, group27-shard1of1, group28-shard1of1, group29-shard1of1, group3-shard1of1, group30-shard1of1, group31-shard1of1, group32-shard1of1, group33-shard1of1, group34-shard1of1, group35-shard1of1, group36-shard1of1, group37-shard1of1, group38-shard1of1, group39-shard1of1, group4-shard1of1, group40-shard1of1, group41-shard1of1, group42-shard1of1, group43-shard1of1, group44-shard1of1, group45-shard1of1, group46-shard1of1, group47-shard1of1, group48-shard1of1, group49-shard1of1, group5-shard1of1, group50-shard1of1, group51-shard1of1, group52-shard1of1, group53-shard1of1, group54-shard1of1, group55-shard1of1, group6-shard1of1, group7-shard1of1, group8-shard1of1, group9-shard1of1, imagenet_classes.js, model.json, tfjs-0.10.3.js")
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.CAMERA")
-public final class LookExtension extends AndroidNonvisibleComponent implements Component {
-  private static final String LOG_TAG = LookExtension.class.getSimpleName();
+public final class Look extends AndroidNonvisibleComponent implements Component {
+  private static final String LOG_TAG = Look.class.getSimpleName();
   private static final int IMAGE_WIDTH = 500;
   private static final int IMAGE_QUALITY = 100;
 
@@ -76,8 +79,9 @@ public final class LookExtension extends AndroidNonvisibleComponent implements C
 
   private final WebView webview;
 
-  public LookExtension(final Form form) {
+  public Look(final Form form) {
     super(form);
+    requestHardwareAcceleration(form);
     webview = new WebView(form);
     webview.getSettings().setJavaScriptEnabled(true);
     webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
@@ -90,7 +94,7 @@ public final class LookExtension extends AndroidNonvisibleComponent implements C
         if (url.contains(MODEL_PREFIX)) {
           Log.d(LOG_TAG, "overriding " + url);
           try {
-            InputStream inputStream = form.openAssetForExtension(LookExtension.this, url.substring(MODEL_PREFIX.length()));
+            InputStream inputStream = form.openAssetForExtension(Look.this, url.substring(MODEL_PREFIX.length()));
             if (url.endsWith(".json")) {
               return new WebResourceResponse("application/json", "UTF-8", inputStream);
             } else {
@@ -130,6 +134,7 @@ public final class LookExtension extends AndroidNonvisibleComponent implements C
       params.height = 500;
       webview.requestLayout();
       try {
+        Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
         webview.loadUrl(form.getAssetPathForExtension(this, "look.html"));
       } catch (FileNotFoundException e) {
         Log.d(LOG_TAG, e.getMessage());
@@ -194,6 +199,10 @@ public final class LookExtension extends AndroidNonvisibleComponent implements C
   @SimpleEvent(description = "Event indicating that an error has occurred.")
   public void Error(final int errorCode) {
     EventDispatcher.dispatchEvent(this, "Error", errorCode);
+  }
+
+  private static void requestHardwareAcceleration(Activity activity) {
+    activity.getWindow().setFlags(LayoutParams.FLAG_HARDWARE_ACCELERATED, LayoutParams.FLAG_HARDWARE_ACCELERATED);
   }
 
   private class JsObject {
