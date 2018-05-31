@@ -260,6 +260,17 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return mapController.isZoomEnabled();
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.0")
+  @SimpleProperty
+  public void Rotation(float rotation) {
+	mapController.setRotation(rotation);
+  }
+
+  @SimpleProperty (category = PropertyCategory.APPEARANCE, description = "Sets or gets the rotation of the map in decimal degrees if any")
+  public float Rotation() {
+	return mapController.getRotation();
+  }
+
   /**
    * <p>Set the type of map tile used for the base tile layer. Valid values are:</p>
    * <ol>
