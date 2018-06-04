@@ -886,7 +886,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.REPL_OK_LOWER = "确定";
     Blockly.Msg.REPL_GOT_IT = "升级完成";
     Blockly.Msg.REPL_UPDATE_INFO = '正在你的设备上安装更新。请查看移动设备(或模拟器)屏幕上的提示，同意安装软件。<br /><br />注意:更新完成后,请点击“完成”(不要点击“打开”)。然后再次进入App Inventor网页,点击“连接”菜单,选择“重置连接”。然后重新连接设备。';
-    Blockly.Msg.REPL_RESET = "重启";
+    Blockly.Msg.REPL_RESET = "重置";
 
     Blockly.Msg.REPL_UPDATE_NO_UPDATE = "无可用更新";
     Blockly.Msg.REPL_UPDATE_NO_CONNECTION = "你必须与AI伴侣连接才能开始更新";
