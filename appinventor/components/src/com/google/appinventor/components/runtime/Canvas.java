@@ -1282,7 +1282,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
       "When fill is true, the shape will be filled.")
   public void DrawShape(YailList pointList, boolean fill) {
-    Path path = parsePath(parsePointList(pointList));
+    Path path;
+    try {
+      path = parsePath(parsePointList(pointList));
+    } catch (IllegalArgumentException e) {
+      path = null;
+    }
     if (path == null) {
       $form().dispatchErrorOccurredEvent(this, "DrawShape", ErrorMessages.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT);
       return;
@@ -1294,9 +1299,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     view.invalidate();
   }
 
-  private Path parsePath(float[][] points) {
+  private Path parsePath(float[][] points) throws IllegalArgumentException {
     if (points == null) {
-      return null;
+      throw new IllegalArgumentException();
     }
     float scalingFactor = $form().deviceDensity();
 
@@ -1309,7 +1314,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return path;
   }
 
-  private float[][] parsePointList(YailList pointList) {
+  private float[][] parsePointList(YailList pointList) throws IllegalArgumentException {
     if (pointList == null) {
       return null;
     }
@@ -1324,14 +1329,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             points[index][0] = Float.parseFloat(pointYailList.getString(0));
             points[index][1] = Float.parseFloat(pointYailList.getString(1));
             index++;
-            continue;
-          } catch (NullPointerException ok) {
-          } catch (NumberFormatException ok) {
+          } catch (NullPointerException e) {
+            throw new IllegalArgumentException(e.fillInStackTrace());
+          } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e.fillInStackTrace());
           }
+        } else {
+          throw new IllegalArgumentException("length of item YailList("+ index +") is not 2");
         }
+      } else {
+        throw new IllegalArgumentException("item("+ index +") in YailList is not a YailList");
       }
-      // if continue is not trigered, null will be executed
-      return null;
     }
     return points;
   }
