@@ -29,20 +29,8 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       _picturePath = path
-      if path.isEmpty {
-        updateImage(nil)
-      } else if let image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
+      if let image = AssetManager.shared.imageFromPath(path: path) {
         updateImage(image)
-      } else if let image = UIImage(named: path) {
-        updateImage(image)
-      } else if let image = UIImage(contentsOfFile: path) {
-        updateImage(image)
-      } else if path.starts(with: "file://") {
-        if let image = UIImage(contentsOfFile: path.chopPrefix(count: 7).removingPercentEncoding ?? "") {
-          updateImage(image)
-        } else {
-          updateImage(nil)
-        }
       } else if (path.starts(with: "http://") || path.starts(with: "https://")), let url = URL(string: path) {
         URLSession.shared.dataTask(with: url) { data, response, error in
           DispatchQueue.main.async {

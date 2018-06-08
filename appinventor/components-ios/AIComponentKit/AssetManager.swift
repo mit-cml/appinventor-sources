@@ -132,7 +132,15 @@ open class AssetManager: NSObject {
   }
 
   public func imageFromPath(path: String) -> UIImage? {
-    if let image = UIImage(named: path) {
+    if path.isEmpty {
+      return nil
+    } else if let image =  UIImage(contentsOfFile: pathForExistingFileAsset(path)){
+      return image
+    } else if let image = UIImage(named: path) {
+      return image
+    } else if let image = UIImage(contentsOfFile: path) {
+      return image
+    } else if path.starts(with: "file://"), let image = UIImage(contentsOfFile: path.chopPrefix(count: 7).removingPercentEncoding ?? "") {
       return image
     }
     return nil
