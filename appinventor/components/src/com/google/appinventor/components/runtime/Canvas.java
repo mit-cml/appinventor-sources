@@ -1316,7 +1316,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   private float[][] parsePointList(YailList pointList) throws IllegalArgumentException {
     if (pointList == null) {
-      return null;
+      throw new IllegalArgumentException();
     }
     float[][] points = new float[pointList.size()][2];
     int index = 0;
