@@ -29,3 +29,5 @@ let kDefaultRowColumn: Int32 = -1
 let kTextboxPreferredWidth: Int32 = 160
 let kEmptyHVArrangementWidth = 100
 let kEmptyHVArrangementHeight = 100
+let kCanvasPreferredWidth = 32
+let kCanvasPreferredHeight = 48

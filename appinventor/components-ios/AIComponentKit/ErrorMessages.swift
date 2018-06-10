@@ -26,6 +26,8 @@ import Foundation
   // Media Errors
   case ERROR_UNABLE_TO_LOAD_MEDIA = 701
   case ERROR_UNABLE_TO_PREPARE_MEDIA = 702
+  case ERROR_MEDIA_IMAGE_FILE_FORMAT = 706
+  case ERROR_MEDIA_FILE_ERROR = 708
   
   // SoundRecorder Errors
   case ERROR_SOUND_RECORDER = 801
@@ -130,6 +132,10 @@ import Foundation
       return "Unable to load media."
     case .ERROR_UNABLE_TO_PREPARE_MEDIA:
       return "Unable to prepare %s."
+    case .ERROR_MEDIA_IMAGE_FILE_FORMAT:
+      return "Image file name must end in \".jpg\", \".jpeg\", or \".png\"."
+    case .ERROR_MEDIA_FILE_ERROR:
+      return  "Got file error: %s."
       
     // SoundRecorder Errors
     case .ERROR_SOUND_RECORDER:

@@ -109,12 +109,12 @@
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
+		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
 		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
 		CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB96609B1F95489F009746C3 /* LocationSensor.swift */; };
 		CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC786812006AD2F005363A3 /* FileUtil.swift */; };
 		CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC7868520113A3C005363A3 /* CircularBuffer.swift */; };
-		CBC78694202E0B6E005363A3 /* FileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC78693202E0B6E005363A3 /* FileTests.swift */; };
 		CBC787022032272E005363A3 /* String+Replace.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC787012032272E005363A3 /* String+Replace.swift */; };
 		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
 		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
@@ -251,6 +251,7 @@
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		082778F620112FE300ACC99A /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		08AB5803201AF2BA00F38C88 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
@@ -427,6 +428,7 @@
 		06D151951DC464F300FC981E /* drawing */ = {
 			isa = PBXGroup;
 			children = (
+				08AB5803201AF2BA00F38C88 /* Canvas.swift */,
 			);
 			name = drawing;
 			sourceTree = "<group>";
@@ -986,6 +988,7 @@
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
+				08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */,
 				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
 				0680ED591E012A2100732883 /* TableArrangement.swift in Sources */,
 				068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */,

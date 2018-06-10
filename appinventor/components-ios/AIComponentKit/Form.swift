@@ -13,7 +13,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   open let APPINVENTOR_URL_SCHEME = "appinventor"
   open var application: Application?
   weak static var activeForm: Form?
-  fileprivate var deviceDensity: Float?
+  fileprivate var deviceDensity: Float = 1.0
   fileprivate var compatScalingFactor: Float?
   fileprivate var applicationIsBeingClosed = false
   var formName: String = ""
@@ -334,6 +334,15 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
     set(animation) {
       
+    }
+  }
+  
+  open var DeviceDensity: Float {
+    get {
+      return deviceDensity
+    }
+    set(density) {
+      deviceDensity = density
     }
   }
 

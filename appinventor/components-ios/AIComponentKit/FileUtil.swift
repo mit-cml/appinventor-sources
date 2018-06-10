@@ -6,6 +6,7 @@ import Foundation
 private let FILENAME_PREFIX: String = "app_inventor_"
 private let DIRECTORY_RECORDINGS: String = "Recordings"
 private let ANDROID_TO_IOS_RECORDING_EXTENSION: String = "aac"
+private let DIRECTORY_PICTURES: String = "Pictures"
 
 open class FileUtil {
   
@@ -16,6 +17,10 @@ open class FileUtil {
   open static func getRecordingFileFromAndroidPath(_ filePath: String) throws -> String {
     let aacFilePath = transformFileExtension(filePath, toExtension: ANDROID_TO_IOS_RECORDING_EXTENSION)
     return try transformAndroidFilePath(aacFilePath)
+  }
+  
+  open static func getPictureFile(_ fileExtension: String) throws -> String {
+    return try getFile(DIRECTORY_PICTURES, fileExtension)
   }
   
   open static func transformFileExtension(_ fileName: String, toExtension fileExtension: String) -> String {
