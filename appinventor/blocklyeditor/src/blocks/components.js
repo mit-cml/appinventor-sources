@@ -554,7 +554,7 @@ Blockly.Blocks.component_method = {
       componentDb.forMethodInType(instance.typeName, function(_, methodName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instance.name +
-          '.' + componentDb.getInternationalizedMethodName(instant.typeName, methodName),
+          '.' + componentDb.getInternationalizedMethodName(instance.typeName, methodName),
           mutatorAttributes: {
             component_type: instance.typeName,
             instance_name: instance.name,
