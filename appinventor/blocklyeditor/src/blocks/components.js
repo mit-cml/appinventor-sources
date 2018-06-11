@@ -56,7 +56,11 @@ Blockly.Blocks.component_event = {
 
     var container = document.createElement('mutation');
     container.setAttribute('component_type', this.typeName);
-    container.setAttribute('instance_name', this.instanceName);//instance name not needed
+    container.setAttribute('is_generic', this.isGeneric ? "true" : "false");
+    if (!this.isGeneric) {
+      container.setAttribute('instance_name', this.instanceName);//instance name not needed
+    }
+
     container.setAttribute('event_name', this.eventName);
     if (!this.horizontalParameters) {
       container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
@@ -68,7 +72,11 @@ Blockly.Blocks.component_event = {
   domToMutation : function(xmlElement) {
 
     this.typeName = xmlElement.getAttribute('component_type');
-    this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
+    this.isGeneric = xmlElement.getAttribute('is_generic') == 'true';
+    if (!this.isGeneric) {
+      this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
+    }
+
     this.eventName = xmlElement.getAttribute('event_name');
     var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
 
@@ -77,8 +85,6 @@ Blockly.Blocks.component_event = {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    this.componentDropDown.setValue(this.instanceName);
-
     var localizedEventName;
     var eventType = this.getEventTypeObject();
     var componentDb = this.getTopWorkspace().getComponentDatabase();
@@ -89,10 +95,15 @@ Blockly.Blocks.component_event = {
       localizedEventName = componentDb.getInternationalizedEventName(this.eventName);
     }
 
-    this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
+    if (!this.isGeneric) {
+      this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
         .appendField('.' + localizedEventName);
-    this.componentDropDown.setValue(this.instanceName);
+      this.componentDropDown.setValue(this.instanceName);
+    } else {
+      this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE
+        + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedEventName);
+    }
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
@@ -194,6 +205,12 @@ Blockly.Blocks.component_event = {
   getParameters: function () {
     /** @type {EventDescriptor} */
     var eventType = this.getEventTypeObject();
+    if (this.isGeneric) {
+      return [
+          {name:'component', type:'component'},
+          {name:'notAlreadyHandled', type: 'boolean'}
+        ].concat((eventType && eventType.parameters) || []);
+    }
     return eventType && eventType.parameters;
   },
   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
@@ -264,8 +281,10 @@ Blockly.Blocks.component_event = {
   typeblock : function(){
     var componentDb = Blockly.mainWorkspace.getComponentDatabase();
     var tb = [];
+    var types = {};
 
     componentDb.forEachInstance(function(instance) {
+      types[instance.typeName] = true;
       componentDb.forEventInType(instance.typeName, function(_, eventName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instance.name + '.' +
@@ -273,6 +292,20 @@ Blockly.Blocks.component_event = {
           mutatorAttributes: {
             component_type: instance.typeName,
             instance_name: instance.name,
+            event_name: eventName
+          }
+        });
+      });
+    });
+
+    Object.keys(types).forEach(function(typeName) {
+      componentDb.forEventInType(typeName, function(_, eventName) {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE +
+            componentDb.getInternationalizedComponentType(typeName),
+          mutatorAttributes: {
+            component_type: typeName,
+            is_generic: true,
             event_name: eventName
           }
         });
@@ -305,6 +338,10 @@ Blockly.Blocks.component_event = {
       // check parameters
       var varList = this.getVars();
       var params = event.parameters;
+      if (this.isGeneric) {
+        varList.splice(0, 2);  // remove component and wasDefined parameters
+                               // since we know they are well-defined
+      }
       if (varList.length != params.length) {
         return false; // parameters have changed
       }

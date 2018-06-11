@@ -74,6 +74,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
         outMethods.add(propertyName);
       }
     }
+    // This special case adds the notAlreadyHandled parameter, which is the second parameter for the generic event
+    // handlers. Since it's not explicitly declared in any event handler, we add it here for internationalization.
+    parameters.put("notAlreadyHandled", new Parameter("notAlreadyHandled", "boolean"));
     sb.append("\n\n/* Parameters */\n\n");
     for (Parameter parameter : parameters.values()) {
       sb.append("    map.put(\"PARAM-" + parameter.name + "\", MESSAGES." +

@@ -866,6 +866,11 @@ public class Form extends AppInventorCompatActivity
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void dispatchGenericEvent(Component component, String eventName,
+      boolean notAlreadyHandled, Object[] args) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Initialize event handler.

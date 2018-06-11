@@ -307,6 +307,9 @@
        (module-static form-name)
        (require <com.google.youngandroid.runtime>)
 
+       (define (get-simple-name object)
+         (*:getSimpleName (*:getClass object)))
+
        (define (onCreate icicle :: android.os.Bundle) :: void
          ;(android.util.Log:i "AppInventorCompatActivity" "in YAIL oncreate")
          (com.google.appinventor.components.runtime.AppInventorCompatActivity:setClassicModeFromYail classic-theme)
@@ -474,6 +477,48 @@
                          registeredComponentName eventName)
                        #f))))
 
+       (define (dispatchGenericEvent componentObject :: com.google.appinventor.components.runtime.Component
+                                     eventName :: java.lang.String
+                                     notAlreadyHandled :: boolean
+                                     args :: java.lang.Object[]) :: void
+         ; My first attempt was to use the gen-generic-event-name
+         ; here, but unfortunately the version of Kawa that we use
+         ; does not correctly import functions from the runtime module
+         ; into the form. The macro expands, but the symbol-append
+         ; function is not found. Below is an "optimization" that
+         ; concatenates the strings first and then calls
+         ; string->symbol, which is effectively the same thing. Most
+         ; of the logic then follows that of dispatchEvent above.
+         (let* ((handler-symbol (string->symbol (string-append "any$" (get-simple-name componentObject) "$" eventName)))
+                (handler (lookup-in-form-environment handler-symbol)))
+           (if handler
+               (try-catch
+                (begin
+                  (apply handler (cons componentObject (cons notAlreadyHandled (gnu.lists.LList:makeList args 0))))
+                  #t)
+                (exception com.google.appinventor.components.runtime.errors.PermissionException
+                 (begin
+                   (exception:printStackTrace)
+                   ;; Test to see if the event we are handling is the
+                   ;; PermissionDenied of the current form. If so, then we will
+                   ;; need to avoid re-invoking PermissionDenied.
+                   (if (and (eq? (this) componentObject)
+                            (equal? eventName "PermissionNeeded"))
+                       ;; Error is occurring in the PermissionDenied handler, so we
+                       ;; use the more general exception handler to prevent going
+                       ;; into an infinite loop.
+                       (process-exception exception)
+                       ((this):PermissionDenied componentObject eventName
+                        (exception:getPermissionNeeded)))
+                   #f))
+                (exception java.lang.Throwable
+                 (begin
+                   (android-log-form (exception:getMessage))
+;;; Comment out the line below to inhibit a stack trace on a RunTimeError
+                   (exception:printStackTrace)
+                   (process-exception exception)
+                   #f))))))
+
        (define (lookup-handler componentName eventName)
          (lookup-in-form-environment
           (string->symbol
@@ -608,6 +653,14 @@
       ((_ component-name event-name)
        (datum->syntax-object stx #'(symbol-append component-name '$ event-name))))))
 
+;;; (gen-generic-event-name Button Click)
+;;; ==> any$Button$Click
+(define-syntax gen-generic-event-name
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ component-type event-name)
+       (datum->syntax-object stx #'(symbol-append 'any$ component-type '$ event-name))))))
+
 ;;; define-event-helper looks suspiciously like define, but we need it because
 ;;; if we use define directly in the define-event definition below, the call
 ;;; to gen-event-name makes it look like we're just defining a function called
@@ -675,6 +728,13 @@
                 'event-name)
                ;; If it's not the REPL the form's $define() method will do the registration
                (add-to-events 'component-name 'event-name)))))))
+
+(define-syntax define-generic-event
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ component-type event-name args . body)
+       #`(begin
+           (define-event-helper ,(gen-generic-event-name #`component-type #`event-name) args body))))))
 
 ;;;; def
 
