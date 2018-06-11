@@ -755,7 +755,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return new RpcResult(true, "Building " + projectName, "");
   }
 
-  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+  String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
     return "Request to build failed with " + exceptionName + ", user=" + userId
         + ", project=" + projectId + ", build URL is " + buildURL
         + " [" + buildURL.toString().length() + "]";
