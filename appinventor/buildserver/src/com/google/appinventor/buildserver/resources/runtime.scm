@@ -338,6 +338,12 @@
          (android-log-form (format #f "Adding ~A to env ~A with value ~A" name global-var-environment object))
          (gnu.mapping.Environment:put global-var-environment name object))
 
+       (define (lookup-in-global-var-environment name :: gnu.mapping.Symbol #!optional (default-value #!null))
+         (if (and (not (eq? global-var-environment #!null))
+                  (gnu.mapping.Environment:isBound global-var-environment name))
+             (gnu.mapping.Environment:get global-var-environment name)
+             default-value))
+
        ;; Simple wants there to be a variable named the same as the class.  It will
        ;; later get initialized to an instance of the class.
        (define form-name :: class-name #!null)
@@ -417,7 +423,20 @@
            ;; component name that registered the event.  This is
            ;; necessary, in part, due to the late binding that we want
            ;; for event handlers and component names.
-           (let ((registeredObject (string->symbol registeredComponentName)))
+           (if (eq? registeredComponentName #!null)
+             (let ((handler (lookup-in-global-var-environment (string->symbol eventName))))
+               (if (not (eq? handler #!null))
+                 (try-catch
+                   (begin
+                     (apply handler (gnu.lists.LList:makeList args 0))
+                     #t)
+                   (exception java.lang.Throwable
+                     (begin
+                       (process-exception exception)
+                       #f)))
+                 #f))
+             ;; else
+             (let ((registeredObject (string->symbol registeredComponentName)))
                  (if (is-bound-in-form-environment registeredObject)
                      (if (eq? (lookup-in-form-environment registeredObject) componentObject)
                         (let ((handler (lookup-handler registeredComponentName eventName)))
@@ -444,7 +463,7 @@
                        (com.google.appinventor.components.runtime.EventDispatcher:unregisterEventForDelegation
                          (as com.google.appinventor.components.runtime.HandlesEventDispatching (this))
                          registeredComponentName eventName)
-                       #f))))
+                       #f)))))
 
        (define (lookup-handler componentName eventName)
          (lookup-in-form-environment

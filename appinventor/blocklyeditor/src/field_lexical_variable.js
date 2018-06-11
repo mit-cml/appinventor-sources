@@ -1027,7 +1027,11 @@ Blockly.LexicalVariable.getEventParam = function (block) {
        // Walk up ancestor tree to determine if name is an event parameter name.
        if (parent.type === "component_event") {
          var componentDb = block.getTopWorkspace().getComponentDatabase();
-         var untranslatedEventParams = parent.getParameters().map( function(param) {return param.name;});
+         var params = parent.getParameters();
+         if(parent.isGeneric){
+           params = [{name:'component',type:'component'}].concat(params);
+         }
+         var untranslatedEventParams = params.map( function(param) {return param.name;});
          var translatedEventParams =  untranslatedEventParams.map(
              function (name) {return componentDb.getInternationalizedParameterName(name); }
          );

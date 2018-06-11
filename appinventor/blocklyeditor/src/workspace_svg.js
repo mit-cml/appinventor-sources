@@ -495,6 +495,10 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
     if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration') {
       map.globals.push(block);
     } else if (block.category == 'Component' && block.type == 'event') {
+      if(block.isGeneric){
+        map.globals.push(block);
+        continue;
+      }
       var instanceName = block.instanceName;
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];
@@ -883,6 +887,10 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
     } else if (block.category == 'Component') {
       var instanceName = block.instanceName;
       if(block.blockType != "event") {
+        continue;
+      }
+      if(block.isGeneric){
+        map.globals.push(block);
         continue;
       }
       if (!map.components[instanceName]) {
