@@ -1,0 +1,88 @@
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+
+import Foundation
+
+class PickerPadController: UIViewController {
+  public init() {
+    super.init(nibName: nil, bundle: nil)
+    modalPresentationStyle = .popover
+  }
+
+  public required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  open override func viewDidLoad() {
+    super.viewDidLoad()
+    view.backgroundColor = .clear
+    setupViews()
+    addLayoutConstraints()
+  }
+
+  func setupViews() {
+    fatalError("setupViews() has not been implemented")
+  }
+
+  func addLayoutConstraints() {
+    fatalError("addLayoutConstraints() has not been implemented")
+  }
+}
+
+class PickerPhoneController: UIViewController {
+  private var _toolBar = UIToolbar()
+  private var _contentView: UIView
+
+  public init(contentView: UIView) {
+    _contentView = contentView
+    super.init(nibName: nil, bundle: nil)
+    modalPresentationStyle = .custom
+    _toolBar.barStyle = .default
+    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissPicker))
+    let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+    let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPicker))
+    _toolBar.setItems([doneButton, flexibleSpace, cancelButton], animated: true)
+    _toolBar.isUserInteractionEnabled = true
+    _toolBar.sizeToFit()
+    _contentView.backgroundColor = .white
+  }
+
+  public override func viewDidLoad() {
+    super.viewDidLoad()
+    view.backgroundColor = .clear
+    view.addSubview(_toolBar)
+    view.addSubview(_contentView)
+    addLayoutConstraints()
+  }
+
+  private func addLayoutConstraints() {
+    _contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.5 / 7).isActive = true
+    _toolBar.bottomAnchor.constraint(equalTo: _contentView.topAnchor).isActive = true
+    _toolBar.heightAnchor.constraint(equalToConstant: 50)
+    _toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+    _toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    _toolBar.translatesAutoresizingMaskIntoConstraints = false
+    _contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    _contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+    _contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    _contentView.translatesAutoresizingMaskIntoConstraints = false
+  }
+
+  public required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  public func dismissPicker() {
+    doDismissPicker()
+    self.dismiss(animated: true)
+  }
+
+  func doDismissPicker() {}
+
+  public func cancelPicker() {
+    doCancelPicker()
+    self.dismiss(animated: true)
+  }
+
+  func doCancelPicker() {}
+}
