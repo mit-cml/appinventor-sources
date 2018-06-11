@@ -185,7 +185,7 @@ public class EventDispatcher {
    * @param eventName  name of event being raised
    * @param args  arguments to the event handler
    */
-  public static boolean dispatchEvent(Component component, String eventName, Object...args) {
+  public static boolean dispatchEvent(final Component component, String eventName, Object...args) {
     if (DEBUG) {
       Log.i("EventDispatcher", "Trying to dispatch event " + eventName);
     }
@@ -196,6 +196,17 @@ public class EventDispatcher {
       Set<EventClosure> eventClosures = er.eventClosuresMap.get(eventName);
       if (eventClosures != null && eventClosures.size() > 0) {
         dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
+      }
+    }
+    //If the component does not have a binding event, the generic event is handled.
+    if(!dispatched){
+      if(dispatchDelegate.canDispatchEvent(component, eventName)){
+        Object[] params = new Object[args == null ? 1 : (args.length + 1)];
+        params[0] = component;
+        if(args != null) {
+          System.arraycopy(args, 0, params, 1, args.length);
+        }
+        dispatched = dispatchDelegate.dispatchEvent(component, null, "e$" + component.getClass().getSimpleName() + "$" + eventName, params);
       }
     }
     return dispatched;
