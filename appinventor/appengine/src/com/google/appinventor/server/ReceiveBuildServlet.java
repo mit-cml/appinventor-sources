@@ -74,11 +74,16 @@ public class ReceiveBuildServlet extends OdeServlet {
           LOG.info("Saving android.keystore for user: " + userId);
           storageIo.addFilesToUser(userId, StorageUtil.ANDROID_KEYSTORE_FILENAME);
           storageIo.uploadRawUserFile(userId, fileName, fileBytes);
+        } else if (fileName.equals("build.status")) {
+          int progress = Integer.parseInt((new String(fileBytes)).trim());
+          LOG.info("Received a build.status file contents = " + progress);
+          storageIo.storeBuildStatus(userId, projectId, progress);
         } else {
           String filePath = buildFileDirPath + "/" + fileName;
           LOG.info("Saving build output files: " + filePath);
           storageIo.addOutputFilesToProject(userId, projectId, filePath);
           storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
+          storageIo.storeBuildStatus(userId, projectId, 0); // Reset for the next build
         }
       }
     } finally {

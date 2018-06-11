@@ -248,6 +248,8 @@ public final class Compiler {
 
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
+  private BuildServer.ProgressReporter reporter; // Used to report progress of the build
+
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -803,12 +805,13 @@ public final class Compiler {
   public static boolean compile(Project project, Set<String> compTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForCompanion, String keystoreFilePath,
-                                int childProcessRam, String dexCacheDir) throws IOException, JSONException {
+                                int childProcessRam, String dexCacheDir,
+                                BuildServer.ProgressReporter reporter) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, compTypes, out, err, userErrors, isForCompanion,
-                                     childProcessRam, dexCacheDir);
+                                     childProcessRam, dexCacheDir, reporter);
 
     compiler.generateAssets();
     compiler.generateActivities();
@@ -834,7 +837,9 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
-    setProgress(15);
+    if (reporter != null) {
+      reporter.report(15);        // Have to call directly because we are in a
+    }                             // Static context
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");
@@ -858,7 +863,9 @@ public final class Compiler {
     if (!compiler.writeAndroidManifest(manifestFile)) {
       return false;
     }
-    setProgress(20);
+    if (reporter != null) {
+      reporter.report(20);
+    }
 
     // Insert native libraries
     out.println("________Attaching native libraries");
@@ -883,12 +890,14 @@ public final class Compiler {
     File deployDir = createDir(buildDir, "deploy");
     String tmpPackageName = deployDir.getAbsolutePath() + SLASH +
         project.getProjectName() + ".ap_";
-    File srcJavaDir = createDirectory(buildDir, "generated/src");
-    File rJavaDir = createDirectory(buildDir, "generated/symbols");
+    File srcJavaDir = createDir(buildDir, "generated/src");
+    File rJavaDir = createDir(buildDir, "generated/symbols");
     if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName, srcJavaDir, rJavaDir)) {
       return false;
     }
-    setProgress(30);
+    if (reporter != null) {
+      reporter.report(30);
+    }
 
     // Create class files.
     out.println("________Compiling source files");
@@ -899,7 +908,9 @@ public final class Compiler {
     if (!compiler.generateClasses(classesDir)) {
       return false;
     }
-    setProgress(35);
+    if (reporter != null) {
+      reporter.report(35);
+    }
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -918,12 +929,14 @@ public final class Compiler {
     // method of identifying via a hash of the path won't work when files
     // are copied into temporary storage) and processed via a hacked up version of
     // Android SDK's Dex Ant task
-    File tmpDir = createDirectory(buildDir, "tmp");
+    File tmpDir = createDir(buildDir, "tmp");
     String dexedClassesDir = tmpDir.getAbsolutePath();
     if (!compiler.runDx(classesDir, dexedClassesDir, false)) {
       return false;
     }
-    setProgress(85);
+    if (reporter != null) {
+      reporter.report(85);
+    }
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
@@ -932,7 +945,9 @@ public final class Compiler {
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClassesDir)) {
       return false;
     }
-    setProgress(95);
+    if (reporter != null) {
+      reporter.report(95);
+    }
 
     // Sign the apk file
     out.println("________Signing the apk file");
@@ -946,7 +961,9 @@ public final class Compiler {
       return false;
     }
 
-    setProgress(100);
+    if (reporter != null) {
+      reporter.report(100);
+    }
 
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
@@ -1040,7 +1057,7 @@ public final class Compiler {
   @VisibleForTesting
   Compiler(Project project, Set<String> compTypes, PrintStream out, PrintStream err,
            PrintStream userErrors, boolean isForCompanion,
-           int childProcessMaxRam, String dexCacheDir) {
+           int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
     this.project = project;
 
     prepareCompTypes(compTypes);
@@ -1052,6 +1069,7 @@ public final class Compiler {
     this.isForCompanion = isForCompanion;
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
+    this.reporter = reporter;
 
   }
 
@@ -1586,9 +1604,9 @@ public final class Compiler {
    * @return true on success, otherwise false
    */
   private boolean attachAarLibraries(File buildDir) {
-    final File explodedBaseDir = createDirectory(buildDir, "exploded-aars");
-    final File generatedDir = createDirectory(buildDir, "generated");
-    final File genSrcDir = createDirectory(generatedDir, "src");
+    final File explodedBaseDir = createDir(buildDir, "exploded-aars");
+    final File generatedDir = createDir(buildDir, "generated");
+    final File genSrcDir = createDir(generatedDir, "src");
     explodedAarLibs = new AARLibraries(genSrcDir);
     final Set<String> processedLibs = new HashSet<>();
 
@@ -1664,9 +1682,9 @@ public final class Compiler {
    */
   private boolean mergeResources(File mainResDir, File buildDir, String aaptTool) {
     // these should exist from earlier build steps
-    File intermediates = createDirectory(buildDir, "intermediates");
-    File resDir = createDirectory(intermediates, "res");
-    mergedResDir = createDirectory(resDir, "merged");
+    File intermediates = createDir(buildDir, "intermediates");
+    File resDir = createDir(intermediates, "res");
+    mergedResDir = createDir(resDir, "merged");
     PngCruncher cruncher = new AaptCruncher(getResource(aaptTool), null, null);
     return explodedAarLibs.mergeResources(mergedResDir, mainResDir, cruncher);
   }
@@ -1837,34 +1855,11 @@ public final class Compiler {
     return dir;
   }
 
-  /**
-   * Creates a new directory (if it doesn't exist already).
-   *
-   * @param parentDirectory  parent directory of new directory
-   * @param name  name of new directory
-   * @return  new directory
-   */
-  private static File createDirectory(File parentDirectory, String name) {
-    File dir = new File(parentDirectory, name);
-    if (!dir.exists()) {
-      dir.mkdir();
-    }
-    return dir;
-  }
-
-  private static int setProgress(int increments) {
-    Compiler.currentProgress = increments;
+  private void setProgress(int increments) {
     LOG.info("The current progress is "
-              + Compiler.currentProgress + "%");
-    return Compiler.currentProgress;
-  }
-
-  public static int getProgress() {
-    if (Compiler.currentProgress==100) {
-      Compiler.currentProgress = 10;
-      return 100;
-    } else {
-      return Compiler.currentProgress;
+              + increments + "%");
+    if (reporter != null) {
+      reporter.report(increments);
     }
   }
 

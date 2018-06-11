@@ -142,8 +142,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
    * @param colors  colors to be shown in property editor - must not be
    *                {@code null} or empty
    */
-  public ColorChoicePropertyEditor(final Color[] colors, final String hexPrefix) {
-    this(colors, hexPrefix, "", false);
+  public ColorChoicePropertyEditor(final Color[] colors, final String hexPrefix, final String defaultValue) {
+    this(colors, hexPrefix, defaultValue, false);
   }
 
   /**

@@ -73,6 +73,32 @@ public final class CookieAuth {
      * </pre>
      */
     long getOneProjectId();
+
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    boolean hasBackpackid();
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    java.lang.String getBackpackid();
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getBackpackidBytes();
   }
   /**
    * Protobuf type {@code cookieauth.cookie}
@@ -150,6 +176,12 @@ public final class CookieAuth {
             case 48: {
               bitField0_ |= 0x00000010;
               oneProjectId_ = input.readUInt64();
+              break;
+            }
+            case 74: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000020;
+              backpackid_ = bs;
               break;
             }
           }
@@ -306,12 +338,67 @@ public final class CookieAuth {
       return oneProjectId_;
     }
 
+    public static final int BACKPACKID_FIELD_NUMBER = 9;
+    private java.lang.Object backpackid_;
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    public boolean hasBackpackid() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    public java.lang.String getBackpackid() {
+      java.lang.Object ref = backpackid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          backpackid_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string backpackid = 9;</code>
+     *
+     * <pre>
+     * backpackid for shared backpack
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getBackpackidBytes() {
+      java.lang.Object ref = backpackid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        backpackid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       uuid_ = "";
       ts_ = 0L;
       isAdmin_ = false;
       isReadOnly_ = false;
       oneProjectId_ = 0L;
+      backpackid_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -349,6 +436,9 @@ public final class CookieAuth {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt64(6, oneProjectId_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(9, getBackpackidBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -377,6 +467,10 @@ public final class CookieAuth {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(6, oneProjectId_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getBackpackidBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -505,6 +599,8 @@ public final class CookieAuth {
         bitField0_ = (bitField0_ & ~0x00000008);
         oneProjectId_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
+        backpackid_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -553,6 +649,10 @@ public final class CookieAuth {
           to_bitField0_ |= 0x00000010;
         }
         result.oneProjectId_ = oneProjectId_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.backpackid_ = backpackid_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -585,6 +685,11 @@ public final class CookieAuth {
         }
         if (other.hasOneProjectId()) {
           setOneProjectId(other.getOneProjectId());
+        }
+        if (other.hasBackpackid()) {
+          bitField0_ |= 0x00000020;
+          backpackid_ = other.backpackid_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -849,6 +954,106 @@ public final class CookieAuth {
         return this;
       }
 
+      private java.lang.Object backpackid_ = "";
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public boolean hasBackpackid() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public java.lang.String getBackpackid() {
+        java.lang.Object ref = backpackid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            backpackid_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getBackpackidBytes() {
+        java.lang.Object ref = backpackid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          backpackid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public Builder setBackpackid(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        backpackid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public Builder clearBackpackid() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        backpackid_ = getDefaultInstance().getBackpackid();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string backpackid = 9;</code>
+       *
+       * <pre>
+       * backpackid for shared backpack
+       * </pre>
+       */
+      public Builder setBackpackidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        backpackid_ = value;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:cookieauth.cookie)
     }
 
@@ -874,11 +1079,11 @@ public final class CookieAuth {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014cookie.proto\022\ncookieauth\"]\n\006cookie\022\014\n\004" +
+      "\n\014cookie.proto\022\ncookieauth\"q\n\006cookie\022\014\n\004" +
       "uuid\030\001 \002(\t\022\n\n\002ts\030\002 \002(\004\022\017\n\007isAdmin\030\003 \001(\010\022" +
       "\022\n\nisReadOnly\030\004 \001(\010\022\024\n\014oneProjectId\030\006 \001(" +
-      "\004B6\n(com.google.appinventor.server.cooki" +
-      "eauthB\nCookieAuth"
+      "\004\022\022\n\nbackpackid\030\t \001(\tB6\n(com.google.appi" +
+      "nventor.server.cookieauthB\nCookieAuth"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -897,7 +1102,7 @@ public final class CookieAuth {
     internal_static_cookieauth_cookie_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_cookieauth_cookie_descriptor,
-        new java.lang.String[] { "Uuid", "Ts", "IsAdmin", "IsReadOnly", "OneProjectId", });
+        new java.lang.String[] { "Uuid", "Ts", "IsAdmin", "IsReadOnly", "OneProjectId", "Backpackid", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -26,11 +26,12 @@ Blockly.Util = {};
 // argument being passed to the callback. If in the future we need to pass an arugment
 // we can worry about adding that functionality.
 
-Blockly.Util.Dialog = function(title, content, buttonName, cancelButtonName, size, callback) {
+Blockly.Util.Dialog = function(title, content, buttonName, destructive, cancelButtonName, size, callback) {
     this.title = title;
     this.content = content;
     this.size = size;
     this.buttonName = buttonName;
+    this.destructive = destructive;
     this.cancelButtonName = cancelButtonName;
     this.callback = callback;
     if (this.buttonName) {
@@ -40,7 +41,7 @@ Blockly.Util.Dialog = function(title, content, buttonName, cancelButtonName, siz
 
 Blockly.Util.Dialog.prototype = {
     'display' : function() {
-        this._dialog = top.BlocklyPanel_createDialog(this.title, this.content, this.buttonName, this.cancelButtonName, this.size, this.callback);
+        this._dialog = top.BlocklyPanel_createDialog(this.title, this.content, this.buttonName, this.destructive, this.cancelButtonName, this.size, this.callback);
     },
     'hide' : function() {
         if (this._dialog) {

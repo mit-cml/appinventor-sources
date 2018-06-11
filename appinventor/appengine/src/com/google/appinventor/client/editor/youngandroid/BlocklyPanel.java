@@ -328,12 +328,14 @@ public class BlocklyPanel extends HTMLPanel {
    * @param mess       The message to display
    * @param buttonName The string to display in the "OK" button.
    * @param size       0 or 1. 0 makes a smaller box 1 makes a larger box.
+   * @param destructive Indicates if the button should be styled as a destructive action.
    * @param callback   an opague JavaScriptObject that contains the
    *                   callback function provided by the Javascript code.
    * @return The created dialog box.
    */
 
-  public static DialogBox createDialog(String title, String mess, final String buttonName, final String cancelButtonName, int size, final JavaScriptObject callback) {
+  public static DialogBox createDialog(String title, String mess, final String buttonName, Boolean destructive,
+                                       final String cancelButtonName, int size, final JavaScriptObject callback) {
     final DialogBox dialogBox = new DialogBox();
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(title);
@@ -350,16 +352,6 @@ public class BlocklyPanel extends HTMLPanel {
     HTML message = new HTML(mess);
     message.setStyleName("DialogBox-message");
     HorizontalPanel holder = new HorizontalPanel();
-    if (buttonName != null) {           // If buttonName and cancelButtonName are null
-      Button ok = new Button(buttonName); // We won't have any buttons and other
-      ok.addClickHandler(new ClickHandler() { // code is needed to dismiss us
-        @Override
-        public void onClick(ClickEvent event) {
-          doCallBack(callback, buttonName);
-        }
-      });
-      holder.add(ok);
-    }
     if (cancelButtonName != null) {
       Button cancel = new Button(cancelButtonName);
       cancel.addClickHandler(new ClickHandler() {
@@ -369,6 +361,19 @@ public class BlocklyPanel extends HTMLPanel {
         }
       });
       holder.add(cancel);
+    }
+    if (buttonName != null) {           // If buttonName and cancelButtonName are null
+      Button ok = new Button(buttonName); // We won't have any buttons and other
+      if (destructive) {
+        ok.addStyleName("destructive-action");
+      }
+      ok.addClickHandler(new ClickHandler() { // code is needed to dismiss us
+        @Override
+        public void onClick(ClickEvent event) {
+          doCallBack(callback, buttonName);
+        }
+      });
+      holder.add(ok);
     }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -504,6 +509,49 @@ public class BlocklyPanel extends HTMLPanel {
     Ode.getUserSettings().saveSettings(null);
   }
 
+  /**
+   * Fetch a shared backpack from the server, call the callback with the
+   * backpack content.
+   *
+   * @param backPackId the backpack id
+   * @param callback callback to call with the backpack contents
+   */
+
+  public static void getSharedBackpack(String backPackId, final JavaScriptObject callback) {
+    Ode.getInstance().getUserInfoService().getSharedBackpack(backPackId,
+      new AsyncCallback<String>() {
+        @Override
+        public void onSuccess(String content) {
+          doCallBack(callback, content);
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.log("getSharedBackpack failed.");
+        }
+      });
+  }
+
+  /**
+   * Store shared backpack to the server.
+   *
+   * @param backPackId the backpack id
+   * @param content the contents to store (XML String)
+   */
+
+  public static void storeSharedBackpack(String backPackId, String content) {
+    Ode.getInstance().getUserInfoService().storeSharedBackpack(backPackId, content,
+      new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void v) {
+          // Nothing to do
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.log("storeSharedBackpack failed.");
+        }
+      });
+  }
+
   // ------------ Native methods ------------
 
   /**
@@ -511,9 +559,11 @@ public class BlocklyPanel extends HTMLPanel {
    * and call it.
    *
    * @param callback the Javascript callback.
+   * @param arg argument to the callback
    */
-  private static native void doCallBack(JavaScriptObject callback, String buttonName) /*-{
-    callback.call(null, buttonName);
+
+  private static native void doCallBack(JavaScriptObject callback, String arg) /*-{
+    callback.call(null, arg);
   }-*/;
 
   private static native void exportMethodsToJavascript() /*-{
@@ -529,7 +579,7 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_popScreen =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
     $wnd.BlocklyPanel_createDialog =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
+        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_hideDialog =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =
@@ -554,6 +604,11 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getSnapEnabled());
     $wnd.BlocklyPanel_saveUserSettings =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::saveUserSettings());
+    $wnd.BlocklyPanel_getSharedBackpack =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getSharedBackpack(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+    $wnd.BlocklyPanel_storeSharedBackpack =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::storeSharedBackpack(Ljava/lang/String;Ljava/lang/String;));
+
   }-*/;
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl)/*-{
@@ -842,7 +897,11 @@ public class BlocklyPanel extends HTMLPanel {
    * @param backpack JSON-serialized backpack contents.
    */
   public static native void setInitialBackpack(String backpack)/*-{
-    Blockly.Backpack.shared_contents = JSON.parse(backpack);
+    Blockly.Backpack.contents = JSON.parse(backpack);
+  }-*/;
+
+  public static native void setSharedBackpackId(String backPackId)/*-{
+    Blockly.Backpack.backPackId = backPackId;
   }-*/;
 
   /**
@@ -853,7 +912,7 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
-   * Store the backpack's contents to the App Inventor service.
+   * Store the backpack's contents to the App Inventor server.
    *
    * @param backpack JSON-serialized backpack contents.
    */
