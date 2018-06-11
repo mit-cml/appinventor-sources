@@ -56,7 +56,10 @@ Blockly.Blocks.component_event = {
 
     var container = document.createElement('mutation');
     container.setAttribute('component_type', this.typeName);
-    container.setAttribute('instance_name', this.instanceName);//instance name not needed
+    container.setAttribute('is_generic', this.isGeneric ? "true" : "false");
+    if(!this.isGeneric) {
+      container.setAttribute('instance_name', this.instanceName);
+    }
     container.setAttribute('event_name', this.eventName);
     if (!this.horizontalParameters) {
       container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
@@ -68,7 +71,10 @@ Blockly.Blocks.component_event = {
   domToMutation : function(xmlElement) {
 
     this.typeName = xmlElement.getAttribute('component_type');
-    this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
+    this.isGeneric = xmlElement.getAttribute('is_generic') == 'true';
+    if(!this.isGeneric) {
+      this.instanceName = xmlElement.getAttribute('instance_name');
+    }
     this.eventName = xmlElement.getAttribute('event_name');
     var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
 
@@ -77,7 +83,6 @@ Blockly.Blocks.component_event = {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    this.componentDropDown.setValue(this.instanceName);
 
     var localizedEventName;
     var eventType = this.getEventTypeObject();
@@ -89,10 +94,15 @@ Blockly.Blocks.component_event = {
       localizedEventName = componentDb.getInternationalizedEventName(this.eventName);
     }
 
-    this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
+    if(!this.isGeneric){
+      this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
         .appendField('.' + localizedEventName);
-    this.componentDropDown.setValue(this.instanceName);
+      this.componentDropDown.setValue(this.instanceName);
+    }else{
+      this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN 
+        + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedEventName);
+    }
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
@@ -122,6 +132,9 @@ Blockly.Blocks.component_event = {
     var params = this.getParameters();
     if (!params)  {
       params = [];
+    }
+    if(this.isGeneric){
+      params = [{name:'component',type:'component'}].concat(params);
     }
     var componentDb = this.getTopWorkspace().getComponentDatabase();
     var oldDoInput = this.getInput("DO");
@@ -173,7 +186,7 @@ Blockly.Blocks.component_event = {
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedPropertyName(param.name), false),
+              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
@@ -222,7 +235,7 @@ Blockly.Blocks.component_event = {
 
   getVars: function() {
     var varList = [];
-    for (var i = 0, input; input = this.getFieldValue('VAR' + i); i++) {
+    for (var i = this.isGeneric ? 1 : 0, input; input = this.getFieldValue('VAR' + i); i++) {
       varList.push(input);
     }
     return varList;
@@ -230,7 +243,7 @@ Blockly.Blocks.component_event = {
 
   getVarString: function() {
     var varString = "";
-    for (var i = 0, param; param = this.getFieldValue('VAR' + i); i++) {
+    for (var i = this.isGeneric ? 1 : 0, param; param = this.getFieldValue('VAR' + i); i++) {
       // [lyn, 10/13/13] get current name from block, not from underlying event (may have changed)
       if(i != 0){
         varString += " ";
@@ -241,7 +254,7 @@ Blockly.Blocks.component_event = {
   },
 
   declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
-    return this.getVars();
+    return this.isGeneric ? [this.getFieldValue('VAR0')].concat(this.getVars()) : this.getVars();
   },
 
   blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
