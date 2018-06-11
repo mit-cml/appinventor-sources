@@ -27,6 +27,18 @@ goog.provide('Blockly.Yail.componentblock');
  * @returns {Function} event code generation function with instanceName and eventName bound in
  */
 Blockly.Yail.component_event = function() {
+  if(this.isGeneric){
+    var args = ([{name:'component',type:'component'}].concat(this.getParameters()))
+      .map(function (param) {
+        return Blockly.Yail.YAIL_LOCAL_VAR_TAG+param.name;
+      }).join(' ');
+    var procName = "e$" + this.typeName + "$" + this.eventName;
+    var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_NULL;
+    var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
+      + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + body + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    return code;
+  }
+
   var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE);
   // TODO: handle deactivated block, null body
   if(body == ""){
