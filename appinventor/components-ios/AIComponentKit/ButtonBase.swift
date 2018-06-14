@@ -95,6 +95,21 @@ open class ButtonBase: ViewComponent {
     }
   }
 
+  open var FontTypeface: Int32 {
+    get {
+      return _fontTypeface.rawValue
+    }
+    set(newTypeFace) {
+      if newTypeFace != _fontTypeface.rawValue {
+        if let type = Typeface(rawValue: Int32(newTypeFace)) {
+          _fontTypeface = type
+          _view.titleLabel?.font = getFontTypeface(font: _view.titleLabel?.font, typeFace: type)
+        }
+      }
+    }
+  }
+
+
   open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)

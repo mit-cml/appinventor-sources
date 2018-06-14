@@ -20,3 +20,26 @@ func getFontTrait(font: UIFont?, trait: UIFontDescriptorSymbolicTraits, shouldSe
     return font
   }
 }
+
+func getFontTypeface(font: UIFont?, typeFace: Typeface) -> UIFont? {
+  if let descriptor = font?.fontDescriptor, let size = font?.pointSize {
+    var tempDescriptor: UIFontDescriptor
+    switch typeFace {
+    case .normal, .sansSerif:
+      return UIFont(descriptor: descriptor, size: size)
+    case .monospace:
+      tempDescriptor = UIFontDescriptor(name: "Menlo", size: size)
+      break
+    case .serif:
+      tempDescriptor = UIFontDescriptor(name: "Cochin", size: size)
+      break
+    }
+    if let newDescriptor = tempDescriptor.withSymbolicTraits(descriptor.symbolicTraits) {
+      return UIFont(descriptor: newDescriptor, size: size)
+    } else {
+      return font
+    }
+  } else {
+    return font
+  }
+}

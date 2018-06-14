@@ -22,7 +22,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   
   fileprivate var _textAlignment: Int32 = 0
   fileprivate var _backgroundColor: Int32 = 0
-  fileprivate var _fontTypeface: Int32 = 0
+  fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _bold: Bool = false
   fileprivate var _italic: Bool = false
   fileprivate var _hint: String = ""
@@ -119,11 +119,17 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   
   open var FontTypeface: Int32 {
     get {
-      return _fontTypeface
+      return _fontTypeface.rawValue
     }
     set(typeface) {
-      _fontTypeface = typeface
-      // TODO(ewpatton): Replace font with new typeface
+      if typeface != _fontTypeface.rawValue {
+        if let type = Typeface(rawValue: typeface) {
+          _fontTypeface = type
+          if let delegate = _delegate {
+            delegate.font = getFontTypeface(font: delegate.font, typeFace: type) ?? delegate.font
+          }
+        }
+      }
     }
   }
   
