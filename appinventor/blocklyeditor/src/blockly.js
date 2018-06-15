@@ -41,9 +41,10 @@ Blockly.hideChaff = (function(func) {
     return func;
   } else {
     var f = function() {
-      func.apply(this, Array.prototype.slice.call(arguments));
+      var argCopy = Array.prototype.slice.call(arguments);
+      func.apply(this, argCopy);
       // [lyn, 10/06/13] for handling parameter & procedure flydowns
-      Blockly.getMainWorkspace().hideChaff();
+      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.getMainWorkspace(), argCopy);
     };
     f.isWrapped = true;
     return f;

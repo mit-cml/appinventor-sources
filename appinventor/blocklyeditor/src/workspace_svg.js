@@ -483,10 +483,12 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
   return this.flydown_;
 };
 
-Blockly.WorkspaceSvg.prototype.hideChaff = function() {
+Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.flydown_ && this.flydown_.hide();
   this.typeBlock_ && this.typeBlock_.hide();
-  this.backpack_ && this.backpack_.hide();
+  if (!opt_allowToolbox) {  // Fixes #1269
+    this.backpack_ && this.backpack_.hide();
+  }
   this.setScrollbarsVisible(true);
 };
 
