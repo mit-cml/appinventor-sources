@@ -71,6 +71,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.SORT_C = 'Sort Blocks by Category';
     Blockly.Msg.COPY_TO_BACKPACK = 'Add to Backpack';
     Blockly.Msg.COPY_ALLBLOCKS = 'Copy All Blocks to Backpack';
+    Blockly.Msg.REMOVE_FROM_BACKPACK = 'Remove from Backpack';
     Blockly.Msg.BACKPACK_GET = 'Paste All Blocks from Backpack';
     Blockly.Msg.BACKPACK_EMPTY = 'Empty the Backpack';
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Are you sure you want to empty the backpack?';
