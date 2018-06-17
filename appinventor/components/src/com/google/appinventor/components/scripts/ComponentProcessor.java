@@ -1457,8 +1457,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
     // {float, double, int, short, long} -> number
     if (type.equals("float") || type.equals("double") || type.equals("int") ||
-        type.equals("short") || type.equals("long") || type.equals("byte") ||
-        type.equals("short")) {
+        type.equals("short") || type.equals("long") || type.equals("byte") {
       return "number";
     }
     // YailList -> list
