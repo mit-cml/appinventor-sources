@@ -218,6 +218,7 @@ Blockly.Backpack.prototype.init = function() {
   Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
   Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackDoc);
   this.flyout_.init(this.workspace_);
+  this.flyout_.workspace_.isBackpack = true;
 
   // load files for sound effect
   Blockly.getMainWorkspace().loadAudio_(['assets/backpack.mp3', 'assets/backpack.ogg', 'assets/backpack.wav'], 'backpack');
