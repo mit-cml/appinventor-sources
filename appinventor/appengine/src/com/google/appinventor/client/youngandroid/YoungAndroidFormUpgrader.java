@@ -1525,12 +1525,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // Version 2
       // The Markers property (blocks-only) was renamed to Features
       // Version 3
       // Block event handlers were renamed
-      srcCompVersion = 3;
+      // Version 4
+      // The Rotation property was added with default 0.0 (due north)
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

@@ -1848,7 +1848,11 @@ Blockly.Versioning.AllUpgradeMaps =
     3: [
       Blockly.Versioning.changeEventName('Map', 'GotGeoJSON', 'GotFeatures'),
       Blockly.Versioning.changeEventName('Map', 'GeoJSONError', 'LoadError')
-    ]
+    ],
+
+    // AI2:
+    // - The Rotation property was added to Map
+    4: "noUpgrade"
 
   }, // End Map upgraders
 

@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import com.caverock.androidsvg.SVG;
@@ -370,6 +371,14 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void setCompassEnabled(boolean enabled) {
     if (enabled && compass == null) {
       compass = new CompassOverlay(view.getContext(), view);
+      view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+          float density = view.getContext().getResources().getDisplayMetrics().density;
+          compass.setCompassCenter(view.getMeasuredWidth() / density - 35, 35);
+          return true;
+        }
+      });
       view.getOverlayManager().add(compass);
     }
     if (compass != null) {
@@ -1181,6 +1190,16 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public int getOverlayCount() {
     System.err.println(view.getOverlays());
     return view.getOverlays().size();
+  }
+
+  @Override
+  public void setRotation(float Rotation) {
+    view.setMapOrientation(Rotation);
+  }
+
+  @Override
+  public float getRotation() {
+    return view.getMapOrientation();
   }
 
   static class MultiPolygon extends Polygon {
