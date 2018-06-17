@@ -334,7 +334,7 @@ Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   var component = this.componentDb_.getInstance(uid);
 
   // Fixes #1175
-  if (component.name === this.drawer_.lastComponent) {
+  if (this.drawer_ && component.name === this.drawer_.lastComponent) {
     this.drawer_.hide();
   }
 
