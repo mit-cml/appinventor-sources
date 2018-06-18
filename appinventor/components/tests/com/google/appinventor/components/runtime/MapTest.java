@@ -5,6 +5,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
+import android.hardware.Sensor;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
@@ -13,7 +15,9 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowSensorManager;
 import org.robolectric.shadows.ShadowView;
 
 import java.io.IOException;
@@ -121,6 +125,12 @@ public class MapTest extends MapTestBase {
 
   @Test
   public void testShowCompass() {
+    /* We need to create a sensor for the orientation type, otherwise compass will fail to enable */
+    Context context = RuntimeEnvironment.application.getApplicationContext();
+    ShadowSensorManager sensorManager = Shadow.extract(context.getSystemService(Context.SENSOR_SERVICE));
+    Sensor s = Shadow.newInstanceOf(Sensor.class);
+    sensorManager.addSensor(Sensor.TYPE_ORIENTATION, s);
+    /* end setup */
     map.ShowCompass(true);
     assertTrue(map.ShowCompass());
   }

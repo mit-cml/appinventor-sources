@@ -62,6 +62,7 @@ import org.osmdroid.views.overlay.OverlayWithIWVisitor;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.infowindow.OverlayInfoWindow;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
@@ -107,6 +108,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private OverlayInfoWindow defaultInfoWindow = null;
   private boolean ready = false;
   private ZoomControlView zoomControls = null;
+  private float lastAzimuth = Float.NaN;
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -383,8 +385,14 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     }
     if (compass != null) {
       if (enabled) {
-        compass.enableCompass();
+        if (compass.getOrientationProvider() != null) {
+          compass.enableCompass();
+        } else {
+          compass.enableCompass(new InternalCompassOrientationProvider(view.getContext()));
+        }
+        compass.onOrientationChanged(lastAzimuth, null);
       } else {
+        lastAzimuth = compass.getOrientation();
         compass.disableCompass();
       }
     }
@@ -392,7 +400,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public boolean isCompassEnabled() {
-    return compass != null && compass.isEnabled();
+    return compass != null && compass.isCompassEnabled();
   }
 
   @Override
