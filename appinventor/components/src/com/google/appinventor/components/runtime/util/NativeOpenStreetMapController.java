@@ -5,18 +5,12 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Picture;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -24,8 +18,30 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.widget.RelativeLayout;
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
+import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
+import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
+import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapController;
+import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
+import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
+import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
+import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
+import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapType;
+import com.google.appinventor.components.runtime.view.ZoomControlView;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapListener;
@@ -52,32 +68,17 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
-import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
-import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapController;
-import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
-import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
-import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
-import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
-import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
-import com.google.appinventor.components.runtime.util.MapFactory.MapType;
-
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Picture;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class NativeOpenStreetMapController implements MapController, MapListener {
   /* copied from SVG */
@@ -91,6 +92,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private static final String TAG = NativeOpenStreetMapController.class.getSimpleName();
   private boolean caches;
   private final Form form;
+  private RelativeLayout containerView;
   private MapView view;
   private MapType tileType;
   private boolean zoomEnabled;
@@ -104,6 +106,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private TouchOverlay touch = null;
   private OverlayInfoWindow defaultInfoWindow = null;
   private boolean ready = false;
+  private ZoomControlView zoomControls = null;
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -286,12 +289,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         }
       }
     });
+    zoomControls = new ZoomControlView(view);
     userLocation = new MyLocationNewOverlay(locationProvider, view);
+
+    containerView = new RelativeLayout(form);
+    containerView.setClipChildren(true);
+    containerView.addView(view, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    containerView.addView(zoomControls);
+    zoomControls.setVisibility(View.GONE);  // not shown by default
   }
 
   @Override
   public View getView() {
-    return view;
+    return containerView;
   }
 
   @Override
@@ -312,6 +322,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public void setZoom(int zoom) {
     view.getController().setZoom((double) zoom);
+    zoomControls.updateButtons();
   }
 
   @Override
@@ -386,8 +397,11 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public void setZoomControlEnabled(boolean enabled) {
-    view.setBuiltInZoomControls(enabled);
-    zoomControlEnabled = enabled;
+    if (zoomControlEnabled != enabled) {
+      zoomControls.setVisibility(enabled ? View.VISIBLE : View.GONE);
+      zoomControlEnabled = enabled;
+      containerView.invalidate();
+    }
   }
 
   @Override
@@ -1160,6 +1174,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public boolean onZoom(ZoomEvent event) {
+    zoomControls.updateButtons();
     for (MapEventListener listener : eventListeners) {
       listener.onZoom();
     }
