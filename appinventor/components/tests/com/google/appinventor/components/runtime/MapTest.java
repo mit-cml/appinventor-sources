@@ -1,12 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
-import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -15,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowView;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -306,9 +306,9 @@ public class MapTest extends MapTestBase {
   public void testFeatureListRemoval() {
     Marker marker1 = new Marker(map);
     Marker marker2 = new Marker(map);
-    ((ShadowMapView) Shadow.extract(map.getView())).clearWasInvalidated();
+    ((ShadowView) Shadow.extract(map.getView())).clearWasInvalidated();
     map.Features(YailList.makeList(Collections.singletonList(marker1)));
-    assertTrue(((ShadowMapView) Shadow.extract(map.getView())).wasInvalidated());
+    assertTrue(((ShadowView) Shadow.extract(map.getView())).wasInvalidated());
     assertEquals(1, map.Features().size());
     assertTrue(map.Features().contains(marker1));
     assertFalse(map.Features().contains(marker2));
