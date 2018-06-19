@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -172,12 +172,18 @@ public final class AssetManager implements ProjectChangeListener {
         allow = false;
 
         // Filter : For files in directly in EXTERNAL_COMPS_FOLDER/COMP_FOLDER
-        if (StringUtils.countMatches(fileId, "/") == 3) {
+        int depth = StringUtils.countMatches(fileId, "/");
+        if (depth == 3) {
 
           // Filter : For classes.jar File
           if (name.equals("classes.jar")) {
             allow = true;
 
+          }
+        } else if (depth > 3) {
+          String[] parts = fileId.split("/");
+          if (ASSETS_FOLDER.equals(parts[3])) {
+            return true;
           }
         }
       }

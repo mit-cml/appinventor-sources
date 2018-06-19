@@ -68,6 +68,8 @@
       <!-- Map assets for build server -->
       <fileset dir="${lib.dir}/leaflet" includes="leaflet.js,leaflet.css" />
       <fileset dir="${lib.dir}/leaflet/assets" includes="*"/>
+      <!-- Component/extension assets (for testing) -->
+      <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>
     <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />

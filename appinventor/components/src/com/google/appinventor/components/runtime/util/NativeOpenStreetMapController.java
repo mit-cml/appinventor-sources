@@ -906,7 +906,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     SVG markerSvg = null;
     if (defaultMarkerSVG == null) {
       try {
-        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), "component/marker.svg");
+        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), "marker.svg");
       } catch (SVGParseException e) {
         Log.e(TAG, "Invalid SVG in Marker asset", e);
       } catch (IOException e) {
