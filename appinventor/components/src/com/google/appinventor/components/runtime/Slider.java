@@ -1,9 +1,14 @@
 package com.google.appinventor.components.runtime;
 
 import android.R;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,11 +62,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private float thumbPosition;
   private boolean thumbEnabled;
 
-  // the total slider width
-  private LayerDrawable fullBar;
-  // the part of the slider to the left of the thumb
-  private Drawable beforeThumb;
-
   // colors of the bar after and before the thumb position
   private int rightColor;
   private int leftColor;
@@ -100,9 +100,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
       seekbar.setSplitTrack(false);
     }
-
-    fullBar = (LayerDrawable) seekbar.getProgressDrawable();
-    beforeThumb = fullBar.findDrawableByLayerId(R.id.progress);
 
     leftColor = initialLeftColor;
     rightColor = initialRightColor;
@@ -143,9 +140,32 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   // NOTE(hal): On old phones, up through 2.2.2 and maybe higher, the color of the bar doesn't
   // change until the thumb is moved.  I'm ignoring that problem.
   private void setSliderColors() {
-   fullBar.setColorFilter(rightColor,PorterDuff.Mode.SRC);
-   beforeThumb.setColorFilter(leftColor, PorterDuff.Mode.SRC);
- }
+    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+      seekbar.setProgressTintList(ColorStateList.valueOf(leftColor));
+      if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP_MR1 ||
+          !(seekbar.getProgressDrawable() instanceof StateListDrawable)) {
+        seekbar.setProgressBackgroundTintList(ColorStateList.valueOf(rightColor));
+        seekbar.setProgressBackgroundTintMode(Mode.MULTIPLY);
+      } else {
+        // Looking at the AOSP code, the previous calls should effectively accomplish what the
+        // following code does... except it doesn't on Android 5.0. Instead, the result is that the
+        // right side color is 50% opacity of leftColor. The following code works on Android 5.0,
+        // but assumes a Drawable hierarchy that may not be true if the device manufacturer deviates
+        // from the AOSP design. If that is the case, then the right hand side will not change.
+        StateListDrawable drawable = (StateListDrawable) seekbar.getProgressDrawable();
+        if (drawable.getCurrent() instanceof LayerDrawable) {
+          LayerDrawable layerDrawable = (LayerDrawable) drawable.getCurrent();
+          Drawable background = layerDrawable.findDrawableByLayerId(R.id.background);
+          background.setTintList(ColorStateList.valueOf(rightColor));
+          background.setTintMode(Mode.MULTIPLY);
+        }
+      }
+    } else {
+      LayerDrawable fullBar = (LayerDrawable) seekbar.getProgressDrawable();
+      fullBar.setColorFilter(rightColor,PorterDuff.Mode.SRC);
+      fullBar.findDrawableByLayerId(R.id.progress).setColorFilter(leftColor, PorterDuff.Mode.SRC);
+    }
+  }
 
  // Set the seekbar position based on minValue, maxValue, and thumbPosition
  // seekbar position is an integer in the range [0,100] and is determined by MinValue,
