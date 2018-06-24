@@ -24,6 +24,7 @@ public class ZoomControlView extends LinearLayout {
   private final Button zoomOut;
 
   private float density;
+  private boolean enabled = true;
 
   public ZoomControlView(MapView parent) {
     super(parent.getContext());
@@ -75,8 +76,23 @@ public class ZoomControlView extends LinearLayout {
    */
   @SuppressWarnings("WeakerAccess")
   public final void updateButtons() {
-    zoomIn.setEnabled(parent.canZoomIn());
-    zoomOut.setEnabled(parent.canZoomOut());
+    zoomIn.setEnabled(enabled && parent.canZoomIn());
+    zoomOut.setEnabled(enabled && parent.canZoomOut());
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+    if (enabled) {
+      zoomIn.setEnabled(parent.canZoomIn());
+      zoomOut.setEnabled(parent.canZoomOut());
+    } else {
+      zoomIn.setEnabled(false);
+      zoomOut.setEnabled(false);
+    }
+  }
+
+  public boolean isEnabled() {
+    return enabled;
   }
 
   private void initButton(Button button, String text) {

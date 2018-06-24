@@ -336,6 +336,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void setZoomEnabled(boolean enable) {
     this.zoomEnabled = enable;
     view.setMultiTouchControls(enable);
+    zoomControls.setEnabled(enable);
   }
 
   @Override
