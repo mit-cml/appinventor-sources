@@ -81,7 +81,11 @@ import Foundation
   
   // DatePicker Errors
   case ERROR_ILLEGAL_DATE = 2401
-  
+
+  // FusionTables Errors
+  case FUSION_TABLES_QUERY_ERROR = 2601
+  case FUSION_TABLES_AUTH_ERROR = 2602
+
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
   case ERROR_CANNOT_ENCODE_TEXT_AS_UTF8 = 100002
@@ -218,7 +222,13 @@ import Foundation
       return "The translation service is not available; Please try again later."
     case .ERROR_TRANSLATE_JSON_RESPONSE:
       return "The response from the Yandex.Translate service cannot be parsed; Please try again later."
-      
+
+    // FusionTables Errors
+    case .FUSION_TABLES_QUERY_ERROR:
+      return "Fusion tables returned an error. The query was: %s. The response was: %s"
+    case .FUSION_TABLES_AUTH_ERROR:
+      return "An error occured when attempting to authenticate for Fusion Tables. The error was %s"
+
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
       return "Installing packages from URLs is not supported on iOS"

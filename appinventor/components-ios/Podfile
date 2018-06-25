@@ -24,6 +24,7 @@ target 'SchemeKit' do
     pod "Toast-Swift", '~> 2.0.0'
     pod 'SQLite.swift', '~> 0.11.0'
     pod 'Alamofire', '~> 4.5'
+    pod "JSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'c418235'
 
     target 'AIComponentKitTests' do
       inherit! :search_paths
@@ -36,6 +37,7 @@ target 'SchemeKit' do
 
       pod "GCDWebServer", "~> 3.0"
       pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => 'fa2f046'
+      pod "JSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'c418235'
       pod "CSLinearLayoutView", "~> 1.0"
       pod "Toast-Swift", '~> 2.0.0'
       pod 'SQLite.swift', '~> 0.11.0'

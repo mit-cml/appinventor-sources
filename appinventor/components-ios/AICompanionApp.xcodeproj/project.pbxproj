@@ -28,6 +28,7 @@
 		06B216191DBC5F1B000B3366 /* mooning.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216141DBC5F1B000B3366 /* mooning.png */; };
 		06B2161A1DBC5F1B000B3366 /* Title.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216151DBC5F1B000B3366 /* Title.png */; };
 		312923B0097F3BD41691AB4B /* Pods_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA22D71D260E9C27E2D63CBE /* Pods_AICompanionAppUITests.framework */; };
+		895A0A0A73E724578F01DB4F /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
 		97F84DC2E26690BF615F6CB0 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -111,6 +112,7 @@
 				062ACEF91F705D3F00FA31AD /* CoreData.framework in Frameworks */,
 				062ACEFB1F705D7700FA31AD /* AIComponentKit.framework in Frameworks */,
 				062ACEF81F705CD200FA31AD /* Pods_AICompanionApp.framework in Frameworks */,
+				895A0A0A73E724578F01DB4F /* Pods_AICompanionApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +391,7 @@
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/CSLinearLayoutView/CSLinearLayoutView.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
+				"${BUILT_PRODUCTS_DIR}/JSONWebToken/JSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
@@ -398,6 +401,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CSLinearLayoutView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
