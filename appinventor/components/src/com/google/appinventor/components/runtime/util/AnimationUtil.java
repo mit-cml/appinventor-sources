@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.app.Activity;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -82,7 +83,7 @@ public final class AnimationUtil {
     if (animType == null) {
       return;
     }
-    if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
     }
@@ -122,7 +123,7 @@ public final class AnimationUtil {
     if (animType == null) {
       return;
     }
-    if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
     }

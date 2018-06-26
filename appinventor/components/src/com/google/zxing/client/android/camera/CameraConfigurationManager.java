@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -64,7 +65,7 @@ final class CameraConfigurationManager {
     Camera.Parameters parameters = camera.getParameters();
     WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = manager.getDefaultDisplay();
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR2) {
         int width = display.getWidth();
         int height = display.getHeight();
         // We're landscape-only, and have apparently seen issues with display thinking it's portrait 

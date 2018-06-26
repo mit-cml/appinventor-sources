@@ -12,6 +12,7 @@ package com.google.appinventor.components.runtime.util;
 
 import java.util.List;
 
+import android.os.Build;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.Texting;
 import com.google.appinventor.components.runtime.ReplForm;
@@ -123,7 +124,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         phone = intent.getExtras().getString(Texting.PHONE_NUMBER_TAG);
         phone = PhoneNumberUtils.formatNumber(phone);
 
-      } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_KITKAT) {
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         // On KitKat or higher, use the convience getMessageFromIntent method.
         List<SmsMessage> messages = KitkatUtil.getMessagesFromIntent(intent);
         for (SmsMessage smsMsg : messages) {
@@ -131,7 +132,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             // getOriginatingAddress() can throw a NPE if its wrapped message is null, but there
             // isn't an API to check whether this is the case.
             phone = smsMsg.getOriginatingAddress();
-            if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
               phone = LollipopUtil.formatNumber(phone);
             } else {
               phone = PhoneNumberUtils.formatNumber(phone);
@@ -167,7 +168,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
         msg = intent.getExtras().getString(Texting.MESSAGE_TAG);
 
-      } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_KITKAT) {
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         // On KitKat or higher, use the convience getMessageFromIntent method.
         List<SmsMessage> messages = KitkatUtil.getMessagesFromIntent(intent);
         for (SmsMessage smsMsg : messages) {

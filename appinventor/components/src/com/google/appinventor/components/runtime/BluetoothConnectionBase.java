@@ -15,7 +15,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.util.Log;

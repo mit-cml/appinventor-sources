@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.os.Build;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 
@@ -253,7 +254,7 @@ public class MediaUtil {
       case CONTACT_URI:
         // Open the photo for the contact.
         InputStream is = null;
-        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
           is = HoneycombMR1Util.openContactPhotoInputStreamHelper(form.getContentResolver(),
               Uri.parse(mediaPath));
         } else {

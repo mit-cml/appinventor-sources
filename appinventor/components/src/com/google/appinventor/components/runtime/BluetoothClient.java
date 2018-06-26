@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -16,7 +17,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.util.Log;
 
@@ -285,7 +285,7 @@ public final class BluetoothClient extends BluetoothConnectionBase {
 
   private void connect(Object bluetoothDevice, UUID uuid) throws IOException {
     Object bluetoothSocket;
-    if (!secure && SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD_MR1) {
+    if (!secure && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
       // createInsecureRfcommSocketToServiceRecord was introduced in level 10
       bluetoothSocket = BluetoothReflection.createInsecureRfcommSocketToServiceRecord(
           bluetoothDevice, uuid);

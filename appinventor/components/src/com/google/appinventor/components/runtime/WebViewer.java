@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.Context;
+import android.os.Build;
 import android.webkit.JavascriptInterface;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -21,7 +22,6 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -107,7 +107,7 @@ public final class WebViewer extends AndroidViewComponent {
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR)
       EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
 
     container.$add(this);
@@ -416,12 +416,12 @@ public final class WebViewer extends AndroidViewComponent {
 
   @SimpleFunction(description = "Clear stored location permissions.")
   public void ClearLocations() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR)
       EclairUtil.clearWebViewGeoLoc();
   }
 
   private void resetWebViewClient() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
       webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
     } else {
       webview.setWebViewClient(new WebViewerClient());

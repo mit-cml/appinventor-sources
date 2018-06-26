@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -31,7 +32,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ExternalTextToSpeech;
 import com.google.appinventor.components.runtime.util.ITextToSpeech;
 import com.google.appinventor.components.runtime.util.InternalTextToSpeech;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 /**
@@ -125,7 +125,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     Language(Component.DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE);
     Country(Component.DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY);
     /* Determine which TTS library to use */
-    boolean useExternalLibrary = SdkLevel.getLevel() < SdkLevel.LEVEL_DONUT;
+    boolean useExternalLibrary = Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT;
     Log.v(LOG_TAG, "Using " + (useExternalLibrary ? "external" : "internal") + " TTS library.");
     ITextToSpeech.TextToSpeechCallback callback = new ITextToSpeech.TextToSpeechCallback() {
       @Override
@@ -376,7 +376,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     // arrange to also do this in earlier releases, but that would be
     // relying on the use of an external textToSpeech application and those
     // old releases are obsolete anyway.
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_DONUT) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
       String tempLang;
       String tempCountry;
       for (Locale locale : Locale.getAvailableLocales()) {

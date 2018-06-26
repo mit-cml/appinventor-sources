@@ -21,10 +21,10 @@ import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -130,7 +130,7 @@ public final class Image extends AndroidViewComponent {
                                 // This also means that you can always set the
                                 // the angle to 0.0 even on older Android devices
     }
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
       container.$form().dispatchErrorOccurredEvent(this, "RotationAngle",
         ErrorMessages.ERROR_IMAGE_CANNOT_ROTATE);
       return;

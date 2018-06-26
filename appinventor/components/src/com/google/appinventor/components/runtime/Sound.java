@@ -19,11 +19,11 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
@@ -99,7 +99,7 @@ public class Sound extends AndroidNonvisibleComponent
   // in earlier APIs. For those early systems, attempting to play a sound before it is loaded
   // will fail to play the sound and there will be no retry, although there might be a "cannot
   // play" error.
-  private final boolean waitForLoadToComplete = (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO);
+  private final boolean waitForLoadToComplete = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
 
   private String sourcePath;              // name of source
   private int soundId;                    // id of sound in the soundPool

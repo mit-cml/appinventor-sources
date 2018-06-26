@@ -6,6 +6,7 @@
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 package com.google.appinventor.components.runtime.util;
+
 import android.os.Looper;
 import com.google.appinventor.components.runtime.ReplForm;
 
@@ -214,7 +215,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         String packageName = form.getPackageName();
         PackageInfo pInfo = form.getPackageManager().getPackageInfo(packageName, 0);
         String installer;
-        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
           installer = EclairUtil.getInstallerPackageName("edu.mit.appinventor.aicompanion3", form);
         } else {
           installer = "Not Known";  // So we *will* auto-update old phones, no way to find out

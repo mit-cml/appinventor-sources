@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This is a FrameLayout that displays all content by a scaled amount.
@@ -134,7 +134,7 @@ public class ScaledFrameLayout extends ViewGroup {
         mLeftWidth += Math.max(maxWidth, child.getMeasuredWidth());
 
         maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
           childState = HoneycombUtil.combineMeasuredStates(this, childState,
             HoneycombUtil.getMeasuredState(child));
         }
@@ -146,7 +146,7 @@ public class ScaledFrameLayout extends ViewGroup {
     maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
     maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
       setMeasuredDimension(
         HoneycombUtil.resolveSizeAndState(this, maxWidth, widthMeasureSpec, childState),
         HoneycombUtil.resolveSizeAndState(this, maxHeight, heightMeasureSpec,

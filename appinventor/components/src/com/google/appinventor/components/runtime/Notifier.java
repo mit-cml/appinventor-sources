@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.text.Html;
 import android.text.SpannableString;
@@ -34,7 +35,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * The Notifier component displays alert messages and creates Android log entries through
@@ -437,7 +437,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // This sets the fontsize according to SDK level,  There is almost certainly
     // a better way to do this, with display metrics for example, but
     // I (Hal) can't figure it out.
-    int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
+    int fontsize = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
         ? 22 : 15;
     Toast toast = Toast.makeText(activity, message, notifierLength);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import android.os.Build;
 import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.SmsBroadcastReceiver;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -423,7 +423,7 @@ public class Texting extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty()
   public void GoogleVoiceEnabled(boolean enabled) {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
       this.googleVoiceEnabled = enabled;
       SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
       SharedPreferences.Editor editor = prefs.edit();

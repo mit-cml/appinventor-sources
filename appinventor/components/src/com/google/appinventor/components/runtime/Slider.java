@@ -4,6 +4,7 @@ import android.R;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -17,7 +18,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This class is used to display a Slider.
@@ -85,7 +85,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     }
   }
 
-  public final boolean referenceGetThumb = (SdkLevel.getLevel() >= SdkLevel.LEVEL_JELLYBEAN);
+  public final boolean referenceGetThumb = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
 
   /**
    * Creates a new Slider component.
@@ -130,7 +130,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     }
 
     if (DEBUG) {
-      Log.d(LOG_TAG, "API level is " + SdkLevel.getLevel());
+      Log.d(LOG_TAG, "API level is " + Build.VERSION.SDK_INT);
     }
 
   }
