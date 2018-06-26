@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -15,7 +16,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.ContentUris;
@@ -110,7 +110,7 @@ public class PhoneNumberPicker extends ContactPicker {
       Uri phoneUri = data.getData();
 
       String desiredPhoneUri = "";
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
         desiredPhoneUri = "//com.android.contacts/data";
       } else {
         desiredPhoneUri = "//contacts/phones";
@@ -120,7 +120,7 @@ public class PhoneNumberPicker extends ContactPicker {
         Cursor contactCursor = null;
         Cursor dataCursor = null;
         try {
-          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             NAME_PROJECTION = HoneycombMR1Util.getNameProjection();
             contactCursor = activityContext.getContentResolver().query(phoneUri,
                 NAME_PROJECTION, null, null, null);

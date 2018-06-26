@@ -10,6 +10,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.Build;
 import android.provider.Contacts.ContactMethods;
 import android.provider.Contacts.People;
 import android.text.TextUtils;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * EmailAddressAdapter provides email address completion from contacts,
@@ -59,7 +59,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
     this.context = context;
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
       SORT_ORDER = HoneycombMR1Util.getTimesContacted() + " DESC, " + HoneycombMR1Util.getDisplayName();
     } else {
       SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
@@ -74,7 +74,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     String name = "";
     String address = "";
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
       name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
       address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
     } else {
@@ -94,7 +94,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     String name = "";
     String address = "";
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
       name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
       address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
     } else {
@@ -135,7 +135,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
 
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
         db = HoneycombMR1Util.getDataContentUri();
         s.append("(" + HoneycombMR1Util.getDataMimeType() + "='" + HoneycombMR1Util.getEmailType() + "')");
         s.append(" AND ");
@@ -163,7 +163,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
       }
     }
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
       return contentResolver.query(db, POST_HONEYCOMB_PROJECTION,
           where, null, SORT_ORDER);
     } else {

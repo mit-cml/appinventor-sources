@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -34,7 +35,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -578,7 +578,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   }
 
   private void connectFirebase() {
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD_MR1) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1) {
       Notifier.oneButtonAlert(activity, "The version of Android on this device is too old to use Firebase.",
         "Android Too Old", "OK");
       return;

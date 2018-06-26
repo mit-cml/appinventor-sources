@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -68,7 +69,6 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import org.json.JSONException;
@@ -1238,7 +1238,7 @@ public class Form extends AppInventorCompatActivity
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     } else if (screenOrientation.equalsIgnoreCase("user")) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD) {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
       if (screenOrientation.equalsIgnoreCase("fullSensor")) {
         setRequestedOrientation(10); // ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
       } else if (screenOrientation.equalsIgnoreCase("reverseLandscape")) {

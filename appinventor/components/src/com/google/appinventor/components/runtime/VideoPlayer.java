@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -21,7 +22,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -479,7 +479,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @SimpleProperty(userVisible = true)
   public void FullScreen(boolean value) {
 
-    if (value && (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT)) {
+    if (value && (Build.VERSION.SDK_INT <= Build.VERSION_CODES.DONUT)) {
       container.$form().dispatchErrorOccurredEvent(this, "FullScreen(true)",
         ErrorMessages.ERROR_VIDEOPLAYER_FULLSCREEN_UNSUPPORTED);
       return;

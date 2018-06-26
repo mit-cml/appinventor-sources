@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -21,7 +22,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * Controller for Near Field Communication
@@ -64,7 +64,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     super(container.$form());
     activity = container.$context();
     writeType = 1;
-    nfcAdapter = (SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD)
+    nfcAdapter = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
         ? GingerbreadUtil.newNfcAdapter(activity)
         : null;
     // register with the forms to that OnResume and OnNewIntent
@@ -139,7 +139,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
   public void ReadMode(boolean newMode) {
     Log.d(TAG, "Read mode set to" + newMode);
     readMode = newMode;
-    if(!readMode && SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD){
+    if(!readMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){
       GingerbreadUtil.enableNFCWriteMode(activity, nfcAdapter, textToWrite);
     }
   }
@@ -152,7 +152,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     Log.d(TAG, "Text to write set to" + newText);
     textToWrite = newText;
     if(!readMode && writeType == 1){
-      if(SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD){
+      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){
         GingerbreadUtil.enableNFCWriteMode(activity, nfcAdapter, textToWrite);
       }
     }
@@ -176,7 +176,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
   void resolveIntent(Intent intent) {
     Log.d(TAG, "resolve intent. Intent is: " + intent);
     // Parse the intent
-    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD){
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){
       GingerbreadUtil.resolveNFCIntent(intent, this);
     }
   }

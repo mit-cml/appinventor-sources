@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime.util;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -96,11 +97,10 @@ public final class ScreenDensityUtil {
     final WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
 
-    int sdkLevel = SdkLevel.getLevel();
-    if (sdkLevel >= SdkLevel.LEVEL_JELLYBEAN_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       // On API level 17, a public method was added to get the actual sizes
       JellybeanUtil.getRealSize(display, outSize);
-    } else if ( sdkLevel > SdkLevel.LEVEL_GINGERBREAD_MR1){
+    } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1){
       // Before API level 17, the realsize method did not exist
       // We use reflection instead to access some hidden methods
       // Does not work for 3.x, will just error

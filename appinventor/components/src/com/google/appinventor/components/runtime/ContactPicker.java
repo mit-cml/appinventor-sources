@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Contacts;
 import android.util.Log;
 
@@ -27,7 +28,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * Component enabling a user to select a contact.
@@ -98,9 +98,9 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     super(container);
     activityContext = container.$context();
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1 && intentUri.equals(Contacts.People.CONTENT_URI)) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && intentUri.equals(Contacts.People.CONTENT_URI)) {
       this.intentUri = HoneycombMR1Util.getContentUri();
-    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1 && intentUri.equals(Contacts.Phones.CONTENT_URI)) {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && intentUri.equals(Contacts.Phones.CONTENT_URI)) {
       this.intentUri = HoneycombMR1Util.getPhoneContentUri();
     } else {
       this.intentUri = intentUri;
@@ -213,7 +213,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
 
       // Pre- and post-Honeycomb need different URIs.
       String desiredContactUri = "";
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
         desiredContactUri = "//com.android.contacts/contact";
       } else {
         desiredContactUri = "//contacts/people";
@@ -223,7 +223,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
         Cursor contactCursor = null;
         Cursor dataCursor = null;
         try {
-          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             CONTACT_PROJECTION = HoneycombMR1Util.getContactProjection();
             contactCursor = activityContext.getContentResolver().query(receivedContactUri,
                 CONTACT_PROJECTION, null, null, null);

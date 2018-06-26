@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -21,7 +22,6 @@ import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -93,7 +93,7 @@ public final class Player extends AndroidNonvisibleComponent
   private Object afChangeListener;
 
   static{
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
       audioFocusSupported = true;
     } else {
       audioFocusSupported = false;

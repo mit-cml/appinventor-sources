@@ -8,13 +8,13 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.VideoPlayer;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.R;
 import android.app.Dialog;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -102,7 +102,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
     mForm = form;
     mHandler = handler;
 
-    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.DONUT) {
       mFullScreenVideoDialog = new Dialog(mForm,
           R.style.Theme_NoTitleBar_Fullscreen) {
           public void onBackPressed() {

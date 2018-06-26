@@ -5,6 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -31,7 +32,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IClientLoginHelper;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -228,7 +228,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     requestHelper = createClientLoginHelper(DIALOG_TEXT, FUSIONTABLE_SERVICE);
     query = DEFAULT_QUERY;
 
-    if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR) {
       showNoticeAndDie(
           "Sorry. The Fusiontables component is not compatible with this phone.",
           "This application must exit.",
@@ -435,7 +435,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
   // To be Deprecated, based on the old API
   private IClientLoginHelper createClientLoginHelper(String accountPrompt, String service) {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
       HttpClient httpClient = new DefaultHttpClient();
       HttpConnectionParams.setSoTimeout(httpClient.getParams(), SERVER_TIMEOUT_MS);
       HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), SERVER_TIMEOUT_MS);

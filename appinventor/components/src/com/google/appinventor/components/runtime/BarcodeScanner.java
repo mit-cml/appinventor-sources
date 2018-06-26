@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -21,7 +22,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -91,7 +91,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
       "is complete, the AfterScan event will be raised.")
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
-    if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
+    if (!useExternalScanner && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR)) {  // Should we attempt to use an internal scanner?
       String packageName = container.$form().getPackageName();
       intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
     }
