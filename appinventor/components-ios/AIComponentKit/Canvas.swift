@@ -42,10 +42,10 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     super.setDelegate(self)
 
     // set up gesture recognizers
-    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(Touched))
-    let longTouchGesture = UILongPressGestureRecognizer(target: self, action: #selector(HandleLongTouches))
-    let flingGesture = UIPanGestureRecognizer(target: self, action: #selector(Fling))
-    let dragGesture = DragGestureRecognizer(target: self, action: #selector(Dragged))
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(gesture:)))
+    let longTouchGesture = UILongPressGestureRecognizer(target: self, action: #selector(onLongTouch))
+    let flingGesture = UIPanGestureRecognizer(target: self, action: #selector(onFling))
+    let dragGesture = DragGestureRecognizer(target: self, action: #selector(onDrag))
     _view.addGestureRecognizer(tapGesture)
     _view.addGestureRecognizer(longTouchGesture)
     _view.addGestureRecognizer(flingGesture)
@@ -313,24 +313,36 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     return (gestureRecognizer is DragGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is DragGestureRecognizer)
   }
   
-  open func Touched(gesture: UITapGestureRecognizer) {
+  open func onTap(gesture: UITapGestureRecognizer) {
     let _x = gesture.location(in: _view).x
     let _y = gesture.location(in: _view).y
-    EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: _x as NSNumber, _y as NSNumber, _touchedAnySprite as AnyObject)
+    Touched(Float32(_x), Float32(_y), _touchedAnySprite)
   }
 
-  func HandleLongTouches(gesture: UILongPressGestureRecognizer) {
+  open func Touched(_ x: Float32, _ y: Float32, _ touchedAnySprite: Bool) {
+    EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber, _touchedAnySprite as AnyObject)
+  }
+
+  func onLongTouch(gesture: UILongPressGestureRecognizer) {
     let _x = gesture.location(in: _view).x
     let _y = gesture.location(in: _view).y
     if gesture.state == UIGestureRecognizerState.began {
-      EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: _x as NSNumber, _y as NSNumber)
+      TouchDown(Float(_x), Float(_y))
     } else if gesture.state == UIGestureRecognizerState.ended {
-      EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: _x as NSNumber, _y as NSNumber)
+      TouchUp(Float(_x), Float(_y))
     }
   }
 
+  open func TouchDown(_ x: Float, _ y: Float) {
+    EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: x as NSNumber, y as NSNumber)
+  }
+
+  open func TouchUp(_ x: Float, _ y: Float) {
+    EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
+  }
+
   // Fling and Gesture are simultaneously recognized.
-  open func Fling(gesture: UIPanGestureRecognizer) {
+  open func onFling(gesture: UIPanGestureRecognizer) {
     let flungSprite = false
     var velocity = gesture.velocity(in: _view)
     velocity.x = velocity.x / FLING_INTERVAL
@@ -360,21 +372,40 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
           heading = 360 + heading
         }
       }
-      EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: _flingStartX as NSNumber, _flingStartY as NSNumber, speed as NSNumber, heading as NSNumber, velocity.x as NSNumber, velocity.y as NSNumber, flungSprite as AnyObject)
+      Flung(Float(_flingStartX), Float(_flingStartY), Float(speed), Float(heading),
+            Float(velocity.x), Float(velocity.y), flungSprite)
     default:
       break
     }
   }
 
-  open func Dragged(gesture: DragGestureRecognizer) {
+  open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
+                  _ velocityX: Float, _ velocityY: Float, _ flungSprite: Bool) {
+    EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
+                                  flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
+                                  velocityX as NSNumber, velocityY as NSNumber,
+                                  flungSprite as NSNumber)
+  }
+
+  open func onDrag(gesture: DragGestureRecognizer) {
     let draggedAnySprite = false
     if gesture.state == .began || gesture.state == .changed {
       let viewWidth = _view.bounds.width
       let viewHeight = _view.bounds.height
       if gesture.currentY <= viewHeight && gesture.currentX <= viewWidth {
-        EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: gesture.startX as NSNumber, gesture.startY as NSNumber, max(0, gesture.prevX) as NSNumber, max(0, gesture.prevY) as NSNumber, max(0, gesture.currentX) as NSNumber, max(0, gesture.currentY) as NSNumber, draggedAnySprite as AnyObject)
+        Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)),
+                Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)),
+                Float(max(0, gesture.currentY)), draggedAnySprite)
       }
     }
+  }
+
+  open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
+                    _ currentX: Float, _ currentY: Float, _ draggedAnySprite: Bool) {
+    EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
+                                  startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
+                                  currentX as NSNumber, currentY as NSNumber,
+                                  draggedAnySprite as NSNumber)
   }
   
   //MARK: Container methods
