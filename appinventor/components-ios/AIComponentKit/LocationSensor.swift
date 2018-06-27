@@ -42,11 +42,11 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   
   public override init(_ container: ComponentContainer) {
     super.init(container)
+    _locationManager.delegate = self
     // TODO: Setup Listener one listeners implemented
 //    form.registerForOnResume(self)
 //    form.registerForOnStop(self)
     
-    _locationManager.delegate = self
   }
   
   // MARK: LocationSensor Properties
@@ -154,18 +154,21 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       return _enabled
     }
     set(enabled) {
-      if _enabled == enabled {
-      } else if enabled && hasAuthorization() {
-        _enabled = true
-        RefreshProvider()
-      } else if enabled && needsAuthorization() {
-        _locationManager.requestWhenInUseAuthorization()
-      } else if enabled {
-        _enabled = false
-        stopListening()
-        
-        _form.dispatchErrorOccurredEvent(self, "Enabled", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code, ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, "Enabled should not be true.")
-      } else {
+      if !_enabled && enabled {
+        PermissionHandler.RequestPermission(for: .location) {
+          authorized, _ in
+          if authorized {
+            self._enabled = true
+            self.RefreshProvider()
+          } else {
+            if self._enabled {
+              self._form.dispatchErrorOccurredEvent(self, "Enabled", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code, ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, "Enabled should not be true.")
+            }
+            self._enabled = false
+            self.stopListening()
+          }
+        }
+      } else if _enabled && !enabled {
         _enabled = false
         stopListening()
       }
@@ -236,23 +239,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
     return address
   }
-  
-  fileprivate func needsAuthorization() -> Bool {
-    return CLLocationManager.locationServicesEnabled() && CLLocationManager.authorizationStatus()
-      == .notDetermined ? true : false
-  }
-  
-  fileprivate func hasAuthorization() -> Bool {
-    if CLLocationManager.locationServicesEnabled() {
-      switch CLLocationManager.authorizationStatus() {
-      case .authorizedAlways, .authorizedWhenInUse:
-        return true
-      default:
-        return false
-      }
-    }
-    return false
-  }
+
   
   // MARK: LocationDelegate
   open func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
@@ -282,16 +269,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     StatusChanged(LocationManagerStatus.AVAILABLE)
     onResume()
   }
-  
-  open func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    switch status {
-    case .authorizedAlways, .authorizedWhenInUse:
-      Enabled = true
-    default:
-      Enabled = false
-    }
-  }
-  
+
   open func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     guard let lastLocation = locations.last else {
       return
