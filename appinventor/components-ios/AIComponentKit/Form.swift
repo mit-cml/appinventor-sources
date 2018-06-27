@@ -484,6 +484,33 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
+  open var TutorialURL: String {
+    get {
+      return ""  // not used in companion
+    }
+    set(url) {
+      // not used in companion
+    }
+  }
+
+  open var VersionCode: Int32 {
+    get {
+      return 1  // not used in companion
+    }
+    set(version) {
+      // not used in companion
+    }
+  }
+
+  open var VersionName: String {
+    get {
+      return ""  // not used in companion
+    }
+    set(version) {
+      // not used in companion
+    }
+  }
+
   open var Width: Int32 {
     get {
       if let width =  view.window?.frame.size.width {
@@ -498,6 +525,9 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // MARK: Form Methods
+  open func HideKeyboard() {
+    self.view.endEditing(true)
+  }
 
   // MARK: Form Events
   open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
