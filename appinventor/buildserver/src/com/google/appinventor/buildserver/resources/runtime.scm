@@ -806,18 +806,8 @@
       (let *yail-loop* ()
         (if ,condition
             (begin
-              ;; Kawa attempts to be smart by detecting unreachable
-              ;; code and reporting it as an error. This causes an
-              ;; issue here if *yail-break* is determined to be always
-              ;; called within body-form, since *yail-loop* will
-              ;; unreachable. The mixing of `or` and `and` operators
-              ;; below fools the Kawa optimizer so that even in
-              ;; trivial cases it won't flag the call to *yail-loop*
-              ;; as unreachable. It also works around a bug in the
-              ;; tail-recursive optimizer that breaks when the while
-              ;; loop is empty.
-              (or (and ((lambda () (begin ,body . ,rest))) #f)
-                  (*yail-loop*)))
+              (begin ,body . ,rest)
+              (*yail-loop*))
             #!null)))))
 
 ;; Below are hygienic versions of the forrange, foreach and while
