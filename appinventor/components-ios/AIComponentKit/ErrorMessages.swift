@@ -81,7 +81,10 @@ import Foundation
   
   // DatePicker Errors
   case ERROR_ILLEGAL_DATE = 2401
-
+  
+  // Map Errors
+  case ERROR_INVALID_MAP_TYPE = 3421
+  
   // FusionTables Errors
   case FUSION_TABLES_QUERY_ERROR = 2601
   case FUSION_TABLES_AUTH_ERROR = 2602
@@ -198,6 +201,10 @@ import Foundation
     // DatePicker Errors
     case .ERROR_ILLEGAL_DATE:
       return "The date you entered is invalid."
+      
+    // Map Errors
+    case .ERROR_INVALID_MAP_TYPE:
+      return "The MapType must be 1, 2, or 3"
     
     // File Errors
     case .ERROR_CANNOT_FIND_FILE:

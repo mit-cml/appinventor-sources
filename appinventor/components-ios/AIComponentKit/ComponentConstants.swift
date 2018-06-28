@@ -31,3 +31,5 @@ let kEmptyHVArrangementWidth = 100
 let kEmptyHVArrangementHeight = 100
 let kCanvasPreferredWidth = 32
 let kCanvasPreferredHeight = 48
+let kMapPreferredWidth: Int32 = 176
+let kMapPreferredHeight: Int32 = 144
