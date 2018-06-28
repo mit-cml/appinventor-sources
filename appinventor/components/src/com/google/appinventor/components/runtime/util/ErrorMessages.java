@@ -148,6 +148,7 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+  public static final int ERROR_NO_CAMERA_PERMISSION = 1603;
 
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
@@ -492,6 +493,8 @@ public final class ErrorMessages {
         "Unable to save image: %s");
     errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
         "Unable to copy selected media: %s");
+    errorMessages.put(ERROR_NO_CAMERA_PERMISSION,
+        "Scanning requires CAMERA Permission");
     // Texting errors
     errorMessages.put(ERROR_BAD_VALUE_FOR_TEXT_RECEIVING,
       "Text Receiving should be either 1, 2 or 3.");

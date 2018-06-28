@@ -1,40 +1,52 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
+import android.content.Intent;
+
 import android.graphics.Color;
+
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
+
 import android.support.v7.app.ActionBar;
+
 import android.text.Html;
+
+import android.util.Log;
+
+import android.view.Menu;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MenuItem;
+
+import android.widget.Toast;
+
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentConstants;
+
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ImageViewUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
 
 import dalvik.system.DexClassLoader;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication

@@ -28,6 +28,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.ComponentName;
 
+import android.Manifest;
+
 /**
  * Component for scanning a barcode and getting back the resulting string.
  *
@@ -50,7 +52,7 @@ import android.content.ComponentName;
 @UsesPermissions(permissionNames = "android.permission.CAMERA")
 @UsesLibraries(libraries = "Barcode.jar,core.jar")
 public class BarcodeScanner extends AndroidNonvisibleComponent
-    implements ActivityResultListener, Component {
+  implements ActivityResultListener, Component, PermissionHandler {
 
   private static final String SCAN_INTENT = "com.google.zxing.client.android.SCAN";
   private static final String LOCAL_SCAN = "com.google.zxing.client.android.AppInvCaptureActivity";
@@ -58,7 +60,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   private String result = "";
   private boolean useExternalScanner = true;
   private final ComponentContainer container;
-
+  private boolean havePermission = false; // Do we have CAMERA permission?
 
   /* Used to identify the call to startActivityForResult. Will be passed back into the
   resultReturned() callback method. */
@@ -94,6 +96,11 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
     if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
       String packageName = container.$form().getPackageName();
       intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
+      // Make sure we have CAMERA permission
+      if (!havePermission) {
+        container.$form().askPermission(Manifest.permission.CAMERA, this);
+        return;
+      }
     }
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);
@@ -104,6 +111,17 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
       e.printStackTrace();
       container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
         ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
+    }
+  }
+
+  @Override
+  public void HandlePermissionResponse(String permission, boolean granted) {
+    if (granted) {
+      havePermission = true;
+      DoScan();
+    } else {
+      container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
+        ErrorMessages.ERROR_NO_CAMERA_PERMISSION, "");
     }
   }
 

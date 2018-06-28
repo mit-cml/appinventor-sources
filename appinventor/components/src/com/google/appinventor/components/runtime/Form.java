@@ -6,40 +6,46 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+
 import android.content.res.Configuration;
+
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat;
+
+import android.support.v4.content.ContextCompat;
+
+import android.support.v7.app.ActionBar;
+
 import android.util.Log;
+
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -52,14 +58,18 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
+
 import com.google.appinventor.components.runtime.multidex.MultiDex;
+
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -68,10 +78,24 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+
+import java.io.IOException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
 import org.json.JSONException;
+
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -196,6 +220,11 @@ public class Form extends AppInventorCompatActivity
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+
+  // Listeners for permission results
+  private final HashMap<Integer, PermissionHandler> permissionHandlers = Maps.newHashMap();
+
+  private final Random permissionRandom = new Random(); // Used for generating nonces
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
@@ -2275,4 +2304,44 @@ public class Form extends AppInventorCompatActivity
   public boolean isDarkTheme() {
     return usesDarkTheme;
   }
+
+  // Permission Handling Code
+
+  public void askPermission(final String permission, final PermissionHandler responseRequestor) {
+    final Form form = this;
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          if (ContextCompat.checkSelfPermission(form, permission) ==
+            PackageManager.PERMISSION_GRANTED) {
+            // We already have permission, so no need to ask
+            responseRequestor.HandlePermissionResponse(permission, true);
+            return;
+          }
+          int nonce = permissionRandom.nextInt(100000);
+          permissionHandlers.put(nonce, responseRequestor);
+          ActivityCompat.requestPermissions((Activity)form,
+            new String[] {permission}, nonce);
+        }
+      });
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode,
+    String permissions[], int[] grantResults) {
+    PermissionHandler responder = permissionHandlers.get(requestCode);
+    if (responder == null) {
+      // Hmm. Shouldn't happen
+      Log.e(LOG_TAG, "Received permission response which we cannot match.");
+      return;
+    }
+    if (grantResults.length > 0
+      && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      responder.HandlePermissionResponse(permissions[0], true);
+    } else {
+      responder.HandlePermissionResponse(permissions[0], false);
+    }
+    permissionHandlers.remove(requestCode);
+  }
+
 }
