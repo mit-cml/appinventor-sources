@@ -1181,7 +1181,7 @@ public final class Compiler {
       List<String> kawaCommandArgs = Lists.newArrayList();
       int mx = childProcessRamMb - 200;
       Collections.addAll(kawaCommandArgs,
-          System.getProperty("java.home") + "/bin/java",
+          "/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java",
           "-Dfile.encoding=UTF-8",
           "-mx" + mx + "M",
           "-cp", classpath.toString(),
