@@ -131,11 +131,6 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
-  
-  for (var comp in componentMap.components)
-    if (componentMap.components.hasOwnProperty(comp))
-      componentNames.push(comp);
-
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
     code.push(Blockly.Yail.blockToCode(block));
