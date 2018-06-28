@@ -78,6 +78,7 @@ open class ReplForm: Form {
     if let startValue = startValue {
       newForm.startValue = startValue
     }
+    interpreter?.setCurrentForm(newForm)
     self.navigationController?.pushViewController(newForm, animated: true)
     RetValManager.shared().pushScreen(formName, withValue: newForm.startText as NSString)
   }

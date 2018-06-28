@@ -59,6 +59,13 @@
         (cadr p)
         #f)))
 
+(define (rename-in-current-form-environment old-name new-name)
+  (when (not (eqv? old-name new-name))
+    (let ((p (assq old-name *current-form-environment*)))
+      (if p
+          (set-car! p new-name)
+        #f))))
+
 (define (lookup-in-form-environment name)
   (lookup-in-current-form-environment name))
 
@@ -1718,3 +1725,8 @@ list, use the make-yail-list constructor with no arguments.
   (syntax-rules ()
     ((_ component-name)
       (lookup-in-current-form-environment 'component-name))))
+
+(define (rename-component old-component-name new-component-name)
+ (rename-in-current-form-environment
+  (string->symbol old-component-name)
+  (string->symbol new-component-name)))
