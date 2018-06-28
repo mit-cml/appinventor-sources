@@ -1662,7 +1662,7 @@ list, use the make-yail-list constructor with no arguments.
   (unless (null? irritants)
           (display " (irritants: " port)
           (display (string-join (map ->string irritants) ", ") port)
-          (display ")") port)
+          (display ")" port))
   (newline port))
 
 ; This is an imperative way of writing this function, but it works.
