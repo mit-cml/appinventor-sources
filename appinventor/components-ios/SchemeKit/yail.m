@@ -899,7 +899,7 @@ yail_random_int(pic_state *pic) {
 
   pic_get_args(pic, "i", &bound);
 
-  return pic_int_value(pic, (int) (lrand48() / (double)UINT_MAX * bound));
+  return pic_int_value(pic, (int) (lrand48() / (double)INT_MAX * bound));
 }
 
 pic_value
