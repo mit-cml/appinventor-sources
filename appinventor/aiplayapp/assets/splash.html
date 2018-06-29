@@ -10,12 +10,29 @@
              var item = document.getElementById("foo");
              item.innerHTML = "Permission " + permission + " = " + result;
          }
+         function start() {
+         }
+         function done() {
+             Android.finished();
+         }
         </script>
 
     </head>
-    <body>
+    <body onload="start();">
         <h1>Welcome to App Inventor!</h1>
+        <p>Welcome to the MIT App Inventor Companion Application. You use this application in conjunction with
+            the MIT App Inventor application authoring system. You can learn more about it at http://appinventor.mit.edu.
+        </p>
+        <p>
+            On modern Android devices you will be prompted to give permission for certain sensitive activities such as
+            reading the location of your device. You will only receive these prompts when you attempt to perform
+            these activities. Once you give permission, Android will remember and not ask you next time.
+        </p>
+        <div id="needs">
+        </div>
         <button onclick="test();">Click Me</button>
+        <p>&nbsp;</p>
         <div id="foo"></div>
+        <button onclick="done();">Continue</button>
     </body>
 </html>

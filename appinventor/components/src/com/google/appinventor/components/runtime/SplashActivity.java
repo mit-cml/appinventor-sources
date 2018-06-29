@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.app.Activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import android.support.v4.content.ContextCompat;
 
@@ -34,6 +35,7 @@ import android.webkit.WebViewClient;
 public final class SplashActivity extends AppInventorCompatActivity {
 
   WebView webview;
+  Handler handler;
 
   public class JavaInterface {
     Context mContext;
@@ -58,13 +60,23 @@ public final class SplashActivity extends AppInventorCompatActivity {
         new String[] { permission}, 1);
     }
 
+    @JavascriptInterface
+    public void finished() {
+      SplashActivity.this.handler.post(new Runnable() {
+          @Override
+          public void run() {
+            SplashActivity.this.webview.destroy();
+            SplashActivity.this.finish();
+          }
+        });
+    }
   }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    JavaInterface android = new JavaInterface(this);
-
     super.onCreate(savedInstanceState);
+    JavaInterface android = new JavaInterface(this);
+    handler = new Handler();
     webview = new WebView(this);
     webview.getSettings().setJavaScriptEnabled(true);
     webview.setWebViewClient(new WebViewClient() {
