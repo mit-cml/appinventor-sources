@@ -738,6 +738,15 @@ public final class Compiler {
           out.write("      </intent-filter>\n");
         }
         out.write("    </activity>\n");
+
+        // Companion display a splash screen... define it's activity here
+        if (isMain && isForCompanion) {
+          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
+          out.write("      </intent-filter>\n");
+          out.write("    </activity>\n");
+        }
       }
       
       // Collect any additional <application> subelements into a single set.

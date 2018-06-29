@@ -10,6 +10,8 @@ import android.content.Intent;
 
 import android.graphics.Color;
 
+import android.net.Uri;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -31,6 +33,11 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentConstants;
+
+import com.google.appinventor.components.annotations.UsesActivities;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -82,6 +89,9 @@ public class ReplForm extends Form {
   private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
 
+  private static final String SPLASH_ACTIVITY_CLASS = SplashActivity.class
+      .getName();
+
   public ReplForm() {
     super();
     topform = this;
@@ -98,6 +108,12 @@ public class ReplForm extends Form {
     if (actionBar != null) {
       actionBar.setShowHideAnimationEnabled(false);
     }
+
+    // Hacking. Show WebView
+    Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
+    webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
+    activeForm.$context().startActivity(webviewIntent);
+
   }
 
   @Override
