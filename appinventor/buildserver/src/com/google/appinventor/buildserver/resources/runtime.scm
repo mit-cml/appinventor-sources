@@ -814,7 +814,7 @@
                    (if ,condition
                        (begin (begin ,body . ,rest)
                               (*yail-loop*))
-                       *the-null-value*)))))
+                       #!null)))))
      (call-with-current-continuation cont)))
 
 ;; Below are hygienic versions of the forrange, foreach and while
