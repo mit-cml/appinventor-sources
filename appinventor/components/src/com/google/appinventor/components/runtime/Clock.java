@@ -196,13 +196,13 @@ public final class Clock extends AndroidNonvisibleComponent
    * @return  date
    */
   @SimpleFunction(
-      description = "An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm")
+      description = "An instant in time specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm")
   public static Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
     } catch (IllegalArgumentException e) {
       throw new YailRuntimeError(
-          "Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm",
+          "Argument to MakeInstant should have form MM/dd/YYYY hh:mm:ss, or MM/dd/YYYY or hh:mm",
           "Sorry to be so picky.");
     }
   }
@@ -459,7 +459,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * Converts and formats an instant into a string of date and time with the specified pattern.   *
    *
    * @param instant  instant to format
-   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm
+   * @param pattern format of the date and time e.g. MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date and time of an"
@@ -469,7 +469,7 @@ public final class Clock extends AndroidNonvisibleComponent
       return Dates.FormatDateTime(instant, pattern);
     } catch (IllegalArgumentException e){
       throw new YailRuntimeError(
-        "Illegal argument for pattern in Clock.FormatDateTime. Acceptable values are empty string, MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm "
+        "Illegal argument for pattern in Clock.FormatDateTime. Acceptable values are empty string, MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm "
         + "For all possible patterns, see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html",
         "Sorry to be so picky.");
     }

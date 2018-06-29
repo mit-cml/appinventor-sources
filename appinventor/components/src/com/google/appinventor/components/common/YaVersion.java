@@ -423,8 +423,12 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 23
   // For YOUNG_ANDROID_VERSION 168:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 22
+  // For YOUNG_ANDROID_VERSION 169:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 170:
+  // - MAP_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 168;
+  public static final int YOUNG_ANDROID_VERSION = 170;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -854,7 +858,9 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 3:
   // - GotGeoJSON was renamed to GotFeatures
   // - GeoJSONError was renamed to LoadError
-  public static final int MAP_COMPONENT_VERSION = 3;
+  // For MAP_COMPONENT_VERSION 4:
+  // - Added Rotation property
+  public static final int MAP_COMPONENT_VERSION = 4;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -871,7 +877,9 @@ public class YaVersion {
   // - Added NotifierColor, TextColor and NotifierLength options
   // For NOTIFIER_COMPONENT_VERSION 4:
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
-  public static final int NOTIFIER_COMPONENT_VERSION = 4;
+  // For NOTIFIER_COMPONENT_VERSION 5:
+  // - Added TextInputCanceled & ChoosingCanceled event
+  public static final int NOTIFIER_COMPONENT_VERSION = 5;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
