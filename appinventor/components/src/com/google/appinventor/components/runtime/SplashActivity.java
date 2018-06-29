@@ -8,8 +8,13 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+
+import java.util.Random;
 
 import android.net.Uri;
+
+import android.app.Activity;
 
 import android.os.Bundle;
 
@@ -28,6 +33,8 @@ import android.webkit.WebViewClient;
  */
 public final class SplashActivity extends AppInventorCompatActivity {
 
+  WebView webview;
+
   public class JavaInterface {
     Context mContext;
 
@@ -44,11 +51,18 @@ public final class SplashActivity extends AppInventorCompatActivity {
         return false;
       }
     }
+
+    @JavascriptInterface
+    public void askPermission(String permission) {
+      ActivityCompat.requestPermissions((Activity) SplashActivity.this,
+        new String[] { permission}, 1);
+    }
+
   }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    WebView webview;
+    JavaInterface android = new JavaInterface(this);
 
     super.onCreate(savedInstanceState);
     webview = new WebView(this);
@@ -73,7 +87,21 @@ public final class SplashActivity extends AppInventorCompatActivity {
     setContentView(webview);
     webview.setWebContentsDebuggingEnabled(true);
     webview.loadUrl("file:///android_asset/splash.html");
-    webview.addJavascriptInterface(new JavaInterface(this), "Android");
+    webview.addJavascriptInterface(android, "Android");
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int code,
+    String permissions[], int[] grantResults) {
+    for (int i = 0; i < permissions.length; i++ ) {
+      String permission = permissions[i];
+      int grantResult = grantResults[i];
+      boolean granted = false;
+      if (grantResult == PackageManager.PERMISSION_GRANTED) {
+        granted = true;
+      }
+      webview.loadUrl("javascript:permresult('" + permission + "'," + granted + ")");
+    }
   }
 
 }
