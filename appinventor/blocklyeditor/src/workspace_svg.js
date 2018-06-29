@@ -332,6 +332,12 @@ Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeNa
  */
 Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   var component = this.componentDb_.getInstance(uid);
+
+  // Fixes #1175
+  if (this.drawer_ && component.name === this.drawer_.lastComponent) {
+    this.drawer_.hide();
+  }
+
   if (!this.componentDb_.removeInstance(uid)) {
     return this;
   }
@@ -477,10 +483,12 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
   return this.flydown_;
 };
 
-Blockly.WorkspaceSvg.prototype.hideChaff = function() {
+Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.flydown_ && this.flydown_.hide();
   this.typeBlock_ && this.typeBlock_.hide();
-  this.backpack_ && this.backpack_.hide();
+  if (!opt_allowToolbox) {  // Fixes #1269
+    this.backpack_ && this.backpack_.hide();
+  }
   this.setScrollbarsVisible(true);
 };
 

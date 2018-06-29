@@ -41,9 +41,10 @@ Blockly.hideChaff = (function(func) {
     return func;
   } else {
     var f = function() {
-      func.apply(this, Array.prototype.slice.call(arguments));
+      var argCopy = Array.prototype.slice.call(arguments);
+      func.apply(this, argCopy);
       // [lyn, 10/06/13] for handling parameter & procedure flydowns
-      Blockly.getMainWorkspace().hideChaff();
+      Blockly.WorkspaceSvg.prototype.hideChaff.call(Blockly.getMainWorkspace(), argCopy);
     };
     f.isWrapped = true;
     return f;
@@ -69,7 +70,7 @@ Blockly.confirmDeletion = function(callback) {
       var msg = Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount));
       var cancelButton = top.BlocklyPanel_getOdeMessage('cancelButton');
       var deleteButton = top.BlocklyPanel_getOdeMessage('deleteButton');
-      var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, cancelButton, 0, function(button) {
+      var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
         dialog.hide();
         if (button == deleteButton) {
           Blockly.mainWorkspace.playAudio('delete');
