@@ -24,6 +24,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -78,24 +81,39 @@ public final class SplashActivity extends AppInventorCompatActivity {
     JavaInterface android = new JavaInterface(this);
     handler = new Handler();
     webview = new WebView(this);
-    webview.getSettings().setJavaScriptEnabled(true);
-    webview.setWebViewClient(new WebViewClient() {
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        Log.i("WebView", "Handling url " + url);
-        Uri uri = Uri.parse(url);
-        String scheme = uri.getScheme();
-        if (scheme.equals(Form.APPINVENTOR_URL_SCHEME)) {
-          Intent resultIntent = new Intent();
-          resultIntent.setData(uri);
-          setResult(RESULT_OK, resultIntent);
-          finish();
-        } else {
-          view.loadUrl(url);
+    WebSettings webSettings = webview.getSettings();
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setDatabaseEnabled(true);
+    webSettings.setDomStorageEnabled(true);
+    String databasePath = this.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
+    webSettings.setDatabasePath(databasePath);
+
+    // webview.setWebViewClient(new WebViewClient() {
+    //     @Override
+    //     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+    //       Log.i("WebView", "Handling url " + url);
+    //       Uri uri = Uri.parse(url);
+    //       String scheme = uri.getScheme();
+    //       if (scheme.equals(Form.APPINVENTOR_URL_SCHEME)) {
+    //         Intent resultIntent = new Intent();
+    //         resultIntent.setData(uri);
+    //         setResult(RESULT_OK, resultIntent);
+    //         finish();
+    //       } else {
+    //         view.loadUrl(url);
+    //       }
+    //       return true;
+    //     }
+    //   });
+
+    webview.setWebChromeClient(new WebChromeClient() {
+        @Override
+        public void onExceededDatabaseQuota(String url, String databaseIdentifier,
+          long currentQuota, long estimatedSize, long totalUsedQuota,
+          WebStorage.QuotaUpdater quotaUpdater) {
+          quotaUpdater.updateQuota(5 * 1024 * 1024);
         }
-        return true;
-      }
-    });
+      });
     setContentView(webview);
     webview.setWebContentsDebuggingEnabled(true);
     webview.loadUrl("file:///android_asset/splash.html");

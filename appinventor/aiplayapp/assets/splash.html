@@ -2,6 +2,8 @@
     <head>
         <title>Welcome to App Inventor</title>
         <script type="text/javascript">
+         var permissions = ['android.permission.CAMERA',
+                            'android.permission.WRITE_EXTERNAL_STORAGE']
          function test() {
              var item = document.getElementById("foo");
              item.innerHTML = "<b>Clicked</b>";
@@ -9,8 +11,31 @@
          function permresult(permission, result) {
              var item = document.getElementById("foo");
              item.innerHTML = "Permission " + permission + " = " + result;
+             start();/* Re-evaluate whether or not to display */
+         }
+         function hasallpermissions() {
+             var haveall = true;
+             for (i = 0; i < permissions.length; i++) {
+                 haveall = haveall && Android.hasPermission(permissions[i]);
+             }
+             return haveall;
          }
          function start() {
+             var item = document.getElementById("needpermission");
+             if (!hasallpermissions()) {
+                 item.style.display = "block";
+             } else {
+                 item.style.display = "none";
+             }
+         }
+         function getpermission() {
+             for (i = 0; i < permissions.length; i++) {
+                 var perm = permissions[i];
+                 if (!Android.hasPermission(perm)) {
+                     Android.askPermission(perm);
+                     break;
+                 }
+             }
          }
          function done() {
              Android.finished();
@@ -19,18 +44,27 @@
 
     </head>
     <body onload="start();">
-        <h1>Welcome to App Inventor!</h1>
+        <center>
+            <h1>Welcome to App Inventor!</h1>
+        </center>
         <p>Welcome to the MIT App Inventor Companion Application. You use this application in conjunction with
             the MIT App Inventor application authoring system. You can learn more about it at http://appinventor.mit.edu.
         </p>
+        <div id="needpermission" style="display:none;">
         <p>
             On modern Android devices you will be prompted to give permission for certain sensitive activities such as
             reading the location of your device. You will only receive these prompts when you attempt to perform
             these activities. Once you give permission, Android will remember and not ask you next time.
         </p>
-        <div id="needs">
+        <p>
+            The Companion needs CAMERA and STORAGE persmission. Press the "Get Permissions" button below to ask your device
+            to grant these permissions. Each time you press the button you will be prompted for a missing permission. Once
+            all permissions have been obtained, the "Get Permissions" button will disappear. Press "Continue" to use
+            the Companion.
+        </p>
+        <p>&nbsp;</p>
+        <button onclick="getpermission();">Get Permissions</button>
         </div>
-        <button onclick="test();">Click Me</button>
         <p>&nbsp;</p>
         <div id="foo"></div>
         <button onclick="done();">Continue</button>
