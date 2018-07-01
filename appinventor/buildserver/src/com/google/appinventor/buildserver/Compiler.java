@@ -668,7 +668,8 @@ public final class Compiler {
       // testing their packaged apps.  Maybe we should make that an option, somehow.
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
-      out.write("android:debuggable=\"false\" ");
+      // out.write("android:debuggable=\"false\" ");
+      out.write("android:debuggable=\"true\" "); // DEBUGGING
       if (aName.equals("")) {
         out.write("android:label=\"" + projectName + "\" ");
       } else {
