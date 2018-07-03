@@ -800,15 +800,22 @@
 
 ;; Also unhygienic (see comment above about foreach)
 
+;; The structure of this macro is important. If the argument to
+;; call-with-current-continuation is a lambda expression, then Kawa
+;; attempts to optimize it. This optimization fails spectacularly when
+;; the lambda expression is tail-recursive (like ours is). By binding
+;; the lambda expression to a variable and then calling via the
+;; variable, the optimizer is not invoked and the code produced, while
+;; not optmized, is correct.
+
 (define-macro (while condition body . rest)
-  `(call-with-current-continuation
-    (lambda (*yail-break*)
-      (let *yail-loop* ()
-        (if ,condition
-            (begin
-              (begin ,body . ,rest)
-              (*yail-loop*))
-            #!null)))))
+  `(let ((cont (lambda (*yail-break*)
+                 (let *yail-loop* ()
+                   (if ,condition
+                       (begin (begin ,body . ,rest)
+                              (*yail-loop*))
+                       #!null)))))
+     (call-with-current-continuation cont)))
 
 ;; Below are hygienic versions of the forrange, foreach and while
 ;; macros. They are here to be "future aware". A future version of

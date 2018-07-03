@@ -125,8 +125,6 @@ Blockly.ReplMgr.buildYail = function(workspace) {
     }
     var componentMap = Blockly.mainWorkspace.buildComponentMap([], [], false, false);
     var componentNames = [];
-    for (var comp in componentMap.components)
-        componentNames.push(comp);
     if (formProperties) {
         if (formName != 'Screen1')
             code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
