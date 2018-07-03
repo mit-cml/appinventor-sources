@@ -467,6 +467,7 @@ public final class WebViewer extends AndroidViewComponent {
     /**
      * Sets the web view string
      */
+    @JavascriptInterface
     public void setWebViewString(String newString) {
       webViewString = newString;
     }
