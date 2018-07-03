@@ -10,10 +10,10 @@ import org.junit.Test;
 
 public class YoungAndroidProjectServiceTest extends TestCase {
 	
-/* Testing the case of a null build URL */
+  /* Testing the case of a null build URL */
   @Test
   public void testBuildErrorMsgDoesntThrowNPE() {
-  	YoungAndroidProjectService obj = new YoungAndroidProjectService(null); 
+    YoungAndroidProjectService obj = new YoungAndroidProjectService(null);
     obj.buildErrorMsg("TestException", null, "userID", 0); 
   }
 }
