@@ -755,10 +755,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return new RpcResult(true, "Building " + projectName, "");
   }
 
-  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
-    return "Request to build failed with " + exceptionName + ", user=" + userId
-        + ", project=" + projectId + ", build URL is " + buildURL
-        + " [" + buildURL.toString().length() + "]";
+  String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+    return "Request to build failed with " + exceptionName 
+      + ", user=" + userId + ", project=" + projectId 
+      + ", build URL is " + (buildURL != null ? buildURL : "null") + " [" 
+      + (buildURL != null ? buildURL.toString().length() : "n/a") + "]";
   }
 
   // Note that this is a function rather than just a constant because we assume it will get
