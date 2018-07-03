@@ -976,6 +976,11 @@ public final class YoungAndroidFormUpgrader {
       // were added.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The LoadingDialogMessage property was added
+      // The ShowLoadingDialog property was added
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

@@ -427,8 +427,10 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 170:
   // - MAP_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 171:
+  // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 170;
+  public static final int YOUNG_ANDROID_VERSION = 171;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -752,7 +754,10 @@ public class YaVersion {
   // - InsertRow, GetRows and GetRowsWithConditions was added.
   // - KeyFile, UseServiceAuthentication and ServiceAccountEmail
   //   were added.
-  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 3;
+  // For FUSIONTABLESCONTROL_COMPONENT_VERSION 4:
+  // - The LoadingDialogMessage property was added
+  // - The ShowLoadingDialog property was added
+  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 4;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
