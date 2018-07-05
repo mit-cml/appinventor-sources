@@ -132,7 +132,7 @@ public final class WebViewer extends AndroidViewComponent {
 
     HomeUrl("");
     Width(LENGTH_FILL_PARENT);
-    Height(LENGTH_FILL_PARENT);
+    Height(LENGTH_FILL_PARENT); // ? the same name "LENGTH_FILL_PARENT" for Width and Height? I have find some bugs in html pages in position of buttons and textbox. This is the error? 
   }
 
   /**
@@ -178,7 +178,7 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleProperty()
   public void Width(int width) {
     if (width == LENGTH_PREFERRED) {
-      width = LENGTH_FILL_PARENT;
+      width = LENGTH_FILL_PARENT;  
     }
     super.Width(width);
   }
@@ -187,7 +187,7 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleProperty()
   public void Height(int height) {
     if (height == LENGTH_PREFERRED) {
-      height = LENGTH_FILL_PARENT;
+      height = LENGTH_FILL_PARENT; //same problem here, using name length for height 
     }
     super.Height(height);
   }
