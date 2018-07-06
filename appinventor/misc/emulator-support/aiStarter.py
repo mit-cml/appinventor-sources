@@ -143,7 +143,7 @@ def replstart(device=None):
 
 def checkrunning(emulator):
     try:
-        match = ''
+        match = None
         result = subprocess.check_output(f'"{ADB}" devices', shell=True)
         lines = result.splitlines()
         for line in lines[1:]:
