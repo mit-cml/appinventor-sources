@@ -762,6 +762,8 @@ delimiter byte value is received. </dd>
   <dd>Performs an HTTP PUT request using the Url property and the specified text.<br>The characters of the text are encoded using the given encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
   <dt><code>text UriEncode(text text)</code></dt>
   <dd>Encodes the given text value so that it can be used in a URL.</dd>
+  <dt><code>text UriDecode(text text)</code></dt>
+  <dd>Decodes the encoded text value so that the values aren't URL encoded anymore.</dd>
   <dt><code>any XMLTextDecode(text XmlText)</code></dt>
   <dd>Decodes the given XML string to produce a list structure.  See the App Inventor documentation on "Other topics, notes, and details" for information.</dd>
 </dl>

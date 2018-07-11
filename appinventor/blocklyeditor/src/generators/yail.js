@@ -35,6 +35,9 @@ Blockly.Yail.ORDER_NONE = 99;          // (...)
 Blockly.Yail.YAIL_ADD_COMPONENT = "(add-component ";
 Blockly.Yail.YAIL_ADD_TO_LIST = "(add-to-list ";
 Blockly.Yail.YAIL_BEGIN = "(begin ";
+// This "break" symbol must match the one that is used in the
+// foreach macro, forrange and while macros
+Blockly.Yail.YAIL_BREAK = "*yail-break*";
 Blockly.Yail.YAIL_CALL_COMPONENT_METHOD = "(call-component-method ";
 Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD = "(call-component-type-method ";
 Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE = "(call-yail-primitive ";
@@ -128,11 +131,6 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
-  
-  for (var comp in componentMap.components)
-    if (componentMap.components.hasOwnProperty(comp))
-      componentNames.push(comp);
-
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
     code.push(Blockly.Yail.blockToCode(block));

@@ -2907,6 +2907,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LineWidthProperties();
 
+  @DefaultMessage("LoadingDialogMessage")
+  @Description("")
+  String LoadingDialogMessageProperties();
+
   @DefaultMessage("Message")
   @Description("")
   String MessageProperties();
@@ -2918,6 +2922,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MultiLine")
   @Description("")
   String MultiLineProperties();
+
+  @DefaultMessage("Namespace")
+  @Description("")
+  String NamespaceProperties();
 
   @DefaultMessage("NumbersOnly")
   @Description("")
@@ -3018,6 +3026,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ServiceURL")
   @Description("")
   String ServiceURLProperties();
+
+  @DefaultMessage("ShowLoadingDialog")
+  @Description("")
+  String ShowLoadingDialogProperties();
 
   @DefaultMessage("FirebaseURL")
   @Description("")
@@ -3602,6 +3614,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewString")
   @Description("")
   String WebViewStringProperties();
+
+  @DefaultMessage("WebViewStringChange")
+  @Description("")
+  String WebViewStringChangeEvents();
 
   @DefaultMessage("EnableSpeedRegulation")
   @Description("")
@@ -4557,6 +4573,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AfterTextInputEvents();
 
+  @DefaultMessage("ChoosingCanceled")
+  @Description("")
+  String ChoosingCanceledEvents();
+
+  @DefaultMessage("TextInputCanceled")
+  @Description("")
+  String TextInputCanceledEvents();
+
   @DefaultMessage("AboveRange")
   @Description("")
   String AboveRangeEvents();
@@ -5509,6 +5533,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
+  
+  @DefaultMessage("UriDecode")
+  @Description("")
+  String UriDecodeMethods();
 
   @DefaultMessage("CanGoBack")
   @Description("")
@@ -5825,9 +5853,9 @@ public interface OdeMessages extends Messages {
     + "regularly set intervals and perform time calculations, "
     + "manipulations, and conversions.</p> <p>Methods to convert an "
     + "instant to text are also available. Acceptable patterns are "
-    + "empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy "
+    + "empty string, MM/dd/YYYY hh:mm:ss a, or MMM d, yyyy "
     + "HH:mm. The empty string will provide the default format, "
-    + "which is \"MMM d, yyyy HH:mm:ss a\" for FormatDateTime \"MMM "
+    + "which is \"MMM d, yyyy hh:mm:ss a\" for FormatDateTime \"MMM "
     + "d, yyyy\" for FormatDate.  To see all possible format, "
     + "please see <a "
     + "href=\"https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\" "
@@ -7003,4 +7031,8 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetCenter")
   @Description("")
   String SetCenterMethods();
+
+  @DefaultMessage("Rotation")
+  @Description("")
+  String RotationProperties();
 }

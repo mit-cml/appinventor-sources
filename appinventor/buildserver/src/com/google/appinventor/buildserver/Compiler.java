@@ -114,6 +114,7 @@ public final class Compiler {
   private static final String ARMEABI_DIR_NAME = "armeabi";
   private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
 
+  private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
 
   private static final String DEFAULT_APP_NAME = "";
@@ -1485,7 +1486,7 @@ public final class Compiler {
 
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName, File sourceOutputDir, File symbolOutputDir) {
     // Need to make sure assets directory exists otherwise aapt will fail.
-    createDir(project.getAssetsDirectory());
+    final File mergedAssetsDir = createDir(project.getBuildDirectory(), ASSET_DIR_NAME);
     String aaptTool;
     String osName = System.getProperty("os.name");
     if (osName.equals("Mac OS X")) {
@@ -1516,7 +1517,7 @@ public final class Compiler {
     aaptPackageCommandLineArgs.add("-S");
     aaptPackageCommandLineArgs.add(mergedResDir.getAbsolutePath());
     aaptPackageCommandLineArgs.add("-A");
-    aaptPackageCommandLineArgs.add(project.getAssetsDirectory().getAbsolutePath());
+    aaptPackageCommandLineArgs.add(mergedAssetsDir.getAbsolutePath());
     aaptPackageCommandLineArgs.add("-I");
     aaptPackageCommandLineArgs.add(getResource(ANDROID_RUNTIME));
     aaptPackageCommandLineArgs.add("-F");
@@ -1637,31 +1638,44 @@ public final class Compiler {
   }
 
   private boolean attachCompAssets() {
-    createDir(project.getAssetsDirectory()); // Needed to insert resources.
+    createDir(project.getBuildDirectory()); // Needed to insert resources.
     try {
       // Gather non-library assets to be added to apk's Asset directory.
       // The assets directory have been created before this.
-      File compAssetDir = createDir(project.getAssetsDirectory(),
-          ASSET_DIRECTORY);
+      File mergedAssetDir = createDir(project.getBuildDirectory(), ASSET_DIR_NAME);
 
+      // Copy component/extension assets to build/assets
       for (String type : assetsNeeded.keySet()) {
         for (String assetName : assetsNeeded.get(type)) {
-          File targetDir = compAssetDir;
-          String sourcePath = "";
-          String pathSuffix = RUNTIME_FILES_DIR + assetName;
+          File targetDir = mergedAssetDir;
+          String sourcePath;
 
           if (simpleCompTypes.contains(type)) {
+            String pathSuffix = RUNTIME_FILES_DIR + assetName;
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
-            sourcePath = getExtCompDirPath(type) + pathSuffix;
-            targetDir = createDir(targetDir, EXT_COMPS_DIR_NAME);
-            targetDir = createDir(targetDir, type);
+            final String extCompDir = getExtCompDirPath(type);
+            sourcePath = getExtAssetPath(extCompDir, assetName);
+            // If targetDir's location is changed here, you must update Form.java in components to
+            // reference the new location. The path for assets in compiled apps is assumed to be
+            // assets/EXTERNAL-COMP-PACKAGE/ASSET-NAME
+            targetDir = createDir(targetDir, basename(extCompDir));
           } else {
             userErrors.print(String.format(ERROR_IN_STAGE, "Assets"));
             return false;
           }
 
           Files.copy(new File(sourcePath), new File(targetDir, assetName));
+        }
+      }
+
+      // Copy project assets to build/assets
+      File[] assets = project.getAssetsDirectory().listFiles();
+      if (assets != null) {
+        for (File asset : assets) {
+          if (asset.isFile()) {
+            Files.copy(asset, new File(mergedAssetDir, asset.getName()));
+          }
         }
       }
       return true;
@@ -1952,5 +1966,13 @@ public final class Compiler {
       return candidate;
     }
     throw new IllegalStateException("Project lacks extension directory for " + type);
+  }
+
+  private static String basename(String path) {
+    return new File(path).getName();
+  }
+
+  private static String getExtAssetPath(String extCompDir, String assetName) {
+    return extCompDir + File.separator + ASSET_DIR_NAME + File.separator + assetName;
   }
 }
