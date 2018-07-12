@@ -1,10 +1,5 @@
-//
-//  ListPicker.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/27/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -39,6 +34,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   fileprivate var _selectionIndex: Int32 = 0
   fileprivate var _itemBackgroundColor: UIColor = UIColor.white
   fileprivate var _itemTextColor: UIColor = UIColor.black
+  fileprivate var _needsReload = true
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -54,7 +50,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       return _items
     }
     set(items) {
-      _items = items
+      setItems(items: items)
     }
   }
 
@@ -63,7 +59,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       return ""
     }
     set(itemstring) {
-      _items = elementsFromString(itemstring)
+      setItems(items: elementsFromString(itemstring))
     }
   }
 
@@ -72,9 +68,10 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       return colorToArgb(_itemBackgroundColor)
     }
     set(argb) {
-      _itemBackgroundColor = argbToColor(argb)
-      if let tableVC = _viewController?._tableViewController {
-        tableVC.tableView.reloadData()
+      let newColor = argbToColor(argb)
+      if _itemBackgroundColor != newColor {
+        _itemBackgroundColor = argbToColor(argb)
+        _needsReload = true
       }
     }
   }
@@ -84,9 +81,10 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       return colorToArgb(_itemTextColor)
     }
     set(argb) {
-      _itemTextColor = argbToColor(argb)
-      if let tableVC = _viewController?._tableViewController {
-        tableVC.tableView.reloadData()
+      let newColor = argbToColor(argb)
+      if _itemTextColor != newColor {
+        _itemTextColor = argbToColor(argb)
+        _needsReload = true
       }
     }
   }
@@ -140,8 +138,17 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     })
   }
 
+  private func setItems(items: [String]) {
+    _items = items
+    _needsReload = true
+  }
+
   // MARK: AbstractMethodsForPicker
   open func open() {
+    if _needsReload, let tableVC = _viewController?._tableViewController {
+      tableVC.tableView.reloadData()
+      _needsReload = false
+    }
     _container.form.present(_viewController!, animated: true, completion: {})
   }
 
