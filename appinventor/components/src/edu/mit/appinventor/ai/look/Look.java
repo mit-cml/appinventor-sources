@@ -36,6 +36,7 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.VerticalArrangement;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +46,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Component that classifies images.
@@ -82,6 +85,7 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
   public Look(final Form form) {
     super(form);
     requestHardwareAcceleration(form);
+    WebView.setWebContentsDebuggingEnabled(true);
     webview = new WebView(form);
     webview.getSettings().setJavaScriptEnabled(true);
     webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
@@ -95,10 +99,21 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
           Log.d(LOG_TAG, "overriding " + url);
           try {
             InputStream inputStream = form.openAssetForExtension(Look.this, url.substring(MODEL_PREFIX.length()));
+            String charSet;
+            String contentType;
             if (url.endsWith(".json")) {
-              return new WebResourceResponse("application/json", "UTF-8", inputStream);
+              contentType = "application/json";
+              charSet = "UTF-8";
             } else {
-              return new WebResourceResponse("application/octet-stream", "binary", inputStream);
+              contentType = "application/octet-stream";
+              charSet = "binary";
+            }
+            if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+              Map<String, String> responseHeaders = new HashMap<String, String>();
+              responseHeaders.put("Access-Control-Allow-Origin", "*");
+              return new WebResourceResponse(contentType, charSet, 200, "OK", responseHeaders, inputStream);
+            } else {
+              return new WebResourceResponse(contentType, charSet, inputStream);
             }
           } catch (IOException e) {
             e.printStackTrace();
