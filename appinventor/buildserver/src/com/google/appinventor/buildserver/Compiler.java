@@ -121,7 +121,7 @@ public final class Compiler {
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_MIN_SDK = "14";
   private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*

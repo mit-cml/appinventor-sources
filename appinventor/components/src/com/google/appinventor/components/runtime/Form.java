@@ -131,7 +131,7 @@ import org.json.JSONException;
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Top-level component containing all other components in the program",
-    androidMinSdk = 7,
+    androidMinSdk = 14,
     showOnPalette = false)
 @SimpleObject
 @UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar, animated-vector-drawable.aar, " +
