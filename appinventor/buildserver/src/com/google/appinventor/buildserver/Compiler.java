@@ -581,6 +581,25 @@ public final class Compiler {
   }
 
   /*
+   * Creates the provider_paths file which is used to setup a "Files" content
+   * provider.
+   */
+  private boolean createProviderXml(File providerDir) {
+    File paths = new File(providerDir, "provider_paths.xml");
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
+      out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
+      out.write("</paths>\n");
+      out.close();
+    } catch (IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
   private boolean writeAndroidManifest(File manifestFile) {
@@ -652,6 +671,7 @@ public final class Compiler {
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
         out.write("  <uses-permission android:name=\"android.permission.READ_LOGS\" />\n");
+        out.write("  <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n");
       }
 
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
@@ -796,6 +816,19 @@ public final class Compiler {
         out.write("</receiver> \n");
       }
 
+      // Add the FileProvider because in Sdk >=24 we cannot pass file:
+      // URLs in intents (and in other contexts)
+
+      out.write("      <provider\n");
+      out.write("         android:name=\"android.support.v4.content.FileProvider\"\n");
+      out.write("         android:authorities=\"" + packageName + ".provider\"\n");
+      out.write("         android:exported=\"false\"\n");
+      out.write("         android:grantUriPermissions=\"true\">\n");
+      out.write("         <meta-data\n");
+      out.write("            android:name=\"android.support.FILE_PROVIDER_PATHS\"\n");
+      out.write("            android:resource=\"@xml/provider_paths\"/>\n");
+      out.write("      </provider>\n");
+
       out.write("  </application>\n");
       out.write("</manifest>\n");
       out.close();
@@ -874,6 +907,12 @@ public final class Compiler {
     File style21Dir = createDir(resDir, "values-v21");
     if (!compiler.createValuesXml(styleDir, "") ||
         !compiler.createValuesXml(style21Dir, "-v21")) {
+      return false;
+    }
+
+    out.println("________Creating provider_path xml");
+    File providerDir = createDir(resDir, "xml");
+    if (!compiler.createProviderXml(providerDir)) {
       return false;
     }
 
