@@ -528,7 +528,13 @@ public final class Compiler {
     String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
     String theme = project.getTheme() == null ? "Classic" : project.getTheme();
     String actionbar = project.getActionBar();
-    String parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+    String parentTheme;
+    if (theme.startsWith("Classic")) {
+      parentTheme = theme.replace("Classic", "Theme.AppCompat");
+    } else {
+      parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+    }
+
     if (!"true".equalsIgnoreCase(actionbar)) {
       if (parentTheme.endsWith("DarkActionBar")) {
         parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
@@ -559,16 +565,16 @@ public final class Compiler {
       out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      if (!parentTheme.startsWith("Classic")) {
-        writeTheme(out, "AppTheme", parentTheme);
-        if (parentTheme.contains("Light")) {
-          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
-          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
-        } else {
-          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
-          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
-        }
+
+      writeTheme(out, "AppTheme", parentTheme);
+      if (parentTheme.contains("Light") || parentTheme.contains("Classic")) {
+        writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
+        writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
+      } else {
+        writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
+        writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
       }
+
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
       out.write("<item name=\"textAllCaps\">false</item>\n");
       out.write("</style>\n");
@@ -702,7 +708,8 @@ public final class Compiler {
         out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
       // Write theme info if we are not using the "Classic" theme (i.e., no theme)
-      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
+      if (true) {
+//      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
         out.write("android:theme=\"@style/AppTheme\" ");
       }
       out.write(">\n");

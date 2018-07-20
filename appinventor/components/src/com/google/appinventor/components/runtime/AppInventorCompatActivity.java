@@ -59,13 +59,20 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     }
     Window.Callback classicCallback = getWindow().getCallback();
     appCompatDelegate = AppCompatDelegate.create(this, this);
-    try {
-      appCompatDelegate.onCreate(icicle);
-    } catch (IllegalStateException e) {
-      // Thrown in "Classic" mode
+    if (currentTheme == Theme.CLASSIC) {
       appCompatDelegate = null;
       AppInventorCompatActivity.classicMode = true;
       getWindow().setCallback(classicCallback);
+    } else {
+      try {
+        appCompatDelegate.onCreate(icicle);
+      } catch (IllegalStateException e) {
+        // Thrown in "Classic" mode
+        Log.d(LOG_TAG, "IllegalStateException thrown in onCreate");
+        appCompatDelegate = null;
+        AppInventorCompatActivity.classicMode = true;
+        getWindow().setCallback(classicCallback);
+      }
     }
 
     super.onCreate(icicle);
@@ -181,7 +188,17 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
   @SuppressWarnings("WeakerAccess")  // To maintain visibility compatibility with AppCompatActivity
   public ActionBar getSupportActionBar() {
-    return appCompatDelegate == null ? null : appCompatDelegate.getSupportActionBar();
+    Window.Callback classicCallback = getWindow().getCallback();
+    try {
+      return appCompatDelegate == null ? null : appCompatDelegate.getSupportActionBar();
+    } catch (IllegalStateException e) {
+      // Thrown in "Classic" mode
+      Log.d(LOG_TAG, "IllegalStateException thrown in getSupportActionBar");
+      appCompatDelegate = null;
+      AppInventorCompatActivity.classicMode = true;
+      getWindow().setCallback(classicCallback);
+      return null;
+    }
   }
 
   @SuppressWarnings("unused") // Potentially useful for extensions adding custom activities
