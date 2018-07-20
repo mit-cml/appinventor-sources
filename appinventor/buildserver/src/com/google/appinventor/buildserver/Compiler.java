@@ -530,7 +530,7 @@ public final class Compiler {
     String actionbar = project.getActionBar();
     String parentTheme;
     if (theme.startsWith("Classic")) {
-      parentTheme = theme.replace("Classic", "Theme.AppCompat");
+      parentTheme = "Theme.AppCompat.Light";
     } else {
       parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
     }
@@ -567,7 +567,7 @@ public final class Compiler {
       out.write("<resources>\n");
 
       writeTheme(out, "AppTheme", parentTheme);
-      if (parentTheme.contains("Light") || parentTheme.contains("Classic")) {
+      if (parentTheme.contains("Light") || theme.contains("Classic")) {
         writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
         writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
       } else {
