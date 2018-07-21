@@ -94,13 +94,13 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
     if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
-      String packageName = container.$form().getPackageName();
-      intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
       // Make sure we have CAMERA permission
       if (!havePermission) {
         container.$form().askPermission(Manifest.permission.CAMERA, this);
         return;
       }
+      String packageName = container.$form().getPackageName();
+      intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
     }
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);

@@ -134,6 +134,7 @@ public final class ErrorMessages {
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
+  public static final int ERROR_NO_READ_CONTACTS_PERMISSION = 1116; // Note Gap in numbers
   // Camcorder errors
   public static final int ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201;
   // VideoPlayer errors
@@ -471,6 +472,8 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING,
         "To pick contacts, pick them directly, without using search.");
     // Camcorder errors
+    errorMessages.put(ERROR_NO_READ_CONTACTS_PERMISSION,
+        "READ_CONTACTS Permission was denied.");
     errorMessages.put(ERROR_CAMCORDER_NO_CLIP_RETURNED,
         "The camcorder did not return a clip.");
     // VideoPlayer errors
