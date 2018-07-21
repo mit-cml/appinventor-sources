@@ -567,7 +567,7 @@ public final class Compiler {
       out.write("<resources>\n");
 
       writeTheme(out, "AppTheme", parentTheme);
-      if (parentTheme.contains("Light") || theme.contains("Classic")) {
+      if (parentTheme.contains("Light")) {
         writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
         writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
       } else {
