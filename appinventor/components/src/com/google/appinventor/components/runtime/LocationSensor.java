@@ -30,6 +30,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.Manifest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -210,6 +211,9 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   // User-settable properties
   private boolean enabled = true;  // the default value is true
+
+  private boolean havePermission = false; // Do we have the necessary permission
+  private static final String LOG_TAG = LocationSensor.class.getSimpleName();
 
   /**
    * Creates a new LocationSensor component.
@@ -504,10 +508,10 @@ public class LocationSensor extends AndroidNonvisibleComponent
         if (e instanceof IllegalArgumentException
             || e instanceof IOException
             || e instanceof IndexOutOfBoundsException ) {
-          Log.e("LocationSensor", "Exception thrown by getting current address " + e.getMessage());
+          Log.e(LOG_TAG, "Exception thrown by getting current address " + e.getMessage());
         } else {
           // what other exceptions can happen here?
-          Log.e("LocationSensor",
+          Log.e(LOG_TAG,
               "Unexpected exception thrown by getting current address " + e.getMessage());
         }
       }
@@ -526,7 +530,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public double LatitudeFromAddress(String locationName) {
     try {
       List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i("LocationSensor", "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+      Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
       if ( (addressObjs == null) || (addressObjs.size() == 0) ){
         throw new IOException("");
       }
@@ -548,7 +552,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public double LongitudeFromAddress(String locationName) {
     try {
       List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i("LocationSensor", "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+      Log.i(LOG_TAG, "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
       if ( (addressObjs == null) || (addressObjs.size() == 0) ){
         throw new IOException("");
       }
@@ -577,6 +581,29 @@ public class LocationSensor extends AndroidNonvisibleComponent
   // @SimpleFunction(description = "Find and start listening to a location provider.")
   public void RefreshProvider() {
     stopListening();             // In case another provider is active.
+    final LocationSensor me = this;
+    if (!havePermission) {
+      // Make sure we do this on the UI thread
+      androidUIHandler.post(new Runnable() {
+          @Override
+          public void run() {
+            me.form.askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    me.havePermission = true;
+                    me.RefreshProvider();
+                    Log.d(LOG_TAG, "Permission Granted");
+                  } else {
+                    me.form.dispatchErrorOccurredEvent(me, "LocationSensor",
+                      ErrorMessages.ERROR_LOCATION_NO_PERMISSION);
+                  }
+                }
+              });
+          }
+        });
+    }
     if (providerLocked && !empty(providerName)) {
       listening = startProvider(providerName);
       return;
@@ -601,11 +628,11 @@ public class LocationSensor extends AndroidNonvisibleComponent
   /* Start listening to ProviderName.
    * Return true iff successful.
    */
-  private boolean startProvider(String providerName) {
+  private boolean startProvider(final String providerName) {
     this.providerName = providerName;
     LocationProvider tLocationProvider = locationManager.getProvider(providerName);
     if (tLocationProvider == null) {
-      Log.d("LocationSensor", "getProvider(" + providerName + ") returned null");
+      Log.d(LOG_TAG, "getProvider(" + providerName + ") returned null");
       return false;
     }
     stopListening();

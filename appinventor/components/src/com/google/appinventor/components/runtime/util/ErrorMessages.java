@@ -24,6 +24,7 @@ public final class ErrorMessages {
   // LocationSensor errors
   public static final int ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101;
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
+  public static final int ERROR_LOCATION_NO_PERMISSION = 103;
   // Camera errors
   public static final int ERROR_CAMERA_NO_IMAGE_RETURNED = 201;
   // Twitter errors
@@ -262,6 +263,8 @@ public final class ErrorMessages {
         "Unable to find latitude from %s.");
     errorMessages.put(ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND,
         "Unable to find longitude from %s.");
+    errorMessages.put(ERROR_LOCATION_NO_PERMISSION,
+        "Location Permission was Denied.");
     // Camera errors
     errorMessages.put(ERROR_CAMERA_NO_IMAGE_RETURNED,
         "The camera did not return an image.");
