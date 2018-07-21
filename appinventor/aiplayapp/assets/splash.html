@@ -2,14 +2,9 @@
     <head>
         <title>Welcome to App Inventor</title>
         <script type="text/javascript">
-         var permissions = ['android.permission.CAMERA',
-                            'android.permission.WRITE_EXTERNAL_STORAGE']
-         function test() {
-             var item = document.getElementById("foo");
-             item.innerHTML = "<b>Clicked</b>";
-         }
+         var permissions = ['android.permission.WRITE_EXTERNAL_STORAGE'];
          function permresult(permission, result) {
-             var item = document.getElementById("foo");
+             var item = document.getElementById("continue");
              item.innerHTML = "Permission " + permission + " = " + result;
              start();/* Re-evaluate whether or not to display */
          }
@@ -22,10 +17,13 @@
          }
          function start() {
              var item = document.getElementById("needpermission");
+             var cbutton = document.getElementById("continue");
              if (!hasallpermissions()) {
                  item.style.display = "block";
+                 cbutton.style.display = "none";
              } else {
                  item.style.display = "none";
+                 cbutton.style.display = "block";
              }
          }
          function getpermission() {
@@ -66,7 +64,7 @@
         <button onclick="getpermission();">Get Permissions</button>
         </div>
         <p>&nbsp;</p>
-        <div id="foo"></div>
+        <div id="continue"></div>
         <button onclick="done();">Continue</button>
     </body>
 </html>

@@ -240,7 +240,7 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
 
   // Listeners for permission results
-  private final HashMap<Integer, PermissionHandler> permissionHandlers = Maps.newHashMap();
+  private final HashMap<Integer, PermissionResultHandler> permissionHandlers = Maps.newHashMap();
 
   private final Random permissionRandom = new Random(); // Used for generating nonces
 
@@ -2325,7 +2325,7 @@ public class Form extends AppInventorCompatActivity
 
   // Permission Handling Code
 
-  public void askPermission(final String permission, final PermissionHandler responseRequestor) {
+  public void askPermission(final String permission, final PermissionResultHandler responseRequestor) {
     final Form form = this;
     androidUIHandler.post(new Runnable() {
         @Override
@@ -2347,7 +2347,7 @@ public class Form extends AppInventorCompatActivity
   @Override
   public void onRequestPermissionsResult(int requestCode,
     String permissions[], int[] grantResults) {
-    PermissionHandler responder = permissionHandlers.get(requestCode);
+    PermissionResultHandler responder = permissionHandlers.get(requestCode);
     if (responder == null) {
       // Hmm. Shouldn't happen
       Log.e(LOG_TAG, "Received permission response which we cannot match.");

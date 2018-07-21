@@ -88,23 +88,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
 
   private boolean havePermission = false; // Do we have READ_CONTACTS permission?
 
-  class PermissionResultHandler implements PermissionHandler {
-
-    protected PermissionResultHandler() {
-    }
-
-    @Override
-    public void HandlePermissionResponse(String permission, boolean granted) {
-      if (granted) {
-        ContactPicker.this.havePermission = true;
-        ContactPicker.this.click();
-      } else {
-        ContactPicker.this.container.$form().dispatchErrorOccurredEvent(ContactPicker.this, "ContactPicker",
-          ErrorMessages.ERROR_NO_READ_CONTACTS_PERMISSION, "");
-      }
-    }
-  }
-
   /**
    * Create a new ContactPicker component.
    *
@@ -130,8 +113,22 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   @Override
   public void click() {
     if (!havePermission) {
-      container.$form().askPermission(Manifest.permission.READ_CONTACTS,
-        new PermissionResultHandler());
+      container.$form()
+        .askPermission(Manifest.permission.READ_CONTACTS,
+                       new PermissionResultHandler() {
+                         @Override
+                         public void HandlePermissionResponse(String permission, boolean granted) {
+                           if (granted) {
+                             ContactPicker.this.havePermission = true;
+                             ContactPicker.this.click();
+                           } else {
+                             ContactPicker
+                               .this.container.$form()
+                               .dispatchErrorOccurredEvent(ContactPicker.this, "ContactPicker",
+                                                           ErrorMessages.ERROR_NO_READ_CONTACTS_PERMISSION, "");
+                           }
+                         }
+                       });
       return;
     }
     super.click();
