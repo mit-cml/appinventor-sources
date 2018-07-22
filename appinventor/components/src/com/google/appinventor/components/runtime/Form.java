@@ -32,7 +32,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-
+import android.content.pm.PackageInfo;
+import android.content.pm.PermissionInfo;
 import android.content.res.Configuration;
 
 import android.graphics.PorterDuff;
@@ -364,6 +365,25 @@ public class Form extends AppInventorCompatActivity
     Log.d(LOG_TAG, "onCreateFinish called " + System.currentTimeMillis());
     if (progress != null) {
       progress.dismiss();
+    }
+
+    // Check to see if we need to ask for WRITE_EXTERNAL_STORAGE
+    // permission.  We look at the application manifest to see if it
+    // is declared there. If it is, then we need to ask the user to
+    // approve it here. Otherwise we don't need to and we can
+    // continue. Because the asking process is asynchronous
+    // we have to have yet another continuation of the onCreate
+    // process (onCreateFinish2). Sigh.
+
+    // DEBUG: For now just listing the manifest permissions...
+    try {
+      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(),
+        PackageManager.GET_PERMISSIONS);
+      for (String permission : packageInfo.requestedPermissions) {
+        Log.d(LOG_TAG, "requestedPersmission: " + permission);
+      }
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "Exception while attempting to learn permissions.", e);
     }
 
     defaultPropertyValues();
