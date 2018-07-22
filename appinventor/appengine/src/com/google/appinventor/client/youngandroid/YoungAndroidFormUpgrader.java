@@ -976,6 +976,11 @@ public final class YoungAndroidFormUpgrader {
       // were added.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The LoadingDialogMessage property was added
+      // The ShowLoadingDialog property was added
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1487,7 +1492,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 6) {
+    if (srcCompVersion < 7) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1496,7 +1501,8 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
-      srcCompVersion = 6;
+      // WebViewStringChange event was added (version 7)
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

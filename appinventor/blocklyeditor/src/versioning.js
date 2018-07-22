@@ -1513,7 +1513,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: - InsertRow, GetRows and GetRowsWithConditions was added.
     // - KeyFile, UseServiceAuthentication and ServiceAccountEmail
     //   were added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // The LoadingDialogMessage property was added
+    // The ShowLoadingDialog property was added
+    4: "noUpgrade"
 
   }, // End FusiontablesControl upgraders
 
@@ -2543,7 +2547,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Added ClearCaches method
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: Added WebViewStringChange
+    7: "noUpgrade"
 
   }, // End WebViewer upgraders
 
