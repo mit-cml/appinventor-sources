@@ -2337,6 +2337,8 @@ public class Form extends AppInventorCompatActivity
             return;
           }
           int nonce = permissionRandom.nextInt(100000);
+          Log.d(LOG_TAG, "askPermission: permission = " + permission +
+            " requestCode = " + nonce);
           permissionHandlers.put(nonce, responseRequestor);
           ActivityCompat.requestPermissions((Activity)form,
             new String[] {permission}, nonce);
@@ -2353,11 +2355,15 @@ public class Form extends AppInventorCompatActivity
       Log.e(LOG_TAG, "Received permission response which we cannot match.");
       return;
     }
-    if (grantResults.length > 0
-      && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      responder.HandlePermissionResponse(permissions[0], true);
+    if (grantResults.length > 0) {
+      if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        responder.HandlePermissionResponse(permissions[0], true);
+      } else {
+        responder.HandlePermissionResponse(permissions[0], false);
+      }
     } else {
-      responder.HandlePermissionResponse(permissions[0], false);
+      Log.d(LOG_TAG, "onRequestPermissionsResult: grantResults.length = " + grantResults.length +
+        " requestCode = " + requestCode);
     }
     permissionHandlers.remove(requestCode);
   }
