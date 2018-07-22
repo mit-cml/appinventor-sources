@@ -236,7 +236,10 @@ public final class ErrorMessages {
   public static final int ERROR_INVALID_LONGITUDE_IN_POINT_AT_INDEX = 3419;
   public static final int ERROR_EXPECTED_ARRAY_AT_INDEX = 3420;
 
-  // Start the next group of errors at 3500
+  // Phone Call Errors
+  public static final int ERROR_NO_CALL_PERMISSION = 3501;
+
+  // Start the next group of errors at 3600
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -592,6 +595,8 @@ public final class ErrorMessages {
         "Invalid longitude %2$s in point at index %1$d. Expected a value between [-180, 180].");
     errorMessages.put(ERROR_EXPECTED_ARRAY_AT_INDEX,
         "Expected an array of values at index %1$d, but got %2$s.");
+    errorMessages.put(ERROR_NO_CALL_PERMISSION,
+        "You do not have permission to make phone calls.");
   }
 
   private ErrorMessages() {

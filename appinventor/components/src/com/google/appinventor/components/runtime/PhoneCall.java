@@ -17,8 +17,10 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +62,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   private String phoneNumber;
   private final Context context;
   private final CallStateReceiver callStateReceiver;
+  private boolean havePermission = false;
 
   /**
    * Creates a Phone Call component.
@@ -101,7 +104,25 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    */
   @SimpleFunction
   public void MakePhoneCall() {
-    PhoneCallUtil.makePhoneCall(context, phoneNumber);
+    // Check that we have permission and ask for it if we don't
+    if (!havePermission) {
+      form.askPermission(Manifest.permission.CALL_PHONE,
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            if (granted) {
+              PhoneCall.this.havePermission = true;
+              PhoneCall.this.MakePhoneCall();
+            } else {
+              PhoneCall.this.form
+                .dispatchErrorOccurredEvent(PhoneCall.this, "PhoneCall",
+                  ErrorMessages.ERROR_NO_CALL_PERMISSION, "");
+            }
+          }
+        });
+    } else {
+      PhoneCallUtil.makePhoneCall(context, phoneNumber);
+    }
   }
 
   /**
