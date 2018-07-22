@@ -1,11 +1,9 @@
 <html>
     <head>
-        <title>Welcome to App Inventor</title>
+        <title>Welcome to MIT App Inventor</title>
         <script type="text/javascript">
          var permissions = ['android.permission.WRITE_EXTERNAL_STORAGE'];
          function permresult(permission, result) {
-             var item = document.getElementById("continue");
-             item.innerHTML = "Permission " + permission + " = " + result;
              start();/* Re-evaluate whether or not to display */
          }
          function hasallpermissions() {
@@ -17,7 +15,7 @@
          }
          function start() {
              var item = document.getElementById("needpermission");
-             var cbutton = document.getElementById("continue");
+             var cbutton = document.getElementById("cbutton");
              if (!hasallpermissions()) {
                  item.style.display = "block";
                  cbutton.style.display = "none";
@@ -25,6 +23,7 @@
                  item.style.display = "none";
                  cbutton.style.display = "block";
              }
+             getmotd();
          }
          function getpermission() {
              for (i = 0; i < permissions.length; i++) {
@@ -38,33 +37,41 @@
          function done() {
              Android.finished();
          }
+         function getmotd() {
+             xhr = new XMLHttpRequest();
+             xhr.open("GET", "http://templates.appinventor.mit.edu/mit/m.json");
+             xhr.onreadystatechange = function() {
+                 if (this.status == 200) {
+                     var json = JSON.parse(this.response);
+                     var mess = document.getElementById("motd");
+                     mess.innerHTML = json['message'];
+                 }
+             };
+             xhr.send();
+         }
         </script>
 
     </head>
     <body onload="start();">
         <center>
-            <h1>Welcome to App Inventor!</h1>
+            <h1>Welcome to MIT App Inventor!</h1>
         </center>
         <p>Welcome to the MIT App Inventor Companion Application. You use this application in conjunction with
             the MIT App Inventor application authoring system. You can learn more about it at http://appinventor.mit.edu.
         </p>
+        <div id="motd">
+        </div>
         <div id="needpermission" style="display:none;">
         <p>
-            On modern Android devices you will be prompted to give permission for certain sensitive activities such as
-            reading the location of your device. You will only receive these prompts when you attempt to perform
-            these activities. Once you give permission, Android will remember and not ask you next time.
-        </p>
-        <p>
-            The Companion needs CAMERA and STORAGE persmission. Press the "Get Permissions" button below to ask your device
-            to grant these permissions. Each time you press the button you will be prompted for a missing permission. Once
-            all permissions have been obtained, the "Get Permissions" button will disappear. Press "Continue" to use
-            the Companion.
+            The Companion needs STORAGE permission. Press the "Get Permissions" button below to ask your device
+            to grant these permissions.
         </p>
         <p>&nbsp;</p>
         <button onclick="getpermission();">Get Permissions</button>
         </div>
         <p>&nbsp;</p>
-        <div id="continue"></div>
-        <button onclick="done();">Continue</button>
+        <div id="cbutton">
+            <button onclick="done();">Continue</button>
+        </div>
     </body>
 </html>
