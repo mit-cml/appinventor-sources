@@ -154,6 +154,7 @@ public final class ErrorMessages {
 
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
+  public static final int ERROR_NO_SMS_PERMISSION = 1702;
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
@@ -507,6 +508,8 @@ public final class ErrorMessages {
     // Texting errors
     errorMessages.put(ERROR_BAD_VALUE_FOR_TEXT_RECEIVING,
       "Text Receiving should be either 1, 2 or 3.");
+    errorMessages.put(ERROR_NO_SMS_PERMISSION,
+      "You do not have SEND_SMS permission");
     errorMessages.put(ERROR_REPL_SECURITY_ERROR,
       "Security Error Receiving Blocks from Browser.");
     //AccelerometerSensor errors

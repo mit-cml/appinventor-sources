@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import android.Manifest;
 import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -205,6 +206,9 @@ public class Texting extends AndroidNonvisibleComponent
   private Queue<String> pendingQueue = new ConcurrentLinkedQueue<String>();
 
   private ComponentContainer container; // Need this for error reporting
+
+  // Do we have SEND_SMS permission enabled?
+  private boolean havePermission = false;
 
   /**
    * Creates a new TextMessage component.
@@ -940,6 +944,31 @@ public class Texting extends AndroidNonvisibleComponent
    */
   private void sendViaSms() {
     Log.i(TAG, "Sending via built-in Sms");
+
+    // Need to make sure we have the SEND_SMS permission
+    if (!havePermission) {
+      final Form form = container.$form();
+      final Texting me = this;
+      form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            form.askPermission(Manifest.permission.SEND_SMS,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    me.havePermission = true;
+                    me.sendViaSms();
+                  } else {
+                    form.dispatchErrorOccurredEvent(me, "Texting",
+                      ErrorMessages.ERROR_NO_SMS_PERMISSION, "");
+                  }
+                }
+              });
+          }
+        });
+      return;
+    }
 
     ArrayList<String> parts = smsManager.divideMessage(message);
     int numParts = parts.size();
