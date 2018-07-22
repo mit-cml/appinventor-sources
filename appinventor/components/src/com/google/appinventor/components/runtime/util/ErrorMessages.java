@@ -105,6 +105,7 @@ public final class ErrorMessages {
   public static final int ERROR_SOUND_RECORDER_ILLEGAL_STOP = 803;
   public static final int ERROR_SOUND_RECORDER_MAX_DURATION_REACHED = 804;
   public static final int ERROR_SOUND_RECORDER_MAX_FILESIZE_REACHED = 805;
+  public static final int ERROR_SOUND_NO_PERMISSION = 806;
   // Form errors
   public static final int ERROR_INVALID_SCREEN_ORIENTATION = 901;
   public static final int ERROR_SCREEN_NOT_FOUND = 902;
@@ -428,6 +429,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_SOUND_RECORDER_ILLEGAL_STOP, "Stop() called when not recording.");
     errorMessages.put(ERROR_SOUND_RECORDER_MAX_DURATION_REACHED, "Maximum sound recording duration was reached.");
     errorMessages.put(ERROR_SOUND_RECORDER_MAX_FILESIZE_REACHED, "Maximum sound recording size was reached.");
+    errorMessages.put(ERROR_SOUND_NO_PERMISSION, "RECORD_AUDIO permission denied");
     // Form errors
     errorMessages.put(ERROR_INVALID_SCREEN_ORIENTATION,
         "The specified screen orientation is not valid: %s");

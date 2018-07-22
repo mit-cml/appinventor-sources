@@ -19,6 +19,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import android.Manifest;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
@@ -51,6 +52,8 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
   // note that this is also initialized to "" in the designer
   private String savedRecording = "";
 
+  // Whether or not we have the RECORD_AUDIO permission
+  private boolean havePermission = false;
 
   /**
    * This class encapsulates the required state during recording.
@@ -82,8 +85,9 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
 
     void start() throws IllegalStateException {
       Log.i(TAG, "starting");
+
       try {
-      recorder.start();
+        recorder.start();
       } catch (IllegalStateException e) {
         // This is the error produced when there are two recorders running.
         // There might be other causes, but we don't know them.
@@ -148,6 +152,30 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
+      // Need to check if we have RECORD_AUDIO permission
+    if (!havePermission) {
+      final SoundRecorder me = this;
+      form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            form.askPermission(Manifest.permission.RECORD_AUDIO,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    me.havePermission = true;
+                    me.Start();
+                  } else {
+                    form.dispatchErrorOccurredEvent(me, "SoundRecorder",
+                      ErrorMessages.ERROR_SOUND_NO_PERMISSION);
+                  }
+                }
+              });
+          }
+        });
+      return;
+    }
+
     if (controller != null) {
       Log.i(TAG, "Start() called, but already recording to " + controller.file);
       return;
