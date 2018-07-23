@@ -311,10 +311,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         return (res);
       }
       Log.d(LOG_TAG, rootDir + "/" + packageapk);
-      Intent intent = new Intent(Intent.ACTION_VIEW);
-      Uri packageuri = Uri.fromFile(new File(rootDir + "/" + packageapk));
-      intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
-      form.startActivity(intent);
+      doPackageUpdate("file:///" + rootDir + "/" + packageapk);
       res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       res.addHeader("Access-Control-Allow-Origin", "*");
       res.addHeader("Access-Control-Allow-Headers", "origin, content-type");

@@ -383,7 +383,9 @@ public class Form extends AppInventorCompatActivity
       for (String permission : packageInfo.requestedPermissions) {
         Log.d(LOG_TAG, "requestedPersmission: " + permission);
         if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
-          needSdcardWrite = true;
+          if (!(this instanceof ReplForm)) { // Don't do this for the Companion
+            needSdcardWrite = true;
+          }
           Log.d(LOG_TAG, "NEED TO REQUEST PERMISSION!");
         }
       }
