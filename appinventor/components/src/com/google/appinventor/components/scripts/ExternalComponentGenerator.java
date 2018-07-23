@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015 MIT, All rights reserved
+// Copyright 2015-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -109,6 +108,7 @@ public class ExternalComponentGenerator {
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.type, info.descriptor);
+        copyAssets(name, info.type, info.descriptor);
       }
       generateExternalComponentBuildFiles(name, entry.getValue());
       generateExternalComponentOtherFiles(name);
@@ -230,6 +230,42 @@ public class ExternalComponentGenerator {
     }
   }
 
+  private static void copyAssets(String packageName, String type, JSONObject componentDescriptor) throws IOException, JSONException {
+    JSONArray assets = componentDescriptor.optJSONArray("assets");
+    if (assets == null) {
+      return;
+    }
+
+    // Get asset source directory
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File assetSrcDir = new File(sourceDir, "assets");
+    if (!assetSrcDir.exists() || !assetSrcDir.isDirectory()) {
+      return;
+    }
+
+    // Get asset dest directory
+    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+    File assetDestDir = new File(destDir, "assets");
+    if (assetDestDir.exists() && !deleteRecursively(assetDestDir)) {
+      throw new IllegalStateException("Unable to delete the assets directory for the extension.");
+    }
+    if (!assetDestDir.mkdirs()) {
+      throw new IllegalStateException("Unable to create the assets directory for the extension.");
+    }
+
+    // Copy assets
+    for (int i = 0; i < assets.length(); i++) {
+      String asset = assets.getString(i);
+      if (!asset.isEmpty()) {
+        if (!copyFile(assetSrcDir.getAbsolutePath() + File.separator + asset,
+            assetDestDir.getAbsolutePath() + File.separator + asset)) {
+          throw new IllegalStateException("Unable to copy asset to destination.");
+        }
+      }
+    }
+  }
+
   private static void generateExternalComponentOtherFiles(String packageName) throws IOException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
 
@@ -345,6 +381,21 @@ public class ExternalComponentGenerator {
     componentPackage = componentPackage.replace(File.separator, ".");
     return  componentPackage;
 
+  }
+
+  private static boolean deleteRecursively(File dirOrFile) {
+    if (dirOrFile.isFile()) {
+      return dirOrFile.delete();
+    } else {
+      boolean result = true;
+      File[] children = dirOrFile.listFiles();
+      if (children != null) {
+        for (File child : children) {
+          result = result && deleteRecursively(child);
+        }
+      }
+      return result && dirOrFile.delete();
+    }
   }
 }
 

@@ -48,6 +48,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   private String password;      // Hashed password (if using local login system)
 
+  private String backPackId = null; // If non-null we have a shared backpack
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
@@ -317,6 +319,15 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return isReadOnly;
   }
 
+
+  public String getBackpackId() {
+    return backPackId;
+  }
+
+  public void setBackpackId(String backPackId) {
+    this.backPackId = backPackId;
+  }
+
   public User copy() {
     User retval = new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
     // We set the isReadOnly flag in the copy in this fashion so we do not have to
@@ -324,6 +335,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     // only a few places where we assert or read the isReadOnly flag, so we want to
     // limit the places where we have to have knowledge of it to just those places that care
     retval.setReadOnly(isReadOnly);
+    retval.setBackpackId(this.backPackId);
+    retval.name = this.name;
     return retval;
   }
 }

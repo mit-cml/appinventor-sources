@@ -44,6 +44,14 @@ class DummyMapController implements MapController {
     throw new UnsupportedOperationException();
   }
 
+  public void setRotation(float Rotation) {
+    throw new UnsupportedOperationException();
+  }
+
+  public float getRotation() {
+    throw new UnsupportedOperationException();
+  }
+
   public int getZoom() {
     throw new UnsupportedOperationException();
   }

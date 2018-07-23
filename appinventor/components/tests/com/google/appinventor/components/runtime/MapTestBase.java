@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -139,7 +139,7 @@ public class MapTestBase extends RobolectricTestBase {
   public void setUp() {
     super.setUp();
     map = new Map(getForm());
-    map.getView().measure(ComponentConstants.MAP_PREFERRED_WIDTH, ComponentConstants.MAP_PREFERRED_HEIGHT);
+    map.getView().requestLayout();
     map.getView().layout(0, 0, ComponentConstants.MAP_PREFERRED_WIDTH, ComponentConstants.MAP_PREFERRED_HEIGHT);
   }
 }

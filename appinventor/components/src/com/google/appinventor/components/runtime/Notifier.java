@@ -217,8 +217,13 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         cancelable,
         new Runnable() {public void run() {AfterChoosing(button1Text);}},
         new Runnable() {public void run() {AfterChoosing(button2Text);}},
-        new Runnable() {public void run() {AfterChoosing(activity.getString(android.R.string.cancel));}}
-        );
+        new Runnable() {
+          public void run() {
+            ChoosingCanceled();
+            AfterChoosing(activity.getString(android.R.string.cancel)); // backward compatible
+          }
+        }
+    );
   }
 
   // This method takes three runnables that specify the actions to be performed
@@ -270,9 +275,19 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * Event after the user has made a selection for ShowChooseDialog.
    * @param choice is the text on the button the user pressed
    */
-  @SimpleEvent
+  @SimpleEvent(
+    description = "Event after the user has made a selection for ShowChooseDialog.")
   public void AfterChoosing(String choice) {
     EventDispatcher.dispatchEvent(this, "AfterChoosing", choice);
+  }
+
+  /**
+   * Event raised when the user canceled ShowChooseDialog.
+   */
+  @SimpleEvent(
+    description = "Event raised when the user canceled ShowChooseDialog.")
+  public void ChoosingCanceled() {
+    EventDispatcher.dispatchEvent(this, "ChoosingCanceled");
   }
 
   /**
@@ -332,6 +347,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               HideKeyboard((View) input);
+              TextInputCanceled();
               //User pressed CANCEL. Raise AfterTextInput with CANCEL
               AfterTextInput(cancelButtonText);
             }
@@ -354,10 +370,22 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * Event raised after the user has responded to ShowTextDialog.
    * @param response is the text that was entered
    */
-  @SimpleEvent
+  @SimpleEvent(
+    description = "Event raised after the user has responded to ShowTextDialog.")
   public void AfterTextInput(String response) {
     EventDispatcher.dispatchEvent(this, "AfterTextInput", response);
   }
+
+  /**
+   * Event raised when the user canceled ShowTextDialog.
+   */
+  @SimpleEvent(
+    description = "Event raised when the user canceled ShowTextDialog.")
+  public void TextInputCanceled() {
+    EventDispatcher.dispatchEvent(this, "TextInputCanceled");
+  }
+
+
 
   /**
    * Display a temporary notification

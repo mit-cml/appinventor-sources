@@ -273,6 +273,38 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
   return false;
 };
 
+// Check if the block is not within a loop block (used for checking break block)
+// if so, create an error
+
+Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
+  if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
+    return false;  // wait until the user is done dragging to check validity.
+  }
+  if (Blockly_containedInLoop(block)) {
+    return false;  // false means it is within a loop
+  } else {
+    var errorMessage = Blockly.ERROR_BREAK_ONLY_IN_LOOP;
+    block.setErrorIconText(errorMessage);
+    return true;  //true means it is not within a loop
+  }
+};
+
+Blockly_loopBlockTypes =
+  // add more later
+  ["controls_forEach", "controls_forRange", "controls_while"] ;
+
+Blockly_containedInLoop = function(block) {
+  var enclosingBlock = block.getSurroundParent();
+  if (enclosingBlock == null) {
+    return false;
+  }
+  else if (Blockly_loopBlockTypes.indexOf(enclosingBlock.type) >= 0) {
+    return true;
+  } else {
+    return Blockly_containedInLoop(enclosingBlock);
+  }
+};
+
 // check if the component of the pasted block from the Backpack does not exist
 // - originally written by @evanrthomas
 // - added by @graceRyu
@@ -354,6 +386,7 @@ Blockly.WarningHandler.prototype['checkIfIAmADuplicateEventHandler'] = function(
     return false;
   }
 };
+
 
 /* [lyn, 12/23/2013] Putting a change handler that determines duplicates
    on each AI2 event handler block leads to

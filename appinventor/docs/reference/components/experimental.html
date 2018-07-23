@@ -508,7 +508,7 @@
   <dt><code>RemoveFirstFromList(text tag)</code></dt>
   <dd>Return the first element of a list and atomically remove it. If two devices use this function simultaneously, one will get the first element and the the other will get the second element, or an error if there is no available element. When the element is available, the "FirstRemoved" event will be triggered.</dd>
   <dt><code>StoreValue(text tag, any valueToStore)</code></dt>
-  <dd>Asks CloudDB to store the given value under the given tag.</dd>
+  <dd>Asks CloudDB to store the given value under the given tag. If the value begins with "file:///" or "/storage/", CloudDB will interpret the value as a filename and send the contents of the named file. The file extension must be 3 characters (e.g., ".png", ".wav"). When received via GotValue or DataChanged, the file will be saved onto the device's public storage and the value will reflect the new location.</dd>
 </dl>
 <h2 id="FirebaseDB">FirebaseDB</h2>
 

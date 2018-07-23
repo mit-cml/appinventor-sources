@@ -81,4 +81,14 @@ public interface UserInfoServiceAsync {
    */
   void noop(AsyncCallback<Void> callback);
 
+  /**
+   * @see UserInfoService#getSharedBackpack(String)
+   */
+  void getSharedBackpack(String backPackId, AsyncCallback<String> callback);
+
+  /**
+   * @see UserInfoService#storeSharedBackpack(String, String)
+   */
+  void storeSharedBackpack(String backPackId, String content, AsyncCallback<Void> callback);
+
 }

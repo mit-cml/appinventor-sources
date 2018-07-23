@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import android.os.Environment;
 import android.os.Handler;
 
 import android.util.Base64;
@@ -27,9 +26,6 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
-
-import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
-import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -45,7 +41,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.security.KeyStore;
@@ -54,9 +49,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -72,7 +65,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
-
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
@@ -110,7 +102,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   OnClearListener, OnDestroyListener {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
-  private static final String BINFILE_DIR = "/AppInventorBinaries";
   private boolean importProject = false;
   private String projectID = "";
   private String token = "";
@@ -745,7 +736,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 Log.d(LOG_TAG, "finished call jedis.get()");
               }
               if (returnValue != null) {
-                String val = getJsonRepresenationIfValueFileName(returnValue);
+                String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
                 if(val != null) value.set(val);
                 else value.set(returnValue);
               }
@@ -1234,94 +1225,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
-  /**
-   * Accepts a base64 encoded string and a file extension (which must be three characters).
-   * Decodes the string into a binary and saves it to a file on external storage and returns
-   * the filename assigned.
-   *
-   * Written by Jeff Schiller (jis) for the BinFile Extension
-   *
-   * @param input Base64 input string
-   * @param fileExtension three character file extension
-   * @return the name of the created file
-   */
-  private String writeFile(String input, String fileExtension) {
-    try {
-      if (fileExtension.length() != 3) {
-        throw new YailRuntimeError("File Extension must be three characters", "Write Error");
-      }
-      byte [] content = Base64.decode(input, Base64.DEFAULT);
-      String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
-      File destDirectory = new File(fullDirName);
-      destDirectory.mkdirs();
-      File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
-      FileOutputStream outStream = new FileOutputStream(dest);
-      outStream.write(content);
-      outStream.close();
-      String retval = dest.toURI().toASCIIString();
-      trimDirectory(20, destDirectory);
-      return retval;
-    } catch (Exception e) {
-      throw new YailRuntimeError(e.getMessage(), "Write");
-    }
-  }
-
-  // keep only the last N files, where N = maxSavedFiles
-  // Written by Jeff Schiller (jis) for the BinFile Extension
-  private void trimDirectory(int maxSavedFiles, File directory) {
-
-    File [] files = directory.listFiles();
-
-    Arrays.sort(files, new Comparator<File>(){
-      public int compare(File f1, File f2)
-      {
-        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-      } });
-
-    int excess = files.length - maxSavedFiles;
-    for (int i = 0; i < excess; i++) {
-      files[i].delete();
-    }
-
-  }
-
   // Utility to get the file extension from a filename
   // Written by Jeff Schiller (jis) for the BinFile Extension
   private String getFileExtension(String fullName) {
     String fileName = new File(fullName).getName();
     int dotIndex = fileName.lastIndexOf(".");
     return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
-  }
-
-  /*
-  * Written by joymitro@gmail.com (Joydeep Mitra)
-  * This method converts a file path to a JSON representation.
-  * The code in the method was part of GetValue. For better modularity and reusability
-  * the logic is now part of this method, which can be invoked from wherever and
-  * whenever required.
-  *
-  * @param file path
-  * @return JSON representation
-  */
-  private String getJsonRepresenationIfValueFileName(String value){
-    try {
-      JSONArray valueJsonList = new JSONArray(value);
-      List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
-      if (valueList.size() == 2) {
-        if (valueList.get(0).startsWith(".")) {
-          String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
-          System.out.println("Filename Written: " + filename);
-          filename = filename.replace("file:/", "file:///");
-          return JsonUtil.getJsonRepresentation(filename);
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    } catch(JSONException e) {
-      return null;
-    }
   }
 
   public ExecutorService getBackground() {

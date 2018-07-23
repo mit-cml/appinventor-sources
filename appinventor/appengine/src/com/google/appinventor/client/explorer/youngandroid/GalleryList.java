@@ -468,27 +468,18 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   }
 
   /**
-   * Gets the number of projects
+   * Gets the number of selected apps
    *
-   * @return the number of projects
-   */
-  public int getNumProjects() {
-    return apps.size();
-  }
-
-  /**
-   * Gets the number of selected projects
-   *
-   * @return the number of selected projects
+   * @return the number of selected apps
    */
   public int getNumSelectedApps() {
     return selectedApps.size();
   }
 
   /**
-   * Returns the list of selected projects
+   * Returns the list of selected apps
    *
-   * @return the selected projects
+   * @return the selected apps
    */
   public List<GalleryApp> getSelectedApps() {
     return selectedApps;

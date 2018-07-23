@@ -6,15 +6,21 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.content.res.AssetManager;
 import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -108,6 +114,8 @@ public class Form extends AppInventorCompatActivity
   private static final String ARGUMENT_NAME = "APP_INVENTOR_START";
 
   public static final String APPINVENTOR_URL_SCHEME = "appinventor";
+
+  public static final String ASSETS_PREFIX = "file:///android_asset/";
 
   private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
   private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
@@ -2272,5 +2280,39 @@ public class Form extends AppInventorCompatActivity
 
   public boolean isDarkTheme() {
     return usesDarkTheme;
+  }
+
+  /**
+   * Determines a WebView compatible, REPL-sensitive path for an asset provided by a given
+   * extension.
+   *
+   * @param component The extension that is requesting an asset
+   * @param asset The asset filename
+   * @return A string containing the path to the asset
+   * @throws FileNotFoundException if the asset cannot be located
+   */
+  public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
+    String extPkgName = component.getClass().getPackage().getName();
+    return ASSETS_PREFIX + extPkgName + "/" + asset;
+  }
+
+  /**
+   * Opens an asset for reading as an InputStream. If the asset cannot be found, an IOException will
+   * be raised.
+   *
+   * @param component The extension that is requesting an asset
+   * @param asset The asset filename
+   * @return A new input stream for the requested asset. The caller is responsible for closing the
+   * stream to prevent resource leaking.
+   * @throws IOException if the asset is not found or cannot be read
+   */
+  public InputStream openAssetForExtension(Component component, String asset) throws IOException {
+    String path = getAssetPathForExtension(component, asset);
+    if (path.startsWith(ASSETS_PREFIX)) {
+      final AssetManager am = getAssets();
+      return am.open(path.substring(ASSETS_PREFIX.length()));
+    } else {
+      return new FileInputStream(new File(URI.create(path)));
+    }
   }
 }

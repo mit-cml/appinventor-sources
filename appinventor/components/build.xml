@@ -289,7 +289,6 @@
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
           <pathelement location="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
           <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
-          <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
           <pathelement location="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
           <pathelement location="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />

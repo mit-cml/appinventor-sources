@@ -958,7 +958,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = '输入项';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = '输入:';
 
-    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = '预览代码块功能';
+    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = '转到代码块定义处';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP = '';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP = '';

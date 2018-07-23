@@ -755,10 +755,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return new RpcResult(true, "Building " + projectName, "");
   }
 
-  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
-    return "Request to build failed with " + exceptionName + ", user=" + userId
-        + ", project=" + projectId + ", build URL is " + buildURL
-        + " [" + buildURL.toString().length() + "]";
+  String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+    return "Request to build failed with " + exceptionName 
+      + ", user=" + userId + ", project=" + projectId 
+      + ", build URL is " + (buildURL != null ? buildURL : "null") + " [" 
+      + (buildURL != null ? buildURL.toString().length() : "n/a") + "]";
   }
 
   // Note that this is a function rather than just a constant because we assume it will get
@@ -857,42 +858,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param target  build target (optional, implementation dependent)
    */
   public void updateCurrentProgress(User user, long projectId, String target) {
-    try {
-      String userId = user.getUserId();
-      String projectName = storageIo.getProjectName(userId, projectId);
-      String outputFileDir = BUILD_FOLDER + '/' + target;
-      URL buildServerUrl = null;
-      ProjectSourceZip zipFile = null;
-
-      buildServerUrl = new URL(getBuildServerUrlStr(user.getUserEmail(),
-        userId, projectId, outputFileDir));
-      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
-      connection.setDoOutput(true);
-      connection.setRequestMethod("POST");
-
-      int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-          try {
-            String content = readContent(connection.getInputStream());
-            if (content != null && !content.isEmpty()) {
-              if (DEBUG) {
-                LOG.info("The current progress is " + content + "%.");
-              }
-              currentProgress = Integer.parseInt(content);
-            }
-          } catch (IOException e) {
-            // No content. That's ok.
-          }
-         }
-      } catch (MalformedURLException e) {
-        // that's ok, nothing to do
-      } catch (IOException e) {
-        // that's ok, nothing to do
-      } catch (EncryptionException e) {
-        // that's ok, nothing to do
-      } catch (RuntimeException e) {
-        // that's ok, nothing to do
-      }
+    currentProgress = storageIo.getBuildStatus(user.getUserId(), projectId);
   }
 
   // Nicely format floating number using only two decimal places

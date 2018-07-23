@@ -12,5 +12,6 @@ message cookie {
 // do not recycle the id number too soon
 //  optional string locale = 5;
   optional uint64 oneProjectId = 6;
+  optional string backpackid = 9;         // backpackid for shared backpack
 }
 

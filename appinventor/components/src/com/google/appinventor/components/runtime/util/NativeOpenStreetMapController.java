@@ -5,18 +5,12 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Picture;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -24,8 +18,30 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.widget.RelativeLayout;
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
+import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
+import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
+import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapController;
+import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
+import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
+import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
+import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
+import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapType;
+import com.google.appinventor.components.runtime.view.ZoomControlView;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapListener;
@@ -46,37 +62,24 @@ import org.osmdroid.views.overlay.OverlayWithIWVisitor;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.infowindow.OverlayInfoWindow;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
-import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
-import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapController;
-import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
-import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
-import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
-import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
-import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
-import com.google.appinventor.components.runtime.util.MapFactory.MapType;
-
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Picture;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.Animation;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class NativeOpenStreetMapController implements MapController, MapListener {
   /* copied from SVG */
@@ -90,6 +93,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private static final String TAG = NativeOpenStreetMapController.class.getSimpleName();
   private boolean caches;
   private final Form form;
+  private RelativeLayout containerView;
   private MapView view;
   private MapType tileType;
   private boolean zoomEnabled;
@@ -103,6 +107,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private TouchOverlay touch = null;
   private OverlayInfoWindow defaultInfoWindow = null;
   private boolean ready = false;
+  private ZoomControlView zoomControls = null;
+  private float lastAzimuth = Float.NaN;
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -285,12 +291,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         }
       }
     });
+    zoomControls = new ZoomControlView(view);
     userLocation = new MyLocationNewOverlay(locationProvider, view);
+
+    containerView = new RelativeLayout(form);
+    containerView.setClipChildren(true);
+    containerView.addView(view, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    containerView.addView(zoomControls);
+    zoomControls.setVisibility(View.GONE);  // not shown by default
   }
 
   @Override
   public View getView() {
-    return view;
+    return containerView;
   }
 
   @Override
@@ -311,6 +324,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public void setZoom(int zoom) {
     view.getController().setZoom((double) zoom);
+    zoomControls.updateButtons();
   }
 
   @Override
@@ -359,12 +373,26 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void setCompassEnabled(boolean enabled) {
     if (enabled && compass == null) {
       compass = new CompassOverlay(view.getContext(), view);
+      view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+          float density = view.getContext().getResources().getDisplayMetrics().density;
+          compass.setCompassCenter(view.getMeasuredWidth() / density - 35, 35);
+          return true;
+        }
+      });
       view.getOverlayManager().add(compass);
     }
     if (compass != null) {
       if (enabled) {
-        compass.enableCompass();
+        if (compass.getOrientationProvider() != null) {
+          compass.enableCompass();
+        } else {
+          compass.enableCompass(new InternalCompassOrientationProvider(view.getContext()));
+        }
+        compass.onOrientationChanged(lastAzimuth, null);
       } else {
+        lastAzimuth = compass.getOrientation();
         compass.disableCompass();
       }
     }
@@ -372,13 +400,16 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public boolean isCompassEnabled() {
-    return compass != null && compass.isEnabled();
+    return compass != null && compass.isCompassEnabled();
   }
 
   @Override
   public void setZoomControlEnabled(boolean enabled) {
-    view.setBuiltInZoomControls(enabled);
-    zoomControlEnabled = enabled;
+    if (zoomControlEnabled != enabled) {
+      zoomControls.setVisibility(enabled ? View.VISIBLE : View.GONE);
+      zoomControlEnabled = enabled;
+      containerView.invalidate();
+    }
   }
 
   @Override
@@ -875,7 +906,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     SVG markerSvg = null;
     if (defaultMarkerSVG == null) {
       try {
-        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), "component/marker.svg");
+        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), "marker.svg");
       } catch (SVGParseException e) {
         Log.e(TAG, "Invalid SVG in Marker asset", e);
       } catch (IOException e) {
@@ -1151,6 +1182,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public boolean onZoom(ZoomEvent event) {
+    zoomControls.updateButtons();
     for (MapEventListener listener : eventListeners) {
       listener.onZoom();
     }
@@ -1166,6 +1198,16 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public int getOverlayCount() {
     System.err.println(view.getOverlays());
     return view.getOverlays().size();
+  }
+
+  @Override
+  public void setRotation(float Rotation) {
+    view.setMapOrientation(Rotation);
+  }
+
+  @Override
+  public float getRotation() {
+    return view.getMapOrientation();
   }
 
   static class MultiPolygon extends Polygon {

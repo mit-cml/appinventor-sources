@@ -539,7 +539,7 @@ none
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
   <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p>
-  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p>
+  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/dd/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p>
   <p> Date and Time are formatted with InstantInTime and Duration. </p>
   <ul>
       <li> <strong> Instant </strong> : consists of Year, Month, DayOfMonth, Hour, Minute, and Second.
@@ -604,7 +604,7 @@ none
       <dt> <code> number Hour(InstantInTime instant) </code> </dt>
       <dd> Returns the hour of the day(0-23) from the instant </dd>
       <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
-      <dd> Returns an instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm. An example text input is "06/22/2015 12:18"</dd>
+      <dd> Returns an instant specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm. An example text input is "06/22/2015 12:18"</dd>
       <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
       <dd> Returns an instant in time specified by the milliseconds since 1970. </dd>
       <dt> <code> number Minute(InstantInTime instant) </code> </dt>

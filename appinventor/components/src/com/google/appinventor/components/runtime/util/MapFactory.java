@@ -512,6 +512,18 @@ public final class MapFactory {
      * @return  the number of overlays on the map
      */
     int getOverlayCount();
+
+    /**
+     * Sets the rotation of the map in degrees
+     * @param Rotation in degrees
+     */
+    void setRotation(float Rotation);
+
+    /**
+     * Gets the rotation of the map in degrees
+     * @return the rotation
+     */
+    float getRotation();
   }
 
   /**

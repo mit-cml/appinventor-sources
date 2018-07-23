@@ -18,6 +18,8 @@ def auth_func():
   return (raw_input('Email: '), getpass.getpass('Password: '))
 
 def main():
+    if sys.modules.has_key('google'):
+      del sys.modules['google'] # This interferes with imports later
     getlibdir()
     from google.appengine.ext import db
     from google.appengine.ext.remote_api import remote_api_stub
@@ -57,10 +59,13 @@ def main():
     else:
         secure = True
 
-    remote_api_stub.ConfigureRemoteApi(None, '/remote_api', auth_func,
-                                       servername=host,
-                                       save_cookies=True, secure=secure,
-                                       rpc_server_factory=appengine_rpc.HttpRpcServer)
+    if secure:
+      remote_api_stub.ConfigureRemoteApiForOAuth(host, '/remote_api',
+                                                 secure=secure)
+    else:
+      remote_api_stub.ConfigureRemoteApi(None, '/remote_api', auth_func,
+                                         servername=host,
+                                         save_cookies=True, secure=secure)
     remote_api_stub.MaybeInvokeAuthentication()
 
     input_people = open(whitelistname).readlines()

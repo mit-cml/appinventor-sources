@@ -194,4 +194,32 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void noop() {
   }
+
+  /**
+   * fetch the contents of a shared backpack.
+   *
+   * @param BackPackId the uuid of the backpack
+   * @return the backpack's content as an XML string
+   */
+
+  @Override
+  public String getSharedBackpack(String backPackId) {
+    return storageIo.downloadBackpack(backPackId);
+  }
+
+  /**
+   * store a shared backpack.
+   *
+   * Note: We overwrite any existing backpack. If merging of contents
+   * is desired, our caller has to take care of it.
+   *
+   * @param BackPackId the uuid of the shared backpack
+   * @param the new contents of the backpack
+   */
+
+  @Override
+  public void storeSharedBackpack(String backPackId, String content) {
+    storageIo.uploadBackpack(backPackId, content);
+  }
+
 }

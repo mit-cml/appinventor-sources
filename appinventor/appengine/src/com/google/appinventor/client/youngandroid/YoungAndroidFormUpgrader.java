@@ -320,6 +320,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("TinyDB")) {
+        srcCompVersion = upgradeTinyDBProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TinyWebDB")) {
         srcCompVersion = upgradeTinyWebDBProperties(componentProperties, srcCompVersion);
 
@@ -973,6 +976,11 @@ public final class YoungAndroidFormUpgrader {
       // were added.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The LoadingDialogMessage property was added
+      // The ShowLoadingDialog property was added
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1296,6 +1304,15 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeTinyDBProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added Property: Namespace
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeTinyWebDBProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1336,6 +1353,10 @@ public final class YoungAndroidFormUpgrader {
       // A new type of dialog was created, a ProgressDialog, and a method to
       // dismiss the dialog was also added.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Added TextInputCanceled & ChoosingCanceled event
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1461,12 +1482,17 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The UriDecode method was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 6) {
+    if (srcCompVersion < 7) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1475,7 +1501,8 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
-      srcCompVersion = 6;
+      // WebViewStringChange event was added (version 7)
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1504,12 +1531,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // Version 2
       // The Markers property (blocks-only) was renamed to Features
       // Version 3
       // Block event handlers were renamed
-      srcCompVersion = 3;
+      // Version 4
+      // The Rotation property was added with default 0.0 (due north)
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
