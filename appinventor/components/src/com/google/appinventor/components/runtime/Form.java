@@ -376,16 +376,39 @@ public class Form extends AppInventorCompatActivity
     // process (onCreateFinish2). Sigh.
 
     // DEBUG: For now just listing the manifest permissions...
+    boolean needSdcardWrite = false;
     try {
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(),
         PackageManager.GET_PERMISSIONS);
       for (String permission : packageInfo.requestedPermissions) {
         Log.d(LOG_TAG, "requestedPersmission: " + permission);
+        if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
+          needSdcardWrite = true;
+          Log.d(LOG_TAG, "NEED TO REQUEST PERMISSION!");
+        }
       }
     } catch (Exception e) {
       Log.e(LOG_TAG, "Exception while attempting to learn permissions.", e);
     }
+    if (needSdcardWrite) {
+      askPermission("android.permission.WRITE_EXTERNAL_STORAGE",
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            if (granted) {
+              onCreateFinish2();
+            } else {
+              Log.i(LOG_TAG, "WRITE_EXTERNAL_STORAGE Permission denied by user");
+              onCreateFinish2();
+            }
+          }
+        });
+    } else {
+      onCreateFinish2();
+    }
+  }
 
+  private void onCreateFinish2() {
     defaultPropertyValues();
 
     // Get startup text if any before adding components
