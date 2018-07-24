@@ -41,10 +41,16 @@
              xhr = new XMLHttpRequest();
              xhr.open("GET", "http://templates.appinventor.mit.edu/mit/m.json");
              xhr.onreadystatechange = function() {
-                 if (this.status == 200) {
+                 if (this.readyState == 4 && this.status == 200) {
                      var json = JSON.parse(this.response);
-                     var mess = document.getElementById("motd");
-                     mess.innerHTML = json['message'];
+                     var ele = document.getElementById("motd");
+                     var message = json[Android.getVersion()];
+                     if (!message) {
+                         message = json['message'];
+                     }
+                     if (message) {
+                         ele.innerHTML = message;
+                     }
                  }
              };
              xhr.send();

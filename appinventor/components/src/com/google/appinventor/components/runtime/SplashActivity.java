@@ -5,19 +5,20 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-
-import java.util.Random;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.net.Uri;
 
-import android.app.Activity;
-
 import android.os.Bundle;
 import android.os.Handler;
+
+import android.support.v4.app.ActivityCompat;
 
 import android.support.v4.content.ContextCompat;
 
@@ -61,6 +62,17 @@ public final class SplashActivity extends AppInventorCompatActivity {
     public void askPermission(String permission) {
       ActivityCompat.requestPermissions((Activity) SplashActivity.this,
         new String[] { permission}, 1);
+    }
+
+    @JavascriptInterface
+    public String getVersion() {
+      try {
+        String packageName = mContext.getPackageName();
+        PackageInfo pInfo = mContext.getPackageManager().getPackageInfo(packageName, 0);
+        return (pInfo.versionName);
+      } catch (NameNotFoundException e) {
+        return "Unknown";
+      }
     }
 
     @JavascriptInterface
