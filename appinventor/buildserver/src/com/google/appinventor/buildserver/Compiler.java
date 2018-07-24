@@ -1597,11 +1597,13 @@ public final class Compiler {
       aaptPackageCommandLineArgs.add(packageName);
       aaptPackageCommandLineArgs.add("--output-text-symbols");
       aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
+      aaptPackageCommandLineArgs.add("--no-version-vectors");
       appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
     aaptPackageCommandLineArgs.add(libsDir.getAbsolutePath());
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
+    libSetup();                 // Setup /tmp/lib64 on Linux
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
@@ -1821,6 +1823,29 @@ public final class Compiler {
         resources.put(resourcePath, file);
       }
       return file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /*
+   * This code is only invoked on Linux. It copies libc++.so into /tmp/lib64. This
+   * is needed on linux to run the aapt tool.
+   */
+  private void libSetup() {
+    String osName = System.getProperty("os.name");
+    if (!osName.equals("Linux")) {
+      return;                   // Nothing to do (yet) for MacOS and Windows
+    }
+    try {
+      File outFile = new File("/tmp/lib64/libc++.so");
+      if (outFile.exists()) {    // Don't do it more then once!
+        return;
+      }
+      File tmpLibDir = new File("/tmp/lib64");
+      tmpLibDir.mkdirs();
+      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource("/tools/linux/lib64/libc++.so")),
+        outFile);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
