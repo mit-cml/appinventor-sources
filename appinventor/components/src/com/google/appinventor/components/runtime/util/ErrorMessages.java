@@ -27,6 +27,8 @@ public final class ErrorMessages {
   public static final int ERROR_LOCATION_NO_PERMISSION = 103;
   // Camera errors
   public static final int ERROR_CAMERA_NO_IMAGE_RETURNED = 201;
+  public static final int ERROR_NO_CAMERA_PERMISSION = 202;
+
   // Twitter errors
   public static final int ERROR_TWITTER_UNSUPPORTED_LOGIN_FUNCTION = 301;
   public static final int ERROR_TWITTER_BLANK_CONSUMER_KEY_OR_SECRET = 302;
@@ -151,7 +153,6 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
-  public static final int ERROR_NO_CAMERA_PERMISSION = 1603;
 
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
@@ -506,7 +507,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
         "Unable to copy selected media: %s");
     errorMessages.put(ERROR_NO_CAMERA_PERMISSION,
-        "Scanning requires CAMERA Permission");
+        "Permission to use the Camera denied.");
     // Texting errors
     errorMessages.put(ERROR_BAD_VALUE_FOR_TEXT_RECEIVING,
       "Text Receiving should be either 1, 2 or 3.");

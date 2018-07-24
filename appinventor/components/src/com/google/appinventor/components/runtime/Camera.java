@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.Manifest;
 
 import java.io.File;
 import java.util.Date;
@@ -45,7 +46,8 @@ import java.util.Date;
    nonVisible = true,
    iconName = "images/camera.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE," +
+                 "android.permission.CAMERA")
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
@@ -60,6 +62,10 @@ public class Camera extends AndroidNonvisibleComponent
 
   // whether to open into the front-facing camera
   private boolean useFront;
+
+  // wether or not we have permission to use the camera
+
+  private boolean havePermission = false;
 
   /**
    * Creates a Camera component.
@@ -111,7 +117,28 @@ public class Camera extends AndroidNonvisibleComponent
   public void TakePicture() {
     Date date = new Date();
     String state = Environment.getExternalStorageState();
-
+    if (!havePermission) {
+      final Camera me = this;
+      form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            form.askPermission(Manifest.permission.CAMERA,
+                               new PermissionResultHandler() {
+                                 @Override
+                                 public void HandlePermissionResponse(String permission, boolean granted) {
+                                   if (granted) {
+                                     me.havePermission = true;
+                                     me.TakePicture();
+                                   } else {
+                                     form.dispatchErrorOccurredEvent(me, "Camera",
+                                                                     ErrorMessages.ERROR_NO_CAMERA_PERMISSION);
+                                   }
+                                 }
+                               });
+          }
+        });
+      return;
+    }
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CameraComponent", "External storage is available and writable");
 
