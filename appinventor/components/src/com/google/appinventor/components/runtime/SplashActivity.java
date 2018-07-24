@@ -127,7 +127,7 @@ public final class SplashActivity extends AppInventorCompatActivity {
         }
       });
     setContentView(webview);
-    webview.setWebContentsDebuggingEnabled(true);
+//    webview.setWebContentsDebuggingEnabled(true);
     webview.loadUrl("file:///android_asset/splash.html");
     webview.addJavascriptInterface(android, "Android");
   }
