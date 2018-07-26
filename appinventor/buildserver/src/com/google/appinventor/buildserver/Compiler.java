@@ -743,7 +743,7 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        out.write("android:configChanges=\"orientation|keyboardHidden|keyboard\">\n");
+        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
 
 
         out.write("      <intent-filter>\n");
