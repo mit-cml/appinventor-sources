@@ -69,9 +69,9 @@ public class PackageInstaller {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             form.startActivity(intent);
           } catch (Exception e) {
-          Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-          form.dispatchErrorOccurredEvent(form, "PackageInstaller",
-            ErrorMessages.ERROR_WEB_UNABLE_TO_GET, inurl);
+            Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
+            form.dispatchErrorOccurredEvent(form, "PackageInstaller",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, inurl);
           }
         }
       });

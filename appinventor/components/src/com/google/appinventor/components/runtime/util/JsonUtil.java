@@ -298,8 +298,8 @@ public class JsonUtil {
    */
   private static String writeFile(String input, String fileExtension) {
     try {
-      if (fileExtension.length() != 3) {
-        throw new YailRuntimeError("File Extension must be three characters", "Write Error");
+      if (fileExtension.length() != 3 && fileExtension.length() != 4) {
+        throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
       }
       byte [] content = Base64.decode(input, Base64.DEFAULT);
       String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
