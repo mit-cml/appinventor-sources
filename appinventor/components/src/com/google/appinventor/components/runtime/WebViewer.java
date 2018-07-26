@@ -317,9 +317,7 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Go back to the previous page in the history list.  " +
           "Does nothing if there is no previous page.")
   public void GoBack() {
-    if (webview.canGoBack()) {
-      webview.goBack();
-    }
+    webview.goBack();
   }
 
   /**
@@ -329,9 +327,7 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Go forward to the next page in the history list.   " +
           "Does nothing if there is no next page.")
   public void GoForward() {
-    if (webview.canGoForward()) {
-      webview.goForward();
-    }
+    webview.goForward();
   }
 
   /**
