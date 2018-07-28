@@ -322,10 +322,11 @@ public abstract class CommonProjectService {
    * @param projectId  project id to be built
    * @param nonce -- random string used to find finished APK
    * @param target  build target (optional, implementation dependent)
+   * @param secondBuildserver use second buildserver
    *
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target, boolean secondBuildserver);
 
   /**
    * Gets the result of a build command for the project.

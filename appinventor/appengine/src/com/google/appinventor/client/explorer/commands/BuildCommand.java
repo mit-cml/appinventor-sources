@@ -27,13 +27,16 @@ public class BuildCommand extends ChainableCommand {
   // The build target
   private String target;
 
+  // Whether or not to use the second buildserver
+  private boolean secondBuildserver = false;
+
   /**
    * Creates a new build command.
    *
    * @param target the build target
    */
-  public BuildCommand(String target) {
-    this(target, null);
+  public BuildCommand(String target, boolean secondBuildserver) {
+    this(target, secondBuildserver, null);
   }
 
   /**
@@ -43,9 +46,10 @@ public class BuildCommand extends ChainableCommand {
    * @param target the build target
    * @param nextCommand the command to execute after the build has finished
    */
-  public BuildCommand(String target, ChainableCommand nextCommand) {
+  public BuildCommand(String target, boolean secondBuildserver, ChainableCommand nextCommand) {
     super(nextCommand);
     this.target = target;
+    this.secondBuildserver = secondBuildserver;
   }
 
   @Override
@@ -95,7 +99,7 @@ public class BuildCommand extends ChainableCommand {
               String errorMsg = result.getError();
               // This is not an internal App Inventor bug. The error is reported as info so that
               // the red background is not shown.
-              ErrorReporter.reportInfo(MESSAGES.buildFailedError() + 
+              ErrorReporter.reportInfo(MESSAGES.buildFailedError() +
                   (errorMsg.isEmpty() ? "" : " " + errorMsg));
               break;
           }
@@ -111,6 +115,6 @@ public class BuildCommand extends ChainableCommand {
     };
 
     String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, callback);
+    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, callback);
   }
 }

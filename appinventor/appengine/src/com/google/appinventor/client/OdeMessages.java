@@ -659,9 +659,17 @@ public interface OdeMessages extends Messages {
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
 
+  @DefaultMessage("App for Google Play ( provide QR code for .apk )")
+  @Description("Label of item for building a project and show barcode")
+  String showBarcodeMenuItem2();
+
   @DefaultMessage("App ( save .apk to my computer )")
   @Description("Label of item for building a project and downloading")
   String downloadToComputerMenuItem();
+
+  @DefaultMessage("App for Google Play ( save .apk to my computer )")
+  @Description("Label of item for building a project and downloading")
+  String downloadToComputerMenuItem2();
 
   @DefaultMessage("Generate YAIL")
   @Description("Label of the cascade item for generating YAIL for a project")
@@ -7035,4 +7043,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
+
+  @DefaultMessage("Notice!")
+  @Description("Title for the Warning Dialog Box")
+  String NoticeTitle();
+
+  @DefaultMessage("Use this option to build apps that that will work back to Android version 2.1 (Eclair)," +
+      "<br/>but will not be publishable in the Google Play Store.")
+  @Description("Text for the Package non-SDK 26 Warning Dialog Box (HTML)")
+  String PackageNotice();
+
+  @DefaultMessage("Use this option to create applications that can be submitted to the Google Play Store." +
+      "<br/>These applications will not run on Android versions older than 4.0.")
+  @Description("Text for the Package SDK 26 Warning Dialog Box (HTML)")
+  String Package26Notice();
 }
