@@ -3,6 +3,7 @@
         (scheme cxr)
         (scheme lazy)
         (scheme r5rs)
+        (srfi 1)
         (picrin base)
         (yail))
 
@@ -564,26 +565,67 @@
         ;(*:addParent (KawaEnvironment:getCurrent) *test-environment*)
         (set! *test-global-var-environment* '()))))
 
-(define-syntax foreach
-  (syntax-rules ()
-    ((_ lambda-arg-name body-form list)
-     (yail-for-each (lambda (lambda-arg-name) body-form) list))))
+(define (*yail-break* ignore)
+  (signal-runtime-error
+   "Break should be run only from within a loop"
+   "Bad use of Break"))
 
+(define-macro foreach
+  (lambda (form _)
+    (let ((arg-name (second form))
+          (bodyform (third form))
+          (list-of-args (fourth form)))
+      `(call-with-current-continuation
+        (lambda (*yail-break*)
+          (let ((proc (lambda (,arg-name) ,bodyform)))
+            (yail-for-each proc ,list-of-args)))))))
 
-(define-syntax forrange
-  (syntax-rules ()
-    ((_ lambda-arg-name body-form start end step)
-     (yail-for-range (lambda (lambda-arg-name) body-form) start end step))))
+(define-macro forrange
+  (lambda (form _)
+    (let ((lambda-arg-name (second form))
+          (body-form (third form))
+          (start (fourth form))
+          (end (fifth form))
+          (step (sixth form)))
+      `(call-with-current-continuation
+        (lambda (*yail-break*)
+          (yail-for-range (lambda (,lambda-arg-name) ,body-form) ,start ,end ,step))))))
 
-(define-syntax while
+(define-macro while
+  (lambda (form _)
+    (let ((condition (cadr form))
+          (body (cddr form)))
+      (display "condition = ") (display condition) (display "\n")
+      (display "body = ") (display body) (display "\n")
+      `(while-with-break *yail-break* ,condition ,@body))))
+
+(define-syntax foreach-with-break
   (syntax-rules ()
-    ((_ condition body ...)
-     (let loop ()
-       (if condition
-       (begin
-         body ...
-         (loop))
-       *the-null-value*)))))
+    ((_ escapename arg-name bodyform list-of-args)
+     (call-with-current-continuation
+      (lambda (escapename)
+        (let ((proc (lambda (arg-name) bodyform)))
+          (yail-for-each proc list-of-args)))))))
+
+(define-syntax forrange-with-break
+  (syntax-rules ()
+    ((_ escapename arg-name bodyform list-of-args)
+     (call-with-current-continuation
+      (lambda (escapename)
+        (let ((proc (lambda (arg-name) bodyform)))
+          (yail-for-range proc list-of-args)))))))
+
+(define-syntax while-with-break
+  (syntax-rules ()
+    ((_ escapename condition body ...)
+     (call-with-current-continuation
+      (lambda (escapename)
+        (let loop ()
+          (if condition
+              (begin
+                body ...
+                (loop))
+              *the-null-value*)))))))
 
 (define (init-runtime)
   ; no-op
