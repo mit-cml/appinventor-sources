@@ -5,7 +5,7 @@ import Foundation
 import UIKit
 import Toast_Swift
 
-open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching {
+open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate {
   fileprivate static var _showListsAsJson = false
   fileprivate let TAG = "Form"
   fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
@@ -169,7 +169,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     for subview in subviews {
       subview.removeFromSuperview()
     }
-    _components = []
+    clearComponents()
     _linearView = LinearView(frame: view.frame)
     _linearView.accessibilityIdentifier = "Form root view"
     view.addSubview(_linearView)
@@ -188,6 +188,43 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
 //    _verticalItem = CSLinearLayoutItem(for: _verticalLayout)
 //    horizontal.addItem(_verticalItem)
     defaultPropertyValues()
+  }
+
+  func clearComponents() {
+    onDelete()
+    _components = []
+  }
+
+  public func onResume() {
+    for component in _components {
+      if let delegate = component as? LifecycleDelegate {
+        delegate.onResume()
+      }
+    }
+  }
+
+  open func onPause() {
+    for component in _components {
+      if let delegate = component as? LifecycleDelegate {
+        delegate.onPause()
+      }
+    }
+  }
+
+  open func onDelete() {
+    for component in _components {
+      if let delegate = component as? LifecycleDelegate {
+        delegate.onDelete()
+      }
+    }
+  }
+
+  public func onDestroy() {
+    for component in _components {
+      if let delegate = component as? LifecycleDelegate {
+        delegate.onDestroy()
+      }
+    }
   }
 
   open func callInitialize(_ component: Component) {
@@ -570,6 +607,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // Private implementation
+
+  public class func getActiveForm() -> Form? {
+    return Form.activeForm
+  }
 
   open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
     dispatchErrorOccurredEvent(self, functionName, errorNumber, message as NSString)

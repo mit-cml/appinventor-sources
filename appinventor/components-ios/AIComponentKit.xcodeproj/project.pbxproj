@@ -46,6 +46,7 @@
 		0658E9C2201399FA009D6A15 /* text.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C0201399FA009D6A15 /* text.yail */; };
 		0658E9C42013D19A009D6A15 /* colors.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C32013D19A009D6A15 /* colors.yail */; };
 		06604B732034EFE70066C459 /* CsvUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06604B722034EFE70066C459 /* CsvUtil.swift */; };
+		0665ADE7210F592D0044C887 /* FileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC78693202E0B6E005363A3 /* FileTests.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
@@ -110,6 +111,9 @@
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
+		0846B64620BBBF92008FB20C /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0846B64520BBBF92008FB20C /* Sprite.swift */; };
+		0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0846B64720BBBF9C008FB20C /* ImageSprite.swift */; };
+		088CAFD020DABB2E002B1B67 /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088CAFCF20DABB2E002B1B67 /* Ball.swift */; };
 		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
 		CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */; };
 		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
@@ -258,6 +262,9 @@
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		082778F620112FE300ACC99A /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		0846B64520BBBF92008FB20C /* Sprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
+		0846B64720BBBF9C008FB20C /* ImageSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSprite.swift; sourceTree = "<group>"; };
+		088CAFCF20DABB2E002B1B67 /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		08AB5803201AF2BA00F38C88 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -451,6 +458,9 @@
 			isa = PBXGroup;
 			children = (
 				08AB5803201AF2BA00F38C88 /* Canvas.swift */,
+				0846B64520BBBF92008FB20C /* Sprite.swift */,
+				088CAFCF20DABB2E002B1B67 /* Ball.swift */,
+				0846B64720BBBF9C008FB20C /* ImageSprite.swift */,
 			);
 			name = drawing;
 			sourceTree = "<group>";
@@ -954,6 +964,7 @@
 				DE999D34201272DA0023DA47 /* VideoPlayer.swift in Sources */,
 				06B216061DB95155000B3366 /* Image.swift in Sources */,
 				06E59EAF1D92D14F00C42804 /* Sound.swift in Sources */,
+				088CAFD020DABB2E002B1B67 /* Ball.swift in Sources */,
 				06DA9F501D8CFBA200389B04 /* Form.swift in Sources */,
 				060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */,
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
@@ -964,6 +975,7 @@
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,
 				06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */,
+				0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */,
 				0417585720098EE0007D2C31 /* LinkedList.swift in Sources */,
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
@@ -985,6 +997,7 @@
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
+				0846B64620BBBF92008FB20C /* Sprite.swift in Sources */,
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,
 				DEE8A98D1FAF9E59000C7E6B /* EmailPicker.swift in Sources */,
 				CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */,
@@ -1040,8 +1053,8 @@
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
-				CBC78694202E0B6E005363A3 /* FileTests.swift in Sources */, 
 				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
+				0665ADE7210F592D0044C887 /* FileTests.swift in Sources */,
 				DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */,
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,

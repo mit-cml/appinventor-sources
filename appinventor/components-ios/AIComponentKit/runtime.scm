@@ -1763,6 +1763,7 @@ list, use the make-yail-list constructor with no arguments.
              (value (cadr message)))
         (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue (coerce-to-string value) blockid good))
       (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue "No message received" blockid "NOK")))
+
 (define-syntax get-component
   (syntax-rules ()
     ((_ component-name)

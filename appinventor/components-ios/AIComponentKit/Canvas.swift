@@ -9,20 +9,24 @@ fileprivate let kCanvasDefaultPaintColor = Color.black.rawValue
 fileprivate let kCanvasDefaultLineWidth: CGFloat = 2.0
 fileprivate let kCanvasDefaultFontSize: Float = 14.0
 fileprivate let FLING_INTERVAL: CGFloat = 1000
-fileprivate let TAP_THRESHOLD = Float(1.5) //corresponds to 15 pixels
+fileprivate let TAP_THRESHOLD = Float(15) // corresponds to 15 pixels
 fileprivate let UNSET = CGFloat(-1)
+fileprivate let FINGER_WIDTH = CGFloat(24) // corresponds to 24 pixels
+fileprivate let FINGER_HEIGHT = CGFloat(24)
+fileprivate let HALF_FINGER_WIDTH: CGFloat = FINGER_WIDTH / 2;
+fileprivate let HALF_FINGER_HEIGHT: CGFloat = FINGER_HEIGHT / 2;
 
 // MARK: Canvas class
-public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentContainer, UIGestureRecognizerDelegate {
-  fileprivate var _view: UIView
+public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentContainer, UIGestureRecognizerDelegate, LifecycleDelegate {
+  fileprivate var _view: CanvasView
   fileprivate var _backgroundColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
+  fileprivate var _backgroundColorInitialized = false
   fileprivate var _backgroundImage = ""
-  fileprivate var _touchedAnySprite = false
   fileprivate var _paintColor = Int32(bitPattern: kCanvasDefaultPaintColor)
   fileprivate var _lineWidth = kCanvasDefaultLineWidth
   fileprivate var _fontSize = kCanvasDefaultFontSize
   fileprivate var _textAlignment = kCAAlignmentCenter
-  fileprivate var _frame = CGRect(x:0, y:0, width:kCanvasPreferredWidth, height:kCanvasPreferredHeight)
+  fileprivate var _frame = CGRect(x: 0, y: 0, width: kCanvasPreferredWidth, height: kCanvasPreferredHeight)
   
   fileprivate var _flingStartX = CGFloat(0)
   fileprivate var _flingStartY = CGFloat(0)
@@ -31,18 +35,26 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   
   // Layers are split into four categories. There may be multiple layers in shapeLayers and textLayers.
   // There is always just one background image layer and one background color layer.
-  fileprivate var shapeLayers = [CALayer]()
-  fileprivate var textLayers = [CALayer]()
+  fileprivate var _shapeLayers = [CALayer]()
+  fileprivate var _textLayers = [CALayer]()
   fileprivate var _backgroundImageLayer = CALayer()
   fileprivate var _backgroundColorLayer = CALayer()
 
+  // Old values are used to scale shapes when canvas size changes.
+  fileprivate var _oldHeight = CGFloat(0)
+  fileprivate var _oldWidth = CGFloat(0)
+  
+  fileprivate var _sprites = [Sprite]()
+
   public override init(_ parent: ComponentContainer) {
-    _view = UIView()
+    _view = CanvasView()
     super.init(parent)
     super.setDelegate(self)
 
+    _view.Canvas = self
+  
     // set up gesture recognizers
-    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(gesture:)))
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
     let longTouchGesture = UILongPressGestureRecognizer(target: self, action: #selector(onLongTouch))
     let flingGesture = UIPanGestureRecognizer(target: self, action: #selector(onFling))
     let dragGesture = DragGestureRecognizer(target: self, action: #selector(onDrag))
@@ -92,10 +104,12 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       // Canvas is cleared whenever BackgroundColor is set.
       Clear()
       
-      if backgroundColor != _backgroundColor {
+      // The color 'none' is rendered as white
+      let newColor = backgroundColor != Int32(bitPattern: Color.none.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
+      if newColor != _backgroundColor || !_backgroundColorInitialized {
         // _backgroundColorLayer is updated even when _backgroundImage is set; it is just hidden.
         // Changes to _backgroundColor are only visible when _backgroundImage is not set.
-        _backgroundColor = backgroundColor
+        _backgroundColor = newColor
 
         if let backgroundImage = backgroundColorImage() {
           _backgroundColorLayer.removeFromSuperlayer()
@@ -111,6 +125,10 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
           _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
 
           _view.layer.addSublayer(_backgroundColorLayer)
+          
+          if !_backgroundColorInitialized {
+            _backgroundColorInitialized = true
+          }
         }
       }
     }
@@ -154,85 +172,95 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
 
   override open var Width: Int32 {
     get {
+      if super.Width < 0 && _view.Drawn {
+        return Int32(_view.bounds.width)
+      }
       return super.Width
     }
     set(width) {
-      let oldWidth = _view.bounds.width
-      if width != super.Width {
-        setNestedViewWidth(nestedView: _view, width: width, shouldAddConstraints: true)
-        if width >= 0 {
-          _view.frame.size.width = CGFloat(width)
-        }
-        
-        // adjust background image layer size to fill the newly sized canvas
-        let centerX = CGFloat(width) / 2
-        let centerY = CGFloat(Height) / 2
-        _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
-        _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-    
-        // Resize background color layer
-        if _backgroundImage == "" {
-          _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
-          _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-          if let backgroundImage = backgroundColorImage() {
-            _backgroundColorLayer.contents = backgroundImage.cgImage
-          }
-        }
-        
-        // Adjust all the shapeLayers transforms on the x-axis
-        let xScaleFactor = CGFloat(width) / oldWidth
-        for s in shapeLayers {
-          transformLayerWidth(s, xScaleFactor)
-        }
-        
-        // Adjust all the textLayers transforms and positions on the x-axis
-        for s in textLayers {
-          s.position.x *= xScaleFactor
-          transformLayerWidth(s, xScaleFactor)
-        }
-      }
+      _oldWidth = _view.bounds.width
+      setNestedViewWidth(nestedView: _view, width: width, shouldAddConstraints: true)
     }
   }
   
+  func updateLayerWidth() {
+    let newWidth = _view.bounds.width
+    if newWidth >= 0 {
+      _view.frame.size.width = CGFloat(newWidth)
+    }
+    
+    // adjust background image layer size to fill the newly sized canvas
+    let centerX = CGFloat(newWidth) / 2
+    let centerY = CGFloat(_view.bounds.height) / 2
+    _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
+    _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
+    
+    // Resize background color layer
+    if _backgroundImage == "" {
+      _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
+      _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
+      if let backgroundImage = backgroundColorImage() {
+        _backgroundColorLayer.contents = backgroundImage.cgImage
+      }
+    }
+    
+    // Adjust all the shapeLayers transforms on the x-axis
+    let xScaleFactor = CGFloat(newWidth) / _oldWidth
+    for s in _shapeLayers {
+      transformLayerWidth(s, xScaleFactor)
+    }
+    
+    // Adjust all the textLayers transforms and positions on the x-axis
+    for s in _textLayers {
+      s.position.x *= xScaleFactor
+      transformLayerWidth(s, xScaleFactor)
+    }
+  }
+    
   override open var Height: Int32 {
     get {
+      if super.Height < 0 && _view.Drawn {
+        return Int32(_view.bounds.height)
+      }
       return super.Height
     }
     set(height) {
-      let oldHeight = _view.bounds.height
-      if height != super.Height {
-        setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
-        if height >= 0 {
-          _view.frame.size.height = CGFloat(height)
-        }
-        
-        // adjust background image layer size to fill the newly sized canvas
-        let centerX = CGFloat(Width) / 2
-        let centerY = CGFloat(height) / 2
-        _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
-        _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
+      _oldHeight = _view.bounds.height
+      setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
+    }
+  }
 
-        // Resize background color layer
-        if _backgroundImage == "" {
-          _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
-          _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-          if let backgroundImage = backgroundColorImage() {
-            _backgroundColorLayer.contents = backgroundImage.cgImage
-          }
-        }
-        
-        // Adjust all the shapeLayers transforms on the y-axis
-        let yScaleFactor = CGFloat(height) / oldHeight
-        for s in shapeLayers {
-          transformLayerHeight(s, yScaleFactor)
-        }
-        
-        // Adjust all the textLayers transforms and positions on the y-axis
-        for s in textLayers {
-          s.position.y *= yScaleFactor
-          transformLayerHeight(s, yScaleFactor)
-        }
+  func updateLayerHeight() {
+    let newHeight = _view.bounds.height
+    if newHeight >= 0 {
+      _view.frame.size.height = CGFloat(newHeight)
+    }
+    
+    // adjust background image layer size to fill the newly sized canvas
+    let centerX = CGFloat(_view.bounds.width) / 2
+    let centerY = CGFloat(newHeight) / 2
+    _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
+    _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
+    
+    // Resize background color layer
+    if _backgroundImage == "" {
+      _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
+      _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
+      if let backgroundImage = backgroundColorImage() {
+        _backgroundColorLayer.contents = backgroundImage.cgImage
       }
+    }
+    
+    // Adjust all the shapeLayers transforms on the y-axis
+    let yScaleFactor = CGFloat(newHeight) / _oldHeight
+    for s in _shapeLayers {
+      transformLayerHeight(s, yScaleFactor)
+    }
+    
+    // Adjust all the textLayers transforms and positions on the y-axis
+    for s in _textLayers {
+      s.position.y *= yScaleFactor
+      transformLayerHeight(s, yScaleFactor)
     }
   }
   
@@ -291,6 +319,12 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       return _view
     }
   }
+  
+  open var canvasView: CanvasView {
+    get {
+      return _view
+    }
+  }
 
   fileprivate func transformLayerWidth(_ s: CALayer, _ xScaleFactor: CGFloat) {
     s.transform.m11 *= xScaleFactor
@@ -307,30 +341,60 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   }
 
   // MARK: Events
-
+  // Returns bounding box within canvas borders centered at the start of the gesture.
+  func getGestureBoundingBox(_ x: CGFloat, _ y: CGFloat) -> CGRect {
+    let startX = max(0, x - HALF_FINGER_WIDTH)
+    let startY = max(0, y - HALF_FINGER_HEIGHT)
+    let origin = CGPoint(x: startX, y: startY)
+    let width = min(CGFloat(Width), startX + FINGER_WIDTH) - startX
+    let height = min(CGFloat(Height), startY + FINGER_HEIGHT) - startY
+    let size = CGSize(width: width, height: height)
+    let rect = CGRect(origin: origin, size: size)
+    return rect
+  }
+  
   // Allow drag and fling gestures to be recognized simultaneously
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return (gestureRecognizer is DragGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is DragGestureRecognizer)
   }
   
-  open func onTap(gesture: UITapGestureRecognizer) {
-    let _x = gesture.location(in: _view).x
-    let _y = gesture.location(in: _view).y
-    Touched(Float32(_x), Float32(_y), _touchedAnySprite)
-  }
-
-  open func Touched(_ x: Float32, _ y: Float32, _ touchedAnySprite: Bool) {
-    EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber, _touchedAnySprite as AnyObject)
+  func onTap(gesture: UITapGestureRecognizer) {
+    let x = gesture.location(in: _view).x
+    let y = gesture.location(in: _view).y
+    let rect = getGestureBoundingBox(x, y)
+    var touchedAnySprite = false
+    for sprite in _sprites {
+      if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+        sprite.Touched(Float(x), Float(y))
+        touchedAnySprite = true
+      }
+    }
+    Touched(Float(x), Float(y), touchedAnySprite)
   }
 
   func onLongTouch(gesture: UILongPressGestureRecognizer) {
-    let _x = gesture.location(in: _view).x
-    let _y = gesture.location(in: _view).y
+    let x = gesture.location(in: _view).x
+    let y = gesture.location(in: _view).y
+    let rect = getGestureBoundingBox(x, y)
     if gesture.state == UIGestureRecognizerState.began {
-      TouchDown(Float(_x), Float(_y))
+      for sprite in _sprites {
+        if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+          sprite.TouchDown(Float(x), Float(y))
+        }
+      }
+      TouchDown(Float(x), Float(y))
     } else if gesture.state == UIGestureRecognizerState.ended {
-      TouchUp(Float(_x), Float(_y))
+      for sprite in _sprites {
+        if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+          sprite.TouchUp(Float(x), Float(y))
+        }
+      }
+      TouchUp(Float(x), Float(y))
     }
+  }
+  
+  open func Touched(_ x: Float, _ y: Float, _ touchedAnySprite: Bool) {
+    EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber, touchedAnySprite as AnyObject)
   }
 
   open func TouchDown(_ x: Float, _ y: Float) {
@@ -343,7 +407,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
 
   // Fling and Gesture are simultaneously recognized.
   open func onFling(gesture: UIPanGestureRecognizer) {
-    let flungSprite = false
     var velocity = gesture.velocity(in: _view)
     velocity.x = velocity.x / FLING_INTERVAL
     velocity.y = velocity.y / FLING_INTERVAL
@@ -354,26 +417,18 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       _flingStartY = gesture.location(in: _view).y
     case .ended:
       let speed = pow(pow(velocity.x, 2) + pow(velocity.y, 2), 0.5)
-      let endX = gesture.location(in: _view).x
-      let endY = gesture.location(in: _view).y
-      let xDiff = endX - _flingStartX
-      let yDiff = endY - _flingStartY
-      // calculate the direction of the fling, assuming 0 degrees is 3 o'clock on a watch
-      var heading = 180 * atan(yDiff / xDiff) / CGFloat.pi
-      if xDiff == 0 {
-        heading = yDiff > 0 ? CGFloat(180 * atan(Float.pi / 2)) / CGFloat.pi : CGFloat(180 * atan(3 * Float.pi / 2)) / CGFloat.pi
-      }
-      if heading != 0 {
-        if xDiff < 0 {
-          // adjust heading; it is in the range of 90 to 270 degrees
-          heading = 180 + heading
-        } else if yDiff < 0 {
-          // adjust heading; it is in the range of 270 to 360 degrees
-          heading = 360 + heading
+      let heading = -atan2(velocity.y, velocity.x) / (2 * CGFloat.pi) * 360
+      var spriteHandledFling = false
+      let rect = getGestureBoundingBox(_flingStartX, _flingStartY)
+      for sprite in _sprites {
+        if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+          sprite.Flung(Float(_flingStartX), Float(_flingStartY), Float(speed), Float(heading),
+                       Float(velocity.x), Float(velocity.y))
+          spriteHandledFling = true
         }
       }
       Flung(Float(_flingStartX), Float(_flingStartY), Float(speed), Float(heading),
-            Float(velocity.x), Float(velocity.y), flungSprite)
+            Float(velocity.x), Float(velocity.y), spriteHandledFling)
     default:
       break
     }
@@ -388,14 +443,23 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   }
 
   open func onDrag(gesture: DragGestureRecognizer) {
-    let draggedAnySprite = false
+    var draggedAnySprite = false
     if gesture.state == .began || gesture.state == .changed {
       let viewWidth = _view.bounds.width
       let viewHeight = _view.bounds.height
-      if gesture.currentY <= viewHeight && gesture.currentX <= viewWidth {
-        Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)),
-                Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)),
-                Float(max(0, gesture.currentY)), draggedAnySprite)
+      let gestureX = gesture.state == .began ? gesture.startX : gesture.currentX
+      let gestureY = gesture.state == .began ? gesture.startY : gesture.currentY
+      if gestureX <= viewWidth && gestureY <= viewHeight {
+        let rect = getGestureBoundingBox(gestureX, gestureY)
+        for sprite in _sprites {
+          if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+            draggedAnySprite = true
+            OperationQueue.main.addOperation {
+              sprite.Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)), Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)), Float(max(0, gesture.currentY)))
+            }
+          }
+        }
+        Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)), Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)), Float(max(0, gesture.currentY)), draggedAnySprite)
       }
     }
   }
@@ -427,17 +491,77 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     // unsupported
   }
   
+  //MARK: LifeCycleDelegate methods
+  public func onResume() {
+    for s in _sprites {
+        if s.Enabled {
+            s.restartTimer()
+        }
+    }
+  }
+  
+  public func onPause() {
+    for s in _sprites {
+        s.removeTimer()
+    }
+  }
+  
+  public func onDelete() {
+    for s in _sprites {
+      s.removeTimer()
+    }
+  }
+  
+  public func onDestroy() {
+    for s in _sprites {
+      s.removeTimer()
+    }
+  }
+  
+  func addSprite(_ sprite: Sprite) {
+    _sprites.append(sprite)
+    _view.layer.addSublayer(sprite.DisplayLayer)
+  }
+  
+  // Re-render the sprite imageLayer when change has been registered.
+  func registerChange(_ sprite: Sprite) {
+    sprite.updateDisplayLayer()
+    findSpriteCollisions(sprite)
+  }
+  
+  fileprivate func findSpriteCollisions(_ movedSprite: Sprite) {
+    for sprite in _sprites {
+      if sprite != movedSprite {
+        let bothSpritesActive = movedSprite.Visible && movedSprite.Enabled && sprite.Visible && sprite.Enabled
+        // Check whether we already raised an event for their collision.
+        if movedSprite.CollidingWith(sprite) {
+          // If they no longer conflict, make modifications.
+          if !bothSpritesActive || !Sprite.colliding(movedSprite, sprite) {
+            movedSprite.NoLongerCollidingWith(sprite)
+            sprite.NoLongerCollidingWith(movedSprite)
+          }
+        } else {
+          // Check if they now conflict.
+          if bothSpritesActive && Sprite.colliding(movedSprite, sprite) {
+            movedSprite.CollidedWith(sprite)
+            sprite.CollidedWith(movedSprite)
+          }
+        }
+      }
+    }
+  }
+
   //MARK: Drawing methods
-  func isInCanvasBoundaries(_ x: CGFloat, _ y: CGFloat) -> Bool {
+  fileprivate func isInCanvasBoundaries(_ x: CGFloat, _ y: CGFloat) -> Bool {
     return x >= 0 && x <= _view.frame.size.width && y >= 0 && y <= _view.frame.size.height
   }
   
   open func Clear() {
     // background image and background color are not cleared
-    for l in shapeLayers {
+    for l in _shapeLayers {
       l.removeFromSuperlayer()
     }
-    for l in textLayers {
+    for l in _textLayers {
       l.removeFromSuperlayer()
     }
   }
@@ -460,7 +584,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
     shapeLayer.path = point.cgPath
     _view.layer.addSublayer(shapeLayer)
-    shapeLayers.append(shapeLayer)
+    _shapeLayers.append(shapeLayer)
   }
 
   open func DrawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float) {
@@ -483,7 +607,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
     shapeLayer.lineWidth = _lineWidth
     _view.layer.addSublayer(shapeLayer)
-    shapeLayers.append(shapeLayer)
+    _shapeLayers.append(shapeLayer)
   }
   
   open func DrawPoint(_ x: Float, _ y: Float) {
@@ -498,7 +622,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     shapeLayer.lineWidth = _lineWidth
     shapeLayer.path = point.cgPath
     _view.layer.addSublayer(shapeLayer)
-    shapeLayers.append(shapeLayer)
+    _shapeLayers.append(shapeLayer)
   }
 
   fileprivate func makeTextLayer(text: String, x: Float, y: Float) -> CATextLayer {
@@ -525,7 +649,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
       let textLayer = makeTextLayer(text: text, x: x, y: y)
       _view.layer.addSublayer(textLayer)
-      textLayers.append(textLayer)
+      _textLayers.append(textLayer)
     }
   }
 
@@ -537,10 +661,14 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       let radians = CGFloat(angle * Float.pi / 180)
       textLayer.transform = CATransform3DMakeRotation(-radians, 0, 0, 1.0)
       _view.layer.addSublayer(textLayer)
-      textLayers.append(textLayer)
+      _textLayers.append(textLayer)
     }
   }
 
+  /**
+   * Gets the color of the specified point. This includes the background
+   * and any drawn points, lines, or circles but not sprites.
+   */
   open func GetBackgroundPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
     var pixel: [CUnsignedChar] = [0, 0, 0, 0]
 
@@ -562,6 +690,43 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     return colorToArgb(color)
   }
 
+  /**
+   * Gets the color of the specified point. This includes sprites.
+   */
+  open func GetPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
+    if !isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
+      return Int32(Color.none.rawValue)
+    }
+    for sprite in _sprites {
+      if sprite.contains(CGPoint(x: CGFloat(x), y: CGFloat(y))) {
+        if let imgSprite = sprite as? ImageSprite {
+          let img = imgSprite.Image
+          if let cgImg = img.cgImage {
+            if let provider = cgImg.dataProvider {
+              let pixelData = provider.data
+              let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
+              
+              let xRatio = Double(img.size.width) / Double(sprite.Width)
+              let yRatio = Double(img.size.height) / Double(sprite.Height)
+              let newX = (Double(x) - imgSprite.X) * xRatio
+              let newY = (Double(y) - imgSprite.Y) * yRatio
+              
+              let pixelInfo: Int = ((Int(img.size.width) * Int(newY)) + Int(newX)) * 4
+              
+              let r = CGFloat(data[pixelInfo]) / CGFloat(255.0)
+              let g = CGFloat(data[pixelInfo+1]) / CGFloat(255.0)
+              let b = CGFloat(data[pixelInfo+2]) / CGFloat(255.0)
+              let a = CGFloat(data[pixelInfo+3]) / CGFloat(255.0)
+              
+              return colorToArgb(UIColor(red: r, green: g, blue: b, alpha: a))
+            }
+          }
+        }
+      }
+    }
+    return GetBackgroundPixelColor(x, y)
+  }
+
   open func SetBackgroundPixelColor(_ x: Float, _ y: Float, _ color: Int32) {
     let finalX = CGFloat(x); let finalY = CGFloat(y)
     if !isInCanvasBoundaries(finalX, finalY) {
@@ -573,12 +738,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     shapeLayer.lineWidth = _lineWidth
     shapeLayer.path = point.cgPath
     _view.layer.addSublayer(shapeLayer)
-    shapeLayers.append(shapeLayer)
-  }
-
-  //TODO: Update once we have sprites
-  open func GetPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
-    return isInCanvasBoundaries(CGFloat(x), CGFloat(y)) ? GetBackgroundPixelColor(x, y) : Int32(Color.none.rawValue)
+    _shapeLayers.append(shapeLayer)
   }
 
   open func Save() -> String {
@@ -755,8 +915,8 @@ open class DragGestureRecognizer: UIGestureRecognizer {
       self.addSample(for: firstTouch)
       let x = firstTouch.location(in: self.view).x
       let y = firstTouch.location(in: self.view).y
-      if self.samples.count == 2 {
-        // this would be a touch event, not a drag event.
+      if !_isDrag && Float(abs(x - _startX)) < TAP_THRESHOLD && Float(abs(y - _startY)) < TAP_THRESHOLD {
+        // this is a touch event
         state = .failed
       } else {
         _prevX = _currentX
@@ -782,3 +942,45 @@ open class DragGestureRecognizer: UIGestureRecognizer {
     self.samples.append(newSample)
   }
 }
+
+open class CanvasView: UIView {
+  private var _drawn = false
+  private weak var _canvas: Canvas?
+  
+  required public init?(coder aDecoder: NSCoder) {
+    fatalError("This class does not support NSCoding")
+  }
+  
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+  }
+  
+  open var Drawn: Bool {
+    get {
+      return _drawn
+    }
+  }
+  
+  open var Canvas: Canvas? {
+    get {
+      return _canvas
+    }
+    set(c) {
+      _canvas = c
+    }
+  }
+
+  override open func draw(_ rect: CGRect) {
+    super.draw(rect)
+    _drawn = true
+    if let c = _canvas {
+      c.updateLayerHeight()
+      c.updateLayerWidth()
+      for sprite in c._sprites {
+        sprite.updateWidth()
+        sprite.updateHeight()
+      }
+    }
+  }
+}
+
