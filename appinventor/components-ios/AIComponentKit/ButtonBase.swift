@@ -115,9 +115,7 @@ open class ButtonBase: ViewComponent {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      if let descriptor = _view.titleLabel?.font.fontDescriptor {
-        _view.titleLabel?.font = UIFont(descriptor: descriptor, size: CGFloat(size))
-      }
+      _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
     }
   }
 

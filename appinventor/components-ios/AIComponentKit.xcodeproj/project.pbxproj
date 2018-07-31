@@ -119,10 +119,10 @@
 		CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC7868520113A3C005363A3 /* CircularBuffer.swift */; };
 		CBC787022032272E005363A3 /* String+Replace.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC787012032272E005363A3 /* String+Replace.swift */; };
 		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
-
 		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
 		DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDA20C5C1610049A748 /* PickerBase.swift */; };
 		DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */; };
+		DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE102DB820F53189002C71F0 /* FontUtilTests.swift */; };
 		DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3F6B082080F72400A0BA69 /* Camera.swift */; };
 		DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */; };
 		DE4CDF572093982F008412BC /* FontUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4CDF562093982F008412BC /* FontUtil.swift */; };
@@ -275,6 +275,7 @@
 		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
 		DE0FFBDA20C5C1610049A748 /* PickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerBase.swift; sourceTree = "<group>"; };
 		DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerBase.swift; sourceTree = "<group>"; };
+		DE102DB820F53189002C71F0 /* FontUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtilTests.swift; sourceTree = "<group>"; };
 		DE3F6B082080F72400A0BA69 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		DE4CDF562093982F008412BC /* FontUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtil.swift; sourceTree = "<group>"; };
@@ -304,7 +305,6 @@
 				06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */,
 				06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */,
 				06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */,
-				CD63A8EAF73E91C0ED232D5B /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -696,6 +696,7 @@
 			isa = PBXGroup;
 			children = (
 				DE85F125209CD9AB00A809AA /* SliderTests.swift */,
+				DE102DB820F53189002C71F0 /* FontUtilTests.swift */,
 			);
 			path = visible;
 			sourceTree = "<group>";
@@ -1039,11 +1040,12 @@
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
+				CBC78694202E0B6E005363A3 /* FileTests.swift in Sources */, 
 				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
-				CBC78694202E0B6E005363A3 /* FileTests.swift in Sources */,
 				DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */,
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,
+				DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */,
 				0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

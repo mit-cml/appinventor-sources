@@ -111,9 +111,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       }
     }
     set(size) {
-      if let delegate = _delegate {
-        delegate.font = delegate.font.withSize(CGFloat(size))
-      }
+      _delegate.font = getFontSize(font: _delegate?.font, size: size) ?? _delegate.font
     }
   }
   

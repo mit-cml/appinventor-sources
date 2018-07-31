@@ -23,23 +23,32 @@ func getFontTrait(font: UIFont?, trait: UIFontDescriptorSymbolicTraits, shouldSe
 
 func getFontTypeface(font: UIFont?, typeFace: Typeface) -> UIFont? {
   if let descriptor = font?.fontDescriptor, let size = font?.pointSize {
-    var tempDescriptor: UIFontDescriptor
+    var tempFont: UIFont?
     switch typeFace {
     case .normal, .sansSerif:
-      return UIFont(descriptor: descriptor, size: size)
+      tempFont = UIFont.systemFont(ofSize: size)
     case .monospace:
-      tempDescriptor = UIFontDescriptor(name: "Menlo", size: size)
-      break
+      tempFont = UIFont(name: "Menlo", size: size)
     case .serif:
-      tempDescriptor = UIFontDescriptor(name: "Cochin", size: size)
-      break
+      tempFont = UIFont(name: "Cochin", size: size)
     }
-    if let newDescriptor = tempDescriptor.withSymbolicTraits(descriptor.symbolicTraits) {
-      return UIFont(descriptor: newDescriptor, size: size)
-    } else {
-      return font
+    if descriptor.symbolicTraits.contains(.traitBold) {
+      tempFont = getFontTrait(font: tempFont, trait: .traitBold, shouldSet: true)
     }
+    if descriptor.symbolicTraits.contains(.traitItalic) {
+      tempFont = getFontTrait(font: tempFont, trait: .traitItalic, shouldSet: true)
+    }
+    return tempFont ?? font
   } else {
     return font
   }
 }
+
+func getFontSize(font: UIFont?, size: Float32) -> UIFont? {
+  if let descriptor = font?.fontDescriptor {
+    return UIFont(descriptor: descriptor, size: CGFloat(size))
+  } else {
+    return font
+  }
+}
+
