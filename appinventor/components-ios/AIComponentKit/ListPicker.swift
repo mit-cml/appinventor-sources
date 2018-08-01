@@ -27,7 +27,7 @@ open class ListPickerActivity: UINavigationController {
   }
 }
 
-open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, UITableViewDelegate {
+open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
   fileprivate var _items: [String] = []
   fileprivate var _viewController: ListPickerActivity?
   fileprivate var _selection: String = ""
@@ -35,9 +35,18 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   fileprivate var _itemBackgroundColor: UIColor = UIColor.white
   fileprivate var _itemTextColor: UIColor = UIColor.black
   fileprivate var _needsReload = true
+  fileprivate var _showSearch = false
+  fileprivate var _searchBar = UISearchBar()
+  fileprivate var _results: [String]? = nil
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
+    _searchBar.autocapitalizationType = .none
+    _searchBar.searchBarStyle = .minimal
+    _searchBar.barTintColor = UIColor.clear
+    _searchBar.placeholder = "Search list..."
+    _searchBar.delegate = self
+    _searchBar.returnKeyType = .done
     super.setDelegate(self)
     _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
     _viewController = ListPickerActivity(delegate: self, dataSource: self, cancelTarget: self, cancelAction: #selector(cancelPicking(_:)))
@@ -89,6 +98,16 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
+  open var ShowFilterBar: Bool {
+    get {
+      return _showSearch
+    }
+    set(showFilterBar) {
+      _showSearch = showFilterBar
+      _needsReload = true
+    }
+  }
+
   open var Selection: String {
     get {
       return _selection
@@ -132,6 +151,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
 
   @objc fileprivate func cancelPicking(_ sender: Any?) {
     _viewController?.dismiss(animated: true, completion: {
+      self.resetSearch()
       self._selection = ""
       self._selectionIndex = 0
       self.AfterPicking()
@@ -158,20 +178,54 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     if cell == nil {
       cell = UITableViewCell(style: .default, reuseIdentifier: kListViewCellIdentifier)
     }
-    cell?.textLabel?.text = _items[indexPath.row]
+    let dataArr = _results ?? _items
+    cell?.textLabel?.text = dataArr[indexPath.row]
     return cell!
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _items.count
+    return _results?.count ?? _items.count
+  }
+
+  open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    return _showSearch ? _searchBar: nil
+  }
+
+  open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return _showSearch ? 40: 0
   }
 
   // MARK: UITableViewDelegate
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     _viewController?.dismiss(animated: true, completion: {
+      self.resetSearch()
       self._selection = self._items[indexPath.row]
       self._selectionIndex = Int32(indexPath.row) + 1
       self.AfterPicking()
     })
+  }
+  
+  // MARK: UISearchBarDelegate
+  open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    _results = nil
+    if !searchText.isEmpty  {
+      _results = [String]()
+      for item in _items {
+        if item.starts(with: searchText) {
+          _results!.append(item)
+        }
+      }
+    }
+    _viewController?._tableViewController.tableView.reloadData()
+  }
+
+  open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    searchBar.endEditing(true)
+  }
+
+  fileprivate func resetSearch() {
+    _searchBar.text = ""
+    _results = nil
+    _viewController?._tableViewController.tableView.reloadData()
   }
 }
