@@ -80,6 +80,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       let newColor = argbToColor(argb)
       if _itemBackgroundColor != newColor {
         _itemBackgroundColor = argbToColor(argb)
+        _viewController?._tableViewController.tableView.backgroundColor = _itemBackgroundColor
         _needsReload = true
       }
     }
@@ -178,8 +179,10 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     if cell == nil {
       cell = UITableViewCell(style: .default, reuseIdentifier: kListViewCellIdentifier)
     }
+    cell?.backgroundColor = _itemBackgroundColor
     let dataArr = _results ?? _items
     cell?.textLabel?.text = dataArr[indexPath.row]
+    cell?.textLabel?.textColor = _itemTextColor
     return cell!
   }
 
