@@ -253,7 +253,13 @@ public class YailEvalTest extends TestCase {
     String schemeString = "(define theList (list)) (define foo 5) (while (< foo 10) " +
         "(set! theList (append theList (list foo))) (set! foo (+ foo 1))) theList";
     assertEquals("null, (5 6 7 8 9)", scheme.eval(schemeString).toString());
+  }
 
+  public void testYailWhileWithBreak() throws Throwable {
+    String schemeString = "(define theList (list))(define foo 5)(while (< foo 100)" +
+      "(set! theList (append theList (list foo)))(set! foo (+ foo 1))" +
+      "(if (= foo 10) (*yail-break* #f)))theList";
+    assertEquals("false, (5 6 7 8 9)", scheme.eval(schemeString).toString());
   }
 
   public void testYailAnd() throws Throwable {

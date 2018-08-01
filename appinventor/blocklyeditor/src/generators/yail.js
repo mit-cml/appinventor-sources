@@ -35,6 +35,9 @@ Blockly.Yail.ORDER_NONE = 99;          // (...)
 Blockly.Yail.YAIL_ADD_COMPONENT = "(add-component ";
 Blockly.Yail.YAIL_ADD_TO_LIST = "(add-to-list ";
 Blockly.Yail.YAIL_BEGIN = "(begin ";
+// This "break" symbol must match the one that is used in the
+// foreach macro, forrange and while macros
+Blockly.Yail.YAIL_BREAK = "*yail-break*";
 Blockly.Yail.YAIL_CALL_COMPONENT_METHOD = "(call-component-method ";
 Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD = "(call-component-type-method ";
 Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE = "(call-yail-primitive ";
@@ -128,11 +131,6 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
-  
-  for (var comp in componentMap.components)
-    if (componentMap.components.hasOwnProperty(comp))
-      componentNames.push(comp);
-
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
     code.push(Blockly.Yail.blockToCode(block));
@@ -405,8 +403,12 @@ Blockly.Yail.getPropertySetterString = function(componentName, componentType, pr
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + Blockly.Yail.YAIL_QUOTE + 
     componentName + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + propertyName + 
     Blockly.Yail.YAIL_SPACER;
-  var propType = Blockly.Yail.YAIL_QUOTE +
-    componentDb.getPropertyForType(componentType, propertyName).type;
+  var propDef = componentDb.getPropertyForType(componentType, propertyName);
+  // If a designer property does not have a corresponding block property, then propDef will be
+  // undefined. In this case, we assume "any" as the type. A corresponding fix is included in
+  // ComponentProcessor to enforce that newer components/extensions always have both a designer
+  // and block definition.
+  var propType = Blockly.Yail.YAIL_QUOTE + (propDef ? propDef.type : "any");
   var value = Blockly.Yail.getPropertyValueString(propertyValue, propType);
   code = code.concat(value + Blockly.Yail.YAIL_SPACER + propType + Blockly.Yail.YAIL_CLOSE_BLOCK);
   return code;

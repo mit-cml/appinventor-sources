@@ -172,7 +172,7 @@ Blockly.Blocks.component_event = {
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedPropertyName(this.typeName, param.name), false),
+              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(this.typeName, param.name), false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
@@ -448,7 +448,7 @@ Blockly.Blocks.component_method = {
       this.componentDropDown.setValue(this.instanceName);
     } else {
       this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + localizedMethodName);
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentDb.getInternationalizedComponentType(this.typeName) + '.' + localizedMethodName);
       this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
         .setAlign(Blockly.ALIGN_RIGHT);
