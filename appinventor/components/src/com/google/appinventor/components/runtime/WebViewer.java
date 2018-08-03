@@ -153,7 +153,7 @@ public final class WebViewer extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void WebViewString(String newString) {
-    wvInterface.setWebViewString(newString);
+    wvInterface.setWebViewStringFromBlocks(newString);
   }
 
   @Override
@@ -482,6 +482,10 @@ public final class WebViewer extends AndroidViewComponent {
           WebViewStringChange(newString);
         }
       });
+    }
+
+    public void setWebViewStringFromBlocks(final String newString) {
+      webViewString = newString;
     }
 
   }
