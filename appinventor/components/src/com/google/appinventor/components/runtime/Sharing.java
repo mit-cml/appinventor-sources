@@ -7,18 +7,24 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.Intent;
+
 import android.net.Uri;
+
+import android.support.v4.content.FileProvider;
+
 import android.webkit.MimeTypeMap;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.io.File;
-
 
 /**
  * Component for sharing files and/or messages through Android's built-in sharing
@@ -85,6 +91,8 @@ public class Sharing extends AndroidNonvisibleComponent {
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
 
+    String packageName = form.$context().getPackageName();
+
     if (!file.startsWith("file://"))
       file = "file://" + file;
 
@@ -95,8 +103,11 @@ public class Sharing extends AndroidNonvisibleComponent {
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String type = mime.getMimeTypeFromExtension(fileExtension);
 
+      Uri shareableUri = FileProvider.getUriForFile(form.$context(),
+        packageName + ".provider", imageFile);
       Intent shareIntent = new Intent(Intent.ACTION_SEND);
-      shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+      shareIntent.putExtra(Intent.EXTRA_STREAM, shareableUri);
+      shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
       shareIntent.setType(type);
       if (message.length() > 0) {
         shareIntent.putExtra(Intent.EXTRA_TEXT, message);
