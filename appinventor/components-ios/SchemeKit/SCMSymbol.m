@@ -1,22 +1,20 @@
-//
-//  SCMSymbol.m
-//  SchemeKit
-//
-//  Created by Evan Patton on 10/29/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 #import "SCMSymbol.h"
 
 @interface SCMSymbol () {
   pic_value _symbol;
   pic_state *_state;
+  NSString *_name;
 }
 
 @end
 
 
 @implementation SCMSymbol
+
+@synthesize name = _name;
 
 + (instancetype)symbol:(pic_value)symbol forState:(pic_state *)pic {
   return [[self alloc] initWithSymbol:symbol forState:pic];
@@ -27,13 +25,14 @@
   if (self = [super init]) {
     _symbol = symbol;
     _state = pic;
+    _name = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, symbol))];
   }
   return self;
 }
 
 
 - (NSString *)description {
-  return [NSString stringWithUTF8String:pic_str(_state, pic_sym_name(_state, _symbol))];
+  return _name;
 }
 
 @end

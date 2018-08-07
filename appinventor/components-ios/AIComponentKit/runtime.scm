@@ -1,3 +1,6 @@
+; -*- mode: scheme; -*-
+; Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+
 (import (scheme base)
         (scheme write)
         (scheme cxr)
@@ -211,6 +214,26 @@
                         (get-display-representation possible-component))
          "Problem with application")
         component)))
+
+(define (get-property-and-check possible-component component-type prop-name)
+  (let ((component (coerce-to-component-of-type possible-component component-type)))
+    (if (not (yail:isa component AIComponentKit.Component))
+        (signal-runtime-error
+         (format #f "Property getter was expecting a ~A component but got a ~A instead."
+                 component-type
+                 (*:getSimpleName (*:getClass possible-component)))
+         "Problem with application")
+        (sanitize-component-data (invoke component prop-name)))))
+
+(define (set-and-coerce-property-and-check! possible-component comp-type prop-sym property-value property-type)
+  (let ((component (coerce-to-component-of-type possible-component comp-type)))
+    (if (not (yail:isa component AIComponentKit.Component))
+        (signal-runtime-error
+         (format #f "Property setter was expecting a ~A component but got a ~A instead."
+                 comp-type
+                 (*:getSimpleName (*:getClass possible-component)))
+         "Problem with application")
+        (%set-and-coerce-property! component prop-sym property-value property-type))))
 
 ;;; Global variables
 (define-syntax get-var

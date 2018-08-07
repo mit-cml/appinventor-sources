@@ -1,15 +1,11 @@
-//
-//  yail.m
-//  SchemeKit
-//
-//  Created by Evan Patton on 10/9/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import "SCMNameResolver.h"
 #import "SCMMethod.h"
+#import "SCMSymbol.h"
 #import "YailList.h"
 #include "picrin.h"
 #include "picrin/extra.h"
@@ -803,6 +799,21 @@ yail_isa(pic_state *pic) {
     } else {
       return pic_false_value(pic);
     }
+  } else if (pic_sym_p(pic, native_class)) {
+    // We have a symbol representing a FQCN
+    SCMSymbol *symbol = [SCMSymbol symbol:native_class forState:pic];
+    NSString *name = nil;
+    if ([symbol.name hasPrefix:@"com.google.appinventor.components.runtime."]) {
+      name = [symbol.name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
+    } else {
+      name = symbol.name;
+    }
+    Class clazz = [SCMNameResolver classFromQualifiedName:name.UTF8String];
+    if (clazz == nil) {
+      pic_error(pic, "Expected a native class or protocol", 1, native_class);
+    } else {
+      return yail_make_native_class(pic, clazz);
+    }
   } else {
     pic_error(pic, "Expected a native class or protocol", 1, native_class);
   }
@@ -1026,6 +1037,34 @@ void yail_set_time_zone(NSTimeZone *tz) {
   timeZone = tz;
 }
 
+pic_value yail_get_class(pic_state *pic) {
+  pic_value native_object;
+
+  pic_get_args(pic, "o", &native_object);
+  if (yail_native_instance_p(pic, native_object)) {
+    id object = yail_native_instance_ptr(pic, native_object)->object_;
+    Class clazz = [object class];
+    return yail_make_native_class(pic, clazz);
+  } else {
+    pic_error(pic, "Expected a native object", 1, native_object);
+    return pic_undef_value(pic);
+  }
+}
+
+pic_value yail_get_simple_name(pic_state *pic) {
+  pic_value native_class;
+
+  pic_get_args(pic, "o", &native_class);
+
+  if (yail_native_class_p(pic, native_class)) {
+    const char *name = yail_native_class_name(pic, yail_native_class_ptr(pic, native_class));
+    return pic_cstr_value(pic, name);
+  } else {
+    pic_error(pic, "Expected a native class", 1, native_class);
+    return pic_undef_value(pic);
+  }
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -1043,9 +1082,12 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:call-static-method", pic_yail_call_static_method);
   pic_defun(pic, "yail:make-instance", yail_make_instance);
   pic_defun(pic, "yail:invoke", yail_invoke);
+  pic_defun(pic, "invoke", yail_invoke);
   pic_defun(pic, "yail:isa", yail_isa);
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
+  pic_defun(pic, "*:getClass", yail_get_class);
+  pic_defun(pic, "*:getSimpleName", yail_get_simple_name);
   pic_defun(pic, "string-index-of", yail_string_index_of);
   pic_defun(pic, "string-to-upper-case", yail_string_to_uppercase);
   pic_defun(pic, "string-to-lower-case", yail_string_to_lowercase);

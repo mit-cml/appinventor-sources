@@ -183,4 +183,11 @@ class RuntimeTests: XCTestCase {
     XCTAssertNil(interpreter.exception)
     XCTAssertEqual("1970-01-01T00:00:00Z", result)
   }
+
+  func testAnyComponentBlocks() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("Success", interpreter.evalForm("(begin (set-and-coerce-property-and-check! *this-form* 'com.google.appinventor.components.runtime.Form 'Title \"Success\" 'text) (get-property-and-check *this-form* 'com.google.appinventor.components.runtime.Form 'Title))"))
+  }
 }
