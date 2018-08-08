@@ -6,6 +6,22 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
+import android.net.Uri;
+
+import android.support.v4.content.FileProvider;
+
+import android.text.TextUtils;
+
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -13,22 +29,18 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
+
+import java.io.File;
 
 /**
  * Implementation of a general Android Activity component.
@@ -113,6 +125,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   private int requestCode;
   private YailList extras;
   private final ComponentContainer container;
+
+  private static final String LOG_TAG = "ActivityStarter";
 
   /**
    * Creates a new ActivityStarter component.
@@ -454,7 +468,21 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   private Intent buildActivityIntent() {
     Uri uri = (dataUri.length() != 0) ? Uri.parse(dataUri) : null;
-    Intent intent = (uri != null) ? new Intent(action, uri) : new Intent(action);
+    Intent intent = new Intent(action);
+
+    if (uri != null && dataUri.toLowerCase().startsWith("file://") ) {
+      Log.d(LOG_TAG, "Usng file://");
+      File file = new File(uri.getPath());
+      if (file.isFile()) {
+        Log.d(LOG_TAG, "It's a file");
+
+        String packageName = form.$context().getPackageName();
+        uri = FileProvider.getUriForFile(form.$context(), packageName + ".provider", file);
+        intent = new Intent(action);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Log.d(LOG_TAG, "added permissions"); // adb log shows this gets printed
+      }
+    }
 
     if (TextUtils.isEmpty(Action())) {
       return null;
@@ -466,17 +494,19 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       } else {
         intent.setType(dataType);
       }
+    } else {
+      intent.setData(uri);
     }
 
     if (activityPackage.length() != 0 || activityClass.length() != 0) {
       ComponentName component = new ComponentName(activityPackage, activityClass);
       intent.setComponent(component);
-    } else if (Action() == "android.intent.action.MAIN") {
+    } else if (Action().equals("android.intent.action.MAIN")) {
       return null;
     }
 
     if (extraKey.length() != 0 && extraValue.length() != 0) {
-      Log.i("ActivityStarter", "Adding extra, key = " + extraKey + " value = " + extraValue);
+      Log.i(LOG_TAG, "Adding extra, key = " + extraKey + " value = " + extraValue);
       intent.putExtra(extraKey, extraValue);
     }
 
@@ -485,7 +515,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       String key = castExtra.getString(0);
       String value = castExtra.getString(1);
       if (key.length() != 0 && value.length() != 0) {
-        Log.i("ActivityStarter", "Adding extra (pairs), key = " + key + " value = " + value);
+        Log.i(LOG_TAG, "Adding extra (pairs), key = " + key + " value = " + value);
         intent.putExtra(key, value);
       }
     }
@@ -496,7 +526,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == this.requestCode) {
-      Log.i("ActivityStarter", "resultReturned - resultCode = " + resultCode);
+      Log.i(LOG_TAG, "resultReturned - resultCode = " + resultCode);
       if (resultCode == Activity.RESULT_OK) {
         resultIntent = data;
         if (resultName.length() != 0 && resultIntent != null &&
