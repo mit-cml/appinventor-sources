@@ -210,6 +210,9 @@ public class Texting extends AndroidNonvisibleComponent
   // Do we have SEND_SMS permission enabled?
   private boolean havePermission = false;
 
+  // Do we have RECEIVE_SMS permission enabled?
+  private boolean haveReceivePermission = false;
+
   /**
    * Creates a new TextMessage component.
    *
@@ -270,6 +273,14 @@ public class Texting extends AndroidNonvisibleComponent
     processCachedMessages();
     NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
     nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
+  }
+
+  // Called from runtime.scm
+  public void Initialize() {
+    if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
+      // Request receive SMS permission if we are configured to receive but do not have permission
+      requestReceiveSmsPermission();
+    }
   }
 
   /**
@@ -485,6 +496,9 @@ public class Texting extends AndroidNonvisibleComponent
     editor.putInt(PREF_RCVENABLED, enabled);
     editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
     editor.commit();
+    if (enabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
+      requestReceiveSmsPermission();
+    }
   }
 
   public static int isReceivingEnabled(Context context) {
@@ -994,6 +1008,27 @@ public class Texting extends AndroidNonvisibleComponent
     // This may result in an error -- a "sent" or "error" message will be displayed
     activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
+  }
+
+  private void requestReceiveSmsPermission() {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        form.askPermission(Manifest.permission.RECEIVE_SMS,
+            new PermissionResultHandler() {
+              @Override
+              public void HandlePermissionResponse(String permission, boolean granted) {
+                if (granted) {
+                  haveReceivePermission = true;
+                } else {
+                  form.dispatchErrorOccurredEvent(Texting.this, "Texting",
+                      ErrorMessages.ERROR_NO_SMS_RECEIVE_PERMISSION);
+                }
+              }
+            });
+      }
+    });
+
   }
 
   /**
