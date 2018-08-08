@@ -1,8 +1,10 @@
+// -*- mode: javascript; js-indent-level: 2; -*-
 "use strict";
 
 console.log("Look: Using TensorFlow.js version " + tf.version.tfjs);
 
-const MOBILENET_MODEL_PATH = "https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json";
+const MOBILENET_MODEL_PATH = "https://emojiscavengerhunt.withgoogle.com/model/web_model.pb";
+const WEIGHTS_MANIFEST_FILE_URL = "https://emojiscavengerhunt.withgoogle.com/model/weights_manifest.json";
 
 const IMAGE_SIZE = 224;
 const TOPK_PREDICTIONS = 10;
@@ -18,7 +20,7 @@ const ERROR_INVALID_INPUT_MODE = -6;
 let mobilenet;
 const mobilenetDemo = async () => {
   try {
-    mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
+    mobilenet = await tf.loadFrozenModel(MOBILENET_MODEL_PATH, WEIGHTS_MANIFEST_FILE_URL);
     const zeros = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
     mobilenet.predict(zeros).dispose();
     zeros.dispose();
@@ -71,7 +73,7 @@ async function getTopKClasses(logits, topK) {
   const topClassesAndProbs = [];
   for (let i = 0; i < topkIndices.length; i++) {
     topClassesAndProbs.push({
-      className: IMAGENET_CLASSES[topkIndices[i]],
+      className: SCAVENGER_CLASSES[topkIndices[i]],
       probability: topkValues[i]
     });
   }
