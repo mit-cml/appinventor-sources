@@ -108,12 +108,18 @@ public class ReplForm extends Form {
     if (actionBar != null) {
       actionBar.setShowHideAnimationEnabled(false);
     }
+  }
 
-    // Hacking. Show WebView
-    Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
-    webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
-    activeForm.$context().startActivity(webviewIntent);
+  @Override
+  void onCreateFinish() {
+    super.onCreateFinish();
 
+    if (!isEmulator()) {  // Only show REPL splash if not in emulator
+      // Hacking. Show WebView
+      Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
+      webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
+      activeForm.$context().startActivity(webviewIntent);
+    }
   }
 
   @Override
@@ -254,6 +260,11 @@ public class ReplForm extends Form {
         }
       }
     }
+  }
+
+  public boolean isEmulator() {
+    return android.os.Build.PRODUCT.contains("google_sdk") ||  // Old emulator build (2.x)
+        android.os.Build.PRODUCT.contains("sdk_gphone");       // New emulator build (3.x)
   }
 
   public boolean isDirect() {
