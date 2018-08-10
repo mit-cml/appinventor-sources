@@ -262,11 +262,6 @@ public class ReplForm extends Form {
     }
   }
 
-  public boolean isEmulator() {
-    return android.os.Build.PRODUCT.contains("google_sdk") ||  // Old emulator build (2.x)
-        android.os.Build.PRODUCT.contains("sdk_gphone");       // New emulator build (3.x)
-  }
-
   public boolean isDirect() {
     return isDirect;
   }
