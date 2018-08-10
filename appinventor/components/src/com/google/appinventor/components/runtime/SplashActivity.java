@@ -30,6 +30,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * Create a An activity that display's the Repl's startup splash screen
@@ -50,7 +51,9 @@ public final class SplashActivity extends AppInventorCompatActivity {
 
     @JavascriptInterface
     public boolean hasPermission(String permission) {
-      if (ContextCompat.checkSelfPermission(mContext, permission) ==
+      if (SdkLevel.getLevel() < SdkLevel.LEVEL_MARSHMALLOW) {  // permissions granted at install prior to Marshmallow
+        return true;
+      } else if (ContextCompat.checkSelfPermission(mContext, permission) ==
         PackageManager.PERMISSION_GRANTED) {
         return true;
       } else {
@@ -128,8 +131,8 @@ public final class SplashActivity extends AppInventorCompatActivity {
       });
     setContentView(webview);
 //    webview.setWebContentsDebuggingEnabled(true);
-    webview.loadUrl("file:///android_asset/splash.html");
     webview.addJavascriptInterface(android, "Android");
+    webview.loadUrl("file:///android_asset/splash.html");
   }
 
   @Override
