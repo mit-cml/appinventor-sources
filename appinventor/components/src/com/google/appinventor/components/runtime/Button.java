@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Handler;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -26,7 +28,7 @@ import com.google.appinventor.components.common.YaVersion;
     "Editor.")
 @SimpleObject
 public final class Button extends ButtonBase {
-
+    private Handler androidUIHandler;
   /**
    * Creates a new Button component.
    *
@@ -34,13 +36,18 @@ public final class Button extends ButtonBase {
    */
   public Button(ComponentContainer container) {
     super(container);
+    androidUIHandler = new Handler();
   }
 
  @Override
   public void click() {
     // Call the users Click event handler. Note that we distinguish the click() abstract method
     // implementation from the Click() event handler method.
-    Click();
+    androidUIHandler.post(new Runnable() {
+      public void run() {
+        Click();
+      }
+    });
   }
 
   /**
@@ -55,7 +62,11 @@ public final class Button extends ButtonBase {
   public boolean longClick() {
     // Call the users Click event handler. Note that we distinguish the longclick() abstract method
     // implementation from the LongClick() event handler method.
-    return LongClick();
+    androidUIHandler.post(new Runnable() {
+      public void run() {
+        return LongClick();
+      }
+    });
   }
 
   /**
