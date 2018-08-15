@@ -486,13 +486,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       if (backgroundDrawable != null) {
         // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
         try {
-            Bitmap bitmap = backgroundDrawable.getBitmap();
-            preferredWidth = bitmap.getWidth();
-            preferredHeight = bitmap.getHeight();
+          Bitmap bitmap = backgroundDrawable.getBitmap();
+          preferredWidth = bitmap.getWidth();
+          preferredHeight = bitmap.getHeight();
         } catch (Exception e) {
-            preferredWidth = ComponentConstants.CANVAS_PREFERRED_WIDTH;
-            preferredHeight = ComponentConstants.CANVAS_PREFERRED_HEIGHT;
-            Log.e(LOG_TAG, "Error on backgroundDrawable.getBitmap(): " + e.getMessage());
+          preferredWidth = ComponentConstants.CANVAS_PREFERRED_WIDTH;
+          preferredHeight = ComponentConstants.CANVAS_PREFERRED_HEIGHT;
+          Log.e(LOG_TAG, "Error on backgroundDrawable.getBitmap(): " + e.getMessage());
         }
       } else {
         preferredWidth = ComponentConstants.CANVAS_PREFERRED_WIDTH;
