@@ -138,7 +138,6 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       Log.i(LOG_TAG, "copyMediaToTempFile failed: " + e.getMessage());
       container.$form().dispatchErrorOccurredEvent(this, "ImagePicker",
           ErrorMessages.ERROR_CANNOT_COPY_MEDIA, e.getMessage());
-      return;
     }
   }
 
