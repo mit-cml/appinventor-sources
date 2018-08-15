@@ -45,6 +45,7 @@ import android.view.View;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.Exception;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -484,9 +485,15 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       int preferredHeight;
       if (backgroundDrawable != null) {
         // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-        Bitmap bitmap = backgroundDrawable.getBitmap();
-        preferredWidth = bitmap.getWidth();
-        preferredHeight = bitmap.getHeight();
+        try {
+            Bitmap bitmap = backgroundDrawable.getBitmap();
+            preferredWidth = bitmap.getWidth();
+            preferredHeight = bitmap.getHeight();
+        } catch (Exception e) {
+            preferredWidth = ComponentConstants.CANVAS_PREFERRED_WIDTH;
+            preferredHeight = ComponentConstants.CANVAS_PREFERRED_HEIGHT;
+            Log.e(LOG_TAG, "Error on backgroundDrawable.getBitmap(): " + e.getMessage());
+        }
       } else {
         preferredWidth = ComponentConstants.CANVAS_PREFERRED_WIDTH;
         preferredHeight = ComponentConstants.CANVAS_PREFERRED_HEIGHT;
@@ -1485,4 +1492,3 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
-
