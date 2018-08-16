@@ -62,11 +62,7 @@ public final class Button extends ButtonBase {
   public boolean longClick() {
     // Call the users Click event handler. Note that we distinguish the longclick() abstract method
     // implementation from the LongClick() event handler method.
-    androidUIHandler.post(new Runnable() {
-      public void run() {
-        return LongClick();
-      }
-    });
+    return LongClick();
   }
 
   /**
