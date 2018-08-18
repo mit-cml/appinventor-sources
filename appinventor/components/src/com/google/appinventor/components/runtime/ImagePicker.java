@@ -76,7 +76,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
      *        contains the image's content URI.
      */
     public void resultReturned(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             selectionSavedImage = getImagePath(selectedImage);
             AfterPicking();
