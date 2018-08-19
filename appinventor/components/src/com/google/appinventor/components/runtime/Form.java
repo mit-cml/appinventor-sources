@@ -535,14 +535,16 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public void onGlobalLayout() {
-    int heightDiff = scaleLayout.getRootView().getHeight() - scaleLayout.getHeight();
-    int[] position = new int[2];
-    scaleLayout.getLocationInWindow(position);
-    int contentViewTop = position[1];
-    Log.d(LOG_TAG, "onGlobalLayout(): heightdiff = " + heightDiff + " contentViewTop = " +
-      contentViewTop);
+    int totalHeight = scaleLayout.getRootView().getHeight();
+    int scaledHeight = scaleLayout.getHeight();
+    int heightDiff = totalHeight - scaledHeight;
+    // int[] position = new int[2];
+    // scaleLayout.getLocationInWindow(position);
+    // int contentViewTop = position[1];
+    float diffPercent = (float) heightDiff / (float) totalHeight;
+    Log.d(LOG_TAG, "onGlobalLayout(): diffPercent = " + diffPercent);
 
-    if(heightDiff <= contentViewTop){
+    if(diffPercent < 0.25) {    // 0.25 is kind of arbitrary
       Log.d(LOG_TAG, "keyboard hidden!");
       if (keyboardShown) {
         keyboardShown = false;
@@ -552,7 +554,6 @@ public class Form extends AppInventorCompatActivity
         }
       }
     } else {
-      int keyboardHeight = heightDiff - contentViewTop;
       Log.d(LOG_TAG, "keyboard shown!");
       keyboardShown = true;
       if (scaleLayout != null) { // Effectively put us in responsive mode
