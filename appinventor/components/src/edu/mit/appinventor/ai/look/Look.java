@@ -5,19 +5,19 @@
 
 package edu.mit.appinventor.ai.look;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.webkit.PermissionRequest;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -28,12 +28,12 @@ import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.VerticalArrangement;
+import com.google.appinventor.components.runtime.WebViewer;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -43,8 +43,8 @@ import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,9 +57,10 @@ import java.util.Map;
  * @author kelseyc@mit.edu (Kelsey Chan)
  */
 
-@DesignerComponent(version = YaVersion.LOOK_COMPONENT_VERSION,
+@DesignerComponent(version = 20180822,
         category = ComponentCategory.EXTENSION,
-        description = "Component that classifies images.",
+        description = "Component that classifies images. You must provide a WebViewer component " +
+            "in the Look component's WebViewer property in order for classificatino to work.",
         iconName = "aiwebres/glasses.png",
         nonVisible = true)
 @SimpleObject(external = true)
@@ -69,6 +70,10 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
   private static final String LOG_TAG = Look.class.getSimpleName();
   private static final int IMAGE_WIDTH = 500;
   private static final int IMAGE_QUALITY = 100;
+  private static final String MODE_VIDEO = "Video";
+  private static final String MODE_IMAGE = "Image";
+  private static final String ERROR_WEBVIEWER_NOT_SET =
+      "You must specify a WebViewer using the WebViewer designer property before you can call %1s";
 
   private static final String MODEL_PREFIX = "https://emojiscavengerhunt.withgoogle.com/model/";
 
@@ -79,14 +84,21 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
   private static final int ERROR_CANNOT_CLASSIFY_IMAGE_IN_VIDEO_MODE = -4;
   private static final int ERROR_CANNOT_CLASSIFY_VIDEO_IN_IMAGE_MODE = -5;
   private static final int ERROR_INVALID_INPUT_MODE = -6;
+  private static final int ERROR_WEBVIEWER_REQUIRED = -7;
 
-  private final WebView webview;
+  private WebView webview = null;
+  private String inputMode = MODE_VIDEO;
 
   public Look(final Form form) {
     super(form);
     requestHardwareAcceleration(form);
     WebView.setWebContentsDebuggingEnabled(true);
-    webview = new WebView(form);
+    Log.d(LOG_TAG, "Created Look component");
+  }
+
+  @SuppressLint("SetJavaScriptEnabled")
+  private void configureWebView(WebView webview) {
+    this.webview = webview;
     webview.getSettings().setJavaScriptEnabled(true);
     webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
     // adds a way to send strings to the javascript
@@ -136,17 +148,22 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
         }
       }
     });
-    Log.d(LOG_TAG, "Created Look component");
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.runtime.components.VerticalArrangement")
+  public void Initialize() {
+    Log.d(LOG_TAG, "webview = " + webview);
+    if (webview == null) {
+      form.dispatchErrorOccurredEvent(this, "WebViewer",
+          ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_WEBVIEWER_REQUIRED, LOG_TAG,
+          "You must specify a WebViewer component in the WebViewer property.");
+    }
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.runtime.components.WebViewer")
   @SimpleProperty(userVisible = false)
-  public void Container(VerticalArrangement verticalArrangement) {
-    if (verticalArrangement != null) {
-      ((ViewGroup) verticalArrangement.getView()).addView(this.webview, 500, 500);
-      ViewGroup.LayoutParams params = this.webview.getLayoutParams();
-      params.width = 500;
-      params.height = 500;
+  public void WebViewer(WebViewer webviewer) {
+    if (webviewer != null) {
+      configureWebView((WebView) webviewer.getView());
       webview.requestLayout();
       try {
         Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
@@ -158,8 +175,28 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
     }
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHOICES,
+      editorArgs = {MODE_VIDEO, MODE_IMAGE})
+  @SimpleProperty
+  public void InputMode(String mode) {
+    if (webview == null) {
+      inputMode = mode;
+      return;
+    }
+    if (MODE_VIDEO.equalsIgnoreCase(mode)) {
+      webview.evaluateJavascript("setInputMode(\"video\");", null);
+      inputMode = MODE_VIDEO;
+    } else if (MODE_IMAGE.equalsIgnoreCase(mode)) {
+      webview.evaluateJavascript("setInputMode(\"image\");", null);
+      inputMode = MODE_IMAGE;
+    } else {
+      form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode " + mode);
+    }
+  }
+
   @SimpleFunction(description = "Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.")
   public void ClassifyImageData(final String image) {
+    assertWebView("ClassifyImageData");
     Log.d(LOG_TAG, "Entered Classify");
     Log.d(LOG_TAG, image);
 
@@ -188,21 +225,19 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
 
   @SimpleFunction(description = "Toggles between user-facing and environment-facing camera.")
   public void ToggleCameraFacingMode() {
+    assertWebView("ToggleCameraFacingMode");
     webview.evaluateJavascript("toggleCameraFacingMode();", null);
   }
 
   @SimpleFunction(description = "Performs classification on current video frame and triggers the GotClassification event when classification is finished successfully.")
   public void ClassifyVideoData() {
+    assertWebView("ClassifyVideoData");
     webview.evaluateJavascript("classifyVideoData();", null);
-  }
-
-  @SimpleFunction(description = "Sets the input mode to image if inputMode is \"image\" or video if inputMode is \"video\".")
-  public void SetInputMode(final String inputMode) {
-    webview.evaluateJavascript("setInputMode(\"" + inputMode + "\");", null);
   }
 
   @SimpleEvent(description = "Event indicating that the classifier is ready.")
   public void ClassifierReady() {
+    InputMode(inputMode);
     EventDispatcher.dispatchEvent(this, "ClassifierReady");
   }
 
@@ -218,6 +253,12 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
 
   private static void requestHardwareAcceleration(Activity activity) {
     activity.getWindow().setFlags(LayoutParams.FLAG_HARDWARE_ACCELERATED, LayoutParams.FLAG_HARDWARE_ACCELERATED);
+  }
+
+  private void assertWebView(String method) {
+    if (webview == null) {
+      throw new RuntimeException(String.format(ERROR_WEBVIEWER_NOT_SET, method));
+    }
   }
 
   private class JsObject {
