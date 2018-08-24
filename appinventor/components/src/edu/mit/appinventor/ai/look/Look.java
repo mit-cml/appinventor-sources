@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -192,6 +193,13 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
     } else {
       form.dispatchErrorOccurredEvent(this, "InputMode", ErrorMessages.ERROR_EXTENSION_ERROR, ERROR_INVALID_INPUT_MODE, LOG_TAG, "Invalid input mode " + mode);
     }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Gets or sets the input mode for classification. Valid values are \"Video\" " +
+          "(the default) and \"Image\".")
+  public String InputMode() {
+    return inputMode;
   }
 
   @SimpleFunction(description = "Performs classification on the image at the given path and triggers the GotClassification event when classification is finished successfully.")
