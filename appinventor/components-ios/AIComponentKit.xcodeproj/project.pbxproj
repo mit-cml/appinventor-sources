@@ -124,6 +124,7 @@
 		CBC787022032272E005363A3 /* String+Replace.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC787012032272E005363A3 /* String+Replace.swift */; };
 		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
 		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
+		DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D720C842EE00A250F1 /* Pedometer.swift */; };
 		DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDA20C5C1610049A748 /* PickerBase.swift */; };
 		DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */; };
 		DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE102DB820F53189002C71F0 /* FontUtilTests.swift */; };
@@ -280,6 +281,7 @@
 		CBC787012032272E005363A3 /* String+Replace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Replace.swift"; sourceTree = "<group>"; };
 		CBE5DE991FE1C421009A139F /* SoundRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundRecorder.swift; sourceTree = "<group>"; };
 		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
+		DE1443D720C842EE00A250F1 /* Pedometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pedometer.swift; sourceTree = "<group>"; };
 		DE0FFBDA20C5C1610049A748 /* PickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerBase.swift; sourceTree = "<group>"; };
 		DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerBase.swift; sourceTree = "<group>"; };
 		DE102DB820F53189002C71F0 /* FontUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtilTests.swift; sourceTree = "<group>"; };
@@ -469,6 +471,7 @@
 			isa = PBXGroup;
 			children = (
 				06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */,
+				DE1443D720C842EE00A250F1 /* Pedometer.swift */,
 			);
 			name = sensors;
 			sourceTree = "<group>";
@@ -971,6 +974,7 @@
 				DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
+				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,
