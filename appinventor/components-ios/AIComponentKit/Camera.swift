@@ -40,6 +40,9 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
       picker.delegate = self
       picker.sourceType = .camera
       picker.allowsEditing = false
+      if UseFront {
+        picker.cameraDevice = .front
+      }
       picker.cameraCaptureMode = .photo
       _form.present(picker, animated: true, completion: nil)
       _pictureRequest = true
@@ -61,6 +64,9 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
       }
     }
   }
+
+  // Deprecated
+  open var UseFront: Bool = false
 
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
