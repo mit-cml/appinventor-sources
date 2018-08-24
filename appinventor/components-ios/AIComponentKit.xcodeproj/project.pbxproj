@@ -124,6 +124,7 @@
 		CBC787022032272E005363A3 /* String+Replace.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC787012032272E005363A3 /* String+Replace.swift */; };
 		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
 		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
+		DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D520C80BF900A250F1 /* OrientationSensor.swift */; };
 		DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D720C842EE00A250F1 /* Pedometer.swift */; };
 		DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDA20C5C1610049A748 /* PickerBase.swift */; };
 		DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */; };
@@ -281,6 +282,7 @@
 		CBC787012032272E005363A3 /* String+Replace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Replace.swift"; sourceTree = "<group>"; };
 		CBE5DE991FE1C421009A139F /* SoundRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundRecorder.swift; sourceTree = "<group>"; };
 		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
+		DE1443D520C80BF900A250F1 /* OrientationSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationSensor.swift; sourceTree = "<group>"; };
 		DE1443D720C842EE00A250F1 /* Pedometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pedometer.swift; sourceTree = "<group>"; };
 		DE0FFBDA20C5C1610049A748 /* PickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerBase.swift; sourceTree = "<group>"; };
 		DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerBase.swift; sourceTree = "<group>"; };
@@ -471,6 +473,7 @@
 			isa = PBXGroup;
 			children = (
 				06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */,
+				DE1443D520C80BF900A250F1 /* OrientationSensor.swift */,
 				DE1443D720C842EE00A250F1 /* Pedometer.swift */,
 			);
 			name = sensors;
@@ -956,6 +959,7 @@
 				DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
+				DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,
