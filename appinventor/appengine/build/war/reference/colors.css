@@ -1,0 +1,168 @@
+/* Page */
+html, body {
+  background-color: #efedea;
+  color: #000;  
+}
+
+/* tasks */
+#skip-link a,
+ul.tabs li a,
+ul.tabs li a:visited {
+  background-color: #fffffe;
+  color: #101010;
+}
+ul.tabs li a:hover,
+ul.tabs li a:focus,
+ul.tabs li a:active,
+ul.tabs li a.active,
+ul.tabs li a.active:visited {
+  background-color: #efedeb;
+  color: #111111;
+}
+
+/* Links */
+a,
+a:visited {
+  color: #1c6ea0;
+}
+a:hover,
+a:focus,
+a:active {
+  color: #42a9be;  
+}
+.pager a:hover,
+.pager a:active,
+.pager a:focus {
+  background-color: #1c6ea0;
+  color: #fff;
+}
+
+/* Identity */
+h1#site-name a,
+h1#site-name a:visited {
+  color: #4c4742;   
+}
+h2#site-slogan {
+  color: #837b72; 
+}
+
+/* Header */
+.region-header,
+#menu-bar,
+.region-header h2.block-title,
+#menu-bar h2.block-title {
+  color: #101000;
+}
+.region-header a,
+.region-header a:visited {
+  color: #A9A9A9;
+}
+.region-header a:hover,
+.region-header a:focus,
+.region-header a:active {
+  color: #42a9ba;
+}
+
+/* Footer */
+.breadcrumb,
+#page > footer,
+#page > footer .block-title {
+  background-color: #e3e1df;
+  color: #010101;
+}
+.breadcrumb a,
+#page > footer a,
+#page > footer a:visited {
+ color: #126598; 
+}
+.breadcrumb a:hover,
+.breadcrumb a:focus,
+.breadcrumb a:active,
+#page > footer a:hover,
+#page > footer a:focus,
+#page > footer a:active {
+  color: #127ba5;
+}
+
+/* Navigation */
+#menu-bar .sf-menu a {
+  border: 0;
+}
+#menu-bar ul a,
+#menu-bar ul a:visited {
+  background-color: #e1dfdc;
+  color: #4d453e;
+}
+#menu-bar ul a:hover,
+#menu-bar ul a:focus,
+#menu-bar ul a:active,
+#menu-bar ul a.active-trail,
+#menu-bar ul a.active-trail:visited,
+#menu-bar ul a.active,
+#menu-bar ul a.active:visited {
+  background-color: #fff;
+  color: #473e34;
+}
+#menu-bar ul ul a:active,
+#menu-bar ul ul a.active-trail,
+#menu-bar ul ul a.active-trail:visited,
+#menu-bar ul ul a.active,
+#menu-bar ul ul a.active:visited {
+  background-color: #e1dfdc;
+  color: #4d453e;
+}
+#menu-bar ul ul a:hover,
+#menu-bar ul ul a:focus,
+#menu-bar ul ul a.active:hover,
+#menu-bar ul ul a.active:focus {
+  background-color: #473e34;
+  color: #fff;
+}
+#menu-bar .sf-navbar.sf-style-none li ul li ul {
+  background-color: transparent;
+}
+/* .sf-navbar */
+.sf-navbar.sf-style-none li ul {
+  background-color: transparent !important;
+  width: 100%;
+}
+.sf-navbar > li > ul > li {
+  border-bottom: 1px solid #473e34;
+}
+/* .sf-vertical */
+.sf-menu.sf-vertical li a {
+  border: 0;
+  border-bottom: 1px solid #473e34;
+}
+.sf-menu.sf-vertical li a:hover,
+.sf-menu.sf-vertical li a:focus,
+.sf-menu.sf-vertical li a:visited:hover {
+  background: #473e34 !important;
+  color: #ffffff;
+}
+
+/* Node links */
+article .links a,
+article .links a:visited {
+  background-color: #e7e5e3;
+  color: #100100;
+}
+article .links a:hover,
+article .links a:focus,
+article .links a:active {
+  background-color: #d7d5d3;
+  color: #100101;
+}
+
+/* Titles */
+h1 {
+  color: #100001;
+}
+h2 {
+  color: #5e5247; /* need to update */
+}
+.comment header h3 a,
+h1 a,
+h1.article-title a {
+  color: #100011;
+}

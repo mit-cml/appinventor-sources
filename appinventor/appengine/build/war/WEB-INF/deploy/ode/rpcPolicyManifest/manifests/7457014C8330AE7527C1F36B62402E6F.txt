@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.project.ProjectService
+path: E14D37FCCDD97BB5F907BFEF6D899A49.gwt.rpc

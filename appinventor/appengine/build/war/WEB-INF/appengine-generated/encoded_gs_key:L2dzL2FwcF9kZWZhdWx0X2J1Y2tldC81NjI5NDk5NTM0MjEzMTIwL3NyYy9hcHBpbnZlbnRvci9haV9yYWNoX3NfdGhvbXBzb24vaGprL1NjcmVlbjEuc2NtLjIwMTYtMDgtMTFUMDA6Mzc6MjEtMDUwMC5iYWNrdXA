@@ -1,0 +1,4 @@
+#|
+$JSON
+{"authURL":["localhost"],"YaVersion":"157","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"19","AppName":"hjk","Title":"Screen1","Uuid":"0","$Components":[{"$Name":"GamePad1","$Type":"GamePad","$Version":"1","Uuid":"1358062893"}]}}
+|#

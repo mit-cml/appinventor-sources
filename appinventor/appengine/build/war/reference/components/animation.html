@@ -1,0 +1,803 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Drawing and Animation Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+
+                    <h1>Drawing and Animation Components - App Inventor for Android</h1>
+
+                    <!-- CONTENT -->
+                    <h2>Table of Contents</h2>
+                    <ul>
+                      <li>
+                        <a href="#Ball">
+                          Ball
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Canvas">
+                          Canvas
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#ImageSprite">
+                          ImageSprite
+                        </a>
+                      </li>
+                    </ul>
+
+
+                 <h2 id="Ball">Ball</h2>
+
+                 <p><p>A round 'sprite' that can be placed on a <code>Canvas</code>, where it can react to touches and drags, interact with other sprites (<code>ImageSprite</code>s and other <code>Ball</code>s) and the edge of the Canvas, and move according to its property values.</p><p>For example, to have a <code>Ball</code> move 4 pixels toward the top of a <code>Canvas</code> every 500 milliseconds (half second), you would set the <code>Speed</code> property to 4 [pixels], the <code>Interval</code> property to 500 [milliseconds], the <code>Heading</code> property to 90 [degrees], and the <code>Enabled</code> property to <code>True</code>.  These and its other properties can be changed at any time.</p><p>The difference between a Ball and an <code>ImageSprite</code> is that the latter can get its appearance from an image file, while a Ball's appearance can only be changed by varying its <code>PaintColor</code> and <code>Radius</code> properties.</p></p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>Enabled</code></dt>
+                   <dd>Controls whether the sprite moves when its speed is non-zero.</dd>
+                   <dt><code>Heading</code></dt>
+                   <dd><p>Returns the sprite's heading in degrees above the positive x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the top of the screen.</p></dd>
+                   <dt><code>Interval</code></dt>
+                   <dd><p>The interval in milliseconds at which the sprite's position is updated.  For example, if the interval is 50 and the speed is 10, then the sprite will move 10 pixels every 50 milliseconds.</p></dd>
+                   <dt><code>PaintColor</code></dt>
+                   <dd></dd>
+                   <dt><code>Radius</code></dt>
+                   <dd></dd>
+                   <dt><code>Speed</code></dt>
+                   <dd><p>The speed at which the sprite moves.  The sprite moves this many pixels every interval.</p></dd>
+                   <dt><code>Visible</code></dt>
+                   <dd><p>True if the sprite is visible.</p></dd>
+                   <dt><code>X</code></dt>
+                   <dd><p>The horizontal coordinate of the left edge of the sprite, increasing as the sprite moves to the right.</p></dd>
+                   <dt><code>Y</code></dt>
+                   <dd><p>The vertical coordinate of the top of the sprite, increasing as the sprite moves down.</p></dd>
+                   <dt><code>Z</code></dt>
+                   <dd><p>How the sprite should be layered relative to other sprits, with higher-numbered layers in front of lower-numbered layers.</p></dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt><code>CollidedWith(component other)</code></dt>
+                   <dd>Handler for CollidedWith events, called when two sprites collide.
+                  Note that checking for collisions with a rotated ImageSprite currently
+                  checks against the sprite's unrotated position.  Therefore, collision
+                  checking will be inaccurate for tall narrow or short wide sprites that are
+                  rotated.</dd>
+                   <dt><code>Dragged(number startX, number startY, number prevX, number prevY, number currentX, number currentY)</code></dt>
+                   <dd>Handler for Dragged events.  On all calls, the starting coordinates
+                  are where the screen was first touched, and the "current" coordinates
+                  describe the endpoint of the current line segment.  On the first call
+                  within a given drag, the "previous" coordinates are the same as the
+                  starting coordinates; subsequently, they are the "current" coordinates
+                  from the prior call.  Note that the Sprite won't actually move
+                  anywhere in response to the Dragged event unless MoveTo is
+                  specifically called.</dd>
+
+<dt><code>EdgeReached(number edge)</code></dt>
+<dd>Event handler called when the sprite reaches an edge of the screen. If Bounce is then called with that edge, the sprite will appear to bounce off of the edge it reached.  Edge here is represented as an integer that indicates one of eight directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3), and northwest(-4).</dd>
+<dt>
+                   <dt><code>Flung(number x, number y, number speed, number heading, number xvel, number yvel)</code></dt>
+                   <dd>When a fling gesture (quick swipe) is made on the sprite: provides
+                  the (x,y) position of the start of the fling, relative to the upper
+                  left of the canvas. Also provides the speed (pixels per millisecond) and heading
+                  (0-360 degrees) of the fling, as well as the x velocity and y velocity
+                  components of the fling's vector.</dd>
+                   <dt><code>NoLongerCollidingWith(component other)</code></dt>
+                   <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
+                   <dt><code>TouchDown(number x, number y)</code></dt>
+                   <dd>When the user begins touching the sprite (places finger on sprite and
+                  leaves it there): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>TouchUp(number x, number y)</code></dt>
+                   <dd>When the user stops touching the sprite (lifts finger after a
+                  TouchDown event): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>Touched(number x, number y)</code></dt>
+                   <dd>When the user touches the sprite and then immediately lifts finger: provides
+                  the (x,y) position of the touch, relative to the upper left of the canvas</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt><code>Bounce(number edge)</code></dt>
+                   <dd><p>Makes this sprite bounce, as if off a wall.  For normal bouncing, the edge argument should be the one returned by EdgeReached.</p></dd>
+                   <dt><code>boolean CollidingWith(component other)</code></dt>
+                   <dd>Indicates whether a collision has been registered between this sprite
+                  and the passed sprite.</dd>
+                   <dt><code>MoveIntoBounds()</code></dt>
+                   <dd>Moves the sprite back in bounds if part of it extends out of bounds,
+                  having no effect otherwise. If the sprite is too wide to fit on the
+                  canvas, this aligns the left side of the sprite with the left side of the
+                  canvas. If the sprite is too tall to fit on the canvas, this aligns the
+                  top side of the sprite with the top side of the canvas.</dd>
+                   <dt><code>MoveTo(number x, number y)</code></dt>
+                   <dd><p>Moves the sprite so that its left top corner is at the specfied x and y coordinates.</p></dd>
+                   <dt><code>PointInDirection(number x, number y)</code></dt>
+                   <dd><p>Turns the sprite to point towards the point with coordinates as (x, y).</p></dd>
+                   <dt><code>PointTowards(component target)</code></dt>
+                   <dd><p>Turns the sprite to point towards a designated target sprite. The new heading will be parallel to the line joining the centerpoints of the two sprites.</p></dd>
+                 </dl>
+
+                 <h2 id="Canvas">Canvas</h2>
+
+                 <p><p>A two-dimensional touch-sensitive rectangular
+                 panel on which drawing can be done and sprites can be
+                 moved.</p> <p>The <code>BackgroundColor</code>, <code>PaintColor</code>, <code>BackgroundImage</code>, <code>Width</code>,
+                 and <code>Height</code> of the Canvas can be set in
+                 either the Designer or in the Blocks Editor.
+                 The <code>Width</code> and <code>Height</code> are
+                 measured in pixels and must be positive.</p><p>Any
+                 location on the Canvas can be specified as a pair of
+                 (X, Y) values, where <ul> <li>X is the number of
+                 pixels away from the left edge of the
+                 Canvas</li><li>Y is the number of pixels away from
+                 the top edge of the Canvas</li></ul>.</p> <p>There
+                 are events to tell when and where a Canvas has been
+                 touched or a <code>Sprite</code>
+                 (<code>ImageSprite</code> or <code>Ball</code>) has
+                 been dragged.  There are also methods for drawing
+                 points, lines, and circles.</p></p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>BackgroundColor</code></dt>
+                   <dd>The color of the canvas background.</dd>
+                   <dt><code>BackgroundImage</code></dt>
+                   <dd>The name of a file containing the background image for the canvas</dd>
+                   <dt><code>FontSize</code></dt>
+                   <dd>The font size of text drawn on the canvas.</dd>
+                   <dt><code>Height</code></dt>
+                   <dd></dd>
+                   <dt><code>LineWidth</code></dt>
+                   <dd>The width of lines drawn on the canvas.</dd>
+                   <dt><code>PaintColor</code></dt>
+                   <dd>The color in which lines are drawn</dd>
+                   <dt><code>TextAlignment</code></dt>
+                   <dd>Determines the alignment of the text drawn by DrawText() or DrawAngle() with respect to the point specified by that command.</dd>
+                   <dt><code>Visible</code></dt>
+                   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                   <dt><code>Width</code></dt>
+                   <dd></dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt><code>Dragged(number startX, number startY, number prevX, number prevY, number currentX, number currentY, boolean draggedSprite)</code></dt>
+                   <dd>When the user does a drag from one point (prevX, prevY) to
+                  another (x, y).  The pair (startX, startY) indicates where the
+                  user first touched the screen, and "draggedSprite" indicates whether a
+                  sprite is being dragged.</dd>
+                   <dt><code>Flung(number x, number y, number speed, number heading, number xvel, number yvel, boolean flungSprite)</code></dt>
+                   <dd>When a fling gesture (quick swipe) is made on the canvas: provides
+                  the (x,y) position of the start of the fling, relative to the upper
+                  left of the canvas. Also provides the speed (pixels per millisecond) and heading
+                  (0-360 degrees) of the fling, as well as the x velocity and y velocity
+                  components of the fling's vector. The value "flungSprite" is true if a sprite
+                  was located near the the starting point of the fling gesture.</dd>
+                   <dt><code>TouchDown(number x, number y)</code></dt>
+                   <dd>When the user begins touching the canvas (places finger on canvas and
+                  leaves it there): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>TouchUp(number x, number y)</code></dt>
+                   <dd>When the user stops touching the canvas (lifts finger after a
+                  TouchDown event): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>Touched(number x, number y, boolean touchedSprite)</code></dt>
+                   <dd>When the user touches the canvas and then immediately lifts finger: provides
+                  the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedSprite
+                  is true if the same touch also touched a sprite, and false otherwise.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt><code>Clear()</code></dt>
+                   <dd>Clears anything drawn on this Canvas but not any background color or image.</dd>
+                   <dt><code>DrawCircle(number x, number y, number r)</code></dt>
+                   <dd>Draws a circle (filled in) at the given coordinates on the canvas, with the
+                  given radius.</dd>
+                   <dt><code>DrawLine(number x1, number y1, number x2, number y2)</code></dt>
+                   <dd>Draws a line between the given coordinates on the canvas.</dd>
+                   <dt><code>DrawPoint(number x, number y)</code></dt>
+                   <dd>Draws a point at the given coordinates on the canvas.</dd>
+                   <dt><code>DrawText(text text, number x, number y)</code></dt>
+                   <dd>Draws the specified text relative to the specified coordinates using the values of the FontSize and TextAlignment properties.</dd>
+                   <dt><code>DrawTextAtAngle(text text, number x, number y, number angle)</code></dt>
+                   <dd>Draws the specified text starting at the specified coordinates at the specified angle using the values of the FontSize and TextAlignment properties.</dd>
+                   <dt><code>number GetBackgroundPixelColor(number x, number y)</code></dt>
+                   <dd>Gets the color of the specified point. This includes the background and any drawn points, lines, or circles but not sprites.</dd>
+                   <dt><code>number GetPixelColor(number x, number y)</code></dt>
+                   <dd>Gets the color of the specified point.</dd>
+                   <dt><code>text Save()</code></dt>
+                   <dd>Saves a picture of this Canvas to the device's external storage. If an error occurs, the Screen's ErrorOccurred event will be called.</dd>
+                   <dt><code>text SaveAs(text fileName)</code></dt>
+                   <dd>Saves a picture of this Canvas to the device's external storage in the file named fileName. fileName must end with one of .jpg, .jpeg, or .png, which determines the file type.</dd>
+                   <dt><code>SetBackgroundPixelColor(number x, number y, number color)</code></dt>
+                   <dd>Sets the color of the specified point. This differs from DrawPoint by having an argument for color.</dd>
+                 </dl>
+
+                 <h2 id="ImageSprite">ImageSprite</h2>
+
+                 <p><p>A 'sprite' that can be placed on
+                 a <code>Canvas</code>, where it can react to touches
+                 and drags, interact with other sprites
+                 (<code>Ball</code>s and
+                 other <code>ImageSprite</code>s) and the edge of the
+                 Canvas, and move according to its property values.
+                 Its appearance is that of the image specified in
+                 its <code>Picture</code> property (unless
+                 its <code>Visible</code> property
+                 is <code>False</code>.</p> <p>To have
+                 an <code>ImageSprite</code> move 10 pixels to the
+                 left every 1000 milliseconds (one second), for
+                 example, you would set the <code>Speed</code>
+                 property to 10 [pixels], the <code>Interval</code>
+                 property to 1000 [milliseconds],
+                 the <code>Heading</code> property to 180 [degrees],
+                 and the <code>Enabled</code> property
+                 to <code>True</code>.  A sprite
+                 whose <code>Rotates</code> property
+                 is <code>True</code> will rotate its image as the
+                 sprite's <code>Heading</code> changes.  Checking for
+                 collisions with a rotated sprite currently checks the
+                 sprite's unrotated position so that collision
+                 checking will be inaccurate for tall narrow or short
+                 wide sprites that are rotated.  Any of the sprite
+                 properties can be changed at any time under program
+                 control.</p> </p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>Enabled</code></dt>
+                   <dd>Controls whether the sprite moves when its speed is non-zero.</dd>
+                   <dt><code>Heading</code></dt>
+                   <dd><p>Returns the sprite's heading in degrees above the positive x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the top of the screen.</p></dd>
+                   <dt><code>Height</code></dt>
+                   <dd></dd>
+                   <dt><code>Interval</code></dt>
+                   <dd><p>The interval in milliseconds at which the sprite's position is updated.  For example, if the interval is 50 and the speed is 10, then the sprite will move 10 pixels every 50 milliseconds.</p></dd>
+                   <dt><code>Picture</code></dt>
+                   <dd>The picture that determines the sprite's appearence</dd>
+                   <dt><code>Rotates</code></dt>
+                   <dd>If true, the sprite image rotates to match the sprite's heading. If false, the sprite image does not rotate when the sprite changes heading. The sprite rotates around its centerpoint.</dd>
+                   <dt><code>Speed</code></dt>
+                   <dd><p>The speed at which the sprite moves.  The sprite moves this many pixels every interval.</p></dd>
+                   <dt><code>Visible</code></dt>
+                   <dd><p>True if the sprite is visible.</p></dd>
+                   <dt><code>Width</code></dt>
+                   <dd></dd>
+                   <dt><code>X</code></dt>
+                   <dd><p>The horizontal coordinate of the left edge of the sprite, increasing as the sprite moves to the right.</p></dd>
+                   <dt><code>Y</code></dt>
+                   <dd><p>The vertical coordinate of the top of the sprite, increasing as the sprite moves down.</p></dd>
+                   <dt><code>Z</code></dt>
+                   <dd><p>How the sprite should be layered relative to other sprits, with higher-numbered layers in front of lower-numbered layers.</p></dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt><code>CollidedWith(component other)</code></dt>
+                   <dd>Handler for CollidedWith events, called when two sprites collide.
+                  Note that checking for collisions with a rotated ImageSprite currently
+                  checks against the sprite's unrotated position.  Therefore, collision
+                  checking will be inaccurate for tall narrow or short wide sprites that are
+                  rotated.</dd>
+                   <dt><code>Dragged(number startX, number startY, number prevX, number prevY, number currentX, number currentY)</code></dt>
+                   <dd>Handler for Dragged events.  On all calls, the starting coordinates
+                  are where the screen was first touched, and the "current" coordinates
+                  describe the endpoint of the current line segment.  On the first call
+                  within a given drag, the "previous" coordinates are the same as the
+                  starting coordinates; subsequently, they are the "current" coordinates
+                  from the prior call.  Note that the Sprite won't actually move
+                  anywhere in response to the Dragged event unless MoveTo is
+                  specifically called.</dd>
+<dt><code>EdgeReached(number edge)</code></dt>
+  <dd>Event handler called when the sprite reaches an edge of the screen. If Bounce is then called with that edge, the sprite will appear to bounce off of the edge it reached.  Edge here is represented as an integer that indicates one of eight directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3), and northwest(-4).</dd>
+<dt>
+                   <dt><code>Flung(number x, number y, number speed, number heading, number xvel, number yvel)</code></dt>
+                   <dd>When a fling gesture (quick swipe) is made on the sprite: provides
+                  the (x,y) position of the start of the fling, relative to the upper
+                  left of the canvas. Also provides the speed (pixels per millisecond) and heading
+                  (0-360 degrees) of the fling, as well as the x velocity and y velocity
+                  components of the fling's vector.</dd>
+                   <dt><code>NoLongerCollidingWith(component other)</code></dt>
+                   <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
+                   <dt><code>TouchDown(number x, number y)</code></dt>
+                   <dd>When the user begins touching the sprite (places finger on sprite and
+                  leaves it there): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>TouchUp(number x, number y)</code></dt>
+                   <dd>When the user stops touching the sprite (lifts finger after a
+                  TouchDown event): provides the (x,y) position of the touch, relative
+                  to the upper left of the canvas</dd>
+                   <dt><code>Touched(number x, number y)</code></dt>
+                   <dd>When the user touches the sprite and then immediately lifts finger: provides
+                  the (x,y) position of the touch, relative to the upper left of the canvas</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt><code>Bounce(number edge)</code></dt>
+                   <dd><p>Makes this sprite bounce, as if off a wall.  For normal bouncing, the edge argument should be the one returned by EdgeReached.</p></dd>
+                   <dt><code>boolean CollidingWith(component other)</code></dt>
+                   <dd>Indicates whether a collision has been registered between this sprite
+                  and the passed sprite.</dd>
+                   <dt><code>MoveIntoBounds()</code></dt>
+                   <dd>Moves the sprite back in bounds if part of it extends out of bounds,
+                  having no effect otherwise. If the sprite is too wide to fit on the
+                  canvas, this aligns the left side of the sprite with the left side of the
+                  canvas. If the sprite is too tall to fit on the canvas, this aligns the
+                  top side of the sprite with the top side of the canvas.</dd>
+                   <dt><code>MoveTo(number x, number y)</code></dt>
+                   <dd><p>Moves the sprite so that its left top corner is at the specfied x and y coordinates.</p></dd>
+                   <dt><code>PointInDirection(number x, number y)</code></dt>
+                   <dd><p>Turns the sprite to point towards the point with coordinates as (x, y).</p></dd>
+                   <dt><code>PointTowards(component target)</code></dt>
+                   <dd><p>Turns the sprite to point towards a designated target sprite. The new heading will be parallel to the line joining the centerpoints of the two sprites.</p></dd>
+                 </dl>
+
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>

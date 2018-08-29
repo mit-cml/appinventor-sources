@@ -1,0 +1,7 @@
+<BlockGenus name="%1$s-%2$s" initlabel="%2$s"
+            kind="command" decorator="when"
+            is-starter="yes" is-terminator="yes" color="event">
+  <description>
+    <text>%3$s</text>
+  </description>
+  <BlockConnectors>

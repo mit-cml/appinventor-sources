@@ -1,0 +1,746 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="global_declaration" id="1" inline="false" x="-42" y="-693">
+    <field name="NAME">Y</field>
+    <value name="VALUE">
+      <block type="math_number" id="2">
+        <field name="NUM">0</field>
+      </block>
+    </value>
+  </block>
+  <block type="global_declaration" id="3" inline="false" x="-43" y="-658">
+    <field name="NAME">X</field>
+    <value name="VALUE">
+      <block type="math_number" id="4">
+        <field name="NUM">0</field>
+      </block>
+    </value>
+  </block>
+  <block type="global_declaration" id="5" inline="false" x="-43" y="-623">
+    <field name="NAME">Sending</field>
+    <value name="VALUE">
+      <block type="logic_boolean" id="6">
+        <field name="BOOL">FALSE</field>
+      </block>
+    </value>
+  </block>
+  <block type="global_declaration" id="7" inline="false" x="-42" y="-588">
+    <field name="NAME">Seconds</field>
+    <value name="VALUE">
+      <block type="math_number" id="8">
+        <field name="NUM">60</field>
+      </block>
+    </value>
+  </block>
+  <block type="component_event" id="9" x="-39" y="-548">
+    <mutation component_type="Form" instance_name="Screen1" event_name="Initialize"></mutation>
+    <field name="COMPONENT_SELECTOR">Screen1</field>
+    <statement name="DO">
+      <block type="component_set_get" id="10" inline="false">
+        <mutation component_type="Button" set_or_get="set" property_name="Text" is_generic="false" instance_name="YellowLedBtn"></mutation>
+        <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="text" id="11">
+            <field name="TEXT">Start</field>
+          </block>
+        </value>
+        <next>
+          <block type="component_set_get" id="12" inline="false">
+            <mutation component_type="TextBox" set_or_get="set" property_name="Text" is_generic="false" instance_name="SecondsTxBx"></mutation>
+            <field name="COMPONENT_SELECTOR">SecondsTxBx</field>
+            <field name="PROP">Text</field>
+            <value name="VALUE">
+              <block type="lexical_variable_get" id="13">
+                <field name="VAR">global Seconds</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="14" x="-42" y="-444">
+    <mutation component_type="Form" instance_name="Screen1" event_name="ErrorOccurred"></mutation>
+    <field name="COMPONENT_SELECTOR">Screen1</field>
+    <statement name="DO">
+      <block type="component_set_get" id="15" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Status"></mutation>
+        <field name="COMPONENT_SELECTOR">Status</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="text_join" id="16" inline="false">
+            <mutation items="7"></mutation>
+            <value name="ADD0">
+              <block type="lexical_variable_get" id="17">
+                <mutation>
+                  <eventparam name="component"></eventparam>
+                </mutation>
+                <field name="VAR">component</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text" id="18">
+                <field name="TEXT">\n</field>
+              </block>
+            </value>
+            <value name="ADD2">
+              <block type="lexical_variable_get" id="19">
+                <mutation>
+                  <eventparam name="functionName"></eventparam>
+                </mutation>
+                <field name="VAR">functionName</field>
+              </block>
+            </value>
+            <value name="ADD3">
+              <block type="text" id="20">
+                <field name="TEXT">\n</field>
+              </block>
+            </value>
+            <value name="ADD4">
+              <block type="lexical_variable_get" id="21">
+                <mutation>
+                  <eventparam name="errorNumber"></eventparam>
+                </mutation>
+                <field name="VAR">errorNumber</field>
+              </block>
+            </value>
+            <value name="ADD5">
+              <block type="text" id="22">
+                <field name="TEXT">\n</field>
+              </block>
+            </value>
+            <value name="ADD6">
+              <block type="lexical_variable_get" id="23">
+                <mutation>
+                  <eventparam name="message"></eventparam>
+                </mutation>
+                <field name="VAR">message</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="24" x="-40" y="-188">
+    <mutation component_type="ListPicker" instance_name="ListPicker1" event_name="BeforePicking"></mutation>
+    <field name="COMPONENT_SELECTOR">ListPicker1</field>
+    <statement name="DO">
+      <block type="component_set_get" id="25" inline="false">
+        <mutation component_type="ListPicker" set_or_get="set" property_name="Elements" is_generic="false" instance_name="ListPicker1"></mutation>
+        <field name="COMPONENT_SELECTOR">ListPicker1</field>
+        <field name="PROP">Elements</field>
+        <value name="VALUE">
+          <block type="component_set_get" id="26">
+            <mutation component_type="BluetoothClient" set_or_get="get" property_name="AddressesAndNames" is_generic="false" instance_name="BluetoothClient1"></mutation>
+            <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+            <field name="PROP">AddressesAndNames</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="27" x="-38" y="-111">
+    <mutation component_type="ListPicker" instance_name="ListPicker1" event_name="AfterPicking"></mutation>
+    <field name="COMPONENT_SELECTOR">ListPicker1</field>
+    <statement name="DO">
+      <block type="controls_if" id="28" inline="false">
+        <value name="IF0">
+          <block type="component_method" id="29" inline="false">
+            <mutation component_type="BluetoothClient" method_name="Connect" is_generic="false" instance_name="BluetoothClient1"></mutation>
+            <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+            <value name="ARG0">
+              <block type="component_set_get" id="30">
+                <mutation component_type="ListPicker" set_or_get="get" property_name="Selection" is_generic="false" instance_name="ListPicker1"></mutation>
+                <field name="COMPONENT_SELECTOR">ListPicker1</field>
+                <field name="PROP">Selection</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_set_get" id="31" inline="false">
+            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label1"></mutation>
+            <field name="COMPONENT_SELECTOR">Label1</field>
+            <field name="PROP">Text</field>
+            <value name="VALUE">
+              <block type="text" id="32">
+                <field name="TEXT">Connected</field>
+              </block>
+            </value>
+            <next>
+              <block type="component_set_get" id="33" inline="false">
+                <mutation component_type="Clock" set_or_get="set" property_name="TimerEnabled" is_generic="false" instance_name="Clock1"></mutation>
+                <field name="COMPONENT_SELECTOR">Clock1</field>
+                <field name="PROP">TimerEnabled</field>
+                <value name="VALUE">
+                  <block type="logic_boolean" id="34">
+                    <field name="BOOL">TRUE</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="35" x="-31" y="54">
+    <mutation component_type="Button" instance_name="GetStatusBtn" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">GetStatusBtn</field>
+    <statement name="DO">
+      <block type="component_method" id="36" inline="false">
+        <mutation component_type="BluetoothClient" method_name="SendText" is_generic="false" instance_name="BluetoothClient1"></mutation>
+        <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+        <value name="ARG0">
+          <block type="text" id="37">
+            <field name="TEXT">STATUS\n</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="38" x="-32" y="152">
+    <mutation component_type="Button" instance_name="YellowLedBtn" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+    <statement name="DO">
+      <block type="controls_if" id="39" inline="false">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="lexical_variable_get" id="40">
+            <field name="VAR">global Sending</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="lexical_variable_set" id="41" inline="false">
+            <field name="VAR">global Sending</field>
+            <value name="VALUE">
+              <block type="logic_false" id="42">
+                <field name="BOOL">FALSE</field>
+              </block>
+            </value>
+            <next>
+              <block type="component_method" id="43">
+                <mutation component_type="GamePad" method_name="DisableGamepad" is_generic="false" instance_name="GamePad1"></mutation>
+                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                <next>
+                  <block type="component_set_get" id="44" inline="false">
+                    <mutation component_type="Button" set_or_get="set" property_name="Text" is_generic="false" instance_name="YellowLedBtn"></mutation>
+                    <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+                    <field name="PROP">Text</field>
+                    <value name="VALUE">
+                      <block type="text" id="45">
+                        <field name="TEXT">Start</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="component_set_get" id="46" inline="false">
+                        <mutation component_type="Button" set_or_get="set" property_name="BackgroundColor" is_generic="false" instance_name="YellowLedBtn"></mutation>
+                        <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+                        <field name="PROP">BackgroundColor</field>
+                        <value name="VALUE">
+                          <block type="color_red" id="47">
+                            <field name="COLOR">#33ff33</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="component_method" id="48" inline="false">
+                            <mutation component_type="BluetoothClient" method_name="SendText" is_generic="false" instance_name="BluetoothClient1"></mutation>
+                            <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+                            <value name="ARG0">
+                              <block type="text_join" id="49" inline="false">
+                                <mutation items="4"></mutation>
+                                <value name="ADD0">
+                                  <block type="math_add" id="50" inline="true">
+                                    <mutation items="2"></mutation>
+                                    <value name="NUM0">
+                                      <block type="math_multiply" id="51" inline="true">
+                                        <mutation items="2"></mutation>
+                                        <value name="NUM0">
+                                          <block type="math_number" id="52">
+                                            <field name="NUM">0</field>
+                                          </block>
+                                        </value>
+                                        <value name="NUM1">
+                                          <block type="math_number" id="53">
+                                            <field name="NUM">63</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <value name="NUM1">
+                                      <block type="math_number" id="54">
+                                        <field name="NUM">64</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="ADD1">
+                                  <block type="text" id="55">
+                                    <field name="TEXT">z</field>
+                                  </block>
+                                </value>
+                                <value name="ADD2">
+                                  <block type="math_add" id="56" inline="true">
+                                    <mutation items="2"></mutation>
+                                    <value name="NUM0">
+                                      <block type="math_multiply" id="57" inline="true">
+                                        <mutation items="2"></mutation>
+                                        <value name="NUM0">
+                                          <block type="math_number" id="58">
+                                            <field name="NUM">0</field>
+                                          </block>
+                                        </value>
+                                        <value name="NUM1">
+                                          <block type="math_number" id="59">
+                                            <field name="NUM">63</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <value name="NUM1">
+                                      <block type="math_number" id="60">
+                                        <field name="NUM">192</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="ADD3">
+                                  <block type="text" id="61">
+                                    <field name="TEXT">z\n</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <statement name="ELSE">
+          <block type="lexical_variable_set" id="62" inline="false">
+            <field name="VAR">global Sending</field>
+            <value name="VALUE">
+              <block type="logic_boolean" id="63">
+                <field name="BOOL">TRUE</field>
+              </block>
+            </value>
+            <next>
+              <block type="component_method" id="64">
+                <mutation component_type="GamePad" method_name="EnableGamepad" is_generic="false" instance_name="GamePad1"></mutation>
+                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                <next>
+                  <block type="component_set_get" id="65" inline="false">
+                    <mutation component_type="Button" set_or_get="set" property_name="Text" is_generic="false" instance_name="YellowLedBtn"></mutation>
+                    <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+                    <field name="PROP">Text</field>
+                    <value name="VALUE">
+                      <block type="text" id="66">
+                        <field name="TEXT">Stop</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="component_set_get" id="67" inline="false">
+                        <mutation component_type="Button" set_or_get="set" property_name="BackgroundColor" is_generic="false" instance_name="YellowLedBtn"></mutation>
+                        <field name="COMPONENT_SELECTOR">YellowLedBtn</field>
+                        <field name="PROP">BackgroundColor</field>
+                        <value name="VALUE">
+                          <block type="color_red" id="68">
+                            <field name="COLOR">#ff0000</field>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="69" x="-13" y="748">
+    <mutation component_type="Clock" instance_name="Clock1" event_name="Timer"></mutation>
+    <field name="COMPONENT_SELECTOR">Clock1</field>
+    <statement name="DO">
+      <block type="controls_if" id="70" inline="false">
+        <value name="IF0">
+          <block type="math_compare" id="71" inline="true">
+            <field name="OP">GT</field>
+            <value name="A">
+              <block type="component_method" id="72">
+                <mutation component_type="BluetoothClient" method_name="BytesAvailableToReceive" is_generic="false" instance_name="BluetoothClient1"></mutation>
+                <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="73">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_set_get" id="74" inline="false">
+            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Status"></mutation>
+            <field name="COMPONENT_SELECTOR">Status</field>
+            <field name="PROP">Text</field>
+            <value name="VALUE">
+              <block type="component_method" id="75" inline="false">
+                <mutation component_type="BluetoothClient" method_name="ReceiveText" is_generic="false" instance_name="BluetoothClient1"></mutation>
+                <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+                <value name="ARG0">
+                  <block type="component_method" id="76">
+                    <mutation component_type="BluetoothClient" method_name="BytesAvailableToReceive" is_generic="false" instance_name="BluetoothClient1"></mutation>
+                    <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </statement>
+        <next>
+          <block type="controls_if" id="77" inline="false">
+            <value name="IF0">
+              <block type="lexical_variable_get" id="78">
+                <field name="VAR">global Sending</field>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="procedures_callnoreturn" id="79">
+                <mutation name="padCmd"></mutation>
+                <field name="PROCNAME">padCmd</field>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="80" x="-14" y="1031">
+    <mutation component_type="Button" instance_name="SecondsBtn" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">SecondsBtn</field>
+    <statement name="DO">
+      <block type="lexical_variable_set" id="81" inline="false">
+        <field name="VAR">global Seconds</field>
+        <value name="VALUE">
+          <block type="component_set_get" id="82">
+            <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="SecondsTxBx"></mutation>
+            <field name="COMPONENT_SELECTOR">SecondsTxBx</field>
+            <field name="PROP">Text</field>
+          </block>
+        </value>
+        <next>
+          <block type="component_method" id="83" inline="false">
+            <mutation component_type="BluetoothClient" method_name="SendText" is_generic="false" instance_name="BluetoothClient1"></mutation>
+            <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+            <value name="ARG0">
+              <block type="text_join" id="84" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="text" id="85">
+                    <field name="TEXT">SECONDS=</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="lexical_variable_get" id="86">
+                    <field name="VAR">global Seconds</field>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text" id="87">
+                    <field name="TEXT">\n</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" id="88" inline="false" x="505" y="1152">
+    <field name="NAME">pwrR</field>
+    <value name="VALUE">
+      <block type="math_number" id="89">
+        <field name="NUM">0</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" id="90" x="-28" y="1193">
+    <mutation></mutation>
+    <field name="NAME">padCmd</field>
+    <statement name="STACK">
+      <block type="lexical_variable_set" id="91" inline="false">
+        <field name="VAR">global X</field>
+        <value name="VALUE">
+          <block type="math_number" id="92">
+            <field name="NUM">0</field>
+          </block>
+        </value>
+        <next>
+          <block type="lexical_variable_set" id="93" inline="false">
+            <field name="VAR">global Y</field>
+            <value name="VALUE">
+              <block type="math_number" id="94">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+            <next>
+              <block type="lexical_variable_set" id="95" inline="false">
+                <field name="VAR">global pwrL</field>
+                <value name="VALUE">
+                  <block type="math_add" id="96" inline="true">
+                    <mutation items="2"></mutation>
+                    <value name="NUM0">
+                      <block type="lexical_variable_get" id="97">
+                        <field name="VAR">global Y</field>
+                      </block>
+                    </value>
+                    <value name="NUM1">
+                      <block type="lexical_variable_get" id="98">
+                        <field name="VAR">global X</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="lexical_variable_set" id="99" inline="false">
+                    <field name="VAR">global pwrR</field>
+                    <value name="VALUE">
+                      <block type="math_add" id="100" inline="true">
+                        <mutation items="2"></mutation>
+                        <value name="NUM0">
+                          <block type="lexical_variable_get" id="101">
+                            <field name="VAR">global Y</field>
+                          </block>
+                        </value>
+                        <value name="NUM1">
+                          <block type="math_multiply" id="102" inline="true">
+                            <mutation items="2"></mutation>
+                            <value name="NUM0">
+                              <block type="lexical_variable_get" id="103">
+                                <field name="VAR">global X</field>
+                              </block>
+                            </value>
+                            <value name="NUM1">
+                              <block type="math_number" id="104">
+                                <field name="NUM">-1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="controls_if" id="105" inline="false">
+                        <value name="IF0">
+                          <block type="math_compare" id="106" inline="true">
+                            <field name="OP">GT</field>
+                            <value name="A">
+                              <block type="lexical_variable_get" id="107">
+                                <field name="VAR">global pwrL</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="108">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="lexical_variable_set" id="109" inline="false">
+                            <field name="VAR">global pwrL</field>
+                            <value name="VALUE">
+                              <block type="math_number" id="110">
+                                <field name="NUM">1</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="controls_if" id="111" inline="false">
+                            <value name="IF0">
+                              <block type="math_compare" id="112" inline="true">
+                                <field name="OP">LT</field>
+                                <value name="A">
+                                  <block type="lexical_variable_get" id="113">
+                                    <field name="VAR">global pwrL</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="math_number" id="114">
+                                    <field name="NUM">-1</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO0">
+                              <block type="lexical_variable_set" id="115" inline="false">
+                                <field name="VAR">global pwrL</field>
+                                <value name="VALUE">
+                                  <block type="math_number" id="116">
+                                    <field name="NUM">-1</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </statement>
+                            <next>
+                              <block type="controls_if" id="117" inline="false">
+                                <value name="IF0">
+                                  <block type="math_compare" id="118" inline="true">
+                                    <field name="OP">GT</field>
+                                    <value name="A">
+                                      <block type="lexical_variable_get" id="119">
+                                        <field name="VAR">global pwrR</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="math_number" id="120">
+                                        <field name="NUM">1</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO0">
+                                  <block type="lexical_variable_set" id="121" inline="false">
+                                    <field name="VAR">global pwrR</field>
+                                    <value name="VALUE">
+                                      <block type="math_number" id="122">
+                                        <field name="NUM">1</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </statement>
+                                <next>
+                                  <block type="controls_if" id="123" inline="false">
+                                    <value name="IF0">
+                                      <block type="math_compare" id="124" inline="true">
+                                        <field name="OP">LT</field>
+                                        <value name="A">
+                                          <block type="lexical_variable_get" id="125">
+                                            <field name="VAR">global pwrR</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block type="math_number" id="126">
+                                            <field name="NUM">-1</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <statement name="DO0">
+                                      <block type="lexical_variable_set" id="127" inline="false">
+                                        <field name="VAR">global pwrR</field>
+                                        <value name="VALUE">
+                                          <block type="math_number" id="128">
+                                            <field name="NUM">-1</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </statement>
+                                    <next>
+                                      <block type="component_method" id="129" inline="false">
+                                        <mutation component_type="BluetoothClient" method_name="SendText" is_generic="false" instance_name="BluetoothClient1"></mutation>
+                                        <field name="COMPONENT_SELECTOR">BluetoothClient1</field>
+                                        <value name="ARG0">
+                                          <block type="text_join" id="130" inline="false">
+                                            <mutation items="4"></mutation>
+                                            <value name="ADD0">
+                                              <block type="math_add" id="131" inline="true">
+                                                <mutation items="2"></mutation>
+                                                <value name="NUM0">
+                                                  <block type="math_multiply" id="132" inline="true">
+                                                    <mutation items="2"></mutation>
+                                                    <value name="NUM0">
+                                                      <block type="lexical_variable_get" id="133">
+                                                        <field name="VAR">global pwrL</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="NUM1">
+                                                      <block type="math_number" id="134">
+                                                        <field name="NUM">63</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                                <value name="NUM1">
+                                                  <block type="math_number" id="135">
+                                                    <field name="NUM">64</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <value name="ADD1">
+                                              <block type="text" id="136">
+                                                <field name="TEXT">z</field>
+                                              </block>
+                                            </value>
+                                            <value name="ADD2">
+                                              <block type="math_add" id="137" inline="true">
+                                                <mutation items="2"></mutation>
+                                                <value name="NUM0">
+                                                  <block type="math_multiply" id="138" inline="true">
+                                                    <mutation items="2"></mutation>
+                                                    <value name="NUM0">
+                                                      <block type="lexical_variable_get" id="139">
+                                                        <field name="VAR">global pwrR</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="NUM1">
+                                                      <block type="math_number" id="140">
+                                                        <field name="NUM">63</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                                <value name="NUM1">
+                                                  <block type="math_number" id="141">
+                                                    <field name="NUM">192</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <value name="ADD3">
+                                              <block type="text" id="142">
+                                                <field name="TEXT">z\n</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" id="143" inline="false" x="517" y="1190">
+    <field name="NAME">pwrL</field>
+    <value name="VALUE">
+      <block type="math_number" id="144">
+        <field name="NUM">0</field>
+      </block>
+    </value>
+  </block>
+  <yacodeblocks ya-version="157" language-version="20"></yacodeblocks>
+</xml>

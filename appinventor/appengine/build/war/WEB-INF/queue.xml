@@ -1,0 +1,8 @@
+<queue-entries>
+  <queue>
+    <name>blobupgrade</name>
+    <rate>5/s</rate>
+    <bucket-size>5</bucket-size>
+    <max-concurrent-requests>3</max-concurrent-requests>
+  </queue>
+</queue-entries>

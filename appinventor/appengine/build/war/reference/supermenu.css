@@ -1,0 +1,294 @@
+/* Specific overrides for screen sizes */
+
+/* Smartphone portrait */
+@media only screen and (max-width:320px) {
+  #branding {
+    padding: 10px 0 10px;
+  }
+  .region-header {
+    padding: 0 0 10px;
+  }
+  #branding,
+  .region-header, #featured-block {
+    float: none;
+    margin: auto;
+    text-align: center;
+    display: table;
+  }
+  #logo,
+  #site-name,
+  #site-slogan {
+    display: block;
+    float: none;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+  #site-name {
+    font-size: 3em;
+  }
+  .content-style {
+    padding: 10px;
+  }
+  #secondary-content-wrapper,
+  #top-panels-wrapper,
+  #content-wrapper,
+  #footer-panels-wrapper,
+  #tertiary-content-wrapper {
+    margin-bottom: 10px;
+  }
+  .region-secondary-content .block {
+    margin-bottom: 0;
+    font-size: 1em;
+  }
+  #menu-bar-wrapper,
+  #menu-bar {
+    min-height: 3em;
+    height: auto;
+  }
+  #menu-bar {
+    padding: 0 2px;
+  }
+  #menu-bar .block {
+    clear: both;
+    float: none;
+  }
+  #menu-bar .menu-wrapper ul li {
+    display: block;
+    float: none;
+    margin: 0;
+    overflow: hidden;
+  }
+  #menu-bar .menu-wrapper ul li a {
+    padding: 6px 10px 8px;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+  #menu-bar .sf-menu {
+    height: auto;
+    padding: 2px 0;
+  }
+  #menu-bar .menu-wrapper ul ul {
+    display: none !important;
+  }
+  .region-header .block {
+    overflow: hidden;
+  }
+  .region-header .block ul li {
+    display: block;
+    text-align: center;
+    float: none;
+  }
+  .region-header .block ul li a {
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+  .article-title {
+    font-size: 1.5em;
+  }
+}
+/* Smartphone landscape */
+@media only screen and (min-width:321px) and (max-width:480px) {
+  #branding {
+    padding: 15px 0 0 0;
+  }
+  .region-header {
+    padding: 0 0 10px;
+  }
+  #branding hgroup {
+    margin-top: 1em;
+  }
+  #branding,
+  .region-header {
+    float: none;
+    margin: auto;
+    text-align: center;
+    display: table;
+  }
+  .with-logo #site-name,
+  .with-logo #site-slogan {
+    text-align: left;
+  }
+  #site-name {
+    font-size: 3em;
+  }
+  .content-style {
+    padding: 10px;
+  }
+  #secondary-content-wrapper,
+  #top-panels-wrapper,
+  #content-wrapper,
+  #footer-panels-wrapper,
+  #tertiary-content-wrapper {
+    margin-bottom: 10px;
+  }
+  .region-secondary-content .block {
+    margin-bottom: 0;
+    font-size: 1em;
+  }
+  #menu-bar-wrapper,
+  #menu-bar {
+    min-height: 3em;
+    height: auto;
+  }
+  #menu-bar {
+    padding: 0 2px;
+  }
+  #menu-bar .block {
+    clear: both;
+    float: none;
+  }
+  #menu-bar .menu-wrapper ul li {
+    display: block;
+    float: none;
+    margin: 0;
+    overflow: hidden;
+  }
+  #menu-bar .menu-wrapper ul li a {
+    padding: 6px 10px 8px;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+  #menu-bar .sf-menu {
+    height: auto;
+    padding: 2px 0;
+  }
+  #menu-bar .menu-wrapper ul ul {
+    display: none !important;
+  }
+  .region-header .block {
+    overflow: hidden;
+  }
+  .region-header .block ul li {
+    display: block;
+    text-align: center;
+    float: none;
+  }
+  .region-header .block ul li a {
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+  .article-title {
+    font-size: 1.5em;
+  }
+}
+/* Tablet portrait */
+@media only screen and (min-width:481px) and (max-width:768px) {
+  #header-wrapper {
+    float: left;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 10000;
+  }
+  #branding {
+    padding: 15px 0 0 0;
+  }
+  .region-header {
+    padding: 0 0 10px;
+  }
+  #branding hgroup {
+    margin-top: 0.8em;
+  }
+  #branding,
+  .region-header {
+    float: none;
+    text-align: center;
+    display: table;
+  }
+  #site-name,
+  #site-slogan {
+    text-align: left;
+  }
+  #site-name {
+    font-size: 3.5em;
+  }
+  .content-style {
+    padding: 12px 15px;
+  }
+  #secondary-content-wrapper,
+  #top-panels-wrapper,
+  #content-wrapper,
+  #footer-panels-wrapper,
+  #tertiary-content-wrapper {
+    margin-bottom: 10px;
+  }
+  .region-secondary-content .block {
+    margin-bottom: 0;
+    font-size: 1em;
+  }
+  #menu-bar-wrapper {
+    float: right;
+    margin: 3px;
+    padding: 2px 0 0 0;
+    max-width: 30%;
+  }
+  #menu-bar-wrapper,
+  #menu-bar {
+    min-height: 3em;
+    height: auto;
+  }
+  #menu-bar {
+    padding: 0 2px;
+  }
+  #menu-bar .block {
+    clear: both;
+    float: none;
+  }
+  #menu-bar .menu-wrapper ul li {
+    display: block;
+    float: none;
+    margin: 0;
+    overflow: hidden;
+  }
+  #menu-bar .menu-wrapper ul li a {
+    padding: 6px 10px 8px;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+  #menu-bar .sf-menu {
+    height: auto;
+    padding: 2px 0;
+  }
+  .region-header .block {
+    overflow: hidden;
+  }
+  .region-header .block ul li {
+    display: block;
+    text-align: center;
+    float: none;
+  }
+  .region-header .block ul li a {
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+/* Tablet landscape */
+@media only screen and (min-width:769px) and (max-width:1024px) {
+  #branding,
+  .region-header  {
+    padding-top: 15px;
+    padding-bottom: 20px;
+  }
+  #branding hgroup {
+    margin-top: 0.8em;
+  }
+  #site-name {
+    font-size: 3.5em;
+  }
+  .region-secondary-content .block {
+    margin-bottom: 0;
+    font-size: 1.077em;
+  }
+}
+/* Standard layout */
+@media only screen and (min-width:1025px) {
+  th,td {
+    padding: 10px 14px;
+  }
+}

@@ -1,0 +1,11 @@
+<!-- %1$s Component -->
+
+<BlockGenus name="%1$s" initlabel="%1$s"
+            label-unique="yes" editable-label="no" kind="command"
+            is-starter="yes" is-terminator="yes" color="grey">
+  <description>
+    <text>%2$s</text>
+  </description>
+  <LangSpecProperties>
+    <LangSpecProperty key="ya-kind" value="component"/>
+    <LangSpecProperty key="component-version" value="%3$d"/>

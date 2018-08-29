@@ -1,0 +1,449 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="component_event" id="1" x="137" y="-8">
+    <mutation component_type="Form" instance_name="Screen1" event_name="Initialize"></mutation>
+    <field name="COMPONENT_SELECTOR">Screen1</field>
+    <statement name="DO">
+      <block type="component_method" id="2">
+        <mutation component_type="GamePad" method_name="EnableGamepad" is_generic="false" instance_name="GamePad1"></mutation>
+        <field name="COMPONENT_SELECTOR">GamePad1</field>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="3" x="142" y="105">
+    <mutation component_type="Button" instance_name="Button1" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">Button1</field>
+    <statement name="DO">
+      <block type="component_set_get" id="4" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label1"></mutation>
+        <field name="COMPONENT_SELECTOR">Label1</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="text_join" id="5" inline="false">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
+              <block type="text" id="6">
+                <field name="TEXT">A Button: </field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="component_set_get" id="7">
+                <mutation component_type="GamePad" set_or_get="get" property_name="AButton" is_generic="false" instance_name="GamePad1"></mutation>
+                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                <field name="PROP">AButton</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="component_set_get" id="8" inline="false">
+            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label2"></mutation>
+            <field name="COMPONENT_SELECTOR">Label2</field>
+            <field name="PROP">Text</field>
+            <value name="VALUE">
+              <block type="text_join" id="9" inline="false">
+                <mutation items="2"></mutation>
+                <value name="ADD0">
+                  <block type="text" id="10">
+                    <field name="TEXT">B Button: </field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="component_set_get" id="11">
+                    <mutation component_type="GamePad" set_or_get="get" property_name="BButton" is_generic="false" instance_name="GamePad1"></mutation>
+                    <field name="COMPONENT_SELECTOR">GamePad1</field>
+                    <field name="PROP">BButton</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="component_set_get" id="12" inline="false">
+                <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label3"></mutation>
+                <field name="COMPONENT_SELECTOR">Label3</field>
+                <field name="PROP">Text</field>
+                <value name="VALUE">
+                  <block type="text_join" id="13" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text" id="14">
+                        <field name="TEXT">Y Button: </field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="component_set_get" id="15">
+                        <mutation component_type="GamePad" set_or_get="get" property_name="YButton" is_generic="false" instance_name="GamePad1"></mutation>
+                        <field name="COMPONENT_SELECTOR">GamePad1</field>
+                        <field name="PROP">YButton</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="component_set_get" id="16" inline="false">
+                    <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label4"></mutation>
+                    <field name="COMPONENT_SELECTOR">Label4</field>
+                    <field name="PROP">Text</field>
+                    <value name="VALUE">
+                      <block type="text_join" id="17" inline="false">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="18">
+                            <field name="TEXT">X Button: </field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_set_get" id="19">
+                            <mutation component_type="GamePad" set_or_get="get" property_name="XButton" is_generic="false" instance_name="GamePad1"></mutation>
+                            <field name="COMPONENT_SELECTOR">GamePad1</field>
+                            <field name="PROP">XButton</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="component_set_get" id="20" inline="false">
+                        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label5"></mutation>
+                        <field name="COMPONENT_SELECTOR">Label5</field>
+                        <field name="PROP">Text</field>
+                        <value name="VALUE">
+                          <block type="text_join" id="21" inline="false">
+                            <mutation items="2"></mutation>
+                            <value name="ADD0">
+                              <block type="text" id="22">
+                                <field name="TEXT">Right Bumper: </field>
+                              </block>
+                            </value>
+                            <value name="ADD1">
+                              <block type="component_set_get" id="23">
+                                <mutation component_type="GamePad" set_or_get="get" property_name="RightBumper" is_generic="false" instance_name="GamePad1"></mutation>
+                                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                <field name="PROP">RightBumper</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="component_set_get" id="24" inline="false">
+                            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label6"></mutation>
+                            <field name="COMPONENT_SELECTOR">Label6</field>
+                            <field name="PROP">Text</field>
+                            <value name="VALUE">
+                              <block type="text_join" id="25" inline="false">
+                                <mutation items="2"></mutation>
+                                <value name="ADD0">
+                                  <block type="text" id="26">
+                                    <field name="TEXT">Left Bumper: </field>
+                                  </block>
+                                </value>
+                                <value name="ADD1">
+                                  <block type="component_set_get" id="27">
+                                    <mutation component_type="GamePad" set_or_get="get" property_name="LeftBumper" is_generic="false" instance_name="GamePad1"></mutation>
+                                    <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                    <field name="PROP">LeftBumper</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="component_set_get" id="28" inline="false">
+                                <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label7"></mutation>
+                                <field name="COMPONENT_SELECTOR">Label7</field>
+                                <field name="PROP">Text</field>
+                                <value name="VALUE">
+                                  <block type="text_join" id="29" inline="false">
+                                    <mutation items="2"></mutation>
+                                    <value name="ADD0">
+                                      <block type="text" id="30">
+                                        <field name="TEXT">Dpad Up: </field>
+                                      </block>
+                                    </value>
+                                    <value name="ADD1">
+                                      <block type="component_set_get" id="31">
+                                        <mutation component_type="GamePad" set_or_get="get" property_name="DpadUp" is_generic="false" instance_name="GamePad1"></mutation>
+                                        <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                        <field name="PROP">DpadUp</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="component_set_get" id="32" inline="false">
+                                    <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label8"></mutation>
+                                    <field name="COMPONENT_SELECTOR">Label8</field>
+                                    <field name="PROP">Text</field>
+                                    <value name="VALUE">
+                                      <block type="text_join" id="33" inline="false">
+                                        <mutation items="2"></mutation>
+                                        <value name="ADD0">
+                                          <block type="text" id="34">
+                                            <field name="TEXT">Dpad Down: </field>
+                                          </block>
+                                        </value>
+                                        <value name="ADD1">
+                                          <block type="component_set_get" id="35">
+                                            <mutation component_type="GamePad" set_or_get="get" property_name="DpadDown" is_generic="false" instance_name="GamePad1"></mutation>
+                                            <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                            <field name="PROP">DpadDown</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="component_set_get" id="36" inline="false">
+                                        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label9"></mutation>
+                                        <field name="COMPONENT_SELECTOR">Label9</field>
+                                        <field name="PROP">Text</field>
+                                        <value name="VALUE">
+                                          <block type="text_join" id="37" inline="false">
+                                            <mutation items="2"></mutation>
+                                            <value name="ADD0">
+                                              <block type="text" id="38">
+                                                <field name="TEXT">Dpad Left: </field>
+                                              </block>
+                                            </value>
+                                            <value name="ADD1">
+                                              <block type="component_set_get" id="39">
+                                                <mutation component_type="GamePad" set_or_get="get" property_name="DpadLeft" is_generic="false" instance_name="GamePad1"></mutation>
+                                                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                <field name="PROP">DpadLeft</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="component_set_get" id="40" inline="false">
+                                            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label10"></mutation>
+                                            <field name="COMPONENT_SELECTOR">Label10</field>
+                                            <field name="PROP">Text</field>
+                                            <value name="VALUE">
+                                              <block type="text_join" id="41" inline="false">
+                                                <mutation items="2"></mutation>
+                                                <value name="ADD0">
+                                                  <block type="text" id="42">
+                                                    <field name="TEXT">Dpad Right: </field>
+                                                  </block>
+                                                </value>
+                                                <value name="ADD1">
+                                                  <block type="component_set_get" id="43">
+                                                    <mutation component_type="GamePad" set_or_get="get" property_name="DpadRight" is_generic="false" instance_name="GamePad1"></mutation>
+                                                    <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                    <field name="PROP">DpadRight</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="component_set_get" id="44" inline="false">
+                                                <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label11"></mutation>
+                                                <field name="COMPONENT_SELECTOR">Label11</field>
+                                                <field name="PROP">Text</field>
+                                                <value name="VALUE">
+                                                  <block type="text_join" id="45" inline="false">
+                                                    <mutation items="2"></mutation>
+                                                    <value name="ADD0">
+                                                      <block type="text" id="46">
+                                                        <field name="TEXT">Start: </field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="ADD1">
+                                                      <block type="component_set_get" id="47">
+                                                        <mutation component_type="GamePad" set_or_get="get" property_name="Start" is_generic="false" instance_name="GamePad1"></mutation>
+                                                        <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                        <field name="PROP">Start</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                                <next>
+                                                  <block type="component_set_get" id="48" inline="false">
+                                                    <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label12"></mutation>
+                                                    <field name="COMPONENT_SELECTOR">Label12</field>
+                                                    <field name="PROP">Text</field>
+                                                    <value name="VALUE">
+                                                      <block type="text_join" id="49" inline="false">
+                                                        <mutation items="2"></mutation>
+                                                        <value name="ADD0">
+                                                          <block type="text" id="50">
+                                                            <field name="TEXT">Select: </field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="ADD1">
+                                                          <block type="component_set_get" id="51">
+                                                            <mutation component_type="GamePad" set_or_get="get" property_name="Select" is_generic="false" instance_name="GamePad1"></mutation>
+                                                            <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                            <field name="PROP">Select</field>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="component_set_get" id="52" inline="false">
+                                                        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label13"></mutation>
+                                                        <field name="COMPONENT_SELECTOR">Label13</field>
+                                                        <field name="PROP">Text</field>
+                                                        <value name="VALUE">
+                                                          <block type="text_join" id="53" inline="false">
+                                                            <mutation items="2"></mutation>
+                                                            <value name="ADD0">
+                                                              <block type="text" id="54">
+                                                                <field name="TEXT">Left Joystick Y: </field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="ADD1">
+                                                              <block type="component_set_get" id="55">
+                                                                <mutation component_type="GamePad" set_or_get="get" property_name="LeftJoystickY" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                <field name="PROP">LeftJoystickY</field>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </value>
+                                                        <next>
+                                                          <block type="component_set_get" id="56" inline="false">
+                                                            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label14"></mutation>
+                                                            <field name="COMPONENT_SELECTOR">Label14</field>
+                                                            <field name="PROP">Text</field>
+                                                            <value name="VALUE">
+                                                              <block type="text_join" id="57" inline="false">
+                                                                <mutation items="2"></mutation>
+                                                                <value name="ADD0">
+                                                                  <block type="text" id="58">
+                                                                    <field name="TEXT">Left Joystick X: </field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="ADD1">
+                                                                  <block type="component_set_get" id="59">
+                                                                    <mutation component_type="GamePad" set_or_get="get" property_name="LeftJoystickX" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                    <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                    <field name="PROP">LeftJoystickX</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="component_set_get" id="60" inline="false">
+                                                                <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label15"></mutation>
+                                                                <field name="COMPONENT_SELECTOR">Label15</field>
+                                                                <field name="PROP">Text</field>
+                                                                <value name="VALUE">
+                                                                  <block type="text_join" id="61" inline="false">
+                                                                    <mutation items="2"></mutation>
+                                                                    <value name="ADD0">
+                                                                      <block type="text" id="62">
+                                                                        <field name="TEXT">Right Joystick Y: </field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="ADD1">
+                                                                      <block type="component_set_get" id="63">
+                                                                        <mutation component_type="GamePad" set_or_get="get" property_name="RightJoystickY" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                        <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                        <field name="PROP">RightJoystickY</field>
+                                                                      </block>
+                                                                    </value>
+                                                                  </block>
+                                                                </value>
+                                                                <next>
+                                                                  <block type="component_set_get" id="64" inline="false">
+                                                                    <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label17"></mutation>
+                                                                    <field name="COMPONENT_SELECTOR">Label17</field>
+                                                                    <field name="PROP">Text</field>
+                                                                    <value name="VALUE">
+                                                                      <block type="text_join" id="65" inline="false">
+                                                                        <mutation items="2"></mutation>
+                                                                        <value name="ADD0">
+                                                                          <block type="text" id="66">
+                                                                            <field name="TEXT">Left Trigger: </field>
+                                                                          </block>
+                                                                        </value>
+                                                                        <value name="ADD1">
+                                                                          <block type="component_set_get" id="67">
+                                                                            <mutation component_type="GamePad" set_or_get="get" property_name="LeftTrigger" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                            <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                            <field name="PROP">LeftTrigger</field>
+                                                                          </block>
+                                                                        </value>
+                                                                      </block>
+                                                                    </value>
+                                                                    <next>
+                                                                      <block type="component_set_get" id="68" inline="false">
+                                                                        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label18"></mutation>
+                                                                        <field name="COMPONENT_SELECTOR">Label18</field>
+                                                                        <field name="PROP">Text</field>
+                                                                        <value name="VALUE">
+                                                                          <block type="text_join" id="69" inline="false">
+                                                                            <mutation items="2"></mutation>
+                                                                            <value name="ADD0">
+                                                                              <block type="text" id="70">
+                                                                                <field name="TEXT">Right Trigger: </field>
+                                                                              </block>
+                                                                            </value>
+                                                                            <value name="ADD1">
+                                                                              <block type="component_set_get" id="71">
+                                                                                <mutation component_type="GamePad" set_or_get="get" property_name="RightTrigger" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                                <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                                <field name="PROP">RightTrigger</field>
+                                                                              </block>
+                                                                            </value>
+                                                                          </block>
+                                                                        </value>
+                                                                        <next>
+                                                                          <block type="component_set_get" id="72" inline="false">
+                                                                            <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label16"></mutation>
+                                                                            <field name="COMPONENT_SELECTOR">Label16</field>
+                                                                            <field name="PROP">Text</field>
+                                                                            <value name="VALUE">
+                                                                              <block type="text_join" id="73" inline="false">
+                                                                                <mutation items="2"></mutation>
+                                                                                <value name="ADD0">
+                                                                                  <block type="text" id="74">
+                                                                                    <field name="TEXT">Right Joystick X: </field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <value name="ADD1">
+                                                                                  <block type="component_set_get" id="75">
+                                                                                    <mutation component_type="GamePad" set_or_get="get" property_name="RightJoystickX" is_generic="false" instance_name="GamePad1"></mutation>
+                                                                                    <field name="COMPONENT_SELECTOR">GamePad1</field>
+                                                                                    <field name="PROP">RightJoystickX</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                              </block>
+                                                                            </value>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <yacodeblocks ya-version="157" language-version="20"></yacodeblocks>
+</xml>

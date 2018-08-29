@@ -1,0 +1,263 @@
+
+<!-- COMPONENTS END HERE -->
+  </BlockGenuses>
+
+  <!-- Block Families -->
+  <BlockFamilies>
+
+    <BlockFamily>
+      <FamilyMember>number</FamilyMember>
+      <FamilyMember>text</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>true</FamilyMember>
+      <FamilyMember>false</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-min</FamilyMember>
+      <FamilyMember>number-max</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-sin</FamilyMember>
+      <FamilyMember>number-cos</FamilyMember>
+      <FamilyMember>number-tan</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-asin</FamilyMember>
+      <FamilyMember>number-acos</FamilyMember>
+      <FamilyMember>number-atan</FamilyMember>
+      <FamilyMember>number-radians-to-degrees</FamilyMember>
+      <FamilyMember>number-degrees-to-radians</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-quotient</FamilyMember>
+      <FamilyMember>number-remainder</FamilyMember>
+      <FamilyMember>number-modulo</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-abs</FamilyMember>
+      <FamilyMember>number-round</FamilyMember>
+      <FamilyMember>number-floor</FamilyMember>
+      <FamilyMember>number-ceiling</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-exp</FamilyMember>
+      <FamilyMember>number-log</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>greaterthan</FamilyMember>
+      <FamilyMember>greaterthanorequal</FamilyMember>
+      <FamilyMember>lessthan</FamilyMember>
+      <FamilyMember>lessthanorequal</FamilyMember>
+      <FamilyMember>yail-equal</FamilyMember>
+      <FamilyMember>yail-not-equal</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>string-less-than</FamilyMember>
+      <FamilyMember>string-equal</FamilyMember>
+      <FamilyMember>string-greater-than</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>string-upcase</FamilyMember>
+      <FamilyMember>string-downcase</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>number-plus</FamilyMember>
+      <FamilyMember>number-minus</FamilyMember>
+      <FamilyMember>number-times</FamilyMember>
+      <FamilyMember>number-divide</FamilyMember>
+    </BlockFamily>
+
+    <BlockFamily>
+      <FamilyMember>color-none</FamilyMember>
+      <FamilyMember>color-black</FamilyMember>
+      <FamilyMember>color-blue</FamilyMember>
+      <FamilyMember>color-cyan</FamilyMember>
+      <FamilyMember>color-dark-gray</FamilyMember>
+      <FamilyMember>color-gray</FamilyMember>
+      <FamilyMember>color-green</FamilyMember>
+      <FamilyMember>color-light-gray</FamilyMember>
+      <FamilyMember>color-magenta</FamilyMember>
+      <FamilyMember>color-orange</FamilyMember>
+      <FamilyMember>color-pink</FamilyMember>
+      <FamilyMember>color-red</FamilyMember>
+      <FamilyMember>color-white</FamilyMember>
+      <FamilyMember>color-yellow</FamilyMember>
+    </BlockFamily>
+
+  </BlockFamilies>
+
+  <!-- Drawers -->
+  <!-- TODO(gleitz): uncomment and implement genusmembers if needed -->
+  <BlockDrawerSets>
+    <BlockDrawerSet name="Factory" type="stack" location="southwest" window-per-drawer="no" drawer-draggable="no">
+      <BlockDrawer name="Definition" button-color="setter">
+        <BlockGenusMember>define</BlockGenusMember>
+        <BlockGenusMember>define-void</BlockGenusMember>
+        <BlockGenusMember>def</BlockGenusMember>
+        <BlockGenusMember>argument</BlockGenusMember>
+        <BlockGenusMember>glue</BlockGenusMember>
+      </BlockDrawer>
+
+      <BlockDrawer name="Text" button-color="text">
+        <BlockGenusMember>text</BlockGenusMember>
+        <BlockGenusMember>string-append</BlockGenusMember>
+        <BlockGenusMember>string-vappend</BlockGenusMember>
+        <BlockGenusMember>string-length</BlockGenusMember>
+        <BlockGenusMember>string-empty?</BlockGenusMember>
+        <BlockGenusMember>string-less-than</BlockGenusMember>
+        <BlockGenusMember>string-equal</BlockGenusMember>
+        <BlockGenusMember>string-greater-than</BlockGenusMember>
+        <BlockGenusMember>string-trim</BlockGenusMember>
+        <BlockGenusMember>string-upcase</BlockGenusMember>
+        <BlockGenusMember>string-downcase</BlockGenusMember>
+        <BlockGenusMember>string-starts-at</BlockGenusMember>
+        <BlockGenusMember>string-contains</BlockGenusMember>
+        <BlockGenusMember>string-split-at-first</BlockGenusMember>
+        <BlockGenusMember>string-split-at-first-of-any</BlockGenusMember>
+        <BlockGenusMember>string-split</BlockGenusMember>
+        <BlockGenusMember>string-split-at-any</BlockGenusMember>
+        <BlockGenusMember>string-split-at-spaces</BlockGenusMember>
+        <BlockGenusMember>string-subtext</BlockGenusMember>
+        <BlockGenusMember>string-replace-all</BlockGenusMember>
+       </BlockDrawer>
+
+      <BlockDrawer name="Lists" button-color="list">
+        <BlockGenusMember>make-list</BlockGenusMember>
+        <BlockGenusMember>get-list-item</BlockGenusMember>
+        <BlockGenusMember>replace-list-item</BlockGenusMember>
+        <BlockGenusMember>remove-list-item</BlockGenusMember>
+        <BlockGenusMember>insert-list-item</BlockGenusMember>
+        <BlockGenusMember>list-length</BlockGenusMember>
+        <!--
+        These were removed and the implementation commented
+        out in runtime.scm
+        <BlockGenusMember>list-first</BlockGenusMember>
+        <BlockGenusMember>list-rest</BlockGenusMember>
+        -->
+        <BlockGenusMember>append-list</BlockGenusMember>
+        <BlockGenusMember>add-items-to-list</BlockGenusMember>
+        <BlockGenusMember>list-member</BlockGenusMember>
+        <BlockGenusMember>list-index</BlockGenusMember>
+        <BlockGenusMember>list-pick-random</BlockGenusMember>
+        <BlockGenusMember>list-empty?</BlockGenusMember>
+        <BlockGenusMember>list-copy</BlockGenusMember>
+        <BlockGenusMember>is-list?</BlockGenusMember>
+        <BlockGenusMember>list-to-csv-row</BlockGenusMember>
+        <BlockGenusMember>list-to-csv-table</BlockGenusMember>
+        <BlockGenusMember>list-from-csv-row</BlockGenusMember>
+        <BlockGenusMember>list-from-csv-table</BlockGenusMember>
+        <BlockGenusMember>list-lookup-in-pairs</BlockGenusMember>
+
+      </BlockDrawer>
+
+      <BlockDrawer name="Math" button-color="math">
+        <BlockGenusMember>number</BlockGenusMember>
+        <BlockGenusMember>greaterthan</BlockGenusMember>
+        <BlockGenusMember>greaterthanorequal</BlockGenusMember>
+        <BlockGenusMember>lessthan</BlockGenusMember>
+        <BlockGenusMember>lessthanorequal</BlockGenusMember>
+        <BlockGenusMember>yail-equal</BlockGenusMember>
+        <BlockGenusMember>yail-not-equal</BlockGenusMember>
+        <BlockGenusMember>number-plus</BlockGenusMember>
+        <BlockGenusMember>number-minus</BlockGenusMember>
+        <BlockGenusMember>number-times</BlockGenusMember>
+        <BlockGenusMember>number-divide</BlockGenusMember>
+        <BlockGenusMember>number-sqrt</BlockGenusMember>
+        <BlockGenusMember>number-random-fraction</BlockGenusMember>
+        <BlockGenusMember>number-random-integer</BlockGenusMember>
+        <BlockGenusMember>number-random-set-seed</BlockGenusMember>
+        <BlockGenusMember>number-negate</BlockGenusMember>
+        <BlockGenusMember>number-min</BlockGenusMember>
+        <BlockGenusMember>number-max</BlockGenusMember>
+        <BlockGenusMember>number-quotient</BlockGenusMember>
+        <BlockGenusMember>number-remainder</BlockGenusMember>
+        <BlockGenusMember>number-modulo</BlockGenusMember>
+        <BlockGenusMember>number-abs</BlockGenusMember>
+        <BlockGenusMember>number-round</BlockGenusMember>
+        <BlockGenusMember>number-floor</BlockGenusMember>
+        <BlockGenusMember>number-ceiling</BlockGenusMember>
+        <BlockGenusMember>number-expt</BlockGenusMember>
+        <BlockGenusMember>number-exp</BlockGenusMember>
+        <BlockGenusMember>number-log</BlockGenusMember>
+        <BlockGenusMember>number-sin</BlockGenusMember>
+        <BlockGenusMember>number-cos</BlockGenusMember>
+        <BlockGenusMember>number-tan</BlockGenusMember>
+        <BlockGenusMember>number-asin</BlockGenusMember>
+        <BlockGenusMember>number-acos</BlockGenusMember>
+        <BlockGenusMember>number-atan</BlockGenusMember>
+        <BlockGenusMember>number-atan2</BlockGenusMember>
+        <BlockGenusMember>number-radians-to-degrees</BlockGenusMember>
+        <BlockGenusMember>number-degrees-to-radians</BlockGenusMember>
+        <BlockGenusMember>format-as-decimal</BlockGenusMember>
+        <BlockGenusMember>number-is-number?</BlockGenusMember>
+      </BlockDrawer>
+
+      <BlockDrawer name="Logic" button-color="logic">
+        <BlockGenusMember>true</BlockGenusMember>
+        <BlockGenusMember>false</BlockGenusMember>
+        <BlockGenusMember>logical-not</BlockGenusMember>
+        <BlockGenusMember>yail-equal</BlockGenusMember>
+        <BlockGenusMember>and</BlockGenusMember>
+        <BlockGenusMember>or</BlockGenusMember>
+      </BlockDrawer>
+
+      <BlockDrawer name="Control" button-color="control">
+        <BlockGenusMember>if</BlockGenusMember>
+        <BlockGenusMember>ifelse</BlockGenusMember>
+        <BlockGenusMember>choose</BlockGenusMember>
+        <BlockGenusMember>foreach</BlockGenusMember>
+        <BlockGenusMember>forrange</BlockGenusMember>
+        <BlockGenusMember>while</BlockGenusMember>
+        <BlockGenusMember>open-another-screen</BlockGenusMember>
+        <BlockGenusMember>open-another-screen-with-start-value</BlockGenusMember>
+        <BlockGenusMember>get-start-value</BlockGenusMember>
+        <BlockGenusMember>close-screen</BlockGenusMember>
+        <BlockGenusMember>close-screen-with-value</BlockGenusMember>
+        <BlockGenusMember>close-application</BlockGenusMember>
+        <BlockGenusMember>get-plain-start-text</BlockGenusMember>
+        <BlockGenusMember>close-screen-with-plain-text</BlockGenusMember>
+      </BlockDrawer>
+
+      <BlockDrawer name="Colors" button-color="colors">
+        <BlockGenusMember>make-color</BlockGenusMember>
+        <BlockGenusMember>split-color</BlockGenusMember>
+        <BlockGenusMember>color-none</BlockGenusMember>
+        <BlockGenusMember>color-black</BlockGenusMember>
+        <BlockGenusMember>color-blue</BlockGenusMember>
+        <BlockGenusMember>color-cyan</BlockGenusMember>
+        <BlockGenusMember>color-dark-gray</BlockGenusMember>
+        <BlockGenusMember>color-gray</BlockGenusMember>
+        <BlockGenusMember>color-green</BlockGenusMember>
+        <BlockGenusMember>color-light-gray</BlockGenusMember>
+        <BlockGenusMember>color-magenta</BlockGenusMember>
+        <BlockGenusMember>color-orange</BlockGenusMember>
+        <BlockGenusMember>color-pink</BlockGenusMember>
+        <BlockGenusMember>color-red</BlockGenusMember>
+        <BlockGenusMember>color-white</BlockGenusMember>
+        <BlockGenusMember>color-yellow</BlockGenusMember>
+      </BlockDrawer>
+
+    </BlockDrawerSet>
+  </BlockDrawerSets>
+
+  <Pages drawer-with-page="yes">
+    <!-- note that if the name "My Definitions" is changed, the comparator in
+         appinventor/blockslib/src/openblocks/workspace/FactoryManager.java
+         needs to be changed as well -->
+    <Page page-name=" " page-width="800" page-drawer="My Definitions">
+    </Page>
+  </Pages>
+
+</BlockLangDef>

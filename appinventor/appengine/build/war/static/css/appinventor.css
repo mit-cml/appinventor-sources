@@ -1,0 +1,626 @@
+/* Copyright 2010 Google Inc.  All Rights Reserved
+ *
+ * CSS script for App Inventor for Android. */
+
+@import url("http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans:bold|Droid+Sans+Mono");
+
+img {
+  border: 0;
+}
+iframe {
+  border: 0;
+}
+body {
+  background-color: #efefef;
+  color: #555;
+  font-family: arial, sans;
+  font-size: 10pt;
+  margin: 0px;
+  padding: 0px;
+  line-height: 18px;
+}
+#aiac {
+}
+#aiac a {
+  color: #93b528;
+}
+#aiac h1 {
+  color: #333;
+  font-family: 'Droid Sans', sans;
+  font-size: 20px;
+  font-weight: normal;
+  margin: 0;
+  padding: 10px 0 10px 0;
+}
+#aiac h2 {
+  font-family: 'Droid Sans', sans;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 0 5px 0;
+  border-bottom: 1px solid #cdcdcd;
+}
+#aiac h3 {
+  font-family: 'Droid Sans', sans;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 0 5px 0;
+}
+#aiac ul {
+  list-style-type: square;
+}
+
+#aiac .main-container {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+#aiac .header {
+  height: 66px;
+  width: 100%;
+}
+
+#aiac .header-title {
+  float: left;
+  height: 51px;
+  padding: 15px 0 0;
+  width: 360px;
+}
+
+#aiac .header-search {
+  float: left;
+  background: no-repeat url('/static/images/search.gif');
+  height: 66px;
+  width: 271px;
+}
+#aiac .header-search-query {
+  float: left;
+  padding: 32px 0 0 8px;
+  width: 188px;
+}
+#aiac .header-search-button {
+  float: left;
+  z-index: 10;
+  padding: 32px 0 0 8px;
+}
+
+#aiac .header-login {
+  float: right;
+  background: no-repeat url('/static/images/login.gif');
+  height: 66px;
+  width: 275px;
+}
+
+#aiac .header-login-greeting {
+  font-size: 8pt;
+  left: 2px;
+  text-align: center;
+  padding-top: 31px;
+  width: 269px;
+}
+#aiac .header-login-username {
+  left: 8px;
+  padding-top: 32px;
+  width: 99px;
+}
+#aiac .header-login-password {
+  left: 114px;
+  top: 32px;
+  width: 101px;
+}
+#aiac .header-login-button {
+  padding-top: 32px;
+  right: 9px;
+}
+
+#aiac #navigation {
+  background-color: #fff;
+  clear: both;
+  padding: 0;
+  margin: 0;
+}
+
+#aiac #navigation-breadcrumb {
+  color: #aaa;
+  padding: 7px 0 5px 10px;
+  margin: 0;
+}
+#aiac #navigation-breadcrumb a:hover {
+  text-decoration: none;
+}
+#aiac #navigation-links {
+  margin: 0 10px 0 0;
+  padding: 0;
+  float: right;
+  text-align: right;
+}
+
+#aiac .content {
+  background: #fff url('/static/images/footer-android.png') center bottom no-repeat;
+  padding-bottom: 60px;
+  width: 100%;
+}
+#aiac .content-body {
+  padding: 10px;
+}
+
+#aiac .myprojects-header {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+#aiac .myprojects-header-title {
+  left: 0;
+  padding-left: 10px;
+  position: absolute;
+}
+#aiac .myprojects-header-controls {
+  position: absolute;
+  right: 315px;
+}
+#aiac .myprojects-header-pagination {
+  right: 0;
+  padding-right: 10px;
+  position: absolute;
+}
+#aiac .myprojects-header-pagination a {
+  color: #aaa;
+  text-decoration: none;
+}
+
+#aiac .footer {
+  color: #888;
+  text-align: center;
+  width: 100%;
+  font-size: 9pt;
+}
+#aiac .footer a {
+  color: #888;
+}
+#aiac .footer a:hover {
+  text-decoration: none;
+}
+#aiac .footer-legal {
+  padding-bottom: 10px;
+  padding-top: 20px;
+}
+#aiac .footer-lastupdate {
+  font-size: 8pt;
+}
+
+#aiac .customhr {
+  text-align: center;
+  width: 100%;
+}
+#aiac .customhr-gray {
+  background-color: #eaeaea;
+  height: 1px;
+  left: 10px;
+  text-align: center;
+  width: 980px;
+}
+#aiac .customhr-green {
+  background: repeat-x url('/static/images/navigation-active-bg.png');
+  height: 4px;
+}
+
+#aiac .myprojects-projectdetail {
+  width: 980px;
+}
+#aiac .myprojects-projectdetail-container {
+  padding: 10px 0 10px 35px;
+}
+
+#aiac .myprojects-row {
+  cursor: pointer;
+}
+
+#aiac .navigation-link-option {
+  float: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 7px;
+}
+#aiac .navigation-link-option a {
+  color: #888;
+  text-decoration: none;
+}
+#aiac .navigation-link-active {
+  background: repeat-x url('/static/images/navigation-active-bg.png');
+  color: #000;
+}
+#aiac .navigation-link-active a {
+  color: #000;
+  text-decoration: none;
+}
+
+#aiac .subtable-header-left {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border-left: 1px solid #efefef;
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  color: #888;
+  padding: 5px;
+}
+#aiac .subtable-header-center {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  color: #888;
+  padding: 5px;
+}
+#aiac .subtable-header-right {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border-right: 1px solid #efefef;
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  color: #888;
+  padding: 5px;
+}
+#aiac .subtable-header2 {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border: 1px solid #efefef;
+  color: #888;
+  padding: 5px;
+}
+#aiac .subtable-header2-left {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border-left: 1px solid #efefef;
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  color: #888;
+  padding: 4px;
+}
+#aiac .subtable-header2-right {
+  background: repeat-x url('/static/images/subtable-bg.png');
+  border-right: 1px solid #efefef;
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  color: #aaa;
+  font-size: 8pt;
+  padding: 4px;
+  text-align: right;
+}
+
+#aiac .subtable-row {
+  border-bottom: 1px solid #dedede;
+  padding: 5px;
+}
+#aiac .subtable-row2 {
+  border-bottom: 1px solid #dedede;
+  border-left: 1px solid #dedede;
+  border-right: 1px solid #dedede;
+}
+#aiac .subtable-textbox {
+  border: 0;
+  color: #aaa;
+  font-family: Arial, sans;
+  font-size: 10pt;
+  height: 50px;
+  padding: 4px;
+  width: 99%;
+}
+#aiac .subtable-text {
+  border: 0;
+  color: #aaa;
+  font-family: Arial, sans;
+  font-size: 10pt;
+  padding: 3px;
+  width: 99%;
+}
+
+#aiac .table-header {
+  border: 1px;
+  margin:0px;
+  padding:0px;
+  width: 100%;
+}
+#aiac .table-header-left {
+  background: no-repeat url('/static/images/table-header-left.png');
+  height: 36px;
+}
+#aiac .table-header-center {
+  background: repeat-x url('/static/images/table-header-center.png');
+  color: #888;
+  height: 36px;
+}
+#aiac .table-header-right {
+  background: no-repeat url('/static/images/table-header-right.png');
+  height: 36px;
+}
+#aiac .table-row {
+  height: 36px;
+}
+#aiac .table-row a {
+  color: #a4c639;
+}
+#aiac .table-row a:hover {
+  text-decoration: none;
+}
+
+#aiac .textbox {
+  border: 1px solid #d3d3d2;
+  height: 17px;
+  font-size: 10pt;
+  margin: 0;
+  padding:0px;
+  width: 100%;
+}
+
+#aiac .invisible {
+  display: none;
+}
+
+
+/* Goro */
+
+#aiac .learn-content {
+  width: 100%;
+}
+#aiac .learn-content-left {
+  width: 50%;
+  float: left;
+}
+#aiac .learn-content-right {
+  width: 50%;
+  float: left;
+}
+
+#aiac .learn-categories {
+}
+#aiac .learn-category {
+  clear: both;
+  padding-bottom:0;
+}
+#aiac .learn-category-image {
+ float: left;
+ padding-bottom: 10px;
+}
+#aiac .learn-category-title {
+  font-size: 11pt;
+  padding-left: 75px;
+  padding-top: 10px;
+}
+#aiac .learn-category-desc {
+  padding-left: 75px;
+  padding-bottom: 10px;
+}
+
+#aiac .learn-page {
+}
+
+#aiac h2 .gallery-attribution {
+  float: right;
+  font-weight: normal;
+  font-size: 8pt;
+  color: #898989;
+}
+
+#aiac blockquote {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 60px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+#aiac .dogfood, #aiac .Dogfooding {
+  border: 2px solid #ff4444;
+  color: #f33;
+  background: #ffdddd url('/static/images/android-warning-30x30.gif') left center no-repeat;
+}
+#aiac .notice {
+  border: 2px solid #adca3c;
+  color: #607609;
+  background: #f3f6ec url('/static/images/android-notice-30x30.gif') left center no-repeat;
+}
+#aiac .testing {
+  border: 2px solid #ababab;
+  color: #888;
+  background: #efefef url('/static/images/testicon2.png') left center no-repeat;
+  padding-left: 90px;
+}
+#aiac .testing .ButtonText {
+  color: #777;
+  font-weight: bold;
+}
+#aiac .notice .ButtonText {
+  color: #607609;
+  font-weight: bold;
+}
+#aiac .dogfood .ButtonText {
+  color: red;
+  font-weight: bold;
+}
+#aiac .imagecontainer {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+#aiac .imagecontainer img {
+  border: 10px solid #efefef;
+}
+
+#aiac .block, #aiac .Block {
+  border: 2px dashed #7aa81c;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  background-color: #f3f6ec;
+  color: #333;
+  font-family: 'Droid Sans Mono', serif;
+  font-size: 9pt;
+}
+
+#aiac #tutorial {
+  padding-left: 10px;
+}
+#aiac #tutorial .image {
+/*
+    float: left;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    border: 1px solid #cdcdcd;
+    width: 60px;
+    height: 60px;
+*/
+}
+#aiac #tutorial .title {
+  font-size: 10pt;
+  font-weight: bold;
+}
+#aiac #tutorial .text {
+  width: 850px;
+  float: left;
+  margin-bottom: 10px;
+}
+#aiac #tutorial li {
+  list-style-type: none;
+}
+#aiac #tutorial .clear {
+  clear: left;
+}
+
+#aiac .advtutorial table {
+  border: 1px solid #ababab;
+  border-spacing: 0px;
+  width: 100%;
+}
+#aiac .advtutorial td {
+  border-bottom: 1px solid #ababab;
+  padding: 3px;
+}
+#aiac .advtutorial .tbl-header {
+  background-color: #efefef;
+  font-weight: bold;
+}
+
+/* Home/About */
+
+  #about {
+    padding: 0;
+    margin: 0;
+  }
+  #about #about-left {
+    float: left;
+    width: 640px;
+  }
+  #about #about-right {
+    float: right;
+    width: 315px;
+    padding: 20px 20px 0 0;
+  }
+  #about #about-right p {
+    color: #777;
+    font-size: 14px;
+  }
+  .clear {
+    clear: both;
+  }
+  #about h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+  }
+  #about h2 {
+    font-size: 18px;
+    border: 0;
+    font-weight: normal;
+  }
+  #about h3 {
+    margin: 0;
+    padding: 0;
+  }
+  #about h3 a {
+    text-decoration: none;
+    color: #333;
+  }
+  #about .greenbutton {
+    display: inline-block;
+    background-color: #93b92b;
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 15px 5px 15px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 14px;
+  }
+  #about #about-hr {
+    width: 100%;
+    height: 1px;
+    background-color: #efefef;
+    margin: 20px 0 20px 0;
+  }
+  #about #about-highlight {
+  }
+  #about .about-highlight-item {
+    float: left;
+    width: 323px;
+  }
+  #about .about-highlight-item img {
+    margin: 0 40px 0 10px;
+    border: 0;
+    float: right;
+  }
+
+/* GAIA */
+
+#gaia {
+  background:#fff;
+  font-family: arial, sans-serif;
+  padding:3px 8px 0;
+  color: #000;
+}
+
+#gaia > div {
+  margin: 0;
+  padding: 1px 0 6px 2px;
+  text-align: right;
+}
+
+#gaia #gbl,
+#gaia #gbr{
+  border-top:1px solid #c9d7f1;
+  font-size:1px;
+  height:0;
+  left:0;
+  margin:0;
+  position:absolute;
+  top:24px;
+  width:100%
+}
+
+#gaia #gbr {
+  left: auto;
+  right: 0;
+}
+
+
+
+
+/* Closure Overrides */
+
+.goog-zippy-expanded {
+  background: #fff url('/static/images/zippy-up.png') center center no-repeat;
+  cursor: pointer;
+}
+
+.goog-zippy-collapsed {
+  background: #fff url('/static/images/zippy-down.png') center center no-repeat;
+  cursor: pointer;
+}
+
+/* Temp */
+
+span.ButtonText {
+    /* Color to match what Dave Wolber is using */
+    color: rgb(56, 118, 29) ;
+    font-weight: bold;
+}

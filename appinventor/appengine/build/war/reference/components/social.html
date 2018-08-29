@@ -1,0 +1,969 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Social Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+                    <h1>Social Components - App Inventor for Android</h1>
+                    <h2>Table of Contents</h2>
+                    <ul>
+                      <li>
+                        <a href="#ContactPicker">
+                          ContactPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#EmailPicker">
+                          EmailPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#PhoneCall">
+                          PhoneCall
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#PhoneNumberPicker">
+                          PhoneNumberPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Sharing">
+                          Sharing
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Texting">
+                          Texting
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Twitter">
+                          Twitter
+                        </a>
+                      </li>
+                    </ul>
+
+
+<h2 id="ContactPicker">ContactPicker</h2>
+
+<p>A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
+ <li> <code>ContactName</code>: the contact's name </li>
+ <li> <code>EmailAddress</code>: the contact's primary email address </li>
+ <li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>
+ <li> <code>ContactUri</code>: the contact's URI on the device </li>
+ <li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>
+ <li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>
+ <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
+</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).
+</p><p>The ContactPicker component might not work on all phones. For
+example, on Android systems before system 3.0, it cannot pick phone
+numbers, and the list of email addresses will contain only one email.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code><em>ContactName</em></code></dt>
+  <dd></dd>
+  <dt><code><em>EmailAddress</em></code></dt>
+  <dd></dd>
+  <dt><code><em>ContactUri</em></code></dt>
+  <dd>URI that specifies the location of the contact on the device.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code><em>Picture</em></code></dt>
+  <dd></dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>Text</code></dt>
+  <dd></dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>TextColor</code></dt>
+  <dd></dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+  <dt><code>ViewContact(uri)</code></dt>
+  <dd>Views a contact given its URI.</dd>
+</dl>
+
+
+<h2 id="EmailPicker">EmailPicker</h2>
+
+<p>An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>
+ <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>
+<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.</p>
+<h3>Methods</h3>
+<dl>
+  <dt><code>RequestFocus()</code></dt>
+  <dd>Sets the EmailPicker active.</dd>
+</dl>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is 'default' (shaded 3-D look).</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>Whether the user can enter text into this input box.  By default, this is true.</dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd>Whether the font for the text should be bold.  By default, it is not.</dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd>Whether the text should appear in italics.  By default, it does not.</dd>
+  <dt><code>FontSize</code></dt>
+  <dd>The font size for the text.  By default, it is 14.0 points.</dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd>The font for the text.  The value can be changed in the Designer.</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Hint</code></dt>
+  <dd>Text that should appear faintly in the input box to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.</dd>
+  <dt><code>Text</code></dt>
+  <dd>The text in the input box, which can be set by the programmer in the Designer or Blocks Editor, or it can be entered by the user (unless the <code>Enabled</code> property is false).</dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd>Whether the text should be left justified, centered, or right justified.  By default, text is left justified.</dd>
+  <dt><code>TextColor</code></dt>
+  <dd>The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Event raised when this component is selected for input, such as by
+ the user touching it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Event raised when this component is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
+<h2 id="PhoneCall">
+  PhoneCall
+</h2>
+<img alt="" src="images/phonecall.png" />
+  <p>
+    A non-visible component that makes a phone call to the number
+    specified in the <code>PhoneNumber</code> property, which can be
+    set either in the Designer or Blocks Editor. The component has
+    a <code>MakePhoneCall</code> method, enabling the program to
+    launch a phone call.</p><p>Often, this component is used with
+    the <code>ContactPicker</code> component, which lets the user
+    select a contact from the ones stored on the phone and sets
+    the <code>PhoneNumber</code> property to the contact's phone
+    number.</p><p>To directly specify the phone number (e.g.,
+    650-555-1212), set the <code>PhoneNumber</code> property to a Text
+    with the specified digits (e.g., "6505551212").  Dashes, dots, and
+    parentheses may be included (e.g., "(650)-555-1212") but will be
+    ignored; spaces may not be included.
+</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>PhoneNumber</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>IncomingCallAnswered(text phoneNumber)</code></dt>
+  <dd>Event indicating that an incoming phone call is
+  answered. phoneNumber is the incoming call phone number.</dd>
+  <dt><code>PhoneCallEnded(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.</dd>
+  <dt><code>PhoneCallStarted(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+  <dt><code>MakePhoneCall()</code></dt>
+  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+</dl>
+<h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
+<p>A button that, when clicked on, displays a list of the contacts' phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
+<li> <code>ContactName</code>: the contact's name </li>
+ <li> <code>PhoneNumber</code>: the contact's phone number </li>
+ <li> <code>EmailAddress</code>: the contact's email address </li> <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
+</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>
+<p>The PhoneNumberPicker component may not work on all Android
+devices. For example, on Android systems before system 3.0, the
+returned lists of phone numbers and email addresses will be empty.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code><em>ContactName</em></code></dt>
+  <dd></dd>
+  <dt><code><em>EmailAddress</em></code></dt>
+  <dd></dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code><em>PhoneNumber</em></code></dt>
+  <dd></dd>
+  <dt><code><em>Picture</em></code></dt>
+  <dd></dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>Text</code></dt>
+  <dd></dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>TextColor</code></dt>
+  <dd></dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="Sharing">Sharing</h2>
+
+<p>Sharing is a non-visible component that enables sharing files and/or messages between your app and other apps installed on a device. The component will display a list of the installed apps that can handle the information provided, and will allow the user to choose one to share the content with, for instance a mail app, a social network app, a texting app, and so on.<br>The file path can be taken directly from other components such as the Camera or the ImagePicker, but can also be specified directly to read from storage. Be aware that different devices treat storage differently, so a few things to try if, for instance, you have a file called arrow.gif in the folder <code>Appinventor/assets</code>, would be: <ul><li><code>"file:///sdcard/Appinventor/assets/arrow.gif"</code></li> or <li><code>"/storage/Appinventor/assets/arrow.gif"</code></li></ul></p>
+
+<h3>Properties</h3>
+none
+
+<h3>Events</h3>
+none
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>ShareFile(text file)</code></dt>
+  <dd>Shares a file through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the file inserted on it.</dd>
+  <dt><code>ShareFileWithMessage(text file, text message)</code></dt>
+  <dd>Shares both a file and a message through any capable application installed on the phone by displaying a list of available apps and allowing the user to  choose one from the list. The selected app will open with the file and message inserted on it.</dd>
+  <dt><code>ShareMessage(text message)</code></dt>
+  <dd>Shares a message through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the message inserted on it.</dd>
+</dl>
+
+                    <h2 id="Texting">
+                      Texting
+                    </h2>
+                    <img alt="" src="images/texting.png" />
+                    <p>
+                      A component that will, when the
+                      <code>SendMessage</code>
+                      method is called, send the text message specified in the
+                      <code>Message</code>
+                      property to the phone number specified in the
+                      <code>PhoneNumber</code>
+                      property.
+                    </p>
+                    <p>
+                      If the
+                      <code>ReceivingEnabled</code>
+                      property is set to 1 messages will <b>not</b> be received. If
+                      <code>ReceivingEnabled</code>
+                      is set to 2 messages will be received only when the application is running. Finally if
+                      <code>ReceivingEnabled</code>
+                      is set to 3, messages will be received when the application
+                      is running <b>and</b> when the application is not running
+                      they will be queued and a notification displayed to the user.
+                    </p>
+                    <p>
+                      When a message arrives, the
+                      <code>MessageReceived</code>
+                      event is raised and provides the sending number and message.
+                    </p>
+                    <p>
+                      An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
+                    </p>
+                    <p>
+                      If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.
+                    </p>
+                    <p>
+                      To specify the phone number (e.g., 650-555-1212), set the
+                      <code>PhoneNumber</code>
+                      property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
+                    </p>
+                    <p>
+                      Another way for an app to specify a phone number would be to include a
+                      <code>PhoneNumberPicker</code>
+                      component, which lets the users select a phone numbers from the ones stored in the the phone's contacts.
+                    </p>
+
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>GoogleVoiceEnabled</code></dt>
+                      <dd>
+                        If true, then SendMessage will attempt to send messages
+                        over Wifi using Google Voice.  This requires that the
+                        Google Voice app must be installed and set up on the phone
+                        or tablet, with a Google Voice account.  If
+                        GoogleVoiceEnabled is false, the device must have phone and
+                        texting service in order to send or receive messages with
+                        this component.
+                      </dd>
+                      <dt><code>Message</code></dt>
+                      <dd>The message that will be sent when the SendMessage method is called.</dd>
+                      <dt><code>PhoneNumber</code></dt>
+                      <dd>
+                        The number that the message will be sent to when the
+                        SendMessage method is called. The number is a text string
+                        with the specified digits (e.g., 6505551212).  Dashes,
+                        dots, and parentheses may be included (e.g.,
+                        (650)-555-1212) but will be ignored; spaces should not be
+                        included.
+                      </dd>
+                      <dt><code>ReceivingEnabled</code></dt>
+                      <dd>
+                        If set to 1 (OFF) no messages will be received.  If set to
+                        2 (FOREGROUND) or3 (ALWAYS) the component will respond to
+                        messages if it is running. If theapp is not running then
+                        the message will be discarded if set to 2(FOREGROUND). If
+                        set to 3 (ALWAYS) and the app is not running the phone
+                        willshow a notification.  Selecting the notification will
+                        bring up the appand signal the MessageReceived event.
+                        Messages received when the appis dormant will be queued,
+                        and so several MessageReceived events mightappear when the
+                        app awakens.  As an app developer, it would be a good idea
+                        to give your users control over this property, so they can
+                        maketheir phones ignore text messages when your app is
+                        installed.
+                      </dd>
+                    </dl>
+                    <h3>Events</h3>
+                    <dl>
+                      <dt><code>MessageReceived(text number, text messageText)</code></dt>
+                      <dd>Event that's raised when a text message is received by the phone.</dd>
+                    </dl>
+                    <h3>Methods</h3>
+                    <dl>
+                      <dt><code>SendMessage()</code></dt>
+                      <dd>Send a text message</dd>
+                    </dl>
+
+
+
+<h2 id="Twitter">Twitter</h2>
+
+<p>A non-visible component that enables communication with <a href="http://www.twitter.com" target="_blank">Twitter</a>. Once a user has logged into their Twitter account (and the authorization has been confirmed successful by the <code>IsAuthorized</code> event), many more operations are available:<ul><li> Searching Twitter for tweets or labels (<code>SearchTwitter</code>)</li>
+<li> Sending a Tweet (<code>Tweet</code>)     </li>
+<li> Sending a Tweet with an Image (<code>TweetWithImage</code>)     </li>
+<li> Directing a message to a specific user      (<code>DirectMessage</code>)</li>
+ <li> Receiving the most recent messages directed to the logged-in user      (<code>RequestDirectMessages</code>)</li>
+ <li> Following a specific user (<code>Follow</code>)</li>
+<li> Ceasing to follow a specific user (<code>StopFollowing</code>)</li>
+<li> Getting a list of users following the logged-in user      (<code>RequestFollowers</code>)</li>
+ <li> Getting the most recent messages of users followed by the      logged-in user (<code>RequestFriendTimeline</code>)</li>
+ <li> Getting the most recent mentions of the logged-in user      (<code>RequestMentions</code>)</li></ul></p>
+ <p>You must obtain a Consumer Key and Consumer Secret for Twitter authorization  specific to your app from http://twitter.com/oauth_clients/new</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>ConsumerKey</code></dt>
+  <dd>The the consumer key to be used when authorizing with Twitter via OAuth.</dd>
+  <dt><code>ConsumerSecret</code></dt>
+  <dd>The consumer secret to be used when authorizing with Twitter via OAuth</dd>
+  <dt><code><em>DirectMessages</em></code></dt>
+  <dd>This property contains a list of the most recent messages mentioning the logged-in user.  Initially, the list is empty.  To set it, the program must: <ol> <li> Call the <code>Authorize</code> method.</li> <li> Wait for the <code>Authorized</code> event.</li> <li> Call the <code>RequestDirectMessages</code> method.</li> <li> Wait for the <code>DirectMessagesReceived</code> event.</li></ol>
+The value of this property will then be set to the list of direct messages retrieved (and maintain that value until any subsequent call to <code>RequestDirectMessages</code>).</dd>
+  <dt><code><em>Followers</em></code></dt>
+  <dd>This property contains a list of the followers of the logged-in user.  Initially, the list is empty.  To set it, the program must: <ol> <li> Call the <code>Authorize</code> method.</li> <li> Wait for the <code>IsAuthorized</code> event.</li> <li> Call the <code>RequestFollowers</code> method.</li> <li> Wait for the <code>FollowersReceived</code> event.</li></ol>
+The value of this property will then be set to the list of followers (and maintain its value until any subsequent call to <code>RequestFollowers</code>).</dd>
+  <dt><code><em>FriendTimeline</em></code></dt>
+  <dd>This property contains the 20 most recent messages of users being followed.  Initially, the list is empty.  To set it, the program must: <ol> <li> Call the <code>Authorize</code> method.</li> <li> Wait for the <code>IsAuthorized</code> event.</li> <li> Specify users to follow with one or more calls to the <code>Follow</code> method.</li> <li> Call the <code>RequestFriendTimeline</code> method.</li> <li> Wait for the <code>FriendTimelineReceived</code> event.</li> </ol>
+The value of this property will then be set to the list of messages (and maintain its value until any subsequent call to <code>RequestFriendTimeline</code>.</dd>
+  <dt><code><em>Mentions</em></code></dt>
+  <dd>This property contains a list of mentions of the logged-in user.  Initially, the list is empty.  To set it, the program must: <ol> <li> Call the <code>Authorize</code> method.</li> <li> Wait for the <code>IsAuthorized</code> event.</li> <li> Call the <code>RequestMentions</code> method.</li> <li> Wait for the <code>MentionsReceived</code> event.</li></ol>
+The value of this property will then be set to the list of mentions (and will maintain its value until any subsequent calls to <code>RequestMentions</code>).</dd>
+  <dt><code><em>SearchResults</em></code></dt>
+  <dd>This property, which is initially empty, is set to a list of search results after the program: <ol><li>Calls the <code>SearchTwitter</code> method.</li> <li>Waits for the <code>SearchSuccessful</code> event.</li></ol>
+The value of the property will then be the same as the parameter to <code>SearchSuccessful</code>.  Note that it is not necessary to call the <code>Authorize</code> method before calling <code>SearchTwitter</code>.</dd>
+  <dt><code><em>Username</em></code></dt>
+  <dd>The user name of the authorized user. Empty if there is no authorized user.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>DirectMessagesReceived(list messages)</code></dt>
+  <dd>This event is raised when the recent messages requested through <code>RequestDirectMessages</code> have been retrieved. A list of the messages can then be found in the <code>messages</code> parameter or the <code>Messages</code> property.</dd>
+  <dt><code>FollowersReceived(list followers2)</code></dt>
+  <dd>This event is raised when all of the followers of the logged-in user requested through <code>RequestFollowers</code> have been retrieved. A list of the followers can then be found in the <code>followers</code> parameter or the <code>Followers</code> property.</dd>
+  <dt><code>FriendTimelineReceived(list timeline)</code></dt>
+  <dd>This event is raised when the messages requested through <code>RequestFriendTimeline</code> have been retrieved. The <code>timeline</code> parameter and the <code>Timeline</code> property will contain a list of lists, where each sub-list contains a status update of the form (username message)</dd>
+  <dt><code>IsAuthorized()</code></dt>
+  <dd>This event is raised after the program calls <code>Authorize</code> if the authorization was successful.  It is also called after a call to <code>CheckAuthorized</code> if we already have a valid access token. After this event has been raised, any other method for this component can be called.</dd>
+  <dt><code>MentionsReceived(list mentions)</code></dt>
+  <dd>This event is raised when the mentions of the logged-in user requested through <code>RequestMentions</code> have been retrieved.  A list of the mentions can then be found in the <code>mentions</code> parameter or the <code>Mentions</code> property.</dd>
+  <dt><code>SearchSuccessful(list searchResults)</code></dt>
+  <dd>This event is raised when the results of the search requested through <code>SearchSuccessful</code> have been retrieved. A list of the results can then be found in the <code>results</code> parameter or the <code>Results</code> property.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Authorize()</code></dt>
+  <dd>Redirects user to login to Twitter via the Web browser using the OAuth protocol if we don't already have authorization.</dd>
+  <dt><code>CheckAuthorized()</code></dt>
+  <dd>Checks whether we already have access, and if so, causes IsAuthorized event handler to be called.</dd>
+  <dt><code>DeAuthorize()</code></dt>
+  <dd>Removes Twitter authorization from this running app instance</dd>
+  <dt><code>DirectMessage(text user, text message)</code></dt>
+  <dd>This sends a direct (private) message to the specified user.  The message will be trimmed if it exceeds 160characters. <p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>Follow(text user)</code></dt>
+  <dd>Starts following a user.</dd>
+  <dt><code>RequestDirectMessages()</code></dt>
+  <dd>Requests the 20 most recent direct messages sent to the logged-in user.  When the messages have been retrieved, the system will raise the <code>DirectMessagesReceived</code> event and set the <code>DirectMessages</code> property to the list of messages.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>RequestFollowers()</code></dt>
+  <dd>Gets who is following you.</dd>
+  <dt><code>RequestFriendTimeline()</code></dt>
+  <dd>Gets the most recent 20 messages in the user's timeline.</dd>
+  <dt><code>RequestMentions()</code></dt>
+  <dd>Requests the 20 most recent mentions of the logged-in user.  When the mentions have been retrieved, the system will raise the <code>MentionsReceived</code> event and set the <code>Mentions</code> property to the list of mentions.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>SearchTwitter(text query)</code></dt>
+  <dd>This searches Twitter for the given String query.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>StopFollowing(text user)</code></dt>
+  <dd>Stops following a user.</dd>
+  <dt><code>Tweet(text status)</code></dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it exceeds 160 characters. <p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>TweetWithImage(text status, text imagePath)</code></dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text and a path to the image to be uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or invalid, the update will not be sent.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+</dl>
+
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>
