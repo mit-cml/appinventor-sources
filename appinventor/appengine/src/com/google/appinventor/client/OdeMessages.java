@@ -283,9 +283,9 @@ public interface OdeMessages extends Messages {
   String labelConfirm();
 
   @DefaultMessage("Your app \"{0}\" has been removed from the gallery due to inappropriate content. "
-          + "Please review the guidelines at http://ai2.appinventor.mit.edu/about/termsofservice.html. "
-          + "If you feel this action has been taken in error, " +
-          "you may reply directly to this e-mail for discussion. \n")
+          + "Please review the guidelines at http://ai2.appinventor.mit.edu/about/termsofservice.html. "  
+          + "If you feel this action has been taken in error, " 
+          + "you may reply directly to this e-mail for discussion. \n")
   @Description("Label of the Text of Template 1 of reportlist")
   String inappropriateAppContentRemoveEmail(String title);
 
@@ -2542,7 +2542,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String verticalScrollArrangementComponentPallette();
 
-  // Lego Mindstorms NXT
+ // Lego Mindstorms NXT
   @DefaultMessage("NxtColorSensor")
   @Description("")
   String nxtColorSensorComponentPallette();
@@ -6391,6 +6391,93 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SelectionColor")
   @Description("")
   String SelectionColorProperties();
+    
+  // Gamepad
+  @DefaultMessage("AButton")
+  @Description("")
+  String AButtonProperties();
+    
+  @DefaultMessage("BButton")
+  @Description("")
+  String BButtonProperties();
+    
+  @DefaultMessage("XButton")
+  @Description("")
+  String XButtonProperties();
+    
+  @DefaultMessage("YButton")
+  @Description("")
+  String YButtonProperties();
+
+  @DefaultMessage("RightBumper")
+  @Description("")
+  String RightBumperProperties();
+
+  @DefaultMessage("LeftBumper")
+  @Description("")
+  String LeftBumperProperties();
+
+  @DefaultMessage("DpadCenter")
+  @Description("")
+  String DpadCenterProperties();
+
+  @DefaultMessage("DpadUp")
+  @Description("")
+  String DpadUpProperties();
+
+  @DefaultMessage("DpadDown")
+  @Description("")
+  String DpadDownProperties();
+
+  @DefaultMessage("DpadLeft")
+  @Description("")
+  String DpadLeftProperties();
+
+  @DefaultMessage("DpadRight")
+  @Description("")
+  String DpadRightProperties();
+
+  @DefaultMessage("Select")
+  @Description("")
+  String SelectProperties();
+
+  @DefaultMessage("Start")
+  @Description("")
+  String StartProperties();
+
+  @DefaultMessage("LeftJoystickX")
+  @Description("")
+  String LeftJoystickXProperties();
+
+  @DefaultMessage("LeftJoystickY")
+  @Description("")
+  String LeftJoystickYProperties();
+
+  @DefaultMessage("RightJoystickX")
+  @Description("")
+  String RightJoystickXProperties();
+
+  @DefaultMessage("RightJoystickY")
+  @Description("")
+  String RightJoystickYProperties();
+
+  @DefaultMessage("RightTrigger")
+  @Description("")
+  String RightTriggerProperties();
+
+  @DefaultMessage("LeftTrigger")
+  @Description("")
+  String LeftTriggerProperties();
+
+  @DefaultMessage("EnableGamepad")
+  @Description("")
+  String EnableGamepadMethods();
+
+  @DefaultMessage("DisableGamepad")
+  @Description("")
+  String DisableGamepadMethods();
+
+
 
   // Missing translations from 4/8/2015 -- Should sort into appropriate place
 
