@@ -312,6 +312,44 @@ Blockly.Blocks['math_power'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_POWER}]
 };
 
+Blockly.Blocks['math_bitwise_and'] = {
+    // Basic arithmetic operator.
+    category: 'Math',
+    helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND,
+    init: function () {
+        this.setColour(Blockly.MATH_CATEGORY_HUE);
+        this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+        this.appendValueInput('A')
+            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+        this.appendValueInput('B')
+            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+            .appendField(Blockly.Msg.LANG_MATH_BITWISE_AND);
+        this.setInputsInline(true);
+        // Assign 'this' to a variable for use in the tooltip closure below.
+        this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND);
+    },
+    typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND}]
+};
+
+Blockly.Blocks['math_bitwise_or'] = {
+    // Basic arithmetic operator.
+    category: 'Math',
+    helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_OR,
+    init: function () {
+        this.setColour(Blockly.MATH_CATEGORY_HUE);
+        this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+        this.appendValueInput('A')
+            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+        this.appendValueInput('B')
+            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+            .appendField(Blockly.Msg.LANG_MATH_BITWISE_OR);
+        this.setInputsInline(true);
+        // Assign 'this' to a variable for use in the tooltip closure below.
+        this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_OR);
+    },
+    typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_OR}]
+};
+
 Blockly.Blocks['math_random_int'] = {
   // Random integer between [X] and [Y].
   category: 'Math',

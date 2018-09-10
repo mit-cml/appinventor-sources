@@ -91,6 +91,14 @@ Blockly.Yail['math_multiply'] = function() {
   return Blockly.Yail.math_arithmetic_list("MULTIPLY",this);
 };
 
+Blockly.Yail['math_bitwise_and'] = function() {
+  return Blockly.Yail.math_arithmetic("BITAND",this);
+};
+
+Blockly.Yail['math_bitwise_or'] = function() {
+  return Blockly.Yail.math_arithmetic("BITOR",this);
+};
+
 Blockly.Yail['math_arithmetic_list'] = function(mode,block) {
   // Basic arithmetic operators.
   //var mode = this.getFieldValue('OP');
@@ -123,7 +131,9 @@ Blockly.Yail.math_arithmetic.OPERATORS = {
   MINUS: ['-', Blockly.Yail.ORDER_NONE],
   MULTIPLY: ['*', Blockly.Yail.ORDER_NONE],
   DIVIDE: ['yail-divide', Blockly.Yail.ORDER_NONE],
-  POWER: ['expt', Blockly.Yail.ORDER_NONE]
+  POWER: ['expt', Blockly.Yail.ORDER_NONE],
+  BITAND: ['bitwise-and', Blockly.Yail.ORDER_NONE],
+  BITOR: ['bitwise-ior', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail['math_single'] = function() {

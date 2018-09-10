@@ -385,22 +385,29 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_ARITHMETIC_HELPURL_MULTIPLY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#multiply';
     Blockly.Msg.LANG_MATH_ARITHMETIC_HELPURL_DIVIDE = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#divide';
     Blockly.Msg.LANG_MATH_ARITHMETIC_HELPURL_POWER = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#exponent';
+    Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#bitwise-and';
+    Blockly.Msg.LANG_MATH_BITWISE_HELPURL_OR = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#bitwise-ior';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD = 'Return the sum of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS = 'Return the difference of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY = 'Return the product of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Return the quotient of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = 'Return the first number raised to\n' +
         'the power of the second number.';
+    Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND = 'Return the bitwise AND of the two numbers.';
+    Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_OR = 'Return the bitwise OR of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_ADD = '+';
     Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS = '-';
     Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY = '*';
     Blockly.Msg.LANG_MATH_ARITHMETIC_DIVIDE = '/';
     Blockly.Msg.LANG_MATH_ARITHMETIC_POWER = '^';
 
-    /*Blockly.Msg.LANG_MATH_CHANGE_TITLE_CHANGE = 'change';
-     Blockly.Msg.LANG_MATH_CHANGE_TITLE_ITEM = 'item';
-     Blockly.Msg.LANG_MATH_CHANGE_INPUT_BY = 'by';
-     Blockly.Msg.LANG_MATH_CHANGE_TOOLTIP = 'Add a number to variable "%1".';*/
+    Blockly.Msg.LANG_MATH_BITWISE_AND = 'bitwise-and';
+    Blockly.Msg.LANG_MATH_BITWISE_OR = 'bitwise-ior';
+
+      /*Blockly.Msg.LANG_MATH_CHANGE_TITLE_CHANGE = 'change';
+       Blockly.Msg.LANG_MATH_CHANGE_TITLE_ITEM = 'item';
+       Blockly.Msg.LANG_MATH_CHANGE_INPUT_BY = 'by';
+       Blockly.Msg.LANG_MATH_CHANGE_TOOLTIP = 'Add a number to variable "%1".';*/
 
 
     Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'square root';
