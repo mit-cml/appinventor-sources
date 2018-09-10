@@ -40,21 +40,21 @@ public class TextValidatorsTest extends TestCase {
     }
   }
 
-  public void testComponentIdentifierFilter(){
-	    for (String legalComponentIdentifier : legalComponentIdentifierNames) {
-	      assertTrue(TextValidators.isValidComponentIdentifier(legalComponentIdentifier));
-	    }
-	    for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
-	      assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
-	    }
+  public void testComponentIdentifierFilter() {
+    for (String legalComponentIdentifier : legalComponentIdentifierNames) {
+      assertTrue(TextValidators.isValidComponentIdentifier(legalComponentIdentifier));
+    }
+    for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
+      assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
+    }
   }
 
-  public void testReservedNameFilter(){
-      for (String reservedWord : reservedWordNames) {
-          assertTrue(TextValidators.isReservedName(reservedWord));
-      }
-      for (String notReservedWord : legalIdentifierNames) {
-          assertFalse(TextValidators.isReservedName(notReservedWord));
-      }
+  public void testReservedNameFilter() {
+    for (String reservedWord : reservedWordNames) {
+      assertTrue(TextValidators.isReservedName(reservedWord));
+    }
+    for (String notReservedWord : legalIdentifierNames) {
+      assertFalse(TextValidators.isReservedName(notReservedWord));
+    }
   }
 }
