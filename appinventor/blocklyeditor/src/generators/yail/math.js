@@ -95,8 +95,12 @@ Blockly.Yail['math_bitwise_and'] = function() {
   return Blockly.Yail.math_arithmetic("BITAND",this);
 };
 
-Blockly.Yail['math_bitwise_or'] = function() {
-  return Blockly.Yail.math_arithmetic("BITOR",this);
+Blockly.Yail['math_bitwise_ior'] = function() {
+  return Blockly.Yail.math_arithmetic("BITIOR",this);
+};
+
+Blockly.Yail['math_bitwise_xor'] = function() {
+  return Blockly.Yail.math_arithmetic("BITXOR",this);
 };
 
 Blockly.Yail['math_arithmetic_list'] = function(mode,block) {
@@ -133,7 +137,8 @@ Blockly.Yail.math_arithmetic.OPERATORS = {
   DIVIDE: ['yail-divide', Blockly.Yail.ORDER_NONE],
   POWER: ['expt', Blockly.Yail.ORDER_NONE],
   BITAND: ['bitwise-and', Blockly.Yail.ORDER_NONE],
-  BITOR: ['bitwise-ior', Blockly.Yail.ORDER_NONE]
+  BITIOR: ['bitwise-ior', Blockly.Yail.ORDER_NONE],
+  BITXOR: ['bitwise-xor', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail['math_single'] = function() {
