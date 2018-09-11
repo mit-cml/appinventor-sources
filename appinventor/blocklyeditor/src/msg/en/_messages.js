@@ -89,6 +89,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DISABLE_GRID = 'Disable Workspace Grid';
     Blockly.Msg.ENABLE_SNAPPING = 'Enable Snap to Grid';
     Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
+    Blockly.Msg.DISABLE_ALL_BLOCKS = 'Disable All Blocks';
+    Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';

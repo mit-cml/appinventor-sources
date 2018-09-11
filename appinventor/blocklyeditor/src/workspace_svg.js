@@ -709,6 +709,32 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       arrangeOptionV.callback(opt_type);
   }
 
+  // Enable all blocks
+  var enableAll = {enabled: true};
+  enableAll.text = Blockly.Msg.ENABLE_ALL_BLOCKS;
+  enableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(false);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(enableAll);
+
+  // Disable all blocks
+  var disableAll = {enabled: true};
+  disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
+  disableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(true);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(disableAll);
+
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
   backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
