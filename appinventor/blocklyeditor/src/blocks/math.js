@@ -313,41 +313,41 @@ Blockly.Blocks['math_power'] = {
 };
 
 Blockly.Blocks['math_bitwise_and'] = {
-    // Basic arithmetic operator.
-    category: 'Math',
-    helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND,
-    init: function () {
-        this.setColour(Blockly.MATH_CATEGORY_HUE);
-        this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-        this.appendValueInput('A')
-            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-        this.appendValueInput('B')
-            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
-            .appendField(Blockly.Msg.LANG_MATH_BITWISE_AND);
-        this.setInputsInline(true);
-        // Assign 'this' to a variable for use in the tooltip closure below.
-        this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND);
-    },
-    typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND}]
+  // Basic arithmetic operator.
+  category: 'Math',
+  helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND,
+  init: function () {
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('A')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    this.appendValueInput('B')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_BITWISE_AND);
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND}]
 };
 
 Blockly.Blocks['math_bitwise_xor'] = {
-    // Basic arithmetic operator.
-    category: 'Math',
-    helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR,
-    init: function () {
-        this.setColour(Blockly.MATH_CATEGORY_HUE);
-        this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-        this.appendValueInput('A')
-            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-        this.appendValueInput('B')
-            .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
-            .appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
-        this.setInputsInline(true);
-        // Assign 'this' to a variable for use in the tooltip closure below.
-        this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR);
-    },
-    typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR}]
+  // Basic arithmetic operator.
+  category: 'Math',
+  helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR,
+  init: function () {
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('A')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    this.appendValueInput('B')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR}]
 };
 
 Blockly.Blocks['math_bitwise_ior'] = {

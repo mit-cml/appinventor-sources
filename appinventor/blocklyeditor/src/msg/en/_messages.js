@@ -407,10 +407,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_BITWISE_IOR = 'bitwise ior';
     Blockly.Msg.LANG_MATH_BITWISE_XOR = 'bitwise xor';
 
-      /*Blockly.Msg.LANG_MATH_CHANGE_TITLE_CHANGE = 'change';
-       Blockly.Msg.LANG_MATH_CHANGE_TITLE_ITEM = 'item';
-       Blockly.Msg.LANG_MATH_CHANGE_INPUT_BY = 'by';
-       Blockly.Msg.LANG_MATH_CHANGE_TOOLTIP = 'Add a number to variable "%1".';*/
+    /*Blockly.Msg.LANG_MATH_CHANGE_TITLE_CHANGE = 'change';
+     Blockly.Msg.LANG_MATH_CHANGE_TITLE_ITEM = 'item';
+     Blockly.Msg.LANG_MATH_CHANGE_INPUT_BY = 'by';
+     Blockly.Msg.LANG_MATH_CHANGE_TOOLTIP = 'Add a number to variable "%1".';*/
 
 
     Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'square root';
