@@ -714,9 +714,11 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   enableAll.text = Blockly.Msg.ENABLE_ALL_BLOCKS;
   enableAll.callback = function() {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       block.setDisabled(false);
     }
+    Blockly.Events.setGroup(false);
   };
   menuOptions.push(enableAll);
 
@@ -725,9 +727,11 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
   disableAll.callback = function() {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
       block.setDisabled(true);
     }
+    Blockly.Events.setGroup(false);
   };
   menuOptions.push(disableAll);
 
