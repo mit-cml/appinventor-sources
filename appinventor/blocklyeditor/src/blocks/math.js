@@ -331,25 +331,6 @@ Blockly.Blocks['math_bitwise_and'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND}]
 };
 
-Blockly.Blocks['math_bitwise_xor'] = {
-  // Basic arithmetic operator.
-  category: 'Math',
-  helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR,
-  init: function () {
-    this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
-    this.setInputsInline(true);
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR}]
-};
-
 Blockly.Blocks['math_bitwise_ior'] = {
   // Basic arithmetic operator.
   category: 'Math',
@@ -367,6 +348,25 @@ Blockly.Blocks['math_bitwise_ior'] = {
     this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_IOR}]
+};
+
+Blockly.Blocks['math_bitwise_xor'] = {
+  // Basic arithmetic operator.
+  category: 'Math',
+  helpUrl: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR,
+  init: function () {
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('A')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    this.appendValueInput('B')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR}]
 };
 
 Blockly.Blocks['math_random_int'] = {
