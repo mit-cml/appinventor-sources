@@ -27,6 +27,7 @@ import com.google.appinventor.components.common.YaVersion;
  * Component enabling a user to select an image from the phone's gallery.
  *
  * @author halabelson@google.com (Hal Abelson)
+ * @author nmdofficialhelp@gmail.com (Mika - Next Mobile Development[NMD])
  */
 @DesignerComponent(version = YaVersion.IMAGEPICKER_COMPONENT_VERSION,
     description = "A special-purpose button. When the user taps an image picker, the " +
