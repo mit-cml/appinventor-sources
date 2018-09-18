@@ -257,4 +257,14 @@ class DummyMapController implements MapController {
   public int getOverlayCount() {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public void setScaleVisible(boolean show) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isScaleVisible() {
+    throw new UnsupportedOperationException();
+  }
 }

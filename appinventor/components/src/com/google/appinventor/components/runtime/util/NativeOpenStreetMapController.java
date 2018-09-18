@@ -61,6 +61,7 @@ import org.osmdroid.views.overlay.OverlayWithIW;
 import org.osmdroid.views.overlay.OverlayWithIWVisitor;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
@@ -109,6 +110,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private boolean ready = false;
   private ZoomControlView zoomControls = null;
   private float lastAzimuth = Float.NaN;
+  private ScaleBarOverlay scaleBar;
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -293,6 +295,11 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     });
     zoomControls = new ZoomControlView(view);
     userLocation = new MyLocationNewOverlay(locationProvider, view);
+    scaleBar = new ScaleBarOverlay(view);
+    scaleBar.setAlignBottom(true);
+    scaleBar.setAlignRight(true);
+    scaleBar.disableScaleBar();
+    view.getOverlayManager().add(scaleBar);
 
     containerView = new RelativeLayout(form);
     containerView.setClipChildren(true);
@@ -1210,6 +1217,17 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public float getRotation() {
     return view.getMapOrientation();
+  }
+
+  @Override
+  public void setScaleVisible(boolean show) {
+    scaleBar.setEnabled(show);
+    view.invalidate();
+  }
+
+  @Override
+  public boolean isScaleVisible() {
+    return scaleBar.isEnabled();
   }
 
   static class MultiPolygon extends Polygon {

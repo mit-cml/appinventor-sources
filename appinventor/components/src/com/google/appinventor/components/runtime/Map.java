@@ -114,6 +114,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     ShowUser(false);
     ShowZoom(false);
     EnableRotation(false);
+    ShowScale(false);
   }
 
   @Override
@@ -447,6 +448,18 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
 
   public LocationSensor LocationSensor() {
     return sensor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty
+  public void ShowScale(boolean show) {
+    mapController.setScaleVisible(show);
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Shows a scale reference on the map.")
+  public boolean ShowScale() {
+    return mapController.isScaleVisible();
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
