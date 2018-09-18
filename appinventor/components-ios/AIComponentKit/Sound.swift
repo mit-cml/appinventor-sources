@@ -12,12 +12,13 @@ import AVKit
 private let kMaxPlayDelayRetries: Int32 = 10
 private let kPlayDelayLength = TimeInterval(0.050)
 
-open class Sound: NonvisibleComponent {
+open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
   fileprivate var _sourcePath: String = ""
   fileprivate var _minimumInterval: Int32 = 500
   fileprivate var _timeLastPlayed: Double = 0.0
   fileprivate var _audioPlayer: AVAudioPlayer?
   fileprivate var _delayRetries: Int32 = 0
+  fileprivate var _started: Bool = false
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -39,6 +40,7 @@ open class Sound: NonvisibleComponent {
         do {
           _audioPlayer = try AVAudioPlayer(contentsOf:url)
           _audioPlayer?.prepareToPlay()
+          _audioPlayer?.delegate = self
         } catch {
           NSLog("Error loading audio")
         }
@@ -67,14 +69,29 @@ open class Sound: NonvisibleComponent {
   }
 
   fileprivate func playWhenLoadComplete() {
+    _started = true
     _audioPlayer?.play()
   }
 
   open func Pause() {
     _audioPlayer?.pause()
   }
+
+  public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    if flag {
+      _started = false
+    }
+  }
+
+  open func Resume() {
+    if let audio = _audioPlayer, !audio.isPlaying,
+      audio.currentTime != audio.duration, _started {
+      audio.play()
+    }
+  }
   
   open func Stop() {
+    _started = false
     _audioPlayer?.stop()
   }
   

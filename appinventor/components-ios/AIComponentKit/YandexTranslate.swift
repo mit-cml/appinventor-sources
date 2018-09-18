@@ -47,13 +47,13 @@ open class YandexTranslate: NonvisibleComponent {
           self._form.dispatchErrorOccurredEvent(self, "RequestTranslation", ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.code, ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.message)
           return
         }
-        self.GotTranslation(responseCode: responseCode as NSNumber, translation: translation as NSString)
+        self.GotTranslation(responseCode as NSNumber, translation as NSString)
       }
     }
     task.resume()
   }
 
-  open func GotTranslation(responseCode: NSNumber, translation: NSString) {
+  open func GotTranslation(_ responseCode: NSNumber, _ translation: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotTranslation", arguments: responseCode, translation)
 
   }

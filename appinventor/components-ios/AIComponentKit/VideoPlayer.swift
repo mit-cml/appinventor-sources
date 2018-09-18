@@ -153,8 +153,10 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
   }
 
   open func Completed(){
-    print("something happened")
     EventDispatcher.dispatchEvent(of: self, called: "Completed")
   }
+
+  // Deprecated
+  open func VideoPlayerError(_ message: String) {}
 }
 

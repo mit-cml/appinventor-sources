@@ -192,7 +192,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     EventDispatcher.dispatchEvent(of: self, called: "LocationChanged", arguments: latitude as NSNumber, longitude as NSNumber, altitude as NSNumber, speed as NSNumber)
   }
   
-  open func LatitudeFromAddress(addressStr: String) -> Double {
+  open func LatitudeFromAddress(_ addressStr: String) -> Double {
     var latitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
       guard let placemarks = placemarks, let location = placemarks.first?.location else {
@@ -203,7 +203,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     return latitude
   }
   
-  open func LongitudeFromAddress(addressStr: String) -> Double {
+  open func LongitudeFromAddress(_ addressStr: String) -> Double {
     var longitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
       guard let placemarks = placemarks, let location = placemarks.first?.location else {
@@ -303,8 +303,13 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   
   open func StatusChanged(provider: String = "iOS", _ status: LocationManagerStatus) {
     if _enabled {
-      EventDispatcher.dispatchEvent(of: self, called: "StatusChanged", arguments: provider as NSString, status.rawValue as NSString)
+      StatusChanged(provider, status.rawValue)
     }
+  }
+
+  // wrapper for coverage
+  open func StatusChanged(_ provider: String, _ status: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "StatusChanged", arguments: provider as NSString, status as NSString)
   }
   
   open func RefreshProvider() {
