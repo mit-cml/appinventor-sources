@@ -8,19 +8,82 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _image: UIImage? = nil
   fileprivate var _picturePath = ""
   fileprivate var _rotationAngle = 0.0
-  fileprivate var _scaleToFit = false
-  
+  fileprivate var _scaleToFit = true
+  fileprivate var _stoppedPosition: CGFloat? = nil
+
   public override init(_ parent: ComponentContainer) {
     _view.isUserInteractionEnabled = true
     _view.translatesAutoresizingMaskIntoConstraints = false
     super.init(parent)
     parent.add(self)
+    ScalePictureToFit = false
   }
 
   open override var view: UIView {
     get {
       return _view
     }
+  }
+
+  /**
+   * Applies or cancels a horizontal scrolling animation
+   */
+  open var Animation: String {
+    get {
+      return ""
+    }
+    set(animation) {
+      switch animation {
+      case "ScrollRightSlow":
+        ApplyScrollAnimation(false, 8)
+      case "ScrollRight":
+        ApplyScrollAnimation(false, 4)
+      case "ScrollRightFast":
+        ApplyScrollAnimation(false, 1)
+      case "ScrollLeftSlow":
+        ApplyScrollAnimation(true, 8)
+      case "ScrollLeft":
+        ApplyScrollAnimation(true, 4)
+      case "ScrollLeftFast":
+        ApplyScrollAnimation(true, 1)
+      case "Stop":
+        // we want to save the current position
+        _stoppedPosition = _view.frame.origin.x - (_view.layer.presentation()?.frame.origin.x ?? _view.frame.origin.x)
+        _view.layer.removeAllAnimations()
+      default:
+        NSLog("Invalid animation provided: \(animation)")
+      }
+    }
+  }
+
+  // applies an appropriate animation
+  fileprivate func ApplyScrollAnimation(_ left: Bool, _ duration: TimeInterval) {
+    _stoppedPosition = nil
+    let sign: CGFloat = left ? -1: 1
+    let dx = sign * (_view.superview?.frame.width ?? 1) * 0.75
+    let angle = CGFloat(self._rotationAngle) * .pi / 180
+    transform(-dx, angle)
+    UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: {
+      self.transform(2 * dx, angle)
+    }, completion: { completed in
+      // the rotation angle might have changed mid animation
+      let finalAngle = CGFloat(self._rotationAngle) * .pi / 180
+      if completed {
+        self.transform(-dx, finalAngle)
+      } else if let position = self._stoppedPosition {
+        self.transform(-position, finalAngle)
+      }
+    })
+  }
+
+  /**
+   * Translates a rotated view horizontally
+   * We have to disable the transform before translating and restore it after
+   */
+  fileprivate func transform(_ dx: CGFloat, _ angle: CGFloat) {
+    _view.transform = CGAffineTransform.identity.rotated(by: 0)
+    _view.frame.origin.x += dx
+    _view.transform = CGAffineTransform.identity.rotated(by: angle)
   }
   
   open var Picture: String {
@@ -58,6 +121,8 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       if (_rotationAngle == rotationAngle) {
         return  // Don't waste cycles
       }
+      _rotationAngle = rotationAngle
+      _view.transform = CGAffineTransform.identity.rotated(by: CGFloat(RotationAngle) * .pi / 180)
     }
   }
 
@@ -68,10 +133,13 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     set(scale) {
       if _scaleToFit != scale {
         _scaleToFit = scale
-        _view.contentMode = _scaleToFit ? .scaleAspectFit : .topLeft
+        _view.contentMode = _scaleToFit ? .scaleToFill : .scaleAspectFit
       }
     }
   }
+
+  // Deprecated
+  open var Scaling: Int32 = 0
 
   private func updateImage(_ image: UIImage?) {
     if let image = image {
@@ -81,11 +149,10 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     } else {
       _image = nil
       _view.image = nil
-      _view.frame.size = CGSize(width: 0, height: 0)
+      _view.frame.size = .zero
     }
     _view.invalidateIntrinsicContentSize()
     _view.setNeedsUpdateConstraints()
     _view.setNeedsLayout()
   }
-
 }
