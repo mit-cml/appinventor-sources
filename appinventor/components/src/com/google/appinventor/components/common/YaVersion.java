@@ -879,7 +879,9 @@ public class YaVersion {
   // - GeoJSONError was renamed to LoadError
   // For MAP_COMPONENT_VERSION 4:
   // - Added Rotation property
-  public static final int MAP_COMPONENT_VERSION = 4;
+  // For MAP_COMPONENT_VERSION 5:
+  // - Added Scale property
+  public static final int MAP_COMPONENT_VERSION = 5;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap

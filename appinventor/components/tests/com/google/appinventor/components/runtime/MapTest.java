@@ -7,6 +7,8 @@ package com.google.appinventor.components.runtime;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.view.View;
+import android.widget.RelativeLayout;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
@@ -15,6 +17,7 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowSensorManager;
@@ -145,6 +148,20 @@ public class MapTest extends MapTestBase {
   public void testShowUser() {
     map.ShowUser(true);
     assertTrue(map.ShowUser());
+  }
+
+  /**
+   * Test that:
+   * !) Showing the scale invalidates the view
+   * 2) if we show the scale, the ShowScale getter will return true.
+   */
+  @Test
+  public void testShowScale() {
+    shadowOf(getMapView()).clearWasInvalidated();
+    map.ShowScale(true);
+    // Make sure that the view was invalidated
+    assertTrue(shadowOf(getMapView()).wasInvalidated());
+    assertTrue(map.ShowScale());
   }
 
   @Test
@@ -341,9 +358,20 @@ public class MapTest extends MapTestBase {
    */
   @Test
   public void testResetFeatureList() {
+    int defaultFeatureListSize = map.getController().getOverlayCount();
     new Marker(map);
+    assertEquals(defaultFeatureListSize + 1, map.getController().getOverlayCount());
     map.Features(YailList.makeEmptyList());
     assertEquals(0, map.Features().size());
-    assertEquals(1, map.getController().getOverlayCount());
+    assertEquals(defaultFeatureListSize, map.getController().getOverlayCount());
+  }
+
+  private MapView getMapView() {
+    RelativeLayout layout = (RelativeLayout) map.getView();
+    return (MapView) layout.getChildAt(0);
+  }
+
+  private static ShadowView shadowOf(View view) {
+    return (ShadowView) Shadow.extract(view);
   }
 }

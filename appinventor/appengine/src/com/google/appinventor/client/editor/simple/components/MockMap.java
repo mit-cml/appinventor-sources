@@ -32,6 +32,7 @@ public final class MockMap extends MockContainer {
   protected static final String PROPERTY_NAME_SHOW_ZOOM = "ShowZoom";
   protected static final String PROPERTY_NAME_SHOW_USER = "ShowUser";
   protected static final String PROPERTY_NAME_ENABLE_ROTATION = "EnableRotation";
+  protected static final String PROPERTY_NAME_SHOW_SCALE = "ShowScale";
 
   /**
    * The Widget wrapping the element where the map tiles will be rendered.
@@ -66,6 +67,7 @@ public final class MockMap extends MockContainer {
   private boolean zoomControl = false;
   private boolean compassEnabled = false;
   private boolean userLocationEnabled = false;
+  private boolean showScale = false;
 
   public MockMap(SimpleEditor editor) {
     super(editor, TYPE, images.map(), new MockMapLayout());
@@ -169,6 +171,8 @@ public final class MockMap extends MockContainer {
       setShowUser(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_ZOOM)) {
       setShowZoom(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_SCALE)) {
+      setShowScale(newValue);
     }
   }
 
@@ -232,6 +236,11 @@ public final class MockMap extends MockContainer {
   private void setShowZoom(String state) {
     this.zoomControl = Boolean.parseBoolean(state);
     updateMapZoomControl(this.zoomControl);
+  }
+
+  private void setShowScale(String state) {
+    this.showScale = Boolean.parseBoolean(state);
+    updateMapShowScale(this.showScale);
   }
 
   // event handlers
@@ -459,7 +468,8 @@ public final class MockMap extends MockContainer {
       var latitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::latitude,
           longitude = this.@com.google.appinventor.client.editor.simple.components.MockMap::longitude,
           zoomControl = this.@com.google.appinventor.client.editor.simple.components.MockMap::zoomControl,
-          zoom = this.@com.google.appinventor.client.editor.simple.components.MockMap::zoomLevel;
+          zoom = this.@com.google.appinventor.client.editor.simple.components.MockMap::zoomLevel,
+          showScale = this.@com.google.appinventor.client.editor.simple.components.MockMap::showScale;
       map = L.map(elem, {zoomControl: false, editable: true}).setView([latitude, longitude], zoom);
       var messages = @com.google.appinventor.client.Ode::getMessages()();
       map.zoomControl = L.control.zoom({
@@ -469,6 +479,10 @@ public final class MockMap extends MockContainer {
       });
       if (zoomControl) {
         map.zoomControl.addTo(map);
+      }
+      map.scaleControl = L.control.scale({position: 'bottomright'});
+      if (showScale) {
+        map.scaleControl.addTo(map);
       }
       map.owner = this;
       map.unlocked = true;
@@ -600,6 +614,20 @@ public final class MockMap extends MockContainer {
         map.zoomControl.addTo(map);
       } else {
         map.removeControl(map.zoomControl);
+      }
+    }
+  }-*/;
+
+  private native void updateMapShowScale(boolean enable)/*-{
+    var map = this.@com.google.appinventor.client.editor.simple.components.MockMap::mapInstance;
+    if (map) {
+      if (!map.scaleControl) {
+        map.scaleControl = $wnd.top.L.control.scale({position: 'topleft'});
+      }
+      if (enable) {
+        map.scaleControl.addTo(map);
+      } else {
+        map.removeControl(map.scaleControl);
       }
     }
   }-*/;

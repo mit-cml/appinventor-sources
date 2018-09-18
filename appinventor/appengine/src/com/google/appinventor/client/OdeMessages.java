@@ -6655,6 +6655,10 @@ public interface OdeMessages extends Messages {
   @Description("Show a compass control on the Map")
   String ShowCompassProperties();
 
+  @DefaultMessage("ShowScale")
+  @Description("Show a scale indicator on the Map")
+  String ShowScaleProperties();
+
   @DefaultMessage("ShowUser")
   @Description("Show a marker on the Map for the user's current location")
   String ShowUserProperties();

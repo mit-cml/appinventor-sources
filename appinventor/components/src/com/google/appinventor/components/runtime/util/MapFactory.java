@@ -524,6 +524,20 @@ public final class MapFactory {
      * @return the rotation
      */
     float getRotation();
+
+    /**
+     * Sets whether or not the scale overlay is visible.
+     * @param show True if the scale should be shown, otherwise false.
+     */
+    void setScaleVisible(boolean show);
+
+    /**
+     * Gets the visibility of the scale on the map. A true value does
+     * not guarantee that the scale is visible to the user (i.e., if
+     * the Map is not visible).
+     * @returns true if the scale is enabled on the map, otherwise false.
+     */
+    boolean isScaleVisible();
   }
 
   /**
