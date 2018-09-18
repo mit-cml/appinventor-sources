@@ -83,8 +83,7 @@ Blockly.Msg.en.switch_language_to_english = {
    " drag-and-drop blocks into the workspace." +
    "</p><p>If you leave MIT App Inventor with blocks left in your backpack, " +
    " they will be there the next time you login." +
-   "</p><p>For further documentation and a 'how to' video, see:" +
-   '</p><p><a href="reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
+   "</p><p><a href='/reference/other/backpack.html' target='_blank'>Click Here</a> for further documentation and a 'how to' video, see:";
     Blockly.Msg.ENABLE_GRID = 'Enable Workspace Grid';
     Blockly.Msg.DISABLE_GRID = 'Disable Workspace Grid';
     Blockly.Msg.ENABLE_SNAPPING = 'Enable Snap to Grid';
