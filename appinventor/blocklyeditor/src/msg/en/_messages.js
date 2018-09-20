@@ -109,7 +109,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
 
 // Colour Blocks.
-    Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors#basic';
+    Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors#basic.html';
     Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = 'Click the square to pick a color.';
     Blockly.Msg.LANG_COLOUR_BLACK = 'black';
     Blockly.Msg.LANG_COLOUR_WHITE = 'white';

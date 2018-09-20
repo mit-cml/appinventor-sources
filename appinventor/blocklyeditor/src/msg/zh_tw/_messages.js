@@ -83,7 +83,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     Blockly.Msg.BACKPACK_DOCUMENTATION = "背包具有備份功能。它允許您從專案或螢幕中複製程式方塊到另一個專案或螢幕。複製時，將程式方塊從工作區域拖放入背包；接著另一個專案或畫面，點選背包圖標將其中的程式方塊拖放入工作區域。"
     + "</p><p>退出MIT App Inventor時，程式方塊將留在背包中，並保存到您下次登入。"
     + "</p><p>想要了解更多有關背包的介紹，請參考："
-    + '</p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
+    + '</p><p><a href="/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = '修改數值:';

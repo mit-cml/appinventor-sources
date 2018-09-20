@@ -603,7 +603,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.BACKPACK_EMPTY = '백팩 비우기';
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = '백팩에 있는 모든 블록을 비우시겠습니까?';
     Blockly.Msg.BACKPACK_DOC_TITLE = "백팩 정보";
-    Blockly.Msg.BACKPACK_DOCUMENTATION = '백팩은 블록 복사-붙여넣기를 도와주는 기능입니다. 현재 사용 중인 프로젝트 또는 스크린에서 블록을 복사하여 다른 프로젝트나 스크린에 붙여넣을 수 있습니다. 블록을 복사하려면, 원하는 블록을 드래그하여 백팩에 넣어주세요. 복사된 블록을 붙여넣으려면, 백팩 아이콘을 클릭한 다음 블록을 작업 공간으로 드래그하면 됩니다.</p><p>백팩안에 들어있는 내용들을 현재 접속된 앱 인벤터 세션 동안에만 유지됩니다. 만약 앱 인벤터를 종료하거나 웹 페이지를 다시 불러온다면 백팩은 다시 초기화됩니다. 즉 빈 가방이 되는거죠.</p><p>더 자세한 내용은 다음 문서를 참고하세요: </p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
+    Blockly.Msg.BACKPACK_DOCUMENTATION = '백팩은 블록 복사-붙여넣기를 도와주는 기능입니다. 현재 사용 중인 프로젝트 또는 스크린에서 블록을 복사하여 다른 프로젝트나 스크린에 붙여넣을 수 있습니다. 블록을 복사하려면, 원하는 블록을 드래그하여 백팩에 넣어주세요. 복사된 블록을 붙여넣으려면, 백팩 아이콘을 클릭한 다음 블록을 작업 공간으로 드래그하면 됩니다.</p><p>백팩안에 들어있는 내용들을 현재 접속된 앱 인벤터 세션 동안에만 유지됩니다. 만약 앱 인벤터를 종료하거나 웹 페이지를 다시 불러온다면 백팩은 다시 초기화됩니다. 즉 빈 가방이 되는거죠.</p><p>더 자세한 내용은 다음 문서를 참고하세요: </p><p><a href="/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
   }
 };
 
