@@ -187,7 +187,7 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
 
     /* [lyn, 10/14/13] Removed for now. May come back some day.
      Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = 'nada';
-     Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#nothing';
+     Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control#nothing';
      Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP = 'No devuelve nada. Se utiliza para inicializar variables, es posible encajarlo en una pieza de retorno si no se necesita el valor devuelto. Equivale  a nulo o Ninguno.';
      */
 

@@ -80,7 +80,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.BACKPACK_DOCUMENTATION = "背包具有备份功能。它允许你从项目或屏幕中复制代码块到另一个项目或屏幕。复制时，将代码块从工作区域拖放入背包；粘贴时，单击背包图标将背包中的代码块拖放入工作区域。"
     + "</p><p>如果你退出 MIT App Inventor 时将代码块留在背包中，背包会保存代码块直到你下次登录。"
     + "</p><p>想要了解更多有关背包的介绍，请前往："
-    + '</p><p><a href="/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
+    + '</p><p><a href="/reference/other/backpack.html" target="_blank">/reference/other/backpack.html</a>';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = '修改数值:';
@@ -227,7 +227,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
 
     /* [lyn 13/10/14] Removed for now. May come back some day.
     Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = '空值';
-    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#nothing';
+    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control#nothing.html';
     Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP = ' 返回空值。可用于初始化变量或插入到返回槽中（如果没有值需要返回，相当于为空）。';
     */
 
@@ -422,15 +422,15 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '是否为数字?';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = '判断该对象是否为数字。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = '是否为十进制数?';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = '判断该对象是否为十进制数。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = '是否为十六进制?';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = '判断该对象是否为十六进制数。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math#isnumber.html';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = '是否为二进制?';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = '判断该对象是否为二进制数。';
 
