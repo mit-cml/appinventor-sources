@@ -1066,6 +1066,7 @@ Blockly.Blocks['math_convert_number'] = {
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_convert_number.HELPURLS[mode];
+//      return Blockly.Blocks.math_convert_number.HELPURLS()[mode];
   },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
