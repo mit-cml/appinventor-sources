@@ -187,6 +187,10 @@
     <property name="clouddb.uuid.secret" value="changeme!"/>
     <property name="clouddb.secret" value="changeme too!" />
 
+    <!-- This appears to be needed after a suspected change in how
+         POSTs work with URLFetch around 09/20/2018 -->
+    <property name="appengine.api.urlfetch.defaultDeadline" value="40"/>
+
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->
