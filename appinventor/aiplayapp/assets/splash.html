@@ -44,7 +44,8 @@
                  if (this.readyState == 4 && this.status == 200) {
                      var json = JSON.parse(this.response);
                      var ele = document.getElementById("motd");
-                     var message = json[Android.getVersion()];
+                     var version = Android.getVersion();
+                     var message = json[version];
                      if (!message) {
                          message = json['message'];
                      }
