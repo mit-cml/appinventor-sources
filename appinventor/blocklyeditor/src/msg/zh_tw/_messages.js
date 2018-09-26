@@ -425,15 +425,15 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '是否為數字?';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = '判斷該對象是否為數字。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = '是否為10進位數?';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = '判斷該對象是否為10進位數。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = '是否為16進位?';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = '判斷該對象是否為16進位數。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = '是否為2進位?';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = '判斷該對象是否為2進位數。';
 
