@@ -374,7 +374,10 @@ Blockly.Blocks['math_on_list'] = {
   // Evaluate a list of numbers to return sum, average, min, max, etc.
   // Some functions also work on text (min, max, mode, median).
   category: 'Math',
-  helpUrl: '',
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.math_on_list.HELPURLS()[mode];
+  },
   init: function () {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
@@ -450,6 +453,13 @@ Blockly.Blocks.math_on_list.TOOLTIPS = function () {
   return {
     MIN: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN,
     MAX: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX
+  }
+};
+
+Blockly.Blocks.math_on_list.HELPURLS = function () {
+  return {
+    MIN: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MIN,
+    MAX: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MAX
   }
 };
 
@@ -566,7 +576,7 @@ Blockly.Blocks['math_abs'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -579,7 +589,7 @@ Blockly.Blocks['math_abs'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -589,7 +599,7 @@ Blockly.Blocks['math_neg'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -602,7 +612,7 @@ Blockly.Blocks['math_neg'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -612,7 +622,7 @@ Blockly.Blocks['math_round'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -625,7 +635,7 @@ Blockly.Blocks['math_round'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -635,7 +645,7 @@ Blockly.Blocks['math_ceiling'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -648,7 +658,7 @@ Blockly.Blocks['math_ceiling'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -658,7 +668,7 @@ Blockly.Blocks['math_floor'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -671,7 +681,7 @@ Blockly.Blocks['math_floor'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
