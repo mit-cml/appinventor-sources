@@ -227,7 +227,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
 
     /* [lyn 13/10/14] Removed for now. May come back some day.
     Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = '空值';
-    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control#nothing.html';
+    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control.html#nothing';
     Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP = ' 返回空值。可用于初始化变量或插入到返回槽中（如果没有值需要返回，相当于为空）。';
     */
 
@@ -422,15 +422,15 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '是否为数字?';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = '判断该对象是否为数字。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = '是否为十进制数?';
     // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = '判断该对象是否为十进制数。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = '是否为十六进制?';
     // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = '判断该对象是否为十六进制数。';
 
-    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math#isnumber.html';
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math.html#isnumber';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = '是否为二进制?';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = '判断该对象是否为二进制数。';
 

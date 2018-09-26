@@ -230,7 +230,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
 
     /* [lyn 13/10/14] Removed for now. May come back some day.
     Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = '空值';
-    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control#nothing.html';
+    Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control.html#nothing';
     Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP = ' 回傳空值。可用於初始化變數或插入到回傳槽中（如果沒有值需要回傳，相當於為空）。';
     */
 
