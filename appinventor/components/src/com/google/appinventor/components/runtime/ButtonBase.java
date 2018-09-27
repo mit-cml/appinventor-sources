@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -13,11 +14,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
-import com.google.appinventor.components.runtime.util.KitkatUtil;
-import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
-import com.google.appinventor.components.runtime.util.ViewUtil;
+import com.google.appinventor.components.runtime.util.*;
 import android.view.MotionEvent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -165,9 +162,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     {
         //NOTE: We ALWAYS return false because we want to indicate that this listener has not
         //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
+      int test = me.getAction();
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
             //button pressed, provide visual feedback AND return false
-            if (ShowFeedback()) {
+            if (ShowFeedback() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                view.getBackground().setAlpha(70); // translucent
                view.invalidate();
             }
@@ -175,7 +173,7 @@ public abstract class ButtonBase extends AndroidViewComponent
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
             me.getAction() == MotionEvent.ACTION_CANCEL) {
             //button released, set button back to normal AND return false
-            if (ShowFeedback()) {
+            if (ShowFeedback() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                view.getBackground().setAlpha(255); // opaque
                view.invalidate();
             }
@@ -388,6 +386,15 @@ public abstract class ButtonBase extends AndroidViewComponent
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
           ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && backgroundColor == Component.COLOR_NONE) {
+//          RippleDrawable fred = new RippleDrawable(getPressedColorSelector(backgroundColor), new ColorDrawable(backgroundColor), defaultButtonDrawable);
+//          view.setBackgroundDrawable(fred);
+        } else if (backgroundColor == Component.COLOR_NONE) {
+          // Clear the background image.
+          ViewUtil.setBackgroundDrawable(view, null);
+          //Now we set again the default drawable
+          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
         } else {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
