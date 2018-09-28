@@ -158,29 +158,27 @@ public abstract class ButtonBase extends AndroidViewComponent
      * release when not-pressed.
      */
     @Override
-    public boolean onTouch(View view, MotionEvent me)
-    {
-        //NOTE: We ALWAYS return false because we want to indicate that this listener has not
-        //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
-      int test = me.getAction();
-        if (me.getAction() == MotionEvent.ACTION_DOWN) {
-            //button pressed, provide visual feedback AND return false
-            if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-               view.getBackground().setAlpha(70); // translucent
-               view.invalidate();
-            }
-            TouchDown();
-        } else if (me.getAction() == MotionEvent.ACTION_UP ||
-            me.getAction() == MotionEvent.ACTION_CANCEL) {
-            //button released, set button back to normal AND return false
-            if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-               view.getBackground().setAlpha(255); // opaque
-               view.invalidate();
-            }
-            TouchUp();
+    public boolean onTouch(View view, MotionEvent me) {
+      //NOTE: We ALWAYS return false because we want to indicate that this listener has not
+      //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
+      if (me.getAction() == MotionEvent.ACTION_DOWN) {
+        //button pressed, provide visual feedback AND return false
+        if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+          view.getBackground().setAlpha(70); // translucent
+          view.invalidate();
         }
+        TouchDown();
+      } else if (me.getAction() == MotionEvent.ACTION_UP ||
+              me.getAction() == MotionEvent.ACTION_CANCEL) {
+        //button released, set button back to normal AND return false
+        if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+          view.getBackground().setAlpha(255); // opaque
+          view.invalidate();
+        }
+        TouchUp();
+      }
 
-        return false;
+      return false;
     }
 
   @Override
