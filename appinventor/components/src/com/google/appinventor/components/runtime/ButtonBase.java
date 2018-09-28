@@ -165,7 +165,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       int test = me.getAction();
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
             //button pressed, provide visual feedback AND return false
-            if (ShowFeedback() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                view.getBackground().setAlpha(70); // translucent
                view.invalidate();
             }
@@ -173,7 +173,7 @@ public abstract class ButtonBase extends AndroidViewComponent
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
             me.getAction() == MotionEvent.ACTION_CANCEL) {
             //button released, set button back to normal AND return false
-            if (ShowFeedback() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                view.getBackground().setAlpha(255); // opaque
                view.invalidate();
             }
