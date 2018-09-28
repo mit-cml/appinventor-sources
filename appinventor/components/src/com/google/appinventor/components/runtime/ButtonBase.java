@@ -384,9 +384,6 @@ public abstract class ButtonBase extends AndroidViewComponent
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
           ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
-//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && backgroundColor == Component.COLOR_NONE) {
-//          RippleDrawable fred = new RippleDrawable(getPressedColorSelector(backgroundColor), new ColorDrawable(backgroundColor), defaultButtonDrawable);
-//          view.setBackgroundDrawable(fred);
         } else if (backgroundColor == Component.COLOR_NONE) {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
