@@ -659,6 +659,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
+
+    // Initialize variables
     URL buildServerUrl = null;
     ProjectSourceZip zipFile = null;
     int responseCode = 0;
@@ -686,12 +688,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.close();
 
 
+      // Computer project filesize
       zipFileLength = zipFile == null ? -1 : zipFile.getContent().length;
       String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
 
-      errMsg = "Sorry, can't package projects larger than 5MB. Yours is " + lengthMbs + "MB. Please consider shrinking assets and/or reducing number of screens";
-      if (zipFileLength >= (maxAiaSize * 1024 * 1024) /* 20 MB */) {
-
+      // Pre-check to see if we pass our max aia size.
+      errMsg = "Sorry, can't package projects larger than " + maxAiaSize + "MB. Yours is " + lengthMbs + "MB. Please consider shrinking assets and/or reducing number of screens";
+      if (zipFileLength >= (maxAiaSize * 1024 * 1024) /* 5 MB */) {
         return new RpcResult(false, "", errMsg);
       }
 
@@ -737,6 +740,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     } catch (IOException e) {
       // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
       Throwable wrappedException = e;
+      // Was this due to reaching max aia size?
       if (zipFileLength >= maxAiaSize /* 5 MB */) {
         wrappedException = new IllegalArgumentException(errMsg, e);
       }
