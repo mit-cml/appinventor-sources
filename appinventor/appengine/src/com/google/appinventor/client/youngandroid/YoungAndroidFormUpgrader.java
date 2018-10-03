@@ -1255,11 +1255,15 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-        // The PlayInForeground method was added.
-        // The OtherPlayerStarted event was added.
-        // Properties related to this component have now been upgraded to version  6.
-        srcCompVersion = 6;
-      }
+      // The PlayInForeground method was added.
+      // The OtherPlayerStarted event was added.
+      // Properties related to this component have now been upgraded to version  6.
+      srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // - The Volume property getter was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
