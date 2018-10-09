@@ -664,7 +664,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     URL buildServerUrl = null;
     ProjectSourceZip zipFile = null;
     int responseCode = 0;
-    int maxAiaSize = 5;  // in mb
+    int maxAiaSize = 10;  // in mb
     String errMsg="";
     int zipFileLength = -1;
     try {
