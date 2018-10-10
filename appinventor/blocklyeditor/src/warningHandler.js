@@ -30,6 +30,8 @@ Blockly.WarningHandler.WarningState = {
   WARNING: 1,
   ERROR: 2
 };
+Blockly.WarningHandler.prototype.errorWarningIdHash = {};
+Blockly.WarningHandler.prototype.currentErrorWarning = 0;
 
 Blockly.WarningHandler.prototype.updateWarningErrorCount = function() {
   //update the error and warning count in the UI
@@ -107,6 +109,22 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
   }
 };
 
+Blockly.WarningHandler.prototype.warningNavLeft = function() {
+  var k = Object.keys(this.errorWarningIdHash);
+  if (this.currentErrorWarning > 0) {
+    this.currentErrorWarning--;
+  } else this.currentErrorWarning = k.length - 1;
+  this.workspace.centerOnBlock(k[this.currentErrorWarning]);
+};
+
+Blockly.WarningHandler.prototype.warningNavRight = function() {
+  var k = Object.keys(this.errorWarningIdHash);
+  if (this.currentErrorWarning < k.length - 1) {
+    this.currentErrorWarning++;
+  } else this.currentErrorWarning = 0;
+  this.workspace.centerOnBlock(k[this.currentErrorWarning]);
+};
+
 //Takes a block as the context (this), puts
 //the appropriate error or warning on the block,
 //and returns the corresponding warning state
@@ -131,6 +149,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
       this.errorCount--;
       this.updateWarningErrorCount();
     }
+    delete this.errorWarningIdHash[block.id];
     return Blockly.WarningHandler.WarningState.NO_ERROR;
   }
 
@@ -169,6 +188,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
         this.updateWarningErrorCount();
       }
 
+      this.errorWarningIdHash[block.id] = true;
       return Blockly.WarningHandler.WarningState.ERROR;
     }
   }
@@ -192,6 +212,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
         this.warningCount++;
         this.updateWarningErrorCount();
       }
+      this.errorWarningIdHash[block.id] = true;
       return Blockly.WarningHandler.WarningState.WARNING;
     }
   }
@@ -207,6 +228,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   }
 
   //return no error
+  delete this.errorWarningIdHash[block.id];
   return Blockly.WarningHandler.WarningState.NO_ERROR;
 };
 

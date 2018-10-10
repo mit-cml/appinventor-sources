@@ -123,6 +123,22 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.svgGroup_);
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
+  this.navLeft_ = Blockly.utils.createSvgElement('rect',
+      {'fill': "#eeeeee",'width':"40", 'height':"20", 'x':"5",'y':"50",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+  this.navLeftText_ = Blockly.utils.createSvgElement('text',
+      {'fill': "black", 'transform':"translate(23,65)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      this.svgGroup_);
+  this.navLeftText_.textContent = "<<";
+
+  this.navRight_ = Blockly.utils.createSvgElement('rect',
+      {'fill': "#eeeeee",'width':"40", 'height':"20", 'x':"50",'y':"50",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+  this.navRightText_ = Blockly.utils.createSvgElement('text',
+      {'fill': "black", 'transform':"translate(70,65)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      this.svgGroup_);
+  this.navRightText_.textContent = ">>";
+
   return this.svgGroup_;
 };
 
@@ -135,6 +151,10 @@ Blockly.WarningIndicator.prototype.init = function() {
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.bindEvent_(this.warningToggle_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
   Blockly.bindEvent_(this.warningToggleText_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.navLeft_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavLeft);
+  Blockly.bindEvent_(this.navLeftText_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavLeft);
+  Blockly.bindEvent_(this.navRight_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavRight);
+  Blockly.bindEvent_(this.navRightText_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavRight);
 };
 
 /**
@@ -159,6 +179,10 @@ Blockly.WarningIndicator.prototype.dispose = function() {
 
   this.warningToggle_ = null;
   this.warningToggleText_ = null;
+  this.navLeft_ = null;
+  this.navLeftText_ = null;
+  this.navRight_ = null;
+  this.navRightText_ = null;
 
 };
 
@@ -211,4 +235,11 @@ Blockly.WarningIndicator.prototype.updateWarningToggleText = function() {
  */
 Blockly.WarningIndicator.prototype.onclickWarningToggle = function() {
   window.parent.BlocklyPanel_callToggleWarning();
+}
+
+Blockly.WarningIndicator.prototype.onclickWarningNavLeft = function() {
+  this.workspace_.getWarningHandler().warningNavLeft();
+}
+Blockly.WarningIndicator.prototype.onclickWarningNavRight = function() {
+  this.workspace_.getWarningHandler().warningNavRight();
 }
