@@ -149,9 +149,9 @@ public interface ProjectServiceAsync {
     AsyncCallback<RpcResult> callback);
 
   /**
-   * @see ProjectService#build(long, String, String)
+   * @see ProjectService#build(long, String, String, boolean)
    */
-  void build(long projectId, String nonce, String target, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, boolean secondBuildserver, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)

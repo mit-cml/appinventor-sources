@@ -119,7 +119,7 @@ public final class ProjectBuilder {
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, boolean isForCompanion,
-               int childProcessRam, String dexCachePath) {
+    int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter) {
     try {
       // Download project files into a temporary directory
       File projectRoot = createNewTempDir();
@@ -131,17 +131,6 @@ public final class ProjectBuilder {
         } catch (IOException e) {
           LOG.severe("unexpected problem extracting project file from zip");
           return Result.createFailingResult("", "Problems processing zip file.");
-        }
-
-        try {
-          genYailFilesIfNecessary(sourceFiles);
-        } catch (YailGenerationException e) {
-          // Note that we're using a special result code here for the case of a Yail gen error.
-          return new Result(Result.YAIL_GENERATION_ERROR, "", e.getMessage(), e.getFormName());
-        } catch (Exception e) {
-          LOG.severe("Unknown exception signalled by genYailFilesIf Necessary");
-          e.printStackTrace();
-          return Result.createFailingResult("", "Unexpected problems generating YAIL.");
         }
 
         File keyStoreFile = new File(projectRoot, KEYSTORE_FILE_NAME);
@@ -169,7 +158,7 @@ public final class ProjectBuilder {
         // Invoke YoungAndroid compiler
         boolean success =
             Compiler.compile(project, componentTypes, console, console, userErrors, isForCompanion,
-                             keyStorePath, childProcessRam, dexCachePath);
+                             keyStorePath, childProcessRam, dexCachePath, reporter);
         console.close();
         userErrors.close();
 
@@ -205,31 +194,6 @@ public final class ProjectBuilder {
     } catch (Exception e) {
       e.printStackTrace();
       return Result.createFailingResult("", "Server error performing build");
-    }
-  }
-
-  private void genYailFilesIfNecessary(List<String> sourceFiles)
-      throws IOException, YailGenerationException {
-    // Filter out the files that aren't really source files (i.e. that don't end in .scm or .yail)
-    Collection<String> formAndYailSourceFiles = Collections2.filter(
-        sourceFiles,
-        new Predicate<String>() {
-          @Override
-          public boolean apply(String input) {
-            return input.endsWith(FORM_PROPERTIES_EXTENSION) || input.endsWith(YAIL_EXTENSION);
-          }
-        });
-    for (String sourceFile : formAndYailSourceFiles) {
-      if (sourceFile.endsWith(FORM_PROPERTIES_EXTENSION)) {
-        String rootPath = sourceFile.substring(0, sourceFile.length()
-                                                  - FORM_PROPERTIES_EXTENSION.length());
-        String yailFilePath = rootPath + YAIL_EXTENSION;
-        // Note: Famous last words: The following contains() makes this method O(n**2) but n should
-        // be pretty small.
-        if (!sourceFiles.contains(yailFilePath)) {
-          generateYail(rootPath);
-        }
-      }
     }
   }
 
@@ -475,66 +439,5 @@ public final class ProjectBuilder {
    */
   private Project getProjectProperties(File projectRoot) {
     return new Project(projectRoot.getAbsolutePath() + "/" + PROJECT_PROPERTIES_FILE_NAME);
-  }
-
-  private File generateYail(String rootName) throws IOException, YailGenerationException {
-    String formPropertiesPath = rootName + FORM_PROPERTIES_EXTENSION;
-    String codeblocksSourcePath = rootName + CODEBLOCKS_SOURCE_EXTENSION;
-    String yailPath = rootName + YAIL_EXTENSION;
-
-    String[] commandLine = {
-      System.getProperty("java.home") + "/bin/java",
-      "-mx1024M",
-      "-jar",
-      Compiler.getResource(Compiler.RUNTIME_FILES_DIR + "YailGenerator.jar"),
-      new File(formPropertiesPath).getAbsolutePath(),
-      new File(codeblocksSourcePath).getAbsolutePath(),
-      yailPath
-    };
-    StringBuffer out = new StringBuffer();
-    StringBuffer err = new StringBuffer();
-    int exitValue = Execution.execute(null, commandLine, out, err);
-    if (exitValue == 0) {
-      String generatedYailString = out.toString();
-      File generatedYailFile = new File(yailPath);
-      Files.write(generatedYailString, generatedYailFile, Charsets.UTF_8);
-      return generatedYailFile;
-    } else {
-      String formName = PathUtil.trimOffExtension(PathUtil.basename(formPropertiesPath));
-      if (exitValue == 1) {
-        // Failed to generate yail for legitimate reasons, such as empty sockets.
-        throw new YailGenerationException("Unable to generate code for " + formName + "."
-            + "\n -- err is " + err.toString()
-            + "\n -- out is" + out.toString(),
-            formName);
-      } else {
-        // Any other exit value is unexpected.
-        throw new RuntimeException("YailGenerator for form " + formName
-            + " exited with code " + exitValue
-            + "\n -- err is " + err.toString()
-            + "\n -- out is" + out.toString());
-      }
-    }
-  }
-
-  private static class YailGenerationException extends Exception {
-    // The name of the form being built when an error occurred
-    private final String formName;
-
-    YailGenerationException(String message, String formName) {
-      super(message);
-      this.formName = formName;
-    }
-
-    /**
-     * Return the name of the form that Yail generation failed on.
-     */
-    String getFormName() {
-      return formName;
-    }
-  }
-
-  public int getProgress() {
-    return Compiler.getProgress();
   }
 }

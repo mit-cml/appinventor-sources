@@ -116,6 +116,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  // host[:port] to use for connecting to the second build server
+  private static final Flag<String> buildServerHost2 =
+      Flag.createFlag("build2.server.host", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> appengineHost =
       Flag.createFlag("appengine.host", "");
@@ -640,7 +643,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String nonce, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target,
+    boolean secondBuildserver) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -662,6 +666,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           user.getUserEmail(),
           userId,
           projectId,
+          secondBuildserver,
           outputFileDir));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
@@ -755,30 +760,32 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return new RpcResult(true, "Building " + projectName, "");
   }
 
-  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
-    return "Request to build failed with " + exceptionName + ", user=" + userId
-        + ", project=" + projectId + ", build URL is " + buildURL
-        + " [" + buildURL.toString().length() + "]";
+  String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+    return "Request to build failed with " + exceptionName 
+      + ", user=" + userId + ", project=" + projectId 
+      + ", build URL is " + (buildURL != null ? buildURL : "null") + " [" 
+      + (buildURL != null ? buildURL.toString().length() : "n/a") + "]";
   }
 
   // Note that this is a function rather than just a constant because we assume it will get
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
   private String getBuildServerUrlStr(String userName, String userId,
-                                      long projectId, String fileName)
+    long projectId, boolean secondBuildserver, String fileName)
       throws UnsupportedEncodingException, EncryptionException {
-    return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
-           + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + (sendGitVersion.get()
-               ? "&gitBuildVersion="
-                 + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
-               : "")
-           + "&callback="
-           + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
-                               + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
-                               + Security.encryptUserAndProjectId(userId, projectId)
-                               + "/" + fileName,
-                               "UTF-8");
+    return "http://" + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
+      "/buildserver/build-all-from-zip-async"
+      + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+      + (sendGitVersion.get()
+        ? "&gitBuildVersion="
+        + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
+        : "")
+      + "&callback="
+      + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
+        + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
+        + Security.encryptUserAndProjectId(userId, projectId)
+        + "/" + fileName,
+        "UTF-8");
   }
 
   private String getCurrentHost() {
@@ -857,42 +864,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param target  build target (optional, implementation dependent)
    */
   public void updateCurrentProgress(User user, long projectId, String target) {
-    try {
-      String userId = user.getUserId();
-      String projectName = storageIo.getProjectName(userId, projectId);
-      String outputFileDir = BUILD_FOLDER + '/' + target;
-      URL buildServerUrl = null;
-      ProjectSourceZip zipFile = null;
-
-      buildServerUrl = new URL(getBuildServerUrlStr(user.getUserEmail(),
-        userId, projectId, outputFileDir));
-      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
-      connection.setDoOutput(true);
-      connection.setRequestMethod("POST");
-
-      int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-          try {
-            String content = readContent(connection.getInputStream());
-            if (content != null && !content.isEmpty()) {
-              if (DEBUG) {
-                LOG.info("The current progress is " + content + "%.");
-              }
-              currentProgress = Integer.parseInt(content);
-            }
-          } catch (IOException e) {
-            // No content. That's ok.
-          }
-         }
-      } catch (MalformedURLException e) {
-        // that's ok, nothing to do
-      } catch (IOException e) {
-        // that's ok, nothing to do
-      } catch (EncryptionException e) {
-        // that's ok, nothing to do
-      } catch (RuntimeException e) {
-        // that's ok, nothing to do
-      }
+    currentProgress = storageIo.getBuildStatus(user.getUserId(), projectId);
   }
 
   // Nicely format floating number using only two decimal places

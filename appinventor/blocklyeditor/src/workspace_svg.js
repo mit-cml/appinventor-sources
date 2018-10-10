@@ -332,6 +332,12 @@ Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeNa
  */
 Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   var component = this.componentDb_.getInstance(uid);
+
+  // Fixes #1175
+  if (this.drawer_ && component.name === this.drawer_.lastComponent) {
+    this.drawer_.hide();
+  }
+
   if (!this.componentDb_.removeInstance(uid)) {
     return this;
   }
@@ -477,10 +483,12 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
   return this.flydown_;
 };
 
-Blockly.WorkspaceSvg.prototype.hideChaff = function() {
+Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.flydown_ && this.flydown_.hide();
   this.typeBlock_ && this.typeBlock_.hide();
-  this.backpack_ && this.backpack_.hide();
+  if (!opt_allowToolbox) {  // Fixes #1269
+    this.backpack_ && this.backpack_.hide();
+  }
   this.setScrollbarsVisible(true);
 };
 
@@ -700,6 +708,32 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     else if (Blockly.workspace_arranged_latest_position === Blockly.BLKS_VERTICAL)
       arrangeOptionV.callback(opt_type);
   }
+
+  // Enable all blocks
+  var enableAll = {enabled: true};
+  enableAll.text = Blockly.Msg.ENABLE_ALL_BLOCKS;
+  enableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(false);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(enableAll);
+
+  // Disable all blocks
+  var disableAll = {enabled: true};
+  disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
+  disableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(true);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(disableAll);
 
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};

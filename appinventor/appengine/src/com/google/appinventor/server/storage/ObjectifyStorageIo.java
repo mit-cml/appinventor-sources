@@ -421,16 +421,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.name = name;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,name, userData.link, userData.emailFrequency, userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -445,16 +442,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.link = link;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,userData.name,link,userData.emailFrequency,userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -468,16 +462,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.emailFrequency = emailFrequency;
             datastore.put(userData);
           }
-          // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,userData.name,userData.link,emailFrequency,userData.tosAccepted,
-              false, userData.type, userData.sessionid);
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -487,11 +478,12 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void setUserSessionId(final String userId, final String sessionId) {
-    String cachekey = User.usercachekey + "|" + userId;
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.sessionid = sessionId;
@@ -502,16 +494,16 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override
   public void setUserPassword(final String userId, final String password) {
-    String cachekey = User.usercachekey + "|" + userId;
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.password = password;
@@ -522,7 +514,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override
@@ -2931,4 +2922,23 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+
+  @Override
+  public void storeBuildStatus(String userId, long projectId, int progress) {
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    memcache.put(cacheKey, progress);
+  }
+
+  @Override
+  public int getBuildStatus(String userId, long projectId) {
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    Integer ival = (Integer) memcache.get(cacheKey);
+    if (ival == null) {         // not in memcache (or memcache service down)
+      return 50;
+    } else {
+      return ival.intValue();
+    }
+  }
 }
