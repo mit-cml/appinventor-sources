@@ -693,8 +693,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
 
       // Pre-check to see if we pass our max aia size.
-      errMsg = "Sorry, can't package projects larger than " + maxAiaSize + "MB. Yours is " + lengthMbs + "MB. Please consider shrinking assets and/or reducing number of screens";
-      if (zipFileLength >= (maxAiaSize * 1024 * 1024) /* 5 MB */) {
+      errMsg = "Sorry, can't package projects larger than " + maxAiaSize +
+              "MB. Yours is " + lengthMbs + "MB. Please consider shrinking assets and/or reducing number of screens";
+      if (zipFileLength >= (maxAiaSize * 1024 * 1024) ) {
         return new RpcResult(false, "", errMsg);
       }
 
@@ -741,7 +742,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
       Throwable wrappedException = e;
       // Was this due to reaching max aia size?
-      if (zipFileLength >= maxAiaSize /* 5 MB */) {
+      if (zipFileLength >= maxAiaSize * 1024 * 1024 ) {
         wrappedException = new IllegalArgumentException(errMsg, e);
       }
       CrashReport.createAndLogError(LOG, null,
@@ -756,7 +757,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // big) and ApiProxyException. There may be others.
       Throwable wrappedException = e;
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
-        if (zipFileLength >= maxAiaSize) {
+        if (zipFileLength >= maxAiaSize * 1024 * 1024 ) {
           wrappedException = new IllegalArgumentException(errMsg, e);
         } else {
           wrappedException = new IllegalArgumentException(
