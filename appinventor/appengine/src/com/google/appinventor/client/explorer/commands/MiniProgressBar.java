@@ -236,7 +236,7 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
    */
   public void onResize(int width, int height) {
     if (textVisible) {
-      int textWidth = Integer.parseInt(textElement.getStyle().getProperty("offsetWidth"));
+      int textWidth = textElement.getPropertyInt("offsetWidth");
       int left = (width / 2) - (textWidth / 2);
       textElement.getStyle().setProperty("left", left + "px");
     }
@@ -247,8 +247,8 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
    */
   public void redraw() {
     if (isAttached()) {
-      int width = Integer.parseInt(getElement().getStyle().getProperty("clientWidth"));
-      int height = Integer.parseInt(getElement().getStyle().getProperty("clientHeight"));
+      int width = getElement().getPropertyInt("clientWidth");
+      int height = getElement().getPropertyInt("clientHeight");
       onResize(width, height);
     }
   }
