@@ -124,23 +124,27 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
   this.warningNavLeft_ = Blockly.utils.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"40", 'height':"20", 'x':"5",'y':"50",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"30", 'height':"15", 'x':"5",'y':"45", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavLeftText_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(23,65)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      {'fill': "black", 'transform':"translate(20,57)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavLeftText_.textContent = "<<";
 
   this.warningNavRight_ = Blockly.utils.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"40", 'height':"20", 'x':"50",'y':"50",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"30", 'height':"15", 'x':"50",'y':"45",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavRightText_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(70,65)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      {'fill': "black", 'transform':"translate(67,57)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavRightText_.textContent = ">>";
 
   return this.svgGroup_;
 };
+
+Blockly.WarningIndicator.prototype.hideWarningNav = function() {
+
+}
 
 /**
  * Initialize the warning indicator.
