@@ -141,10 +141,10 @@ Blockly.Yail['local_variable'] = function(block,isExpression) {
       code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.valueToCode(block, 'RETURN', Blockly.Yail.ORDER_NONE);
     }
   } else {
-    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.statementToCode(block, 'STACK', Blockly.Yail.ORDER_NONE);
-  }
-  code += Blockly.Yail.YAIL_SPACER +
+    code += Blockly.Yail.YAIL_SPACER +
       (Blockly.Yail.statementToCode(block, 'STACK', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+  }
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   if(!isExpression){
     return code;
   } else {
