@@ -97,12 +97,12 @@ Blockly.WarningIndicator.prototype.createDom = function() {
 
 
   this.errorCount_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(75,14)"},
+      {'fill': "black", 'transform':"translate(90,14)"},
       this.svgGroup_);
   this.errorCount_.textContent = "0";
 
   this.iconErrorGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyIconGroup', 'transform':"translate(55,0)"}, this.svgGroup_);
+      {'class': 'blocklyIconGroup', 'transform':"translate(70,0)"}, this.svgGroup_);
   Blockly.utils.createSvgElement('circle',
       {'class': 'blocklyErrorIconOutline',
        'r': Blockly.Error.ICON_RADIUS,
@@ -124,20 +124,36 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
   this.warningNavLeft_ = Blockly.utils.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"30", 'height':"15", 'x':"5",'y':"45", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"15", 'height':"15", 'x':"-20",'y':"0", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavLeftText_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(20,57)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      {'fill': "black", 'transform':"translate(-12,12)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavLeftText_.textContent = "<<";
 
   this.warningNavRight_ = Blockly.utils.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"30", 'height':"15", 'x':"50",'y':"45",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"15", 'height':"15", 'x':"30",'y':"0",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavRightText_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(67,57)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      {'fill': "black", 'transform':"translate(37,12)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningNavRightText_.textContent = ">>";
+
+  this.errorNavLeft_ = Blockly.utils.createSvgElement('rect',
+      {'fill': "#eeeeee",'width':"15", 'height':"15", 'x':"50",'y':"0", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+  this.errorNavLeftText_ = Blockly.utils.createSvgElement('text',
+      {'fill': "black", 'transform':"translate(57,12)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      this.svgGroup_);
+  this.errorNavLeftText_.textContent = "<<";
+
+  this.errorNavRight_ = Blockly.utils.createSvgElement('rect',
+      {'fill': "#eeeeee",'width':"15", 'height':"15", 'x':"100",'y':"0",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+  this.errorNavRightText_ = Blockly.utils.createSvgElement('text',
+      {'fill': "black", 'transform':"translate(107,12)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
+      this.svgGroup_);
+  this.errorNavRightText_.textContent = ">>";
 
   return this.svgGroup_;
 };
