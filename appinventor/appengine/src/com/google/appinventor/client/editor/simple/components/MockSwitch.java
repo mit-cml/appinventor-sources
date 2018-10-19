@@ -6,17 +6,17 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * Mock Switch component.
  *
- * @author lizlooney@google.com (Liz Looney)
+ * @author srlane@mit.edu (Susan Rati Lane)
  */
 public final class MockSwitch extends MockWrapper {
 
@@ -54,8 +54,7 @@ public final class MockSwitch extends MockWrapper {
       // Get the Element from the ToggleButton.
       // Call DOM.clone to make a deep clone of that element.
       // Pass that cloned element to the super constructor.
-      //super(DOM.clone(ptb.getElement(), true));
-      DOM.clone(ptb.getElement(), true);
+      super(ptb.getUpFace().getText(), ptb.getDownFace().getText());
     }
   }
 
@@ -112,6 +111,17 @@ public final class MockSwitch extends MockWrapper {
     } else {
       return hint;
     }
+  }
+
+  @Override
+  int getWidthHint() {
+    return hint = super.getWidthHint();
+//    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
+//      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
+//      return Math.round(height);
+//    } else {
+//      return hint;
+//    }
   }
 
   /*
