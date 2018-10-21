@@ -93,6 +93,20 @@ Blockly.Yail['controls_forEach'] = function() {
          + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
+// In general break could take a value to return from the loop, but
+// none of our block language loops return values, so we won't use that capability.
+
+// [hal, 1/20/2018]
+Blockly.Yail['controls_break'] = function() {
+  // generates the literal string: (break #f)
+  // which if evaluated inside the body of a loop will call
+  // the "break" function passed to the loop macro
+  var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_BREAK + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_FALSE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return code;
+};
+
+
 // [lyn, 12/27/2012]
 Blockly.Yail['controls_forRange'] = function() {
   // For range loop.

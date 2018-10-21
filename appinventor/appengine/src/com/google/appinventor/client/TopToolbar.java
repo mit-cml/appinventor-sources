@@ -19,6 +19,7 @@ import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
@@ -79,6 +80,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_BUILD = "Build";
   private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
   private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
+  private static final String WIDGET_NAME_BUILD_BARCODE2 = "Barcode2";
+  private static final String WIDGET_NAME_BUILD_DOWNLOAD2 = "Download2";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
@@ -210,9 +213,32 @@ public class TopToolbar extends Composite {
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
-        new BarcodeAction()));
+        new BarcodeAction(false)));
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
-        new DownloadAction()));
+        new DownloadAction(false)));
+
+    // Second Buildserver Menu Items
+    //
+    // We may have a second buildserver which if present permits us to build applications
+    // using different components. This was added primarily to support the "target 26 SDK"
+    // effort where we needed a way for people to package applications against SDK 26 in
+    // order for them to be available in Google's Play Store (Google Requirement as of
+    // 8/1/2018). However such applications have a minSdk of 14 (Ice Cream Sandwich).
+    //
+    // To support the creation of packages for older devices, we leave the buildserver
+    // (as of 8/1/2018) generating minSdk 7 packages (no target SDK) which will run on
+    // much older devices. The second buildserver will package applications with a target
+    // SDK of 26 for those MIT App Inventor users who wish to put their applications in
+    // the Play Store after 8/1/2018.
+
+    if (Ode.getInstance().hasSecondBuildserver()) {
+      buildItems.add(null);
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE2, MESSAGES.showBarcodeMenuItem2(),
+          new BarcodeAction(true)));
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD2, MESSAGES.downloadToComputerMenuItem2(),
+          new DownloadAction(true)));
+    }
+
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
       buildItems.add(null);
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
@@ -416,6 +442,13 @@ public class TopToolbar extends Composite {
   }
 
   private class BarcodeAction implements Command {
+
+    private boolean secondBuildserver = false;
+
+    public BarcodeAction(boolean secondBuildserver) {
+      this.secondBuildserver = secondBuildserver;
+    }
+
     @Override
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
@@ -423,16 +456,18 @@ public class TopToolbar extends Composite {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new ShowBarcodeCommand(target)), "BarcodeAction"))));
-//        updateBuildButton(true);
+                new BuildCommand(target, secondBuildserver,
+                  new ShowProgressBarCommand(target,
+                    new WaitForBuildResultCommand(target,
+                      new ShowBarcodeCommand(target)), "BarcodeAction"))));
+        if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
+          cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
+          Ode.getInstance().setWarnBuild(secondBuildserver, true);
+        }
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
               @Override
               public void execute() {
-//                updateBuildButton(false);
               }
             });
       }
@@ -440,6 +475,13 @@ public class TopToolbar extends Composite {
   }
 
   private class DownloadAction implements Command {
+
+    private boolean secondBuildserver = false;
+
+    DownloadAction(boolean secondBuildserver) {
+      this.secondBuildserver = secondBuildserver;
+    }
+
     @Override
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
@@ -447,16 +489,18 @@ public class TopToolbar extends Composite {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadProjectOutputCommand(target)), "DownloadAction"))));
-//        updateBuildButton(true);
+                new BuildCommand(target, secondBuildserver,
+                  new ShowProgressBarCommand(target,
+                    new WaitForBuildResultCommand(target,
+                      new DownloadProjectOutputCommand(target)), "DownloadAction"))));
+        if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
+          cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
+          Ode.getInstance().setWarnBuild(secondBuildserver, true);
+        }
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
               @Override
               public void execute() {
-//                updateBuildButton(false);
               }
             });
       }

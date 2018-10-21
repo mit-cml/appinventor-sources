@@ -221,6 +221,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
   private String scope = "https://www.googleapis.com/auth/fusiontables";
 
+  private String loadingDialogMessage = "Please wait loading...";
+
+  private boolean showLoadingDialog = true;
+
   public FusiontablesControl(ComponentContainer componentContainer) {
     super(componentContainer.$form());
     this.container = componentContainer;
@@ -430,6 +434,48 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   public void GetRowsWithConditions(String tableId, String columns, String conditions) {
     query = "SELECT " + columns + " FROM " + tableId + " WHERE " + conditions;
     new QueryProcessorV2(activity).execute(query);
+  }
+
+  /**
+   * Setter for the loading dialog's message.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "Please wait loading...")
+  @SimpleProperty
+  public void LoadingDialogMessage(String loadingDialogMessage) {
+    this.loadingDialogMessage = loadingDialogMessage;
+  }
+
+  /**
+   * Getter for the loading dialog's message.
+   * @return loadingDialogMessage
+   */
+  @SimpleProperty(
+      description = "Set the loading message for the dialog.",
+      category = PropertyCategory.BEHAVIOR)
+  public String LoadingDialogMessage() {
+    return loadingDialogMessage;
+  }
+
+  /**
+   * Setter for the loading dialog's visibility.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void ShowLoadingDialog(boolean showLoadingDialog) {
+    this.showLoadingDialog = showLoadingDialog;
+  }
+
+  /**
+   * Getter for the loading dialog's visibility.
+   * @return True if the loading dialog should be shown, otherwise False.
+   */
+  @SimpleProperty(
+      description = "Whether or not to show the loading dialog",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean ShowLoadingDialog() {
+    return showLoadingDialog;
   }
 
 
@@ -784,8 +830,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
     @Override
     protected void onPreExecute() {
-      dialog.setMessage("Please wait loading...");
-      dialog.show();
+      if (ShowLoadingDialog()) {
+        dialog.setMessage(LoadingDialogMessage());
+        dialog.show();
+      }
     }
 
     /**

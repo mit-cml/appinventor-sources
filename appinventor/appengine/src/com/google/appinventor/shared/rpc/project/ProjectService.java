@@ -281,10 +281,11 @@ public interface ProjectService extends RemoteService {
    * @param projectId  project ID
    * @param nonce used to access the built project -- random string
    * @param target  build target (optional, implementation dependent)
+   * @param secondBuildserver whether to use the second buildserver
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String nonce, String target);
+  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver);
 
   /**
    * Gets the result of a build command for the project from the back-end.
