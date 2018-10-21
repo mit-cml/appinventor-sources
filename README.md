@@ -12,7 +12,7 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 7.
+This code is tested and known to work with Java 8.
 
 ## Contributors
 The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) about whatever you intend to change or add.
