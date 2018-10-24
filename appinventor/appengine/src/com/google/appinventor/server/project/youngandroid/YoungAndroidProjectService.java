@@ -671,12 +671,24 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
+      connection.setRequestProperty("Content-Type", "application/octet-stream");
 
       BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
         projectName + ".aia", true, false, true, false);
+      if (zipFile.getContent().length > 32*1024*1024) { // 32 Megabyte size limit...
+        int zipFileLength = zipFile.getContent().length;
+        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+        RuntimeException exception = new RuntimeException(
+            "Sorry, can't package projects larger than 32Mb."
+            + " Yours is " + lengthMbs + "MB.");
+        CrashReport.createAndLogError(LOG, null,
+            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId),
+            exception);
+        return new RpcResult(false, "", exception.getMessage());
+      }
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
       bufferedOutputStream.close();

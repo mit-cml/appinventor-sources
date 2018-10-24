@@ -197,5 +197,6 @@
   <!-- Enable concurrency in the app engine server -->
   <threadsafe>true</threadsafe>
 
+  <url-stream-handler>urlfetch</url-stream-handler>
 
 </appengine-web-app>
