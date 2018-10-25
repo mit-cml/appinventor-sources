@@ -2738,6 +2738,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BackgroundColorProperties();
 
+  @DefaultMessage("ThumbColorActive")
+  @Description("")
+  String ThumbColorActiveProperties();
+
+  @DefaultMessage("ThumbColorInactive")
+  @Description("")
+  String ThumbColorInactiveProperties();
+
+  @DefaultMessage("TrackColorActive")
+  @Description("")
+  String TrackColorActiveProperties();
+
+  @DefaultMessage("TrackColorInactive")
+  @Description("")
+  String TrackColorInactiveProperties();
+
   @DefaultMessage("BackgroundImage")
   @Description("")
   String BackgroundImageProperties();
