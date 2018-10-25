@@ -138,7 +138,7 @@ public interface Images extends Resources {
    * Designer palette item: checkbox component
    */
   @Source("com/google/appinventor/images/switch.png")
-  ImageResource togglebutton();
+  ImageResource toggleswitch();
 
   /**
    * Designer palette item: DatePicker Component

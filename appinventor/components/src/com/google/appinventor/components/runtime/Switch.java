@@ -6,6 +6,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.internal.widget.ThemeUtils;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.CompoundButton;
@@ -36,6 +42,14 @@ public final class Switch extends AndroidViewComponent
   // Backing for background color
   private int backgroundColor;
 
+  // Backing for thumb color
+  private int thumbColorActive;
+  private int thumbColorInactive;
+
+  // Backing for track color
+  private int trackColorActive;
+  private int trackColorInactive;
+
   // Backing for font typeface
   private int fontTypeface;
 
@@ -64,6 +78,10 @@ public final class Switch extends AndroidViewComponent
     // Adds the component to its designated container
     container.$add(this);
     BackgroundColor(Component.COLOR_NONE);
+    ThumbColorActive(Component.COLOR_WHITE);
+    ThumbColorInactive(Component.COLOR_LTGRAY);
+    TrackColorActive(Component.COLOR_GREEN);
+    TrackColorInactive(Component.COLOR_GRAY);
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -76,6 +94,17 @@ public final class Switch extends AndroidViewComponent
   @Override
   public View getView() {
     return view;
+  }
+
+  private ColorStateList createSwitchColors(int active_color, int inactive_color) {
+    return new ColorStateList(new int[][]{
+            new int[]{android.R.attr.state_checked},
+            new int[]{}
+            },
+            new int[]{
+                    active_color,
+                    inactive_color
+            });
   }
 
   /**
@@ -130,6 +159,85 @@ public final class Switch extends AndroidViewComponent
     } else {
       TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
     }
+  }
+
+
+  /**
+   * Returns the checkbox's thumb color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return  thumb RGB color with alpha
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public int ThumbColorActive() {
+    return thumbColorActive;
+  }
+
+  /**
+   * Specifies the checkbox's thumb color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  thumb RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void ThumbColorActive(int argb) {
+    thumbColorActive = argb;
+    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(argb, thumbColorInactive));
+    view.invalidate();
+  }
+
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = true)
+  public int ThumbColorInactive() {
+    return thumbColorInactive;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void ThumbColorInactive(int argb) {
+    thumbColorInactive = argb;
+    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(thumbColorActive, argb));
+    view.invalidate();
+  }
+
+  /**
+   * Returns the switch's track color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return  track RGB color with alpha
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = true)
+  public int TrackColorActive() {
+    return trackColorActive;
+  }
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = true)
+  public int TrackColorInactive() {
+    return trackColorInactive;
+  }
+
+  /**
+   * Specifies the switch's track color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  track RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_GREEN)
+  @SimpleProperty(description = "Color of the toggle track when switched on", userVisible = true)
+  public void TrackColorActive(int argb) {
+    trackColorActive = argb;
+    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(argb, trackColorInactive));
+    view.invalidate();
+  }
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
+  @SimpleProperty(description = "Color of the toggle track when switched off", userVisible = true)
+  public void TrackColorInactive(int argb) {
+    trackColorInactive = argb;
+    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(trackColorActive, argb));
+    view.invalidate();
   }
 
   /**

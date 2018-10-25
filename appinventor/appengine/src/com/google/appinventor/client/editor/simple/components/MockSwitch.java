@@ -6,17 +6,16 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Mock Switch component.
+ * Mock CheckBox component.
  *
- * @author srlane@mit.edu (Susan Rati Lane)
+ * @author lizlooney@google.com (Liz Looney)
  */
 public final class MockSwitch extends MockWrapper {
 
@@ -25,80 +24,114 @@ public final class MockSwitch extends MockWrapper {
    */
   public static final String TYPE = "Switch";
 
-  // GWT togglebutton widget used to mock a Switch
-  private ToggleButton toggleWidget;
+  // GWT checkbox widget used to mock a Simple CheckBox
+  private CheckBox switchWidget;
 
   /**
-   * Creates a new MockSwitch component.
+   * Creates a new MockCheckbox component.
    *
    * @param editor  editor of source file the component belongs to
    */
   public MockSwitch(SimpleEditor editor) {
-    super(editor, TYPE, images.togglebutton());
+    super(editor, TYPE, images.toggleswitch());
 
-    // Initialize mock switch UI
-    toggleWidget = new ToggleButton();
-    initWrapper(toggleWidget);
+    // Initialize mock checkbox UI
+    switchWidget = new CheckBox();
+    switchWidget.getElement().setClassName("gwt-Switch");
+    DOM.setElementAttribute(switchWidget.getElement(), "name", "real-switch");
+    initWrapper(switchWidget);
   }
 
   /**
-   * Class that extends ToggleButton (Switch) so we can use a protected constructor.
+   * Class that extends CheckBox so we can use a protected constructor.
    *
-   * <p/>The purpose of this class is to create a clone of the ToggleButton
+   * <p/>The purpose of this class is to create a clone of the CheckBox
    * passed to the constructor. It will be used to determine the preferred size
-   * of the ToggleButton, without having the size constrained by its parent,
-   * since the cloned ToggleButton won't have a parent.
+   * of the CheckBox, without having the size constrained by its parent,
+   * since the cloned CheckBox won't have a parent.
    */
-  static class ClonedToggleButton extends ToggleButton {
-    ClonedToggleButton(ToggleButton ptb) {
-      // Get the Element from the ToggleButton.
+  static class ClonedSwitch extends CheckBox {
+    ClonedSwitch(CheckBox ptb) {
+      // Get the Element from the CheckBox.
       // Call DOM.clone to make a deep clone of that element.
       // Pass that cloned element to the super constructor.
-      super(ptb.getUpFace().getText(), ptb.getDownFace().getText());
+      super(DOM.clone(ptb.getElement(), true));
     }
   }
 
   @Override
   protected Widget createClonedWidget() {
-    return new ClonedToggleButton(toggleWidget);
+    return new ClonedSwitch(switchWidget);
   }
 
   @Override
   public void onCreateFromPalette() {
-    // Change togglebutton caption to component name
+    // Change checkbox caption to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
   /*
-   * Sets the togglebutton's BackgroundColor property to a new value.
+   * Sets the checkbox's BackgroundColor property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFFFFFFFF";  // white
     }
-    MockComponentsUtil.setWidgetBackgroundColor(toggleWidget, text);
+    MockComponentsUtil.setWidgetBackgroundColor(switchWidget, text);
   }
 
   /*
-   * Sets the togglebutton's Enabled property to a new value.
+   * Sets the checkbox's BackgroundColor property to a new value.
+   */
+  private void setThumbColorActiveProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      text = "&HFFFFFFFF";  // white
+    }
+    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+  }
+  private void setThumbColorInactiveProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      text = "&HFFFFFFFF";  // white
+    }
+    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+  }
+
+  /*
+   * Sets the checkbox's BackgroundColor property to a new value.
+   */
+  private void setTrackColorActiveProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      text = "&HFFFFFFFF";  // white
+    }
+    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+  }
+  private void setTrackColorInactiveProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      text = "&HFFFFFFFF";  // white
+    }
+    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+  }
+
+  /*
+   * Sets the checkbox's Enabled property to a new value.
    */
   private void setEnabledProperty(String text) {
     MockComponentsUtil.setEnabled(this, text);
   }
 
   /*
-   * Sets the togglebutton's FontBold property to a new value.
+   * Sets the checkbox's FontBold property to a new value.
    */
   private void setFontBoldProperty(String text) {
-    MockComponentsUtil.setWidgetFontBold(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontBold(switchWidget, text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the togglebutton's FontItalic property to a new value.
+   * Sets the checkbox's FontItalic property to a new value.
    */
   private void setFontItalicProperty(String text) {
-    MockComponentsUtil.setWidgetFontItalic(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontItalic(switchWidget, text);
     updatePreferredSize();
   }
 
@@ -113,56 +146,45 @@ public final class MockSwitch extends MockWrapper {
     }
   }
 
-  @Override
-  int getWidthHint() {
-    return hint = super.getWidthHint();
-//    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-//      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-//      return Math.round(height);
-//    } else {
-//      return hint;
-//    }
-  }
-
   /*
-   * Sets the togglebutton's FontSize property to a new value.
+   * Sets the checkbox's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontSize(switchWidget, text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the togglebutton's FontTypeface property to a new value.
+   * Sets the checkbox's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(switchWidget, text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the togglebutton's Text property to a new value.
+   * Sets the checkbox's Text property to a new value.
    */
   private void setTextProperty(String text) {
-    toggleWidget.setText(text);
+    switchWidget.setText(text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the togglebutton's TextColor property to a new value.
+   * Sets the checkbox's TextColor property to a new value.
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFF000000";  // black
     }
-    MockComponentsUtil.setWidgetTextColor(toggleWidget, text);
+    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
   }
 
   /*
-   * Sets the togglebutton's Down property to a new value.
+   * Sets the checkbox's Checked property to a new value.
    */
-  private void setDownProperty(String text) {
-    toggleWidget.setDown(Boolean.parseBoolean(text));
+  private void setCheckedProperty(String text) {
+    switchWidget.setChecked(Boolean.parseBoolean(text));
   }
 
   // PropertyChangeListener implementation
@@ -174,6 +196,14 @@ public final class MockSwitch extends MockWrapper {
     // Apply changed properties to the mock component
     if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
+      setThumbColorActiveProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORINACTIVE)) {
+      setThumbColorInactiveProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORACTIVE)) {
+      setTrackColorActiveProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORINACTIVE)) {
+      setTrackColorInactiveProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
       setEnabledProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
@@ -193,8 +223,8 @@ public final class MockSwitch extends MockWrapper {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_DOWN)) {
-      setDownProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
+      setCheckedProperty(newValue);
     }
   }
 }
