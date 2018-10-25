@@ -37,8 +37,6 @@ public final class MockSwitch extends MockWrapper {
 
     // Initialize mock checkbox UI
     switchWidget = new CheckBox();
-    switchWidget.getElement().setClassName("gwt-Switch");
-    DOM.setElementAttribute(switchWidget.getElement(), "name", "real-switch");
     initWrapper(switchWidget);
   }
 
