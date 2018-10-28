@@ -412,6 +412,10 @@ public class BlocklyPanel extends HTMLPanel {
     return YaBlocksEditor.getComponentInstanceTypeName(formName, instanceName);
   }
 
+  public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName) {
+    return YaBlocksEditor.getComponentInstancePropertyValue(formName, instanceName, propertyName);
+  }
+
   public static int getYaVersion() {
     return YaVersion.YOUNG_ANDROID_VERSION;
   }
@@ -586,6 +590,8 @@ public class BlocklyPanel extends HTMLPanel {
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstanceTypeName =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_getComponentInstancePropertyValue =
+        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInstancePropertyValue(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInfo =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInfo(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentsJSONString =

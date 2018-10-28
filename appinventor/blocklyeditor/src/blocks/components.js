@@ -1066,6 +1066,59 @@ Blockly.ComponentBlock.createClockAddDropDown = function(/*block*/){
   return componentDropDown;
 };
 
+/*
+  1.two versions!!!
+  2. start with "move cube"
+  3. build cube --> create with XML --> mutation(domToMutation, mutationtoDom)
+
+  xml = Blockly.Xml.blockToDom_(Blockly.selected)
+  text = Blockly.Xml.domToText(xml);
+  text = '<xml><block xmlns="http://www.w3.org/1999/xhtml" type="text_join"
+    id="16" inline="false"><mutation items="4"></mutation></block></xml>'
+  new_xml = Blockly.Xml.textToDom(text)
+  Blockly.Xml.domToBlock( Blockly.mainWorkspace,new_xml.children[0])
+
+
+ */
+//JSON.parse --> from string to object
+//JSON.stringify --> from object to string
+
+//for escape characters
+//encoded = encodeURIComponent(text)
+//decodeURIComponent(encoded)
+
+// with socket for  number
+Blockly.Blocks['customizable_block'] = {
+  init:function(){
+    this.setColour(160);
+    this.setTooltip('customizable block with JSON format data');
+  },
+
+
+  mutationToDom: function(){
+    var container = document.createElement('mutation');
+    container.setAttribute('block_info', this.block_info);
+    container.setAttribute('webviewer_name', this.webviewer_name);
+    return container;
+  },
+
+  //this function gets called first!
+  domToMutation: function(xmlElement) {
+    this.block_info = xmlElement.getAttribute('block_info');
+    this.webviewer_name = xmlElement.getAttribute('webviewer_name');
+    var decoded_block_info = decodeURIComponent(this.block_info);
+    var info_object = JSON.parse(decoded_block_info);
+    this.jsonInit(info_object);
+  },
+
+  rename: function(oldname, newname){
+    if (this.webviewer_name == oldname){
+      this.webviewer_name = newname;
+    }
+  }
+}
+
+
 Blockly.ComponentBlock.HELPURLS = {
   "Button": Blockly.Msg.LANG_COMPONENT_BLOCK_BUTTON_HELPURL,
   "Canvas": Blockly.Msg.LANG_COMPONENT_BLOCK_CANVAS_HELPURL,
