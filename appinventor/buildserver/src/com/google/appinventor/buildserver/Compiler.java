@@ -490,20 +490,42 @@ public final class Compiler {
    * @param parent The parent style to inherit from.
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, boolean holo) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
     out.write(parent);
     out.write("\">\n");
-    out.write("<item name=\"windowActionBar\">true</item>\n");
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
-    // Handles theme for Notifier
-    out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
-    // Handles theme for DatePicker/TimePicker
-    out.write("<item name=\"android:alertDialogTheme\">@style/AIAlertDialog</item>\n");
+    if (!parent.equals("android:Theme")) {
+      out.write("<item name=\"windowActionBar\">true</item>\n");
+      out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
+      if (parent.contains("Holo") || holo) {
+        out.write("<item name=\"android:actionBarStyle\">@style/AIActionBar</item>\n");
+        out.write("<item name=\"actionBarStyle\">@style/AIActionBar</item>\n");
+      }
+      // Handles theme for Notifier
+      out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
+      out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
+      out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+    }
+    out.write("</style>\n");
+  }
+
+  private static void writeActionBarStyle(Writer out, String name, String parent,
+      boolean blackText) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
+    out.write("<item name=\"android:background\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"android:titleTextStyle\">@style/AIActionBarTitle</item>\n");
+    out.write("</style>\n");
+    out.write("<style name=\"AIActionBarTitle\" parent=\"android:TextAppearance.Holo.Widget.ActionBar.Title\">\n");
+    out.write("<item name=\"android:textColor\">" + (blackText ? "#000" : "#fff") + "</item>\n");
     out.write("</style>\n");
   }
 
@@ -516,6 +538,13 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    if (parent.contains("Holo")) {
+      // workaround for weird window border effect
+      out.write("<item name=\"android:windowBackground\">@android:color/transparent</item>\n");
+      out.write("<item name=\"android:gravity\">center</item>\n");
+      out.write("<item name=\"android:layout_gravity\">center</item>\n");
+      out.write("<item name=\"android:textColor\">@color/colorPrimary</item>\n");
+    }
     out.write("</style>\n");
   }
 
@@ -529,17 +558,26 @@ public final class Compiler {
     String theme = project.getTheme() == null ? "Classic" : project.getTheme();
     String actionbar = project.getActionBar();
     String parentTheme;
-    if (theme.startsWith("Classic")) {
-      parentTheme = "Theme.AppCompat.Light";
+    boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
+    boolean needsBlackTitleText = false;
+    if (isClassicTheme) {
+      parentTheme = "android:Theme";
     } else {
-      parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
-    }
-
-    if (!"true".equalsIgnoreCase(actionbar)) {
-      if (parentTheme.endsWith("DarkActionBar")) {
-        parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+      if (suffix.equals("-v11")) {  // AppCompat needs SDK 14, so we explicitly name Holo for SDK 11 through 13
+        parentTheme = theme.replace("AppTheme", "android:Theme.Holo");
+        needsBlackTitleText = theme.contains("Light") && !theme.contains("DarkActionBar");
+        if (theme.contains("Light")) {
+          parentTheme = "android:Theme.Holo.Light";
+        }
       } else {
-        parentTheme += ".NoActionBar";
+        parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+      }
+      if (!"true".equalsIgnoreCase(actionbar)) {
+        if (parentTheme.endsWith("DarkActionBar")) {
+          parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+        } else {
+          parentTheme += ".NoActionBar";
+        }
       }
     }
     colorPrimary = cleanColor(colorPrimary, true);
@@ -566,13 +604,22 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
 
-      writeTheme(out, "AppTheme", parentTheme);
-      if (parentTheme.contains("Light")) {
-        writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
-        writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
-      } else {
-        writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
-        writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
+      writeTheme(out, "AppTheme", parentTheme, suffix.equals("-v11"));
+      if (!isClassicTheme) {
+        if ("-v11".equals(suffix)) {  // Handle Holo
+          if (parentTheme.contains("Light")) {
+            writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.Light.ActionBar", needsBlackTitleText);
+          } else {
+            writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.ActionBar", needsBlackTitleText);
+          }
+        }
+        if (parentTheme.contains("Light")) {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
+        } else {
+          writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
+          writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
+        }
       }
 
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
@@ -911,8 +958,12 @@ public final class Compiler {
     // Create values directory and style xml files
     out.println("________Creating style xml");
     File styleDir = createDir(resDir, "values");
+    File style11Dir = createDir(resDir, "values-v11");
+    File style14Dir = createDir(resDir, "values-v14");
     File style21Dir = createDir(resDir, "values-v21");
     if (!compiler.createValuesXml(styleDir, "") ||
+        !compiler.createValuesXml(style11Dir, "-v11") ||
+        !compiler.createValuesXml(style14Dir, "-v14") ||
         !compiler.createValuesXml(style21Dir, "-v21")) {
       return false;
     }

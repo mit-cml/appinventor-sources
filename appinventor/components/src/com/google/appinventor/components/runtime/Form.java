@@ -6,6 +6,67 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Lists;
+import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.multidex.MultiDex;
+import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
+import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,100 +79,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import android.content.res.AssetManager;
-import android.support.v7.app.ActionBar;
-
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageInfo;
-import android.content.pm.PermissionInfo;
-import android.content.res.Configuration;
-
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-
-import android.support.v4.app.ActivityCompat;
-
-import android.support.v4.content.ContextCompat;
-
-import android.support.v7.app.ActionBar;
-
-import android.util.Log;
-
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-
-import android.widget.FrameLayout;
-import android.widget.ScrollView;
-
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesLibraries;
-import com.google.appinventor.components.annotations.UsesPermissions;
-
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-
-import com.google.appinventor.components.runtime.collect.Lists;
-import com.google.appinventor.components.runtime.collect.Maps;
-import com.google.appinventor.components.runtime.collect.Sets;
-
-import com.google.appinventor.components.runtime.multidex.MultiDex;
-
-import com.google.appinventor.components.runtime.util.AlignmentUtil;
-import com.google.appinventor.components.runtime.util.AnimationUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
-import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.OnInitializeListener;
-import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.ViewUtil;
-
-import java.io.IOException;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import org.json.JSONException;
 
 
 /**
@@ -171,7 +140,6 @@ public class Form extends AppInventorCompatActivity
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
-  private static boolean isClassicTheme;
 
   private final Handler androidUIHandler = new Handler();
 
@@ -443,7 +411,7 @@ public class Form extends AppInventorCompatActivity
     if (isRepl()) {
       ActionBar(actionBarEnabled);
     } else {
-      ActionBar(getSupportActionBar() != null);
+      ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
     Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
@@ -1011,16 +979,13 @@ public class Form extends AppInventorCompatActivity
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
+    boolean needsTitleBar = titleBar != null && titleBar.getParent() == frameWithTitle;
     frameWithTitle.removeAllViews();
-    if (isAppCompatMode() && !isClassicTheme && titleBar != null) {
-      try {
-        frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-      } catch(IllegalStateException e) {
-        // Whoops!
-      }
+    if (needsTitleBar) {
+      frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT
+      ));
     }
 
     // Layout
@@ -1213,18 +1178,10 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void TitleVisible(boolean show) {
     if (show != showTitle) {
+      showTitle = show;
       if (actionBarEnabled) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-          if (show) {
-            actionBar.show();
-          } else {
-            actionBar.hide();
-          }
-          showTitle = show;
-        }
+        actionBarEnabled = themeHelper.setActionBarVisible(show);
       } else {
-        showTitle = show;
         maybeShowTitleBar();
       }
     }
@@ -1358,26 +1315,18 @@ public class Form extends AppInventorCompatActivity
       defaultValue = "False")
   @SimpleProperty(userVisible = false)
   public void ActionBar(boolean enabled) {
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      // ActionBar is available on SDK 11 or higher
+      return;
+    }
     if (actionBarEnabled != enabled) {
       setActionBarEnabled(enabled);
       if (enabled) {
         hideTitleBar();
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-          dispatchErrorOccurredEvent(this, "ActionBar", ErrorMessages.ERROR_ACTIONBAR_NOT_SUPPORTED);
-          actionBarEnabled = false;
-          return;
-        } else if (showTitle) {
-          actionBar.show();
-        } else {
-          actionBar.hide();
-        }
+        actionBarEnabled = themeHelper.setActionBarVisible(showTitle);
       } else {
         maybeShowTitleBar();
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-          actionBar.hide();
-        }
+        actionBarEnabled = themeHelper.setActionBarVisible(false);
       }
       actionBarEnabled = enabled;
     }
@@ -1701,6 +1650,9 @@ public class Form extends AppInventorCompatActivity
       defaultValue = ComponentConstants.DEFAULT_THEME)
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
   public void Theme(String theme) {
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      return;  // Only "Classic" is supported below SDK 11 due to minSDK in AppCompat
+    }
     if (usesDefaultBackground) {
       if (theme.equalsIgnoreCase("AppTheme")) {
         backgroundColor = Component.COLOR_BLACK;
@@ -2343,17 +2295,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   protected void updateTitle() {
-    final ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setTitle(title);
-    }
-  }
-
-  private void hideActionBar() {
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.hide();
-    }
+    themeHelper.setTitle(title);
   }
 
   @Override
