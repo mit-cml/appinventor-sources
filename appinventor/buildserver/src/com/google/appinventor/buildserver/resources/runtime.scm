@@ -288,22 +288,27 @@
 
 (define-syntax define-form
   (syntax-rules ()
-    ((_ class-name form-name)
-     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form #f))))
+    ((_ class-name form-name classic-theme)
+     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form #f classic-theme))))
 
 (define-syntax define-repl-form
   (syntax-rules ()
     ((_ class-name form-name)
-     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.ReplForm #t))))
+     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.ReplForm #t #f))))
 
 (define-syntax define-form-internal
   (syntax-rules ()
-    ((_ class-name form-name subclass-name isrepl)
+    ((_ class-name form-name subclass-name isrepl classic-theme)
      (begin
        (module-extends subclass-name)
        (module-name class-name)
        (module-static form-name)
        (require <com.google.youngandroid.runtime>)
+
+       (define (onCreate icicle :: android.os.Bundle) :: void
+         ;(android.util.Log:i "AppInventorCompatActivity" "in YAIL oncreate")
+         (com.google.appinventor.components.runtime.AppInventorCompatActivity:setClassicModeFromYail classic-theme)
+         (invoke-special subclass-name (this) 'onCreate icicle))
 
        (define *debug-form* #f)
 
