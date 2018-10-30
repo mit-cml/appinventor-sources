@@ -8,24 +8,40 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Iterator;
 
 /**
  * Mock CheckBox component.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class MockSwitch extends MockWrapper {
+public final class MockSwitch extends MockVisibleComponent {
 
   /**
    * Component type name.
    */
   public static final String TYPE = "Switch";
+  protected final HorizontalPanel panel;
+  public Boolean checked = false;
+  public String thumbColorActive = "white";
+  public String thumbColorInactive = "gray";
+  public String trackColorActive = "lime";
+  public String trackColorInactive = "lightgray";
 
-  // GWT checkbox widget used to mock a Simple CheckBox
-  private CheckBox switchWidget;
+  public InlineHTML switchLabel;
+  public SVGPanel switchGraphic;
+  public Boolean isInitialized = false;
+
+  private int widgetWidth;
+  private int widgetHeight;
 
   /**
    * Creates a new MockCheckbox component.
@@ -35,31 +51,32 @@ public final class MockSwitch extends MockWrapper {
   public MockSwitch(SimpleEditor editor) {
     super(editor, TYPE, images.toggleswitch());
 
-    // Initialize mock checkbox UI
-    switchWidget = new CheckBox();
-    initWrapper(switchWidget);
+    panel = new HorizontalPanel();
+    panel.setStylePrimaryName("ode-SimpleMockComponent");
+    switchLabel = new InlineHTML();
+    switchLabel.setText("Hello there");
+    panel.add(switchLabel);
+    initComponent(panel);
+
+    paintSwitch();
   }
 
-  /**
-   * Class that extends CheckBox so we can use a protected constructor.
-   *
-   * <p/>The purpose of this class is to create a clone of the CheckBox
-   * passed to the constructor. It will be used to determine the preferred size
-   * of the CheckBox, without having the size constrained by its parent,
-   * since the cloned CheckBox won't have a parent.
-   */
-  static class ClonedSwitch extends CheckBox {
-    ClonedSwitch(CheckBox ptb) {
-      // Get the Element from the CheckBox.
-      // Call DOM.clone to make a deep clone of that element.
-      // Pass that cloned element to the super constructor.
-      super(DOM.clone(ptb.getElement(), true));
+  private void paintSwitch() {
+    if (isInitialized) {
+      panel.remove(switchGraphic);
+    } else {
+      isInitialized = true;
     }
-  }
+    switchGraphic = new SVGPanel();
+    final int switchHeight = 14;
+    final int switchWidth = (int) Math.round(switchHeight * 1.6);
 
-  @Override
-  protected Widget createClonedWidget() {
-    return new ClonedSwitch(switchWidget);
+    switchGraphic.setInnerSVG("<rect x=\"0\" y=\"0\" rx=\"" +
+            switchHeight/2 + "\" yx=\"" + switchWidth/2 + "\" stroke-width=\"1\" stroke=\"black\"" +
+            "height=\"" + switchHeight + "\" width=\"" + switchWidth + "\" fill=\"" + (checked? trackColorActive : trackColorInactive) + "\" />" +
+            "<circle cx=\"" + (checked? switchWidth - switchHeight/2: switchHeight/2) + "\" fill=\"" + (checked? thumbColorActive : thumbColorInactive) + "\" " +
+            "cy=\"" + (switchHeight/2) + "\" r=\"" + (switchHeight/2 - 1) + "\"/>");
+    panel.add(switchGraphic);
   }
 
   @Override
@@ -68,46 +85,24 @@ public final class MockSwitch extends MockWrapper {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
-  /*
-   * Sets the checkbox's BackgroundColor property to a new value.
-   */
-  private void setBackgroundColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetBackgroundColor(switchWidget, text);
-  }
-
-  /*
-   * Sets the checkbox's BackgroundColor property to a new value.
-   */
   private void setThumbColorActiveProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
-  }
-  private void setThumbColorInactiveProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+    thumbColorActive = MockComponentsUtil.getColor(text).toString();
+    paintSwitch();
   }
 
-  /*
-   * Sets the checkbox's BackgroundColor property to a new value.
-   */
-  private void setTrackColorActiveProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+  private void setThumbColorInactiveProperty(String text) {
+    thumbColorInactive = MockComponentsUtil.getColor(text).toString();
+    paintSwitch();
   }
+
+  private void setTrackColorActiveProperty(String text) {
+    trackColorActive = MockComponentsUtil.getColor(text).toString();
+    paintSwitch();
+  }
+
   private void setTrackColorInactiveProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
+    trackColorInactive = MockComponentsUtil.getColor(text).toString();
+    paintSwitch();
   }
 
   /*
@@ -118,19 +113,11 @@ public final class MockSwitch extends MockWrapper {
   }
 
   /*
-   * Sets the checkbox's FontBold property to a new value.
+   * Sets the checkbox's Checked property to a new value.
    */
-  private void setFontBoldProperty(String text) {
-    MockComponentsUtil.setWidgetFontBold(switchWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's FontItalic property to a new value.
-   */
-  private void setFontItalicProperty(String text) {
-    MockComponentsUtil.setWidgetFontItalic(switchWidget, text);
-    updatePreferredSize();
+  private void setCheckedProperty(String text) {
+    checked = Boolean.parseBoolean(text);
+    paintSwitch();
   }
 
   @Override
@@ -143,58 +130,19 @@ public final class MockSwitch extends MockWrapper {
       return hint;
     }
   }
-
-  /*
-   * Sets the checkbox's FontSize property to a new value.
-   */
-  private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(switchWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's FontTypeface property to a new value.
-   */
-  private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(switchWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's Text property to a new value.
-   */
   private void setTextProperty(String text) {
-    switchWidget.setText(text);
-    updatePreferredSize();
+    panel.remove(switchLabel);
+    switchLabel.setText(text);
+    panel.insert(switchLabel, 0);
+    paintSwitch();
   }
-
-  /*
-   * Sets the checkbox's TextColor property to a new value.
-   */
-  private void setTextColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFF000000";  // black
-    }
-    MockComponentsUtil.setWidgetTextColor(switchWidget, text);
-  }
-
-  /*
-   * Sets the checkbox's Checked property to a new value.
-   */
-  private void setCheckedProperty(String text) {
-    switchWidget.setChecked(Boolean.parseBoolean(text));
-  }
-
   // PropertyChangeListener implementation
-
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-      setBackgroundColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
+    if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
       setThumbColorActiveProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORINACTIVE)) {
       setThumbColorInactiveProperty(newValue);
@@ -204,25 +152,11 @@ public final class MockSwitch extends MockWrapper {
       setTrackColorInactiveProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
       setEnabledProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
-      setFontBoldProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {
-      setFontItalicProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-      setFontSizeProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
-      setFontTypefaceProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
-      setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
+      setTextProperty(newValue);
     }
   }
+
 }
