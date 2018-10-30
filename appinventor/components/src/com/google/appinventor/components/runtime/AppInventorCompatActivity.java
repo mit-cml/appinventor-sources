@@ -44,13 +44,14 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
   private static final String LOG_TAG = AppInventorCompatActivity.class.getSimpleName();
   static final int DEFAULT_PRIMARY_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR);
-  private static boolean classicMode;
+  private static boolean classicMode = false;
   private static boolean actionBarEnabled;
   private static Theme currentTheme = Theme.PACKAGED;
   private static int primaryColor;
   private AppCompatDelegate appCompatDelegate;
   android.widget.LinearLayout frameWithTitle;
   TextView titleBar;
+  private static boolean didSetClassicModeFromYail = false;
 
   @Override
   public void onCreate(Bundle icicle) {
@@ -325,5 +326,14 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       return true;
     }
     return false;
+  }
+
+  @SuppressWarnings("unused")  // Called from YAIL
+  public static void setClassicModeFromYail(boolean newClassicMode) {
+    if (!didSetClassicModeFromYail) {  // Check so we only do this once (from Screen1)
+      Log.d(LOG_TAG, "Setting classic mode from YAIL: " + newClassicMode);
+      classicMode = newClassicMode;
+      didSetClassicModeFromYail = true;
+    }
   }
 }
