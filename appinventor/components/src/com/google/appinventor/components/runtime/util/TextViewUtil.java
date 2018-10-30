@@ -215,4 +215,42 @@ public class TextViewUtil {
   public static void setTextColors(TextView textview, ColorStateList colorStateList) {
     textview.setTextColor(colorStateList);
   }
+
+  /**
+   * Sets the minimum width of a text view.
+   *
+   * @param textview text view instance
+   * @param minWidth minimum width of the text view in pixels
+   */
+  public static void setMinWidth(TextView textview, int minWidth) {
+    // According to https://developer.android.com/reference/android/widget/TextView.html#setMinWidth(int), the minimum
+    // width of TextView is the maximum of setMinWidth and setMinimumWidth. Talk about NIH syndrome!
+    textview.setMinWidth(minWidth);
+    textview.setMinimumWidth(minWidth);
+  }
+
+  /**
+   * Sets the minimum height of a text view.
+   *
+   * @param textview text view instance
+   * @param minHeight minimum height of the text view in pixels
+   */
+  public static void setMinHeight(TextView textview, int minHeight) {
+    // According to https://developer.android.com/reference/android/widget/TextView.html#setMinHeight(int), the minimum
+    // height of TextView is the maximum of setMinHeight and setMinimumHeight. Talk about NIH syndrome!
+    textview.setMinHeight(minHeight);
+    textview.setMinimumHeight(minHeight);
+  }
+
+  /**
+   * Sets the minimum size for a text view.
+   *
+   * @param textview text view instance
+   * @param minWidth minimum width of the text view in pixels
+   * @param minHeight minimum height of the text view in pixels
+   */
+  public static void setMinSize(TextView textview, int minWidth, int minHeight) {
+    TextViewUtil.setMinWidth(textview, minWidth);
+    TextViewUtil.setMinHeight(textview, minHeight);
+  }
 }

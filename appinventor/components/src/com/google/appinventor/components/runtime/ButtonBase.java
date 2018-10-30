@@ -98,6 +98,20 @@ public abstract class ButtonBase extends AndroidViewComponent
   private Drawable backgroundImageDrawable;
 
   /**
+   * The minimum width of a button for the current theme.
+   *
+   * We store this statically because it should be constant across all buttons in the app.
+   */
+  private static int defaultButtonMinWidth = 0;
+
+  /**
+   * The minimum height of a button for the current theme.
+   *
+   * We store this statically because it should be constant across all buttons in the app.
+   */
+  private static int defaultButtonMinHeight = 0;
+
+  /**
    * Creates a new ButtonBase component.
    *
    * @param container  container, component will be placed in
@@ -109,6 +123,8 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
     defaultColorStateList = view.getTextColors();
+    defaultButtonMinWidth = view.getMinWidth();
+    defaultButtonMinHeight = view.getMinHeight();
 
     // Adds the component to its designated container
     container.$add(this);
@@ -384,9 +400,11 @@ public abstract class ButtonBase extends AndroidViewComponent
         // create a drawable with the appropriate shape and color.
         setShape();
       }
+      TextViewUtil.setMinSize(view, defaultButtonMinWidth, defaultButtonMinHeight);
     } else {
       // If there is a background image
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+      TextViewUtil.setMinSize(view, 0, 0);
     }
   }
 
