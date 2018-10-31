@@ -246,6 +246,9 @@ jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":
 <li><a href="#format">format as a decimal</a></li>
 <li><a href="#isnumber">is a number</a></li>
 <li><a href="#convertnumber">convert number</a></li>
+<li><a href="#bitwise_and">bitwise and</a></li>
+<li><a href="#bitwise_ior">bitwise or (inclusive)</a></li>
+<li><a href="#bitwise_xor">bitwise or (exclusive)</a></li>
 </ul><h4><em>Can't find the math block you're looking for in the built-in blocks?</em></h4>
 <p>Some math blocks are dropdowns which means that they can be converted into different blocks. Here's a list of what is included in each dropdown:</p>
 <p>=, ≠, &gt;, ≥, &lt;, ≤ </p>
@@ -386,6 +389,15 @@ In this case, <sup>1</sup>⁄<sub>5</sub> is the fractional part. We multiply th
 <h3 id="convertnumber">convert number</h3>
 <p><img src="images/math/convertnumber.png" /></p>
 <p>Takes a text string that represents a positive integer in one base and returns a string that represents the same number is another base.  For example, if the input string is 10, then converting from base 10 to binary will produce the string 1010;  while if the input string is the same 10,  then converting from binary to base 10 will produce the string 2.   If the input string is the same 10, then converting from base 10 to hex will produce the string A.</p>
+<h3 id="bitwise_and">Bitwise And</h3>
+<p><img src="images/math/bitwise_and.png" /></p>
+<p>Takes two numbers and compares each pair of bits. Each bit of the result is true only if the corresponding bits of both operands are true.</p>
+<h3 id="bitwise_ior">Bitwise Or (Inclusive)</h3>
+<p><img src="images/math/bitwise_ior.png" /></p>
+<p>Takes two numbers and compares each pair of bits. Each bit of the result is true either of the corresponding bits in each operands is true.</p>
+<h3 id="bitwise_xor">Bitwise Or (Inclusive)</h3>
+<p><img src="images/math/bitwise_xor.png" /></p>
+<p>Takes two numbers and compares each pair of bits. Each bit of the result is true only if one corresponding bit in the operands is true and the other is false.</p>
 </div></div></div>  </div>
 
 
