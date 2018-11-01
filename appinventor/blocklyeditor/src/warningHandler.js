@@ -30,8 +30,10 @@ Blockly.WarningHandler.WarningState = {
   WARNING: 1,
   ERROR: 2
 };
-Blockly.WarningHandler.prototype.errorWarningIdHash = {};
-Blockly.WarningHandler.prototype.currentErrorWarning = 0;
+Blockly.WarningHandler.prototype.warningIdHash = {};
+Blockly.WarningHandler.prototype.errorIdHash = {};
+Blockly.WarningHandler.prototype.currentWarning = 0;
+Blockly.WarningHandler.prototype.currentError = 0;
 
 Blockly.WarningHandler.prototype.updateWarningErrorCount = function() {
   //update the error and warning count in the UI
@@ -110,19 +112,36 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
 };
 
 Blockly.WarningHandler.prototype.warningNavLeft = function() {
-  var k = Object.keys(this.errorWarningIdHash);
-  if (this.currentErrorWarning > 0) {
-    this.currentErrorWarning--;
-  } else this.currentErrorWarning = k.length - 1;
-  this.workspace.centerOnBlock(k[this.currentErrorWarning]);
+  var k = Object.keys(this.warningIdHash);
+  if (this.currentWarning > 0) {
+    this.currentWarning--;
+  } else this.currentWarning = k.length - 1;
+  this.workspace.centerOnBlock(k[this.currentWarning]);
 };
 
 Blockly.WarningHandler.prototype.warningNavRight = function() {
-  var k = Object.keys(this.errorWarningIdHash);
-  if (this.currentErrorWarning < k.length - 1) {
-    this.currentErrorWarning++;
-  } else this.currentErrorWarning = 0;
-  this.workspace.centerOnBlock(k[this.currentErrorWarning]);
+  var k = Object.keys(this.warningIdHash);
+  if (this.currentWarning < k.length - 1) {
+    this.currentWarning++;
+  } else this.currentWarning = 0;
+  this.workspace.centerOnBlock(k[this.currentWarning]);
+};
+
+
+Blockly.WarningHandler.prototype.errorNavLeft = function() {
+  var k = Object.keys(this.errorIdHash);
+  if (this.currentError > 0) {
+    this.currentError--;
+  } else this.currentError = k.length - 1;
+  this.workspace.centerOnBlock(k[this.currentError]);
+};
+
+Blockly.WarningHandler.prototype.errorNavRight = function() {
+  var k = Object.keys(this.errorIdHash);
+  if (this.currentError < k.length - 1) {
+    this.currentError++;
+  } else this.currentError = 0;
+  this.workspace.centerOnBlock(k[this.currentError]);
 };
 
 //Takes a block as the context (this), puts
@@ -142,14 +161,15 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
     if(block.hasWarning) {
       block.hasWarning = false;
       this.warningCount--;
+      delete this.warningIdHash[block.id];
       this.updateWarningErrorCount();
     }
     if(block.hasError) {
       block.hasError = false;
       this.errorCount--;
+      delete this.errorIdHash[block.id];
       this.updateWarningErrorCount();
     }
-    delete this.errorWarningIdHash[block.id];
     return Blockly.WarningHandler.WarningState.NO_ERROR;
   }
 
@@ -178,6 +198,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
       if(!block.hasError) {
         block.hasError = true;
         this.errorCount++;
+        this.errorIdHash[block.id] = true;
         this.updateWarningErrorCount();
       }
       //If the block has a warning,
@@ -185,10 +206,10 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
       if(block.hasWarning) {
         block.hasWarning = false;
         this.warningCount--;
+        delete this.warningIdHash[block.id];
         this.updateWarningErrorCount();
       }
 
-      this.errorWarningIdHash[block.id] = true;
       return Blockly.WarningHandler.WarningState.ERROR;
     }
   }
@@ -202,6 +223,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   if(block.hasError) {
     block.hasError = false;
     this.errorCount--;
+    delete this.errorIdHash[block.id];
     this.updateWarningErrorCount();
   }
   //if there are no errors, check for warnings
@@ -210,9 +232,9 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
       if(!block.hasWarning) {
         block.hasWarning = true;
         this.warningCount++;
+        this.warningIdHash[block.id] = true;
         this.updateWarningErrorCount();
       }
-      this.errorWarningIdHash[block.id] = true;
       return Blockly.WarningHandler.WarningState.WARNING;
     }
   }
@@ -224,11 +246,11 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
+    delete this.warningIdHash[block.id];
     this.updateWarningErrorCount();
   }
 
   //return no error
-  delete this.errorWarningIdHash[block.id];
   return Blockly.WarningHandler.WarningState.NO_ERROR;
 };
 
