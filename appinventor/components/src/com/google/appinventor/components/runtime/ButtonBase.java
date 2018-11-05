@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
+import com.google.appinventor.components.runtime.util.KitkatUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -123,8 +124,8 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
     defaultColorStateList = view.getTextColors();
-    defaultButtonMinWidth = view.getMinWidth();
-    defaultButtonMinHeight = view.getMinHeight();
+    defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
+    defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
 
     // Adds the component to its designated container
     container.$add(this);
