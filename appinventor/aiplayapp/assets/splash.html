@@ -8,7 +8,7 @@
          }
          function hasallpermissions() {
              var haveall = true;
-             for (i = 0; i < permissions.length; i++) {
+             for (var i = 0; i < permissions.length; i++) {
                  haveall = haveall && Android.hasPermission(permissions[i]);
              }
              return haveall;
@@ -23,10 +23,19 @@
                  item.style.display = "none";
                  cbutton.style.display = "block";
              }
+             if (localStorage) {
+                 var again = document.getElementById("again");
+                 var checkbox = document.getElementById("checkbox");
+                 var inhibit = localStorage.getItem("inhibit");
+                 again.style.display = "inline";
+                 if (inhibit == "true") {
+                     checkbox.checked = true;
+                 }
+             }
              getmotd();
          }
          function getpermission() {
-             for (i = 0; i < permissions.length; i++) {
+             for (var i = 0; i < permissions.length; i++) {
                  var perm = permissions[i];
                  if (!Android.hasPermission(perm)) {
                      Android.askPermission(perm);
@@ -35,22 +44,50 @@
              }
          }
          function done() {
+             var checkbox = document.getElementById("checkbox");
+             if (checkbox.checked) {
+                 localStorage.setItem("inhibit", "true");
+                 localStorage.setItem("generation", localStorage.getItem("sgen"));
+             } else {
+                 localStorage.setItem("inhibit", "false");
+             }
              Android.finished();
          }
          function getmotd() {
-             xhr = new XMLHttpRequest();
+             var xhr = new XMLHttpRequest();
              xhr.open("GET", "http://templates.appinventor.mit.edu/mit/m.json");
              xhr.onreadystatechange = function() {
                  if (this.readyState == 4 && this.status == 200) {
                      var json = JSON.parse(this.response);
-                     var ele = document.getElementById("motd");
+                     var ele = document.getElementById("version");
                      var version = Android.getVersion();
-                     var message = json[version];
-                     if (!message) {
-                         message = json['message'];
+                     var vmessage = json[version];
+                     if (!vmessage) {
+                         vmessage = json.message;
                      }
-                     if (message) {
-                         ele.innerHTML = message;
+                     if (vmessage) {
+                         ele.innerHTML = vmessage;
+                     }
+                     var motd = json.motd;
+                     if (motd) {
+                         ele = document.getElementById("motd");
+                         ele.innerHTML = motd;
+                     }
+                     if (localStorage) {
+                         var generation = localStorage.getItem("generation");
+                         if (!generation) {
+                             generation = "0";
+                         }
+                         var sgen = json.generation;
+                         var inhibit = localStorage.getItem("inhibit");
+                         if (sgen && generation) {
+                             sgen = parseInt(sgen);
+                             generation = parseInt(generation);
+                             localStorage.setItem("sgen", sgen);
+                             if (generation >= sgen && inhibit == "true") {
+                                 setTimeout(done, 3000);
+                             }
+                         }
                      }
                  }
              };
@@ -66,6 +103,8 @@
         <p>Welcome to the MIT App Inventor Companion Application. You use this application in conjunction with
             the MIT App Inventor application authoring system. You can learn more about it at http://appinventor.mit.edu.
         </p>
+        <div id="version">
+        </div>
         <div id="motd">
         </div>
         <div id="needpermission" style="display:none;">
@@ -78,6 +117,14 @@
         </div>
         <p>&nbsp;</p>
         <div id="cbutton">
+            <div id="again" style="display:none;">
+                <p>
+                    Check the box below and we will only show you this screen for a few seconds before
+                    automatically closing it. If important information displayed here changes we will
+                    not automatically close.
+                </p>
+                <p>Check this box for automatic closing: &nbsp;<input type="checkbox" id="checkbox"></p>
+            </div>
             <button onclick="done();">Continue</button>
         </div>
     </body>

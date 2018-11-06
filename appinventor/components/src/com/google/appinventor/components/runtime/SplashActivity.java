@@ -130,7 +130,10 @@ public final class SplashActivity extends AppInventorCompatActivity {
         }
       });
     setContentView(webview);
-//    webview.setWebContentsDebuggingEnabled(true);
+    // Uncomment the line below to enable debugging
+    // the splash screen (splash.html)
+    //
+    // webview.setWebContentsDebuggingEnabled(true);
     webview.addJavascriptInterface(android, "Android");
     webview.loadUrl("file:///android_asset/splash.html");
   }
