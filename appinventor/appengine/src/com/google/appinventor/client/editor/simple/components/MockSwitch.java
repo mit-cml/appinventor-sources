@@ -38,6 +38,7 @@ public final class MockSwitch extends MockVisibleComponent {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
+  public String switchText;
   public Boolean isInitialized = false;
 
   private int widgetWidth;
@@ -70,6 +71,8 @@ public final class MockSwitch extends MockVisibleComponent {
     switchGraphic = new SVGPanel();
     final int switchHeight = 14;
     final int switchWidth = (int) Math.round(switchHeight * 1.6);
+    switchGraphic.setWidth(switchWidth + "px");
+    switchGraphic.setHeight(switchHeight + "px");
 
     switchGraphic.setInnerSVG("<rect x=\"0\" y=\"0\" rx=\"" +
             switchHeight/2 + "\" yx=\"" + switchWidth/2 + "\" stroke-width=\"1\" stroke=\"black\"" +
@@ -77,6 +80,7 @@ public final class MockSwitch extends MockVisibleComponent {
             "<circle cx=\"" + (checked? switchWidth - switchHeight/2: switchHeight/2) + "\" fill=\"" + (checked? thumbColorActive : thumbColorInactive) + "\" " +
             "cy=\"" + (switchHeight/2) + "\" r=\"" + (switchHeight/2 - 1) + "\"/>");
     panel.add(switchGraphic);
+    panel.setWidth(MockComponentsUtil.getPreferredWidth(this) + "px");
   }
 
   @Override
@@ -132,9 +136,10 @@ public final class MockSwitch extends MockVisibleComponent {
   }
   private void setTextProperty(String text) {
     panel.remove(switchLabel);
+    switchLabel = new InlineHTML();
     switchLabel.setText(text);
     panel.insert(switchLabel, 0);
-    paintSwitch();
+    panel.setWidth(MockComponentsUtil.getPreferredWidth(this) + "px");
   }
   // PropertyChangeListener implementation
   @Override
