@@ -155,19 +155,26 @@ Blockly.WarningIndicator.prototype.init = function() {
   // If the document resizes, reposition the warning indicator.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.bindEvent_(this.warningToggleGroup_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.warningNavLeft_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavLeft);
+  Blockly.bindEvent_(this.warningNavRight_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavRight);
+  Blockly.bindEvent_(this.errorNavLeft_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavLeft);
+  Blockly.bindEvent_(this.errorNavRight_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavRight);
 
   // We stop propagating the mousedown event so that Blockly doesn't prevent click events in Firefox, which breaks
   // the click event handler above.
   Blockly.bindEvent_(this.warningToggleGroup_, 'mousedown', this, function(e) { e.stopPropagation() });
-
-  Blockly.bindEvent_(this.warningNavLeft_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavLeft);
-  Blockly.bindEvent_(this.warningNavRight_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningNavRight);
-  Blockly.bindEvent_(this.errorNavLeft_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickErrorNavLeft);
-  Blockly.bindEvent_(this.errorNavRight_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickErrorNavRight);
+  Blockly.bindEvent_(this.warningNavLeft_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavRight_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavLeft_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavRight_, 'mousedown', this, function(e) { e.stopPropagation() });
 
   // Stopping propagation of the mousedown event breaks touch events on tablets. We register here for touchend on the
   // toggle button so that we can simulate a click event.
   Blockly.bindEvent_(this.warningToggleGroup_, 'touchend', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.warningNavLeft_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavRight_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavLeft_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavRight_, 'touchend', this, function(e) { e.stopPropagation() });
 };
 
 /**
