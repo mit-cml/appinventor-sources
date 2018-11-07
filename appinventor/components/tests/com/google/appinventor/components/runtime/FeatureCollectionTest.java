@@ -201,6 +201,18 @@ public class FeatureCollectionTest extends MapTestBase {
     assertEquals(getMap(), collection.getMap());
   }
 
+  /**
+   * Tests that the FeatureCollection can load a GeoJSON file with an invalid BOM. Technically, BOM is not allowed
+   * by the JSON RFC, but who needs standards anyway?
+   */
+  @Test
+  public void testGeoJSONWithBOM() {
+    ShadowEventDispatcher.clearEvents();
+    collection.FeaturesFromGeoJSON("\uFEFF{\"type\":\"FeatureCollection\",\"features\":[]}");
+    runAllEvents();
+    assertEventFiredAny(collection, "GotFeatures");
+  }
+
   private void testFeatureListSetter(MapFeature feature) {
     ShadowView view = Shadow.extract(getMap().getView());
     view.clearWasInvalidated();
