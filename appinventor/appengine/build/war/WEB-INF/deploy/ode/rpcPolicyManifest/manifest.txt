@@ -1,0 +1,11 @@
+# Module ode
+# RPC service class, partial path of RPC policy file
+com.google.appinventor.shared.rpc.GetMotdService, FFA8F452438BD688B163A593998CB1DB.gwt.rpc
+com.google.appinventor.shared.rpc.help.HelpService, 52DBD6588E68529CDA5812482308FB13.gwt.rpc
+com.google.appinventor.shared.rpc.project.ProjectService, E14D37FCCDD97BB5F907BFEF6D899A49.gwt.rpc
+com.google.appinventor.shared.rpc.admin.AdminInfoService, 8DE3F3D0889FD0B729F25B0BB4EBCD48.gwt.rpc
+com.google.appinventor.shared.rpc.launch.LaunchService, 00C38B363F8A87516C7836E3A274DF52.gwt.rpc
+com.google.appinventor.shared.rpc.user.UserInfoService, 2269E680E9265FD94EC576384AB4D745.gwt.rpc
+com.google.appinventor.shared.rpc.components.FirebaseAuthService, DC4EA60FE0821583DB5DCE49D2DA7CBA.gwt.rpc
+com.google.appinventor.shared.rpc.component.ComponentService, 4938FB0991B10B6394344277BCA2508A.gwt.rpc
+com.google.appinventor.shared.rpc.project.GalleryService, B9E23C5E5B8FC95E5182F5A1EFC56A80.gwt.rpc

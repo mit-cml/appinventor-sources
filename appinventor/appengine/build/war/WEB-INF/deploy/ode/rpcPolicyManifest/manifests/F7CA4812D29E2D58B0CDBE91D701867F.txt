@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.project.GalleryService
+path: B9E23C5E5B8FC95E5182F5A1EFC56A80.gwt.rpc

@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.component.ComponentService
+path: 4938FB0991B10B6394344277BCA2508A.gwt.rpc

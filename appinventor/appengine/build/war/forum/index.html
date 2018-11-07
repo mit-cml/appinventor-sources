@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   #aiac .content {
+    background: #fff;
+    padding-bottom:0px;
+    }
+    #aiac .grayhr {
+    height: 4px;
+    background-color: #a5a5a4;
+    margin: 10px 0 10px 0;
+    }
+  </style>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb">             Forum &gt; <a href="/forum/index.html">Table of Contents</a> &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <script>
+        // If there is no fragment, initialize the iframe to the TOC; otherwise initialize
+              // it to the actual embedded content.
+              function loadContents() {
+              var i = window.location.href.indexOf("#");
+              var baseUrl = "https://groups.google.com/forum/embed/";
+              if (i == -1) {
+              document.getElementById("gdf").src = baseUrl + "toc?forums=app-inventor-announcements,getting-started-with-app-inventor,programming-with-app-inventor,app-inventor-instructors,appinventor&amp;showsearch=true&amp;parenturl=" + window.location.href;
+              } else {
+              document.getElementById("gdf").src = baseUrl + "?fragments=true&amp;showsearch=true&amp;parenturl=" + window.location.href.substring(0, i) + "#" + window.location.href.substring(i + 1);
+              }
+              }
+       </script>
+       <div>
+        <h1>
+         App Inventor for Android User Discussion Forum
+        </h1>
+        <div id="forum_subtitle">
+         Read and follow these
+         <strong>
+          IMPORTANT GUIDELINES
+         </strong>
+         as you participate in
+                  these forums. This is the way to make many friends on the forums!
+         <br />
+         <ul>
+          <li>
+           You can
+           <strong>
+            join one or all
+           </strong>
+           of these sub-forums. Click on the
+                    title of the sub-forum to see forum details and join. Read
+           <a href="guidelines.html">
+            FORUM TIPS
+           </a>
+           for more information on the functionality of
+                    these forums.
+          </li>
+          <li>
+           <strong>
+            Read
+           </strong>
+           the
+           <a href="/learn/userfaq.html">
+            USER FAQ
+           </a>
+           , the
+           <a href="/learn/troubleshooting.html">
+            TROUBLESHOOTING
+           </a>
+           page, and the App Inventor
+           <a href="/learn/index.html">
+            DOCUMENTATION
+           </a>
+           before posting. Chances are good your question will be answered.
+          </li>
+          <li>
+           <strong>
+            Search
+           </strong>
+           the archives of these forums. Chances are good that
+                      somebody has run into the same issue before.
+          </li>
+          <li>
+           <strong>
+            Do Not Report Bugs
+           </strong>
+           on these forums. Bugs and feature
+                      requests should be logged on the
+           <a href="http://code.google.com/p/app-inventor-for-android/wiki/ReportingBugs">
+            ISSUES
+                      LIST
+           </a>
+           . The App Inventor team uses the data on the
+           <a href="http://code.google.com/p/app-inventor-for-android/wiki/ReportingBugs">
+            ISSUES
+                      LIST
+           </a>
+           to inform its development priorities.
+          </li>
+          <li>
+           <strong>
+            Be very clear
+           </strong>
+           about your question in the subject and
+           <strong>
+            give plenty of details
+           </strong>
+           in your post to help others
+                      understand your problem. Code snippets, screen shots, source files for your
+                      app may also be helpful.
+          </li>
+         </ul>
+        </div>
+       </div>
+       <div class="grayhr">
+       </div>
+       <iframe frameborder="0" height="700" id="gdf" scrolling="no" src="javascript:void(0);" width="100%">
+       </iframe>
+       <script>
+        loadContents();
+       </script>
+       &nbsp;
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

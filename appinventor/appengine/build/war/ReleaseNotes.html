@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+  Release notes - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c6 {border-width:0}
+    div.c5 {clear:left;}
+    div.c4 {float: left; width: 600px; height: 500px;}
+    img.c3 {width: 60px; height: 60px; border: 1px solid #efefef;}
+    div.c2 {float: right; width: 300px; margin: 0 20px 0 20px; padding: 10px 10px 10px 10px; height: 300px; background: #efefef url('/static/images/sidepanel-bg.png') top left repeat-x;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb">             Release notes &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+
+                <h2>Release Notes</h2>
+
+                <h3>Version 134, May 4, 2013</h3>
+
+                <ul>
+                  <li>
+                    You will need to upgrade your copy of the MIT
+                    AICompanion for this release. Look for version
+                    2.07 in the Google Play
+                    Store. <a href="http://appinventor.mit.edu/releaseupdate"
+                    target="_blank">[More
+                    Information]</a>.<br />
+                    <b>NOTE:</b> This version may not auto update from
+                    Google Play because it requires an additional
+                    permission. We added READ_LOGS permission to aid
+                    in debugging.
+                  </li>
+                  <li>
+                    The Web Component can now do the http “PUT” and “DELETE” methods.
+                  </li>
+                  <li>
+                    Added a “Slider” component. Permits you to choose
+                    a numeric value based on the position of a slider
+                    which you can move.
+                  </li>
+                  <li>
+                    Updated the Twitter Component to use the latest
+                    Twitter API.
+                  </li>
+                  <li>
+                    The Webviewer Component can now use location
+                    services.
+                  </li>
+                  <li>
+                    You can now decide whether or not buttons with
+                    images give feedback when pressed.
+                  </li>
+                  <li>
+                    Bugfixes.
+                  </li>
+                </ul>
+
+                <h3>Version 133, February 5, 2013</h3>
+
+                <ul>
+                  <li>
+                    You will need to upgrade your copy of the MIT
+                    AICompanion for this release. Look for version
+                    2.05 in the Google Play
+                    Store. <a href="http://appinventor.mit.edu/releaseupdate"
+                    target="_blank">[More Information]</a>.
+                  </li>
+                  <li>
+                    Updated Texting Component. The property
+                    “ReceivingEnabled” is no longer a boolean but is
+                    instead a numeric value. 1 = receiving disabled. 2
+                    = Receiving enabled, but only when the app is
+                    running. 3 = Receiving enabled, both when the app
+                    is running and when it isn’t (in which case a
+                    notification is displayed, as it does for the v132
+                    release). So 1 is the equivalent to “false” in the
+                    old release and 3 is equivalent to “true” and 2 is
+                    a new option which emulates the behavior of the
+                    old texting component (prior to release v129)
+                    where texts could be received only when the app
+                    was running.
+                  </li>
+                  <li>
+                    New Button Press Behavior: When an image is set as
+                    a button background, it will change color
+                    (lighten) when pressed in order to give the user
+                    feedback that the button was pressed.
+                  </li>
+                  <li>
+                    Disable Horizontal/Vertical and Alignment
+                    properties for HorizontalArrangement and Vertical
+                    Arrangment in designer when width/length is
+                    automatic.  Disable Vertical Alignment for Screen
+                    when Scrollable is set.
+                  </li>
+                  <li>
+                    Added logic to ShowChooseDialog & ShowTexDialog
+                    methods to include a Cancel button based on a new
+                    arg to indicate cancelable state.
+                  </li>
+                  <li>
+                    Incorporation of the “Bugsense” Error reporting
+                    system in the MIT AICompanion App. This system
+                    will report bugs directly back to MIT.
+                  </li>
+                  <li>
+                    Bugfixes.
+                  </li>
+                </ul>
+
+                <h3>Version 132, December 12, 2012</h3>
+
+                <ul>
+                  <li>
+                    Wireless Access to App Inventor. The new <a href="https://play.google.com/store/apps/details?id=edu.mit.appinventor.aicompanion2" target="_blank">MIT
+                    AICompanion</a> App, available at the Google Play Store
+                    and for <a href="http://appinventor.mit.edu/download/" target="_blank">direct downloading</a>, may be used to develop
+                    App Inventor Apps instead of using a USB Cable to
+                    connect your phone. All that is needed is a
+                    wireless (WiFi) network accessible to both the
+                    phone and the PC used for development.
+                  </li>
+                </ul>
+
+                <h3>Version 131, December 10, 2012</h3>
+                <ul>
+                  <li>
+                    Image Picker is updated to permit selecting images
+                    both from the camera and from other Photo Albums
+                    accessible from the device.  It also copies the
+                    selected image to a file on the SD card and
+                    returns the path to that file as it's “image”
+                    argument to AfterPicking.
+                  </li>
+                  <li>
+                    Camcorder component: Minor modification to where
+                    recorded videos are stored. Now stored in the
+                    Camcorder default location.
+                  </li>
+                  <li>
+                    Bugfixes and Cleanup work on the Texting Component.
+                  </li>
+                  <li>
+                    Fix to buildserver that on occasion resulted in
+                    packages that required external libraries (such as
+                    Texting and Fusion Tables) to not have the correct
+                    libraries included. Note: This was fixed in v130c
+                    patch release as well.
+                  </li>
+                  <li>
+                    Notifier component fixed to display reasonable
+                    sized fonts on both older and newer versions of
+                    Android.
+                  </li>
+                </ul>
+
+                <h3>Version 130, November 9, 2012</h3>
+                <ul>
+                  <li>
+                    Migrated FusiontablesControl to the new V1 API library.<p>
+                    The implementation follows V1 migration guide:<br>
+                    https://developers.google.com/fusiontables/docs/v1/migration_guide
+                    <p>
+                    The main changes are:
+                    <ul>
+                      <li>The API has a new URL: https://www.googleapis.com/fusiontables/v1/query</li>
+                      <li>Oauth 2.0 authentication is used with an API key. Developers must now
+                        register with Google and get an API key.</li>
+                      <li>The Google AccountManager is used to select an account and obtain
+                        an access_token that is used in all queries. (Similar to old approach)</li>
+                      <li>Google API client libraries are used in the implementation.</li>
+                      <li>All queries use the client library's Sql object to make the actual requests.
+                        This is similar to the deprecated version.</li>
+                      <li>A new method, SendQuery, is added to perform API v1 requests. The updated
+                        FusiontablesControl is backwards compatible. Previously written
+                        applications, using DoQuery, will still work until the end of the year.</li>
+                    </ul>
+                    <p>
+                  </li>
+                  <li>
+                    Modified Texting component.<p>
+                    The main changes are:
+                    <ul>
+                      <li>Now works with Wifi. This solution using Google Voice. It requires
+                        users to sign up online for Google Voice and to download and install
+                        the Google Voice mobile application. The mobile application is used
+                        for incoming messages. For outgoing messages the application uses
+                        Google AccountManager to authenticate the user and then uses their
+                        Google Voice account to send messages.</li>
+                      <li>Applications that include the revised component can receive text messages
+                          even when they are not running, with the user being notified on the status
+                          bar of incoming messages.</li>
+                      <li>Component now uses OAuth2Helper, same as used in FusiontablesControl.</li>
+                    </ul>
+                    <p>
+                  </li>
+                  <li>Updated Twitter component with latest version of
+                    twitter4j. Fixing bug that makes some numerical replies
+                    from Twitter fail.
+                  </li>
+                  <li>
+                    Added zipalign tool to the packaging process allowing
+                    applications to be placed in the play store.
+                  </li>
+                  <li>
+                    Added Progress bar, allowing for the monitoring of the
+                    application build process.
+                  </li>
+                  <li>
+                    Modified the Blockseditor so that it now connects and works with the
+                    Samsung Galaxy S III.
+                  </li>
+                  <li>
+                    Fixed Full Screen Video to work with older android versions.
+                  </li>
+                  <li>
+                    Added speed and heading to callback for Sprite.Flung and Canvas.flung.
+                  </li>
+                  <li>
+                    Added transition animations to screens.
+                  </li>
+                  <li>
+                    Added caching of Message of the Day messages.
+                  </li>
+                  <li>
+                    We also made minor User Interface improvements and bugfixes.
+                  </li>
+                </ul>
+
+                <h3>Version 129, September 11, 2012</h3>
+                <ul>
+                  <li>Resize-able and Full Screen Video support. You
+                    can now resize an existing Video Player component
+                    from the blocks editor. In Android 2.0+ you can set
+                    a Video Player to use the entire phone's screen. The
+                    &lt;back&gt; key will restore it to its original
+                    size.
+                  </li>
+                  <li>
+                    Horizontal and Vertical Arrangements can now align
+                    their contents. Arrangements and Screens can now
+                    align their contents along Left, Right, Center,
+                    Top and Bottom edges.<br />
+                    These settings have no effect if the arrangement
+                    size is set to automatic, and vertical setting has
+                    no effect if the screen is scrollable.
+                  </li>
+                  <li>
+                    Canvas and Sprite Improvements. The new events
+                    "Flung", "TouchUP" and "TouchDown" have been added
+                    to Sprites and Canvases. When a user touches a
+                    Sprite and then quickly swipes their finger in
+                    some direction, a "Flung" event is issued for the
+                    Sprite which gives the direction and speed of the
+                    swipe. This can be used to determine the direction
+                    and relative speed to move a Sprite. Canvases also
+                    receive a Flung event so a user can perform the
+                    swiping (Fling) motion anywhere on a Canvas and
+                    the MIT App Inventor programmer can decide how to
+                    handle it.<br />
+                    When a user places their finger on a Sprite, a
+                    TouchDown event is now triggered. When they lift
+                    their finger a TouchUP event is triggered. These
+                    events are in addition to the existing "Touched"
+                    event.
+                  </li>
+                  <li>
+                    Added new screen orientation settings: (1) User
+                    (let's the app's user select portrait or
+                    landscape; and (2) Sensor (auto-rotates as the
+                    phone rotates)
+                  </li>
+                  <li>
+                    We also made minor User Interface improvements and bugfixes.
+                  </li>
+                </ul>
+
+                <h3>Version 128, August 6, 2012</h3>
+                <ul>
+                  <li>Minor bugfixes associated with building from sources.</li>
+                  <li>Added code to map account e-mail addresses. A special configuration file (fixids) is used
+                    to map Google Email addresses to other Google Email Addresses. This is used to fix some people
+                    who have mixed case letters in their email addresses when in the past they didn't.</li>
+                  <li>
+                    The Blocks editor is now signed with a public CA issued certificate. People should no longer see a warning dialog box from Java that they have to click past.</li>
+                  <li>
+                    Added more detailed logging to the build server.
+                  </li>
+                </ul>
+
+                <h3>Version 127, July 24, 2012</h3>
+                <ul>
+                  <li>Added a Camcorder component. It works similarly to the Camera component but captures Video instead of photos.<br />
+                    <ul>
+                      <li>Known Issue: If you play back a recorded video, it will be very small. This will be fixed in an upcoming release.</li>
+                    </ul>
+                  </li>
+                  <li>Allow Image Sprites to rotate and resize simultaneously.</li>
+                  <li>Bugfix in Webviewer component where it could under certain circumstances get a null pointer exception.</li>
+                  <li>Permit Application's versionName and versionCode to be edited in the Designer as a property of the Screen1 component. This is necessary to permit updating of applications submitted to the Google Play Store.</li>
+                </ul>
+
+                <h3>Version 126, June 26, 2012</h3>
+                <ul>
+                        <li> Upgrading the Player Component - Added a Completed event, an isPlaying method, a Looping and Volume property. Modified the Stop method to seek back to the beginning of the song.</li>
+                        <li> Updated Player Component Documentation.</li>
+                        <li> Added new flag to the launch-buildserer script allowing the ability to specify log file and output path.</li>
+                        <li> Added a link to the main panel for access to Release Notes.</li>
+                        <li> Updated text in Quizme tutorial.</li>
+                        <li> Added check for invalid file names.</li>
+                        <li> Modify LocationSensor component to include designer properties for time and distance notification intervals.</li>
+                        <li> Cleaned up misleading warning and error messages.</li>
+                        <li> Updated documentation on how to restart the app from the blocks editor.</li>
+                        <li> Added new property, MinimumInterval, to accelerometer, that keeps it from reporting Shaking events too often.</li>
+                        <li> Changed the error reporting so that red error messages in the Designer disappear when the user clicks the mouse anywhere on the screen.</li>
+                        <li> Updated documentation for color blocks to match the changes made in "make color" and "split color"</li>
+                        <li> Change version to come from Git rather than Mercurial.</li>
+                </ul>
+                <p />
+                <h3>Version 125, May 6, 2012</h3>
+                <ul>
+                        <li> Added ability for apk's created with this version of AppInventor, to be uploaded to Google Play.</li>
+                        <li> Fixed Searching in documentation.</li>
+                        <li> launch_buildserver script now accepts command line arguments</li>
+                        <li> Fixed numerous issues in the documentation pages.</li>
+                        <li> App Inventor should now work better with IE9</li>
+                        <li> Fixed signout link</li>
+                        <li> Added a Shape property to the Button component</li>
+                        <li> Fixed orientation sensor documentation bug</li>
+                        <li> Made changes to make Button FontSize dynamic</li>
+                        <li> Updated notepad.jnlp to fix broken link.</li>
+                        <li> Made the "/learn", "/about", and "/forum" subtrees not require login.</li>
+                        <li> Added some minor logging improvements.</li>
+                </ul>
+        </div>
+</div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,1 @@
+    <BlockConnector label="" connector-kind="plug" connector-type="poly" />

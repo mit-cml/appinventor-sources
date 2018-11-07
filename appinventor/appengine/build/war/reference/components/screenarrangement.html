@@ -1,0 +1,721 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Screen Arrangement Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="/static/images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+
+                    <h1>Screen Arrangement Components - App Inventor for Android</h1>
+
+                    <ul>
+                      <li>
+                        <a href="#HorizontalArrangement">
+                          HorizontalArrangement
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#TableArrangement">
+                          TableArrangement
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#VerticalArrangement">
+                          VerticalArrangement
+                        </a>
+                      </li>
+                    </ul>
+                    <h2 id="HorizontalArrangement">
+                      HorizontalArrangement
+                    </h2>
+                    <img alt="" src="images/horizontalarrangement.png" />
+                    <p>
+                      Use a horizontal arrangement component to display a group of components laid out
+                      from left to right.
+                    </p>
+                    <p>
+                      This component is a formatting element in which you place components that should be
+                      displayed from left to right. If you want to have components displayed one over
+                      another, use
+                      <code>
+                        VerticalArrangement
+                      </code>
+                      instead.
+                    </p>
+                    <p>
+                      In a HorizontalArrangement, components are arranged along the horizontal axis,
+                      vertically center-aligned.
+                    </p>
+                    <p>
+                      If a HorizontalArrangement's Height property is set to Automatic, the actual height
+                      of the arrangement is determined by the tallest component in the arrangement whose
+                      Height property is not set to Fill Parent. If a HorizontalArrangment's Height
+                      property is set to Automatic and it contains only components whose Height
+                      properties are set to Fill Parent, the actual height of the arrangement is
+                      calculated using the automatic heights of the components. If a
+                      HorizontalArrangement's Height property is set to Automatic and it is empty, the
+                      height will be 100.
+                    </p>
+                    <p>
+                      If a HorizontalArrangement's Width property is set to Automatic, the actual width
+                      of the arrangement is determined by the sum of the widths of the components.
+                      <b>
+                        If
+                        a HorizontalArrangement's Width property is set to Automatic, any components whose
+                        Width properties are set to Fill Parent will behave as if they were set to
+                        Automatic.
+                      </b>
+                    </p>
+                    <p>
+                      If a HorizontalArrangement's Width property is set to Fill Parent or specified in
+                      pixels, any components whose Width properties are set to Fill Parent will equally
+                      take up the width not occupied by other components.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If true, component and its contents are visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Horizontal arrangement height (y-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Horizontal arrangement width (x-size).
+                      </dd>
+                    </dl>
+                    <h2 id="TableArrangement">
+                      TableArrangement
+                    </h2>
+                    <p>
+                      Use a table arrangement component to display a group of components in a tabular
+                      fashion.
+                    </p>
+                    <p>
+                      This component is a formatting element in which you place components that should be
+                      displayed in tabular form.
+                    </p>
+                    <p>
+                      In a TableArrangement, components are arranged in a grid of rows and columns, with
+                      not more than one component visible in each cell.
+                      <b>
+                        If multiple components occupy
+                        the same cell, only the last one will be visible.
+                      </b>
+                    </p>
+                    <p>
+                      Within each row, components are vertically center-aligned.
+                    </p>
+                    <p>
+                      The width of a column is determined by the widest component in that column. When
+                      calculating column width, the automatic width is used for components whose Width
+                      property is set to Fill Parent.
+                      <b>
+                        However, each component will always fill the
+                        full width of the column that it occupies.
+                      </b>
+                    </p>
+                    <p>
+                      The height of a row is determined by the tallest component in that row whose Height
+                      property is not set to Fill Parent. If a row contains only components whose Height
+                      properties are set to Fill Parent, the height of the row is calculated using the
+                      automatic heights of the components.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If true, component and its contents are visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Rows (number-of-rows)
+                        </code>
+                      </dt>
+                      <dd>
+                        The number of rows in the table.
+                      </dd>
+                      <dt>
+                        <code>
+                          Columns (number-of-columns)
+                        </code>
+                      </dt>
+                      <dd>
+                        The number of columns in the table.
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Table arrangement height (y-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Table arrangement width (x-size).
+                      </dd>
+                    </dl>
+                    <h2 id="VerticalArrangement">
+                      VerticalArrangement
+                    </h2>
+                    <img alt="" src="images/verticalarrangement.png" />
+                    <p>
+                      Use a vertical arrangement component to display a group of components laid out from
+                      top to bottom, left-aligned.
+                    </p>
+                    <p>
+                      This component is a formatting element in which you place components that should be
+                      displayed one below another. The first child component is stored on top, the second
+                      beneath it, and so on. If you want to have components displayed next to one
+                      another, use
+                      <code>
+                        HorizontalArrangement
+                      </code>
+                      instead.
+                    </p>
+                    <p>
+                      In a VerticalArrangement, components are arranged along the vertical axis,
+                      left-aligned.
+                    </p>
+                    <p>
+                      If a VerticalArrangement's Width property is set to Automatic, the actual width of
+                      the arrangement is determined by the widest component in the arrangement whose
+                      Width property is not set to Fill Parent. If a VerticalArrangement's Width property
+                      is set to Automatic and it contains only components whose Width properties are set
+                      to Fill Parent, the actual width of the arrangement is calculated using the
+                      automatic widths of the components. If a VerticalArrangement's Width property is
+                      set to Automatic and it is empty, the width will be 100.
+                    </p>
+                    <p>
+                      If a VerticalArrangement's Height property is set to Automatic, the actual height
+                      of the arrangement is determined by the sum of the heights of the components.
+                      <b>
+                        If
+                        a VerticalArrangement's Height property is set to Automatic, any components whose
+                        Height properties are set to Fill Parent will behave as if they were set to
+                        Automatic.
+                      </b>
+                    </p>
+                    If a VerticalArrangement's Height property is set to Fill Parent or specified in
+                    pixels, any components whose Height properties are set to Fill Parent will equally
+                    take up the height not occupied by other components.
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If true, component and its contents are visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Vertical arrangement height (y-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Vertical arrangement width (x-size).
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>

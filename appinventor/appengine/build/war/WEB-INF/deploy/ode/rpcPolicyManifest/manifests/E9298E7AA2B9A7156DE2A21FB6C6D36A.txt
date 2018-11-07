@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.components.FirebaseAuthService
+path: DC4EA60FE0821583DB5DCE49D2DA7CBA.gwt.rpc

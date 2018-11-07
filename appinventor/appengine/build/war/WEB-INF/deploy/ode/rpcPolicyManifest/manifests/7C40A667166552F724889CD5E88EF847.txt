@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.admin.AdminInfoService
+path: 8DE3F3D0889FD0B729F25B0BB4EBCD48.gwt.rpc
