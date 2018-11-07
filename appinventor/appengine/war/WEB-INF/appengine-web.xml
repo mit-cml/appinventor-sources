@@ -2,6 +2,7 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application></application>
   <version>1</version>
+  <runtime>java8</runtime>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
@@ -186,6 +187,10 @@
     <property name="clouddb.server" value="clouddb.example.com"/>
     <property name="clouddb.uuid.secret" value="changeme!"/>
     <property name="clouddb.secret" value="changeme too!" />
+
+    <!-- This appears to be needed after a suspected change in how
+         POSTs work with URLFetch around 09/20/2018 -->
+    <property name="appengine.api.urlfetch.defaultDeadline" value="40"/>
 
   </system-properties>
 

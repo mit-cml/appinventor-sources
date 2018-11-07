@@ -136,14 +136,15 @@ Blockly.Yail['local_variable'] = function(block,isExpression) {
   // [lyn, 01/15/2013] Added to fix bug in local declaration expressions:
   if(isExpression){
     if(!block.getInputTargetBlock("RETURN")){
-      code += Blockly.Yail.YAIL_SPACER +  "0";
+      code += Blockly.Yail.YAIL_SPACER + "0";
     } else {
-      code += Blockly.Yail.YAIL_SPACER +  Blockly.Yail.valueToCode(block, 'RETURN', Blockly.Yail.ORDER_NONE);
+      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.valueToCode(block, 'RETURN', Blockly.Yail.ORDER_NONE);
     }
   } else {
-    code += Blockly.Yail.YAIL_SPACER +  Blockly.Yail.statementToCode(block, 'STACK', Blockly.Yail.ORDER_NONE);
+    code += Blockly.Yail.YAIL_SPACER +
+      (Blockly.Yail.statementToCode(block, 'STACK', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
   }
-  code += Blockly.Yail.YAIL_SPACER +  Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   if(!isExpression){
     return code;
   } else {

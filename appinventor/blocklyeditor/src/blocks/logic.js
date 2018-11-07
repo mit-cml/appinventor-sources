@@ -225,11 +225,11 @@ Blockly.Blocks['logic_or'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var op = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.logic_operation.TOOLTIPS[op];
+      return Blockly.Blocks.logic_operation.TOOLTIPS()[op];
     });
   },
   helpUrl: function () {
     var op = this.getFieldValue('OP');
-    return Blockly.Blocks.logic_operation.HELPURLS[op];
+    return Blockly.Blocks.logic_operation.HELPURLS()[op];
   }
 };

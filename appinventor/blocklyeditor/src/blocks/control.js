@@ -478,7 +478,7 @@ Blockly.Blocks['controls_choose'] = {
 Blockly.Blocks['controls_do_then_return'] = {
   // String length.
   category: 'Control',
-  helpUrl: Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
+  helpUrl: Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendStatementInput('STM')

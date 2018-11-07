@@ -128,7 +128,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     // NOTE: GWT's Base64Utils uses a non-standard algorithm.
     // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
     byte[] binData = null;
-    binData = Base64Util.decode(zipData);
+    binData = Base64Util.decodeLines(zipData);
 
     // Import the project
     ByteArrayInputStream bais = null;
