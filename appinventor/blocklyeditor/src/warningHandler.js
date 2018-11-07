@@ -540,11 +540,13 @@ Blockly.WarningHandler.prototype.checkDisposedBlock = function(block){
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
+    delete this.warningIdHash[block.id];
     this.updateWarningErrorCount();
   }
   if(block.hasError) {
     block.hasError = false;
     this.errorCount--;
+    delete this.errorIdHash[block.id];
     this.updateWarningErrorCount();
   }
 };
