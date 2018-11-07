@@ -104,7 +104,11 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
       List<MockComponent> children = new ArrayList<MockComponent>(getChildren());
       for (MockComponent component : children) {
         removeComponent(component, true);
+        component.onRemoved();
       }
+      children.clear();
+      features.clear();
+      clearLayers();
       return;
     }
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
