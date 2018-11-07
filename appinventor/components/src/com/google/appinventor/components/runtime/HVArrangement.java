@@ -36,10 +36,6 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * A container for components that arranges them linearly, either
  * horizontally or vertically.
@@ -353,7 +349,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Load image from file.
         if (imagePath.length() > 0) {
             try {
-                backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+                if(imagePath.length()>=6 && imagePath.substring(imagePath.length()-6, imagePath.length()).equals(".9.png")){
+                    // file path end with ".9.png" which reprecent nine-patch file
+                    backgroundImageDrawable = MediaUtil.getNinePatchDrawable(container.$form(), imagePath);
+                }else{
+                    backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+                }
             } catch (IOException ioe) {
                 // Fall through with a value of null for backgroundImageDrawable.
             }
