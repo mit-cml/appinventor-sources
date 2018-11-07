@@ -106,6 +106,9 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
         removeComponent(component, true);
         component.onRemoved();
       }
+      children.clear();
+      features.clear();
+      clearLayers();
       return;
     }
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
