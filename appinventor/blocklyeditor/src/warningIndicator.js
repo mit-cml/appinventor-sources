@@ -77,27 +77,27 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.svgGroup_ = Blockly.utils.createSvgElement('g',
       {'id': "indicatorWarning"}, null);
   this.warningCount_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(20,14)"},
+      {'fill': "black", 'transform':"translate(20,-1)"},
       this.svgGroup_);
   this.warningCount_.textContent = "0";
 
 
   this.iconGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyIconGroup', 'translate':"transform(0,0)"}, this.svgGroup_);
+      {'class': 'blocklyIconGroup', 'translate':"transform(0,-15)"}, this.svgGroup_);
   var iconShield = Blockly.utils.createSvgElement('path',
       {'class': 'blocklyWarningIconShield',
-       'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
-       'Q 17,15 14,15 z'},
+       'd': 'M 2,0 Q -1,0 0.5,-3 L 6.5,-13.3 Q 8,-16 9.5,-13.3 L 15.5,-3 ' +
+       'Q 17,0 14,0 z'},
       this.iconGroup_);
   this.iconMark_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
        'x': Blockly.Error.ICON_RADIUS,
-       'y': 2 * Blockly.Error.ICON_RADIUS - 3}, this.iconGroup_);
+       'y': 2 * Blockly.Error.ICON_RADIUS - 18}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
   this.errorCount_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(85,14)"},
+      {'fill': "black", 'transform':"translate(85,-1)"},
       this.svgGroup_);
   this.errorCount_.textContent = "0";
 
@@ -107,10 +107,10 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       {'class': 'blocklyErrorIconOutline',
        'r': Blockly.Error.ICON_RADIUS,
        'cx': Blockly.Error.ICON_RADIUS,
-       'cy': Blockly.Error.ICON_RADIUS}, this.iconErrorGroup_);
+       'cy': Blockly.Error.ICON_RADIUS - 15}, this.iconErrorGroup_);
   Blockly.utils.createSvgElement('path',
       {'class': 'blocklyErrorIconX',
-       'd': 'M 4,4 12,12 8,8 4,12 12,4'},
+       'd': 'M 4,-11 12,-3 8,-7 4,-3 12,-11'},
                            // X fills circle vvv
        //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.iconErrorGroup_);
