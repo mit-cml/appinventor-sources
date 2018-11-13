@@ -288,6 +288,8 @@
 
 (define-syntax define-form
   (syntax-rules ()
+    ((_ class-name form-name)
+     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form #f #t))
     ((_ class-name form-name classic-theme)
      (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form #f classic-theme))))
 
