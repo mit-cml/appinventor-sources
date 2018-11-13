@@ -124,19 +124,19 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.warningToggleGroup_);
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
-  this.warningNavLeft_ = Blockly.utils.createSvgElement('path',
+  this.warningNavPrevious_ = Blockly.utils.createSvgElement('path',
       {'fill': "#eeeeee", "d": "M 0,7 L 10,17 L 20,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
 
-  this.warningNavRight_ = Blockly.utils.createSvgElement('path',
+  this.warningNavNext_ = Blockly.utils.createSvgElement('path',
       {'fill': "#eeeeee", "d": "M 10,-31 L 0,-21 L 20,-21 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
 
-  this.errorNavLeft_ = Blockly.utils.createSvgElement('path',
+  this.errorNavPrevious_ = Blockly.utils.createSvgElement('path',
       {'fill': "#eeeeee", "d": "M 67,7 L 77,17 L 87,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
 
-  this.errorNavRight_ = Blockly.utils.createSvgElement('path',
+  this.errorNavNext_ = Blockly.utils.createSvgElement('path',
       {'fill': "#eeeeee", "d": "M 87,-21 L 67,-21 L 77,-31 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
 
@@ -155,26 +155,26 @@ Blockly.WarningIndicator.prototype.init = function() {
   // If the document resizes, reposition the warning indicator.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.bindEvent_(this.warningToggleGroup_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
-  Blockly.bindEvent_(this.warningNavLeft_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavLeft);
-  Blockly.bindEvent_(this.warningNavRight_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavRight);
-  Blockly.bindEvent_(this.errorNavLeft_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavLeft);
-  Blockly.bindEvent_(this.errorNavRight_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavRight);
+  Blockly.bindEvent_(this.warningNavPrevious_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavPrevious);
+  Blockly.bindEvent_(this.warningNavNext_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavNext);
+  Blockly.bindEvent_(this.errorNavPrevious_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavPrevious);
+  Blockly.bindEvent_(this.errorNavNext_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavNext);
 
   // We stop propagating the mousedown event so that Blockly doesn't prevent click events in Firefox, which breaks
   // the click event handler above.
   Blockly.bindEvent_(this.warningToggleGroup_, 'mousedown', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.warningNavLeft_, 'mousedown', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.warningNavRight_, 'mousedown', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.errorNavLeft_, 'mousedown', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.errorNavRight_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavPrevious_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavPrevious_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
 
   // Stopping propagation of the mousedown event breaks touch events on tablets. We register here for touchend on the
   // toggle button so that we can simulate a click event.
   Blockly.bindEvent_(this.warningToggleGroup_, 'touchend', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
-  Blockly.bindEvent_(this.warningNavLeft_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.warningNavRight_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.errorNavLeft_, 'touchend', this, function(e) { e.stopPropagation() });
-  Blockly.bindEvent_(this.errorNavRight_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
 };
 
 /**
@@ -199,9 +199,9 @@ Blockly.WarningIndicator.prototype.dispose = function() {
 
   this.warningToggle_ = null;
   this.warningToggleText_ = null;
-  this.warningNavLeft_ = null;
+  this.warningNavPrevious_ = null;
   this.warningNavLeftText_ = null;
-  this.warningNavRight_ = null;
+  this.warningNavNext_ = null;
   this.warningNavRightText_ = null;
 
 };
@@ -258,17 +258,17 @@ Blockly.WarningIndicator.prototype.onclickWarningToggle = function() {
   window.parent.BlocklyPanel_callToggleWarning();
 }
 
-Blockly.WarningIndicator.prototype.onclickWarningNavLeft = function() {
-  this.workspace_.getWarningHandler().warningNavLeft();
+Blockly.WarningIndicator.prototype.onclickWarningNavPrevious = function() {
+  this.workspace_.getWarningHandler().warningNavPrevious();
 }
-Blockly.WarningIndicator.prototype.onclickWarningNavRight = function() {
-  this.workspace_.getWarningHandler().warningNavRight();
+Blockly.WarningIndicator.prototype.onclickWarningNavNext = function() {
+  this.workspace_.getWarningHandler().warningNavNext();
 }
 
 
-Blockly.WarningIndicator.prototype.onclickErrorNavLeft = function() {
-  this.workspace_.getWarningHandler().errorNavLeft();
+Blockly.WarningIndicator.prototype.onclickErrorNavPrevious = function() {
+  this.workspace_.getWarningHandler().errorNavPrevious();
 }
-Blockly.WarningIndicator.prototype.onclickErrorNavRight = function() {
-  this.workspace_.getWarningHandler().errorNavRight();
+Blockly.WarningIndicator.prototype.onclickErrorNavNext = function() {
+  this.workspace_.getWarningHandler().errorNavNext();
 }

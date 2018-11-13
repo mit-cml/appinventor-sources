@@ -111,7 +111,7 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
   }
 };
 
-Blockly.WarningHandler.prototype.warningNavLeft = function() {
+Blockly.WarningHandler.prototype.warningNavPrevious = function() {
   var k = Object.keys(this.warningIdHash);
   if (this.currentWarning > 0) {
     this.currentWarning--;
@@ -119,7 +119,7 @@ Blockly.WarningHandler.prototype.warningNavLeft = function() {
   this.workspace.centerOnBlock(k[this.currentWarning]);
 };
 
-Blockly.WarningHandler.prototype.warningNavRight = function() {
+Blockly.WarningHandler.prototype.warningNavNext = function() {
   var k = Object.keys(this.warningIdHash);
   if (this.currentWarning < k.length - 1) {
     this.currentWarning++;
@@ -128,7 +128,7 @@ Blockly.WarningHandler.prototype.warningNavRight = function() {
 };
 
 
-Blockly.WarningHandler.prototype.errorNavLeft = function() {
+Blockly.WarningHandler.prototype.errorNavPrevious = function() {
   var k = Object.keys(this.errorIdHash);
   if (this.currentError > 0) {
     this.currentError--;
@@ -136,7 +136,7 @@ Blockly.WarningHandler.prototype.errorNavLeft = function() {
   this.workspace.centerOnBlock(k[this.currentError]);
 };
 
-Blockly.WarningHandler.prototype.errorNavRight = function() {
+Blockly.WarningHandler.prototype.errorNavNext = function() {
   var k = Object.keys(this.errorIdHash);
   if (this.currentError < k.length - 1) {
     this.currentError++;
