@@ -1075,6 +1075,7 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
  * @param {?string} id ID of block center on.
  * @public
  */
+// TODO: This is code from a later version of Blockly. Remove on next Blockly update.
 Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
   if (!this.scrollbar) {
     console.warn('Tried to scroll a non-scrollable workspace.');
