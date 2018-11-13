@@ -958,7 +958,7 @@ public final class Compiler {
 
     // Sign the apk file
     out.println("________Signing the apk file");
-    if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
+    if (!compiler.runApkSigner(apkAbsolutePath, keystoreFilePath)) {
       return false;
     }
 
