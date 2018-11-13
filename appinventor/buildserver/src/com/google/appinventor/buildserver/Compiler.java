@@ -146,6 +146,8 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
+  private static final String APKSIGNER_JAR =
+      RUNTIME_FILES_DIR + "apksigner.jar";
 
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
