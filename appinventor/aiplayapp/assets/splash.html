@@ -85,7 +85,7 @@
                              generation = parseInt(generation);
                              localStorage.setItem("sgen", sgen);
                              if (generation >= sgen && inhibit == "true") {
-                                 setTimeout(done, 3000);
+                                 setTimeout(done, 2000);
                              }
                          }
                      }
@@ -100,8 +100,11 @@
         <center>
             <h1>Welcome to MIT App Inventor!</h1>
         </center>
-        <p>Welcome to the MIT App Inventor Companion Application. You use this application in conjunction with
-            the MIT App Inventor application authoring system. You can learn more about it at http://appinventor.mit.edu.
+        <p>
+          This app is the MIT App Inventor Companion. It is designed
+          to be used with the MIT App Inventor online app development
+          environment. You can learn more at
+          http://appinventor.mit.edu.
         </p>
         <div id="version">
         </div>
@@ -119,11 +122,13 @@
         <div id="cbutton">
             <div id="again" style="display:none;">
                 <p>
-                    Check the box below and we will only show you this screen for a few seconds before
-                    automatically closing it. If important information displayed here changes we will
-                    not automatically close.
+                    Not interested in seeing these messages? Check the box
+                    below, and they will only display for a few seconds,
+                    unless there are important changes.
                 </p>
-                <p>Check this box for automatic closing: &nbsp;<input type="checkbox" id="checkbox"></p>
+                <p>
+                    Display messages for a short time:&nbsp;<input type="checkbox" id="checkbox">
+                </p>
             </div>
             <button onclick="done();">Continue</button>
         </div>
