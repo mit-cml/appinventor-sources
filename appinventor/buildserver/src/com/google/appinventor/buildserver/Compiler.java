@@ -950,15 +950,15 @@ public final class Compiler {
       reporter.report(95);
     }
 
-    // Sign the apk file
-    out.println("________Signing the apk file");
-    if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
-      return false;
-    }
-
     // ZipAlign the apk file
     out.println("________ZipAligning the apk file");
     if (!compiler.runZipAlign(apkAbsolutePath, tmpDir)) {
+      return false;
+    }
+
+    // Sign the apk file
+    out.println("________Signing the apk file");
+    if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
       return false;
     }
 
@@ -1250,47 +1250,6 @@ public final class Compiler {
     return true;
   }
 
-  private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
-    // TODO(user): maybe make a command line flag for the jarsigner location
-    String javaHome = System.getProperty("java.home");
-    // This works on Mac OS X.
-    File jarsignerFile = new File(javaHome + SLASH + "bin" +
-        SLASH + "jarsigner");
-    if (!jarsignerFile.exists()) {
-      // This works when a JDK is installed with the JRE.
-      jarsignerFile = new File(javaHome + SLASH + ".." + SLASH + "bin" +
-          SLASH + "jarsigner");
-      if (System.getProperty("os.name").startsWith("Windows")) {
-        jarsignerFile = new File(javaHome + SLASH + ".." + SLASH + "bin" +
-            SLASH + "jarsigner.exe");
-      }
-      if (!jarsignerFile.exists()) {
-        LOG.warning("YAIL compiler - could not find jarsigner.");
-        err.println("YAIL compiler - could not find jarsigner.");
-        userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
-        return false;
-      }
-    }
-
-    String[] jarsignerCommandLine = {
-        jarsignerFile.getAbsolutePath(),
-        "-digestalg", "SHA1",
-        "-sigalg", "MD5withRSA",
-        "-keystore", keystoreAbsolutePath,
-        "-storepass", "android",
-        apkAbsolutePath,
-        "AndroidKey"
-    };
-    if (!Execution.execute(null, jarsignerCommandLine, System.out, System.err)) {
-      LOG.warning("YAIL compiler - jarsigner execution failed.");
-      err.println("YAIL compiler - jarsigner execution failed.");
-      userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
-      return false;
-    }
-
-    return true;
-  }
-
   private boolean runZipAlign(String apkAbsolutePath, File tmpDir) {
     // TODO(user): add zipalign tool appinventor->lib->android->tools->linux and windows
     // Need to make sure assets directory exists otherwise zipalign will fail.
@@ -1311,7 +1270,7 @@ public final class Compiler {
     }
     // TODO: create tmp file for zipaling result
     String zipAlignedPath = tmpDir.getAbsolutePath() + SLASH + "zipaligned.apk";
-    // zipalign -f -v 4 infile.zip outfile.zip
+    // zipalign -f 4 infile.zip outfile.zip
     String[] zipAlignCommandLine = {
         getResource(zipAlignTool),
         "-f",
@@ -1338,6 +1297,38 @@ public final class Compiler {
         ((System.currentTimeMillis() - startZipAlign) / 1000.0) + " seconds";
     out.println(zipALignTimeMessage);
     LOG.info(zipALignTimeMessage);
+    return true;
+  }
+
+  private boolean runApkSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
+    int mx = childProcessRamMb - 200;
+    /*
+      apksigner sign\
+      --ks <keystore file>\
+      --ks-key-alias AndroidKey\
+      --ks-pass pass:android\
+      <APK>
+    */
+    String[] apksignerCommandLine = {
+      System.getProperty("java.home") + "/bin/java", "-jar",
+      "-mx" + mx + "M",
+      getResource(APKSIGNER_JAR), "sign",
+      "-ks", keystoreAbsolutePath,
+      "-ks-key-alias", "AndroidKey",
+      "-ks-pass", "pass:android",
+      apkAbsolutePath
+    };
+
+    long startApkSigner = System.currentTimeMillis();
+    if (!Execution.execute(null, apksignerCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - apksigner execution failed.");
+      err.println("YAIL compiler - apksigner execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "APKSIGNER"));
+      return false;
+    }
+    String apkSignerTimeMessage = "APKSIGNER time: " + ((System.currentTimeMillis() - startApkSigner) / 1000.0) + " seconds";
+    out.println(apkSignerTimeMessage);
+    LOG.info(apkSignerTimeMessage);
     return true;
   }
 

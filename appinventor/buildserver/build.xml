@@ -102,6 +102,7 @@
     <copy toFile="${classes.files.dir}/support-v4.aar" file="${lib.dir}/android/support/support-v4-22.2.1.aar" />
     <copy toFile="${classes.files.dir}/support-v4.jar" file="${lib.dir}/android/support/support-v4-22.2.1.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
+    <copy toFile="${classes.files.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
