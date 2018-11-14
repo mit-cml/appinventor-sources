@@ -1091,7 +1091,16 @@ public class Form extends AppInventorCompatActivity
     // | ---------------------- |
     // --------------------------
 
-    frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
+    if (scrollable) {
+      frameLayout = new ScrollView(this);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        // Nougat changes how ScrollView handles its content size. Here we force it to fill the viewport
+        // in order to preserve the layout of apps developed prior to N that rely on the old behavior.
+        ((ScrollView) frameLayout).setFillViewport(true);
+      }
+    } else {
+      frameLayout = new FrameLayout(this);
+    }
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
