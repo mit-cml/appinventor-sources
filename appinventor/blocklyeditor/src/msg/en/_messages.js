@@ -91,6 +91,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
     Blockly.Msg.DISABLE_ALL_BLOCKS = 'Disable All Blocks';
     Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
+    Blockly.Msg.HIDE_ALL_COMMENTS = 'Hide All Comments';
+    Blockly.Msg.SHOW_ALL_COMMENTS = 'Show All Comments';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
