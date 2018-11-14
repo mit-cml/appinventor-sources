@@ -6,7 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -14,7 +17,11 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.*;
+import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
+import com.google.appinventor.components.runtime.util.KitkatUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.view.MotionEvent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -431,8 +438,15 @@ public abstract class ButtonBase extends AndroidViewComponent
       default:
         throw new IllegalArgumentException();
     }
+    int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
+    int[] colors = new int[] { Component.COLOR_BLUE }; // sets the ripple color to blue
+
+    ColorStateList colorStateList = new ColorStateList(states, colors);
+    RippleDrawable ripBK = new RippleDrawable(colorStateList, drawable, drawable);
+
     // Set drawable to the background of the button.
-    view.setBackgroundDrawable(drawable);
+//    view.setBackgroundDrawable(drawable);
+    view.setBackgroundDrawable(ripBK);
     view.invalidate();
   }
 
