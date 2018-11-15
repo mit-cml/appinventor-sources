@@ -168,7 +168,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
       if (me.getAction() == MotionEvent.ACTION_DOWN) {
         //button pressed, provide visual feedback AND return false
-        if (ShowFeedback() && AppInventorCompatActivity.isClassicMode()) {
+        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
           view.getBackground().setAlpha(70); // translucent
           view.invalidate();
         }
@@ -176,7 +176,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       } else if (me.getAction() == MotionEvent.ACTION_UP ||
               me.getAction() == MotionEvent.ACTION_CANCEL) {
         //button released, set button back to normal AND return false
-        if (ShowFeedback() && AppInventorCompatActivity.isClassicMode()) {
+        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
           view.getBackground().setAlpha(255); // opaque
           view.invalidate();
         }
