@@ -6,10 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -170,7 +168,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
       if (me.getAction() == MotionEvent.ACTION_DOWN) {
         //button pressed, provide visual feedback AND return false
-        if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (ShowFeedback() && AppInventorCompatActivity.isClassicMode()) {
           view.getBackground().setAlpha(70); // translucent
           view.invalidate();
         }
@@ -178,7 +176,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       } else if (me.getAction() == MotionEvent.ACTION_UP ||
               me.getAction() == MotionEvent.ACTION_CANCEL) {
         //button released, set button back to normal AND return false
-        if (ShowFeedback() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (ShowFeedback() && AppInventorCompatActivity.isClassicMode()) {
           view.getBackground().setAlpha(255); // opaque
           view.invalidate();
         }
@@ -418,12 +416,20 @@ public abstract class ButtonBase extends AndroidViewComponent
     }
   }
 
+  private ColorStateList createRippleState () {
+
+    int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
+    int enabled_color = defaultColorStateList.getColorForState(view.getDrawableState(), android.R.attr.state_enabled);
+    int[] colors = new int[] { Color.argb(70, Color.red(enabled_color), Color.green(enabled_color),
+            Color.blue(enabled_color)) };
+
+    return new ColorStateList(states, colors);
+  }
+
   // Throw IllegalArgumentException if shape has illegal value.
   private void setShape() {
     ShapeDrawable drawable = new ShapeDrawable();
-    // Set color of drawable.
-    drawable.getPaint().setColor((backgroundColor == Component.COLOR_DEFAULT)
-                                 ? SHAPED_DEFAULT_BACKGROUND_COLOR : backgroundColor);
+
     // Set shape of drawable.
     switch (shape) {
       case Component.BUTTON_SHAPE_ROUNDED:
@@ -438,15 +444,17 @@ public abstract class ButtonBase extends AndroidViewComponent
       default:
         throw new IllegalArgumentException();
     }
-    int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
-    int[] colors = new int[] { Component.COLOR_BLUE }; // sets the ripple color to blue
 
-    ColorStateList colorStateList = new ColorStateList(states, colors);
-    RippleDrawable ripBK = new RippleDrawable(colorStateList, drawable, drawable);
+    // Set drawable to the background of the button.ß
+    if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
+    } else ViewUtil.setBackgroundDrawable(view, drawable);
 
-    // Set drawable to the background of the button.
-//    view.setBackgroundDrawable(drawable);
-    view.setBackgroundDrawable(ripBK);
+    if (backgroundColor == Component.COLOR_NONE)
+      view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
+    else
+      view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
+
     view.invalidate();
   }
 
