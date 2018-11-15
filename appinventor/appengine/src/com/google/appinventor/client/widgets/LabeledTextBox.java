@@ -38,6 +38,7 @@ public class LabeledTextBox extends Composite {
     panel.add(label);
     panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);
     textbox = new TextBox();
+    textbox.setStylePrimaryName("ode-LabeledTextBox");
     textbox.setWidth("100%");
     panel.add(textbox);
     panel.setCellWidth(label, "40%");
@@ -62,6 +63,7 @@ public class LabeledTextBox extends Composite {
     panel.add(label);
     panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);
     textbox = new TextBox();
+    textbox.setStylePrimaryName("ode-LabeledTextBox");
     defaultTextBoxColor = textbox.getElement().getStyle().getBorderColor();
     textbox.setWidth("100%");
     panel.add(textbox);
