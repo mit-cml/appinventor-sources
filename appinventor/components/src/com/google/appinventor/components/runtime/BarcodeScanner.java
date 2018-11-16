@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -105,10 +105,8 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
                                BarcodeScanner.this.havePermission = true;
                                DoScan();
                              } else {
-                               BarcodeScanner.this
-                                 .container.$form()
-                                 .dispatchErrorOccurredEvent(BarcodeScanner.this, "BarcodeScanner",
-                                                             ErrorMessages.ERROR_NO_CAMERA_PERMISSION, "");
+                               form.dispatchPermissionDeniedEvent(BarcodeScanner.this, "DoScan",
+                                   Manifest.permission.CAMERA);
                              }
                            }
                          });

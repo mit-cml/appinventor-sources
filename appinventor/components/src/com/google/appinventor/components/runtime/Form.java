@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -21,6 +22,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -53,6 +55,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
@@ -370,6 +373,12 @@ public class Form extends AppInventorCompatActivity
             } else {
               Log.i(LOG_TAG, "WRITE_EXTERNAL_STORAGE Permission denied by user");
               onCreateFinish2();
+              androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  PermissionDenied(Form.this, "Initialize", Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
+              });
             }
           }
         });
@@ -896,6 +905,37 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  /**
+   * Schedules a run of the PermissionDenied event handler for after the current stack of blocks finishes executing
+   * on the UI thread.
+   *
+   * @param component The component that needs the denied permission.
+   * @param functionName The function that triggers the denied permission.
+   * @param exception The PermissionDenied exception
+   */
+  public void dispatchPermissionDeniedEvent(final Component component, final String functionName,
+      final PermissionException exception) {
+    exception.printStackTrace();
+    dispatchPermissionDeniedEvent(component, functionName, exception.getPermissionNeeded());
+  }
+
+  /**
+   * Schedules a run of the PermissionDenied event handler for after the current stack of blocks finishes executing
+   * on the UI thread.
+   *
+   * @param component The component that needs the denied permission.
+   * @param functionName The function that triggers the denied permission.
+   * @param permissionName The name of the needed permission.
+   */
+  public void dispatchPermissionDeniedEvent(final Component component, final String functionName,
+      final String permissionName) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        PermissionDenied(component, functionName, permissionName);
+      }
+    });
+  }
 
   public void dispatchErrorOccurredEvent(final Component component, final String functionName,
       final int errorNumber, final Object... messageArgs) {
@@ -939,6 +979,60 @@ public class Form extends AppInventorCompatActivity
     Log.d("FORM_RUNTIME_ERROR", "errorNumber is " + errorNumber);
     Log.d("FORM_RUNTIME_ERROR", "message is " + message);
     dispatchErrorOccurredEvent((Component) activeForm, functionName, errorNumber, message);
+  }
+
+  /**
+   * Event to handle when the app user has denied a needed permission.
+   *
+   * @param component The component that needs the denied permission.
+   * @param functionName The property or method of the component that needs the denied permission.
+   * @param permissionName The name of the permission that has been denied by the user.
+   */
+  @SimpleEvent
+  public void PermissionDenied(Component component, String functionName, String permissionName) {
+    if (permissionName.startsWith("android.permission.")) {
+      // Forward compatibility with iOS so that we don't have to pass around Android-specific names
+      permissionName = permissionName.replace("android.permission.", "");
+    }
+    if (!EventDispatcher.dispatchEvent(this, "PermissionDenied", component, functionName, permissionName)) {
+      dispatchErrorOccurredEvent(component, functionName, ErrorMessages.ERROR_PERMISSION_DENIED, permissionName);
+    }
+  }
+
+  /**
+   * Event to handle when the app user has granted a needed permission. This event is only run when permission is
+   * granted in response to the AskForPermission method.
+   *
+   * @param permissionName The name of the permission that was granted by the user.
+   */
+  @SimpleEvent
+  public void PermissionGranted(String permissionName) {
+    if (permissionName.startsWith("android.permission.")) {
+      // Forward compatibility with iOS so that we don't have to pass around Android-specific names
+      permissionName = permissionName.replace("android.permission.", "");
+    }
+    EventDispatcher.dispatchEvent(this, "PermissionGranted", permissionName);
+  }
+
+  /**
+   * Ask the user to grant access to a dangerous permission.
+   * @param permissionName The name of the permission to request from the user.
+   */
+  @SimpleFunction
+  public void AskForPermission(String permissionName) {
+    if (!permissionName.contains(".")) {
+      permissionName = "android.permission." + permissionName;
+    }
+    askPermission(permissionName, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          PermissionGranted(permission);
+        } else {
+          PermissionDenied(Form.this, "RequestPermission", permission);
+        }
+      }
+    });
   }
 
   /**
@@ -2313,6 +2407,29 @@ public class Form extends AppInventorCompatActivity
 
   // Permission Handling Code
 
+  /**
+   * Test whether the permission is denied by the user.
+   *
+   * @param permission The name of the permission to test.
+   * @return true if the permission has been denied, otherwise false.
+   */
+  public boolean isDeniedPermission(String permission) {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED;
+  }
+
+  /**
+   * Test whether the permission is denied by the user and throws a PermissionException if it has.
+   *
+   * @param permission The name of the permission to assert.
+   * @throws PermissionException if the permission is denied
+   */
+  public void assertPermission(String permission) {
+    if (isDeniedPermission(permission)) {
+      throw new PermissionException(permission);
+    }
+  }
+
   public void askPermission(final String permission, final PermissionResultHandler responseRequestor) {
     final Form form = this;
     if (ContextCompat.checkSelfPermission(form, permission) ==
@@ -2354,6 +2471,34 @@ public class Form extends AppInventorCompatActivity
         " requestCode = " + requestCode);
     }
     permissionHandlers.remove(requestCode);
+  }
+
+  /**
+   * Gets the path to an asset.
+   *
+   * @param asset The filename of an application asset
+   * @return A file: URI to the asset
+   */
+  public String getAssetPath(String asset) {
+    return ASSETS_PREFIX + asset;
+  }
+
+  /**
+   * Opens an application asset.
+   *
+   * @param asset The filename of an application asset
+   * @return An open InputStream to the asset
+   * @throws IOException if the asset cannot be opened, e.g., if it is not bundled in the app
+   */
+  @SuppressWarnings({"WeakerAccess"})  // May be called by extensions
+  public InputStream openAsset(String asset) throws IOException {
+    String path = getAssetPath(asset);
+    if (path.startsWith(ASSETS_PREFIX)) {
+      final AssetManager am = getAssets();
+      return am.open(path.substring(ASSETS_PREFIX.length()));
+    } else {
+      return FileUtil.openFile(URI.create(path));
+    }
   }
 
   /**

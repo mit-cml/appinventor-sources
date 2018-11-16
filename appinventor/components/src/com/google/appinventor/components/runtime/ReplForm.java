@@ -335,6 +335,11 @@ public class ReplForm extends Form {
   }
 
   @Override
+  public String getAssetPath(String asset) {
+    return REPL_ASSET_DIR + asset;
+  }
+
+  @Override
   public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
     // For testing extensions, we allow external = false, but still compile the assets into the
     // companion for testing. When external = true, we are assuming this is an extension loaded

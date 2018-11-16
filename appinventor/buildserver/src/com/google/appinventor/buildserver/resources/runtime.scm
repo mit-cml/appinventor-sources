@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2013 MIT, All rights reserved
+;;; Copyright 2011-2018 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
@@ -436,6 +436,27 @@
                                  (begin
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
+                                 ;; PermissionException should be caught by a permissions-aware component and
+                                 ;; handled correctly at the point it is caught. However, older extensions
+                                 ;; might not be updated yet for SDK 23's dangerous permissions model, so if
+                                 ;; an exception bubbles all the way up to here we can still catch and report
+                                 ;; it. However, the best context we have for the PermissionDenied event is
+                                 ;; that it occurred in the just-exited event handler code.
+                                 (exception com.google.appinventor.components.runtime.errors.PermissionException
+                                  (begin
+                                    (exception:printStackTrace)
+                                    ;; Test to see if the event we are handling is the
+                                    ;; PermissionDenied of the current form. If so, then we will
+                                    ;; need to avoid re-invoking PermissionDenied.
+                                    (if (and (eq? (this) componentObject)
+                                             (equal? eventName "PermissionNeeded"))
+                                        ;; Error is occurring in the PermissionDenied handler, so we
+                                        ;; use the more general exception handler to prevent going
+                                        ;; into an infinite loop.
+                                        (process-exception exception)
+                                        ((this):PermissionDenied componentObject eventName
+                                                                 (exception:getPermissionNeeded)))
+                                    #f))
                                  (exception java.lang.Throwable
                                   (begin
                                     (android-log-form (exception:getMessage))
@@ -888,6 +909,7 @@
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
 (define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
 
 (define-alias JavaCollection <java.util.Collection>)
@@ -956,10 +978,13 @@
   (let ((coerced-args (coerce-args method-name arglist typelist)))
     (let ((result
            (if (all-coercible? coerced-args)
-               (apply invoke
-                      `(,(lookup-in-current-form-environment component-name)
-                        ,method-name
-                        ,@coerced-args))
+               (try-catch
+                (apply invoke
+                       `(,(lookup-in-current-form-environment component-name)
+                         ,method-name
+                         ,@coerced-args))
+                (exception PermissionException
+                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) (lookup-in-current-form-environment component-name) method-name exception)))
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
       (sanitize-component-data result))))
@@ -1158,7 +1183,10 @@
   (let ((coerced-arg (coerce-arg property-value property-type)))
     (android-log (format #f "coerced property value was: ~A " coerced-arg))
     (if (all-coercible? (list coerced-arg))
-        (invoke comp prop-name coerced-arg)
+        (try-catch
+         (invoke comp prop-name coerced-arg)
+         (exception PermissionException
+                    (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) comp prop-name exception)))
         (generate-runtime-type-error prop-name (list property-value)))))
 
 
@@ -2617,6 +2645,11 @@ list, use the make-yail-list constructor with no arguments.
                  (try-catch
                   (list "OK"
                         (get-display-representation (force promise)))
+                  (exception PermissionException
+                             (exception:printStackTrace)
+                             (list "NOK"
+                                   (string-append "Failed due to missing permission: "
+                                                  (exception:getPermissionNeeded))))
                   (exception YailRuntimeError
                              (android-log (exception:getMessage))
                              (list "NOK"

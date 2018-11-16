@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -116,6 +116,7 @@ public final class ErrorMessages {
   public static final int ERROR_SCREEN_INVALID_ANIMATION = 905;
   public static final int ERROR_NO_FOCUSABLE_VIEW_FOUND = 906;
   public static final int ERROR_ACTIONBAR_NOT_SUPPORTED = 907;
+  public static final int ERROR_PERMISSION_DENIED = 908;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
@@ -446,6 +447,8 @@ public final class ErrorMessages {
         "No Focusable View Found");
     errorMessages.put(ERROR_ACTIONBAR_NOT_SUPPORTED,
         "ActionBar is not supported on this device.");
+    errorMessages.put(ERROR_PERMISSION_DENIED,
+        "The permission %s has been denied. Please enable it in the Settings app.");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
