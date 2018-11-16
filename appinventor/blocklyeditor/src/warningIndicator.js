@@ -143,10 +143,6 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   return this.svgGroup_;
 };
 
-Blockly.WarningIndicator.prototype.hideWarningNav = function() {
-
-}
-
 /**
  * Initialize the warning indicator.
  */
@@ -227,15 +223,18 @@ Blockly.WarningIndicator.prototype.position_ = function() {
       'translate(' + this.left_ + ',' + this.top_ + ')');
 };
 
-
 /**
  * Update the error and warning count on the indicator.
  *
  */
 Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
-//  this.errorCount_.textContent = this.workspace_.getWarningHandler().errorCount;
   this.errorCount_.textContent = this.workspace_.getWarningHandler().errorCount;
   this.warningCount_.textContent = this.workspace_.getWarningHandler().warningCount;
+}
+
+Blockly.WarningIndicator.prototype.updateCurrentWarningAndError = function(currentWarning, currentError) {
+  this.errorCount_.textContent = currentError + "/" + this.workspace_.getWarningHandler().errorCount;
+  this.warningCount_.textContent = currentWarning + "/" + this.workspace_.getWarningHandler().warningCount;
 }
 
 /**
@@ -259,16 +258,16 @@ Blockly.WarningIndicator.prototype.onclickWarningToggle = function() {
 }
 
 Blockly.WarningIndicator.prototype.onclickWarningNavPrevious = function() {
-  this.workspace_.getWarningHandler().warningNavPrevious();
+  this.workspace_.getWarningHandler().previousWarning();
 }
 Blockly.WarningIndicator.prototype.onclickWarningNavNext = function() {
-  this.workspace_.getWarningHandler().warningNavNext();
+  this.workspace_.getWarningHandler().nextWarning();
 }
 
 
 Blockly.WarningIndicator.prototype.onclickErrorNavPrevious = function() {
-  this.workspace_.getWarningHandler().errorNavPrevious();
+  this.workspace_.getWarningHandler().previousError();
 }
 Blockly.WarningIndicator.prototype.onclickErrorNavNext = function() {
-  this.workspace_.getWarningHandler().errorNavNext();
+  this.workspace_.getWarningHandler().nextError();
 }
