@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import android.Manifest;
@@ -166,8 +167,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
                     me.havePermission = true;
                     me.Start();
                   } else {
-                    form.dispatchErrorOccurredEvent(me, "SoundRecorder",
-                      ErrorMessages.ERROR_SOUND_NO_PERMISSION);
+                    form.dispatchPermissionDeniedEvent(me, "Start", Manifest.permission.RECORD_AUDIO);
                   }
                 }
               });
@@ -188,6 +188,9 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     }
     try {
       controller = new RecordingController(savedRecording);
+    } catch (PermissionException e) {
+      form.dispatchPermissionDeniedEvent(this, "Start", e);
+      return;
     } catch (Throwable t) {
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());

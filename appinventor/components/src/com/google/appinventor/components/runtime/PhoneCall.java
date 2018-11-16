@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -75,7 +75,21 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
     form.registerForOnDestroy(this);
     PhoneNumber("");
     callStateReceiver = new CallStateReceiver();
-    registerCallStateMonitor();
+  }
+
+  @SuppressWarnings({"unused"})
+  public void Initialize() {
+    form.askPermission(Manifest.permission.PROCESS_OUTGOING_CALLS, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          registerCallStateMonitor();
+        } else {
+          form.dispatchPermissionDeniedEvent(PhoneCall.this, "Initialize",
+              Manifest.permission.PROCESS_OUTGOING_CALLS);
+        }
+      }
+    });
   }
 
   /**
@@ -114,9 +128,8 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               PhoneCall.this.havePermission = true;
               PhoneCall.this.MakePhoneCall();
             } else {
-              PhoneCall.this.form
-                .dispatchErrorOccurredEvent(PhoneCall.this, "PhoneCall",
-                  ErrorMessages.ERROR_NO_CALL_PERMISSION, "");
+              form.dispatchPermissionDeniedEvent(PhoneCall.this, "MakePhoneCall",
+                  Manifest.permission.READ_EXTERNAL_STORAGE);
             }
           }
         });

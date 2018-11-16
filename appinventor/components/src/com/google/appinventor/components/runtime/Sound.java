@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 /// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -189,6 +190,8 @@ public class Sound extends AndroidNonvisibleComponent
             form.dispatchErrorOccurredEvent(this, "Source",
                 ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, sourcePath);
           }
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(this, "Source", e);
         } catch (IOException e) {
           form.dispatchErrorOccurredEvent(this, "Source",
               ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, sourcePath);

@@ -1,6 +1,6 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -120,6 +121,12 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   }
 
   private void saveSelectedImageToExternalStorage(String extension) {
+    if (container.$form().isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+      container.$form().dispatchPermissionDeniedEvent(this, "ImagePicker",
+          Manifest.permission.WRITE_EXTERNAL_STORAGE);
+      return;
+
+    }
     // clear imageFile for new save attempt
     // This will be the stored picture
     selectionSavedImage = "";

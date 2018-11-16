@@ -959,6 +959,13 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 23;
     }
 
+    if (srcCompVersion < 24) {
+      // The AskForPermissions method was added.
+      // The PermissionDenied event was added.
+      // The PermissionGranted event was added.
+      srcCompVersion = 24;
+    }
+
     return srcCompVersion;
   }
 

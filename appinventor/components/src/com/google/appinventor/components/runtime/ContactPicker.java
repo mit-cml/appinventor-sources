@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -122,10 +122,8 @@ public class ContactPicker extends Picker implements ActivityResultListener {
                              ContactPicker.this.havePermission = true;
                              ContactPicker.this.click();
                            } else {
-                             ContactPicker
-                               .this.container.$form()
-                               .dispatchErrorOccurredEvent(ContactPicker.this, "ContactPicker",
-                                                           ErrorMessages.ERROR_NO_READ_CONTACTS_PERMISSION, "");
+                             container.$form().dispatchPermissionDeniedEvent(ContactPicker.this,
+                                 "Click", Manifest.permission.READ_CONTACTS);
                            }
                          }
                        });

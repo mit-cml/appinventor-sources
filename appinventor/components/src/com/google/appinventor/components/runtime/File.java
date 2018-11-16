@@ -17,12 +17,15 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
@@ -131,6 +134,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       InputStream inputStream;
       if (fileName.startsWith("//")) {
         if (isRepl) {
+          form.assertPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
           inputStream = new FileInputStream(Environment.getExternalStorageDirectory().getPath() +
               "/AppInventor/assets/" + fileName);
         } else {
@@ -138,17 +142,22 @@ public class File extends AndroidNonvisibleComponent implements Component {
         }
       } else {
         String filepath = AbsoluteFileName(fileName);
+        if (MediaUtil.isExternalFile(filepath)) {
+          form.assertPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
         Log.d(LOG_TAG, "filepath = " + filepath);
         inputStream = new FileInputStream(filepath);
       }
 
       final InputStream asyncInputStream = inputStream;
       AsynchUtil.runAsynchronously(new Runnable() {
-          @Override
-          public void run() {
-            AsyncRead(asyncInputStream, fileName);
-          }
-        });
+        @Override
+        public void run() {
+          AsyncRead(asyncInputStream, fileName);
+        }
+      });
+    } catch (PermissionException e) {
+      form.dispatchPermissionDeniedEvent(this, "ReadFrom", e);
     } catch (FileNotFoundException e) {
       Log.e(LOG_TAG, "FileNotFoundException", e);
       form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
@@ -178,6 +187,12 @@ public class File extends AndroidNonvisibleComponent implements Component {
       return;
     }
     String filepath = AbsoluteFileName(fileName);
+    if (MediaUtil.isExternalFile(fileName)) {
+      if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        form.dispatchPermissionDeniedEvent(this, "Delete",
+            new PermissionException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+      }
+    }
     java.io.File file = new java.io.File(filepath);
     file.delete();
   }
@@ -204,6 +219,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         final String filepath = AbsoluteFileName(filename);
+        if (MediaUtil.isExternalFile(filepath)) {
+          form.assertPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
         final java.io.File file = new java.io.File(filepath);
 
         if(!file.exists()){
