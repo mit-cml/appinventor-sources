@@ -1123,5 +1123,9 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
   var scrollToCenterY = scrollToBlockY - halfViewHeight;
 
   Blockly.hideChaff();
+  var event = new AI.Events.WorkspaceMove(this.id);
   this.scrollbar.set(scrollToCenterX, scrollToCenterY);
+  event.recordNew();
+  Blockly.Events.fire(event);
+
 };

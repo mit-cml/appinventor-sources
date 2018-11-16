@@ -845,10 +845,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       var def = Blockly.Procedures.getDefinition(name, workspace);
       if (def) {
         def.select();
-        var event = new AI.Events.WorkspaceMove(workspace.id);
         workspace.centerOnBlock(def.id);
-        event.recordNew();
-        Blockly.Events.fire(event);
         workspace.getParentSvg().parentElement.focus();
       }
     };

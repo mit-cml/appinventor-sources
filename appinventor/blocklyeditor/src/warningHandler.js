@@ -149,7 +149,8 @@ Blockly.WarningHandler.prototype.nextWarning = function() {
 
 Blockly.WarningHandler.prototype.previousError = function() {
   var k = Object.keys(this.errorIdHash);
-  this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
+  if (this.currentError < k.length)
+    this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
   if (k.length > 0) {
     if (this.currentError > 0) {
       this.currentError--;
@@ -162,7 +163,8 @@ Blockly.WarningHandler.prototype.previousError = function() {
 
 Blockly.WarningHandler.prototype.nextError = function() {
   var k = Object.keys(this.errorIdHash);
-  this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
+  if (this.currentError < k.length)
+    this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
   if (k.length > 0) {
     if (this.currentError < k.length - 1) {
       this.currentError++;
