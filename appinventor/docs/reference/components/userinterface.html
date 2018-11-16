@@ -946,7 +946,7 @@ none
 
 <p>Top-level component containing all other components in the program</p>
 
-<h3>Properties</h3>
+<h3><a name="screenproperties"></a>Properties</h3>
 <dl>
   <dt><code>AboutScreen</code></dt>
   <dd>Information about the screen.  It appears when "About this Application" is selected from the system menu. Use it to tell users about your app.  In multiple screen apps, each screen has its own AboutScreen info.</dd>
@@ -1002,7 +1002,7 @@ none
   <dt><code>ShowListsAsJson</code> (designer only)</dt>
   <dd>
     If false, lists will be converted to strings using Lisp notation,
-    i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d). If true,
+    i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d)). If true,
     lists will appear as in Json or Python, e.g.  ["a", 1, "b", 2, ["c",
     "d"]].  This property appears only in Screen 1, and the value for
     Screen 1 determines the behavior for all screens. The property
@@ -1050,7 +1050,7 @@ none
   <dd>Screen width (x-size).</dd>
 </dl>
 
-<h3>Events</h3>
+<h3><a name="screenevents"></a>Events</h3>
 <dl>
   <dt><code>BackPressed()</code></dt>
   <dd>Device back button pressed.</dd>
@@ -1064,8 +1064,11 @@ none
   <dd>Screen orientation changed</dd>
 </dl>
 
-<h3>Methods</h3>
-none
+<h3><a name="screenmethods"></a>Methods</h3>
+<dl>
+  <dt><code>HideKeyboard()</code></dt>
+  <dd>Hide the onscreen soft keyboard.</dd>
+</dl>
 
 
 <h2 id="Slider">Slider</h2>
