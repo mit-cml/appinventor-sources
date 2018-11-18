@@ -116,6 +116,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  // host[:port] to use for connecting to the second build server
+  private static final Flag<String> buildServerHost2 =
+      Flag.createFlag("build2.server.host", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> appengineHost =
       Flag.createFlag("appengine.host", "");
@@ -640,7 +643,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String nonce, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target,
+    boolean secondBuildserver) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -662,6 +666,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           user.getUserEmail(),
           userId,
           projectId,
+          secondBuildserver,
           outputFileDir));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
@@ -766,20 +771,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
   private String getBuildServerUrlStr(String userName, String userId,
-                                      long projectId, String fileName)
+    long projectId, boolean secondBuildserver, String fileName)
       throws UnsupportedEncodingException, EncryptionException {
-    return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
-           + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + (sendGitVersion.get()
-               ? "&gitBuildVersion="
-                 + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
-               : "")
-           + "&callback="
-           + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
-                               + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
-                               + Security.encryptUserAndProjectId(userId, projectId)
-                               + "/" + fileName,
-                               "UTF-8");
+    return "http://" + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
+      "/buildserver/build-all-from-zip-async"
+      + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+      + (sendGitVersion.get()
+        ? "&gitBuildVersion="
+        + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
+        : "")
+      + "&callback="
+      + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
+        + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
+        + Security.encryptUserAndProjectId(userId, projectId)
+        + "/" + fileName,
+        "UTF-8");
   }
 
   private String getCurrentHost() {

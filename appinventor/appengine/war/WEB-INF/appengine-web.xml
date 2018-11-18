@@ -109,6 +109,23 @@
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
 
+    <!-- We provide below for a second buildserver. If this field is
+         non-empty then the user is presented a choice of two different
+         build servers. This feature was introduced to support building
+         against two different versions of the Android SDK. As of 8/1/2018
+         MIT is using this feature with the first buildserver building Apps
+         with a minSdk of 7 (but no targetSdk defined) to support older
+         devices. The second buildserver is configured with a minSdk of 14
+         and a targetSdk of 26 (along with the necessary component code
+         changes). This is required for new Apps submitted to the Google
+         Play Store. Having two buildservers provides us the flexibility to
+         support older devices while also ensuring that people can submit
+         MIT App Inventor created Apps to the Google Play Store.
+    -->
+
+    <!-- host[:port] to use for the second build server -->
+    <property name="build2.server.host" value="" />
+
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
          AppScale.Keep it blank when deploy on GAE -->
