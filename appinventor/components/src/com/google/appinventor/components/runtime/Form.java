@@ -60,6 +60,7 @@ import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -70,8 +71,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import org.json.JSONException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2531,7 +2530,7 @@ public class Form extends AppInventorCompatActivity
       final AssetManager am = getAssets();
       return am.open(path.substring(ASSETS_PREFIX.length()));
     } else {
-      return new FileInputStream(new File(URI.create(path)));
+      return FileUtil.openFile(URI.create(path));
     }
   }
 }
