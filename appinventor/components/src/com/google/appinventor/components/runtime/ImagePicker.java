@@ -7,11 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -33,6 +29,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**
@@ -153,8 +150,6 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   private void copyToExternalStorageAndDeleteSource(File source, String extension) {
 
     File dest = null;
-    InputStream inStream = null;
-    OutputStream outStream = null;
 
     String fullDirname = Environment.getExternalStorageDirectory() + imagePickerDirectoryName;
     File destDirectory = new File(fullDirname);
@@ -168,19 +163,8 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       // dest.deleteOnExit();
       Log.i(LOG_TAG, "saved file path is: " + selectionSavedImage);
 
-      inStream = new FileInputStream(source);
-      outStream = new FileOutputStream(dest);
+      FileUtil.copyFile(source.getAbsolutePath(), dest.getAbsolutePath());
 
-      byte[] buffer = new byte[1024];
-
-      int length;
-      // copy the file content in bytes
-      while ((length = inStream.read(buffer)) > 0){
-        outStream.write(buffer, 0, length);
-      }
-
-      inStream.close();
-      outStream.close();
       Log.i(LOG_TAG, "Image was copied to " + selectionSavedImage);
       // this can be uncommented to show the alert, but the alert
       // is pretty annoying
