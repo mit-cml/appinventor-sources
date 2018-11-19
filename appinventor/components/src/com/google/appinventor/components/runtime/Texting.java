@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -576,16 +576,8 @@ public class Texting extends AndroidNonvisibleComponent
     Log.i(TAG, "Retrieving cached messages");
     String cache = "";
     try {
-      FileInputStream fis = activity.openFileInput(CACHE_FILE);
-      byte[] bytes = new byte[8192];
-      if (fis == null) {
-        Log.e(TAG, "Null file stream returned from openFileInput");
-        return null;
-      }
-      int n = fis.read(bytes);
-      Log.i(TAG, "Read " + n + " bytes from " + CACHE_FILE);
-      cache = new String(bytes, 0, n);
-      fis.close();
+      byte[] bytes = FileUtil.readFile(CACHE_FILE);
+      cache = new String(bytes);
       activity.deleteFile(CACHE_FILE);
       messagesCached = 0;
       Log.i(TAG, "Retrieved cache " + cache);
