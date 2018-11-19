@@ -1,39 +1,31 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.ReplForm;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -133,20 +125,11 @@ public class File extends AndroidNonvisibleComponent implements Component {
     try {
       InputStream inputStream;
       if (fileName.startsWith("//")) {
-        if (isRepl) {
-          form.assertPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-          inputStream = new FileInputStream(Environment.getExternalStorageDirectory().getPath() +
-              "/AppInventor/assets/" + fileName);
-        } else {
-          inputStream = form.getAssets().open(fileName.substring(2));
-        }
+        inputStream = form.openAsset(fileName.substring(2));
       } else {
         String filepath = AbsoluteFileName(fileName);
-        if (MediaUtil.isExternalFile(filepath)) {
-          form.assertPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
         Log.d(LOG_TAG, "filepath = " + filepath);
-        inputStream = new FileInputStream(filepath);
+        inputStream = FileUtil.openFile(filepath);
       }
 
       final InputStream asyncInputStream = inputStream;
