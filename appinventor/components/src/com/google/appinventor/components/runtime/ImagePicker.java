@@ -67,6 +67,9 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   // The path to the saved image
   private String selectionSavedImage = "";
 
+  // Flag to indicate whether we have permission to write imgaes to external storage
+  private boolean havePermission = false;
+
   /**
    * Create a new ImagePicker component.
    *
@@ -88,6 +91,27 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   @Override
   protected Intent getIntent() {
     return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+  }
+
+  @Override
+  public void click() {
+    if (!havePermission) {
+      container.$form().askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+          new PermissionResultHandler() {
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (granted) {
+                havePermission = true;
+                click();
+              } else {
+                container.$form().dispatchPermissionDeniedEvent(ImagePicker.this, "Click",
+                    permission);
+              }
+            }
+          });
+      return;
+    }
+    super.click();
   }
 
   /**
