@@ -254,6 +254,8 @@
       <javac destdir="@{apt-classdir}"
              encoding="utf-8"
              sourcepath=""
+             source="7"
+             target="7"
              srcdir="${src.dir}"
              includeantruntime="false">
         <include name="**/*.java" /> <!-- include all java files -->
