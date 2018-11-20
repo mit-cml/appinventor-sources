@@ -122,34 +122,43 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "slash, it will be read from the applications private storage (for packaged " +
       "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
-    try {
-      InputStream inputStream;
-      if (fileName.startsWith("//")) {
-        inputStream = form.openAsset(fileName.substring(2));
-      } else {
-        String filepath = AbsoluteFileName(fileName);
-        Log.d(LOG_TAG, "filepath = " + filepath);
-        inputStream = FileUtil.openFile(filepath);
-      }
+    form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          try {
+            InputStream inputStream;
+            if (fileName.startsWith("//")) {
+              inputStream = form.openAsset(fileName.substring(2));
+            } else {
+              String filepath = AbsoluteFileName(fileName);
+              Log.d(LOG_TAG, "filepath = " + filepath);
+              inputStream = FileUtil.openFile(filepath);
+            }
 
-      final InputStream asyncInputStream = inputStream;
-      AsynchUtil.runAsynchronously(new Runnable() {
-        @Override
-        public void run() {
-          AsyncRead(asyncInputStream, fileName);
+            final InputStream asyncInputStream = inputStream;
+            AsynchUtil.runAsynchronously(new Runnable() {
+              @Override
+              public void run() {
+                AsyncRead(asyncInputStream, fileName);
+              }
+            });
+          } catch (PermissionException e) {
+            form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", e);
+          } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, "FileNotFoundException", e);
+            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
+          } catch (IOException e) {
+            Log.e(LOG_TAG, "IOException", e);
+            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
+          }
+        } else {
+          form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", permission);
         }
-      });
-    } catch (PermissionException e) {
-      form.dispatchPermissionDeniedEvent(this, "ReadFrom", e);
-    } catch (FileNotFoundException e) {
-      Log.e(LOG_TAG, "FileNotFoundException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "IOException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-    }
+      }
+    });
   }
 
 
@@ -163,21 +172,30 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "will delete the file /sdcard/myFile.txt. If the file does not begin with a /, then the file " +
       "located in the programs private storage will be deleted. Starting the file with // is an error " +
       "because assets files cannot be deleted.")
-  public void Delete(String fileName) {
-    if (fileName.startsWith("//")) {
-      form.dispatchErrorOccurredEvent(File.this, "DeleteFile",
-          ErrorMessages.ERROR_CANNOT_DELETE_ASSET, fileName);
-      return;
-    }
-    String filepath = AbsoluteFileName(fileName);
-    if (MediaUtil.isExternalFile(fileName)) {
-      if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-        form.dispatchPermissionDeniedEvent(this, "Delete",
-            new PermissionException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+  public void Delete(final String fileName) {
+    form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          if (fileName.startsWith("//")) {
+            form.dispatchErrorOccurredEvent(File.this, "DeleteFile",
+                ErrorMessages.ERROR_CANNOT_DELETE_ASSET, fileName);
+            return;
+          }
+          String filepath = AbsoluteFileName(fileName);
+          if (MediaUtil.isExternalFile(fileName)) {
+            if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+              form.dispatchPermissionDeniedEvent(File.this, "Delete",
+                  new PermissionException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+            }
+          }
+          java.io.File file = new java.io.File(filepath);
+          file.delete();
+        } else {
+          form.dispatchPermissionDeniedEvent(File.this, "Delete", permission);
+        }
       }
-    }
-    java.io.File file = new java.io.File(filepath);
-    file.delete();
+    });
   }
 
   /**
@@ -198,7 +216,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       }
       return;
     }
-    AsynchUtil.runAsynchronously(new Runnable() {
+    final Runnable operation = new Runnable() {
       @Override
       public void run() {
         final String filepath = AbsoluteFileName(filename);
@@ -243,6 +261,17 @@ public class File extends AndroidNonvisibleComponent implements Component {
             form.dispatchErrorOccurredEvent(File.this, "SaveFile",
                 ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
           }
+        }
+      }
+    };
+    form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          AsynchUtil.runAsynchronously(operation);
+        } else {
+          form.dispatchPermissionDeniedEvent(File.this, append ? "AppendTo" : "SaveFile",
+              permission);
         }
       }
     });
