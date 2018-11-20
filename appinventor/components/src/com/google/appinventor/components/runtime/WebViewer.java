@@ -88,6 +88,9 @@ public final class WebViewer extends AndroidViewComponent {
   // allows passing strings to javascript
   WebViewInterface wvInterface;
 
+  // Flag to mark whether we have received permission to read external storage
+  private boolean havePermission = false;
+
   /**
    * Creates a new WebViewer component.
    *
@@ -444,12 +447,22 @@ public final class WebViewer extends AndroidViewComponent {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
   }
 
-  private void loadUrl(String caller, String url) {
-    if (MediaUtil.isExternalFileUrl(url)) {
-      if (container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-        container.$form().dispatchPermissionDeniedEvent(this, caller, Manifest.permission.READ_EXTERNAL_STORAGE);
-        return;
-      }
+  private void loadUrl(final String caller, final String url) {
+    if (!havePermission && MediaUtil.isExternalFileUrl(url)) {
+      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+          new PermissionResultHandler() {
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (granted) {
+                havePermission = true;
+                webview.loadUrl(url);
+              } else {
+                container.$form().dispatchPermissionDeniedEvent(WebViewer.this, caller,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
+              }
+            }
+          });
+      return;
     }
     webview.loadUrl(url);
   }
