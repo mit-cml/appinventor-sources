@@ -20,6 +20,8 @@ import android.view.MenuItem;
 
 import android.widget.Toast;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
@@ -41,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
@@ -88,12 +91,12 @@ public class ReplForm extends Form {
   void onCreateFinish() {
     super.onCreateFinish();
 
-    if (!isEmulator()) {  // Only show REPL splash if not in emulator
-      // Hacking. Show WebView
-      Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
-      webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
-      activeForm.$context().startActivity(webviewIntent);
-    }
+    if (!isEmulator() && AppInventorFeatures.doCompanionSplashScreen())
+      {                    // Only show REPL splash if not in emulator and enabled
+        Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
+        webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
+        activeForm.$context().startActivity(webviewIntent);
+      }
   }
 
   @Override

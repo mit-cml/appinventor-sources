@@ -114,5 +114,8 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  public static boolean doCompanionSplashScreen() {
+    return false;
+  }
 
 }
