@@ -742,7 +742,9 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      block.comment.setVisible(true);
+      if (block.comment != null) {
+        block.comment.setVisible(true);
+      }
     }
     Blockly.Events.setGroup(false);
   };
@@ -755,7 +757,9 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      block.comment.setVisible(false);
+      if (block.comment != null) {
+        block.comment.setVisible(false);
+      }
     }
     Blockly.Events.setGroup(false);
   };
