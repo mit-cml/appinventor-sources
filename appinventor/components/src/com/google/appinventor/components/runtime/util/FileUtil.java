@@ -18,6 +18,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,18 +70,25 @@ public class FileUtil {
    */
   public static byte[] readFile(String inputFileName) throws IOException {
     File inputFile = new File(inputFileName);
+    // There are cases where our caller will hand us a file to read that
+    // doesn't exist and is expecting a FileNotFoundException if this is the
+    // case. So we check if the file exists and throw the exception
     if (!inputFile.isFile()) {
-      throw new YailRuntimeError("Cannot find file", "Read");
+      throw new FileNotFoundException("Cannot find file: " + inputFileName);
     }
     FileInputStream inputStream = null;
     byte[] content = null;
     try {
       inputStream = openFile(inputFileName);
-      content = new byte[(int)inputFile.length()];
-      int bytesRead = inputStream.read(content);
-      if (bytesRead != inputFile.length()) {
-        throw new YailRuntimeError("Did not read complete file!", "Read");
-      }
+      int fileLength = (int) inputFile.length();
+      content = new byte[fileLength];
+      int offset = 0;
+      int bytesRead = 0;
+      do {
+        bytesRead = inputStream.read(content, offset, fileLength-offset);
+        if (bytesRead > 0) offset += bytesRead;
+        if (offset == fileLength) break;
+      } while (bytesRead >= 0);
     } finally {
       if (inputStream != null) {
         inputStream.close();
