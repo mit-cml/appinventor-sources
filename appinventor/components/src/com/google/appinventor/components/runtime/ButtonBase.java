@@ -445,15 +445,22 @@ public abstract class ButtonBase extends AndroidViewComponent
         throw new IllegalArgumentException();
     }
 
-    // Set drawable to the background of the button.ß
+    // Set drawable to the background of the button.
     if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
-    } else ViewUtil.setBackgroundDrawable(view, drawable);
+    } else {
+      ViewUtil.setBackgroundDrawable(view, drawable);
+    }
 
-    if (backgroundColor == Component.COLOR_NONE)
+    if (backgroundColor == Component.COLOR_NONE) {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
-    else
+    }
+    else if (backgroundColor == Component.COLOR_DEFAULT) {
+      view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+    }
+    else {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
+    }
 
     view.invalidate();
   }
