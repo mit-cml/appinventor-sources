@@ -127,7 +127,8 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
 
   if (!forRepl) {
-    code.push(Blockly.Yail.getYailPrelude(packageName, formName));
+    code.push(Blockly.Yail.getYailPrelude(packageName, formName,
+      !jsonObject.Properties['Theme'] || jsonObject.Properties['Theme'] === 'Classic'));
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
@@ -189,12 +190,14 @@ Blockly.Yail.getDeepNames = function(componentJson, componentNames) {
  * @returns {String} Yail code
  * @private
 */
-Blockly.Yail.getYailPrelude = function(packageName, formName) {
+Blockly.Yail.getYailPrelude = function(packageName, formName, classicTheme) {
  return "#|\n$Source $Yail\n|#\n\n"
      + Blockly.Yail.YAIL_DEFINE_FORM
      + packageName
      + Blockly.Yail.YAIL_SPACER
      + formName
+     + Blockly.Yail.YAIL_SPACER
+     + (classicTheme ? "#t" : "#f")
      + Blockly.Yail.YAIL_CLOSE_BLOCK
      + "(require <com.google.youngandroid.runtime>)\n";
 };
