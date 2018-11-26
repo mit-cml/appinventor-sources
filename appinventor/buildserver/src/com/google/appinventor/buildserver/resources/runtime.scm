@@ -2741,3 +2741,8 @@ list, use the make-yail-list constructor with no arguments.
                  ((equal? (car sl) " ") "<space>")
                  (#t (car sl)))))
         (cons sp (clarify1 (cdr sl))))))
+
+;; Support for WebRTC communication between browser and Companion
+;; as well as learning which assets we need to load
+
+(define-alias AssetFetcher <com.google.appinventor.components.runtime.util.AssetFetcher>)

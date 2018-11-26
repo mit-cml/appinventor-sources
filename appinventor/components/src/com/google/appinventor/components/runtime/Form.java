@@ -148,7 +148,7 @@ public class Form extends AppInventorCompatActivity
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
 
-  private final Handler androidUIHandler = new Handler();
+  protected final Handler androidUIHandler = new Handler();
 
   protected String formName;
 

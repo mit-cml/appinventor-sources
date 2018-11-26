@@ -1322,6 +1322,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_OK = "OK";
     Blockly.Msg.REPL_COMPANION_VERSION_CHECK = "Companion Version Check";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = 'Your Companion App is out of date. Click "OK" to start the update. Watch your ';
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2 = 'Your Companion App is out of date. Restart the Companion and use it to scan the QRCode below in order to update';
     Blockly.Msg.REPL_EMULATORS = "emulator's";
     Blockly.Msg.REPL_DEVICES = "device's";
     Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";

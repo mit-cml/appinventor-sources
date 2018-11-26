@@ -84,6 +84,10 @@ public final class Compiler {
   // Build info constants. Used for permissions, libraries, assets and activities.
   // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
   private static final String ARMEABI_V7A_SUFFIX = "-v7a";
+  // Must match ComponentProcessor.ARM64_V8A_SUFFIX
+  private static final String ARM64_V8A_SUFFIX = "-v8a";
+  // Must match ComponentProcessor.X86_64_SUFFIX
+  private static final String X86_64_SUFFIX = "-x8a";
   // Must match Component.ASSET_DIRECTORY
   private static final String ASSET_DIRECTORY = "component";
   // Must match ComponentListGenerator.ASSETS_TARGET
@@ -113,6 +117,8 @@ public final class Compiler {
   private static final String LIBS_DIR_NAME = "libs";
   private static final String ARMEABI_DIR_NAME = "armeabi";
   private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
+  private static final String ARM64_V8A_DIR_NAME = "arm64-v8a";
+  private static final String X86_64_DIR_NAME = "x86_64";
 
   private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
@@ -1149,6 +1155,9 @@ public final class Compiler {
         apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
           "classes2.dex");
       }
+      if (nativeLibsNeeded.size() != 0) { // Need to add native libraries...
+        apkBuilder.addNativeLibraries(libsDir);
+      }
       apkBuilder.sealApk();
       return true;
     } catch (Exception e) {
@@ -1652,7 +1661,6 @@ public final class Compiler {
       appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
-    aaptPackageCommandLineArgs.add(libsDir.getAbsolutePath());
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
     libSetup();                 // Setup /tmp/lib64 on Linux
     long startAapt = System.currentTimeMillis();
@@ -1681,15 +1689,34 @@ public final class Compiler {
     libsDir = createDir(buildDir, LIBS_DIR_NAME);
     File armeabiDir = createDir(libsDir, ARMEABI_DIR_NAME);
     File armeabiV7aDir = createDir(libsDir, ARMEABI_V7A_DIR_NAME);
+    File arm64V8aDir = createDir(libsDir, ARM64_V8A_DIR_NAME);
+    File x8664Dir = createDir(libsDir, X86_64_DIR_NAME);
 
     try {
       for (String type : nativeLibsNeeded.keySet()) {
         for (String lib : nativeLibsNeeded.get(type)) {
           boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
+          boolean isV8a = lib.endsWith(ARM64_V8A_SUFFIX);
+          boolean isx8664 = lib.endsWith(X86_64_SUFFIX);
 
-          String sourceDirName = isV7a ? ARMEABI_V7A_DIR_NAME : ARMEABI_DIR_NAME;
-          File targetDir = isV7a ? armeabiV7aDir : armeabiDir;
-          lib = isV7a ? lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length()) : lib;
+          String sourceDirName;
+          File targetDir;
+          if (isV7a) {
+            sourceDirName = ARMEABI_V7A_DIR_NAME;
+            targetDir = armeabiV7aDir;
+            lib = lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length());
+          } else if (isV8a) {
+            sourceDirName = ARM64_V8A_DIR_NAME;
+            targetDir = arm64V8aDir;
+            lib = lib.substring(0, lib.length() - ARM64_V8A_SUFFIX.length());
+          } else if (isx8664) {
+            sourceDirName = X86_64_DIR_NAME;
+            targetDir = x8664Dir;
+            lib = lib.substring(0, lib.length() - X86_64_SUFFIX.length());
+          } else {
+            sourceDirName = ARMEABI_DIR_NAME;
+            targetDir = armeabiDir;
+          }
 
           String sourcePath = "";
           String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + SLASH + lib;

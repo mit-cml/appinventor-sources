@@ -154,6 +154,8 @@
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+        <!-- Native WebRTC Support -->
+        <pathelement location="${lib.dir}/webrtc/webrtc.jar" />
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
@@ -283,6 +285,7 @@
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
+          <pathelement location="${lib.dir}/webrtc/webrtc.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
           <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
           <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />

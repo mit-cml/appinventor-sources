@@ -74,6 +74,14 @@
     </copy>
     <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${classes.files.dir}/webrtc.jar"
+          file="${lib.dir}/webrtc/webrtc.jar" />
+    <copy toFile="${classes.files.dir}/armeabi-v7a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/armeabi-v7a/libjingle_peerconnection_so.so" />
+    <copy toFile="${classes.files.dir}/arm64-v8a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/arm64-v8a/libjingle_peerconnection_so.so" />
+    <copy toFile="${classes.files.dir}/x86_64/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/x86_64/libjingle_peerconnection_so.so" />
     <copy toFile="${classes.files.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
     <copy toFile="${classes.files.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
