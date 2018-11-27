@@ -6,12 +6,15 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+import com.google.gwt.i18n.client.LocaleInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -317,6 +320,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
         properties.get("iconName").asString().getString(), componentNode.toJson());
+    JSONValue translations = properties.get("translations");
+    if (translations != null) {
+      loadComponentTranslations(component, translations.asObject());
+    }
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
     findComponentEvents(component, properties.get("events").asArray());
@@ -405,6 +412,19 @@ class ComponentDatabase implements ComponentDatabaseInterface {
               method.get("description").asString().getString(),
               new Boolean(method.get("deprecated").asString().getString()),
               paramList));
+    }
+  }
+
+  private void loadComponentTranslations(ComponentDefinition component, JSONObject translations) {
+    JSONValue translationForCurrentLocale = translations.get(LocaleInfo.getCurrentLocale().getLocaleName());
+    if (translationForCurrentLocale != null) {
+      Map<String, JSONValue> sjMap = translationForCurrentLocale.asObject().getProperties();
+      Map<String, String> ssMap = new HashMap<String, String>();
+      for (Map.Entry<String, JSONValue> entry : sjMap.entrySet()) {
+        ssMap.put(entry.getKey(), entry.getValue().asString().getString());
+      }
+      BlocklyPanel.appendExtensionTranslation(component.getName(), ssMap);
+      ComponentsTranslation.extensionMap.put(component.getName(), ssMap);
     }
   }
 

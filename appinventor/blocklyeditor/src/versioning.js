@@ -781,7 +781,7 @@ Blockly.Versioning.changeEventParameterName = function(componentType, eventName,
             }
 
             // Find i18n translation of newParamName
-            var newParamTranslation = mainWorkspace.getComponentDatabase().getInternationalizedParameterName(newParamName);
+            var newParamTranslation = mainWorkspace.getComponentDatabase().getInternationalizedParameterName(block.typeName, newParamName);
 
             // Event handler block will have been automatically created with newParamTranslation
             // So need to rename all occurrences of oldParamTranslation within its body

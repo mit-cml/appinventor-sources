@@ -5,27 +5,37 @@
 
 package com.google.appinventor.components.scripts;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
-import java.io.File;
-import org.json.JSONException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
 * Tool to generate component.json for extension.
 *
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
+* @author 502470184@qq.com (ColinTree YANG)
 */
 
 public class ExternalComponentGenerator {
 
+  private static final String TRANSLATION_FILE_NAME = "translation.json";
+  private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
   private static String externalComponentsDirPath;
   private static String androidRuntimeClassDirPath;
@@ -47,8 +57,8 @@ public class ExternalComponentGenerator {
   * args[5]: the path to external componentsTemp directory
   */
   public static void main(String[] args) throws IOException, JSONException {
-    String simple_component_json = readFile(args[0], Charset.defaultCharset());
-    String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
+    String simple_component_json = readFile(args[0], DEFAULT_CHARSET);
+    String simple_component_build_info_json = readFile(args[1], DEFAULT_CHARSET);
     externalComponentsDirPath = args[2];
     androidRuntimeClassDirPath = args[3];
     buildServerClassDirPath = args[4];
@@ -105,6 +115,7 @@ public class ExternalComponentGenerator {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
       String logComponentType =  "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
+      processTranslationScript(name, entry.getValue());
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.type, info.descriptor);
@@ -131,35 +142,18 @@ public class ExternalComponentGenerator {
     String components = sb.toString();
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     new File(extensionDirPath).mkdirs();
-    FileWriter jsonWriter = null;
-    try {
-      jsonWriter = new FileWriter(extensionDirPath + File.separator + "components.json");
-      jsonWriter.write(components);
-    } catch(IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (jsonWriter != null) {
-        jsonWriter.close();
-      }
-    }
+    writeFile(extensionDirPath + File.separator + "components.json", components, DEFAULT_CHARSET);
     // Write legacy format to transition developers
-    try {
-      jsonWriter = new FileWriter(extensionDirPath + File.separator + "component.json");
-      jsonWriter.write(infos.get(0).descriptor.toString(1));
-    } catch(IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (jsonWriter != null) {
-        jsonWriter.close();
-      }
-    }
+    writeFile(extensionDirPath + File.separator + "component.json",
+      infos.get(0).descriptor.toString(1), DEFAULT_CHARSET);
   }
 
 
-  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions) throws IOException {
+  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions)
+      throws IOException, JSONException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
-    String  extensionFileDirPath = extensionDirPath + File.separator + "files";
+    String extensionFileDirPath = extensionDirPath + File.separator + "files";
     copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
@@ -179,31 +173,13 @@ public class ExternalComponentGenerator {
     if (!new File(extensionFileDirPath).mkdirs()) {
       throw new IOException("Unable to create path for component_build_info.json");
     }
-    FileWriter extensionBuildInfoFile = null;
-    try {
-      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_infos.json");
-      extensionBuildInfoFile.write(buildInfos.toString());
+    if(writeFile(extensionFileDirPath + File.separator + "component_build_infos.json",
+        buildInfos.toString(), DEFAULT_CHARSET)) {
       System.out.println("Extensions : Successfully created " + packageName + " build info file");
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (extensionBuildInfoFile != null) {
-        extensionBuildInfoFile.flush();
-        extensionBuildInfoFile.close();
-      }
     }
     // Write out legacy component_build_info.json to transition developers
-    try {
-      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
-      extensionBuildInfoFile.write(buildInfos.get(0).toString());
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (extensionBuildInfoFile != null) {
-        extensionBuildInfoFile.close();
-      }
-    }
+    writeFile(extensionFileDirPath + File.separator + "component_build_info.json",
+      buildInfos.get(0).toString(), DEFAULT_CHARSET);
   }
 
   private static void copyIcon(String packageName, String type, JSONObject componentDescriptor) throws IOException, JSONException {
@@ -228,6 +204,119 @@ public class ExternalComponentGenerator {
     } else {
       System.out.println("Extensions : Skipping missing icon " + icon);
     }
+  }
+  
+  private static void processTranslationScript(String packageName, List<ExternalComponentInfo> componentList) throws IOException, JSONException {
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File script = new File(sourceDir, TRANSLATION_FILE_NAME);
+    if (script.exists()) {
+      System.out.println("Extensions : Processing translation script");
+      String translation_script = readFile(script.getAbsolutePath(), DEFAULT_CHARSET);
+      Map<String, JSONObject> translations = TranslationTransformer.transformTranslationsMap(new JSONObject(translation_script));
+      JSONObject componentTranslations;
+      for (ExternalComponentInfo component : componentList) {
+        componentTranslations = translations.get(component.className);
+        component.descriptor.put("translations",
+          componentTranslations == null ? new JSONObject() : componentTranslations);
+      }
+    } else {
+      System.out.println("Extensions : Skipping missing translation script " + script);
+    }
+  }
+
+  private static class TranslationTransformer {
+
+    /**
+     * Converted translation.json into excepted form.
+     * 
+     * Sample json scriptObject:
+     * {
+     *   "COMPONENT-NAME": {
+     *     "LOCALE-NAME": {
+     *       "component":  "COMPONENT-NAME-TRANSLATION",
+     *       "properties": { "PROPERTY-NAME": "PROPERTY-TRANSLATION" },
+     *       "events":     { "EVENT-NAME": "EVENT-TRANSLATION" },
+     *       "methods":    { "METHOD-NAME": "METHOD-TRANSLATION" },
+     *       "params":     { "PARAM-NAME": "PARAM-TRANSLATION" }
+     *     }
+     *   }
+     * }
+     * 
+     * @param scriptObject JSONObject (componentName, JSONObject (locale, JSONObject (translationType, String|JSONObject (name, translation))))
+     * @return             HashMap (componentName, JSONObject (locale, JSONObject (name, translation)))
+     */
+    public static Map<String, JSONObject> transformTranslationsMap(JSONObject scriptObject) throws JSONException {
+      Map<String, JSONObject> rtnMap = new HashMap<String, JSONObject>();
+      Iterator<String> iterator = scriptObject.keys();
+      String componentName;
+      while (iterator.hasNext()) {
+        componentName = iterator.next();
+        rtnMap.put(componentName, transformTranslationsMapByComponent(scriptObject.getJSONObject(componentName), componentName));
+      }
+      return rtnMap;
+    }
+    
+    /**
+     * @param componentNameObject JSONObject (locale, JSONObject (translationType, String|JSONObject (name, translation)))
+     * @param componentName       The component name
+     * @return                    JSONObject (locale, JSONObject (name, translation))
+     */
+    private static JSONObject transformTranslationsMapByComponent(JSONObject componentNameObject, String componentName) throws JSONException {
+      JSONObject rtnObject = new JSONObject();
+      Iterator<String> iterator = componentNameObject.keys();
+      String locale;
+      while (iterator.hasNext()) {
+        locale = iterator.next();
+        rtnObject.put(locale, transformTranslationsMapByLocale(componentNameObject.getJSONObject(locale), componentName));
+      }
+      return rtnObject;
+    }
+
+    /**
+     * @param localeObject  JSONObject (translationType, String|JSONObject (name, translation))
+     * @param componentName The component name
+     * @return              JSONObject (name, translation)
+     */
+    private static JSONObject transformTranslationsMapByLocale(JSONObject localeObject, String componentName) throws JSONException {
+      JSONObject rtnObject = new JSONObject();
+      // component
+      if (localeObject.has("component")) {
+        rtnObject.put("COMPONENT-" + componentName, localeObject.getString("component"));
+      }
+      // help string
+      if (localeObject.has("helpString")) {
+        rtnObject.put(componentName + "-helpString", localeObject.getString("helpString"));
+      }
+      // properties
+      transformTranslationsMapByType(localeObject.getJSONObject("properties"), "PROPERTY-", rtnObject);
+      // events
+      transformTranslationsMapByType(localeObject.getJSONObject("events"), "EVENT-", rtnObject);
+      // methods
+      transformTranslationsMapByType(localeObject.getJSONObject("methods"), "METHOD-", rtnObject);
+      // params
+      transformTranslationsMapByType(localeObject.getJSONObject("params"), "PARAM-", rtnObject);
+      
+      return rtnObject;
+    }
+
+    /**
+     * @param localeObject JSONObject (name, translation)
+     * @param prefix       Prefix that added into JSONObject
+     * @param target       Target JSONObject (prefix+name, translation)
+     */
+    private static void transformTranslationsMapByType(JSONObject itemObject, String prefix, JSONObject target) throws JSONException {
+      if (itemObject == null) {
+        return;
+      }
+      Iterator<String> iterator = itemObject.keys();
+      String item;
+      while (iterator.hasNext()) {
+        item = iterator.next();
+        target.put(prefix + item, itemObject.getString(item));
+      }
+    }
+
   }
 
   private static void copyAssets(String packageName, String type, JSONObject componentDescriptor) throws IOException, JSONException {
@@ -272,15 +361,9 @@ public class ExternalComponentGenerator {
     // Create extension.properties
     StringBuilder extensionPropertiesString = new StringBuilder();
     extensionPropertiesString.append("type=external\n");
-    FileWriter extensionPropertiesFile = new FileWriter(extensionDirPath + File.separator + "extension.properties");
-    try {
-      extensionPropertiesFile.write(extensionPropertiesString.toString());
+    if (writeFile(extensionDirPath + File.separator + "extension.properties",
+        extensionPropertiesString.toString(), DEFAULT_CHARSET)) {
       System.out.println("Extensions : Successfully created " + packageName + " extension properties file");
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      extensionPropertiesFile.flush();
-      extensionPropertiesFile.close();
     }
   }
 
@@ -320,6 +403,31 @@ public class ExternalComponentGenerator {
     }
     return true;
   }
+  
+  /**
+   * Write a file and returns true if success
+   *
+   * @param path the path of the file to be read
+   * @param content thee content to write in
+   * @param encoding the encoding system
+   */
+  private static boolean writeFile(String path, String content, Charset encoding) throws IOException {
+    OutputStreamWriter osw = null;
+    boolean result = true;
+    try {
+      osw = new OutputStreamWriter(new FileOutputStream(path), encoding);
+      osw.write(content);
+    } catch (IOException e) {
+      e.printStackTrace();
+      result = false;
+    } finally {
+      if (osw != null) {
+        osw.close();
+      }
+    }
+    return result;
+  }
+ 
 
   /**
    * Copy a compiled classes related to a given extension in his package folder

@@ -83,10 +83,9 @@ Blockly.Blocks.component_event = {
     var eventType = this.getEventTypeObject();
     var componentDb = this.getTopWorkspace().getComponentDatabase();
     if (eventType) {
-      localizedEventName = componentDb.getInternationalizedEventName(eventType.name);
-    }
-    else {
-      localizedEventName = componentDb.getInternationalizedEventName(this.eventName);
+      localizedEventName = componentDb.getInternationalizedEventName(this.typeName, eventType.name);
+    } else {
+      localizedEventName = componentDb.getInternationalizedEventName(this.typeName, this.eventName);
     }
 
     this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
@@ -148,7 +147,7 @@ Blockly.Blocks.component_event = {
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
+            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(this.typeName, param.name), false, null, null, param.name), // false means not editable
                                    'VAR' + i)
                       .appendField(" ");
           }
@@ -173,7 +172,7 @@ Blockly.Blocks.component_event = {
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
+              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(this.typeName, param.name), false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
@@ -269,7 +268,7 @@ Blockly.Blocks.component_event = {
       componentDb.forEventInType(instance.typeName, function(_, eventName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instance.name + '.' +
-            componentDb.getInternationalizedEventName(eventName),
+            componentDb.getInternationalizedEventName(instance.typeName, eventName),
           mutatorAttributes: {
             component_type: instance.typeName,
             instance_name: instance.name,
@@ -311,7 +310,7 @@ Blockly.Blocks.component_event = {
       for (var x = 0; x < varList.length; ++x) {
         var found = false;
         for (var i = 0, param; param = params[i]; ++i) {
-          if (componentDb.getInternationalizedParameterName(param.name) == varList[x]) {
+          if (componentDb.getInternationalizedParameterName(this.typeName, param.name) == varList[x]) {
             found = true;
             break;
           }
@@ -402,7 +401,7 @@ Blockly.Blocks.component_method = {
     var methodTypeObject = this.getMethodTypeObject();
     var localizedMethodName;
     if (methodTypeObject) {
-      localizedMethodName = componentDb.getInternationalizedMethodName(methodTypeObject.name);
+      localizedMethodName = componentDb.getInternationalizedMethodName(this.typeName, methodTypeObject.name);
     } else {
       localizedMethodName = this.methodName;
     }
@@ -468,7 +467,7 @@ Blockly.Blocks.component_method = {
       params = methodTypeObject.parameters;
     }
     for (var i = 0, param; param = params[i]; i++) {
-      var newInput = this.appendValueInput("ARG" + i).appendField(componentDb.getInternationalizedParameterName(param.name));
+      var newInput = this.appendValueInput("ARG" + i).appendField(componentDb.getInternationalizedParameterName(this.typeName, param.name));
       newInput.setAlign(Blockly.ALIGN_RIGHT);
       var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
       newInput.connection.setCheck(blockyType);
@@ -555,7 +554,7 @@ Blockly.Blocks.component_method = {
       componentDb.forMethodInType(instance.typeName, function(_, methodName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instance.name +
-          '.' + componentDb.getInternationalizedMethodName(methodName),
+          '.' + componentDb.getInternationalizedMethodName(instance.typeName, methodName),
           mutatorAttributes: {
             component_type: instance.typeName,
             instance_name: instance.name,
@@ -570,7 +569,7 @@ Blockly.Blocks.component_method = {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL +
           componentDb.getInternationalizedComponentType(componentType) + '.' +
-          componentDb.getInternationalizedMethodName(methodName),
+          componentDb.getInternationalizedMethodName(componentType, methodName),
           mutatorAttributes: {
             component_type: componentType,
             method_name: methodName,
@@ -609,13 +608,13 @@ Blockly.Blocks.component_method = {
       for (var x = 0; x < argList.length; ++x) {
         var found = false;
         for (var i = 0, param; param = params[i]; ++i) {
-          if (componentDb.getInternationalizedParameterName(param.name) == argList[x]) {
+          if (componentDb.getInternationalizedParameterName(this.typeName, param.name) == argList[x]) {
             var input = argInputList[argList[x]];
             if (!input || !input.connection) {
               modifiedParameters = true;
               break; // invalid input or connection
             }
-            var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
+            var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type, Blockly.Blocks.Utilities.INPUT);
             input.connection.setCheck(blockyType); // correct type
             found = true;
             break;
@@ -847,7 +846,7 @@ Blockly.Blocks.component_set_get = {
     }
 
     for(var i=0;i<propertyNames.length;i++) {
-      dropDownList.push([componentDb.getInternationalizedPropertyName(propertyNames[i]), propertyNames[i]]);
+      dropDownList.push([componentDb.getInternationalizedPropertyName(this.typeName, propertyNames[i]), propertyNames[i]]);
     }
     return dropDownList;
   },
@@ -873,7 +872,7 @@ Blockly.Blocks.component_set_get = {
     function pushBlock(prefix, mode, property, typeName, instanceName) {
       tb.push({
         translatedName: prefix + instanceName + '.' +
-          componentDb.getInternationalizedPropertyName(property),
+          componentDb.getInternationalizedPropertyName(typeName, property),
         mutatorAttributes: {
           set_or_get: mode,
           component_type: typeName,
@@ -887,7 +886,7 @@ Blockly.Blocks.component_set_get = {
     function pushGenericBlock(prefix, mode, property, typeName) {
       tb.push({
         translatedName: prefix + componentDb.getInternationalizedComponentType(typeName) + '.' +
-          componentDb.getInternationalizedPropertyName(property),
+          componentDb.getInternationalizedPropertyName(typeName, property),
         mutatorAttributes: {
           set_or_get: mode,
           component_type: typeName,
