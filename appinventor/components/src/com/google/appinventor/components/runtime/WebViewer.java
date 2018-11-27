@@ -24,10 +24,7 @@ import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-
+import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -86,6 +83,8 @@ public final class WebViewer extends AndroidViewComponent {
   // self signed certificates should work.
 
   private boolean ignoreSslErrors = false;
+  
+  private boolean isRepl = false;
 
   // allows passing strings to javascript
   WebViewInterface wvInterface;
@@ -97,6 +96,10 @@ public final class WebViewer extends AndroidViewComponent {
    */
   public WebViewer(ComponentContainer container) {
     super(container);
+    
+    if(container.$form() instanceof ReplForm) {
+      isRepl = true;
+    }
 
     webview = new WebView(container.$context());
     resetWebViewClient();       // Set up the web view client
@@ -219,7 +222,7 @@ public final class WebViewer extends AndroidViewComponent {
     homeUrl = url;
     // clear the history, since changing Home is a kind of reset
     webview.clearHistory();
-    webview.loadUrl(homeUrl);
+    loadUrl(homeUrl);
   }
 
   /**
@@ -307,7 +310,7 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Loads the home URL page.  This happens automatically when " +
           "the home URL is changed.")
   public void GoHome() {
-    webview.loadUrl(homeUrl);
+    loadUrl(homeUrl);
   }
 
   /**
@@ -360,7 +363,7 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleFunction(
       description = "Load the page at the given URL.")
   public void GoToUrl(String url) {
-    webview.loadUrl(url);
+    loadUrl(url);
   }
 
   /**
@@ -488,6 +491,29 @@ public final class WebViewer extends AndroidViewComponent {
       webViewString = newString;
     }
 
+  }
+  
+  /**
+   * Fitting url for webview，support read file from assets.
+   * @param url
+   */
+  private void loadUrl(String url) {
+    if(url != null && (url = url.trim()).length() > 0) {
+      if(url.indexOf("/") < 0) {
+        url = "//" + url;
+      }
+      if(url.startsWith("//")) {
+        if(isRepl) {
+          url = "file://" + Environment.getExternalStorageDirectory().getAbsolutePath() +
+            "/AppInventor/assets" + url.substring(1);
+        }else {
+          url = "file:///android_asset" + url.substring(1);
+        }
+      }else if(url.startsWith("/")) {
+        url = "file://" + url;
+      }
+    }
+    webview.loadUrl(url);
   }
 }
 
