@@ -6345,6 +6345,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String switchToDutch();
 
+  @DefaultMessage("Deutch")
+  @Description("")
+  String switchToGerman();
+
   @DefaultMessage("Progress Bar")
   @Description("")
   String ProgressBarFor();
