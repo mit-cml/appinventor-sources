@@ -35,9 +35,6 @@ public final class OdeLog extends Composite {
     private static final OdeLog INSTANCE = new OdeLog();
   }
 
-  // Message style
-  private static final String messageStyle = "style=\"font-size:small\"";
-
   // UI elements
   private final HTML text;
 
@@ -86,7 +83,7 @@ public final class OdeLog extends Composite {
    * @return  logging availability
    */
   public static final boolean isLogAvailable() {
-    return AppInventorFeatures.hasDebuggingView();
+    return AppInventorFeatures.hasDebuggingView() && Ode.getInstance().getUser().getIsAdmin();
   }
 
   /**
@@ -173,26 +170,36 @@ public final class OdeLog extends Composite {
    * Prints a log message.
    */
   private void println(String message) {
-    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-      "<span style=\"color:green\">[INFO] </span>" + message + "</div>");
+    doPrintln("INFO", "green", message);
   }
 
   /*
    * Prints a log warning message.
    */
   private void wprintln(String message) {
-    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-        "<span style=\"color:orange\">[WARNING] </span>" + message +
-        "</div>");
-  }
+    doPrintln("WARNING", "orange", message);
+  };
 
   /*
    * Prints a log error message.
    */
   private void eprintln(String message) {
-    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-        "<span style=\"color:red\">[ERROR] </span>" + message + "</div>");
+    doPrintln("ERROR", "red", message);
   }
+
+  private native void doPrintln(String level, String color, String message)/*-{
+      var el = this.@com.google.appinventor.client.output.OdeLog::text
+          .@com.google.gwt.user.client.ui.UIObject::getElement()();
+    var div = $doc.createElement('div');
+    div.style.fontSize = 'small';
+    var span = $doc.createElement('span');
+    span.style.color = color;
+    span.appendChild($doc.createTextNode('[' + level + '] '));
+    div.appendChild(span);
+    // The better thing would be to use $doc.createTextNode, but the exception logger includes a link...
+    div.innerHTML += message;
+    el.appendChild(div);
+  }-*/;
 
   /*
    * Clears all messages.
