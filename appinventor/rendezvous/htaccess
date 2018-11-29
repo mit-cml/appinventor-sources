@@ -1,5 +1,0 @@
-Options +ExecCGI
-AddHandler fastcgi-script .fcgi
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ rendezvous.fcgi/$1 [QSA,L]

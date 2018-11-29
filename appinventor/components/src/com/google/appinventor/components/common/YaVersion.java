@@ -431,8 +431,10 @@ public class YaVersion {
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 172:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 173:
+  // - FORM_COMPONENT_VERSION was incremented to 24
 
-  public static final int YOUNG_ANDROID_VERSION = 172;
+  public static final int YOUNG_ANDROID_VERSION = 173;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -748,7 +750,11 @@ public class YaVersion {
   // - The Classic option for themes was added
   // For FORM_COMPONENT_VERSION 23:
   // - The ActionBar property was deprecated
-  public static final int FORM_COMPONENT_VERSION = 23;
+  // For FORM_COMPONENT_VERSION 24:
+  // - Added the AskForPermission method
+  // - Added the PermissionDenied event
+  // - Added the PermissionGranted event
+  public static final int FORM_COMPONENT_VERSION = 24;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -1187,6 +1193,7 @@ public class YaVersion {
   public static final String PREFERRED_COMPANION = "2.47";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.47" };
 
   // Splash Screen Values

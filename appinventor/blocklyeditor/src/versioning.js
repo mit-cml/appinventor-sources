@@ -2234,7 +2234,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 23:
     // - The ActionBar designer property was hidden and tied to the Theme property. No blocks need to be changed.
-    23: "noUpgrade"
+    23: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 24:
+    // - The AskForPermissions method, PermissionDenied event, and PermissionGranted event were added. No blocks need to be changed.
+    24: "noUpgrade"
 
 
   }, // End Screen

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -21,6 +21,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
@@ -1366,6 +1367,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     try {
       File file = FileUtil.getPictureFile("png");
       return saveFile(file, Bitmap.CompressFormat.PNG, "Save");
+    } catch (PermissionException e) {
+      container.$form().dispatchPermissionDeniedEvent(this, "Save", e);
     } catch (IOException e) {
       container.$form().dispatchErrorOccurredEvent(this, "Save",
           ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
@@ -1406,6 +1409,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     try {
       File file = FileUtil.getExternalFile(fileName);
       return saveFile(file, format, "SaveAs");
+    } catch (PermissionException e) {
+      container.$form().dispatchPermissionDeniedEvent(this, "SaveAs", e);
     } catch (IOException e) {
       container.$form().dispatchErrorOccurredEvent(this, "SaveAs",
           ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
