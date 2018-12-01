@@ -95,7 +95,11 @@ public final class SimpleComponentDescriptor {
   private MockComponent cachedMockComponent = null;
 
   // The version of the extension (meaning is defined by the extension author).
-  private int version = -1;
+  private final int version;
+
+  private final String versionName;
+
+  private final String dateBuilt;
 
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
@@ -170,6 +174,8 @@ public final class SimpleComponentDescriptor {
   public SimpleComponentDescriptor(String name,
                                    SimpleEditor editor,
                                    int version,
+                                   String versionName,
+                                   String dateBuilt,
                                    String helpString,
                                    String helpUrl,
                                    String categoryDocUrlString,
@@ -179,6 +185,8 @@ public final class SimpleComponentDescriptor {
     this.name = name;
     this.editor = editor;
     this.version = version;
+    this.versionName = versionName;
+    this.dateBuilt = dateBuilt;
     this.helpString = helpString;
     this.helpUrl = helpUrl;
     this.categoryDocUrlString = categoryDocUrlString;
@@ -281,6 +289,24 @@ public final class SimpleComponentDescriptor {
    */
   public int getVersion() {
     return version;
+  }
+
+  /**
+   * Returns the custom version name of the component, if any.
+   *
+   * @return  component version name
+   */
+  public String getVersionName() {
+    return versionName;
+  }
+
+  /**
+   * Returns the date the component was built, if any.
+   *
+   * @return  ISO 8601 formated date the component was built
+   */
+  public String getDateBuilt() {
+    return dateBuilt;
   }
 
   /**

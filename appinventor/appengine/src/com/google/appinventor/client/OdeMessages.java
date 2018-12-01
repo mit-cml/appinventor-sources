@@ -1043,6 +1043,10 @@ public interface OdeMessages extends Messages {
   @Description("Header for extension version information")
   String externalComponentVersion();
 
+  @DefaultMessage("Date Built:")
+  @Description("Header to indicate the date an extension was compiled")
+  String dateBuilt();
+
   @DefaultMessage("More information")
   @Description("Label of the link to a component's reference docs")
   String moreInformation();

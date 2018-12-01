@@ -80,6 +80,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(Boolean.toString(component.external));
     sb.append("\",\n  \"version\": \"");
     sb.append(component.getVersion());
+    if (component.getVersionName() != null && !component.getVersionName().equals("")) {
+      sb.append("\",\n  \"versionName\": \"");
+      sb.append(component.getVersionName());
+    }
+    sb.append("\",\n  \"dateBuilt\": \"");
+    sb.append(component.getDateBuilt());
     sb.append("\",\n  \"categoryString\": \"");
     sb.append(component.getCategoryString());
     sb.append("\",\n  \"helpString\": ");
