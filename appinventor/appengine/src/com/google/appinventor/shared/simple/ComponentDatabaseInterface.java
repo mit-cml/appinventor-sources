@@ -27,6 +27,8 @@ public interface ComponentDatabaseInterface {
   public static class ComponentDefinition {
     private final String name;
     private final int version;
+    private final String versionName;
+    private final String dateBuilt;
     private final String type;
     private final boolean external;
     private final String categoryString;
@@ -43,11 +45,13 @@ public interface ComponentDatabaseInterface {
     private final String iconName;
     private final String typeDescription;
 
-    public ComponentDefinition(String name, int version, String type, boolean external,
+    public ComponentDefinition(String name, int version, String versionName, String dateBuilt, String type, boolean external,
               String categoryString, String helpString, String helpUrl,
               boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
       this.name = name;
       this.version = version;
+      this.versionName = versionName;
+      this.dateBuilt = dateBuilt;
       this.type = type;
       this.external = external;
       this.categoryString = categoryString;
@@ -88,6 +92,14 @@ public interface ComponentDatabaseInterface {
 
     public int getVersion() {
       return version;
+    }
+
+    public String getVersionName() {
+      return versionName;
+    }
+
+    public String getDateBuilt() {
+      return dateBuilt;
     }
 
     public String getType() {
@@ -359,6 +371,22 @@ public interface ComponentDatabaseInterface {
    * @return  the component version number
    */
   int getComponentVersion(String componentName);
+
+  /**
+   * Returns the version name of a component.
+   *
+   * @param componentName  name of the component to query
+   * @return  the component version name, or the empty string if none is provided
+   */
+  String getComponentVersionName(String componentName);
+
+  /**
+   * Returns the build date of a component.
+   *
+   * @param componentName  mame of the component to query
+   * @return  the component build date, or the empty string if non is provided
+   */
+  String getComponentBuildDate(String componentName);
 
   /**
    * Returns the String version of a component's category.  Note that this
