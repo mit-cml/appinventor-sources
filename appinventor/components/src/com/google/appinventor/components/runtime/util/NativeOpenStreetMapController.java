@@ -329,7 +329,9 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public int getZoom() {
-    return (int) view.getZoomLevel(false);
+    // We pass pending as true here so that when a user sets ZoomLevel
+    // and then reads it back it should be reflected.
+    return (int) view.getZoomLevel(true);
   }
 
   @Override
