@@ -7,7 +7,7 @@ package com.google.appinventor.components.runtime.shadows;
 
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.EventDispatcher;
-import org.easymock.internal.AssertionErrorWrapper;
+import org.junit.Assert;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
@@ -58,6 +58,23 @@ public class ShadowEventDispatcher {
     }
     // the event didn't fire, assertion failed.
     throw new AssertionError(String.format("Component %s did not receive event %s", component, eventName));
+  }
+
+  /**
+   * Checks whether or not the given {@code eventName} has fired for {@code component}. If so, the
+   * test fails.
+   * @param component The component to check for events
+   * @param eventName An event name to check that should not have fired
+   */
+  public static void assertEventNotFired(Component component, String eventName) {
+    Set<EventWithArgs> events = firedEvents.get(component);
+    if (events != null) {
+      for (EventWithArgs e : events) {
+        if (e.eventName.equals(eventName)) {
+          Assert.fail("Expected " + eventName + " of " + component + " to not fire, but it did.");
+        }
+      }
+    }
   }
 
   public static void assertEventFiredAny(Component component, String eventName) {

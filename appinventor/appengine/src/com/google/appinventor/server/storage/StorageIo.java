@@ -684,4 +684,26 @@ public interface StorageIo {
 
   public void uploadBackpack(String backPackId, String content);
 
+  /**
+   * Store the status of a pending build. We used to poll the buildserver
+   * for the progress of a build. However that was never correct as while
+   * polling you would likely wind up talking to a different buildserver
+   * then you originally started with! So now the buildserver does a callback
+   * to the server indicating progress. Here is where we store that
+   * progress. The reason we do this in this module is because we have
+   * different versions of storageio for our three (so far) backends, the
+   * App Engine based version, the stand alone version and the "scale-able"
+   * version. Each version will likely want to store this information in
+   * a different fashion.
+   *
+   * Note: The App Engine version uses memcache and if memcache isn't
+   * available (yes, it can be down!) then we cheat and just return
+   * 50 (for 50%).
+   *
+   */
+
+  public void storeBuildStatus(String userId, long projectId, int progress);
+
+  public int getBuildStatus(String userId, long projectId);
+
 }

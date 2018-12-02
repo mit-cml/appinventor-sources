@@ -1,6 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -311,10 +310,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         return (res);
       }
       Log.d(LOG_TAG, rootDir + "/" + packageapk);
-      Intent intent = new Intent(Intent.ACTION_VIEW);
-      Uri packageuri = Uri.fromFile(new File(rootDir + "/" + packageapk));
-      intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
-      form.startActivity(intent);
+      doPackageUpdate("file:///" + rootDir + "/" + packageapk);
       res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       res.addHeader("Access-Control-Allow-Origin", "*");
       res.addHeader("Access-Control-Allow-Headers", "origin, content-type");

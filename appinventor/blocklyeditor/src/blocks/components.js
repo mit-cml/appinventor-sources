@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2016 MIT, All rights reserved
+// Copyright © 2013-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -173,7 +173,7 @@ Blockly.Blocks.component_event = {
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedPropertyName(param.name), false),
+              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
@@ -216,7 +216,7 @@ Blockly.Blocks.component_event = {
     }
   },
   helpUrl : function() {
-    var mode = this.typeName;
+    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
     return Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
   },
 
@@ -355,7 +355,7 @@ Blockly.Blocks.component_event = {
 Blockly.Blocks.component_method = {
   category : 'Component',
   helpUrl : function() {
-      var mode = this.typeName;
+      var mode = this.typeName === "Form" ? "Screen" : this.typeName;
       return Blockly.ComponentBlock.METHODS_HELPURLS[mode];
   },
 
@@ -670,9 +670,9 @@ Blockly.Blocks.component_set_get = {
   category : 'Component',
   //this.blockType = 'getter',
   helpUrl : function() {
-    var mode = this.typeName;
+    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
     return Blockly.ComponentBlock.PROPERTIES_HELPURLS[mode];
-  },  // TODO: fix
+  },
 
   mutationToDom : function() {
 

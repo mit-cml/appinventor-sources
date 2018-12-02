@@ -127,15 +127,11 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
 
   if (!forRepl) {
-    code.push(Blockly.Yail.getYailPrelude(packageName, formName));
+    code.push(Blockly.Yail.getYailPrelude(packageName, formName,
+      !jsonObject.Properties['Theme'] || jsonObject.Properties['Theme'] === 'Classic'));
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
-  
-  for (var comp in componentMap.components)
-    if (componentMap.components.hasOwnProperty(comp))
-      componentNames.push(comp);
-
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
     code.push(Blockly.Yail.blockToCode(block));
@@ -194,12 +190,14 @@ Blockly.Yail.getDeepNames = function(componentJson, componentNames) {
  * @returns {String} Yail code
  * @private
 */
-Blockly.Yail.getYailPrelude = function(packageName, formName) {
+Blockly.Yail.getYailPrelude = function(packageName, formName, classicTheme) {
  return "#|\n$Source $Yail\n|#\n\n"
      + Blockly.Yail.YAIL_DEFINE_FORM
      + packageName
      + Blockly.Yail.YAIL_SPACER
      + formName
+     + Blockly.Yail.YAIL_SPACER
+     + (classicTheme ? "#t" : "#f")
      + Blockly.Yail.YAIL_CLOSE_BLOCK
      + "(require <com.google.youngandroid.runtime>)\n";
 };
@@ -408,8 +406,12 @@ Blockly.Yail.getPropertySetterString = function(componentName, componentType, pr
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + Blockly.Yail.YAIL_QUOTE + 
     componentName + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + propertyName + 
     Blockly.Yail.YAIL_SPACER;
-  var propType = Blockly.Yail.YAIL_QUOTE +
-    componentDb.getPropertyForType(componentType, propertyName).type;
+  var propDef = componentDb.getPropertyForType(componentType, propertyName);
+  // If a designer property does not have a corresponding block property, then propDef will be
+  // undefined. In this case, we assume "any" as the type. A corresponding fix is included in
+  // ComponentProcessor to enforce that newer components/extensions always have both a designer
+  // and block definition.
+  var propType = Blockly.Yail.YAIL_QUOTE + (propDef ? propDef.type : "any");
   var value = Blockly.Yail.getPropertyValueString(propertyValue, propType);
   code = code.concat(value + Blockly.Yail.YAIL_SPACER + propType + Blockly.Yail.YAIL_CLOSE_BLOCK);
   return code;

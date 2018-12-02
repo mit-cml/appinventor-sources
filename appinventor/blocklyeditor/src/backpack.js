@@ -218,6 +218,7 @@ Blockly.Backpack.prototype.init = function() {
   Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
   Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackDoc);
   this.flyout_.init(this.workspace_);
+  this.flyout_.workspace_.isBackpack = true;
 
   // load files for sound effect
   Blockly.getMainWorkspace().loadAudio_(['assets/backpack.mp3', 'assets/backpack.ogg', 'assets/backpack.wav'], 'backpack');
@@ -368,6 +369,35 @@ Blockly.Backpack.prototype.addToBackpack = function(block, store) {
     }
   });
 
+};
+
+/**
+ * Remove the top-level blocks with the given IDs from the backpack.
+ * @param {!Array.<string>} ids The block IDs to be removed
+ */
+Blockly.Backpack.prototype.removeFromBackpack = function(ids) {
+  var p = this;
+  this.getContents(function(/** @type {string[]} */ contents) {
+    if (contents && contents.length) {
+      for (var i = 0; i < contents.length; i++) {
+        var xml = Blockly.Xml.textToDom(contents[i]);
+        var blockID = xml.firstElementChild.getAttribute("id");
+        if (ids.indexOf(blockID) >= 0) {
+          contents.splice(i, 1);
+          i--;
+        }
+      }
+      p.setContents(contents, true);
+      if (contents.length === 0) {
+        p.shrink();
+      }
+      if (p.flyout_.isVisible()) {
+        p.isAdded = true;
+        p.openBackpack();
+        p.isAdded = false;
+      }
+    }
+  });
 };
 
 Blockly.Backpack.prototype.hide = function() {
@@ -575,6 +605,7 @@ Blockly.Backpack.prototype.count = function() {
 
 /**
  * Get the contents of the Backpack.
+ * @param {function(string[])} callback The callback to asynchronously receive the backpack contents
  * @returns {string[]} Backpack contents encoded as an array of XML strings.
  */
 Blockly.Backpack.prototype.getContents = function(callback) {

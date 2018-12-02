@@ -959,6 +959,13 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 23;
     }
 
+    if (srcCompVersion < 24) {
+      // The AskForPermissions method was added.
+      // The PermissionDenied event was added.
+      // The PermissionGranted event was added.
+      srcCompVersion = 24;
+    }
+
     return srcCompVersion;
   }
 
@@ -975,6 +982,11 @@ public final class YoungAndroidFormUpgrader {
       // KeyFile, UseServiceAuthentication and ServiceAccountEmail properties
       // were added.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The LoadingDialogMessage property was added
+      // The ShowLoadingDialog property was added
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1487,7 +1499,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 6) {
+    if (srcCompVersion < 7) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1496,7 +1508,8 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
-      srcCompVersion = 6;
+      // WebViewStringChange event was added (version 7)
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1525,12 +1538,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // Version 2
       // The Markers property (blocks-only) was renamed to Features
       // Version 3
       // Block event handlers were renamed
-      srcCompVersion = 3;
+      // Version 4
+      // The Rotation property was added with default 0.0 (due north)
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

@@ -84,7 +84,7 @@ public final class Main {
                                          commandLineOptions.outputDir,
                                          commandLineOptions.isForCompanion,
                                          commandLineOptions.childProcessRamMb,
-                                         commandLineOptions.dexCacheDir);
+                                         commandLineOptions.dexCacheDir, null);
     System.exit(result.getResult());
   }
 

@@ -1,23 +1,35 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
+import android.os.Environment;
+
+import android.util.Base64;
+import android.util.Log;
+
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+
 import gnu.lists.FString;
+
 import gnu.math.IntFraction;
+
+import java.io.File;
+import java.io.FileOutputStream;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Provides utility functions to convert between Java object and JSON.
@@ -25,7 +37,10 @@ import java.util.List;
  *
  */
 public class JsonUtil {
-  
+
+  private static final String BINFILE_DIR = "/AppInventorBinaries";
+  private static final String LOG_TAG = "JsonUtil";
+
   /**
    * Prevent instantiation.
    */
@@ -216,6 +231,106 @@ public class JsonUtil {
         return getListFromJsonObject((JSONObject)value);
       }
       throw new JSONException("Invalid JSON string.");
+    }
+  }
+
+  /**
+   * Written by joymitro@gmail.com (Joydeep Mitra)
+   * This method converts a file path to a JSON representation.
+   * The code in the method was part of GetValue. For better modularity and reusability
+   * the logic is now part of this method, which can be invoked from wherever and
+   * whenever required.
+   *
+   * 07/06/2018 (jis): Currently this routine is called by the CloudDB component
+   *                   When called from GetValue, it is handed a String (the raw
+   *                   data from Jedis) to parse. When called from the
+   *                   CloudDBJedisListener it is handed an input that has
+   *                   already been converted into a List (because the
+   *                   CloudDBJedisListener is processing a list of changes,
+   *                   not just one. Rather then having two versions of
+   *                   this function, we just do the initial JSON parsing
+   *                   if we are handed a string.
+   *
+   * @param file path
+   * @return JSON representation
+   */
+  public static String getJsonRepresentationIfValueFileName(Object value){
+    try {
+      List<String> valueList;
+      if (value instanceof String) {
+        JSONArray valueJsonList = new JSONArray((String)value);
+        valueList = getStringListFromJsonArray(valueJsonList);
+      } else if (value instanceof List) {
+        valueList = (List<String>) value;
+      } else {
+        throw new YailRuntimeError("getJsonRepresentationIfValueFileName called on unknown type",
+          value.getClass().getName());
+      }
+      if (valueList.size() == 2) {
+        if (valueList.get(0).startsWith(".")) {
+          String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+          System.out.println("Filename Written: " + filename);
+          filename = filename.replace("file:/", "file:///");
+          return getJsonRepresentation(filename);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } catch(JSONException e) {
+      Log.e(LOG_TAG, "JSONException", e);
+      return null;
+    }
+  }
+
+  /**
+   * Accepts a base64 encoded string and a file extension (which must be three characters).
+   * Decodes the string into a binary and saves it to a file on external storage and returns
+   * the filename assigned.
+   *
+   * Written by Jeff Schiller (jis) for the BinFile Extension
+   *
+   * @param input Base64 input string
+   * @param fileExtension three character file extension
+   * @return the name of the created file
+   */
+  private static String writeFile(String input, String fileExtension) {
+    try {
+      if (fileExtension.length() != 3 && fileExtension.length() != 4) {
+        throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
+      }
+      byte [] content = Base64.decode(input, Base64.DEFAULT);
+      String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
+      File destDirectory = new File(fullDirName);
+      destDirectory.mkdirs();
+      File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
+      FileOutputStream outStream = new FileOutputStream(dest);
+      outStream.write(content);
+      outStream.close();
+      String retval = dest.toURI().toASCIIString();
+      trimDirectory(20, destDirectory);
+      return retval;
+    } catch (Exception e) {
+      throw new YailRuntimeError(e.getMessage(), "Write");
+    }
+  }
+
+  // keep only the last N files, where N = maxSavedFiles
+  // Written by Jeff Schiller (jis) for the BinFile Extension
+  private static void trimDirectory(int maxSavedFiles, File directory) {
+
+    File [] files = directory.listFiles();
+
+    Arrays.sort(files, new Comparator<File>(){
+      public int compare(File f1, File f2)
+      {
+        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+      } });
+
+    int excess = files.length - maxSavedFiles;
+    for (int i = 0; i < excess; i++) {
+      files[i].delete();
     }
   }
 }

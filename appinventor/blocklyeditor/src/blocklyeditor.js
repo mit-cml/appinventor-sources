@@ -107,6 +107,20 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   }
 };
 
+Blockly.Block.prototype.flyoutCustomContextMenu = function(menuOptions) {
+  // Option for the backpack.
+  if (this.workspace.isBackpack) {
+    var id = this.id;
+    var removeOption = {enabled: true};
+    removeOption.text = Blockly.Msg.REMOVE_FROM_BACKPACK;
+    var backpack = this.workspace.targetWorkspace.backpack_;
+    removeOption.callback = function() {
+      backpack.removeFromBackpack([id]);
+    };
+    menuOptions.splice(menuOptions.length - 1, 0, removeOption);
+  }
+};
+
 /* [Added by paulmw in patch 15]
    There are three ways that you can change how lexical variables
    are handled:

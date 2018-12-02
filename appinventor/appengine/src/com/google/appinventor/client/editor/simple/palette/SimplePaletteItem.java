@@ -69,13 +69,11 @@ public class SimplePaletteItem extends DragSourcePanel {
     HorizontalPanel optPanel = new HorizontalPanel();
 
     ComponentHelpWidget helpImage = new ComponentHelpWidget(scd);
-    helpImage.addStyleName("ode-SimplePalleteItem-button");
     optPanel.add(helpImage);
     optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
 
     if (scd.getExternal()) {
       ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(scd);
-      deleteImage.addStyleName("ode-SimplePalleteItem-button");
       optPanel.add(deleteImage);
       optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
     }

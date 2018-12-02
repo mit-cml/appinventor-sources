@@ -425,8 +425,16 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 22
   // For YOUNG_ANDROID_VERSION 169:
   // - NOTIFIER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 170:
+  // - MAP_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 171:
+  // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 172:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 173:
+  // - FORM_COMPONENT_VERSION was incremented to 24
 
-  public static final int YOUNG_ANDROID_VERSION = 169;
+  public static final int YOUNG_ANDROID_VERSION = 173;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -742,7 +750,11 @@ public class YaVersion {
   // - The Classic option for themes was added
   // For FORM_COMPONENT_VERSION 23:
   // - The ActionBar property was deprecated
-  public static final int FORM_COMPONENT_VERSION = 23;
+  // For FORM_COMPONENT_VERSION 24:
+  // - Added the AskForPermission method
+  // - Added the PermissionDenied event
+  // - Added the PermissionGranted event
+  public static final int FORM_COMPONENT_VERSION = 24;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -750,7 +762,10 @@ public class YaVersion {
   // - InsertRow, GetRows and GetRowsWithConditions was added.
   // - KeyFile, UseServiceAuthentication and ServiceAccountEmail
   //   were added.
-  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 3;
+  // For FUSIONTABLESCONTROL_COMPONENT_VERSION 4:
+  // - The LoadingDialogMessage property was added
+  // - The ShowLoadingDialog property was added
+  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 4;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
@@ -856,7 +871,9 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 3:
   // - GotGeoJSON was renamed to GotFeatures
   // - GeoJSONError was renamed to LoadError
-  public static final int MAP_COMPONENT_VERSION = 3;
+  // For MAP_COMPONENT_VERSION 4:
+  // - Added Rotation property
+  public static final int MAP_COMPONENT_VERSION = 4;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1130,7 +1147,9 @@ public class YaVersion {
   // - IgnoreSslError property added
   // For WEBVIEWER_COMPONENT_VERSION 6:
   // - ClearCaches method was added
-  public static final int WEBVIEWER_COMPONENT_VERSION = 6;
+  // For WEBVIEWER_COMPONENT_VERSiON 7:
+  // - Added WebViewStringChange event
+  public static final int WEBVIEWER_COMPONENT_VERSION = 7;
 
   // For LOOK_COMPONENT_VERSION 1:
   // - Initial version.
@@ -1175,10 +1194,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.46";
+  public static final String PREFERRED_COMPANION = "2.48";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.46" };
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.48" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
