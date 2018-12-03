@@ -1,26 +1,26 @@
 PODS:
-  - Alamofire (4.5.1)
+  - Alamofire (4.8.0)
   - CSLinearLayoutView (1.0)
   - GCDWebServer (3.4.2):
     - GCDWebServer/Core (= 3.4.2)
   - GCDWebServer/Core (3.4.2)
-  - JSONWebToken (1.0)
-  - SQLite.swift (0.11.0):
-    - SQLite.swift/standard (= 0.11.0)
-  - SQLite.swift/standard (0.11.0)
-  - Toast-Swift (2.0.0)
-  - ZXingObjC (3.2.0):
-    - ZXingObjC/All (= 3.2.0)
-  - ZXingObjC/All (3.2.0)
+  - KTVJSONWebToken (2.1.0)
+  - SQLite.swift (0.11.5):
+    - SQLite.swift/standard (= 0.11.5)
+  - SQLite.swift/standard (0.11.5)
+  - Toast-Swift (4.0.1)
+  - ZXingObjC (3.6.2):
+    - ZXingObjC/All (= 3.6.2)
+  - ZXingObjC/All (3.6.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.5)
+  - Alamofire (~> 4.8)
   - CSLinearLayoutView (~> 1.0)
   - GCDWebServer (~> 3.4.1)
-  - JSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `c418235`)
-  - SQLite.swift (~> 0.11.0)
-  - Toast-Swift (~> 2.0.0)
-  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `fa2f046`)
+  - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
+  - SQLite.swift (~> 0.11.5)
+  - Toast-Swift (~> 4.0.0)
+  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -31,30 +31,30 @@ SPEC REPOS:
     - Toast-Swift
 
 EXTERNAL SOURCES:
-  JSONWebToken:
-    :commit: c418235
+  KTVJSONWebToken:
+    :commit: d2e37fa
     :git: https://github.com/kreactive/JSONWebToken.git
   ZXingObjC:
-    :commit: fa2f046
+    :commit: 47704a8
     :git: https://github.com/TheLevelUp/ZXingObjC.git
 
 CHECKOUT OPTIONS:
-  JSONWebToken:
-    :commit: c418235
+  KTVJSONWebToken:
+    :commit: d2e37fa
     :git: https://github.com/kreactive/JSONWebToken.git
   ZXingObjC:
-    :commit: fa2f046
+    :commit: 47704a8
     :git: https://github.com/TheLevelUp/ZXingObjC.git
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
   CSLinearLayoutView: ce5a4b49267e0a5820203659045f42c0d1faab64
   GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
-  JSONWebToken: 521cbf0a487d1f3237f885b0a6bb6d4fc4a5fc31
-  SQLite.swift: 9a26273607d3077a2e5a8d33486e9989f8404c7d
-  Toast-Swift: 5b2f8f720f7e78e48511f693df1f9c9a6e38a25a
-  ZXingObjC: e586c17a941af870aeaf2cdd156ba628c206f54c
+  KTVJSONWebToken: c3cc06e26876d63c62a5c40c5e89939899de48cf
+  SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
+  Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
+  ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 8563302d88423a735b174317f79fbea15348b5cf
+PODFILE CHECKSUM: cab55299d0d5e18f6c2c6ca7de3e64a2e12e778b
 
 COCOAPODS: 1.5.3

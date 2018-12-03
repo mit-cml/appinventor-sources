@@ -1,5 +1,4 @@
-ZXingObjC
-=========
+# ZXingObjC
 
 ZXingObjC is a full Objective-C port of [ZXing](https://github.com/zxing/zxing) ("Zebra Crossing"), a Java barcode image processing library. It is designed to be used on both iOS devices and in Mac applications.
 
@@ -8,21 +7,22 @@ The following barcodes are currently supported for both encoding and decoding:
 * UPC-A and UPC-E
 * EAN-8 and EAN-13
 * Code 39
-* Code 93 (not implemented yet)
+* Code 93
 * Code 128
 * ITF
 * Codabar
 * RSS-14 (all variants)
 * QR Code
 * Data Matrix
+* Maxicode
 * Aztec ('beta' quality)
-* PDF 417 ('alpha' quality)
+* PDF 417 ('beta' quality)
 
-ZXingObjC currently has feature parity with ZXing version 3.0.
+ZXingObjC currently has feature parity with ZXing version 3.3.3.
 
 ## Requirements
 
-ZXingObjC requires Xcode 5, targeting either iOS 6.0 and above, or Mac OS X 10.8 Mountain Lion and above.
+ZXingObjC requires Xcode 8.3.3 and above, targeting either iOS 8.0 and above, or Mac OS X 10.8 Mountain Lion and above.
 
 ## Usage
 
@@ -37,9 +37,11 @@ ZXBitMatrix* result = [writer encode:@"A string to encode"
                               height:500
                                error:&error];
 if (result) {
-  CGImageRef image = [[ZXImage imageWithMatrix:result] cgimage];
+  CGImageRef image = CGImageRetain([[ZXImage imageWithMatrix:result] cgimage]);
 
   // This CGImageRef image can be placed in a UIImage, NSImage, or written to a file.
+  
+  CGImageRelease(image);
 } else {
   NSString *errorMessage = [error localizedDescription];
 }
@@ -78,21 +80,23 @@ if (result) {
 
 ## Installation
 
-#### CocoaPods
-
-The recommended way to install ZXingObjC is with [CocoaPods](http://cocoapods.org), a dependency mananger for Objective-C projects. After installing CocoaPods just add ZXingObjC to your Podfile:
-
-```ruby
-platform :ios, '7.0'
-pod 'ZXingObjC', '~> 3.2.0'
-```
+We highly recommend Carthage as module manager.
 
 #### Carthage
 
-Alternatively, ZXingObjC can be installed using [Carthage](https://github.com/Carthage/Carthage). After installing Carthage just add ZXingObjC to your Cartfile:
+ZXingObjC can be installed using [Carthage](https://github.com/Carthage/Carthage). After installing Carthage just add ZXingObjC to your Cartfile:
 
 ```ogdl
-github "TheLevelUp/ZXingObjC" ~> 3.2.0
+github "TheLevelUp/ZXingObjC" ~> 3.6
+```
+
+#### CocoaPods
+
+[CocoaPods](http://cocoapods.org) is a dependency manager for Swift and Objective-C Cocoa projects. After installing CocoaPods add ZXingObjC to your Podfile:
+
+```ruby
+platform :ios, '8.0'
+pod 'ZXingObjC', '~> 3.6.2'
 ```
 
 ## Examples
@@ -100,8 +104,12 @@ github "TheLevelUp/ZXingObjC" ~> 3.2.0
 ZXingObjC includes several example applications found in "examples" folder:
 
 * BarcodeScanner - An iOS application that captures video from the camera, scans for barcodes and displays results on screen.
-* BarcodeScannerOSX - An OS X application that captures video from the camera, scans for barcodes and displays results on screen.
-* QrCodeTest - A basic QR code generator that accepts input, encodes it as a QR code, and displays it on screen.
+* BarcodeScannerSwift - An iOS application that captures video from the camera, scans for barcodes and displays results on screen, completely rewritten in Swift.
+
+## Kudos
+
+- [cwalcott](https://github.com/cwalcott) initial creator of this project
+- [neacao](https://github.com/neacao) for his unparalleled support lately
 
 ## License
 

@@ -24,7 +24,7 @@ const int ZX_MAX_DEPTH = 4;
 
 @interface ZXGenericMultipleBarcodeReader ()
 
-@property (nonatomic, weak, readonly) id<ZXReader> delegate;
+@property (nonatomic, readonly) id<ZXReader> delegate;
 
 @end
 
@@ -130,7 +130,7 @@ const int ZX_MAX_DEPTH = 4;
     }
   }
 
-  ZXResult *newResult = [ZXResult resultWithText:result.text rawBytes:result.rawBytes resultPoints:newResultPoints format:result.barcodeFormat];
+  ZXResult *newResult = [ZXResult resultWithText:result.text rawBytes:result.rawBytes numBits:result.numBits resultPoints:newResultPoints format:result.barcodeFormat];
   [newResult putAllMetadata:result.resultMetadata];
   return newResult;
 }

@@ -24,11 +24,13 @@
 #if defined(ZXINGOBJC_ONED) || !defined(ZXINGOBJC_USE_SUBSPECS)
 #import "ZXCodaBarWriter.h"
 #import "ZXCode39Writer.h"
+#import "ZXCode93Writer.h"
 #import "ZXCode128Writer.h"
 #import "ZXEAN8Writer.h"
 #import "ZXEAN13Writer.h"
 #import "ZXITFWriter.h"
 #import "ZXUPCAWriter.h"
+#import "ZXUPCEWriter.h"
 #endif
 #if defined(ZXINGOBJC_DATAMATRIX) || !defined(ZXINGOBJC_USE_SUBSPECS)
 #import "ZXDataMatrixWriter.h"
@@ -66,8 +68,16 @@
       writer = [[ZXUPCAWriter alloc] init];
       break;
 
+    case kBarcodeFormatUPCE:
+      writer = [[ZXUPCEWriter alloc] init];
+      break;
+
     case kBarcodeFormatCode39:
       writer = [[ZXCode39Writer alloc] init];
+      break;
+
+    case kBarcodeFormatCode93:
+      writer = [[ZXCode93Writer alloc] init];
       break;
 
     case kBarcodeFormatCode128:

@@ -2,7 +2,7 @@
 // Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import JSONWebToken
+import KTVJSONWebToken
 import Alamofire
 
 open class FusiontablesControl: NonvisibleComponent {

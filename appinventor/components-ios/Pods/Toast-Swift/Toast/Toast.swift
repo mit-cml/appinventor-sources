@@ -2,7 +2,7 @@
 //  Toast.swift
 //  Toast-Swift
 //
-//  Copyright (c) 2015 Charles Scalesse.
+//  Copyright (c) 2015-2017 Charles Scalesse.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a
 //  copy of this software and associated documentation files (the
@@ -26,12 +26,6 @@
 import UIKit
 import ObjectiveC
 
-public enum ToastPosition {
-    case top
-    case center
-    case bottom
-}
-
 /**
  Toast is a Swift extension that adds toast notifications to the `UIView` object class.
  It is intended to be simple, lightweight, and easy to use. Most toast notifications 
@@ -47,14 +41,14 @@ public extension UIView {
     /**
      Keys used for associated objects.
      */
-    fileprivate struct ToastKeys {
-        static var Timer        = "CSToastTimerKey"
-        static var Duration     = "CSToastDurationKey"
-        static var Position     = "CSToastPositionKey"
-        static var Completion   = "CSToastCompletionKey"
-        static var ActiveToast  = "CSToastActiveToastKey"
-        static var ActivityView = "CSToastActivityViewKey"
-        static var Queue        = "CSToastQueueKey"
+    private struct ToastKeys {
+        static var timer        = "com.toast-swift.timer"
+        static var duration     = "com.toast-swift.duration"
+        static var point        = "com.toast-swift.point"
+        static var completion   = "com.toast-swift.completion"
+        static var activeToasts = "com.toast-swift.activeToasts"
+        static var activityView = "com.toast-swift.activityView"
+        static var queue        = "com.toast-swift.queue"
     }
     
     /**
@@ -62,25 +56,37 @@ public extension UIView {
      Objective-C runtime, so the (ugly) solution is to wrap them in a
      class that can be used with associated objects.
      */
-    fileprivate class ToastCompletionWrapper {
-        var completion: ((Bool) -> Void)?
+    private class ToastCompletionWrapper {
+        let completion: ((Bool) -> Void)?
         
         init(_ completion: ((Bool) -> Void)?) {
             self.completion = completion
         }
     }
     
-    fileprivate enum ToastError: Error {
-        case insufficientData
+    private enum ToastError: Error {
+        case missingParameters
     }
     
-    fileprivate var queue: NSMutableArray {
+    private var activeToasts: NSMutableArray {
         get {
-            if let queue = objc_getAssociatedObject(self, &ToastKeys.Queue) as? NSMutableArray {
+            if let activeToasts = objc_getAssociatedObject(self, &ToastKeys.activeToasts) as? NSMutableArray {
+                return activeToasts
+            } else {
+                let activeToasts = NSMutableArray()
+                objc_setAssociatedObject(self, &ToastKeys.activeToasts, activeToasts, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                return activeToasts
+            }
+        }
+    }
+    
+    private var queue: NSMutableArray {
+        get {
+            if let queue = objc_getAssociatedObject(self, &ToastKeys.queue) as? NSMutableArray {
                 return queue
             } else {
                 let queue = NSMutableArray()
-                objc_setAssociatedObject(self, &ToastKeys.Queue, queue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                objc_setAssociatedObject(self, &ToastKeys.queue, queue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
                 return queue
             }
         }
@@ -89,70 +95,7 @@ public extension UIView {
     // MARK: - Make Toast Methods
     
     /**
-     Creates and presents a new toast view with a message and displays it with the
-     default duration and position. Styled using the shared style.
-    
-     @param message The message to be displayed
-    */
-    public func makeToast(_ message: String) {
-        self.makeToast(message, duration: ToastManager.shared.duration, position: ToastManager.shared.position)
-    }
-    
-    /**
-     Creates and presents a new toast view with a message. Duration and position
-     can be set explicitly. Styled using the shared style.
-     
-     @param message The message to be displayed
-     @param duration The toast duration
-     @param position The toast's position
-     */
-    public func makeToast(_ message: String, duration: TimeInterval, position: ToastPosition) {
-        self.makeToast(message, duration: duration, position: position, style: nil)
-    }
-    
-    /**
-     Creates and presents a new toast view with a message. Duration and position
-     can be set explicitly. Styled using the shared style.
-     
-     @param message The message to be displayed
-     @param duration The toast duration
-     @param position The toast's center point
-     */
-    public func makeToast(_ message: String, duration: TimeInterval, position: CGPoint) {
-        self.makeToast(message, duration: duration, position: position, style: nil)
-    }
-    
-    /**
-     Creates and presents a new toast view with a message. Duration, position, and
-     style can be set explicitly.
-     
-     @param message The message to be displayed
-     @param duration The toast duration
-     @param position The toast's position
-     @param style The style. The shared style will be used when nil
-     */
-    public func makeToast(_ message: String, duration: TimeInterval, position: ToastPosition, style: ToastStyle?) {
-        self.makeToast(message, duration: duration, position: position, title: nil, image: nil, style: style, completion: nil)
-    }
-    
-    /**
-     Creates and presents a new toast view with a message. Duration, position, and
-     style can be set explicitly.
-     
-     @param message The message to be displayed
-     @param duration The toast duration
-     @param position The toast's center point
-     @param style The style. The shared style will be used when nil
-     */
-    public func makeToast(_ message: String, duration: TimeInterval, position: CGPoint, style: ToastStyle?) {
-        self.makeToast(message, duration: duration, position: position, title: nil, image: nil, style: style, completion: nil)
-    }
-    
-    /**
-     Creates and presents a new toast view with a message, title, and image. Duration,
-     position, and style can be set explicitly. The completion closure executes when the
-     toast completes presentation. `didTap` will be `true` if the toast view was dismissed
-     from a tap.
+     Creates and presents a new toast view.
      
      @param message The message to be displayed
      @param duration The toast duration
@@ -163,45 +106,32 @@ public extension UIView {
      @param completion The completion closure, executed after the toast view disappears.
             didTap will be `true` if the toast view was dismissed from a tap.
      */
-    public func makeToast(_ message: String?, duration: TimeInterval, position: ToastPosition, title: String?, image: UIImage?, style: ToastStyle?, completion: ((_ didTap: Bool) -> Void)?) {
-        var toastStyle = ToastManager.shared.style
-        if let style = style {
-           toastStyle = style
-        }
-        
+    public func makeToast(_ message: String?, duration: TimeInterval = ToastManager.shared.duration, position: ToastPosition = ToastManager.shared.position, title: String? = nil, image: UIImage? = nil, style: ToastStyle = ToastManager.shared.style, completion: ((_ didTap: Bool) -> Void)? = nil) {
         do {
-            let toast = try self.toastViewForMessage(message, title: title, image: image, style: toastStyle)
-            self.showToast(toast, duration: duration, position: position, completion: completion)
-        } catch ToastError.insufficientData {
+            let toast = try toastViewForMessage(message, title: title, image: image, style: style)
+            showToast(toast, duration: duration, position: position, completion: completion)
+        } catch ToastError.missingParameters {
             print("Error: message, title, and image are all nil")
         } catch {}
     }
     
     /**
-     Creates and presents a new toast view with a message, title, and image. Duration,
-     position, and style can be set explicitly. The completion closure executes when the
-     toast completes presentation. `didTap` will be `true` if the toast view was dismissed
-     from a tap.
+     Creates a new toast view and presents it at a given center point.
      
      @param message The message to be displayed
      @param duration The toast duration
-     @param position The toast's center point
+     @param point The toast's center point
      @param title The title
      @param image The image
      @param style The style. The shared style will be used when nil
      @param completion The completion closure, executed after the toast view disappears.
             didTap will be `true` if the toast view was dismissed from a tap.
      */
-    public func makeToast(_ message: String?, duration: TimeInterval, position: CGPoint, title: String?, image: UIImage?, style: ToastStyle?, completion: ((_ didTap: Bool) -> Void)?) {
-        var toastStyle = ToastManager.shared.style
-        if let style = style {
-            toastStyle = style
-        }
-        
+    public func makeToast(_ message: String?, duration: TimeInterval = ToastManager.shared.duration, point: CGPoint, title: String?, image: UIImage?, style: ToastStyle = ToastManager.shared.style, completion: ((_ didTap: Bool) -> Void)?) {
         do {
-            let toast = try self.toastViewForMessage(message, title: title, image: image, style: toastStyle)
-            self.showToast(toast, duration: duration, position: position, completion: completion)
-        } catch ToastError.insufficientData {
+            let toast = try toastViewForMessage(message, title: title, image: image, style: style)
+            showToast(toast, duration: duration, point: point, completion: completion)
+        } catch ToastError.missingParameters {
             print("Error: message, title, and image cannot all be nil")
         } catch {}
     }
@@ -209,15 +139,6 @@ public extension UIView {
     // MARK: - Show Toast Methods
     
     /**
-    Displays any view as toast using the default duration and position.
-    
-    @param toast The view to be displayed as toast
-    */
-    public func showToast(_ toast: UIView) {
-        self.showToast(toast, duration: ToastManager.shared.duration, position: ToastManager.shared.position, completion: nil)
-    }
-    
-    /**
      Displays any view as toast at a provided position and duration. The completion closure
      executes when the toast view completes. `didTap` will be `true` if the toast view was
      dismissed from a tap.
@@ -228,33 +149,91 @@ public extension UIView {
      @param completion The completion block, executed after the toast view disappears.
      didTap will be `true` if the toast view was dismissed from a tap.
      */
-    public func showToast(_ toast: UIView, duration: TimeInterval, position: ToastPosition, completion: ((_ didTap: Bool) -> Void)?) {
-        let point = self.centerPointForPosition(position, toast: toast)
-        self.showToast(toast, duration: duration, position: point, completion: completion)
+    public func showToast(_ toast: UIView, duration: TimeInterval = ToastManager.shared.duration, position: ToastPosition = ToastManager.shared.position, completion: ((_ didTap: Bool) -> Void)? = nil) {
+        let point = position.centerPoint(forToast: toast, inSuperview: self)
+        showToast(toast, duration: duration, point: point, completion: completion)
     }
     
     /**
-     Displays any view as toast at a provided position and duration. The completion closure
+     Displays any view as toast at a provided center point and duration. The completion closure
      executes when the toast view completes. `didTap` will be `true` if the toast view was
      dismissed from a tap.
      
      @param toast The view to be displayed as toast
      @param duration The notification duration
-     @param position The toast's center point
+     @param point The toast's center point
      @param completion The completion block, executed after the toast view disappears.
      didTap will be `true` if the toast view was dismissed from a tap.
      */
-    public func showToast(_ toast: UIView, duration: TimeInterval, position: CGPoint, completion: ((_ didTap: Bool) -> Void)?) {
-        objc_setAssociatedObject(toast, &ToastKeys.Completion, ToastCompletionWrapper(completion), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    public func showToast(_ toast: UIView, duration: TimeInterval = ToastManager.shared.duration, point: CGPoint, completion: ((_ didTap: Bool) -> Void)? = nil) {
+        objc_setAssociatedObject(toast, &ToastKeys.completion, ToastCompletionWrapper(completion), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
-        if let _ = objc_getAssociatedObject(self, &ToastKeys.ActiveToast) as? UIView, ToastManager.shared.queueEnabled {
-            objc_setAssociatedObject(toast, &ToastKeys.Duration, NSNumber(value: duration), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            objc_setAssociatedObject(toast, &ToastKeys.Position, NSValue(cgPoint: position), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        if ToastManager.shared.isQueueEnabled, activeToasts.count > 0 {
+            objc_setAssociatedObject(toast, &ToastKeys.duration, NSNumber(value: duration), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject(toast, &ToastKeys.point, NSValue(cgPoint: point), .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
-            self.queue.add(toast)
+            queue.add(toast)
         } else {
-            self.showToast(toast, duration: duration, position: position)
+            showToast(toast, duration: duration, point: point)
         }
+    }
+    
+    // MARK: - Hide Toast Methods
+    
+    /**
+     Hides the active toast. If there are multiple toasts active in a view, this method
+     hides the oldest toast (the first of the toasts to have been presented).
+     
+     @see `hideAllToasts()` to remove all active toasts from a view.
+     
+     @warning This method has no effect on activity toasts. Use `hideToastActivity` to
+     hide activity toasts.
+     
+    */
+    public func hideToast() {
+        guard let activeToast = activeToasts.firstObject as? UIView else { return }
+        hideToast(activeToast)
+    }
+    
+    /**
+     Hides an active toast.
+     
+     @param toast The active toast view to dismiss. Any toast that is currently being displayed
+     on the screen is considered active.
+     
+     @warning this does not clear a toast view that is currently waiting in the queue.
+     */
+    public func hideToast(_ toast: UIView) {
+        guard activeToasts.contains(toast) else { return }
+        hideToast(toast, fromTap: false)
+    }
+    
+    /**
+     Hides all toast views.
+     
+     @param includeActivity If `true`, toast activity will also be hidden. Default is `false`.
+     @param clearQueue If `true`, removes all toast views from the queue. Default is `true`.
+    */
+    public func hideAllToasts(includeActivity: Bool = false, clearQueue: Bool = true) {
+        if clearQueue {
+            clearToastQueue()
+        }
+        
+        activeToasts.compactMap { $0 as? UIView }
+                    .forEach { hideToast($0) }
+        
+        if includeActivity {
+            hideToastActivity()
+        }
+    }
+    
+    /**
+     Removes all toast views from the queue. This has no effect on toast views that are
+     active. Use `hideAllToasts(clearQueue:)` to hide the active toasts views and clear
+     the queue.
+     */
+    public func clearToastQueue() {
+        queue.removeAllObjects()
     }
     
     // MARK: - Activity Methods
@@ -273,13 +252,11 @@ public extension UIView {
      */
     public func makeToastActivity(_ position: ToastPosition) {
         // sanity
-        if let _ = objc_getAssociatedObject(self, &ToastKeys.ActivityView) as? UIView {
-            return
-        }
+        guard objc_getAssociatedObject(self, &ToastKeys.activityView) as? UIView == nil else { return }
         
-        let toast = self.createToastActivityView()
-        let point = self.centerPointForPosition(position, toast: toast)
-        self.makeToastActivity(toast, position: point)
+        let toast = createToastActivityView()
+        let point = position.centerPoint(forToast: toast, inSuperview: self)
+        makeToastActivity(toast, point: point)
     }
     
     /**
@@ -292,52 +269,50 @@ public extension UIView {
      activity views can be presented and dismissed while toast views are being displayed.
      `makeToastActivity(position:)` has no effect on the queueing behavior of the `showToast` methods.
      
-     @param position The toast's center point
+     @param point The toast's center point
      */
-    public func makeToastActivity(_ position: CGPoint) {
+    public func makeToastActivity(_ point: CGPoint) {
         // sanity
-        if let _ = objc_getAssociatedObject(self, &ToastKeys.ActivityView) as? UIView {
-            return
-        }
+        guard objc_getAssociatedObject(self, &ToastKeys.activityView) as? UIView == nil else { return }
         
-        let toast = self.createToastActivityView()
-        self.makeToastActivity(toast, position: position)
+        let toast = createToastActivityView()
+        makeToastActivity(toast, point: point)
     }
     
     /**
      Dismisses the active toast activity indicator view.
      */
     public func hideToastActivity() {
-        if let toast = objc_getAssociatedObject(self, &ToastKeys.ActivityView) as? UIView {
-            UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: { () -> Void in
+        if let toast = objc_getAssociatedObject(self, &ToastKeys.activityView) as? UIView {
+            UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: {
                 toast.alpha = 0.0
-            }, completion: { (finished: Bool) -> Void in
+            }) { _ in
                 toast.removeFromSuperview()
-                objc_setAssociatedObject(self, &ToastKeys.ActivityView, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            })
+                objc_setAssociatedObject(self, &ToastKeys.activityView, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
         }
     }
     
     // MARK: - Private Activity Methods
     
-    fileprivate func makeToastActivity(_ toast: UIView, position: CGPoint) {
+    private func makeToastActivity(_ toast: UIView, point: CGPoint) {
         toast.alpha = 0.0
-        toast.center = position
+        toast.center = point
         
-        objc_setAssociatedObject(self, &ToastKeys.ActivityView, toast, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &ToastKeys.activityView, toast, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         
         self.addSubview(toast)
         
-        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
+        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: .curveEaseOut, animations: {
             toast.alpha = 1.0
-        }, completion: nil)
+        })
     }
     
-    fileprivate func createToastActivityView() -> UIView {
+    private func createToastActivityView() -> UIView {
         let style = ToastManager.shared.style
         
         let activityView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: style.activitySize.width, height: style.activitySize.height))
-        activityView.backgroundColor = style.backgroundColor
+        activityView.backgroundColor = style.activityBackgroundColor
         activityView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
         activityView.layer.cornerRadius = style.cornerRadius
         
@@ -348,9 +323,10 @@ public extension UIView {
             activityView.layer.shadowOffset = style.shadowOffset
         }
         
-        let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
         activityIndicatorView.center = CGPoint(x: activityView.bounds.size.width / 2.0, y: activityView.bounds.size.height / 2.0)
         activityView.addSubview(activityIndicatorView)
+        activityIndicatorView.color = style.activityIndicatorColor
         activityIndicatorView.startAnimating()
         
         return activityView
@@ -358,67 +334,63 @@ public extension UIView {
     
     // MARK: - Private Show/Hide Methods
     
-    fileprivate func showToast(_ toast: UIView, duration: TimeInterval, position: CGPoint) {
-        toast.center = position
+    private func showToast(_ toast: UIView, duration: TimeInterval, point: CGPoint) {
+        toast.center = point
         toast.alpha = 0.0
         
-        if ToastManager.shared.tapToDismissEnabled {
+        if ToastManager.shared.isTapToDismissEnabled {
             let recognizer = UITapGestureRecognizer(target: self, action: #selector(UIView.handleToastTapped(_:)))
             toast.addGestureRecognizer(recognizer)
             toast.isUserInteractionEnabled = true
             toast.isExclusiveTouch = true
         }
         
-        objc_setAssociatedObject(self, &ToastKeys.ActiveToast, toast, .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        
+        activeToasts.add(toast)
         self.addSubview(toast)
         
-        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseOut, .allowUserInteraction], animations: { () -> Void in
+        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseOut, .allowUserInteraction], animations: {
             toast.alpha = 1.0
-        }) { (finished) -> Void in
+        }) { _ in
             let timer = Timer(timeInterval: duration, target: self, selector: #selector(UIView.toastTimerDidFinish(_:)), userInfo: toast, repeats: false)
-            RunLoop.main.add(timer, forMode: RunLoopMode.commonModes)
-            objc_setAssociatedObject(toast, &ToastKeys.Timer, timer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            RunLoop.main.add(timer, forMode: .common)
+            objc_setAssociatedObject(toast, &ToastKeys.timer, timer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
-    fileprivate func hideToast(_ toast: UIView) {
-        self.hideToast(toast, fromTap: false)
-    }
-    
-    fileprivate func hideToast(_ toast: UIView, fromTap: Bool) {
+    private func hideToast(_ toast: UIView, fromTap: Bool) {
+        if let timer = objc_getAssociatedObject(toast, &ToastKeys.timer) as? Timer {
+            timer.invalidate()
+        }
         
-        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: { () -> Void in
+        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: {
             toast.alpha = 0.0
-        }) { (didFinish: Bool) -> Void in
+        }) { _ in
             toast.removeFromSuperview()
+            self.activeToasts.remove(toast)
             
-            objc_setAssociatedObject(self, &ToastKeys.ActiveToast, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            
-            if let wrapper = objc_getAssociatedObject(toast, &ToastKeys.Completion) as? ToastCompletionWrapper, let completion = wrapper.completion {
+            if let wrapper = objc_getAssociatedObject(toast, &ToastKeys.completion) as? ToastCompletionWrapper, let completion = wrapper.completion {
                 completion(fromTap)
             }
             
-            if let nextToast = self.queue.firstObject as? UIView, let duration = objc_getAssociatedObject(nextToast, &ToastKeys.Duration) as? NSNumber, let position = objc_getAssociatedObject(nextToast, &ToastKeys.Position) as? NSValue {
+            if let nextToast = self.queue.firstObject as? UIView, let duration = objc_getAssociatedObject(nextToast, &ToastKeys.duration) as? NSNumber, let point = objc_getAssociatedObject(nextToast, &ToastKeys.point) as? NSValue {
                 self.queue.removeObject(at: 0)
-                self.showToast(nextToast, duration: duration.doubleValue, position: position.cgPointValue)
+                self.showToast(nextToast, duration: duration.doubleValue, point: point.cgPointValue)
             }
         }
     }
     
     // MARK: - Events
     
-    func handleToastTapped(_ recognizer: UITapGestureRecognizer) {
-        if let toast = recognizer.view, let timer = objc_getAssociatedObject(toast, &ToastKeys.Timer) as? Timer {
-            timer.invalidate()
-            self.hideToast(toast, fromTap: true)
-        }
+    @objc
+    private func handleToastTapped(_ recognizer: UITapGestureRecognizer) {
+        guard let toast = recognizer.view else { return }
+        hideToast(toast, fromTap: true)
     }
     
-    func toastTimerDidFinish(_ timer: Timer) {
-        if let toast = timer.userInfo as? UIView {
-            self.hideToast(toast)
-        }
+    @objc
+    private func toastTimerDidFinish(_ timer: Timer) {
+        guard let toast = timer.userInfo as? UIView else { return }
+        hideToast(toast)
     }
     
     // MARK: - Toast Construction
@@ -430,19 +402,19 @@ public extension UIView {
      methods must be used to present the resulting view.
     
      @warning if message, title, and image are all nil, this method will throw
-     `ToastError.InsufficientData`
+     `ToastError.missingParameters`
     
      @param message The message to be displayed
      @param title The title
      @param image The image
      @param style The style. The shared style will be used when nil
-     @throws `ToastError.InsufficientData` when message, title, and image are all nil
+     @throws `ToastError.missingParameters` when message, title, and image are all nil
      @return The newly created toast view
     */
     public func toastViewForMessage(_ message: String?, title: String?, image: UIImage?, style: ToastStyle) throws -> UIView {
         // sanity
-        if message == nil && title == nil && image == nil {
-            throw ToastError.insufficientData
+        guard message != nil || title != nil || image != nil else {
+            throw ToastError.missingParameters
         }
         
         var messageLabel: UILabel?
@@ -538,11 +510,13 @@ public extension UIView {
         wrapperView.frame = CGRect(x: 0.0, y: 0.0, width: wrapperWidth, height: wrapperHeight)
         
         if let titleLabel = titleLabel {
+            titleRect.size.width = longerWidth
             titleLabel.frame = titleRect
             wrapperView.addSubview(titleLabel)
         }
         
         if let messageLabel = messageLabel {
+            messageRect.size.width = longerWidth
             messageLabel.frame = messageRect
             wrapperView.addSubview(messageLabel)
         }
@@ -554,20 +528,6 @@ public extension UIView {
         return wrapperView
     }
     
-    // MARK: - Helpers
-
-    fileprivate func centerPointForPosition(_ position: ToastPosition, toast: UIView) -> CGPoint {
-        let padding: CGFloat = ToastManager.shared.style.verticalPadding
-        
-        switch(position) {
-        case .top:
-            return CGPoint(x: self.bounds.size.width / 2.0, y: (toast.frame.size.height / 2.0) + padding)
-        case .center:
-            return CGPoint(x: self.bounds.size.width / 2.0, y: self.bounds.size.height / 2.0)
-        case .bottom:
-            return CGPoint(x: self.bounds.size.width / 2.0, y: (self.bounds.size.height - (toast.frame.size.height / 2.0)) - padding)
-        }
-    }
 }
 
 // MARK: - Toast Style
@@ -587,19 +547,19 @@ public struct ToastStyle {
     public init() {}
     
     /**
-     The background color. Default is `UIColor.blackColor()` at 80% opacity.
+     The background color. Default is `.black` at 80% opacity.
     */
-    public var backgroundColor = UIColor.black.withAlphaComponent(0.8)
+    public var backgroundColor: UIColor = UIColor.black.withAlphaComponent(0.8)
     
     /**
      The title color. Default is `UIColor.whiteColor()`.
     */
-    public var titleColor = UIColor.white
+    public var titleColor: UIColor = .white
     
     /**
-     The message color. Default is `UIColor.whiteColor()`.
+     The message color. Default is `.white`.
     */
-    public var messageColor = UIColor.white
+    public var messageColor: UIColor = .white
     
     /**
      A percentage value from 0.0 to 1.0, representing the maximum width of the toast
@@ -625,13 +585,15 @@ public struct ToastStyle {
      The spacing from the horizontal edge of the toast view to the content. When an image
      is present, this is also used as the padding between the image and the text.
      Default is 10.0.
+     
     */
     public var horizontalPadding: CGFloat = 10.0
     
     /**
      The spacing from the vertical edge of the toast view to the content. When a title
      is present, this is also used as the padding between the title and the message.
-     Default is 10.0.
+     Default is 10.0. On iOS11+, this value is added added to the `safeAreaInset.top`
+     and `safeAreaInsets.bottom`.
     */
     public var verticalPadding: CGFloat = 10.0
     
@@ -641,24 +603,24 @@ public struct ToastStyle {
     public var cornerRadius: CGFloat = 10.0;
     
     /**
-     The title font. Default is `UIFont.boldSystemFontOfSize(16.0)`.
+     The title font. Default is `.boldSystemFont(16.0)`.
     */
-    public var titleFont = UIFont.boldSystemFont(ofSize: 16.0)
+    public var titleFont: UIFont = .boldSystemFont(ofSize: 16.0)
     
     /**
-     The message font. Default is `UIFont.systemFontOfSize(16.0)`.
+     The message font. Default is `.systemFont(ofSize: 16.0)`.
     */
-    public var messageFont = UIFont.systemFont(ofSize: 16.0)
+    public var messageFont: UIFont = .systemFont(ofSize: 16.0)
     
     /**
      The title text alignment. Default is `NSTextAlignment.Left`.
     */
-    public var titleAlignment = NSTextAlignment.left
+    public var titleAlignment: NSTextAlignment = .left
     
     /**
      The message text alignment. Default is `NSTextAlignment.Left`.
     */
-    public var messageAlignment = NSTextAlignment.left
+    public var messageAlignment: NSTextAlignment = .left
     
     /**
      The maximum number of lines for the title. The default is 0 (no limit).
@@ -676,9 +638,9 @@ public struct ToastStyle {
     public var displayShadow = false
     
     /**
-     The shadow color. Default is `UIColor.blackColor()`.
+     The shadow color. Default is `.black`.
      */
-    public var shadowColor = UIColor.black
+    public var shadowColor: UIColor = .black
     
     /**
      A value from 0.0 to 1.0, representing the opacity of the shadow.
@@ -716,6 +678,16 @@ public struct ToastStyle {
      */
     public var fadeDuration: TimeInterval = 0.2
     
+    /**
+     Activity indicator color. Default is `.white`.
+     */
+    public var activityIndicatorColor: UIColor = .white
+    
+    /**
+     Activity background color. Default is `.black` at 80% opacity.
+     */
+    public var activityBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.8)
+    
 }
 
 // MARK: - Toast Manager
@@ -724,45 +696,85 @@ public struct ToastStyle {
  `ToastManager` provides general configuration options for all toast
  notifications. Backed by a singleton instance.
 */
-open class ToastManager {
+public class ToastManager {
     
     /**
      The `ToastManager` singleton instance.
+     
      */
-    open static let shared = ToastManager()
+    public static let shared = ToastManager()
     
     /**
      The shared style. Used whenever toastViewForMessage(message:title:image:style:) is called
      with with a nil style.
+     
      */
-    open var style = ToastStyle()
+    public var style = ToastStyle()
     
     /**
      Enables or disables tap to dismiss on toast views. Default is `true`.
+     
      */
-    open var tapToDismissEnabled = true
+    public var isTapToDismissEnabled = true
     
     /**
      Enables or disables queueing behavior for toast views. When `true`,
      toast views will appear one after the other. When `false`, multiple toast
      views will appear at the same time (potentially overlapping depending
      on their positions). This has no effect on the toast activity view,
-     which operates independently of normal toast views. Default is `true`.
+     which operates independently of normal toast views. Default is `false`.
+     
      */
-    open var queueEnabled = true
+    public var isQueueEnabled = false
     
     /**
      The default duration. Used for the `makeToast` and
      `showToast` methods that don't require an explicit duration.
      Default is 3.0.
+     
      */
-    open var duration: TimeInterval = 3.0
+    public var duration: TimeInterval = 3.0
     
     /**
      Sets the default position. Used for the `makeToast` and
      `showToast` methods that don't require an explicit position.
      Default is `ToastPosition.Bottom`.
+     
      */
-    open var position = ToastPosition.bottom
+    public var position: ToastPosition = .bottom
+    
+}
+
+// MARK: - ToastPosition
+
+public enum ToastPosition {
+    case top
+    case center
+    case bottom
+    
+    fileprivate func centerPoint(forToast toast: UIView, inSuperview superview: UIView) -> CGPoint {
+        let topPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.top
+        let bottomPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.bottom
+        
+        switch self {
+        case .top:
+            return CGPoint(x: superview.bounds.size.width / 2.0, y: (toast.frame.size.height / 2.0) + topPadding)
+        case .center:
+            return CGPoint(x: superview.bounds.size.width / 2.0, y: superview.bounds.size.height / 2.0)
+        case .bottom:
+            return CGPoint(x: superview.bounds.size.width / 2.0, y: (superview.bounds.size.height - (toast.frame.size.height / 2.0)) - bottomPadding)
+        }
+    }
+}
+
+fileprivate extension UIView {
+    
+    fileprivate var csSafeAreaInsets: UIEdgeInsets {
+        if #available(iOS 11.0, *) {
+            return self.safeAreaInsets
+        } else {
+            return .zero
+        }
+    }
     
 }

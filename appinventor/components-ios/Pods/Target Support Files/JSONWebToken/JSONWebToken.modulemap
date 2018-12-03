@@ -1,6 +1,0 @@
-framework module JSONWebToken {
-  umbrella header "JSONWebToken-umbrella.h"
-
-  export *
-  module * { export * }
-}
