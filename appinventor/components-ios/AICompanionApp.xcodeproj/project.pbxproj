@@ -246,7 +246,6 @@
 				06463EF51D95956800B23DCD /* Frameworks */,
 				06463EF61D95956800B23DCD /* Resources */,
 				170B928B754926C8A96CC2CF /* [CP] Embed Pods Frameworks */,
-				4DE1B4606C109E052AB0DFD6 /* [CP] Copy Pods Resources */,
 				063D67941FA0CEB2002E907D /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -266,8 +265,6 @@
 				06463F081D95956800B23DCD /* Sources */,
 				06463F091D95956800B23DCD /* Frameworks */,
 				06463F0A1D95956800B23DCD /* Resources */,
-				2026474B2825B35BA1A7AAF4 /* [CP] Embed Pods Frameworks */,
-				2CE74069885B29A6B474D519 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -287,8 +284,6 @@
 				06463F131D95956800B23DCD /* Sources */,
 				06463F141D95956800B23DCD /* Frameworks */,
 				06463F151D95956800B23DCD /* Resources */,
-				B8B6B172202CBF24620D3D48 /* [CP] Embed Pods Frameworks */,
-				5156321B0CBA09F26F453248 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -411,66 +406,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2026474B2825B35BA1A7AAF4 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2CE74069885B29A6B474D519 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4DE1B4606C109E052AB0DFD6 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5156321B0CBA09F26F453248 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionAppUITests/Pods-AICompanionAppUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		904958BDAC31CBB8176B1939 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -505,21 +440,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B8B6B172202CBF24620D3D48 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AICompanionAppUITests/Pods-AICompanionAppUITests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BDB79F447D8930A2E23B7017 /* [CP] Check Pods Manifest.lock */ = {

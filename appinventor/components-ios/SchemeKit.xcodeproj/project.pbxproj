@@ -454,7 +454,6 @@
 				06FCDEDB1D94383000199DD4 /* Sources */,
 				06FCDEDC1D94383000199DD4 /* Frameworks */,
 				06FCDEDE1D94383000199DD4 /* Resources */,
-				58C508C0D2382AC51342F020 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -474,8 +473,6 @@
 				06FCDEE61D94383000199DD4 /* Frameworks */,
 				06FCDEE71D94383000199DD4 /* Resources */,
 				068B4F232075693F0050A8BE /* ShellScript */,
-				43E2BD673167E2AC575AB10D /* [CP] Embed Pods Frameworks */,
-				553DAC2DCF20DA2CCA7A5FF4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -575,51 +572,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		43E2BD673167E2AC575AB10D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SchemeKitTests/Pods-SchemeKitTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		553DAC2DCF20DA2CCA7A5FF4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SchemeKitTests/Pods-SchemeKitTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		58C508C0D2382AC51342F020 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SchemeKit/Pods-SchemeKit-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		83E89BB8BA99D022626AA59A /* [CP] Check Pods Manifest.lock */ = {
@@ -839,10 +791,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited)";
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/SchemeKit/picrin/extlib/benz/include\"",

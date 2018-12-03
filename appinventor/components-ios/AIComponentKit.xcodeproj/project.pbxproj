@@ -115,6 +115,7 @@
 		0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0846B64720BBBF9C008FB20C /* ImageSprite.swift */; };
 		088CAFD020DABB2E002B1B67 /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088CAFCF20DABB2E002B1B67 /* Ball.swift */; };
 		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
+		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */; };
 		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
@@ -124,11 +125,11 @@
 		CBC787022032272E005363A3 /* String+Replace.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC787012032272E005363A3 /* String+Replace.swift */; };
 		CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE5DE991FE1C421009A139F /* SoundRecorder.swift */; };
 		DE033B4320179A9300544E5F /* PermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE033B4220179A9300544E5F /* PermissionHandler.swift */; };
-		DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D520C80BF900A250F1 /* OrientationSensor.swift */; };
-		DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D720C842EE00A250F1 /* Pedometer.swift */; };
 		DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDA20C5C1610049A748 /* PickerBase.swift */; };
 		DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */; };
 		DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE102DB820F53189002C71F0 /* FontUtilTests.swift */; };
+		DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D520C80BF900A250F1 /* OrientationSensor.swift */; };
+		DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D720C842EE00A250F1 /* Pedometer.swift */; };
 		DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3F6B082080F72400A0BA69 /* Camera.swift */; };
 		DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */; };
 		DE4CDF572093982F008412BC /* FontUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4CDF562093982F008412BC /* FontUtil.swift */; };
@@ -282,11 +283,11 @@
 		CBC787012032272E005363A3 /* String+Replace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Replace.swift"; sourceTree = "<group>"; };
 		CBE5DE991FE1C421009A139F /* SoundRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundRecorder.swift; sourceTree = "<group>"; };
 		DE033B4220179A9300544E5F /* PermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionHandler.swift; sourceTree = "<group>"; };
-		DE1443D520C80BF900A250F1 /* OrientationSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationSensor.swift; sourceTree = "<group>"; };
-		DE1443D720C842EE00A250F1 /* Pedometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pedometer.swift; sourceTree = "<group>"; };
 		DE0FFBDA20C5C1610049A748 /* PickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerBase.swift; sourceTree = "<group>"; };
 		DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerBase.swift; sourceTree = "<group>"; };
 		DE102DB820F53189002C71F0 /* FontUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtilTests.swift; sourceTree = "<group>"; };
+		DE1443D520C80BF900A250F1 /* OrientationSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationSensor.swift; sourceTree = "<group>"; };
+		DE1443D720C842EE00A250F1 /* Pedometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pedometer.swift; sourceTree = "<group>"; };
 		DE3F6B082080F72400A0BA69 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		DE4CDF562093982F008412BC /* FontUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtil.swift; sourceTree = "<group>"; };
@@ -316,6 +317,7 @@
 				06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */,
 				06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */,
 				06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */,
+				0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,7 +747,6 @@
 				0618A2801D8CF4EE0013A191 /* Frameworks */,
 				0618A2811D8CF4EE0013A191 /* Headers */,
 				0618A2821D8CF4EE0013A191 /* Resources */,
-				A861C5ABECF26956E6A07A5A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -765,7 +766,6 @@
 				0618A2891D8CF4EE0013A191 /* Frameworks */,
 				0618A28A1D8CF4EE0013A191 /* Resources */,
 				71E51F4C290C92ED289B67ED /* [CP] Embed Pods Frameworks */,
-				B5A8F0713FD4E38E1CBB8621 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -912,36 +912,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A861C5ABECF26956E6A07A5A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B5A8F0713FD4E38E1CBB8621 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
