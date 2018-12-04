@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -110,5 +110,24 @@ public class ShadowEventDispatcher {
       }
     }
     throw new AssertionError(String.format("Form did not receive ErrorOccurred event with code %d.", errorCode));
+  }
+
+  /**
+   * Asserts that the EventDispatcher saw a PermissionDenied event for the given permission name.
+   *
+   * @param permission the permission to test for denial
+   */
+  public static void assertPermissionDenied(String permission) {
+    if (permission.startsWith("android.permission.")) {
+      permission = permission.replace("android.permission.", "");
+    }
+    for (Set<EventWithArgs> events: firedEvents.values()) {
+      for (EventWithArgs event : events) {
+        if ("PermissionDenied".equals(event.eventName) && event.args[2].equals(permission)) {
+          return;
+        }
+      }
+    }
+    throw new AssertionError(String.format("Form did not receive PermissionDenied event for permission %s.", permission));
   }
 }
