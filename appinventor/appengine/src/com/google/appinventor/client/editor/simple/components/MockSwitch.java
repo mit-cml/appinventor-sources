@@ -19,11 +19,11 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Iterator;
 
 /**
- * Mock CheckBox component.
+ * Mock Switch component.
  *
- * @author lizlooney@google.com (Liz Looney)
+ * @author srlane@mit.edu (Susan Rati Lane)
  */
-public final class MockSwitch extends MockVisibleComponent {
+public final class MockSwitch extends MockToggleBase {
 
   /**
    * Component type name.
@@ -44,22 +44,52 @@ public final class MockSwitch extends MockVisibleComponent {
   private int widgetWidth;
   private int widgetHeight;
 
+//  public MockSwitch(SimpleEditor editor) {
+//    super(editor, TYPE, images.toggleswitch());
+//  }
+
   /**
    * Creates a new MockCheckbox component.
    *
    * @param editor  editor of source file the component belongs to
    */
   public MockSwitch(SimpleEditor editor) {
+
     super(editor, TYPE, images.toggleswitch());
 
     panel = new HorizontalPanel();
-    panel.setStylePrimaryName("ode-SimpleMockComponent");
     switchLabel = new InlineHTML();
-    switchLabel.setText("Hello there");
     panel.add(switchLabel);
-    initComponent(panel);
-
+    toggleWidget = panel;
+    isInitialized = false;
+    initWrapper(toggleWidget);
     paintSwitch();
+  }
+//
+  /**
+   * Class that extends CheckBox so we can use a protected constructor.
+   *
+   * <p/>The purpose of this class is to create a clone of the CheckBox
+   * passed to the constructor. It will be used to determine the preferred size
+   * of the CheckBox, without having the size constrained by its parent,
+   * since the cloned CheckBox won't have a parent.
+   */
+  static class ClonedSwitch extends HorizontalPanel {
+    ClonedSwitch(HorizontalPanel ptb) {
+      if (ptb.getWidgetCount() >= 1) {
+        this.add(new InlineHTML(ptb.getWidget(0).getElement().getInnerHTML()));
+        if (ptb.getWidgetCount() >= 2) {
+          SVGPanel csvg = new SVGPanel();
+          csvg.setInnerSVG(ptb.getWidget(1).getElement().getInnerHTML());
+          this.add(csvg);
+        }
+      }
+    }
+  }
+
+  @Override
+  protected Widget createClonedWidget() {
+    return new ClonedSwitch((HorizontalPanel)toggleWidget);
   }
 
   private void paintSwitch() {
@@ -80,13 +110,9 @@ public final class MockSwitch extends MockVisibleComponent {
             "<circle cx=\"" + (checked? switchWidth - switchHeight/2: switchHeight/2) + "\" fill=\"" + (checked? thumbColorActive : thumbColorInactive) + "\" " +
             "cy=\"" + (switchHeight/2) + "\" r=\"" + (switchHeight/2 - 1) + "\"/>");
     panel.add(switchGraphic);
-    panel.setWidth(MockComponentsUtil.getPreferredWidth(this) + "px");
-  }
-
-  @Override
-  public void onCreateFromPalette() {
-    // Change checkbox caption to component name
-    changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
+    toggleWidget = panel;
+    this.updatePreferredSize();
+    refreshForm();
   }
 
   private void setThumbColorActiveProperty(String text) {
@@ -108,59 +134,58 @@ public final class MockSwitch extends MockVisibleComponent {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
     paintSwitch();
   }
-
-  /*
-   * Sets the checkbox's Enabled property to a new value.
-   */
-  private void setEnabledProperty(String text) {
-    MockComponentsUtil.setEnabled(this, text);
-  }
-
   /*
    * Sets the checkbox's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
+
     checked = Boolean.parseBoolean(text);
     paintSwitch();
   }
-
-  @Override
-  int getHeightHint() {
-    int hint = super.getHeightHint();
-    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-      return Math.round(height);
-    } else {
-      return hint;
-    }
-  }
+//
+//  @Override
+//  int getHeightHint() {
+//    int hint = super.getHeightHint();
+//    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
+//      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
+//      return Math.round(height);
+//    } else {
+//      return hint;
+//    }
+//  }
+//
   private void setTextProperty(String text) {
     panel.remove(switchLabel);
     switchLabel = new InlineHTML();
     switchLabel.setText(text);
     panel.insert(switchLabel, 0);
-    panel.setWidth(MockComponentsUtil.getPreferredWidth(this) + "px");
+    toggleWidget = panel;
   }
-  // PropertyChangeListener implementation
+
+
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
-      setThumbColorActiveProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORINACTIVE)) {
-      setThumbColorInactiveProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORACTIVE)) {
-      setTrackColorActiveProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORINACTIVE)) {
-      setTrackColorInactiveProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
-      setEnabledProperty(newValue);
+    if (propertyName.equals(PROPERTY_NAME_TEXT)) {
+      setTextProperty(newValue);
+      refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
+      setThumbColorActiveProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORINACTIVE)) {
+      setThumbColorInactiveProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORACTIVE)) {
+      setTrackColorActiveProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORINACTIVE)) {
+      setTrackColorInactiveProperty(newValue);
+      refreshForm();
     }
   }
 
