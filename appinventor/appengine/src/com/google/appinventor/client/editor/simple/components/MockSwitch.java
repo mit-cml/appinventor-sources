@@ -152,6 +152,11 @@ public final class MockSwitch extends MockToggleBase {
     updatePreferredSize();
   }
 
+  private void setFontTypeFaceProperty(String text) {
+    MockComponentsUtil.setWidgetFontTypeface(((HorizontalPanel)toggleWidget).getWidget(0), text);
+    updatePreferredSize();
+  }
+
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
@@ -180,6 +185,9 @@ public final class MockSwitch extends MockToggleBase {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
       setFontSizeProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
+      setFontTypeFaceProperty(newValue);
       refreshForm();
     }
   }
