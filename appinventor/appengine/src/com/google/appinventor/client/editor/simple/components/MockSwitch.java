@@ -83,7 +83,7 @@ public final class MockSwitch extends MockToggleBase {
     }
     switchGraphic = new SVGPanel();
     int switchHeight = hasProperty(PROPERTY_NAME_HEIGHT) ? getHeightHint() : getPreferredHeight();
-    int switchWidth = (int) Math.round(switchHeight * 1.6);
+    int switchWidth = (int) Math.round(switchHeight * 2);
     switchGraphic.setWidth(switchWidth + "px");
     switchGraphic.setHeight(switchHeight + "px");
 
@@ -101,18 +101,34 @@ public final class MockSwitch extends MockToggleBase {
 
   private void setThumbColorActiveProperty(String text) {
     thumbColorActive = MockComponentsUtil.getColor(text).toString();
+    if (checked) {
+      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
+              "fill", thumbColorActive);
+    }
   }
 
   private void setThumbColorInactiveProperty(String text) {
     thumbColorInactive = MockComponentsUtil.getColor(text).toString();
+    if (!checked) {
+      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
+              "fill", thumbColorInactive);
+    }
   }
 
   private void setTrackColorActiveProperty(String text) {
     trackColorActive = MockComponentsUtil.getColor(text).toString();
+    if (checked) {
+      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement(), "fill",
+              trackColorActive);
+    }
   }
 
   private void setTrackColorInactiveProperty(String text) {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
+    if (!checked) {
+      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement(), "fill",
+              trackColorInactive);
+    }
   }
   /*
    * Sets the checkbox's Checked property to a new value.
@@ -125,14 +141,15 @@ public final class MockSwitch extends MockToggleBase {
 
   private void setTextProperty(String text) {
     panel.remove(switchLabel);
-    switchLabel = new InlineHTML();
     switchLabel.setText(text);
     panel.insert(switchLabel, 0);
     toggleWidget = panel;
     updatePreferredSize();
   }
 
-  private void setFontProperty(String text) {
+  private void setFontSizeProperty(String text) {
+    MockComponentsUtil.setWidgetFontSize(((HorizontalPanel)toggleWidget).getWidget(0), text);
+    updatePreferredSize();
   }
 
   @Override
@@ -162,9 +179,8 @@ public final class MockSwitch extends MockToggleBase {
       paintSwitch();
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-      setFontProperty(newValue);
+      setFontSizeProperty(newValue);
       refreshForm();
     }
   }
-
 }
