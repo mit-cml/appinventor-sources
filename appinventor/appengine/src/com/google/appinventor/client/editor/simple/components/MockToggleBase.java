@@ -25,10 +25,6 @@ abstract class MockToggleBase extends MockWrapper {
     super(editor, type, icon);
   }
 
-  protected void setToggleWidget(Widget w) {
-    toggleWidget = w;
-  }
-
   abstract protected Widget createClonedWidget();
 
   @Override

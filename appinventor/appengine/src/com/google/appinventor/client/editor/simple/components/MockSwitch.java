@@ -6,10 +6,8 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
-import com.google.appinventor.shared.rpc.component.Component;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -41,13 +39,6 @@ public final class MockSwitch extends MockToggleBase {
   public String switchText;
   public Boolean isInitialized = false;
 
-  private int widgetWidth;
-  private int widgetHeight;
-
-//  public MockSwitch(SimpleEditor editor) {
-//    super(editor, TYPE, images.toggleswitch());
-//  }
-
   /**
    * Creates a new MockCheckbox component.
    *
@@ -63,7 +54,6 @@ public final class MockSwitch extends MockToggleBase {
     toggleWidget = panel;
     isInitialized = false;
     initWrapper(toggleWidget);
-    paintSwitch();
   }
 //
   /**
@@ -74,16 +64,9 @@ public final class MockSwitch extends MockToggleBase {
    * of the CheckBox, without having the size constrained by its parent,
    * since the cloned CheckBox won't have a parent.
    */
-  static class ClonedSwitch extends HorizontalPanel {
+  static class ClonedSwitch extends InlineHTML {
     ClonedSwitch(HorizontalPanel ptb) {
-      if (ptb.getWidgetCount() >= 1) {
-        this.add(new InlineHTML(ptb.getWidget(0).getElement().getInnerHTML()));
-        if (ptb.getWidgetCount() >= 2) {
-          SVGPanel csvg = new SVGPanel();
-          csvg.setInnerSVG(ptb.getWidget(1).getElement().getInnerHTML());
-          this.add(csvg);
-        }
-      }
+      super(DOM.clone(ptb.getElement(), true));
     }
   }
 
@@ -99,8 +82,8 @@ public final class MockSwitch extends MockToggleBase {
       isInitialized = true;
     }
     switchGraphic = new SVGPanel();
-    final int switchHeight = 14;
-    final int switchWidth = (int) Math.round(switchHeight * 1.6);
+    int switchHeight = hasProperty(PROPERTY_NAME_HEIGHT) ? getHeightHint() : getPreferredHeight();
+    int switchWidth = (int) Math.round(switchHeight * 1.6);
     switchGraphic.setWidth(switchWidth + "px");
     switchGraphic.setHeight(switchHeight + "px");
 
@@ -110,29 +93,26 @@ public final class MockSwitch extends MockToggleBase {
             "<circle cx=\"" + (checked? switchWidth - switchHeight/2: switchHeight/2) + "\" fill=\"" + (checked? thumbColorActive : thumbColorInactive) + "\" " +
             "cy=\"" + (switchHeight/2) + "\" r=\"" + (switchHeight/2 - 1) + "\"/>");
     panel.add(switchGraphic);
+    panel.setCellWidth(switchGraphic, switchWidth + "px");
+    panel.setCellHorizontalAlignment(switchGraphic, HasHorizontalAlignment.ALIGN_RIGHT);
     toggleWidget = panel;
-    this.updatePreferredSize();
     refreshForm();
   }
 
   private void setThumbColorActiveProperty(String text) {
     thumbColorActive = MockComponentsUtil.getColor(text).toString();
-    paintSwitch();
   }
 
   private void setThumbColorInactiveProperty(String text) {
     thumbColorInactive = MockComponentsUtil.getColor(text).toString();
-    paintSwitch();
   }
 
   private void setTrackColorActiveProperty(String text) {
     trackColorActive = MockComponentsUtil.getColor(text).toString();
-    paintSwitch();
   }
 
   private void setTrackColorInactiveProperty(String text) {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
-    paintSwitch();
   }
   /*
    * Sets the checkbox's Checked property to a new value.
@@ -142,26 +122,18 @@ public final class MockSwitch extends MockToggleBase {
     checked = Boolean.parseBoolean(text);
     paintSwitch();
   }
-//
-//  @Override
-//  int getHeightHint() {
-//    int hint = super.getHeightHint();
-//    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-//      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-//      return Math.round(height);
-//    } else {
-//      return hint;
-//    }
-//  }
-//
+
   private void setTextProperty(String text) {
     panel.remove(switchLabel);
     switchLabel = new InlineHTML();
     switchLabel.setText(text);
     panel.insert(switchLabel, 0);
     toggleWidget = panel;
+    updatePreferredSize();
   }
 
+  private void setFontProperty(String text) {
+  }
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
@@ -185,6 +157,12 @@ public final class MockSwitch extends MockToggleBase {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TRACKCOLORINACTIVE)) {
       setTrackColorInactiveProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      paintSwitch();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
+      setFontProperty(newValue);
       refreshForm();
     }
   }
