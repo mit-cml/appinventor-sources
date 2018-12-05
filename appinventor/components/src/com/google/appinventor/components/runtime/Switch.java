@@ -37,7 +37,7 @@ public final class Switch extends ToggleBase {
   /**
    * Creates a new Switch component.
    *
-   * @param container  container, component will be placed in
+   * @param container container, component will be placed in
    */
   public Switch(ComponentContainer container) {
     super(container);
@@ -62,8 +62,8 @@ public final class Switch extends ToggleBase {
   }
 
   /**
-   * Returns the checkbox's thumb color as an alpha-red-green-blue
-   * integer.
+   * Returns the switch's thumb color (button that toggles back and forth)
+   * when the switch is ON/Checked
    *
    * @return  thumb RGB color with alpha
    */
@@ -73,8 +73,7 @@ public final class Switch extends ToggleBase {
   }
 
   /**
-   * Specifies the checkbox's thumb color as an alpha-red-green-blue
-   * integer.
+   * Specifies the switch's thumb color when switch is ON/Checked
    *
    * @param argb  thumb RGB color with alpha
    */
@@ -87,11 +86,22 @@ public final class Switch extends ToggleBase {
     view.invalidate();
   }
 
+  /**
+   * Returns the switch's thumb color (button that toggles back and forth)
+   * when the switch is Off/Unchecked
+   *
+   * @return  thumb RGB color with alpha
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = true)
   public int ThumbColorInactive() {
     return thumbColorInactive;
   }
 
+  /**
+   * Specifies the switch's thumb color when switch is Off/Unchecked
+   *
+   * @param argb  thumb RGB color with alpha
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
           defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
@@ -102,8 +112,7 @@ public final class Switch extends ToggleBase {
   }
 
   /**
-   * Returns the switch's track color as an alpha-red-green-blue
-   * integer.
+   * Returns the switch's track color
    *
    * @return  track RGB color with alpha
    */
@@ -117,8 +126,7 @@ public final class Switch extends ToggleBase {
   }
 
   /**
-   * Specifies the switch's track color as an alpha-red-green-blue
-   * integer.
+   * Specifies the switch's track color
    *
    * @param argb  track RGB color with alpha
    */

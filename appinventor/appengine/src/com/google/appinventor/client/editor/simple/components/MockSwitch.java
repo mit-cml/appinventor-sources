@@ -1,6 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,10 +13,8 @@ import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Iterator;
-
 /**
- * Mock Switch component.
+ * Mock Switch component, inherited from MockToggleBase
  *
  * @author srlane@mit.edu (Susan Rati Lane)
  */
@@ -36,11 +33,10 @@ public final class MockSwitch extends MockToggleBase {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
-  public String switchText;
   public Boolean isInitialized = false;
 
   /**
-   * Creates a new MockCheckbox component.
+   * Creates a new MockSwitch component.
    *
    * @param editor  editor of source file the component belongs to
    */
@@ -55,14 +51,14 @@ public final class MockSwitch extends MockToggleBase {
     isInitialized = false;
     initWrapper(toggleWidget);
   }
-//
+
   /**
-   * Class that extends CheckBox so we can use a protected constructor.
+   * Class that extends Widget so we can use a protected constructor.
    *
-   * <p/>The purpose of this class is to create a clone of the CheckBox
+   * <p/>The purpose of this class is to create a clone of the Switch
    * passed to the constructor. It will be used to determine the preferred size
-   * of the CheckBox, without having the size constrained by its parent,
-   * since the cloned CheckBox won't have a parent.
+   * of the Switch, without having the size constrained by its parent,
+   * since the cloned Switch won't have a parent.
    */
   static class ClonedSwitch extends InlineHTML {
     ClonedSwitch(HorizontalPanel ptb) {
@@ -75,6 +71,12 @@ public final class MockSwitch extends MockToggleBase {
     return new ClonedSwitch((HorizontalPanel)toggleWidget);
   }
 
+
+  /**
+   * Draw the SVG graphic of the toggle switch. It can be drawn in either checked or
+   * unchecked positions, each with their own colors.
+   *
+   */
   private void paintSwitch() {
     if (isInitialized) {
       panel.remove(switchGraphic);
@@ -99,6 +101,11 @@ public final class MockSwitch extends MockToggleBase {
     refreshForm();
   }
 
+  /**
+   * Set thumb color for switch in checked state
+   * Thumb color is the color the color of the button that toggles back and forth
+   *
+   */
   private void setThumbColorActiveProperty(String text) {
     thumbColorActive = MockComponentsUtil.getColor(text).toString();
     if (checked) {
@@ -107,6 +114,11 @@ public final class MockSwitch extends MockToggleBase {
     }
   }
 
+  /**
+   * Set thumb color for switch in UNhecked state
+   * Thumb color is the color the color of the button that toggles back and forth
+   *
+   */
   private void setThumbColorInactiveProperty(String text) {
     thumbColorInactive = MockComponentsUtil.getColor(text).toString();
     if (!checked) {
@@ -115,6 +127,11 @@ public final class MockSwitch extends MockToggleBase {
     }
   }
 
+  /**
+   * Set track color for switch in checked state
+   * Track color is the color of the track that the toggle button slides back and forth along
+   *
+   */
   private void setTrackColorActiveProperty(String text) {
     trackColorActive = MockComponentsUtil.getColor(text).toString();
     if (checked) {
@@ -123,6 +140,11 @@ public final class MockSwitch extends MockToggleBase {
     }
   }
 
+  /**
+   * Set track color for switch in UNchecked state
+   * Track color is the color of the track that the toggle button slides back and forth along
+   *
+   */
   private void setTrackColorInactiveProperty(String text) {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
     if (!checked) {
@@ -130,8 +152,9 @@ public final class MockSwitch extends MockToggleBase {
               trackColorInactive);
     }
   }
+
   /*
-   * Sets the checkbox's Checked property to a new value.
+   * Sets the switch's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
 
@@ -139,7 +162,10 @@ public final class MockSwitch extends MockToggleBase {
     paintSwitch();
   }
 
-  private void setTextProperty(String text) {
+  /*
+   * Sets the switch's Text property to a new value.
+   */
+  protected void setTextProperty(String text) {
     panel.remove(switchLabel);
     switchLabel.setText(text);
     panel.insert(switchLabel, 0);
@@ -147,12 +173,14 @@ public final class MockSwitch extends MockToggleBase {
     updatePreferredSize();
   }
 
-  private void setFontSizeProperty(String text) {
+  @Override
+  protected void setFontSizeProperty(String text) {
     MockComponentsUtil.setWidgetFontSize(((HorizontalPanel)toggleWidget).getWidget(0), text);
     updatePreferredSize();
   }
 
-  private void setFontTypeFaceProperty(String text) {
+  @Override
+  protected void setFontTypefaceProperty(String text) {
     MockComponentsUtil.setWidgetFontTypeface(((HorizontalPanel)toggleWidget).getWidget(0), text);
     updatePreferredSize();
   }
@@ -162,10 +190,7 @@ public final class MockSwitch extends MockToggleBase {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
+    if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
@@ -182,12 +207,6 @@ public final class MockSwitch extends MockToggleBase {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       paintSwitch();
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-      setFontSizeProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
-      setFontTypeFaceProperty(newValue);
       refreshForm();
     }
   }

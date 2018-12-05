@@ -11,16 +11,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Abstract class for on/off toggle components, e.g. Checkbox and Switch
+ *
+ * @author srlane@mit.edu (Susan Rati Lane)
+ */
 abstract class MockToggleBase extends MockWrapper {
 
-  // GWT checkbox widget used to mock a Simple CheckBox
+  // Set toggle widget in child classes
   protected Widget toggleWidget;
 
-  /**
-   * Creates a new MockCheckbox component.
-   *
-   * @param editor  editor of source file the component belongs to
-   */
   public MockToggleBase(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, icon);
   }
@@ -29,12 +29,12 @@ abstract class MockToggleBase extends MockWrapper {
 
   @Override
   public void onCreateFromPalette() {
-    // Change checkbox caption to component name
+    // Change toggle caption to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
   /*
-   * Sets the checkbox's BackgroundColor property to a new value.
+   * Sets the toggle's BackgroundColor property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
@@ -44,14 +44,14 @@ abstract class MockToggleBase extends MockWrapper {
   }
 
   /*
-   * Sets the checkbox's Enabled property to a new value.
+   * Sets the toggle's Enabled property to a new value.
    */
   private void setEnabledProperty(String text) {
     MockComponentsUtil.setEnabled(this, text);
   }
 
   /*
-   * Sets the checkbox's FontBold property to a new value.
+   * Sets the toggle's FontBold property to a new value.
    */
   private void setFontBoldProperty(String text) {
     MockComponentsUtil.setWidgetFontBold(toggleWidget, text);
@@ -59,7 +59,7 @@ abstract class MockToggleBase extends MockWrapper {
   }
 
   /*
-   * Sets the checkbox's FontItalic property to a new value.
+   * Sets the toggle's FontItalic property to a new value.
    */
   private void setFontItalicProperty(String text) {
     MockComponentsUtil.setWidgetFontItalic(toggleWidget, text);
@@ -78,31 +78,28 @@ abstract class MockToggleBase extends MockWrapper {
   }
 
   /*
-   * Sets the checkbox's FontSize property to a new value.
+   * Sets the toggle's FontSize property to a new value.
    */
-  private void setFontSizeProperty(String text) {
+  protected void setFontSizeProperty(String text) {
     MockComponentsUtil.setWidgetFontSize(toggleWidget, text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the checkbox's FontTypeface property to a new value.
+   * Sets the toggle's FontTypeface property to a new value.
    */
-  private void setFontTypefaceProperty(String text) {
+  protected void setFontTypefaceProperty(String text) {
     MockComponentsUtil.setWidgetFontTypeface(toggleWidget, text);
     updatePreferredSize();
   }
 
   /*
-   * Sets the checkbox's Text property to a new value.
+   * The toggle's set text must be implemented in child classes
    */
-  private void setTextProperty(String text) {
-//    toggleWidget.setText(text);
-    updatePreferredSize();
-  }
+  abstract void setTextProperty(String text);
 
   /*
-   * Sets the checkbox's TextColor property to a new value.
+   * Sets the toggle's TextColor property to a new value.
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
