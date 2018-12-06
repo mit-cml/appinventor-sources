@@ -249,13 +249,6 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
 Blockly.WorkspaceSvg.prototype.render = function(blocks) {
   this.rendered = true;
   this.bulkRendering = true;
-  // In bulk rendering mode, the database accepts all new connections to be
-  // sorted later. If we don't clear this, then we can end up with multiple
-  // entries in the DB for the same connection. This isn't necessarily bad,
-  // but it may decrease performance.
-  this.connectionDBList.forEach(function (db) {
-    db.length = 0;  // clear the databases
-  });
   Blockly.Field.startCache();
   try {
     if (Blockly.Instrument.isOn) {
