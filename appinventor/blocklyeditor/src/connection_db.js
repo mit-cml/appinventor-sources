@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -27,14 +27,22 @@ goog.require('Blockly.ConnectionDB');
  * @private
  */
 Blockly.ConnectionDB.prototype.addConnection = function(connection) {
-  if (connection.getSourceBlock() && connection.getSourceBlock().workspace &&
-    connection.getSourceBlock().workspace.bulkRendering) {
-    connection.inDB_ = true;
-    return;
-  }
   if (connection.inDB_) {
     return;  // already in the database
   }
+
+  // Check whether we are in the bulk rendering mode to prevent O(n^2)
+  // insertion sort runtime.
+  if (connection.getSourceBlock() && connection.getSourceBlock().workspace &&
+    connection.getSourceBlock().workspace.bulkRendering) {
+    // We are in the middle of a bulk rendering option, so just add the
+    // connection and we will sort later using native array quicksort via the
+    // Blockly.WorkspaceSvg.requestConnectionDBUpdate() method.
+    this.push(connection);
+    connection.inDB_ = true;
+    return;
+  }
+
   if (connection.getSourceBlock().isInFlyout) {
     // Don't bother maintaining a database of connections in a flyout.
     return;
@@ -53,14 +61,16 @@ Blockly.ConnectionDB.prototype.addConnection = function(connection) {
  * @private
  */
 Blockly.ConnectionDB.prototype.removeConnection_ = function(connection) {
+  if (!connection.inDB_) {
+    return;  // connection already not in database
+  }
+
   if (connection.getSourceBlock() && connection.getSourceBlock().workspace &&
     connection.getSourceBlock().workspace.bulkRendering) {
     connection.inDB_ = false;
     return;
   }
-  if (!connection.inDB_) {
-    return;  // connection already not in database
-  }
+
   connection.inDB_ = false;
   var removalIndex = this.findConnection(connection);
   if (removalIndex > -1) {
