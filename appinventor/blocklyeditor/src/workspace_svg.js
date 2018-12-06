@@ -1063,6 +1063,13 @@ Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
     connectionDB.sort(function(a, b) {
       return a.y_ - b.y_;
     });
+    // If we are rerendering due to a new error, we only redraw the error block, which means that
+    // we can't clear the database, otherwise all other connections disappear. Instead, we add
+    // the moved connections anyway, and at this point we can remove the duplicate entries in the
+    // database. We remove after sorting so that the operation is O(n) rather than O(n^2). This
+    // assumption may break in the future if Blockly decides on a different mechanism for indexing
+    // connections.
+    connectionDB.removeDupes();
   });
 };
 
