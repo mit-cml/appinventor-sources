@@ -114,5 +114,14 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  /**
+   * If set to true the Companion will display the splash screen (defined in
+   * splash.html)
+   *
+   * @return true to display the splash screen in the Companion
+   */
+  public static boolean doCompanionSplashScreen() {
+    return false;
+  }
 
 }

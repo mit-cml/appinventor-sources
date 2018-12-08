@@ -70,7 +70,9 @@ public class BlocklyPanel extends HTMLPanel {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
-    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL);
+    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL,
+      YaVersion.COMPANION_UPDATE_URL1,
+      YaVersion.COMPANION_UPDATE_EMULATOR_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
@@ -798,7 +800,7 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void doResetYail() /*-{
-    Blockly.ReplMgr.resetYail();
+    Blockly.ReplMgr.resetYail(true);
   }-*/;
 
   public native void doPollYail() /*-{
@@ -834,9 +836,11 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  static native void setPreferredCompanion(String comp, String url) /*-{
+  static native void setPreferredCompanion(String comp, String url, String url1, String url2) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
+    $wnd.COMPANION_UPDATE_URL1 = url1;
+    $wnd.COMPANION_UPDATE_EMULATOR_URL = url2;
   }-*/;
 
   static native void addAcceptableCompanionPackage(String comp) /*-{

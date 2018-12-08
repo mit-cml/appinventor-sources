@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright © 2011 Google Inc.
- * Copyright © 2011-2016 Massachusetts Institute of Technology
+ * Copyright © 2011-2018 Massachusetts Institute of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,6 +215,8 @@ Blockly.Backpack.prototype.init = function() {
   this.position_();
   // If the document resizes, reposition the backpack.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
+  // Fixes a bug in Firefox where the backpack cannot be opened.
+  Blockly.bindEvent_(this.svgBody_, 'mousedown', this, function(e) { e.stopPropagation(); e.preventDefault(); });
   Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
   Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackDoc);
   this.flyout_.init(this.workspace_);
@@ -450,8 +452,14 @@ Blockly.Backpack.prototype.openBackpackDoc = function(e) {
 
 /**
  * On left click, open backpack and view flyout
+ *
+ * @param {?MouseEvent} e Click event if the backpack is being opened in
+ * response to a user action.
  */
-Blockly.Backpack.prototype.openBackpack = function() {
+Blockly.Backpack.prototype.openBackpack = function(e) {
+  if (e) {
+    e.stopPropagation();
+  }
   if (!this.isAdded && this.flyout_.isVisible()) {
     this.flyout_.hide();
   } else {

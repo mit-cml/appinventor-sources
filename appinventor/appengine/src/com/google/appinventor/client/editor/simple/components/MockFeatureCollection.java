@@ -180,7 +180,7 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
     if (collection) {
       var self = this;
       map.removeLayer(collection);
-      if (geojson.charCodeAt = 0xFEFF) geojson = geojson.substr(1);  // strip byte order marker, if present
+      if (geojson.charCodeAt(0) == 0xFEFF) geojson = geojson.substr(1);  // strip byte order marker, if present
       collection = top.L.geoJson(JSON.parse(geojson), {
         pointToLayer: function(feature, latlng) {
           for (var key in feature.properties) {
