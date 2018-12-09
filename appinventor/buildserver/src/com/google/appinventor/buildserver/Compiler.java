@@ -84,6 +84,10 @@ public final class Compiler {
   // Build info constants. Used for permissions, libraries, assets and activities.
   // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
   private static final String ARMEABI_V7A_SUFFIX = "-v7a";
+  // Must match ComponentProcessor.ARM64_V8A_SUFFIX
+  private static final String ARM64_V8A_SUFFIX = "-v8a";
+  // Must match ComponentProcessor.X86_64_SUFFIX
+  private static final String X86_64_SUFFIX = "-x8a";
   // Must match Component.ASSET_DIRECTORY
   private static final String ASSET_DIRECTORY = "component";
   // Must match ComponentListGenerator.ASSETS_TARGET
@@ -113,6 +117,8 @@ public final class Compiler {
   private static final String LIBS_DIR_NAME = "libs";
   private static final String ARMEABI_DIR_NAME = "armeabi";
   private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
+  private static final String ARM64_V8A_DIR_NAME = "arm64-v8a";
+  private static final String X86_64_DIR_NAME = "x86_64";
 
   private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
@@ -133,10 +139,19 @@ public final class Compiler {
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
   private static final String[] SUPPORT_JARS = new String[] {
-    RUNTIME_FILES_DIR + "appcompat-v7.jar",
-    RUNTIME_FILES_DIR + "internal_impl.jar",
-    RUNTIME_FILES_DIR + "support-annotations.jar",
-    RUNTIME_FILES_DIR + "support-v4.jar"
+      RUNTIME_FILES_DIR + "animated-vector-drawable.jar",
+      RUNTIME_FILES_DIR + "appcompat-v7.jar",
+      RUNTIME_FILES_DIR + "core-common.jar",
+      RUNTIME_FILES_DIR + "lifecycle-common.jar",
+      RUNTIME_FILES_DIR + "runtime.jar",
+      RUNTIME_FILES_DIR + "support-annotations.jar",
+      RUNTIME_FILES_DIR + "support-compat.jar",
+      RUNTIME_FILES_DIR + "support-core-ui.jar",
+      RUNTIME_FILES_DIR + "support-core-utils.jar",
+      RUNTIME_FILES_DIR + "support-fragment.jar",
+      RUNTIME_FILES_DIR + "support-media-compat.jar",
+      RUNTIME_FILES_DIR + "support-v4.jar",
+      RUNTIME_FILES_DIR + "support-vector-drawable.jar"
   };
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -481,20 +496,42 @@ public final class Compiler {
    * @param parent The parent style to inherit from.
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, boolean holo) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
     out.write(parent);
     out.write("\">\n");
-    out.write("<item name=\"windowActionBar\">true</item>\n");
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
-    // Handles theme for Notifier
-    out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
-    // Handles theme for DatePicker/TimePicker
-    out.write("<item name=\"android:alertDialogTheme\">@style/AIAlertDialog</item>\n");
+    if (!parent.equals("android:Theme")) {
+      out.write("<item name=\"windowActionBar\">true</item>\n");
+      out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
+      if (parent.contains("Holo") || holo) {
+        out.write("<item name=\"android:actionBarStyle\">@style/AIActionBar</item>\n");
+        out.write("<item name=\"actionBarStyle\">@style/AIActionBar</item>\n");
+      }
+      // Handles theme for Notifier
+      out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
+      out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
+      out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+    }
+    out.write("</style>\n");
+  }
+
+  private static void writeActionBarStyle(Writer out, String name, String parent,
+      boolean blackText) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
+    out.write("<item name=\"android:background\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"android:titleTextStyle\">@style/AIActionBarTitle</item>\n");
+    out.write("</style>\n");
+    out.write("<style name=\"AIActionBarTitle\" parent=\"android:TextAppearance.Holo.Widget.ActionBar.Title\">\n");
+    out.write("<item name=\"android:textColor\">" + (blackText ? "#000" : "#fff") + "</item>\n");
     out.write("</style>\n");
   }
 
@@ -507,6 +544,13 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    if (parent.contains("Holo")) {
+      // workaround for weird window border effect
+      out.write("<item name=\"android:windowBackground\">@android:color/transparent</item>\n");
+      out.write("<item name=\"android:gravity\">center</item>\n");
+      out.write("<item name=\"android:layout_gravity\">center</item>\n");
+      out.write("<item name=\"android:textColor\">@color/colorPrimary</item>\n");
+    }
     out.write("</style>\n");
   }
 
@@ -519,12 +563,27 @@ public final class Compiler {
     String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
     String theme = project.getTheme() == null ? "Classic" : project.getTheme();
     String actionbar = project.getActionBar();
-    String parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
-    if (!"true".equalsIgnoreCase(actionbar)) {
-      if (parentTheme.endsWith("DarkActionBar")) {
-        parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+    String parentTheme;
+    boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
+    boolean needsBlackTitleText = false;
+    if (isClassicTheme) {
+      parentTheme = "android:Theme";
+    } else {
+      if (suffix.equals("-v11")) {  // AppCompat needs SDK 14, so we explicitly name Holo for SDK 11 through 13
+        parentTheme = theme.replace("AppTheme", "android:Theme.Holo");
+        needsBlackTitleText = theme.contains("Light") && !theme.contains("DarkActionBar");
+        if (theme.contains("Light")) {
+          parentTheme = "android:Theme.Holo.Light";
+        }
       } else {
-        parentTheme += ".NoActionBar";
+        parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+      }
+      if (!"true".equalsIgnoreCase(actionbar)) {
+        if (parentTheme.endsWith("DarkActionBar")) {
+          parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+        } else {
+          parentTheme += ".NoActionBar";
+        }
       }
     }
     colorPrimary = cleanColor(colorPrimary, true);
@@ -550,8 +609,16 @@ public final class Compiler {
       out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      if (!parentTheme.startsWith("Classic")) {
-        writeTheme(out, "AppTheme", parentTheme);
+
+      writeTheme(out, "AppTheme", parentTheme, suffix.equals("-v11"));
+      if (!isClassicTheme) {
+        if ("-v11".equals(suffix)) {  // Handle Holo
+          if (parentTheme.contains("Light")) {
+            writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.Light.ActionBar", needsBlackTitleText);
+          } else {
+            writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.ActionBar", needsBlackTitleText);
+          }
+        }
         if (parentTheme.contains("Light")) {
           writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
           writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
@@ -560,12 +627,32 @@ public final class Compiler {
           writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
         }
       }
+
       out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
       out.write("<item name=\"textAllCaps\">false</item>\n");
       out.write("</style>\n");
       out.write("</resources>\n");
       out.close();
     } catch(IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  /*
+   * Creates the provider_paths file which is used to setup a "Files" content
+   * provider.
+   */
+  private boolean createProviderXml(File providerDir) {
+    File paths = new File(providerDir, "provider_paths.xml");
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
+      out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
+      out.write("</paths>\n");
+      out.close();
+    } catch (IOException e) {
       return false;
     }
     return true;
@@ -643,13 +730,14 @@ public final class Compiler {
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
         out.write("  <uses-permission android:name=\"android.permission.READ_LOGS\" />\n");
+        out.write("  <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n");
       }
 
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
-      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"26\" />\n");
 
       out.write("  <application ");
 
@@ -660,6 +748,7 @@ public final class Compiler {
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
+      // out.write("android:debuggable=\"true\" "); // DEBUGGING
       if (aName.equals("")) {
         out.write("android:label=\"" + projectName + "\" ");
       } else {
@@ -672,7 +761,8 @@ public final class Compiler {
         out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
       // Write theme info if we are not using the "Classic" theme (i.e., no theme)
-      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
+      if (true) {
+//      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
         out.write("android:theme=\"@style/AppTheme\" ");
       }
       out.write(">\n");
@@ -706,7 +796,7 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        out.write("android:configChanges=\"orientation|keyboardHidden|keyboard\">\n");
+        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
 
 
         out.write("      <intent-filter>\n");
@@ -729,6 +819,15 @@ public final class Compiler {
           out.write("      </intent-filter>\n");
         }
         out.write("    </activity>\n");
+
+        // Companion display a splash screen... define it's activity here
+        if (isMain && isForCompanion) {
+          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
+          out.write("      </intent-filter>\n");
+          out.write("    </activity>\n");
+        }
       }
       
       // Collect any additional <application> subelements into a single set.
@@ -776,6 +875,19 @@ public final class Compiler {
         }
         out.write("</receiver> \n");
       }
+
+      // Add the FileProvider because in Sdk >=24 we cannot pass file:
+      // URLs in intents (and in other contexts)
+
+      out.write("      <provider\n");
+      out.write("         android:name=\"android.support.v4.content.FileProvider\"\n");
+      out.write("         android:authorities=\"" + packageName + ".provider\"\n");
+      out.write("         android:exported=\"false\"\n");
+      out.write("         android:grantUriPermissions=\"true\">\n");
+      out.write("         <meta-data\n");
+      out.write("            android:name=\"android.support.FILE_PROVIDER_PATHS\"\n");
+      out.write("            android:resource=\"@xml/provider_paths\"/>\n");
+      out.write("      </provider>\n");
 
       out.write("  </application>\n");
       out.write("</manifest>\n");
@@ -852,9 +964,19 @@ public final class Compiler {
     // Create values directory and style xml files
     out.println("________Creating style xml");
     File styleDir = createDir(resDir, "values");
+    File style11Dir = createDir(resDir, "values-v11");
+    File style14Dir = createDir(resDir, "values-v14");
     File style21Dir = createDir(resDir, "values-v21");
     if (!compiler.createValuesXml(styleDir, "") ||
+        !compiler.createValuesXml(style11Dir, "-v11") ||
+        !compiler.createValuesXml(style14Dir, "-v14") ||
         !compiler.createValuesXml(style21Dir, "-v21")) {
+      return false;
+    }
+
+    out.println("________Creating provider_path xml");
+    File providerDir = createDir(resDir, "xml");
+    if (!compiler.createProviderXml(providerDir)) {
       return false;
     }
 
@@ -1032,6 +1154,9 @@ public final class Compiler {
       if (hasSecondDex) {
         apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
           "classes2.dex");
+      }
+      if (nativeLibsNeeded.size() != 0) { // Need to add native libraries...
+        apkBuilder.addNativeLibraries(libsDir);
       }
       apkBuilder.sealApk();
       return true;
@@ -1532,11 +1657,12 @@ public final class Compiler {
       aaptPackageCommandLineArgs.add(packageName);
       aaptPackageCommandLineArgs.add("--output-text-symbols");
       aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
+      aaptPackageCommandLineArgs.add("--no-version-vectors");
       appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
-    aaptPackageCommandLineArgs.add(libsDir.getAbsolutePath());
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
+    libSetup();                 // Setup /tmp/lib64 on Linux
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
@@ -1563,15 +1689,34 @@ public final class Compiler {
     libsDir = createDir(buildDir, LIBS_DIR_NAME);
     File armeabiDir = createDir(libsDir, ARMEABI_DIR_NAME);
     File armeabiV7aDir = createDir(libsDir, ARMEABI_V7A_DIR_NAME);
+    File arm64V8aDir = createDir(libsDir, ARM64_V8A_DIR_NAME);
+    File x8664Dir = createDir(libsDir, X86_64_DIR_NAME);
 
     try {
       for (String type : nativeLibsNeeded.keySet()) {
         for (String lib : nativeLibsNeeded.get(type)) {
           boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
+          boolean isV8a = lib.endsWith(ARM64_V8A_SUFFIX);
+          boolean isx8664 = lib.endsWith(X86_64_SUFFIX);
 
-          String sourceDirName = isV7a ? ARMEABI_V7A_DIR_NAME : ARMEABI_DIR_NAME;
-          File targetDir = isV7a ? armeabiV7aDir : armeabiDir;
-          lib = isV7a ? lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length()) : lib;
+          String sourceDirName;
+          File targetDir;
+          if (isV7a) {
+            sourceDirName = ARMEABI_V7A_DIR_NAME;
+            targetDir = armeabiV7aDir;
+            lib = lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length());
+          } else if (isV8a) {
+            sourceDirName = ARM64_V8A_DIR_NAME;
+            targetDir = arm64V8aDir;
+            lib = lib.substring(0, lib.length() - ARM64_V8A_SUFFIX.length());
+          } else if (isx8664) {
+            sourceDirName = X86_64_DIR_NAME;
+            targetDir = x8664Dir;
+            lib = lib.substring(0, lib.length() - X86_64_SUFFIX.length());
+          } else {
+            sourceDirName = ARMEABI_DIR_NAME;
+            targetDir = armeabiDir;
+          }
 
           String sourcePath = "";
           String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + SLASH + lib;
@@ -1756,6 +1901,29 @@ public final class Compiler {
         resources.put(resourcePath, file);
       }
       return file.getAbsolutePath();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /*
+   * This code is only invoked on Linux. It copies libc++.so into /tmp/lib64. This
+   * is needed on linux to run the aapt tool.
+   */
+  private void libSetup() {
+    String osName = System.getProperty("os.name");
+    if (!osName.equals("Linux")) {
+      return;                   // Nothing to do (yet) for MacOS and Windows
+    }
+    try {
+      File outFile = new File("/tmp/lib64/libc++.so");
+      if (outFile.exists()) {    // Don't do it more then once!
+        return;
+      }
+      File tmpLibDir = new File("/tmp/lib64");
+      tmpLibDir.mkdirs();
+      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource("/tools/linux/lib64/libc++.so")),
+        outFile);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

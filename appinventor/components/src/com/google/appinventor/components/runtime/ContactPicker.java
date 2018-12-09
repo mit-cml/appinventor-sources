@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
+import android.Manifest;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -85,6 +86,8 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   protected List emailAddressList;
   protected List phoneNumberList;
 
+  private boolean havePermission = false; // Do we have READ_CONTACTS permission?
+
   /**
    * Create a new ContactPicker component.
    *
@@ -105,6 +108,28 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     } else {
       this.intentUri = intentUri;
     }
+  }
+
+  @Override
+  public void click() {
+    if (!havePermission) {
+      container.$form()
+        .askPermission(Manifest.permission.READ_CONTACTS,
+                       new PermissionResultHandler() {
+                         @Override
+                         public void HandlePermissionResponse(String permission, boolean granted) {
+                           if (granted) {
+                             ContactPicker.this.havePermission = true;
+                             ContactPicker.this.click();
+                           } else {
+                             container.$form().dispatchPermissionDeniedEvent(ContactPicker.this,
+                                 "Click", Manifest.permission.READ_CONTACTS);
+                           }
+                         }
+                       });
+      return;
+    }
+    super.click();
   }
 
   /**
