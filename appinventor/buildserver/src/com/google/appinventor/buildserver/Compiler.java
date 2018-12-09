@@ -78,6 +78,7 @@ public final class Compiler {
 
   private static final String SLASH = File.separator;
   private static final String COLON = File.pathSeparator;
+  private static final String ZIPSLASH = "/";
 
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
@@ -1719,7 +1720,7 @@ public final class Compiler {
           }
 
           String sourcePath = "";
-          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + SLASH + lib;
+          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
 
           if (simpleCompTypes.contains(type)) {
             sourcePath = getResource(pathSuffix);
