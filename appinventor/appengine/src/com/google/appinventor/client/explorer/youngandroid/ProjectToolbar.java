@@ -14,6 +14,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.PostUtil;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
@@ -33,6 +34,9 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_PUBLISH_OR_UPDATE = "PublishOrUpdate";
+  private static final String WIDGET_NAME_NEW_PUBLISH_OR_UPDATE = "PublishOrUpdateNew";
+
+  private static final String KEY_NAME_PROJECT = "project";
 
   private boolean isReadOnly;
 
@@ -50,6 +54,7 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton(),
         new PublishOrUpdateAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, MESSAGES.publishToNewGalleryButton(), new NewPublishOrUpdateAction()));
 
     updateButtons();
   }
@@ -183,6 +188,62 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
+  private static class NewPublishOrUpdateAction implements Command {
+    @Override
+    public void execute() {
+      List<Project> selectedProjects =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() == 1) {
+        Project currentSelectedProject = ProjectListBox.getProjectListBox().getProjectList()
+                .getSelectedProjects().get(0);
+        if(!currentSelectedProject.isPublished()){
+          // app is not yet published
+          publishToGallery(currentSelectedProject);
+        }else{
+          updateGalleryApp(currentSelectedProject);
+        }
+      } else {
+        // The publish/update button will be disabled if selectedProjects.size != 1
+        // This should not happen, but just in case
+
+        ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectSelectedForPublishOrUpdate());
+      }
+    }
+
+    private void publishToGallery(Project p) {
+//      // first create an app object with default data
+//      final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
+//              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
+//      final String serviceUrl = "http://localhost:3000/api";
+//      final String commandName = "project/create";
+//      final OdeAsyncCallback<JSONObject> callback = new OdeAsyncCallback<JSONObject>() {
+//        @Override
+//        public void onSuccess(JSONObject responseObject) {
+//          if (responseObject.has(KEY_NAME_PROJECT)) {
+//            // redirect to project detail page in gallery
+//
+//          }
+//        }
+//      };
+      PostUtil.test();
+    }
+
+    private void updateGalleryApp(Project p) {
+      // setup what happens when we load the app in
+      final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(GalleryApp app) {
+          // the server has returned us something
+          int editStatus=GalleryPage.UPDATEAPP;
+          Ode.getInstance().switchToGalleryAppView(app, editStatus);
+        }
+      };
+      // ok, this is below the call back, but of course it is done first
+      Ode.getInstance().getGalleryService().getApp(p.getGalleryId(),callback);
+    }
+  }
+
   private static class PublishOrUpdateAction implements Command {
     @Override
     public void execute() {
@@ -250,6 +311,7 @@ public class ProjectToolbar extends Toolbar {
     }
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
+    setButtonEnabled(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
     if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
         .getSelectedProjects().get(0).isPublished()){
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.updateGalleryAppButton());
