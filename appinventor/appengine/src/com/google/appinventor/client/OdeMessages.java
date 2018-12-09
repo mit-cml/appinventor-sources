@@ -58,6 +58,10 @@ public interface OdeMessages extends Messages {
   @Description("Text on \"Publish to Gallery\" button")
   String publishToGalleryButton();
 
+  @DefaultMessage("Publish to New Gallery")
+  @Description("Text on \"Publish to New Gallery\" button")
+  String publishToNewGalleryButton();
+
   @DefaultMessage("Update Gallery App")
   @Description("Text on \"Update Gallery App\" button")
   String updateGalleryAppButton();
