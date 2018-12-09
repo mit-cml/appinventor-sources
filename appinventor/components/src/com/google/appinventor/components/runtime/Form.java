@@ -2472,8 +2472,7 @@ public class Form extends AppInventorCompatActivity
    */
   public void askPermission(final String permission, final PermissionResultHandler responseRequestor) {
     final Form form = this;
-    if (ContextCompat.checkSelfPermission(form, permission) ==
-        PackageManager.PERMISSION_GRANTED) {
+    if (!isDeniedPermission(permission)) {
       // We already have permission, so no need to ask
       responseRequestor.HandlePermissionResponse(permission, true);
       return;
