@@ -42,6 +42,7 @@ public final class Switch extends ToggleBase {
   public Switch(ComponentContainer container) {
     super(container);
     view = new SwitchCompat(container.$context());
+    On(false);
 
     ThumbColorActive(Component.COLOR_WHITE);
     ThumbColorInactive(Component.COLOR_LTGRAY);
@@ -144,6 +145,30 @@ public final class Switch extends ToggleBase {
   public void TrackColorInactive(int argb) {
     trackColorInactive = argb;
     DrawableCompat.setTintList(((SwitchCompat)view).getTrackDrawable(), createSwitchColors(trackColorActive, argb));
+    view.invalidate();
+  }
+
+  /**
+   * Returns true if the checkbox is checked.
+   *
+   * @return  {@code true} indicates checked, {@code false} unchecked
+   */
+  @SimpleProperty(
+          category = PropertyCategory.BEHAVIOR)
+  public boolean On() {
+    return view.isChecked();
+  }
+
+  /**
+   * Checked property setter method.
+   *
+   * @param value  {@code true} indicates checked, {@code false} unchecked
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void On(boolean value) {
+    view.setChecked(value);
     view.invalidate();
   }
 

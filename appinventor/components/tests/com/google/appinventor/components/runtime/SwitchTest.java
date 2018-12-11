@@ -6,10 +6,8 @@
 package com.google.appinventor.components.runtime;
 
 
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.tileprovider.modules.ShadowMapTileModuleProviderBase;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
-import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.annotation.Config;
@@ -25,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  */
 @Config(shadows = {ShadowMapView.class, ShadowMapTileModuleProviderBase.class})
 
-public class SwitchTest extends RobolectricTestBase {
+public class SwitchTest extends ToggleTestBase {
 
   private Switch aSwitch;
 
@@ -33,27 +31,53 @@ public class SwitchTest extends RobolectricTestBase {
   public void setUp() {
     super.setUp();
     aSwitch = new Switch(getForm());
+    aToggle = aSwitch;
   }
 
   @Test
-  public void testDefaults() {
-    assertEquals("Expected default background color NONE",Component.COLOR_NONE, aSwitch.BackgroundColor());
-    assertEquals("Expected default Typeface " + Component.TYPEFACE_DEFAULT,Component.TYPEFACE_DEFAULT, aSwitch.FontTypeface());
-    assertTrue(aSwitch.Enabled());
-    assertEquals("Expected default font size " + Component.FONT_DEFAULT_SIZE, Component.FONT_DEFAULT_SIZE, aSwitch.FontSize());
-    assertEquals("Expected default Text Color " + Component.COLOR_DEFAULT, Component.COLOR_DEFAULT, aSwitch.TextColor());
-    assertFalse(aSwitch.Checked());
-
-    assertEquals("", Component.COLOR_WHITE, aSwitch.ThumbColorActive());
-    assertEquals("", Component.COLOR_LTGRAY, aSwitch.ThumbColorInactive());
-    assertEquals("", Component.COLOR_GREEN, aSwitch.TrackColorActive());
-    assertEquals("", Component.COLOR_GRAY, aSwitch.TrackColorInactive());
+  public void testSwitchSharedDefaults() {
+    testToggleDefaults();
   }
 
   @Test
-  public void testSwitchColors()
-  {
-
+  public void testSwitchDefaults() {
+    assertEquals("Invalid default Thumb Color Active", Component.COLOR_WHITE, aSwitch.ThumbColorActive());
+    assertEquals("Invalid default Thumb Color Inactive", Component.COLOR_LTGRAY, aSwitch.ThumbColorInactive());
+    assertEquals("Invalid default Track Color Active", Component.COLOR_GREEN, aSwitch.TrackColorActive());
+    assertEquals("Invalid default Track Color Inactive", Component.COLOR_GRAY, aSwitch.TrackColorInactive());
   }
 
+  @Test
+  public void testSwitchColors() {
+    aSwitch.ThumbColorActive(Component.COLOR_MAGENTA);
+    assertEquals("Invalid Thumb Color Active", Component.COLOR_MAGENTA, aSwitch.ThumbColorActive());
+
+    aSwitch.ThumbColorInactive(Component.COLOR_BLACK);
+    assertEquals("Invalid Thumb Color Inactive", Component.COLOR_BLACK, aSwitch.ThumbColorInactive());
+
+    aSwitch.TrackColorActive(Component.COLOR_PINK);
+    assertEquals("Invalid Track Color Active", Component.COLOR_PINK, aSwitch.TrackColorActive());
+
+    aSwitch.TrackColorInactive(Component.COLOR_CYAN);
+    assertEquals("Invalid Track Color Inactive", Component.COLOR_CYAN, aSwitch.TrackColorInactive());
+  }
+
+  @Test
+  public void testSwitchOn() {
+    aSwitch.On(false);
+    assertFalse(aSwitch.On());
+
+    aSwitch.On(true);
+    assertTrue(aSwitch.On());
+  }
+
+  @Test
+  public void testSwitchSharedProperties() {
+    testTogglelProperties();
+  }
+
+  @Test
+  public void testSwitchEnabled() {
+    testToggleEnabled();
+  }
 }

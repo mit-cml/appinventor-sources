@@ -25,7 +25,7 @@ public final class MockSwitch extends MockToggleBase {
    */
   public static final String TYPE = "Switch";
   protected final HorizontalPanel panel;
-  public Boolean checked = false;
+  public Boolean checked = false;  // the "on" property of the switch is equivalent to "checked"
   public String thumbColorActive = "white";
   public String thumbColorInactive = "gray";
   public String trackColorActive = "lime";
@@ -156,7 +156,7 @@ public final class MockSwitch extends MockToggleBase {
   /*
    * Sets the switch's Checked property to a new value.
    */
-  private void setCheckedProperty(String text) {
+  private void setOnProperty(String text) {
 
     checked = Boolean.parseBoolean(text);
     paintSwitch();
@@ -190,8 +190,8 @@ public final class MockSwitch extends MockToggleBase {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
-      setCheckedProperty(newValue);
+    if (propertyName.equals(PROPERTY_NAME_ON)) {
+      setOnProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLORACTIVE)) {
       setThumbColorActiveProperty(newValue);

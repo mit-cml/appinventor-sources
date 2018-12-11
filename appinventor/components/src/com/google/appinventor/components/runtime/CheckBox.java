@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
@@ -32,6 +33,32 @@ public final class CheckBox extends ToggleBase {
   public CheckBox(ComponentContainer container) {
     super(container);
     view = new android.widget.CheckBox(container.$context());
+    Checked(false);
     initToggle();
   }
+
+  /**
+   * Returns true if the checkbox is checked.
+   *
+   * @return  {@code true} indicates checked, {@code false} unchecked
+   */
+  @SimpleProperty(
+          category = PropertyCategory.BEHAVIOR)
+  public boolean Checked() {
+    return view.isChecked();
+  }
+
+  /**
+   * Checked property setter method.
+   *
+   * @param value  {@code true} indicates checked, {@code false} unchecked
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void Checked(boolean value) {
+    view.setChecked(value);
+    view.invalidate();
+  }
+
 }

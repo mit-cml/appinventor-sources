@@ -75,7 +75,6 @@ public abstract class ToggleBase extends AndroidViewComponent
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
-    Checked(false);
 
   }
 
@@ -327,30 +326,6 @@ public abstract class ToggleBase extends AndroidViewComponent
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
-  }
-
-  /**
-   * Returns true if the checkbox is checked.
-   *
-   * @return  {@code true} indicates checked, {@code false} unchecked
-   */
-  @SimpleProperty(
-          category = PropertyCategory.BEHAVIOR)
-  public boolean Checked() {
-    return view.isChecked();
-  }
-
-  /**
-   * Checked property setter method.
-   *
-   * @param value  {@code true} indicates checked, {@code false} unchecked
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "False")
-  @SimpleProperty
-  public void Checked(boolean value) {
-    view.setChecked(value);
-    view.invalidate();
   }
 
   // OnCheckedChangeListener implementation

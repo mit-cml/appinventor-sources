@@ -2779,6 +2779,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CheckedProperties();
 
+  @DefaultMessage("On")
+  @Description("")
+  String OnProperties();
+
   @DefaultMessage("CloseScreenAnimation")
   @Description("")
   String CloseScreenAnimationProperties();

@@ -40,6 +40,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
+  protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
   protected static final String PROPERTY_NAME_HINT = "Hint";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
