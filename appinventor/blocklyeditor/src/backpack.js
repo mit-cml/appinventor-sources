@@ -201,7 +201,7 @@ Blockly.Backpack.prototype.createDom = function(opt_workspace) {
 
   this.svgGroup_ = Blockly.utils.createSvgElement('g', {}, null);
   this.svgBody_ = Blockly.utils.createSvgElement('image',
-      {'width': this.WIDTH_, 'height': this.BODY_HEIGHT_, 'id': 'backpackIcon'},
+      {'width': this.WIDTH_, 'height': this.BODY_HEIGHT_},
       this.svgGroup_);
   this.svgBody_.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
       Blockly.pathToBlockly + this.BPACK_CLOSED_);
@@ -230,11 +230,7 @@ Blockly.Backpack.prototype.init = function() {
     if (!contents) {
       return;
     }
-    if (contents.length === 0) {
-      p.shrink();
-    } else {
-      p.grow();
-    }
+    p.resize();
   });
 };
 
@@ -537,7 +533,7 @@ Blockly.Backpack.prototype.setOpen_ = function(state) {
  * Change the image of backpack to one with red outline
  */
 Blockly.Backpack.prototype.animateBackpack_ = function() {
-  var icon = document.getElementById('backpackIcon');
+  var icon = this.svgBody_;
   if (this.isOpen){
     icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_EMPTY_);
   } else {
@@ -563,7 +559,7 @@ Blockly.Backpack.prototype.close = function() {
 Blockly.Backpack.prototype.grow = function() {
   if (this.isLarge)
     return;
-  var icon = document.getElementById('backpackIcon');
+  var icon = this.svgBody_;
   icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_FULL_);
   this.svgBody_.setAttribute('transform','scale(1.2)');
   this.MARGIN_SIDE_ = this.MARGIN_SIDE_ / 1.2;
@@ -579,7 +575,7 @@ Blockly.Backpack.prototype.grow = function() {
 Blockly.Backpack.prototype.shrink = function() {
   if (!this.isLarge)
     return;
-  var icon = document.getElementById('backpackIcon');
+  var icon = this.svgBody_;
   icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
   this.svgBody_.setAttribute('transform','scale(1)');
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 1.2;
@@ -635,11 +631,7 @@ Blockly.Backpack.prototype.getContents = function(callback) {
       } else {
         var parsed = JSON.parse(content);
         Blockly.Backpack.contents = parsed;
-        if (parsed.length > 0) {
-          p.grow();
-        } else {
-          p.shrink();
-        }
+        p.resize();
         callback(parsed);
       }
     });
@@ -662,6 +654,17 @@ Blockly.Backpack.prototype.setContents = function(backpack, store) {
     } else {
       top.BlocklyPanel_storeBackpack(JSON.stringify(backpack));
     }
+  }
+};
+
+/**
+ * Resize the backpack icon based on whether the backpack has contents or not.
+ */
+Blockly.Backpack.prototype.resize = function() {
+  if (Blockly.Backpack.contents.length > 0) {
+    this.grow();
+  } else {
+    this.shrink();
   }
 };
 
