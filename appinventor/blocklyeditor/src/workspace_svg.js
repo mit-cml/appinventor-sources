@@ -1074,3 +1074,12 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
     }.bind(this));
   }
 };
+
+/**
+ * Refresh the state of the backpack. Called from BlocklyPanel.java
+ */
+Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
+  if (this.backpack_) {
+    this.backpack_.resize();
+  }
+};
