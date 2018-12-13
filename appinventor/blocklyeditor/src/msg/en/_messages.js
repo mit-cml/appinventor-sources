@@ -403,7 +403,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_ARITHMETIC_POWER = '^';
 
     Blockly.Msg.LANG_MATH_BITWISE_AND = 'bitwise and';
-    Blockly.Msg.LANG_MATH_BITWISE_IOR = 'bitwise ior';
+    Blockly.Msg.LANG_MATH_BITWISE_IOR = 'bitwise or';
     Blockly.Msg.LANG_MATH_BITWISE_XOR = 'bitwise xor';
 
     /*Blockly.Msg.LANG_MATH_CHANGE_TITLE_CHANGE = 'change';
