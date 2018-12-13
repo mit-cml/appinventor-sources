@@ -319,14 +319,42 @@ Blockly.Blocks['math_bitwise_and'] = {
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
+    this.appendValueInput('NUM0')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('NUM1')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_MATH_BITWISE_AND);
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND);
+    var thisBlock = this;
+    this.setTooltip(function () {
+      return Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND;
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_mutator_item', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum !== 0) {
+      input.appendField(Blockly.Msg.LANG_MATH_BITWISE_AND);
+    }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue(Blockly.Blocks.Utilities.times_symbol, "CONTAINER_TEXT");
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND}]
 };
@@ -338,14 +366,42 @@ Blockly.Blocks['math_bitwise_ior'] = {
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
+    this.appendValueInput('NUM0')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('NUM1')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_MATH_BITWISE_IOR);
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR);
+    var thisBlock = this;
+    this.setTooltip(function () {
+      return Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR;
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_mutator_item', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum !== 0) {
+      input.appendField(Blockly.Msg.LANG_MATH_BITWISE_IOR);
+    }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue(Blockly.Blocks.Utilities.times_symbol, "CONTAINER_TEXT");
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_IOR}]
 };
@@ -357,14 +413,42 @@ Blockly.Blocks['math_bitwise_xor'] = {
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
+    this.appendValueInput('NUM0')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('NUM1')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setTooltip(Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR);
+    var thisBlock = this;
+    this.setTooltip(function () {
+      return Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR;
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_mutator_item', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum !== 0) {
+      input.appendField(Blockly.Msg.LANG_MATH_BITWISE_XOR);
+    }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue(Blockly.Blocks.Utilities.times_symbol, "CONTAINER_TEXT");
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR}]
 };

@@ -92,15 +92,15 @@ Blockly.Yail['math_multiply'] = function() {
 };
 
 Blockly.Yail['math_bitwise_and'] = function() {
-  return Blockly.Yail.math_arithmetic("BITAND", this);
+  return Blockly.Yail.math_arithmetic_list("BITAND", this);
 };
 
 Blockly.Yail['math_bitwise_ior'] = function() {
-  return Blockly.Yail.math_arithmetic("BITIOR", this);
+  return Blockly.Yail.math_arithmetic_list("BITIOR", this);
 };
 
 Blockly.Yail['math_bitwise_xor'] = function() {
-  return Blockly.Yail.math_arithmetic("BITXOR", this);
+  return Blockly.Yail.math_arithmetic_list("BITXOR", this);
 };
 
 Blockly.Yail['math_arithmetic_list'] = function(mode,block) {
