@@ -6,10 +6,12 @@
 bin/
 build/
 reports/
+**/bin/
+**/build/
+**/reports/
 *~
 *.out
 .DS_Store*
-*.out
 *~
 *.iml
 .idea/
