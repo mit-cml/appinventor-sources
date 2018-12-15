@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -74,6 +75,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2470,8 +2472,7 @@ public class Form extends AppInventorCompatActivity
    */
   public void askPermission(final String permission, final PermissionResultHandler responseRequestor) {
     final Form form = this;
-    if (ContextCompat.checkSelfPermission(form, permission) ==
-        PackageManager.PERMISSION_GRANTED) {
+    if (!isDeniedPermission(permission)) {
       // We already have permission, so no need to ask
       responseRequestor.HandlePermissionResponse(permission, true);
       return;
@@ -2530,13 +2531,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SuppressWarnings({"WeakerAccess"})  // May be called by extensions
   public InputStream openAsset(String asset) throws IOException {
-    String path = getAssetPath(asset);
-    if (path.startsWith(ASSETS_PREFIX)) {
-      final AssetManager am = getAssets();
-      return am.open(path.substring(ASSETS_PREFIX.length()));
-    } else {
-      return FileUtil.openFile(URI.create(path));
-    }
+    return openAssetInternal(getAssetPath(asset));
   }
 
   /**
@@ -2563,13 +2558,21 @@ public class Form extends AppInventorCompatActivity
    * stream to prevent resource leaking.
    * @throws IOException if the asset is not found or cannot be read
    */
+  @SuppressWarnings("unused")  // May be called by extensions
   public InputStream openAssetForExtension(Component component, String asset) throws IOException {
-    String path = getAssetPathForExtension(component, asset);
+    return openAssetInternal(getAssetPathForExtension(component, asset));
+  }
+
+  @SuppressWarnings("WeakerAccess")  // Visible for testing
+  @VisibleForTesting
+  InputStream openAssetInternal(String path) throws IOException {
     if (path.startsWith(ASSETS_PREFIX)) {
       final AssetManager am = getAssets();
       return am.open(path.substring(ASSETS_PREFIX.length()));
-    } else {
+    } else if (path.startsWith("file:")) {
       return FileUtil.openFile(URI.create(path));
+    } else {
+      return FileUtil.openFile(path);
     }
   }
 }
