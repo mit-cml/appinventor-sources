@@ -441,6 +441,40 @@ Blockly.ReplMgr.putYail = (function() {
             poll();
 
         },
+        'chunker' : (function() {
+            var seq = 0;
+            var gensym = function() {
+                seq += 1;
+                return 'Q' + seq;
+            };
+
+            var chunker = function(input) {
+                var length = input.length;
+                var chunklen = 8192;
+                if (length < chunklen) {
+                    return input;
+                }
+                var chunks = [];
+                while (length > 0) {
+                    var clen = Math.min(length, chunklen);
+                    chunks.push(input.substring(0, clen));
+                    input = input.substring(clen);
+                    length = input.length;
+                }
+                var symbol = gensym();
+                var retval = [];
+                retval.push('(define ' + symbol + ' "")');
+                chunks.forEach(function(item, index) {
+                    item = item.replace(/\\/g, '\\\\');
+                    item = item.replace(/"/g, '\\"');
+                    var code = '(set! ' + symbol + ' (string-append ' + symbol + ' "' + item + '"))';
+                    retval.push(code);
+                });
+                retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                return retval;
+            };
+            return (chunker);
+        })(),
         'pollphone' : function() {
             if (!rs.didversioncheck) {
                 engine.doversioncheck();
@@ -479,7 +513,17 @@ Blockly.ReplMgr.putYail = (function() {
                     sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
                         blockid + " (begin " + work.code + ")))";
                     console.log(sendcode);
-                    webrtcdata.send(sendcode); // Send the code!
+                    sendcode = engine.chunker(sendcode);
+                    if (typeof(sendcode) == 'string') {
+                        console.log('sending whole');
+                        webrtcdata.send(sendcode); // Send the code!
+                    } else {
+                        console.log('sending chunked');
+                        sendcode.forEach(function(item) {
+                            console.log('Chunk: ' + item);
+                            webrtcdata.send(item);
+                        });
+                    }
                 }
                 if (rs.state == Blockly.ReplMgr.rsState.CONNECTED) {
                     while ((work = rs.phoneState.phoneQueue.shift())) {
@@ -491,7 +535,17 @@ Blockly.ReplMgr.putYail = (function() {
                         sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
                             blockid + " (begin " + work.code + ")))";
                         console.log(sendcode);
-                        webrtcdata.send(sendcode); // Send the code!
+                        sendcode = engine.chunker(sendcode);
+                        if (typeof(sendcode) == 'string') {
+                            console.log('sending whole');
+                            webrtcdata.send(sendcode); // Send the code!
+                        } else {
+                            console.log('sending chunked');
+                            sendcode.forEach(function(item) {
+                                console.log('Chunk: ' + item);
+                                webrtcdata.send(item);
+                            });
+                        }
                     }
                 }
                 rs.phoneState.ioRunning = false;
