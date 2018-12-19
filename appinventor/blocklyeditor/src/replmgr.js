@@ -450,9 +450,9 @@ Blockly.ReplMgr.putYail = (function() {
 
             var chunker = function(input) {
                 var length = input.length;
-                var chunklen = 8192;
-                if (length < chunklen) {
-                    return input;
+                var chunklen = 15000; // purposely smaller then 16K because we
+                if (length <= chunklen) { // add overhead
+                    return [input];
                 }
                 var chunks = [];
                 while (length > 0) {
@@ -471,6 +471,7 @@ Blockly.ReplMgr.putYail = (function() {
                     retval.push(code);
                 });
                 retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                retval.push('(set! ' + symbol + ' #!null)'); // so memory is gc'd
                 return retval;
             };
             return (chunker);
@@ -513,17 +514,15 @@ Blockly.ReplMgr.putYail = (function() {
                     sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
                         blockid + " (begin " + work.code + ")))";
                     console.log(sendcode);
+                    // sendcode is a string of all of the scheme code
                     sendcode = engine.chunker(sendcode);
-                    if (typeof(sendcode) == 'string') {
-                        console.log('sending whole');
-                        webrtcdata.send(sendcode); // Send the code!
-                    } else {
-                        console.log('sending chunked');
-                        sendcode.forEach(function(item) {
-                            console.log('Chunk: ' + item);
-                            webrtcdata.send(item);
-                        });
-                    }
+                    // sendcode is now an array of strings, also scheme
+                    // code, but guaranteed that each will fit in a
+                    // webrtc message
+                    sendcode.forEach(function(item) {
+                        console.log('Chunk: ' + item);
+                        webrtcdata.send(item);
+                    });
                 }
                 if (rs.state == Blockly.ReplMgr.rsState.CONNECTED) {
                     while ((work = rs.phoneState.phoneQueue.shift())) {
@@ -535,17 +534,15 @@ Blockly.ReplMgr.putYail = (function() {
                         sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
                             blockid + " (begin " + work.code + ")))";
                         console.log(sendcode);
+                        // sendcode is a string of all of the scheme code
                         sendcode = engine.chunker(sendcode);
-                        if (typeof(sendcode) == 'string') {
-                            console.log('sending whole');
-                            webrtcdata.send(sendcode); // Send the code!
-                        } else {
-                            console.log('sending chunked');
-                            sendcode.forEach(function(item) {
-                                console.log('Chunk: ' + item);
-                                webrtcdata.send(item);
-                            });
-                        }
+                        // sendcode is now an array of strings, also scheme
+                        // code, but guaranteed that each will fit in a
+                        // webrtc message
+                        sendcode.forEach(function(item) {
+                            console.log('Chunk: ' + item);
+                            webrtcdata.send(item);
+                        });
                     }
                 }
                 rs.phoneState.ioRunning = false;
