@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.view.View;
 import android.widget.RelativeLayout;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
+import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -162,6 +163,30 @@ public class MapTest extends MapTestBase {
     // Make sure that the view was invalidated
     assertTrue(shadowOf(getMapView()).wasInvalidated());
     assertTrue(map.ShowScale());
+  }
+
+  /**
+   * Test that:
+   * 1) Changing the scale invalidates the map view
+   * 2) If we change the scale, the ScaleUnits getter will return the new value
+   */
+  @Test
+  public void testScaleUnits() {
+    shadowOf(getMapView()).clearWasInvalidated();
+    map.ScaleUnits(2);
+    // Make sure that the view was invalidated
+    assertTrue(shadowOf(getMapView()).wasInvalidated());
+    assertEquals(2, map.ScaleUnits());
+  }
+
+  /**
+   * Test that, if we give an invalid unit system identifier, the system will
+   * dispatch an error through the Form.
+   */
+  @Test
+  public void testScaleUnitsInvalid() {
+    map.ScaleUnits(-1);
+    ShadowEventDispatcher.assertErrorOccurred(ErrorMessages.ERROR_INVALID_UNIT_SYSTEM);
   }
 
   @Test

@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.LocationSensor;
+import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
 import org.osmdroid.util.BoundingBox;
 
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
@@ -265,6 +266,16 @@ class DummyMapController implements MapController {
 
   @Override
   public boolean isScaleVisible() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setScaleUnits(MapScaleUnits units) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public MapScaleUnits getScaleUnits() {
     throw new UnsupportedOperationException();
   }
 }

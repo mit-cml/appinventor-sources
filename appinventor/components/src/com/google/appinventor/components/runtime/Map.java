@@ -12,6 +12,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory;
+import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.osmdroid.util.BoundingBox;
 
@@ -460,6 +461,30 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
       description = "Shows a scale reference on the map.")
   public boolean ShowScale() {
     return mapController.isScaleVisible();
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM,
+      defaultValue = "1")
+  @SimpleProperty
+  public void ScaleUnits(int units) {
+    if (1 <= units && units < MapScaleUnits.values().length) {
+      mapController.setScaleUnits(MapScaleUnits.values()[units]);
+    } else {
+      $form().dispatchErrorOccurredEvent(this, "ScaleUnits",
+          ErrorMessages.ERROR_INVALID_UNIT_SYSTEM, units);
+    }
+  }
+
+  @SimpleProperty
+  public int ScaleUnits() {
+    switch (mapController.getScaleUnits()) {
+      case METRIC:
+        return 1;
+      case IMPERIAL:
+        return 2;
+      default:
+        return 0;
+    }
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,

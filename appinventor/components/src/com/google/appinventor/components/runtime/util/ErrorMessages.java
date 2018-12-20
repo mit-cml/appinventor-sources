@@ -240,6 +240,7 @@ public final class ErrorMessages {
   public static final int ERROR_INVALID_LATITUDE_IN_POINT_AT_INDEX = 3418;
   public static final int ERROR_INVALID_LONGITUDE_IN_POINT_AT_INDEX = 3419;
   public static final int ERROR_EXPECTED_ARRAY_AT_INDEX = 3420;
+  public static final int ERROR_INVALID_UNIT_SYSTEM = 3421;
 
   // Phone Call Errors
   public static final int ERROR_NO_CALL_PERMISSION = 3501;
@@ -607,6 +608,10 @@ public final class ErrorMessages {
         "Invalid longitude %2$s in point at index %1$d. Expected a value between [-180, 180].");
     errorMessages.put(ERROR_EXPECTED_ARRAY_AT_INDEX,
         "Expected an array of values at index %1$d, but got %2$s.");
+    errorMessages.put(ERROR_INVALID_UNIT_SYSTEM,
+        "Invalid unit system %1$d given to ScaleUnits. Expected either 1 or 2.");
+
+    // Phone Call errors
     errorMessages.put(ERROR_NO_CALL_PERMISSION,
         "You do not have permission to make phone calls.");
   }
