@@ -408,8 +408,8 @@ Blockly.Blocks.math_bitwise.TOOLTIPS = function () {
 Blockly.Blocks.math_bitwise.HELPURLS = function () {
   return {
     BITAND: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND,
-    REMAINDER: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_IOR,
-    QUOTIENT: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR
+    BITIOR: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_IOR,
+    BITXOR: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR
   }
 };
 
