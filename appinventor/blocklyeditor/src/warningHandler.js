@@ -220,7 +220,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
 Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
   var rootBlock = block.getRootBlock();
   if(rootBlock.type == "global_declaration"){
-    var errorMessage = Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION;
+    var errorMessage = Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION;
     block.setErrorIconText(errorMessage);
     return true;
   } else {
@@ -231,7 +231,7 @@ Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
 // Check if block is undefined and unplug
 Blockly.WarningHandler.prototype['checkIfUndefinedBlock'] = function(block) {
   if (block.isBadBlock() === true) {
-    var errorMessage = Blockly.ERROR_BLOCK_IS_NOT_DEFINED;
+    var errorMessage = Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED;
     var healStack = true;
     if (block.type == "component_event") {
       healStack = false; // unplug all blocks inside
@@ -265,7 +265,7 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
       }
     }
     if(!textInDropDown) {
-      var errorMessage = Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN;
+      var errorMessage = Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN;
       block.setErrorIconText(errorMessage);
       return true;
     }
@@ -283,7 +283,7 @@ Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
   if (Blockly_containedInLoop(block)) {
     return false;  // false means it is within a loop
   } else {
-    var errorMessage = Blockly.ERROR_BREAK_ONLY_IN_LOOP;
+    var errorMessage = Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP;
     block.setErrorIconText(errorMessage);
     return true;  //true means it is not within a loop
   }
@@ -315,7 +315,7 @@ Blockly.WarningHandler.prototype['checkComponentNotExistsError'] = function(bloc
   }
   var component_names = this.workspace.componentDb_.getInstanceNames();
   if (component_names.indexOf(block.instanceName) == -1) {
-    var errorMessage = Blockly.ERROR_COMPONENT_DOES_NOT_EXIST;
+    var errorMessage = Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST;
     block.setErrorIconText(errorMessage);
     return true;
   }
@@ -380,7 +380,7 @@ Blockly.WarningHandler.prototype['determineDuplicateComponentEventHandlers'] = f
 // by determineDuplicateComponentEventHandlers
 Blockly.WarningHandler.prototype['checkIfIAmADuplicateEventHandler'] = function(block) {
   if (block.IAmADuplicate) {
-    block.setErrorIconText(Blockly.ERROR_DUPLICATE_EVENT_HANDLER);
+    block.setErrorIconText(Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER);
     return true;
   } else {
     return false;
