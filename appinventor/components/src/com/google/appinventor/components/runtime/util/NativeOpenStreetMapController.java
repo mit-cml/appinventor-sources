@@ -40,6 +40,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
 import com.google.appinventor.components.runtime.util.MapFactory.MapType;
 import com.google.appinventor.components.runtime.view.ZoomControlView;
 import org.osmdroid.api.IGeoPoint;
@@ -62,6 +63,7 @@ import org.osmdroid.views.overlay.OverlayWithIWVisitor;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
+import org.osmdroid.views.overlay.ScaleBarOverlay.UnitsOfMeasure;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
@@ -1228,6 +1230,33 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public boolean isScaleVisible() {
     return scaleBar.isEnabled();
+  }
+
+  @Override
+  public void setScaleUnits(MapScaleUnits units) {
+    switch (units) {
+      case METRIC:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.metric);
+        break;
+      case IMPERIAL:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.imperial);
+        break;
+      default:
+        throw new IllegalArgumentException("Unallowable unit system: " + units);
+    }
+    view.invalidate();
+  }
+
+  @Override
+  public MapScaleUnits getScaleUnits() {
+    switch (scaleBar.getUnitsOfMeasure()) {
+      case imperial:
+        return MapScaleUnits.IMPERIAL;
+      case metric:
+        return MapScaleUnits.METRIC;
+      default:
+        throw new IllegalStateException("Somehow we have an unallowed unit system");
+    }
   }
 
   static class MultiPolygon extends Polygon {

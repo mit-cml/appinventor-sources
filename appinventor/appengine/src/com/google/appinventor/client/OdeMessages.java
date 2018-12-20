@@ -6651,6 +6651,10 @@ public interface OdeMessages extends Messages {
   @Description("The type of map tile to be displayed")
   String MapTypeProperties();
 
+  @DefaultMessage("ScaleUnits")
+  @Description("Display name for the property to adjust the map's scale units")
+  String ScaleUnitsProperties();
+
   @DefaultMessage("ShowCompass")
   @Description("Show a compass control on the Map")
   String ShowCompassProperties();
@@ -6706,6 +6710,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Terrain")
   @Description("Terrain map type")
   String mapTypeTerrain();
+
+  @DefaultMessage("Metric")
+  @Description("Display name for the metric unit system")
+  String mapScaleUnitsMetric();
+
+  @DefaultMessage("Imperial")
+  @Description("Display name for the imperial unit system")
+  String mapScaleUnitsImperial();
 
   @DefaultMessage("ImageAsset")
   @Description("ImageAsset")

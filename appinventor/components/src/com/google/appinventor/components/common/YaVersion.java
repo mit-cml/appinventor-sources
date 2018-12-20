@@ -874,7 +874,8 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 4:
   // - Added Rotation property
   // For MAP_COMPONENT_VERSION 5:
-  // - Added Scale property
+  // - Added ShowScale property
+  // - Added ScaleUnits property
   public static final int MAP_COMPONENT_VERSION = 5;
 
   // For MARKER_COMPONENT_VERSION 1:
