@@ -52,7 +52,7 @@ public final class MockCheckBox extends MockToggleBase<CheckBox> {
   }
 
   protected Widget createClonedWidget() {
-    return new ClonedCheckBox((CheckBox)toggleWidget);
+    return new ClonedCheckBox(toggleWidget);
   }
 
   /*

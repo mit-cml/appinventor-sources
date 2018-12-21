@@ -47,7 +47,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
    * @return  {@code true} indicates checked, {@code false} unchecked
    */
   @SimpleProperty(
-     category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR)
   public boolean Checked() {
     return view.isChecked();
   }
