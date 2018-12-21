@@ -104,7 +104,11 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
       List<MockComponent> children = new ArrayList<MockComponent>(getChildren());
       for (MockComponent component : children) {
         removeComponent(component, true);
+        component.onRemoved();
       }
+      children.clear();
+      features.clear();
+      clearLayers();
       return;
     }
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
@@ -117,10 +121,8 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
       @Override
       public void onSuccess(String result) {
         setGeoJSONProperty(result);
-        for (MockMapFeature feature : features) {
-          MockFeatureCollection.this.addVisibleComponent((MockComponent) feature, -1);
-          feature.addToMap(map);
-        }
+        MockFeatureCollection.this.onSelectedChange(true);  // otherwise the last imported component
+                                                            // will be shown in the properties panel
       }
     });
   }
@@ -178,6 +180,7 @@ public class MockFeatureCollection extends MockContainer implements MockMapFeatu
     if (collection) {
       var self = this;
       map.removeLayer(collection);
+      if (geojson.charCodeAt(0) == 0xFEFF) geojson = geojson.substr(1);  // strip byte order marker, if present
       collection = top.L.geoJson(JSON.parse(geojson), {
         pointToLayer: function(feature, latlng) {
           for (var key in feature.properties) {

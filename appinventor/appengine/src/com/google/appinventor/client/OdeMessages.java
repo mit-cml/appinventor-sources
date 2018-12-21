@@ -985,12 +985,15 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component type would be the same as a component instance name")
   String sameAsComponentInstanceNameError();
 
-  @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
+  @DefaultMessage("Name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
-      "Pattern, YailList, YailNumberToString, YailRuntimeError")
-  @Description("Error shown when a new component name is a variable name already used in the" +
-      "Yail code")
-  String badComponentNameError();
+      "Pattern, YailList, YailNumberToString, YailRuntimeError, abstract, continue, for, new, " +
+      "switch, assert, default, goto, package, synchronized, boolean, do, if, private, this, break, " +
+      "double, implements, protected, throw, byte, else, import, public, throws, case, enum, instanceof, " +
+      "return, transient, catch, extends, int, short, try, char, final, interface, static, void, class, " +
+      "finally, long, strictfp, volatile, const, float, native, super, while")
+  @Description("Error shown when a new name is a reserved name in Yail or Java code")
+  String reservedNameError();
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
@@ -1039,6 +1042,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Extension Version:")
   @Description("Header for extension version information")
   String externalComponentVersion();
+
+  @DefaultMessage("Date Built:")
+  @Description("Header to indicate the date an extension was compiled")
+  String dateBuilt();
 
   @DefaultMessage("More information")
   @Description("Label of the link to a component's reference docs")
@@ -3928,6 +3935,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String functionNameParams();
 
+  @DefaultMessage("permissionName")
+  @Description("The name of the parameter that is used to report the name of a needed permission.")
+  String permissionNameParams();
+
   @DefaultMessage("errorNumber")
   @Description("")
   String errorNumberParams();
@@ -4151,6 +4162,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("seed")
   @Description("")
   String seedParams();
+
+  @DefaultMessage("rendezvousServer")
+  @Description("")
+  String rendezvousServerParams();
 
   @DefaultMessage("millisecs")
   @Description("")
@@ -4500,6 +4515,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("OtherScreenClosed")
   @Description("")
   String OtherScreenClosedEvents();
+
+  @DefaultMessage("PermissionDenied")
+  @Description("The name of the event handler for when the app is denied a dangerous permission by the user.")
+  String PermissionDeniedEvents();
+
+  @DefaultMessage("PermissionGranted")
+  @Description("The name of the event handler for when the app is granted a dangerous permission by the user.")
+  String PermissionGrantedEvents();
 
   @DefaultMessage("ScreenOrientationChanged")
   @Description("")
@@ -5389,6 +5412,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("HideKeyboard")
   @Description("")
   String HideKeyboardMethods();
+
+  @DefaultMessage("AskForPermission")
+  @Description("")
+  String AskForPermissionMethods();
 
   @DefaultMessage("Speak")
   @Description("")
@@ -7043,6 +7070,22 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
+
+  @DefaultMessage("WebRTC")     // Note: This is INTERNAL so doesn't need translation
+  @Description("")
+  String WebRTCProperties();
+
+  @DefaultMessage("GetVersionName")
+  @Description("")
+  String GetVersionNameMethods();
+
+  @DefaultMessage("SdkLevel")
+  @Description("")
+  String SdkLevelMethods();
+
+  @DefaultMessage("GetInstaller")
+  @Description("")
+  String GetInstallerMethods();
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")

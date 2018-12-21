@@ -355,7 +355,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
 
   @SuppressWarnings("WeakerAccess")
   protected void processGeoJSON(final String url, final String content) throws JSONException {
-    JSONObject parsedData = new JSONObject(content);
+    JSONObject parsedData = new JSONObject(stripBOM(content));
     String type = parsedData.optString(GEOJSON_TYPE);
     if (!GEOJSON_FEATURECOLLECTION.equals(type) && !GEOJSON_GEOMETRYCOLLECTION.equals(type)) {
       $form().runOnUiThread(new Runnable() {
@@ -423,6 +423,14 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       }
     }
     return YailList.makeList(items);
+  }
+
+  private static String stripBOM(String content) {
+    if (content.charAt(0) == '\uFEFF') {
+      return content.substring(1);
+    } else {
+      return content;
+    }
   }
 
 }

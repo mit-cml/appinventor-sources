@@ -30,6 +30,11 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
 
+  <target name="comps1">
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
+  </target>
+
   <target name="extensions">
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
@@ -94,7 +99,7 @@
         <pathelement location="components/src" />
       </sourcepath>
       <classpath>
-        <pathelement location="lib/android/5.1.1/android.jar" />
+        <pathelement location="lib/android-26/android.jar" />
         <pathelement location="lib/android/tools/ddmlib.jar"/>
         <pathelement location="lib/bouncycastle/bcprov-jdk15on-149.jar"/>
         <pathelement location="lib/bouncycastle/bcpkix-jdk15on-149.jar"/>

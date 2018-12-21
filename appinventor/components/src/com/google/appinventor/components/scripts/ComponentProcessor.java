@@ -35,7 +35,9 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +50,8 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.AnnotationValueVisitor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -58,7 +62,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.AbstractTypeVisitor7;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
@@ -137,6 +140,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   // Must match buildserver.compiler.ARMEABI_V7A_SUFFIX
   private static final String ARMEABI_V7A_SUFFIX = "-v7a";
+  // Must match buildserver.compiler.ARMEABI_V8A_SUFFIX
+  private static final String ARM64_V8A_SUFFIX = "-v8a";
+  // Must match buildserver.compiler.X86_64_SUFFIX
+  private static final String X86_64_SUFFIX = "-x8a";
 
   // The next two fields are set in init().
   /**
@@ -572,6 +579,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private boolean nonVisible;
     private String iconName;
     private int androidMinSdk;
+    private String versionName;
+    private String dateBuilt;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
@@ -592,6 +601,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       events = Maps.newTreeMap();
       abstractClass = element.getModifiers().contains(Modifier.ABSTRACT);
       external = false;
+      versionName = null;
+      dateBuilt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date());
       for (AnnotationMirror am : element.getAnnotationMirrors()) {
         DeclaredType dt = am.getAnnotationType();
         String annotationName = am.getAnnotationType().toString();
@@ -604,6 +615,27 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           designerComponent = true;
           DesignerComponent designerComponentAnnotation =
               element.getAnnotation(DesignerComponent.class);
+          Map values = elementUtils.getElementValuesWithDefaults(am);
+          for (Map.Entry entry : (Set<Map.Entry>) values.entrySet()) {
+            if (((ExecutableElement) entry.getKey()).getSimpleName().contentEquals("dateBuilt")) {
+              entry.setValue(new AnnotationValue() {
+                @Override
+                public Object getValue() {
+                  return dateBuilt;
+                }
+
+                @Override
+                public <R, P> R accept(AnnotationValueVisitor<R, P> v, P p) {
+                  return v.visit(this, p);
+                }
+
+                @Override
+                public String toString() {
+                  return "\"" + dateBuilt + "\"";
+                }
+              });
+            }
+          }
 
           // Override javadoc description with explicit description
           // if provided.
@@ -630,6 +662,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           nonVisible = designerComponentAnnotation.nonVisible();
           iconName = designerComponentAnnotation.iconName();
           androidMinSdk = designerComponentAnnotation.androidMinSdk();
+          versionName = designerComponentAnnotation.versionName();
         }
       }
     }
@@ -737,6 +770,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected int getAndroidMinSdk() {
       return androidMinSdk;
+    }
+
+    protected String getVersionName() {
+      return versionName;
+    }
+
+    protected String getDateBuilt() {
+      return dateBuilt;
     }
 
     private String getDisplayNameForComponentType(String componentTypeName) {
@@ -935,6 +976,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String v7aLibrary : usesNativeLibraries.v7aLibraries().split(",")) {
         updateWithNonEmptyValue(componentInfo.nativeLibraries, v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
       }
+      for (String v8aLibrary : usesNativeLibraries.v8aLibraries().split(",")) {
+        updateWithNonEmptyValue(componentInfo.nativeLibraries, v8aLibrary.trim() + ARM64_V8A_SUFFIX);
+      }
+      for (String x8664Library : usesNativeLibraries.x86_64Libraries().split(",")) {
+        updateWithNonEmptyValue(componentInfo.nativeLibraries, x8664Library.trim() + X86_64_SUFFIX);
+      }
+
     }
 
     // Gather required files.
