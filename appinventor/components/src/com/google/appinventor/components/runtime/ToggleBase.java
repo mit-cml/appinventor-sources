@@ -32,10 +32,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
                 "the Designer or Blocks Editor.",
         category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public abstract class ToggleBase extends AndroidViewComponent
+public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewComponent
         implements OnCheckedChangeListener, OnFocusChangeListener {
 
-  protected android.widget.CompoundButton view;
+  protected T view;
 
   // Backing for background color
   private int backgroundColor;

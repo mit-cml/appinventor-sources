@@ -27,7 +27,6 @@ public abstract class ToggleTestBase extends RobolectricTestBase {
     assertTrue(aToggle.Enabled());
     assertEquals(Component.FONT_DEFAULT_SIZE, aToggle.FontSize(), 0.0);
     assertEquals("Expected default Text Color " + Component.COLOR_DEFAULT, Component.COLOR_DEFAULT, aToggle.TextColor());
-    assertFalse(aToggle.Checked());
   }
 
   public void testTogglelProperties() {

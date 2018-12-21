@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * @author srlane@mit.edu (Susan Rati Lane)
  */
-public final class MockSwitch extends MockToggleBase {
+public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   /**
    * Component type name.
@@ -68,7 +68,7 @@ public final class MockSwitch extends MockToggleBase {
 
   @Override
   protected Widget createClonedWidget() {
-    return new ClonedSwitch((HorizontalPanel)toggleWidget);
+    return new ClonedSwitch(toggleWidget);
   }
 
 
@@ -84,7 +84,8 @@ public final class MockSwitch extends MockToggleBase {
       isInitialized = true;
     }
     switchGraphic = new SVGPanel();
-    int switchHeight = hasProperty(PROPERTY_NAME_HEIGHT) ? getHeightHint() : getPreferredHeight();
+    int switchHeight = Math.round(Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE)));
+
     int switchWidth = (int) Math.round(switchHeight * 2);
     switchGraphic.setWidth(switchWidth + "px");
     switchGraphic.setHeight(switchHeight + "px");
@@ -109,7 +110,7 @@ public final class MockSwitch extends MockToggleBase {
   private void setThumbColorActiveProperty(String text) {
     thumbColorActive = MockComponentsUtil.getColor(text).toString();
     if (checked) {
-      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
+      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
               "fill", thumbColorActive);
     }
   }
@@ -122,7 +123,7 @@ public final class MockSwitch extends MockToggleBase {
   private void setThumbColorInactiveProperty(String text) {
     thumbColorInactive = MockComponentsUtil.getColor(text).toString();
     if (!checked) {
-      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
+      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement().getNextSiblingElement(),
               "fill", thumbColorInactive);
     }
   }
@@ -135,7 +136,7 @@ public final class MockSwitch extends MockToggleBase {
   private void setTrackColorActiveProperty(String text) {
     trackColorActive = MockComponentsUtil.getColor(text).toString();
     if (checked) {
-      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement(), "fill",
+      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement(), "fill",
               trackColorActive);
     }
   }
@@ -148,7 +149,7 @@ public final class MockSwitch extends MockToggleBase {
   private void setTrackColorInactiveProperty(String text) {
     trackColorInactive = MockComponentsUtil.getColor(text).toString();
     if (!checked) {
-      DOM.setStyleAttribute(((HorizontalPanel)toggleWidget).getWidget(1).getElement().getFirstChildElement(), "fill",
+      DOM.setStyleAttribute(toggleWidget.getWidget(1).getElement().getFirstChildElement(), "fill",
               trackColorInactive);
     }
   }
@@ -175,13 +176,13 @@ public final class MockSwitch extends MockToggleBase {
 
   @Override
   protected void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(((HorizontalPanel)toggleWidget).getWidget(0), text);
+    MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 
   @Override
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(((HorizontalPanel)toggleWidget).getWidget(0), text);
+    MockComponentsUtil.setWidgetFontTypeface(toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 

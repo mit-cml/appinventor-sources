@@ -29,7 +29,7 @@ import com.google.appinventor.components.common.YaVersion;
     "the Designer or Blocks Editor.",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public final class Switch extends ToggleBase {
+public final class Switch extends ToggleBase<SwitchCompat> {
 
   // Backing for thumb color
   private int thumbColorActive;
@@ -88,7 +88,7 @@ public final class Switch extends ToggleBase {
   @SimpleProperty
   public void ThumbColorActive(int argb) {
     thumbColorActive = argb;
-    DrawableCompat.setTintList(((SwitchCompat)view).getThumbDrawable(), createSwitchColors(argb, thumbColorInactive));
+    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(argb, thumbColorInactive));
     view.invalidate();
   }
 
@@ -113,7 +113,7 @@ public final class Switch extends ToggleBase {
   @SimpleProperty
   public void ThumbColorInactive(int argb) {
     thumbColorInactive = argb;
-    DrawableCompat.setTintList(((SwitchCompat)view).getThumbDrawable(), createSwitchColors(thumbColorActive, argb));
+    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(thumbColorActive, argb));
     view.invalidate();
   }
 
@@ -141,7 +141,7 @@ public final class Switch extends ToggleBase {
   @SimpleProperty(description = "Color of the toggle track when switched on", userVisible = true)
   public void TrackColorActive(int argb) {
     trackColorActive = argb;
-    DrawableCompat.setTintList(((SwitchCompat)view).getTrackDrawable(), createSwitchColors(argb, trackColorInactive));
+    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(argb, trackColorInactive));
     view.invalidate();
   }
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
@@ -149,7 +149,7 @@ public final class Switch extends ToggleBase {
   @SimpleProperty(description = "Color of the toggle track when switched off", userVisible = true)
   public void TrackColorInactive(int argb) {
     trackColorInactive = argb;
-    DrawableCompat.setTintList(((SwitchCompat)view).getTrackDrawable(), createSwitchColors(trackColorActive, argb));
+    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(trackColorActive, argb));
     view.invalidate();
   }
 

@@ -45,6 +45,7 @@ public class SwitchTest extends ToggleTestBase {
     assertEquals("Invalid default Thumb Color Inactive", Component.COLOR_LTGRAY, aSwitch.ThumbColorInactive());
     assertEquals("Invalid default Track Color Active", Component.COLOR_GREEN, aSwitch.TrackColorActive());
     assertEquals("Invalid default Track Color Inactive", Component.COLOR_GRAY, aSwitch.TrackColorInactive());
+    aSwitch.On(false);
   }
 
   @Test

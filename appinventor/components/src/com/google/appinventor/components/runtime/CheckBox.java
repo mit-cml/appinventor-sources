@@ -27,7 +27,7 @@ import com.google.appinventor.components.common.YaVersion;
     "the Designer or Blocks Editor.",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public final class CheckBox extends ToggleBase {
+public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
 
   /**
    * Creates a new CheckBox component.

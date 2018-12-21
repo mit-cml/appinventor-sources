@@ -1,5 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,9 +14,9 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Mock CheckBox component, inherited from MockToggleBase
  *
- * @author srlane@mit.edu (Susan Rati Lane)
+ * @author lizlooney@google.com (Liz Looney), srlane@mit.edu (Susan Rati Lane)
  */
-public final class MockCheckBox extends MockToggleBase {
+public final class MockCheckBox extends MockToggleBase<CheckBox> {
 
   /**
    * Component type name.
@@ -58,7 +59,7 @@ public final class MockCheckBox extends MockToggleBase {
    * Sets the checkbox's Text property to a new value.
    */
   protected void setTextProperty(String text) {
-    ((CheckBox)toggleWidget).setText(text);
+    toggleWidget.setText(text);
     updatePreferredSize();
   }
 
@@ -66,7 +67,7 @@ public final class MockCheckBox extends MockToggleBase {
    * Sets the checkbox's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
-    ((CheckBox)toggleWidget).setChecked(Boolean.parseBoolean(text));
+    toggleWidget.setChecked(Boolean.parseBoolean(text));
   }
 
   @Override

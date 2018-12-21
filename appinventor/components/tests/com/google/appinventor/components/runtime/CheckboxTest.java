@@ -37,6 +37,7 @@ public class CheckboxTest extends ToggleTestBase {
   @Test
   public void testCheckboxSharedDefaults() {
     testToggleDefaults();
+    assertFalse(aCheckbox.Checked());
   }
 
   @Test

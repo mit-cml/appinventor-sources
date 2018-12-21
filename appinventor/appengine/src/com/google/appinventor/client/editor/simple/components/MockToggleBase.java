@@ -16,10 +16,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  * @author srlane@mit.edu (Susan Rati Lane)
  */
-abstract class MockToggleBase extends MockWrapper {
+abstract class MockToggleBase<T extends Widget> extends MockWrapper {
 
   // Set toggle widget in child classes
-  protected Widget toggleWidget;
+  protected T toggleWidget;
 
   public MockToggleBase(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, icon);
