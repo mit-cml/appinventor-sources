@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,7 +47,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
    * @return  {@code true} indicates checked, {@code false} unchecked
    */
   @SimpleProperty(
-          category = PropertyCategory.BEHAVIOR)
+     category = PropertyCategory.BEHAVIOR)
   public boolean Checked() {
     return view.isChecked();
   }
@@ -58,7 +58,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
    * @param value  {@code true} indicates checked, {@code false} unchecked
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "False")
+      defaultValue = "False")
   @SimpleProperty
   public void Checked(boolean value) {
     view.setChecked(value);
