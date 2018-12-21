@@ -433,8 +433,10 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
   // For YOUNG_ANDROID_VERSION 173:
   // - FORM_COMPONENT_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 174:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 23
 
-  public static final int YOUNG_ANDROID_VERSION = 173;
+  public static final int YOUNG_ANDROID_VERSION = 174;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -496,8 +498,12 @@ public class YaVersion {
   // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
   // For BLOCKS_LANGUAGE_VERSION 21:
   // - The is-text block was added.
+  // For BLOCKS_LANGUAGE_VERSION 22:
+  // - Break block was added.
+  // For BLOCKS_LANGUAGE_VERSION 23:
+  // - Bitwise and, ior, and xor blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 22;
+  public static final int BLOCKS_LANGUAGE_VERSION = 23;
 
   // ................................. Component Version Numbers ..................................
 
