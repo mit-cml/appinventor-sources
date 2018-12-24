@@ -1765,10 +1765,12 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
   public void Theme(String theme) {
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      backgroundColor = Component.COLOR_WHITE;
+      setBackground(frameLayout);
       return;  // Only "Classic" is supported below SDK 11 due to minSDK in AppCompat
     }
     if (usesDefaultBackground) {
-      if (theme.equalsIgnoreCase("AppTheme")) {
+      if (theme.equalsIgnoreCase("AppTheme") && !isClassicMode()) {
         backgroundColor = Component.COLOR_BLACK;
       } else {
         backgroundColor = Component.COLOR_WHITE;
