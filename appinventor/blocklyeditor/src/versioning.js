@@ -1862,7 +1862,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The Rotation property was added to Map
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2:
+    // - The ScaleUnits and ShowScale properties were added to Map
+    5: "noUpgrade"
 
   }, // End Map upgraders
 
