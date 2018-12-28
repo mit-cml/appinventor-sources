@@ -440,40 +440,6 @@ public class ReplForm extends Form {
   }
 
   @Override
-  public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
-    // For testing extensions, we allow external = false, but still compile the assets into the
-    // companion for testing. When external = true, we are assuming this is an extension loaded
-    // into the production companion.
-    SimpleObject annotation = component.getClass().getAnnotation(SimpleObject.class);
-    if (annotation != null && !annotation.external()) {
-      return ASSETS_PREFIX + asset;
-    }
-
-    String extensionId = component.getClass().getName();
-    String pkgPath = null;
-
-    while (extensionId.contains(".")) {
-      File dir = new File(REPL_COMP_DIR + extensionId + "/assets");
-      if (dir.exists() && dir.isDirectory()) {
-        // found the extension directory
-        pkgPath = dir.getAbsolutePath();
-        break;
-      }
-
-      // Walk up the FQCN to determine possible extension identifier
-      extensionId = extensionId.substring(0, extensionId.lastIndexOf('.'));
-    }
-    if (pkgPath != null) {
-      File result = new File(pkgPath, asset);
-      Log.d(LOG_TAG, "result = " + result.getAbsolutePath());
-      if (result.exists()) {
-        return "file://" + result.getAbsolutePath();
-      }
-    }
-    throw new FileNotFoundException();
-  }
-
-  @Override
   protected boolean isRepl() {
     return true;
   }
