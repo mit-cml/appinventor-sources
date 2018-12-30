@@ -740,6 +740,36 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(disableAll);
 
+  // Show all comments
+  var showAll = {enabled: true};
+  showAll.text = Blockly.Msg.SHOW_ALL_COMMENTS;
+  showAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      if (block.comment != null) {
+        block.comment.setVisible(true);
+      }
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(showAll);
+
+  // Hide all comments
+  var hideAll = {enabled: true};
+  hideAll.text = Blockly.Msg.HIDE_ALL_COMMENTS;
+  hideAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      if (block.comment != null) {
+        block.comment.setVisible(false);
+      }
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(hideAll);
+
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
   backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +

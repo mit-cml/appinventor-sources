@@ -62,7 +62,7 @@ public class ReplForm extends Form {
   private static final String LOG_TAG = ReplForm.class.getSimpleName();
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
-  private static final String REPL_ASSET_DIR =
+  public static final String REPL_ASSET_DIR =
     Environment.getExternalStorageDirectory().getAbsolutePath() +
     "/AppInventor/assets/";
   private static final String REPL_COMP_DIR = REPL_ASSET_DIR + "external_comps/";
@@ -402,7 +402,7 @@ public class ReplForm extends Form {
 
   @Override
   public String getAssetPath(String asset) {
-    return REPL_ASSET_DIR + asset;
+    return "file://" + REPL_ASSET_DIR + asset;
   }
 
   @Override
