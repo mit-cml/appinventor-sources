@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.appinventor.client.ErrorReporter;
@@ -20,6 +21,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
 
 public final class MockMap extends MockContainer {
   public static final String TYPE = "Map";
@@ -90,6 +92,16 @@ public final class MockMap extends MockContainer {
         }
       }
     });
+  }
+
+  @Override
+  public void collectTypesAndIcons(Map<String, String> typesAndIcons) {
+    super.collectTypesAndIcons(typesAndIcons);
+    // These types can be loaded dynamically using LoadFromURL, so we want to show
+    // generic options even though the user might not have explicitly created one
+    typesAndIcons.put("Marker", new Image(images.marker()).getElement().getString());
+    typesAndIcons.put("LineString", new Image(images.linestring()).getElement().getString());
+    typesAndIcons.put("Polygon", new Image(images.polygon()).getElement().getString());
   }
 
   public void addEventListener(MockMapEventListener listener) {
