@@ -19,9 +19,11 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -211,21 +213,8 @@ public class ProjectToolbar extends Toolbar {
     }
 
     private void publishToGallery(Project p) {
-//      // first create an app object with default data
-//      final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
-//              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
-//      final String serviceUrl = "http://localhost:3000/api";
-//      final String commandName = "project/create";
-//      final OdeAsyncCallback<JSONObject> callback = new OdeAsyncCallback<JSONObject>() {
-//        @Override
-//        public void onSuccess(JSONObject responseObject) {
-//          if (responseObject.has(KEY_NAME_PROJECT)) {
-//            // redirect to project detail page in gallery
-//
-//          }
-//        }
-//      };
-      PostUtil.test();
+      User user = Ode.getInstance().getUser();
+      PostUtil.addAppToGallery(user, p.getProjectId(), p.getProjectName());
     }
 
     private void updateGalleryApp(Project p) {
