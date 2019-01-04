@@ -341,12 +341,8 @@ public final class GeoJSONUtil {
   private static MapPolygon polygonFromGeoJSON(final MapFeatureContainer container,
       final YailList coordinates) {
     Polygon polygon = new Polygon(container);
-    Iterator i = coordinates.iterator();
-    i.next();
-    polygon.Points(swapCoordinates((YailList) i.next()));
-    if (i.hasNext()) {
-      polygon.HolePoints(YailList.makeList(swapNestedCoordinates((LList) ((Pair)coordinates.getCdr()).getCdr())));
-    }
+    polygon.Points(swapCoordinates((YailList) coordinates.get(1)));
+    polygon.HolePoints(YailList.makeList(swapNestedCoordinates((LList) ((Pair) coordinates.getCdr()).getCdr())));
     return polygon;
   }
 
