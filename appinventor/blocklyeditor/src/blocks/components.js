@@ -971,7 +971,7 @@ Blockly.Blocks.component_component_block = {
   category : 'Component',
 
   helpUrl : function() {
-    var mode = this.typeName;
+    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
     return Blockly.ComponentBlock.HELPURLS[mode];
   },  // TODO: fix
 
