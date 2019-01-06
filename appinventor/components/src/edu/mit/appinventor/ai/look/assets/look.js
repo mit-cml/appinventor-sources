@@ -80,6 +80,26 @@ async function getTopKClasses(logits, topK) {
   return topClassesAndProbs;
 }
 
+function scavengerClassNames() {
+  var values = Object.keys(SCAVENGER_CLASSES).map(function(key){
+    return SCAVENGER_CLASSES[key];
+  });
+  // use join to remove the quote marks
+  return values.join(",");
+}
+
+function JsSetKnownClasses() {
+  console.log("inside JsSetKnownClasses");
+  console.log("we will first try an dummy test");
+  // calls to dummyTest work
+  Look.dummyTest();
+  // ****
+  // this next call gives the error
+  // "Uncaught TypeError: Look.setKnownClassesfromJS is not a function", 
+  // source: file:///storage/emulated/0/AppInventor/assets/external_comps/edu.mit.appinventor.ai.look/assets/look.js (97)
+  Look.setKnownClassesfromJS(scavengerClassNames());
+  }
+
 var img = document.createElement("img");
 img.width = window.innerWidth;
 img.style.display = "block";

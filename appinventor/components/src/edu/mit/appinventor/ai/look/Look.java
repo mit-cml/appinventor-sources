@@ -1,3 +1,4 @@
+
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -46,10 +48,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 
 /**
  * Component that classifies images.
@@ -58,7 +63,7 @@ import java.util.Map;
  * @author kelseyc@mit.edu (Kelsey Chan)
  */
 
-@DesignerComponent(version = 20181124,
+@DesignerComponent(version = 20181231,
         category = ComponentCategory.EXTENSION,
         description = "Component that classifies images. You must provide a WebViewer component " +
             "in the Look component's WebViewer property in order for classificatino to work.",
@@ -89,6 +94,9 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
 
   private WebView webview = null;
   private String inputMode = MODE_VIDEO;
+
+  // scavenger classes from Javascript
+  private YailList knownClasses = null;
 
   public Look(final Form form) {
     super(form);
@@ -171,6 +179,9 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
             try {
               Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
               webview.loadUrl(form.getAssetPathForExtension(Look.this, "look.html"));
+	      // ** try this
+	      // set the known classes from Javascript
+	      //setKnownClasses();
             } catch (FileNotFoundException e) {
               Log.d(LOG_TAG, e.getMessage());
               e.printStackTrace();
@@ -254,7 +265,10 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
 
   @SimpleEvent(description = "Event indicating that the classifier is ready.")
   public void ClassifierReady() {
+    // or do it here ***???
     InputMode(inputMode);
+    // try it here?
+    setKnownClasses();
     EventDispatcher.dispatchEvent(this, "ClassifierReady");
   }
 
@@ -318,15 +332,100 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
       }
     }
 
+    
+    
+      // attemptig to call Look.setKnownClassesFromJS
+      // signals an error that Look.setKnownClassesFromJS
+      // is not a function
+
     @JavascriptInterface
-    public void error(final int errorCode) {
-      Log.d(LOG_TAG, "Entered error: " + errorCode);
-      form.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          Error(errorCode);
-        }
-      });
+    public void setKnownClassesFromJS(final String s) {
+	// s is a comma-separated string
+	Log.e("inside setKnownClassesFromJS", s);
+	List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
+	knownClasses = YailList.makeList(classes);
     }
+
+      // calls to dummyTest work
+      @JavascriptInterface
+      public void dummyTest() {
+	  Log.e("inside dummy interface", "dummy");
+	  // nothing
+      }
+
+      @JavascriptInterface
+      public void error(final int errorCode) {
+	  Log.d(LOG_TAG, "Entered error: " + errorCode);
+	  form.runOnUiThread(new Runnable() {
+		  @Override
+		  public void run() {
+		      Error(errorCode);
+		  }
+	      });
+      }
+
+
   }
+
+    // **********
+    //    public void callhack(String foo) {
+    //	Look.setKnownClassesFromJS("foo");
+    //    }
+
+
+  @SimpleProperty(
+  category = PropertyCategory.BEHAVIOR)
+  public YailList KnownClasses() {
+    if (knownClasses == null) {
+	Log.e("Look classes", "inside KnownClasses property -- calling setKnownClasses()");
+	setKnownClasses();
+    }
+    return knownClasses;
+  }
+
+
+  // // set the variable knownClasses to the result from Javascript
+  // private void setKnownClasses() {
+  //   Log.e("Look classes", "setting known classes");
+  //   //  what does this next like do?
+  //   //    assertWebView("scavengerClassNames");
+  //   //  This next line works, but the one under it does not
+  //   // webview.evaluateJavascript("12345",  new ValueCallback<String>() {
+  //   webview.evaluateJavascript("scavengerClassNames();",  new ValueCallback<String>() {
+  //       @Override
+  // 	  public void onReceiveValue(String s) {
+  // 	  // s is a comma-separated list
+  // 	  Log.e("Look classes", s);
+  // 	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
+  // 	  knownClasses = YailList.makeList(classes);
+  // 	}
+  //     });
+  // }
+    
+
+  private void setKnownClasses() {
+    Log.e("Look classes", "inside setKnownClasses");
+    webview.evaluateJavascript("JsSetKnownClasses()", null);
+    Log.e("Look classes", "return from evaluateJavascript");
+  }
+
+
+  // // set the variable knownClasses to the result from Javascript
+  // private void setKnownClasses() {
+  //   Log.e("Look classes", "setting known classes");
+  //   //  what does this next like do?
+  //   //    assertWebView("scavengerClassNames");
+  //   //  This next line works, but the one under it does not
+  //   // webview.evaluateJavascript("12345",  new ValueCallback<String>() {
+  //   webview.evaluateJavascript("scavengerClassNames();",  new ValueCallback<String>() {
+  //       @Override
+  // 	  public void onReceiveValue(String s) {
+  // 	  // s is a comma-separated list
+  // 	  Log.e("Look classes", s);
+  // 	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
+  // 	  knownClasses = YailList.makeList(classes);
+  // 	}
+  //     });
+  // }
+
 }
