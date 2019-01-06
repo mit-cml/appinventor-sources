@@ -179,9 +179,9 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
             try {
               Log.d(LOG_TAG, "isHardwareAccelerated? " + webview.isHardwareAccelerated());
               webview.loadUrl(form.getAssetPathForExtension(Look.this, "look.html"));
-	      // ** try this
-	      // set the known classes from Javascript
-	      //setKnownClasses();
+              // ** try this
+              // set the known classes from Javascript
+              //setKnownClasses();
             } catch (FileNotFoundException e) {
               Log.d(LOG_TAG, e.getMessage());
               e.printStackTrace();
@@ -265,9 +265,8 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
 
   @SimpleEvent(description = "Event indicating that the classifier is ready.")
   public void ClassifierReady() {
-    // or do it here ***???
     InputMode(inputMode);
-    // try it here?
+    // setKnown classes needs to be called after webview has been set up
     setKnownClasses();
     EventDispatcher.dispatchEvent(this, "ClassifierReady");
   }
@@ -332,100 +331,42 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
       }
     }
 
-    
-    
-      // attemptig to call Look.setKnownClassesFromJS
-      // signals an error that Look.setKnownClassesFromJS
-      // is not a function
-
       @JavascriptInterface
       public void setKnownClassesFromJS(final String s) {
-	  // s is a comma-separated string
-	  Log.e("inside setKnownClassesFromJS", s);
-	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
-	  knownClasses = YailList.makeList(classes);
-      }
-
-      // calls to dummyTest work
-      @JavascriptInterface
-      public void dummyTest() {
-	  Log.e("inside dummy interface", "dummy");
-	  // nothing
+          // s is a comma-separated string
+          Log.d(LOG_TAG, "inside setKnownClassesFromJS");
+          Log.d(LOG_TAG, s);
+          List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
+          knownClasses = YailList.makeList(classes);
       }
 
       @JavascriptInterface
       public void error(final int errorCode) {
-	  Log.d(LOG_TAG, "Entered error: " + errorCode);
-	  form.runOnUiThread(new Runnable() {
-		  @Override
-		  public void run() {
-		      Error(errorCode);
-		  }
-	      });
+          Log.d(LOG_TAG, "Entered error: " + errorCode);
+          form.runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      Error(errorCode);
+                  }
+              });
       }
 
 
   }
 
-    // **********
-    //    public void callhack(String foo) {
-    //	Look.setKnownClassesFromJS("foo");
-    //    }
-
-
   @SimpleProperty(
-  category = PropertyCategory.BEHAVIOR)
+                  category = PropertyCategory.BEHAVIOR,
+		  description = "Returns the list of classes this classifier knows about.")
   public YailList KnownClasses() {
     if (knownClasses == null) {
-	Log.e("Look classes", "inside KnownClasses property -- calling setKnownClasses()");
-	setKnownClasses();
+        Log.d(LOG_TAG, "inside KnownClasses property -- calling setKnownClasses()");
+        setKnownClasses();
     }
     return knownClasses;
   }
 
-
-  // // set the variable knownClasses to the result from Javascript
-  // private void setKnownClasses() {
-  //   Log.e("Look classes", "setting known classes");
-  //   //  what does this next like do?
-  //   //    assertWebView("scavengerClassNames");
-  //   //  This next line works, but the one under it does not
-  //   // webview.evaluateJavascript("12345",  new ValueCallback<String>() {
-  //   webview.evaluateJavascript("scavengerClassNames();",  new ValueCallback<String>() {
-  //       @Override
-  // 	  public void onReceiveValue(String s) {
-  // 	  // s is a comma-separated list
-  // 	  Log.e("Look classes", s);
-  // 	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
-  // 	  knownClasses = YailList.makeList(classes);
-  // 	}
-  //     });
-  // }
-    
-
   private void setKnownClasses() {
-    Log.e("Look classes", "inside setKnownClasses");
     webview.evaluateJavascript("JsSetKnownClasses()", null);
-    Log.e("Look classes", "return from evaluateJavascript");
   }
-
-
-  // // set the variable knownClasses to the result from Javascript
-  // private void setKnownClasses() {
-  //   Log.e("Look classes", "setting known classes");
-  //   //  what does this next like do?
-  //   //    assertWebView("scavengerClassNames");
-  //   //  This next line works, but the one under it does not
-  //   // webview.evaluateJavascript("12345",  new ValueCallback<String>() {
-  //   webview.evaluateJavascript("scavengerClassNames();",  new ValueCallback<String>() {
-  //       @Override
-  // 	  public void onReceiveValue(String s) {
-  // 	  // s is a comma-separated list
-  // 	  Log.e("Look classes", s);
-  // 	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
-  // 	  knownClasses = YailList.makeList(classes);
-  // 	}
-  //     });
-  // }
 
 }
