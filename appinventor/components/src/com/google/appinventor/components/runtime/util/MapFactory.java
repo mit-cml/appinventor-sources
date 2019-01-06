@@ -524,6 +524,32 @@ public final class MapFactory {
      * @return the rotation
      */
     float getRotation();
+
+    /**
+     * Sets whether or not the scale overlay is visible.
+     * @param show True if the scale should be shown, otherwise false.
+     */
+    void setScaleVisible(boolean show);
+
+    /**
+     * Gets the visibility of the scale on the map. A true value does
+     * not guarantee that the scale is visible to the user (i.e., if
+     * the Map is not visible).
+     * @returns true if the scale is enabled on the map, otherwise false.
+     */
+    boolean isScaleVisible();
+
+    /**
+     * Sets the units for the scale. Options are either "metric" or "imperial"
+     * @param units the new units to show for the scale
+     */
+    void setScaleUnits(MapScaleUnits units);
+
+    /**
+     * Gets the units for the scale.
+     * @return the units used for the scale overlay
+     */
+    MapScaleUnits getScaleUnits();
   }
 
   /**
@@ -1478,6 +1504,27 @@ public final class MapFactory {
      * Terrain tile layer.
      */
     TERRAIN
+  }
+
+  /**
+   * MapScaleUnits defines the available unit systems for rendering the map scale overlay.
+   */
+  public enum MapScaleUnits {
+    /**
+     * Reserved. Makes the map scale units start from 1 to be consistent with App Inventor design
+     * principles.
+     */
+    UNKNOWN,
+
+    /**
+     * Metric units (km, m)
+     */
+    METRIC,
+
+    /**
+     * Imperial units (mi, ft)
+     */
+    IMPERIAL
   }
 
   /**

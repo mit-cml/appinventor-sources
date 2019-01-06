@@ -1768,7 +1768,10 @@ Blockly.Versioning.AllUpgradeMaps =
     21: "noUpgrade",
 
     // AI2: Added Break Block
-    22: "noUpgrade"
+    22: "noUpgrade",
+
+    // AI2: Added Bitwise Blocks
+    23: "noUpgrade"
 
 
   }, // End Language upgraders
@@ -1859,7 +1862,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The Rotation property was added to Map
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2:
+    // - The ScaleUnits and ShowScale properties were added to Map
+    5: "noUpgrade"
 
   }, // End Map upgraders
 
