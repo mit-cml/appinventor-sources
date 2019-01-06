@@ -97,7 +97,7 @@ function JsSetKnownClasses() {
   // this next call gives the error
   // "Uncaught TypeError: Look.setKnownClassesfromJS is not a function", 
   // source: file:///storage/emulated/0/AppInventor/assets/external_comps/edu.mit.appinventor.ai.look/assets/look.js (97)
-  Look.setKnownClassesfromJS(scavengerClassNames());
+  Look.setKnownClassesFromJS(scavengerClassNames());
   }
 
 var img = document.createElement("img");

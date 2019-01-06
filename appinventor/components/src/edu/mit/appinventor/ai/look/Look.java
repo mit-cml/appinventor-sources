@@ -338,13 +338,13 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
       // signals an error that Look.setKnownClassesFromJS
       // is not a function
 
-    @JavascriptInterface
-    public void setKnownClassesFromJS(final String s) {
-	// s is a comma-separated string
-	Log.e("inside setKnownClassesFromJS", s);
-	List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
-	knownClasses = YailList.makeList(classes);
-    }
+      @JavascriptInterface
+      public void setKnownClassesFromJS(final String s) {
+	  // s is a comma-separated string
+	  Log.e("inside setKnownClassesFromJS", s);
+	  List<String>classes = Arrays.asList(s.split("\\s*,\\s*"));
+	  knownClasses = YailList.makeList(classes);
+      }
 
       // calls to dummyTest work
       @JavascriptInterface
