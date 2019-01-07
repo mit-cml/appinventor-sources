@@ -58,9 +58,9 @@ public interface OdeMessages extends Messages {
   @Description("Text on \"Publish to Gallery\" button")
   String publishToGalleryButton();
 
-  @DefaultMessage("Publish to New Gallery")
-  @Description("Text on \"Publish to New Gallery\" button")
-  String publishToNewGalleryButton();
+  @DefaultMessage("Share to Gallery")
+  @Description("Text on \"Share to Gallery\" button")
+  String shareToGalleryButton();
 
   @DefaultMessage("Update Gallery App")
   @Description("Text on \"Update Gallery App\" button")
@@ -482,6 +482,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Import project (.aia) from a repository ...")
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
+
+  @DefaultMessage("Share selected project to gallery")
+  @Description("Name of Share Project menuitem")
+  String shareProjectMenuItem();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")

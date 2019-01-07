@@ -23,7 +23,6 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -56,7 +55,7 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton(),
         new PublishOrUpdateAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, MESSAGES.publishToNewGalleryButton(), new NewPublishOrUpdateAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, MESSAGES.shareToGalleryButton(), new NewPublishOrUpdateAction()));
 
     updateButtons();
   }
