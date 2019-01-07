@@ -366,7 +366,8 @@ public final class Look extends AndroidNonvisibleComponent implements Component 
   }
 
   private void setKnownClasses() {
-    webview.evaluateJavascript("JsSetKnownClasses()", null);
+      Log.e(LOG_TAG, "inside setKnownClasses");
+      webview.evaluateJavascript("JsSetKnownClasses()", null);
   }
 
 }
