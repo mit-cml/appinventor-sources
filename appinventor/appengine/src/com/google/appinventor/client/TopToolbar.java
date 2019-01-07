@@ -10,20 +10,13 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.explorer.commands.BuildCommand;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
-import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
-import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
-import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
-import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
-import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
+import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
+import com.google.appinventor.client.utils.PostUtil;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
@@ -37,10 +30,12 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -112,6 +107,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
   private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
   private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
+  private static final String WIDGET_NAME_SHARE_TO_GALLERY = "ShareToGallery";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -182,6 +178,8 @@ public class TopToolbar extends Composite {
           new CheckpointAction()));
       fileItems.add(null);
     }
+    fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.shareProjectMenuItem(),
+            new ShareToGalleryAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
@@ -549,6 +547,32 @@ public class TopToolbar extends Composite {
         Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
             ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
       }
+    }
+  }
+
+  private static class ShareToGalleryAction implements Command {
+    @Override
+    public void execute() {
+      List<Project> selectedProjects =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        //If we are in the projects view
+        if (selectedProjects.size() == 1) {
+          publishToGallery(selectedProjects.get(0));
+        } else {
+          // The user needs to select only one project.
+          ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
+        }
+      } else {
+        ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+        ChainableCommand cmd = new SaveAllEditorsCommand(new ShareToGalleryCommand(null));
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
+      }
+    }
+
+    private void publishToGallery(Project p) {
+      User user = Ode.getInstance().getUser();
+      PostUtil.addAppToGallery(user, p.getProjectId(), p.getProjectName());
     }
   }
 
