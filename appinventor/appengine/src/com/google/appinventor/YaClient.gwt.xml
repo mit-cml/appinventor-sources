@@ -27,7 +27,6 @@
   <inherits name="com.google.common.base.Base" />
   <inherits name="com.google.common.collect.Collect" />
   <inherits name="com.google.appinventor.components.CommonConstants" />
-  <inherits name="com.google.appinventor.common.BlocksEditorHttpConstants" />
   <inherits name="com.google.appinventor.common.CommonUtils" />
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
@@ -41,8 +40,6 @@
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
-  <servlet path="/webstartfile" class="com.google.appinventor.server.WebStartFileServlet" />
-  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" />
 
   <!-- srcs -->
   <source path="" includes="simple_components.json" />

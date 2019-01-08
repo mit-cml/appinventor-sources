@@ -319,17 +319,6 @@
   </target>
 
   <!-- ====================================================================
-       common_BlocksEditorHttpConstants builds:
-       - build/common/BlocksEditorHttpConstants.jar
-       - build/common/BlocksEditorHttpConstants-gwt.jar
-       ==================================================================== -->
-  
-  <target name="common_BlocksEditorHttpConstants">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
-         target="BlocksEditorHttpConstants"/>
-  </target>
-
-  <!-- ====================================================================
        common_CommonUtils builds:
        - build/common/CommonUtils.jar
        - build/common/CommonUtils-gwt.jar
