@@ -148,8 +148,7 @@
   </target>
   <target name="WarLibs"
           description="Copy libs to build/war/WEB-INF/lib"
-          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants">
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/BlocksEditorHttpConstants.jar"/>
+          depends="init,MakeWarLibsDir,common_CommonUtils,common_CommonVersion,components_CommonConstants">
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonUtils.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonVersion.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/components/CommonConstants.jar"/>
@@ -410,7 +409,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -420,7 +419,6 @@
       <include name="${appinventor.pkg}/client/**/*.java" />
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
@@ -448,14 +446,13 @@
        CheckYaClientApp - checks whether it is already up-to-date.
        ===================================================================== -->
   <target name="CheckYaClientApp"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
     <!-- If ode.nocache.js is up-to-date, set YaClientApp.uptodate to true.
          Otherwise, set YaClientApp.uptodate to false -->
     <uptodate property="YaClientApp.uptodate"
               targetfile="${build.war.dir}/ode/ode.nocache.js">
       <srcfiles dir="${build.war.dir}/WEB-INF/classes"/>
       <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
-      <srcfiles file="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonVersion-gwt.jar" />
       <srcfiles file="${build.dir}/components/CommonConstants-gwt.jar" />
@@ -464,7 +461,7 @@
 
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
           unless="YaClientApp.uptodate">
     <mkdir dir="${build.extra.dir}" />
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
@@ -473,7 +470,6 @@
         <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
         <pathelement location="${build.war.dir}/WEB-INF/classes"/>
         <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
         <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
         <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
