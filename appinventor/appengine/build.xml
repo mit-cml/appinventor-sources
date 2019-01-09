@@ -296,6 +296,16 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
+    <pathelement location="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-client-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-client-appengine-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-appengine-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-jackson-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-jackson2-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-services-storage-v1-rev91-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/httpclient-4.0.1.jar" />
+    <pathelement location="${lib.dir}/gcs/joda-time-2.6.jar" />
     <pathelement location="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
@@ -304,6 +314,7 @@
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
     <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
     <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerLib.jar"/>
   </path>
 
   <path id="AiServerLibTests.path">
@@ -507,19 +518,36 @@
   <path id="libsForAiClientLibTests.path">
     <pathelement location="${build.war.dir}/WEB-INF/classes"/>
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+    <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${build.dir}/components/CommonConstants-gwt.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
     <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+    <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+    <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
+    <!-- Paths to sources (needed by GWTTestCase) -->
+    <pathelement location="${build.dir}/components/ComponentTranslation/src" />
+    <pathelement location="src"/>
+    <pathelement location="tests"/>
   </path>
 
   <path id="AiClientLibTests.path">
     <path refid="libsForAiClientLibTests.path"/>
+    <path refid="libsForAiServerLibTests.path"/>
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiClientLibTests.jar" />
   </path>
@@ -528,6 +556,7 @@
           depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiClientLibTests"
+                aij-prod="true"
                 aij-dir="${appinventor.pkg}/client" >
     </ai.dojunit>
   </target>
