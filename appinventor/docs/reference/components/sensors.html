@@ -538,15 +538,23 @@ none
 
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
-  <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p>
-  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/dd/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p>
-  <p> Date and Time are formatted with InstantInTime and Duration. </p>
+  <p>Non-visible component that provides the instant in time using the internal clock on the phone. It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p>
+   <p>Operations on dates and times, such as from <a href="userinterface.html#DatePicker">DatePicker</a>
+       and <a href="userinterface.html#TimePicker">TimePicker</a>, are accomplished through methods in Clock.
+      Date and Time are represented as InstantInTime and Duration. </p>
   <ul>
-      <li> <strong> Instant </strong> : consists of Year, Month, DayOfMonth, Hour, Minute, and Second.
+      <li> <strong>Instant</strong> : consists of Year, Month, DayOfMonth, Hour, Minute, and Second.
         An instant can be created by using MakeInstant method. </li>
-      <li> <strong> Duration </strong> : time in milliseconds elapsed between instants. Duration can be
+      <li> <strong>Duration</strong> : time in milliseconds elapsed between instants. Duration can be
         obtained by Duration method.</li>
   </ul>
+  <p>Instants are assumed to be in the device's local time zone. When they are converted to or from milliseconds, the
+      milliseconds for a given Instance are calculated from January 1, 1970 in UTC (Greenwich Mean Time).</p>
+  <p>Methods to convert an Instant to text are also available. Acceptable patterns are empty string, MM/dd/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p>
+  <p>A note on combining date and time: In order to combine the date from one Instant and the time from another, for
+  example from a DatePicker and TimePicker, extract the parts as text and use the text to create a new Instant.</p>
+  <p>Example: </p>
+  <img src="images/date_and_time_instant.png" alt="" />
   <h3> Properties </h3>
   <dl>
       <dt> <code> TimerAlwaysFires </code> </dt>
@@ -598,15 +606,15 @@ none
       <dt> <code> text FormatDateTime(InstantInTime instant, text pattern) </code> </dt>
       <dd> Returns text representing the date and time of an instant in the specified pattern</dd>
       <dt> <code> text FormatTime(InstantInTime instant) </code> </dt>
-      <dd> Return text representing the time of an instant </dd>
+      <dd> Return text representing the time of an instant in the device's local time zone.</dd>
       <dt> <code> number GetMillis(InstantInTime instant) </code> </dt>
-      <dd> Returns the instant in time measured as milliseconds since 1970. </dd>
+      <dd> Returns the instant in time measured as milliseconds since 1970 in UTC (Greenwich Mean Time). </dd>
       <dt> <code> number Hour(InstantInTime instant) </code> </dt>
       <dd> Returns the hour of the day(0-23) from the instant </dd>
       <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
       <dd> Returns an instant specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm. An example text input is "06/22/2015 12:18"</dd>
       <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
-      <dd> Returns an instant in time specified by the milliseconds since 1970. </dd>
+      <dd> Returns an instant in time specified by the milliseconds since 1970 in UTC. </dd>
       <dt> <code> number Minute(InstantInTime instant) </code> </dt>
       <dd> Returns the minute of the hour (0-59) from the instant </dd>
       <dt> <code> number Month(InstantInTime instant) </code> </dt>
