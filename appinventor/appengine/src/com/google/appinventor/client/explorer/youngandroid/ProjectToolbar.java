@@ -55,7 +55,7 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton(),
         new PublishOrUpdateAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, MESSAGES.shareToGalleryButton(), new NewPublishOrUpdateAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_NEW_PUBLISH_OR_UPDATE, MESSAGES.exportToGalleryButton(), new NewPublishOrUpdateAction()));
 
     updateButtons();
   }
@@ -197,38 +197,14 @@ public class ProjectToolbar extends Toolbar {
       if (selectedProjects.size() == 1) {
         Project currentSelectedProject = ProjectListBox.getProjectListBox().getProjectList()
                 .getSelectedProjects().get(0);
-        if(!currentSelectedProject.isPublished()){
-          // app is not yet published
-          publishToGallery(currentSelectedProject);
-        }else{
-          updateGalleryApp(currentSelectedProject);
-        }
+        User user = Ode.getInstance().getUser();
+        PostUtil.addAppToGallery(user, currentSelectedProject.getProjectId(), currentSelectedProject.getProjectName());
       } else {
         // The publish/update button will be disabled if selectedProjects.size != 1
         // This should not happen, but just in case
 
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectSelectedForPublishOrUpdate());
       }
-    }
-
-    private void publishToGallery(Project p) {
-      User user = Ode.getInstance().getUser();
-      PostUtil.addAppToGallery(user, p.getProjectId(), p.getProjectName());
-    }
-
-    private void updateGalleryApp(Project p) {
-      // setup what happens when we load the app in
-      final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-              MESSAGES.galleryError()) {
-        @Override
-        public void onSuccess(GalleryApp app) {
-          // the server has returned us something
-          int editStatus=GalleryPage.UPDATEAPP;
-          Ode.getInstance().switchToGalleryAppView(app, editStatus);
-        }
-      };
-      // ok, this is below the call back, but of course it is done first
-      Ode.getInstance().getGalleryService().getApp(p.getGalleryId(),callback);
     }
   }
 

@@ -8,12 +8,11 @@ package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.client.utils.PostUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -200,16 +199,19 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         nameSortIndicator.setText(text);
         dateCreatedSortIndicator.setText("");
         dateModifiedSortIndicator.setText("");
+        publishedSortIndicator.setText("");
         break;
       case DATE_CREATED:
         dateCreatedSortIndicator.setText(text);
         dateModifiedSortIndicator.setText("");
         nameSortIndicator.setText("");
+        publishedSortIndicator.setText("");
         break;
       case DATE_MODIFIED:
         dateModifiedSortIndicator.setText(text);
         dateCreatedSortIndicator.setText("");
         nameSortIndicator.setText("");
+        publishedSortIndicator.setText("");
         break;
       case PUBLISHED:
         publishedSortIndicator.setText(text);
@@ -325,19 +327,26 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.publishedLabel);
-      if(Ode.getGallerySettings().galleryEnabled()){
-        if (project.isPublished()) {
-          pw.publishedLabel.setText(PUBLISHED);
-        }
-        else {
-          pw.publishedLabel.setText(NOT_PUBLISHED);
-        }
+      if (project.isPublished()) {
+        pw.publishedLabel.setText(PUBLISHED);
+      }
+      else {
+        pw.publishedLabel.setText(NOT_PUBLISHED);
       }
 
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
+  }
+
+  /**
+   * Checks whether or not each project is published to the new gallery and updates the project info accordingly.
+   */
+  public void refreshPublishedOrUnpublished() {
+    for (Project project : projects) {
+      PostUtil.updateProjectPublishedOrUnpublished(project.getProjectId());
+    }
   }
 
   /**

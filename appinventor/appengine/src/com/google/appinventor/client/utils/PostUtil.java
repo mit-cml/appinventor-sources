@@ -1,5 +1,6 @@
 package com.google.appinventor.client.utils;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.core.client.GWT;
@@ -46,6 +47,32 @@ public class PostUtil {
         addAppToGalleryPostHelper(aiaUrl, projectName, userId, Objects.toString(projectId));
     }
 
+    public static void updateProjectPublishedOrUnpublished(final long projectId) {
+        XMLHttpRequest xhr = XMLHttpRequest.create();
+        xhr.setOnReadyStateChange(new ReadyStateChangeHandler() {
+            @Override
+            public void onReadyStateChange(XMLHttpRequest xhr) {
+                if (xhr.getReadyState() == XMLHttpRequest.DONE) {
+                    int galleryId = Integer.parseInt(xhr.getResponseText());
+
+                    if (galleryId > 0) {
+                        Ode.getInstance().getProjectManager().publishProject(projectId, galleryId);
+                    } else {
+                        Ode.getInstance().getProjectManager().UnpublishProject(projectId);
+                    }
+                }
+            }
+        });
+        xhr.open("GET", "http://localhost:8090/api/project/gallery_id?projectId=" + Objects.toString(projectId) + "&appInventorInstance=ai2");
+        xhr.send();
+    }
+
+    // Called from addAppToGalleryPostHelper
+    // Need overloaded method with String parameter because JSNI disallows passing long type as Java parameter
+    public static void updateProjectPublishedOrUnpublished(final String projectId) {
+        updateProjectPublishedOrUnpublished(Long.parseLong(projectId));
+    }
+
     public static native void addAppToGalleryPostHelper(String aiaUrl, String title, String authorId, String projectId)/*-{
     var aiaRequest = new XMLHttpRequest();
     aiaRequest.responseType = "blob";
@@ -65,10 +92,11 @@ public class PostUtil {
                 if (request.readyState === 4) {
                     if (request.response.project && request.response.project.id) {
                         window.open("http://localhost:3000/#/project/" + request.response.project.id, "_blank");
+                        @com.google.appinventor.client.utils.PostUtil::updateProjectPublishedOrUnpublished(Ljava/lang/String;)(projectId);
                     }
                 }
             }
-            request.open("POST", "http://localhost:8090/api/project/create");
+            request.open("POST", "http://localhost:8090/api/project/update_or_create");
             request.send(formData);
         }
     }

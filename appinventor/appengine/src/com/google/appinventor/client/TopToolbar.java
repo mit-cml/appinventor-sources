@@ -12,7 +12,6 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -30,7 +29,6 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -41,7 +39,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -178,7 +175,7 @@ public class TopToolbar extends Composite {
           new CheckpointAction()));
       fileItems.add(null);
     }
-    fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.shareProjectMenuItem(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.exportProjectToGalleryMenuItem(),
             new ShareToGalleryAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
