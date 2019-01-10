@@ -66,6 +66,10 @@ public interface OdeMessages extends Messages {
   @Description("Text on \"Update Gallery App\" button")
   String updateGalleryAppButton();
 
+  @DefaultMessage("View App in Gallery")
+  @Description("Text on \"View App in Gallery\" button")
+  String viewAppInGalleryButton();
+
   @DefaultMessage("Show Warnings")
   @Description("Text on Toggle Warning Button")
   String showWarnings();
@@ -486,10 +490,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Export selected project to gallery")
   @Description("Name of Export Project to gallery menuitem")
   String exportProjectToGalleryMenuItem();
-
-  @DefaultMessage("Update project in gallery")
-  @Description("Text on \"Update project in gallery\" menuItem")
-  String updateProjectInGalleryMenuItem();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
