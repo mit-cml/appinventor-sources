@@ -487,6 +487,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Export Project to gallery menuitem")
   String exportProjectToGalleryMenuItem();
 
+  @DefaultMessage("Update project in gallery")
+  @Description("Text on \"Update project in gallery\" menuItem")
+  String updateProjectInGalleryMenuItem();
+
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectMenuItem();
