@@ -17,6 +17,8 @@ import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
 
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.client.output.OdeLog;
 
 import com.google.appinventor.client.tracking.Tracking;
@@ -52,7 +54,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * tab (for the UI designer (a.k.a, Form Editor) and Blocks Editor).
  *
  */
-public class DesignToolbar extends Toolbar {
+public class DesignToolbar extends Toolbar implements ProjectManagerEventListener {
 
   private boolean isReadOnly;   // If the UI is in read only mode
 
@@ -117,6 +119,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
+  private static final String WIDGET_NAME_VIEW_APP_IN_GALLERY = "ViewAppInGallery";
 
   // Switch language
   private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
@@ -181,6 +184,9 @@ public class DesignToolbar extends Toolbar {
       addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
           new RemoveFormAction()));
     }
+
+    addButton(new ToolbarItem(WIDGET_NAME_VIEW_APP_IN_GALLERY, MESSAGES.viewAppInGalleryButton(), new ViewAppInGalleryAction()));
+    setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, false);
 
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
@@ -385,6 +391,15 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+  private static class ViewAppInGalleryAction implements Command {
+    @Override
+    public void execute() {
+      long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+      Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      Window.open("http://localhost:3000/#/project/" + project.getGalleryId(), "_blank", "");
+    }
+  }
+
   public void addProject(long projectId, String projectName) {
     if (!projectMap.containsKey(projectId)) {
       projectMap.put(projectId, new DesignProject(projectName, projectId));
@@ -416,6 +431,7 @@ public class DesignToolbar extends Toolbar {
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
       }
       projectNameLabel.setText(projectName);
+      updateViewAppInGalleryButton(projectId);
     } else {
       ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +
           " with id " + projectId);
@@ -529,6 +545,15 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+  private void updateViewAppInGalleryButton(long projectId) {
+    Project currentProject = Ode.getInstance().getProjectManager().getProject(projectId);
+    if (currentProject.isPublished()) {
+      setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, true);
+    } else {
+      setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, false);
+    }
+  }
+
   public DesignProject getCurrentProject() {
     return currentProject;
   }
@@ -545,4 +570,26 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+  @Override
+  public void onProjectAdded(Project project) {
+
+  }
+
+  @Override
+  public void onProjectRemoved(Project project) {
+
+  }
+
+  @Override
+  public void onProjectsLoaded() {
+
+  }
+
+  @Override
+  public void onProjectPublishedOrUnpublished() {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectMap.containsKey(projectId)) {
+      updateViewAppInGalleryButton(projectId);
+    }
+  }
 }
