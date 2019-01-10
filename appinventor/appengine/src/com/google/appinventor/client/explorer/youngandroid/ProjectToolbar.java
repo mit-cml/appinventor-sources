@@ -34,6 +34,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_PUBLISH_OR_UPDATE = "PublishOrUpdate";
+  private static final String WIDGET_NAME_VIEW_IN_GALLERY = "ViewInGallery";
 
   private static final String KEY_NAME_PROJECT = "project";
 
@@ -53,6 +54,7 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.exportToGalleryButton(),
         new PublishOrUpdateAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_VIEW_IN_GALLERY, MESSAGES.viewAppInGalleryButton(), new ViewAppInGalleryAction()));
 
     updateButtons();
   }
@@ -205,6 +207,19 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
+  private static class ViewAppInGalleryAction implements Command {
+    @Override
+    public void execute() {
+      List<Project> selectedProjects =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() == 1) {
+        Project currentSelectedProject = ProjectListBox.getProjectListBox().getProjectList()
+                .getSelectedProjects().get(0);
+        Window.open("http://localhost:3000/#/project/" + currentSelectedProject.getGalleryId(), "_blank", "");
+      }
+    }
+  }
+
   /**
    * Enables and/or disables buttons based on how many projects exist
    * (in the case of "Download All Projects") or are selected (in the case
@@ -219,6 +234,14 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
+      if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
+              .getSelectedProjects().get(0).isPublished()){
+        setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, true);
+      }else{
+        setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, false);
+      }
+      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectToGalleryMenuItem(),
+              numSelectedProjects == 1);
       Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
         numSelectedProjects > 0);
       Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
@@ -230,8 +253,10 @@ public class ProjectToolbar extends Toolbar {
     if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
         .getSelectedProjects().get(0).isPublished()){
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.updateGalleryAppButton());
+      setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, true);
     }else{
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.exportToGalleryButton());
+      setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, false);
     }
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
         numSelectedProjects > 0);
