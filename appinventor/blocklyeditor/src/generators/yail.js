@@ -390,7 +390,7 @@ Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, co
   var propsToSend = Object.keys(componentJson);
   for (var prop in type['properties']) {
     var property = type['properties'][prop];
-    if (property['alwaysSend']) {
+    if (property['alwaysSend'] && !(prop in componentJson)) {
       propsToSend.push(property['name']);
     }
   }
