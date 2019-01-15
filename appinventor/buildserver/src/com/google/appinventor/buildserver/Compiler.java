@@ -2084,6 +2084,9 @@ public final class Compiler {
    *                   BROADCAST_RECEIVERS_TARGET
    */
   private void processConditionalInfo(JSONObject compJson, String type, String targetInfo) {
+    // Strip off the package name since SCM and BKY use unqualified names
+    type = type.substring(type.lastIndexOf('.') + 1);
+
     JSONObject conditionals = compJson.optJSONObject(CONDITIONALS_TARGET);
     if (conditionals != null) {
       JSONObject jsonBlockMap = conditionals.optJSONObject(targetInfo);
