@@ -56,11 +56,14 @@ public class CompilerTest extends TestCase {
     
     Set<String> componentTypes = Sets.newHashSet(texting);
     Map<String, Set<String>> blocks = Maps.newHashMap();
-    blocks.put(texting, Sets.newHashSet("ReceivingEnabled", "GoogleVoiceEnabled"));
+    blocks.put("Texting", Sets.newHashSet("ReceivingEnabled", "GoogleVoiceEnabled"));
     Compiler compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, 2048, null, null);
     compiler.generateBroadcastReceivers();
     Map<String, Set<String>> componentReceivers = compiler.getBroadcastReceivers();
-    Set<String> receivers = componentReceivers.get(texting);
+    Set<String> receivers = Sets.newHashSet();
+    for (Set<String> receiverSubset : componentReceivers.values()) {
+      receivers.addAll(receiverSubset);
+    }
     assertEquals(2, receivers.size());
     boolean hasTelephony = false, hasGoogleVoice = false;
     for (String receiverElementString : receivers) {
@@ -75,7 +78,10 @@ public class CompilerTest extends TestCase {
     compiler = new Compiler(null, componentTypes, blocks, System.out, System.err, System.err, false, 2048, null, null);
     compiler.generateBroadcastReceivers();
     componentReceivers = compiler.getBroadcastReceivers();
-    receivers = componentReceivers.get(texting);
+    receivers.clear();
+    for (Set<String> receiverSubset : componentReceivers.values()) {
+      receivers.addAll(receiverSubset);
+    }
     assertEquals(2, receivers.size());
     assertTrue(componentReceivers.get(label) == null);
   }
