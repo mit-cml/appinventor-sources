@@ -1,15 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 package com.google.appinventor.components.runtime.util;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 
 import android.net.Uri;
 
+import android.os.Build;
 import android.os.Environment;
 
 import android.support.v4.content.FileProvider;
@@ -41,6 +43,7 @@ public class PackageInstaller {
     AsynchUtil.runAsynchronously(new Runnable() {
         @Override
         public void run() {
+          Uri packageuri = null;
           try {
             URL url = new URL(inurl);
             URLConnection conn = url.openConnection();
@@ -48,7 +51,7 @@ public class PackageInstaller {
             InputStream instream = new BufferedInputStream(conn.getInputStream());
             File apkfile = new File(rootDir + "/package.apk");
             FileOutputStream apkOut = new FileOutputStream(apkfile);
-            byte [] buffer = new byte[32768];
+            byte[] buffer = new byte[32768];
             int len;
             while ((len = instream.read(buffer, 0, 32768)) > 0) {
               apkOut.write(buffer, 0, len);
@@ -58,12 +61,14 @@ public class PackageInstaller {
             // Call Package Manager Here
             Log.d(LOG_TAG, "About to Install package from " + inurl);
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            String packageName = form.$context().getPackageName();
-            Log.d(LOG_TAG, "packageName = " + packageName);
-            Uri packageuri = FileProvider.getUriForFile(form.$context(), packageName + ".provider", new File(rootDir + "/package.apk"));
+            packageuri = NougatUtil.getPackageUri(form, apkfile);
             intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             form.startActivity(intent);
+          } catch (ActivityNotFoundException e) {
+            Log.e(LOG_TAG, "Unable to install package", e);
+            form.dispatchErrorOccurredEvent(form, "PackageInstaller",
+              ErrorMessages.ERROR_UNABLE_TO_INSTALL_PACKAGE, packageuri);
           } catch (Exception e) {
             Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
             form.dispatchErrorOccurredEvent(form, "PackageInstaller",
