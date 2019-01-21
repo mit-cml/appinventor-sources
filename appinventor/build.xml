@@ -144,7 +144,6 @@
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
         <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>
-        -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/testing/appengine-testing.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-api-stubs.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
