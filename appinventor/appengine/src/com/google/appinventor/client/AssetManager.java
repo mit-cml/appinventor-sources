@@ -6,22 +6,25 @@
 
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.explorer.dialogs.ProgressBarDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+
+import com.google.appinventor.client.output.OdeLog;
+
 import com.google.appinventor.common.utils.StringUtils;
+
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
+
 import com.google.appinventor.shared.util.Base64Util;
-import com.google.appinventor.client.output.OdeLog;
 
 import com.google.gwt.core.client.JavaScriptObject;
-
 import com.google.gwt.core.client.JsArrayString;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.ArrayList;
@@ -52,7 +55,6 @@ public final class AssetManager implements ProjectChangeListener {
   private YoungAndroidAssetsFolder assetsFolder;
   private YoungAndroidComponentsFolder componentsFolder;
   private JavaScriptObject assetsTransferredCallback;
-  private ProgressBarDialogBox progress = null;
   private List<String> extensions = new ArrayList<>();
   private int retryCount = 0;
   private volatile int assetTransferProgress = 0;
@@ -222,27 +224,15 @@ public final class AssetManager implements ProjectChangeListener {
   private void refreshAssets1() {
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
-        if (progress == null) {
-          progress = new ProgressBarDialogBox("AssetManager", project.getRootNode());
-          progress.setProgress(0, MESSAGES.startingAssetTransfer());
-          progress.showDismissButton();
-        } else if (!progress.isShowing() && progress.getProgressBarShow() < 2) {
-          progress.show();
-          progress.center();
-        }
         if (a.fileContent == null && !useWebRTC()) { // Need to fetch it from the server
           retryCount = 3;
-          if (progress != null) {
-            progress.setProgress(100 * assetTransferProgress / (2 * assets.size()),
-                MESSAGES.loadingAsset(a.fileId));
-          }
+          ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
+            MESSAGES.loadingAsset(a.fileId));
           readIn(a);          // Read it in asynchronously
           break;                     // we'll resume when we have it
         } else {
-          if (progress != null) {
-            progress.setProgress(100 * assetTransferProgress / (2 * assets.size()),
-                MESSAGES.sendingAssetToCompanion(a.fileId));
-          }
+          ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
+            MESSAGES.sendingAssetToCompanion(a.fileId));
           boolean didit = doPutAsset(Long.toString(projectId), a.fileId, a.fileContent);
           if (didit) {
             assetTransferProgress++;
@@ -298,18 +288,10 @@ public final class AssetManager implements ProjectChangeListener {
       }
     }
     // Dismiss the progress bar if showing
-    if (progress != null && progress.isShowing()) {
-      progress.hide(true);
-    }
-    progress = null;
+    ConnectProgressBar.hide();
     // If we get here, then all assets have been transferred to the device
     // so we fire the assetsTransferredCallback
     doCallBack(assetsTransferredCallback);
-    // Dismiss the progress bar if showing
-    if (progress != null && progress.isShowing()) {
-      progress.hide(true);
-    }
-    progress = null;
     return  true;
   }
 

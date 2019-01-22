@@ -256,6 +256,7 @@ Blockly.ReplMgr.putYail = (function() {
     var conn;                   // XMLHttpRequest Object sending to Phone
     var rxhr;                   // XMLHttpRequest Object listening for returns
     var context;
+    var upatedProgressDialog = false;
     var phonereceiving = false;
     var webrtcstarting = false;
     var webrtcrunning = false;
@@ -336,6 +337,7 @@ Blockly.ReplMgr.putYail = (function() {
             var haveoffer = false;
             webrtcisopen = false;
             webrtcforcestop = false;
+            top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
             var poll = function() {
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', webrtcrendezvous + key + '-r', true);
@@ -399,6 +401,7 @@ Blockly.ReplMgr.putYail = (function() {
             webrtcdata = webrtcpeer.createDataChannel('data');
             webrtcdata.onopen = function() {
                 webrtcisopen = true;
+                top.ConnectProgressBar_setProgress(30, Blockly.Msg.DIALOG_SECURE_ESTABLISHED);
                 console.log('webrtc data connection open!');
                 webrtcdata.onmessage = function(ev) {
                     console.log("webrtc(onmessage): " + ev.data);
@@ -1353,6 +1356,9 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     return;
                 }
                 rs.dialog.hide(); // Take down the QRCode dialog
+                // Keep the user informed about the connection
+                top.ConnectProgressBar_start();
+                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';

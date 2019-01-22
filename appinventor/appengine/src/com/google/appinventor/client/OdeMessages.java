@@ -2227,9 +2227,9 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Starting asset transfer to companion...")
-  @Description("Message to display at the start of an asset transfer before any assets are sent")
-  String startingAssetTransfer();
+  @DefaultMessage("0 Starting Up")
+  @Description("")
+  String startingConnectionDialog();
 
   @DefaultMessage("Downloading {0} from the App Inventor server...")
   @Description("Message to display when an asset is being downloaded from the server")

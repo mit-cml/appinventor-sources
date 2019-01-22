@@ -739,6 +739,9 @@ public class Ode implements EntryPoint {
       galleryIdLoadingFlag = true;
     }
 
+    // We call this below to initialize the ConnectProgressBar
+    ConnectProgressBar.getInstance();
+
     // Get user information.
     OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
         // failure message
