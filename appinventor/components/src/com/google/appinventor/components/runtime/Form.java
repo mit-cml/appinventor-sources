@@ -85,6 +85,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -206,6 +207,7 @@ public class Form extends AppInventorCompatActivity
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
+  private final Map<Integer, Set<ActivityResultListener>> activityResultMultiMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
   private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
@@ -604,6 +606,13 @@ public class Form extends AppInventorCompatActivity
       if (component != null) {
         component.resultReturned(requestCode, resultCode, data);
       }
+      // Many components are interested in this request (e.g., Texting, PhoneCall)
+      Set<ActivityResultListener> listeners = activityResultMultiMap.get(requestCode);
+      if (listeners != null) {
+        for (ActivityResultListener listener : listeners.toArray(new ActivityResultListener[0])) {
+          listener.resultReturned(requestCode, resultCode, data);
+        }
+      }
     }
   }
 
@@ -630,6 +639,22 @@ public class Form extends AppInventorCompatActivity
     return requestCode;
   }
 
+  /**
+   * Register a {@code listener} for the given {@code requestCode}. This is used to simulate
+   * broadcast receivers as a workaround for PhoneCall and Texting handlers related to initiating
+   * calls/messages.
+   *
+   * @param listener The object to report activity results to for the given request code
+   */
+  public void registerForActivityResult(ActivityResultListener listener, int requestCode) {
+    Set<ActivityResultListener> listeners = activityResultMultiMap.get(requestCode);
+    if (listeners == null) {
+      listeners = Sets.newHashSet();
+      activityResultMultiMap.put(requestCode, listeners);
+    }
+    listeners.add(listener);
+  }
+
   public void unregisterForActivityResult(ActivityResultListener listener) {
     List<Integer> keysToDelete = Lists.newArrayList();
     for (Map.Entry<Integer, ActivityResultListener> mapEntry : activityResultMap.entrySet()) {
@@ -639,6 +664,17 @@ public class Form extends AppInventorCompatActivity
     }
     for (Integer key : keysToDelete) {
       activityResultMap.remove(key);
+    }
+
+    // Remove any simulated broadcast receivers
+    Iterator<Map.Entry<Integer, Set<ActivityResultListener>>> it =
+        activityResultMultiMap.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<Integer, Set<ActivityResultListener>> entry = it.next();
+      entry.getValue().remove(listener);
+      if (entry.getValue().size() == 0) {
+        it.remove();
+      }
     }
   }
 

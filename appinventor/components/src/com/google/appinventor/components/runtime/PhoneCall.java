@@ -63,11 +63,16 @@ import android.telephony.TelephonyManager;
 public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener, ActivityResultListener {
 
   private static final String LOG_TAG = PhoneCall.class.getSimpleName();
-  private static final int REQUEST_CODE = 0x50484F4E;
+
+  /**
+   * Magic number "PHON" used to report when a phone call has been initiated
+   */
+  private static final int PHONECALL_REQUEST_CODE = 0x50484F4E;
   private String phoneNumber;
   private final Context context;
   private final CallStateReceiver callStateReceiver;
   private boolean havePermission = false;
+  private boolean didRegisterReceiver = false;
 
   /**
    * Creates a Phone Call component.
@@ -78,7 +83,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
     super(container.$form());
     context = container.$context();
     form.registerForOnDestroy(this);
-    form.registerForActivityResult(this);
+    form.registerForActivityResult(this, PHONECALL_REQUEST_CODE);
     PhoneNumber("");
     callStateReceiver = new CallStateReceiver();
   }
@@ -128,7 +133,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   public void MakePhoneCall() {
     Intent i = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", this.phoneNumber, null));
     if (i.resolveActivity(form.getPackageManager()) != null) {
-      form.startActivityForResult(i, REQUEST_CODE);
+      form.startActivityForResult(i, PHONECALL_REQUEST_CODE);
     }
   }
 
@@ -149,7 +154,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               PhoneCall.this.MakePhoneCall();
             } else {
               form.dispatchPermissionDeniedEvent(PhoneCall.this, "MakePhoneCall",
-                  Manifest.permission.READ_EXTERNAL_STORAGE);
+                  Manifest.permission.CALL_PHONE);
             }
           }
         });
@@ -214,9 +219,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_CODE) {
-      Log.d(LOG_TAG, "data = " + data);
-      Log.d(LOG_TAG, "extras = " + data.getExtras());
+    if (requestCode == PHONECALL_REQUEST_CODE) {
       PhoneCallStarted(2, "");
     }
   }
@@ -282,13 +285,17 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
     intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
     intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
     context.registerReceiver(callStateReceiver, intentFilter);
+    didRegisterReceiver = true;
   }
 
   /**
    * Unregisters phonecall state monitor
    */
-  private void unregisterCallStateMonitor(){
-    context.unregisterReceiver(callStateReceiver);
+  private void unregisterCallStateMonitor() {
+    if (didRegisterReceiver) {
+      context.unregisterReceiver(callStateReceiver);
+      didRegisterReceiver = false;
+    }
   }
 
   @Override

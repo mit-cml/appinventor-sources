@@ -135,6 +135,10 @@ public class Texting extends AndroidNonvisibleComponent
     Deleteable, ActivityResultListener {
 
   public static final String TAG = "Texting Component";
+
+  /**
+   * Magic number "TEXT" used to report when a text message has been sent.
+   */
   public static final int TEXTING_REQUEST_CODE = 0x54455854;
 
   public static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
@@ -251,7 +255,6 @@ public class Texting extends AndroidNonvisibleComponent
     container.$form().registerForOnResume(this);
     container.$form().registerForOnPause(this);
     container.$form().registerForOnStop(this);
-    form.registerForActivityResult(this);
   }
 
   /**
@@ -338,6 +341,7 @@ public class Texting extends AndroidNonvisibleComponent
     Intent i = new Intent(Intent.ACTION_SENDTO, uri);
     i.putExtra("sms_body", message);
     if (i.resolveActivity(form.getPackageManager()) != null) {
+      form.registerForActivityResult(this, TEXTING_REQUEST_CODE);
       form.startActivityForResult(i, TEXTING_REQUEST_CODE);
     }
   }
@@ -704,7 +708,9 @@ public class Texting extends AndroidNonvisibleComponent
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == TEXTING_REQUEST_CODE) {
-      handleSentMessage(form, null, resultCode, data.getStringExtra("sms_body"));
+      handleSentMessage(form, null, resultCode, data == null ? "" :
+          data.getStringExtra("sms_body"));
+      form.unregisterForActivityResult(this);
     }
   }
 
