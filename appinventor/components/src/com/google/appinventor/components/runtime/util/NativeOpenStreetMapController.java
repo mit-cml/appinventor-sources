@@ -1137,6 +1137,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   protected void showOverlay(OverlayWithIW overlay) {
     view.getOverlayManager().add(overlay);
+    view.invalidate();
   }
 
   @Override
@@ -1146,6 +1147,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   protected void hideOverlay(OverlayWithIW overlay) {
     view.getOverlayManager().remove(overlay);
+    view.invalidate();
   }
 
   @Override
