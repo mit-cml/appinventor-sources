@@ -15,7 +15,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * Show a Progress Bar during connection from the Browser to the Companion.
  * We are designed by be used from a static context. This facilitates calls
  * from both the Java (GWT) side of things and the Javascript (blockly) side
- * of thing.
+ * of things.
  *
  * Javascript starts the progress bar when we learn the connection information
  * we need from the Rendezvous server. After a connection to the Companion is complete
@@ -29,8 +29,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public final class ConnectProgressBar {
 
     private static ConnectProgressBar INSTANCE = new ConnectProgressBar();
-    private Project currentProject;
     private ProgressBarDialogBox progressBar;
+    private boolean shouldShow = false;
 
     private ConnectProgressBar() {
       exportMethodsToJavascript();
@@ -46,7 +46,7 @@ public final class ConnectProgressBar {
 
     private void start1() {
       Ode ode = Ode.getInstance();
-      currentProject = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
+      Project currentProject = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
       if (progressBar == null) {
           progressBar = new ProgressBarDialogBox("ConnectProgressBar", currentProject.getRootNode());
           progressBar.show();
@@ -63,7 +63,7 @@ public final class ConnectProgressBar {
       INSTANCE.setProgress1(progress, message);
     }
 
-    public void setProgress1(int progress, String message) {
+    private void setProgress1(int progress, String message) {
       if (progressBar != null && progressBar.isShowing()) {
           progressBar.setProgress(progress, message);
       }
@@ -73,11 +73,30 @@ public final class ConnectProgressBar {
       INSTANCE.hide1();
     }
 
-    public void hide1() {
+    private void hide1() {
       if (progressBar != null && progressBar.isShowing()) {
           progressBar.hide(true);
       }
       progressBar = null;
+    }
+
+    public static void tempHide(boolean hide) {
+      INSTANCE.tempHide1(hide);
+    }
+
+    private void tempHide1(boolean hide) {
+      if (progressBar == null) {
+        return;                 // Nothing to do
+      }
+      if (hide) {
+        shouldShow = progressBar.isShowing();
+        if (shouldShow) {
+          progressBar.hide(true);
+        }
+      } else if (shouldShow) {
+        progressBar.show();
+        progressBar.center();
+      }
     }
 
     private static native void exportMethodsToJavascript() /*-{

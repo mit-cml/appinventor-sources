@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -242,9 +242,13 @@ public final class AssetManager implements ProjectChangeListener {
         }
       }
     }
-    // If no assets are in the project, perform the callback immediately.
-    if (assets.values().size() == 0 && assetsTransferredCallback != null) {
-      doCallBack(assetsTransferredCallback);
+    // If no assets are in the project, close the Progress Bar and
+    // perform the callback immediately.
+    if (assets.values().size() == 0) {
+      ConnectProgressBar.hide();
+      if (assetsTransferredCallback != null) {
+        doCallBack(assetsTransferredCallback);
+      }
     }
   }
 
