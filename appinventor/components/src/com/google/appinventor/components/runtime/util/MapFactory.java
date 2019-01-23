@@ -442,6 +442,13 @@ public final class MapFactory {
     void updateFeaturePosition(MapPolygon polygon);
 
     /**
+     * Update the holes in a polygon on the map.
+     *
+     * @param polygon the polygon that needs its holes updated
+     */
+    void updateFeatureHoles(MapPolygon polygon);
+
+    /**
      * Update the position of a circle on the map.
      *
      * @param circle the circle that needs its position updated on the map
