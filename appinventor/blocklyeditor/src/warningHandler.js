@@ -32,8 +32,6 @@ Blockly.WarningHandler.WarningState = {
   WARNING: 1,
   ERROR: 2
 };
-Blockly.WarningHandler.prototype.warningIdHash;
-Blockly.WarningHandler.prototype.errorIdHash;
 Blockly.WarningHandler.prototype.currentWarning = 0;
 Blockly.WarningHandler.prototype.currentError = 0;
 
