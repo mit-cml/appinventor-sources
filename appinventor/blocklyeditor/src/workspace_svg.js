@@ -1129,3 +1129,12 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
   Blockly.Events.fire(event);
 
 };
+
+/*
+* Refresh the state of the backpack. Called from BlocklyPanel.java
+*/
+Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
+  if (this.backpack_) {
+    this.backpack_.resize();
+  }
+};
