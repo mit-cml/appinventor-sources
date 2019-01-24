@@ -327,11 +327,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.publishedLabel);
-      if (project.isPublished()) {
-        pw.publishedLabel.setText(PUBLISHED);
-      }
-      else {
-        pw.publishedLabel.setText(NOT_PUBLISHED);
+      if (Ode.getGallerySettings().galleryEnabled()) {
+        if (project.isPublished()) {
+          pw.publishedLabel.setText(PUBLISHED);
+        } else {
+          pw.publishedLabel.setText(NOT_PUBLISHED);
+        }
       }
 
       row++;
