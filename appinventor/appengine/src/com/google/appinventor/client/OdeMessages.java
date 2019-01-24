@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -1042,6 +1042,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Extension Version:")
   @Description("Header for extension version information")
   String externalComponentVersion();
+
+  @DefaultMessage("Date Built:")
+  @Description("Header to indicate the date an extension was compiled")
+  String dateBuilt();
 
   @DefaultMessage("More information")
   @Description("Label of the link to a component's reference docs")
@@ -2223,9 +2227,9 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Starting asset transfer to companion...")
-  @Description("Message to display at the start of an asset transfer before any assets are sent")
-  String startingAssetTransfer();
+  @DefaultMessage("0 Starting Up")
+  @Description("")
+  String startingConnectionDialog();
 
   @DefaultMessage("Downloading {0} from the App Inventor server...")
   @Description("Message to display when an asset is being downloaded from the server")
@@ -3931,6 +3935,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String functionNameParams();
 
+  @DefaultMessage("permissionName")
+  @Description("The name of the parameter that is used to report the name of a needed permission.")
+  String permissionNameParams();
+
   @DefaultMessage("errorNumber")
   @Description("")
   String errorNumberParams();
@@ -4154,6 +4162,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("seed")
   @Description("")
   String seedParams();
+
+  @DefaultMessage("rendezvousServer")
+  @Description("")
+  String rendezvousServerParams();
 
   @DefaultMessage("millisecs")
   @Description("")
@@ -4503,6 +4515,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("OtherScreenClosed")
   @Description("")
   String OtherScreenClosedEvents();
+
+  @DefaultMessage("PermissionDenied")
+  @Description("The name of the event handler for when the app is denied a dangerous permission by the user.")
+  String PermissionDeniedEvents();
+
+  @DefaultMessage("PermissionGranted")
+  @Description("The name of the event handler for when the app is granted a dangerous permission by the user.")
+  String PermissionGrantedEvents();
 
   @DefaultMessage("ScreenOrientationChanged")
   @Description("")
@@ -5392,6 +5412,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("HideKeyboard")
   @Description("")
   String HideKeyboardMethods();
+
+  @DefaultMessage("AskForPermission")
+  @Description("")
+  String AskForPermissionMethods();
 
   @DefaultMessage("Speak")
   @Description("")
@@ -6391,6 +6415,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FusionTablesStandardErrorMessage();
 
+  @DefaultMessage("WARNING: Google has Deprecated the Fusion Tables Service. " +
+    "It will stop working on December 3, 2019 " +
+    "<a href=\"https://support.google.com/fusiontables/answer/9185417\" target=\"_blank\"> " +
+    "Learn More</a>")
+  @Description("")
+  String FusionTablesDeprecated();
+
   @DefaultMessage("SelectionColor")
   @Description("")
   String SelectionColorProperties();
@@ -6627,9 +6658,17 @@ public interface OdeMessages extends Messages {
   @Description("The type of map tile to be displayed")
   String MapTypeProperties();
 
+  @DefaultMessage("ScaleUnits")
+  @Description("Display name for the property to adjust the map's scale units")
+  String ScaleUnitsProperties();
+
   @DefaultMessage("ShowCompass")
   @Description("Show a compass control on the Map")
   String ShowCompassProperties();
+
+  @DefaultMessage("ShowScale")
+  @Description("Show a scale indicator on the Map")
+  String ShowScaleProperties();
 
   @DefaultMessage("ShowUser")
   @Description("Show a marker on the Map for the user's current location")
@@ -6678,6 +6717,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Terrain")
   @Description("Terrain map type")
   String mapTypeTerrain();
+
+  @DefaultMessage("Metric")
+  @Description("Display name for the metric unit system")
+  String mapScaleUnitsMetric();
+
+  @DefaultMessage("Imperial")
+  @Description("Display name for the imperial unit system")
+  String mapScaleUnitsImperial();
 
   @DefaultMessage("ImageAsset")
   @Description("ImageAsset")
@@ -7046,6 +7093,22 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
+
+  @DefaultMessage("WebRTC")     // Note: This is INTERNAL so doesn't need translation
+  @Description("")
+  String WebRTCProperties();
+
+  @DefaultMessage("GetVersionName")
+  @Description("")
+  String GetVersionNameMethods();
+
+  @DefaultMessage("SdkLevel")
+  @Description("")
+  String SdkLevelMethods();
+
+  @DefaultMessage("GetInstaller")
+  @Description("")
+  String GetInstallerMethods();
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")

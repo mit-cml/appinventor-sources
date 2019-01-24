@@ -61,6 +61,7 @@
 
     <!-- Copy files that will be loaded as resources -->
     <property name="classes.files.dir" location="${BuildServer-class.dir}/files" />
+    <property name="support.dir" location="${lib.dir}/android/support" />
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
@@ -73,6 +74,14 @@
     </copy>
     <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${classes.files.dir}/webrtc.jar"
+          file="${lib.dir}/webrtc/webrtc.jar" />
+    <copy toFile="${classes.files.dir}/armeabi-v7a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/armeabi-v7a/libjingle_peerconnection_so.so" />
+    <copy toFile="${classes.files.dir}/arm64-v8a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/arm64-v8a/libjingle_peerconnection_so.so" />
+    <copy toFile="${classes.files.dir}/x86_64/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/x86_64/libjingle_peerconnection_so.so" />
     <copy toFile="${classes.files.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
     <copy toFile="${classes.files.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
@@ -95,18 +104,39 @@
     <copy toFile="${classes.files.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
-    <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.aar" />
-    <copy toFile="${classes.files.dir}/appcompat-v7.jar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.jar" />
-    <copy toFile="${classes.files.dir}/internal_impl.jar" file="${lib.dir}/android/support/internal_impl-22.2.1.jar" />
-    <copy toFile="${classes.files.dir}/support-annotations.jar" file="${lib.dir}/android/support/support-annotations-22.2.1.jar" />
-    <copy toFile="${classes.files.dir}/support-v4.aar" file="${lib.dir}/android/support/support-v4-22.2.1.aar" />
-    <copy toFile="${classes.files.dir}/support-v4.jar" file="${lib.dir}/android/support/support-v4-22.2.1.jar" />
-    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
+    <!-- BEGIN Android Support Libraries -->
+    <copy toFile="${classes.files.dir}/animated-vector-drawable.aar" file="${support.dir}/animated-vector-drawable-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/animated-vector-drawable.jar" file="${support.dir}/animated-vector-drawable-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${support.dir}/appcompat-v7-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.jar" file="${support.dir}/appcompat-v7-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/core-common.jar" file="${support.dir}/core-common-1.0.0.jar" />
+    <copy toFile="${classes.files.dir}/lifecycle-common.jar" file="${support.dir}/lifecycle-common-1.0.0.jar" />
+    <copy toFile="${classes.files.dir}/runtime.aar" file="${support.dir}/runtime-1.0.0.aar" />
+    <copy toFile="${classes.files.dir}/runtime.jar" file="${support.dir}/runtime-1.0.0.jar" />
+    <copy toFile="${classes.files.dir}/support-annotations.jar" file="${support.dir}/support-annotations-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-compat.aar" file="${support.dir}/support-compat-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-compat.jar" file="${support.dir}/support-compat-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-core-ui.aar" file="${support.dir}/support-core-ui-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-core-ui.jar" file="${support.dir}/support-core-ui-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-core-utils.aar" file="${support.dir}/support-core-utils-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-core-utils.jar" file="${support.dir}/support-core-utils-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-fragment.aar" file="${support.dir}/support-fragment-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-fragment.jar" file="${support.dir}/support-fragment-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-media-compat.aar" file="${support.dir}/support-media-compat-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-media-compat.jar" file="${support.dir}/support-media-compat-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-v4.aar" file="${support.dir}/support-v4-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-v4.jar" file="${support.dir}/support-v4-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/support-vector-drawable.aar" file="${support.dir}/support-vector-drawable-26.1.0.aar" />
+    <copy toFile="${classes.files.dir}/support-vector-drawable.jar" file="${support.dir}/support-vector-drawable-26.1.0.jar" />
+    <copy toFile="${classes.files.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
+    <!-- END Android Support Libraries -->
+    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
+      <fileset dir="${lib.dir}/android/tools" includes="*/lib64/*" />
     </copy>
     <chmod dir="${classes.tools.dir}" includes="*/aapt" perm="ugo+rx"/>
     <copy todir="${classes.tools.dir}">

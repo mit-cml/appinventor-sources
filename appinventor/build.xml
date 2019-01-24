@@ -30,6 +30,11 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
 
+  <target name="comps1">
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
+  </target>
+
   <target name="extensions">
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
@@ -92,58 +97,11 @@
         <pathelement location="buildserver/src" />
         <pathelement location="common/src" />
         <pathelement location="components/src" />
+        <pathelement location="build/components/ComponentTranslation/src" />
       </sourcepath>
       <classpath>
-        <pathelement location="lib/android/5.1.1/android.jar" />
-        <pathelement location="lib/android/tools/ddmlib.jar"/>
-        <pathelement location="lib/bouncycastle/bcprov-jdk15on-149.jar"/>
-        <pathelement location="lib/bouncycastle/bcpkix-jdk15on-149.jar"/>
-        <pathelement location="lib/android/tools/sdklib.jar"/>
-        <pathelement location="lib/args4j/args4j-2.0.18.jar" />
-        <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
-        <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
-        <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
-        <pathelement location="lib/guava/guava-14.0.1.jar" />
-        <pathelement location="lib/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="lib/json/json.jar" />
-        <pathelement location="lib/gson/gson-2.1.jar" />
-        <pathelement location="lib/kawa/kawa-1.11-modified.jar" />
-        <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
-        <pathelement location="lib/objectify-3.1/objectify-3.1.jar" />
-        <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-        <pathelement location="lib/twitter/twitter4j-core-3.0.5.jar" />
-        <pathelement location="lib/twitter/twitter4j-media-support-3.0.5.jar" />
-        <pathelement location="lib/QRGenerator/core.jar" />
-        <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
-        <!-- Apache Http Libraries -->
-        <pathelement location="lib/apache-http/httpcore-4.3.2.jar" />
-        <pathelement location="lib/apache-http/httpmime-4.3.4.jar" />
-        <!-- oauth libs -->
-        <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
-        <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
-        <pathelement location="lib/oauth/google-http-client-1.10.3-beta.jar" />
-        <pathelement location="lib/oauth/google-http-client-android2-1.10.3-beta.jar" />
-        <pathelement location="lib/oauth/google-http-client-android3-1.10.3-beta.jar" />
-        <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
-        <!-- fusiontables libs -->
-        <pathelement location="lib/fusiontables/fusiontables.jar" />
-        <!-- firebase libs -->
-        <pathelement location="lib/firebase/firebase-client-android-2.2.4.jar" />
-        <!-- acra -->
-        <pathelement location="lib/acra/acra-4.4.0.jar" />
-        <!-- gwt libs -->
-        <pathelement location="lib/gwt/2.7/gwt-dev.jar"/>
-        <pathelement location="lib/gwt/2.7/gwt-user.jar"/>
-        <!-- app engine libs -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
-        <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>
-        -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/testing/appengine-testing.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-api-stubs.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
-        <!-- prevent error importing GitBuildId if it has been generated -->
+        <fileset dir="lib" includes="**/*.jar"/>
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
       <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the

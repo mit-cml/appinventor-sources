@@ -1,13 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,11 +22,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import android.Manifest;
 import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -206,6 +207,12 @@ public class Texting extends AndroidNonvisibleComponent
 
   private ComponentContainer container; // Need this for error reporting
 
+  // Do we have SEND_SMS permission enabled?
+  private boolean havePermission = false;
+
+  // Do we have RECEIVE_SMS permission enabled?
+  private boolean haveReceivePermission = false;
+
   /**
    * Creates a new TextMessage component.
    *
@@ -266,6 +273,14 @@ public class Texting extends AndroidNonvisibleComponent
     processCachedMessages();
     NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
     nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
+  }
+
+  // Called from runtime.scm
+  public void Initialize() {
+    if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
+      // Request receive SMS permission if we are configured to receive but do not have permission
+      requestReceiveSmsPermission("Initialize");
+    }
   }
 
   /**
@@ -357,7 +372,7 @@ public class Texting extends AndroidNonvisibleComponent
       // We're sending via built-in Sms
     } else {
       Log.i(TAG, "Sending via SMS");
-      this.sendViaSms();
+      this.sendViaSms("SendMessage");
     }
   }
 
@@ -481,6 +496,9 @@ public class Texting extends AndroidNonvisibleComponent
     editor.putInt(PREF_RCVENABLED, enabled);
     editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
     editor.commit();
+    if (enabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
+      requestReceiveSmsPermission("ReceivingEnabled");
+    }
   }
 
   public static int isReceivingEnabled(Context context) {
@@ -558,16 +576,8 @@ public class Texting extends AndroidNonvisibleComponent
     Log.i(TAG, "Retrieving cached messages");
     String cache = "";
     try {
-      FileInputStream fis = activity.openFileInput(CACHE_FILE);
-      byte[] bytes = new byte[8192];
-      if (fis == null) {
-        Log.e(TAG, "Null file stream returned from openFileInput");
-        return null;
-      }
-      int n = fis.read(bytes);
-      Log.i(TAG, "Read " + n + " bytes from " + CACHE_FILE);
-      cache = new String(bytes, 0, n);
-      fis.close();
+      byte[] bytes = FileUtil.readFile(CACHE_FILE);
+      cache = new String(bytes);
       activity.deleteFile(CACHE_FILE);
       messagesCached = 0;
       Log.i(TAG, "Retrieved cache " + cache);
@@ -938,8 +948,32 @@ public class Texting extends AndroidNonvisibleComponent
    * Sends a text message via SMS. No authentication required.
    * This method is called only when the UseGoogleVoice option is disabled.
    */
-  private void sendViaSms() {
+  private void sendViaSms(final String caller) {
     Log.i(TAG, "Sending via built-in Sms");
+
+    // Need to make sure we have the SEND_SMS permission
+    if (!havePermission) {
+      final Form form = container.$form();
+      final Texting me = this;
+      form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            form.askPermission(Manifest.permission.SEND_SMS,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    me.havePermission = true;
+                    me.sendViaSms(caller);
+                  } else {
+                    form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.SEND_SMS);
+                  }
+                }
+              });
+          }
+        });
+      return;
+    }
 
     ArrayList<String> parts = smsManager.divideMessage(message);
     int numParts = parts.size();
@@ -965,6 +999,26 @@ public class Texting extends AndroidNonvisibleComponent
     // This may result in an error -- a "sent" or "error" message will be displayed
     activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
+  }
+
+  private void requestReceiveSmsPermission(final String caller) {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        form.askPermission(Manifest.permission.RECEIVE_SMS,
+            new PermissionResultHandler() {
+              @Override
+              public void HandlePermissionResponse(String permission, boolean granted) {
+                if (granted) {
+                  haveReceivePermission = true;
+                } else {
+                  form.dispatchPermissionDeniedEvent(Texting.this, caller, Manifest.permission.RECEIVE_SMS);
+                }
+              }
+            });
+      }
+    });
+
   }
 
   /**

@@ -959,6 +959,13 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 23;
     }
 
+    if (srcCompVersion < 24) {
+      // The AskForPermissions method was added.
+      // The PermissionDenied event was added.
+      // The PermissionGranted event was added.
+      srcCompVersion = 24;
+    }
+
     return srcCompVersion;
   }
 
@@ -1531,14 +1538,16 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 4) {
+    if (srcCompVersion < 5) {
       // Version 2
       // The Markers property (blocks-only) was renamed to Features
       // Version 3
       // Block event handlers were renamed
       // Version 4
       // The Rotation property was added with default 0.0 (due north)
-      srcCompVersion = 4;
+      // Verison 5
+      // The ScaleUnits and ShowScale properties were added
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

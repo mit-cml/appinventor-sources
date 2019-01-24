@@ -1,5 +1,5 @@
 // -*- mode: javascript; js-indent-level: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2016-2018 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -1175,6 +1175,7 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
 /*
 * Refresh the state of the backpack. Called from BlocklyPanel.java
 */
+
 Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
   if (this.backpack_) {
     this.backpack_.resize();

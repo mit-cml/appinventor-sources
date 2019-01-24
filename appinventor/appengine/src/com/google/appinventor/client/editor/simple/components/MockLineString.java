@@ -32,7 +32,6 @@ public class MockLineString extends MockMapFeatureBase {
   static MockLineString fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockLineString line = new MockLineString(parent.editor);
     line.feature = layer;
-    line.setContainer(parent);
     String name = null;
     for (String key : properties.keySet()) {
       String value;
@@ -60,17 +59,7 @@ public class MockLineString extends MockMapFeatureBase {
         line.onPropertyChange(PROPERTY_NAME_VISIBLE, value);
       }
     }
-    if (name == null) {
-      name = line.getPropertyValue(PROPERTY_NAME_TITLE);
-    }
-    name = name.replaceAll("[ \t]+", "_");
-    if (name.equalsIgnoreCase("")) {
-      name = ComponentsTranslation.getComponentName(TYPE) + "1";
-    }
-    name = ensureUniqueName(name, parent.editor.getComponentNames());
-    line.changeProperty(PROPERTY_NAME_NAME, name);
-    line.onPropertyChange(PROPERTY_NAME_NAME, name);
-    line.getForm().fireComponentRenamed(line, ComponentsTranslation.getComponentName(TYPE));
+    processFeatureName(line, parent, name);
     line.preserveLayerData();
     return line;
   }
@@ -188,7 +177,11 @@ public class MockLineString extends MockMapFeatureBase {
     if (line) {
       var latlngs = line.getLatLngs();
       var resultJson = [];
-      if (latlngs[0][0] instanceof top.L.LatLng) {
+      if (latlngs[0] instanceof top.L.LatLng) {
+        for (var i = 0; i < latlngs.length; i++) {
+          resultJson.push([latlngs[i].lat, latlngs[i].lng]);
+        }
+      } else if (latlngs[0][0] instanceof top.L.LatLng) {
         for (var i = 0; i < latlngs[0].length; i++) {
           resultJson.push([latlngs[0][i].lat, latlngs[0][i].lng]);
         }

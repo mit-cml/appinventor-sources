@@ -5,45 +5,50 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
+import android.content.Intent;
+
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Looper;
+
+import android.util.Log;
+
+import android.view.Menu;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MenuItem;
+
+import android.widget.Toast;
+
+import com.google.appinventor.common.version.AppInventorFeatures;
+
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+
+import com.google.appinventor.components.common.ComponentConstants;
+
+import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.RetValManager;
+import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
+
+import dalvik.system.DexClassLoader;
+
+import gnu.expr.Language;
+
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.os.Looper;
-import android.support.v7.app.ActionBar;
-import android.support.v7.internal.widget.TintImageView;
-import android.text.Html;
-import android.view.View;
-import android.view.ViewGroup;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.util.AppInvHTTPD;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.ImageViewUtil;
-import com.google.appinventor.components.runtime.util.RetValManager;
+import kawa.standard.Scheme;
 
-import dalvik.system.DexClassLoader;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.Toast;
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
@@ -57,7 +62,7 @@ public class ReplForm extends Form {
   private static final String LOG_TAG = ReplForm.class.getSimpleName();
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
-  private static final String REPL_ASSET_DIR =
+  public static final String REPL_ASSET_DIR =
     Environment.getExternalStorageDirectory().getAbsolutePath() +
     "/AppInventor/assets/";
   private static final String REPL_COMP_DIR = REPL_ASSET_DIR + "external_comps/";
@@ -68,10 +73,49 @@ public class ReplForm extends Form {
   private String replResultFormName = null;
   private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
+  private WebRTCNativeMgr webRTCNativeMgr;
+
+  SchemeInterface schemeInterface = new SchemeInterface();
+
+  private static final String SPLASH_ACTIVITY_CLASS = SplashActivity.class
+      .getName();
 
   public ReplForm() {
     super();
     topform = this;
+  }
+
+  public class SchemeInterface {
+    Language scheme = Scheme.getInstance("scheme");
+
+    public SchemeInterface() {
+      gnu.expr.ModuleExp.mustNeverCompile();
+    }
+
+    private void adoptMainThreadClassLoader() {
+      ClassLoader mainClassLoader = Looper.getMainLooper().getThread().getContextClassLoader();
+      Thread myThread = Thread.currentThread();
+      if (myThread.getContextClassLoader() != mainClassLoader) {
+        myThread.setContextClassLoader(mainClassLoader);
+      }
+    }
+
+    public void eval(final String sexp) {
+      runOnUiThread(new Runnable() {
+          @Override public void run() {
+            try {
+              adoptMainThreadClassLoader();
+              if (sexp.equals("#DONE#")) {
+                ReplForm.this.finish();
+                return;
+              }
+              scheme.eval(sexp);
+            } catch (Throwable e) {
+              Log.e(LOG_TAG, "Exception in scheme processing", e);
+            }
+          }
+        });
+    }
   }
 
   @Override
@@ -81,10 +125,19 @@ public class ReplForm extends Form {
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
     processExtras(intent, false);
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setShowHideAnimationEnabled(false);
-    }
+    themeHelper.setActionBarAnimation(false);
+  }
+
+  @Override
+  void onCreateFinish() {
+    super.onCreateFinish();
+
+    if (!isEmulator() && AppInventorFeatures.doCompanionSplashScreen())
+      {                    // Only show REPL splash if not in emulator and enabled
+        Intent webviewIntent = new Intent(Intent.ACTION_MAIN);
+        webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
+        activeForm.$context().startActivity(webviewIntent);
+      }
   }
 
   @Override
@@ -325,6 +378,33 @@ public class ReplForm extends Form {
     updateTitle();
   }
 
+  public static void returnRetvals(final String retvals) {
+    final ReplForm form = (ReplForm)activeForm;
+    Log.d(LOG_TAG, "returnRetvals: " + retvals);
+    form.sendToCompanion(retvals);
+  }
+
+  public void sendToCompanion(String data) {
+    if (webRTCNativeMgr == null) {
+      Log.i(LOG_TAG, "No WebRTCNativeMgr!");
+      return;
+    }
+    webRTCNativeMgr.send(data);
+  }
+
+  public void setWebRTCMgr(WebRTCNativeMgr mgr) {
+    webRTCNativeMgr = mgr;
+  }
+
+  public void evalScheme(String sexp) {
+    schemeInterface.eval(sexp);
+  }
+
+  @Override
+  public String getAssetPath(String asset) {
+    return "file://" + REPL_ASSET_DIR + asset;
+  }
+
   @Override
   public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
     // For testing extensions, we allow external = false, but still compile the assets into the
@@ -366,16 +446,7 @@ public class ReplForm extends Form {
 
   @Override
   protected void updateTitle() {
-    final ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      if ("AppTheme.Light".equals(currentTheme)) {
-        actionBar.setTitle(Html.fromHtml("<font color=\"black\">" + title + "</font>"));
-        ImageViewUtil.setMenuButtonColor(this, Color.BLACK);
-      } else {
-        actionBar.setTitle(title);
-        ImageViewUtil.setMenuButtonColor(this, Color.WHITE);
-      }
-    }
+    themeHelper.setTitle(title, "AppTheme.Light".equals(currentTheme));
   }
 
   private String genReportId() {

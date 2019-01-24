@@ -29,14 +29,22 @@ goog.require('goog.crypt.base64');
 goog.require('AI.Blockly.Util');
 goog.require('AI.Events');
 
-if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {}
+if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {};
 Blockly.ReplMgr.yail = null;
+
+top.usewebrtc = false;           // True if we are going to use webRTC instead
+                                 // of our builtin webserver. This is now set when
+                                 // we hear from the Rendezvous server that we are playing the webrtc game!
 
 top.loadAll = true;             // Use "Chunked" loading for initial form load
                                 // or any case where we have more then one "chunk"
                                 // of code queued for the device. We put this variable
                                 // in the top window to ease debugging (this may change
                                 // in the future).
+
+                                // Note: While we develop webrtc communication, we
+                                // are not using the chunking code (jis: 07/08/2018)
+
 top.loadAllErrorCount = 0;      // When we get an error loading a chunk, we turn off
                                 // loadAll and set this to some positive value
                                 // (20 at the moment). We then count this value down each
@@ -65,7 +73,7 @@ Blockly.ReplStateObj = function() {};
 Blockly.ReplStateObj.prototype = {
     'state' : Blockly.ReplMgr.rsState.IDLE,     // Is the connection to the Repl Up
     'url' : null,                       // The url of the repl (Companion) when known
-    'baseurl' : null,                  // URL used to upload assets
+    'baseurl' : null,                   // URL used to upload assets
     'replcode' : null,                  // The six digit code used for rendezvous
     'rendezvouscode' : null,            // Code used for Rendezvous (hash of replcode)
     'dialog' : null,                    // The Dialog Box with the code and QR Code
@@ -225,9 +233,9 @@ Blockly.ReplMgr.pollYail = function(workspace) {
 
 Blockly.ReplMgr.resetYail = function(partial) {
     top.ReplState.phoneState.initialized = false; // so running io stops
-    this.putYail.reset();
     if (!partial) {
-        top.ReplState.phoneState = { "phoneQueue" : []};
+        this.putYail.reset();
+        top.ReplState.phoneState = { "phoneQueue" : [], "assetQueue" : []};
     }
 };
 
@@ -245,20 +253,39 @@ Blockly.ReplMgr.resetYail = function(partial) {
 
 Blockly.ReplMgr.putYail = (function() {
     var rs;
-    var context;
     var conn;                   // XMLHttpRequest Object sending to Phone
     var rxhr;                   // XMLHttpRequest Object listening for returns
+    var context;
+    var upatedProgressDialog = false;
     var phonereceiving = false;
+    var webrtcstarting = false;
+    var webrtcrunning = false;
+    var webrtcpeer;
+    var webrtcisopen = false;
+    var webrtcforcestop = false;
+    // var iceservers = { 'iceServers' : [ { 'urls' : ['stun:stun.l.google.com:19302']}]};
+    var iceservers = { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
+                                          'username' : 'oh',
+                                          'credential' : 'boy' }]};
+    var webrtcrendezvous = 'http://rendezvous.appinventor.mit.edu/rendezvous2/';
+    var webrtcdata;
+    var seennonce = {};
     var engine = {
         // Enqueue form for the phone
         'putYail' : function(code, block, success, failure) {
-            rs = top.ReplState;
             context = this;
+            rs = top.ReplState;
+            if (code === undefined) {      // This is a kludge. It lets us call putYail without args
+                engine.pollphone();
+                return;                    // in order to setup the context variable above.
+            }
             if (rs === undefined || rs === null) {
                 console.log('putYail: replState not set yet.');
                 return;
             }
-            if (rs.state != Blockly.ReplMgr.rsState.CONNECTED) {
+            if (rs.state != Blockly.ReplMgr.rsState.CONNECTED &&
+                rs.state != Blockly.ReplMgr.rsState.ASSET &&
+                rs.state != Blockly.ReplMgr.rsState.EXTENSIONS) {
                 console.log('putYail: phone not connected');
                 return;
             }
@@ -276,15 +303,255 @@ Blockly.ReplMgr.putYail = (function() {
                 engine.pollphone(); // Trigger callback side
             }
         },
+        // putAsset: Like putYail but uses a different queue
+        'putAsset' : function(code, block, success, failure) {
+            rs = top.ReplState;
+            if (rs === undefined || rs === null) {
+                console.log('putAsset: replState not set yet.');
+                return;
+            }
+            if (rs.state != Blockly.ReplMgr.rsState.CONNECTED &&
+                rs.state != Blockly.ReplMgr.rsState.ASSET &&
+                rs.state != Blockly.ReplMgr.rsState.EXTENSIONS) {
+                console.log('putAsset: phone not connected');
+                return;
+            }
+            if (!rs.phoneState.assetQueue) {
+                rs.phoneState.assetQueue = [];
+            }
+            rs.phoneState.assetQueue.push({
+                'code' : Blockly.ReplMgr.quoteUnicode(code), // Deal with unicode characters and kawa
+                'success' : success,
+                'failure' : failure,
+                'block' : block
+            });
+            if (!rs.phoneState.ioRunning) {
+                rs.phoneState.ioRunning = true;
+                engine.pollphone(); // Trigger callback side
+            }
+        },
+        'webrtcstart' : function() {
+            var RefreshAssets = top.AssetManager_refreshAssets;
+            var offer;
+            var key = rs.replcode;
+            var haveoffer = false;
+            webrtcisopen = false;
+            webrtcforcestop = false;
+            top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
+            var poll = function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', webrtcrendezvous + key + '-r', true);
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        if (this.response[0] == '[') {
+                            var json = JSON.parse(this.response);
+                            for (var i = 0; i < json.length; i++ ){
+                                var hunk = json[i];
+                                var candidate = hunk['candidate'];
+                                offer = hunk['offer'];
+                                if (candidate && haveoffer) {
+                                    var nonce = hunk['nonce'];
+                                    if (!seennonce[nonce]) {
+                                        seennonce[nonce] = true;
+                                        webrtcpeer.addIceCandidate(candidate);
+                                    } else {
+                                        console.log("Seen nonce " + nonce);
+                                    }
+                                } else if (offer) {
+                                    if (!haveoffer) {
+                                        haveoffer = true;
+                                        i = 0; // Start loop over (I hope)
+                                        webrtcpeer.setRemoteDescription(offer);
+                                    }
+                                }
+                            }
+                        }
+                        if (!webrtcisopen && !webrtcforcestop) {
+                            setTimeout(poll, 1000); // Try again in one second
+                        }
+                    }
+                };
+                xhr.send();
+            };
+            webrtcpeer = new RTCPeerConnection(iceservers);
+            webrtcpeer.oniceconnectionstatechange = function(evt) {
+                console.log("oniceconnectionstatechange: evt.type = " + evt.type);
+                if (this.iceConnectionState == "disconnected" ||
+                    this.iceConnectionState == "failed") {
+                    webrtcdata = null;
+                    webrtcstarting = false;
+                    webrtcrunning = false;
+                    top.BlocklyPanel_indicateDisconnect();
+                    webrtcpeer.close();
+                }
+            };
+            webrtcpeer.onsignalingstatechange = function(evt) {
+                console.log("onsignalingstatechange: evt.type = " + evt.type);
+            };
+            webrtcpeer.onicecandidate = function(evt) {
+                if (evt.type == 'icecandidate') {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', webrtcrendezvous, true);
+                    xhr.send(JSON.stringify({'key' : key + '-s',
+                                             'webrtc' : true,
+                                             'nonce' : Math.floor(Math.random() * 10000) + 1,
+                                             'candidate' : evt.candidate}));
+                }
+            };
+            webrtcdata = webrtcpeer.createDataChannel('data');
+            webrtcdata.onopen = function() {
+                webrtcisopen = true;
+                top.ConnectProgressBar_setProgress(30, Blockly.Msg.DIALOG_SECURE_ESTABLISHED);
+                console.log('webrtc data connection open!');
+                webrtcdata.onmessage = function(ev) {
+                    console.log("webrtc(onmessage): " + ev.data);
+                    var json = goog.json.parse(ev.data);
+                    if (json.status == 'OK') {
+                        context.processRetvals(json.values);
+                    }
+                };
+                // Ready to actually exchange data
+                webrtcrunning = true;
+                top.webrtcdata = webrtcdata; // For debugging
+                rs.dialog.hide();            // Take down QR Code dialog
+                RefreshAssets(function() {
+                    Blockly.ReplMgr.loadExtensions();
+                });
+            };
+            webrtcdata.onclose = function() {
+                console.log("webrtc data closed");
+                webrtcdata = null;
+                webrtcstarting = false;
+                webrtcrunning = false;
+                webrtcpeer.close();
+                top.BlocklyPanel_indicateDisconnect();
+            };
+            webrtcdata.onerror = function(err) {
+                console.log("webrtc data error: " + err);
+                webrtcdata = null;
+                webrtcstarting = false;
+                webrtcrunning = false;
+            };
+            webrtcpeer.createOffer().then(function(desc) {
+                offer = desc;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', webrtcrendezvous, true);
+                xhr.send(JSON.stringify({'key' : key + '-s',
+                                         'webrtc' : true,
+                                         'offer' : desc}));
+                webrtcpeer.setLocalDescription(desc);
+            });
+            poll();
+
+        },
+        'chunker' : (function() {
+            var seq = 0;
+            var gensym = function() {
+                seq += 1;
+                return 'Q' + seq;
+            };
+
+            var chunker = function(input) {
+                var length = input.length;
+                var chunklen = 15000; // purposely smaller then 16K because we
+                if (length <= chunklen) { // add overhead
+                    return [input];
+                }
+                var chunks = [];
+                while (length > 0) {
+                    var clen = Math.min(length, chunklen);
+                    chunks.push(input.substring(0, clen));
+                    input = input.substring(clen);
+                    length = input.length;
+                }
+                var symbol = gensym();
+                var retval = [];
+                retval.push('(define ' + symbol + ' "")');
+                chunks.forEach(function(item, index) {
+                    item = item.replace(/\\/g, '\\\\');
+                    item = item.replace(/"/g, '\\"');
+                    var code = '(set! ' + symbol + ' (string-append ' + symbol + ' "' + item + '"))';
+                    retval.push(code);
+                });
+                retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                retval.push('(set! ' + symbol + ' #!null)'); // so memory is gc'd
+                return retval;
+            };
+            return (chunker);
+        })(),
         'pollphone' : function() {
             if (!rs.didversioncheck) {
                 engine.doversioncheck();
                 return;
             }
-            if (!phonereceiving) {
+            var blockid;
+            var sendcode;
+            if (!phonereceiving && !top.usewebrtc) {
                 engine.receivefromphone();
             }
             var work;
+            if (top.usewebrtc) {
+                if (!webrtcrunning && !webrtcstarting) {
+                    webrtcstarting = true;
+                    engine.webrtcstart(); // We need to start webrtc
+                    return;
+                }
+                if (!webrtcrunning) {
+                    return;     // We are in the process of starting
+                }
+                // Let's ensure the queues exist
+                if (!rs.phoneState.assetQueue) {
+                    rs.phoneState.assetQueue = [];
+                }
+                if (!rs.phoneState.phoneQueue) {
+                    rs.phoneState.phoneQueue = [];
+                }
+                // OK, let's send with webrtc!
+                // First let's drain the queue of pending asset updates
+                while ((work = rs.phoneState.assetQueue.shift())) {
+                    if (!work.block) {
+                        blockid = -1;
+                    } else {
+                        blockid = '"' + work.block.id + '"';
+                    }
+                    sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
+                        blockid + " (begin " + work.code + ")))";
+                    console.log(sendcode);
+                    // sendcode is a string of all of the scheme code
+                    sendcode = engine.chunker(sendcode);
+                    // sendcode is now an array of strings, also scheme
+                    // code, but guaranteed that each will fit in a
+                    // webrtc message
+                    sendcode.forEach(function(item) {
+                        console.log('Chunk: ' + item);
+                        webrtcdata.send(item);
+                    });
+                }
+                if (rs.state == Blockly.ReplMgr.rsState.CONNECTED) {
+                    while ((work = rs.phoneState.phoneQueue.shift())) {
+                        if (!work.block) {
+                            blockid = -1;
+                        } else {
+                            blockid = '"' + work.block.id + '"';
+                        }
+                        sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
+                            blockid + " (begin " + work.code + ")))";
+                        console.log(sendcode);
+                        // sendcode is a string of all of the scheme code
+                        sendcode = engine.chunker(sendcode);
+                        // sendcode is now an array of strings, also scheme
+                        // code, but guaranteed that each will fit in a
+                        // webrtc message
+                        sendcode.forEach(function(item) {
+                            console.log('Chunk: ' + item);
+                            webrtcdata.send(item);
+                        });
+                    }
+                }
+                rs.phoneState.ioRunning = false;
+                return;
+            }
+            // We only get here if we are not using webrtc
             if (top.loadAll) {
                 var chunk;
                 var allcode = "";
@@ -326,7 +593,6 @@ Blockly.ReplMgr.putYail = (function() {
             }
             var encoder = new goog.Uri.QueryData();
             conn = goog.net.XmlHttp();
-            var blockid;
             if (work.block) {
                 // Quote blockId as a string due to non-numeric identifiers generated from
                 // Blockly's soup {@see Blockly.utils.genUid.soup_}
@@ -389,7 +655,10 @@ Blockly.ReplMgr.putYail = (function() {
                         return;
                     } else {
                         var json = goog.json.parse(this.response);
-                        if (!Blockly.ReplMgr.acceptablePackage(json["package"])) {
+                        // Don't check the package name if we are the emulator
+                        // We cannot check because our distributed setup tools contains
+                        // a Companion older then the version that supplies its package name
+                        if ((rs.replcode != 'emulator') && !Blockly.ReplMgr.acceptablePackage(json["package"])) {
                             dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                              Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE,
                                                              Blockly.Msg.REPL_OK, false, null, 0, function() {
@@ -453,12 +722,23 @@ Blockly.ReplMgr.putYail = (function() {
             rxhr.send("IGNORED=STUFF");
         },
         "reset" : function() {
+            if (top.usewebrtc) {
+                if (webrtcdata) {
+                    webrtcdata.close();
+                    webrtcpeer.close();
+                }
+                webrtcforcestop = true;
+                webrtcisopen = false;
+                webrtcrunning = false;
+                webrtcstarting = false;
+            }
             if (rxhr)
                 rxhr.abort();
             rxhr = null;
 //            if (conn)  // This seems to cause disconnects on project switch
 //                conn.abort();
 //            conn = null;
+            top.usewebrtc = false;
             phonereceiving = false;
         },
         "resetcompanion" : function() {
@@ -471,6 +751,7 @@ Blockly.ReplMgr.putYail = (function() {
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
             top.BlocklyPanel_indicateDisconnect();
+            engine.reset();
         },
         "checkversionupgrade" : function(fatal, installer, force) {
             var dialog;
@@ -504,6 +785,7 @@ Blockly.ReplMgr.putYail = (function() {
         }
     };
     engine.putYail.reset = engine.reset;
+    engine.putYail.putAsset = engine.putAsset;
     return engine.putYail;
 })();
 
@@ -575,42 +857,51 @@ Blockly.ReplMgr.triggerUpdate = function() {
         return;
     }
 
-    encoder.add('package', 'update.apk');
-    var qs = encoder.toString();
-    fetchconn.open("GET", top.COMPANION_UPDATE_URL, true);
-    fetchconn.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            try {
-                showdialog(Blockly.Msg.REPL_GOT_IT, Blockly.Msg.REPL_UPDATE_INFO);
-                Blockly.ReplMgr.putAsset("update.apk", goog.crypt.base64.decodeStringToByteArray(this.response),
-                                         function() {
-                                             // Trigger Update Here
-                                             console.log("Update: Downloaded");
-                                             var conn = goog.net.XmlHttp();
-                                             conn.open("POST", rs.baseurl + "_package", true);
-                                             conn.onreadystatechange = function() {
-                                                 if (this.readyState == 4 && this.status == 200) {
-                                                     console.log("Update: _package success");
-                                                     reset(); //  New companion, no connection left!
-                                                 } else if (this.readyState == 4) {
-                                                     console.log("Update: _package state = 4 probably ok");
-                                                     reset();
-                                                 }
-                                             };
-                                             conn.send(qs);
-                                         },
-                                         function() {
-                                             fail(Blockly.Msg.REPL_UNABLE_TO_UPDATE);
-                                         }, true);
-            } catch (err) {     // Most likely a decoding error from goog.crypt.base64...
-                fail(Blockly.Msg.REPL_UNABLE_TO_LOAD);
+    if (top.usewebrtc) {        // If we are using webrtc, we just ask the Companion to do the
+                                // work directly.
+        var cookie = this.getCookie();
+        var yail = "(AssetFetcher:upgradeCompanion \"" + cookie + "\" \"" +
+            top.COMPANION_UPDATE_URL + "\")";
+        console.log("CompanionUpgrade Yail = " + yail);
+        this.putYail.putAsset(yail);
+    } else {
+        encoder.add('package', 'update.apk');
+        var qs = encoder.toString();
+        fetchconn.open("GET", top.COMPANION_UPDATE_EMULATOR_URL, true);
+        fetchconn.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                try {
+                    showdialog(Blockly.Msg.REPL_GOT_IT, Blockly.Msg.REPL_UPDATE_INFO);
+                    Blockly.ReplMgr.putAsset(0, "update.apk", goog.crypt.base64.decodeStringToByteArray(this.response),
+                                             function() {
+                                                 // Trigger Update Here
+                                                 console.log("Update: Downloaded");
+                                                 var conn = goog.net.XmlHttp();
+                                                 conn.open("POST", rs.baseurl + "_package", true);
+                                                 conn.onreadystatechange = function() {
+                                                     if (this.readyState == 4 && this.status == 200) {
+                                                         console.log("Update: _package success");
+                                                         reset(); //  New companion, no connection left!
+                                                     } else if (this.readyState == 4) {
+                                                         console.log("Update: _package state = 4 probably ok");
+                                                         reset();
+                                                     }
+                                                 };
+                                                 conn.send(qs);
+                                             },
+                                             function() {
+                                                 fail(Blockly.Msg.REPL_UNABLE_TO_UPDATE);
+                                             }, true);
+                } catch (err) {     // Most likely a decoding error from goog.crypt.base64...
+                    fail(Blockly.Msg.REPL_UNABLE_TO_LOAD);
+                }
+            } else if (this.readyState == 4) {
+                fail(Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND);
             }
-        } else if (this.readyState == 4) {
-            fail(Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND);
-        }
-    };
-    showdialog(false, Blockly.Msg.REPL_NOW_DOWNLOADING);
-    fetchconn.send();
+        };
+        showdialog(false, Blockly.Msg.REPL_NOW_DOWNLOADING);
+        fetchconn.send();
+    }
 };
 
 Blockly.ReplMgr.acceptablePackage = function(comppack) {
@@ -631,6 +922,7 @@ Blockly.ReplMgr.acceptableVersion = function(version) {
 };
 
 Blockly.ReplMgr.processRetvals = function(responses) {
+    var rs = top.ReplState;
     var block;
     var context = this;
     var runtimeerr = function(message) {
@@ -666,7 +958,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
       var text = document.createTextNode(str);
       div.appendChild(text);
       return div.innerHTML;
-    }
+    };
 
     for (var i = 0; i < responses.length; i++) {
         var r = responses[i];
@@ -722,6 +1014,13 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             break;
         case "popScreen":
             top.BlocklyPanel_popScreen();
+            break;
+        case "assetTransferred":
+            top.AssetManager_markAssetTransferred(r.value);
+            break;
+        case "extensionsLoaded":
+            rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+            Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
             break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);
@@ -957,9 +1256,13 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
         var u = input.charCodeAt(i); // Unicode of the character
         if (u < ' '.charCodeAt(0) || u > '~'.charCodeAt(0)) {
           // Replace any special chars with \u1234 unicode
-            var hex = "000" + u.toString(16);
-            hex = hex.substring(hex.length - 4);
-            sb.push("\\u" + hex);
+            if (u == 10) {      // Don't encode newlines
+                sb.push(input.charAt(i));
+            } else {
+                var hex = "000" + u.toString(16);
+                hex = hex.substring(hex.length - 4);
+                sb.push("\\u" + hex);
+            }
         } else {
             sb.push(input.charAt(i));
         }
@@ -969,7 +1272,9 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
 
 Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
     var rs = top.ReplState;
+    var me = this;
     rs.didversioncheck = false; // Re-check
+    var RefreshAssets = top.AssetManager_refreshAssets;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
@@ -999,6 +1304,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
             rs.dialog.hide();
             rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
             rs.connection = null;
+            me.putYail.reset(true); // Shutdown any polling
             top.BlocklyPanel_indicateDisconnect();
         });
         this.getFromRendezvous();
@@ -1006,7 +1312,13 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         if (top.ReplState.state == this.rsState.RENDEZVOUS) {
             top.ReplState.dialog.hide();
         }
+        try {
+            top.webrtcdata.send("#DONE#"); // This should kill the companion
+        } catch (err) {
+            console.log("webrtcdata: Error: " + err);
+        }
         this.resetYail(false);
+        this.putYail.reset();
         top.ReplState.state = this.rsState.IDLE;
         this.hardreset(this.formName);       // Tell aiStarter to kill off adb
     }
@@ -1022,6 +1334,7 @@ Blockly.ReplMgr.genCode = function() {
 
 // Request ipAddress information from the Rendezvous Server
 Blockly.ReplMgr.getFromRendezvous = function() {
+    var me = this;
     var xmlhttp = goog.net.XmlHttp();
     if (top.ReplState === undefined || top.ReplState === null) {
         console.log('getFromRendezvous: replState not set yet.');
@@ -1042,18 +1355,74 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     setTimeout(poller, 2000);
                     return;
                 }
+                rs.dialog.hide(); // Take down the QRCode dialog
+                // Keep the user informed about the connection
+                top.ConnectProgressBar_start();
+                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.extensionurl = rs.baseurl + '_extensions';
-                rs.state = Blockly.ReplMgr.rsState.ASSET;
-                rs.dialog.hide();
-                RefreshAssets(function() {
-                                  Blockly.ReplMgr.loadExtensions();
-                              });
-                // Start the connection with the Repl itself
+                rs.didversioncheck = true; // We are checking it here, so don't check it later
+                                           // via HTTP because we may be using webrtc and there is no
+                                           // HTTP
+
+                // The code below really gets things going. We will
+                // either call it shortly, if the Companion version is acceptable
+                // or in the dialog response handler below if the Companion
+                // is out of date but the user chooses to continue anyway
+                var getstarted = function() {
+                    if (json.webrtc && json.webrtc == "true") { // We are the webRTC Companion
+                        top.usewebrtc = true;
+                        rs.state = me.rsState.ASSET;
+                        me.putYail(); // This starts the whole negotiation process!
+                        return;         // And we are done here.
+                    }
+                    rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+
+                    RefreshAssets(function() {
+                        Blockly.ReplMgr.loadExtensions();
+                    });
+                    // Start the connection with the Repl itself
+                };
+                // Time to check the version of the Companion that we get from the
+                // Rendezvous server. Note: Only post 2.47 Companions provide this
+                // information. So if it isn't present we will assume it is old and
+                // say that an update is advisable (or needed)
+                var installer = json.installer;
+                if (!json.version || !Blockly.ReplMgr.acceptableVersion(json.version)) {
+                    if (top.COMPANION_UPDATE_URL1) {
+                        var url = top.location.origin + top.COMPANION_UPDATE_URL1;
+                        var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
+                                                         Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2 + '<br/>' +
+                                                         Blockly.ReplMgr.makeqrcode(url),
+                                                         Blockly.Msg.REPL_OK, false,
+                                                         Blockly.Msg.REPL_NOT_NOW, 0,
+                                                         function(response) {
+                                                             dialog.hide();
+                                                             if (response == Blockly.Msg.REPL_NOT_NOW) {
+                                                                 getstarted();
+                                                             } else {
+                                                                 top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                                                                 top.BlocklyPanel_indicateDisconnect();
+                                                             }
+                                                         });
+
+                    } else {
+                        dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
+                                                         Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + " " +
+                                                         top.PREFERRED_COMPANION,
+                                                         Blockly.Msg.REPL_OK, false, null, 0,
+                                                         function(response) {
+                                                             dialog.hide();
+                                                             getstarted();
+                                                         });
+                    }
+                } else {
+                        getstarted();
+                }
             } catch (err) {
                 console.log("getFromRendezvous(): Error: " + err);
                 setTimeout(poller, 2000); // Queue next attempt
@@ -1074,24 +1443,36 @@ Blockly.ReplMgr.resendAssetsAndExtensions = function() {
 
 Blockly.ReplMgr.loadExtensions = function() {
     var rs = top.ReplState;
-    rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
-    var xmlhttp = goog.net.XmlHttp();
-    var encoder = new goog.Uri.QueryData();
-    encoder.add('extensions', JSON.stringify(top.AssetManager_getExtensions()));
-    xmlhttp.open('POST', rs.extensionurl, true);
-    xmlhttp.onreadystatechange = function() {
-        /* Older companions do not support ReplMgr providing an extension list. This check below
-         * handles older companions as well as new companions so that we don't break old clients.
-         */
-        if (xmlhttp.readyState === 4 && (this.status === 200 || this.status === 404 || !this.status)) {
-            rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-            Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
-        } else if (xmlhttp.readyState === 4) {
-            rs.state = Blockly.ReplMgr.rsState.IDLE;
-            top.BlocklyPanel_indicateDisconnect();
-        }
-    };
-    xmlhttp.send(encoder.toString());
+    if (top.usewebrtc) {
+        // Need to trigger the loading of extensions here
+        rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
+        var extensionJson = JSON.stringify(top.AssetManager_getExtensions());
+        extensionJson = extensionJson.replace(/"/g, '\\"');
+        var yailstring = "(AssetFetcher:loadExtensions \"" +
+            extensionJson +
+            "\")";
+        console.log("Blockly.ReplMgr.loadExtensions(webrtc): Yail = " + yailstring);
+        this.putYail.putAsset(yailstring);
+    } else {
+        rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
+        var xmlhttp = goog.net.XmlHttp();
+        var encoder = new goog.Uri.QueryData();
+        encoder.add('extensions', JSON.stringify(top.AssetManager_getExtensions()));
+        xmlhttp.open('POST', rs.extensionurl, true);
+        xmlhttp.onreadystatechange = function() {
+            /* Older companions do not support ReplMgr providing an extension list. This check below
+             * handles older companions as well as new companions so that we don't break old clients.
+             */
+            if (xmlhttp.readyState === 4 && (this.status === 200 || this.status === 404 || !this.status)) {
+                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+            } else if (xmlhttp.readyState === 4) {
+                rs.state = Blockly.ReplMgr.rsState.IDLE;
+                top.BlocklyPanel_indicateDisconnect();
+            }
+        };
+        xmlhttp.send(encoder.toString());
+    }
 };
 
 // Called by the main poller function. Manages the state transitions for polling
@@ -1160,11 +1541,43 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
     return z.join("");
 };
 
-Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
+// Extract the AppInventor authentication cookie from the current
+// document. We do this so we can provide it directly to the Companion
+// so the Companion can fetch assets directly from the MIT App
+// Inventor server without having the browser have to get them and
+// "stuff" them to the Companion
+
+Blockly.ReplMgr.getCookie = function() {
+    var regex = /AppInventor *=([^;]+)/;
+    var cookie;
+    if (regex.test(document.cookie)) {
+        cookie = regex.exec(document.cookie)[1];
+    } else {
+        console.log("Cannot obtain cookie for putAsset!");
+        cookie = null;
+    }
+    return cookie;
+};
+
+Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, force) {
     if (top.ReplState === undefined)
         return false;
     if (!force && (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
+    if (top.usewebrtc) {
+        // Note: if using webrtc we ignore the passed in callback and
+        // instead just call makeAssetTransferred ourselves
+        var uri = window.location.origin;
+        var cookie = this.getCookie();
+        console.log("putAsset uri = " + uri + " cookie = " + cookie);
+        var yail = "(AssetFetcher:fetchAssets \"" + cookie + "\" \"" + projectid +
+            "\" \"" + uri + "\" \"" + filename + "\")";
+        console.log("Yail for putAsset = " + yail);
+        this.putYail();         // This sets up the internal context variable
+                                // inside of the Closure for putYail and friends
+        this.putYail.putAsset(yail);
+        return true;
+    }
     var conn = goog.net.XmlHttp();
     var arraybuf = new ArrayBuffer(blob.length);
     var rs = top.ReplState;

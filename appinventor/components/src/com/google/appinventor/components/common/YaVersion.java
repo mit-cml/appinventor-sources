@@ -431,8 +431,14 @@ public class YaVersion {
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 172:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 173:
+  // - FORM_COMPONENT_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 174:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 23
+  // For YOUNG_ANDROID_VERSION 175:
+  // - MAP_COMPONENT_VERSION was incremented 5
 
-  public static final int YOUNG_ANDROID_VERSION = 172;
+  public static final int YOUNG_ANDROID_VERSION = 175;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -494,8 +500,12 @@ public class YaVersion {
   // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
   // For BLOCKS_LANGUAGE_VERSION 21:
   // - The is-text block was added.
+  // For BLOCKS_LANGUAGE_VERSION 22:
+  // - Break block was added.
+  // For BLOCKS_LANGUAGE_VERSION 23:
+  // - Bitwise and, ior, and xor blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 22;
+  public static final int BLOCKS_LANGUAGE_VERSION = 23;
 
   // ................................. Component Version Numbers ..................................
 
@@ -748,7 +758,11 @@ public class YaVersion {
   // - The Classic option for themes was added
   // For FORM_COMPONENT_VERSION 23:
   // - The ActionBar property was deprecated
-  public static final int FORM_COMPONENT_VERSION = 23;
+  // For FORM_COMPONENT_VERSION 24:
+  // - Added the AskForPermission method
+  // - Added the PermissionDenied event
+  // - Added the PermissionGranted event
+  public static final int FORM_COMPONENT_VERSION = 24;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -867,7 +881,10 @@ public class YaVersion {
   // - GeoJSONError was renamed to LoadError
   // For MAP_COMPONENT_VERSION 4:
   // - Added Rotation property
-  public static final int MAP_COMPONENT_VERSION = 4;
+  // For MAP_COMPONENT_VERSION 5:
+  // - Added ShowScale property
+  // - Added ScaleUnits property
+  public static final int MAP_COMPONENT_VERSION = 5;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1184,10 +1201,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.47";
+  public static final String PREFERRED_COMPANION = "2.50";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.47" };
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.50" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

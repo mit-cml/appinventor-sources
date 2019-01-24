@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2019 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -70,7 +71,9 @@ public class BlocklyPanel extends HTMLPanel {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
-    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL);
+    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL,
+      YaVersion.COMPANION_UPDATE_URL1,
+      YaVersion.COMPANION_UPDATE_EMULATOR_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
@@ -379,6 +382,7 @@ public class BlocklyPanel extends HTMLPanel {
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     terminateDrag();  // cancel a drag before showing the modal dialog
+    ConnectProgressBar.tempHide(true); // Hide any connection progress bar
     dialogBox.show();
     return dialogBox;
   }
@@ -392,6 +396,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
 
   public static void HideDialog(DialogBox dialog) {
+    ConnectProgressBar.tempHide(false); // unhide the progress bar if it was hidden
     dialog.hide();
   }
 
@@ -651,6 +656,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
   native void makeActive()/*-{
     Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    Blockly.mainWorkspace.refreshBackpack();
     // Trigger a screen switch to send new YAIL.
     var parts = Blockly.mainWorkspace.formName.split(/_/);
     if (Blockly.ReplMgr.isConnected()) {
@@ -798,7 +804,7 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void doResetYail() /*-{
-    Blockly.ReplMgr.resetYail();
+    Blockly.ReplMgr.resetYail(true);
   }-*/;
 
   public native void doPollYail() /*-{
@@ -834,9 +840,11 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  static native void setPreferredCompanion(String comp, String url) /*-{
+  static native void setPreferredCompanion(String comp, String url, String url1, String url2) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
+    $wnd.COMPANION_UPDATE_URL1 = url1;
+    $wnd.COMPANION_UPDATE_EMULATOR_URL = url2;
   }-*/;
 
   static native void addAcceptableCompanionPackage(String comp) /*-{
