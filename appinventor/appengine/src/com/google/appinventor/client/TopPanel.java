@@ -123,7 +123,7 @@ public class TopPanel extends Composite {
     gallery.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        ode.switchToGalleryView();
+        Window.open("http://localhost:3000/", "_blank", "");
       }
     });
     links.add(gallery);

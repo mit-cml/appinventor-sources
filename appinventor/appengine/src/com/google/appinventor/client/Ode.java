@@ -397,8 +397,8 @@ public class Ode implements EntryPoint {
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
-          projectToolbar.setPublishOrUpdateButtonVisible(true);
-          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(false);
+          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
         }
       }
     };
