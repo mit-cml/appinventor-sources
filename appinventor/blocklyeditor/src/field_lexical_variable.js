@@ -252,7 +252,8 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
     parent = child.getParent();
     if (parent) {
       while (parent) {
-          if ((parent.type === "procedures_defnoreturn") || (parent.type === "procedures_defreturn")) {
+          if ((parent.type === "procedures_defnoreturn") || (parent.type === "procedures_defreturn") ||
+              (parent.type === "procedures_defanonnoreturn")) {
             params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not arguments_ instance var
             for (i = 0; i < params.length; i++) {
               rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix);

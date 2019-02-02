@@ -23,7 +23,6 @@ goog.provide('Blockly.Yail.procedures');
  */
 
 Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
-Blockly.Yail.YAIL_ANON_PROC_TAG = 'ap$';
 
 // Generator code for procedure call with return
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
