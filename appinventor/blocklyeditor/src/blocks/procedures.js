@@ -656,6 +656,83 @@ Blockly.Blocks.procedures_mutatorarg.validator = function(newVar) {
   return newVar || null;
 };
 
+Blockly.Blocks['procedures_defanonnoreturn'] = { //TODO:
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE)
+        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_VAR_NAME,
+            true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR');
+    this.appendStatementInput('DO')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
+  },
+  getVars: function() {
+    return [this.getFieldValue('VAR')];
+  },
+  declaredNames: function() {
+    return [this.getFieldValue('VAR')];
+  },
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+      this.setFieldValue(newName, 'VAR');
+    }
+  },
+  renameBound: function(boundSubstitution, freeSubstitution) {
+    var oldIndexVar = this.getFieldValue('VAR');
+    var newIndexVar = boundSubstitution.apply(oldIndexVar);
+    if (newIndexVar !== oldIndexVar) {
+      this.renameVar(oldIndexVar, newIndexVar);
+      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
+      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    } else {
+      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+    }
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function(freeSubstitution) {
+    var indexVar = this.getFieldValue('VAR');
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    bodyFreeVars.deleteName(indexVar);
+    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
+      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
+      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
+      this.renameBound(boundSubstitution, freeSubstitution);
+    } else {
+      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+    }
+  },
+  freeVariables: function() { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    result.deleteName(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+    return result;
+  },
+  blocksInScope: function() {
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
+  },
+  typeblock: [
+    { translatedName: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE }
+  ]
+}; //TODO:
+
 Blockly.Blocks['procedures_callnoreturn'] = {
   // Call a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.

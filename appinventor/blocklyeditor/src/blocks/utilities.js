@@ -33,6 +33,7 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
   'list':{input:"Array",output:["Array","String"]},
   'component':{input:"COMPONENT",output:"COMPONENT"},
   'InstantInTime':{input:Blockly.Blocks.Utilities.InstantInTime,output:Blockly.Blocks.Utilities.InstantInTime},
+  'AnonProcedure':{input:"AnonProcedure",output:"AnonProcedure"},
   'any':{input:null,output:null}
   //add  more types here
 };

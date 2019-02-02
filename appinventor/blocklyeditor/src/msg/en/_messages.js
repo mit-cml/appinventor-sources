@@ -972,6 +972,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = 'to ';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure that does not return a value.';
+    
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_VAR_NAME = 'param';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';

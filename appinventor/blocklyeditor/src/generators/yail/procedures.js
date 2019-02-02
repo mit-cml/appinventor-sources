@@ -23,6 +23,7 @@ goog.provide('Blockly.Yail.procedures');
  */
 
 Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
+Blockly.Yail.YAIL_ANON_PROC_TAG = 'ap$';
 
 // Generator code for procedure call with return
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
@@ -49,6 +50,18 @@ Blockly.Yail['procedures_defnoreturn'] = function() {
       + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + body
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
+};
+
+// Generator code for anonymous procedure
+Blockly.Yail['procedures_defanonnoreturn'] = function() {
+  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YAIL_LAMBDA
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION
+      + body + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
 Blockly.Yail['procedure_lexical_variable_get'] = function() {

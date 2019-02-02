@@ -68,6 +68,7 @@ Blockly.Yail.YAIL_OR_DELAYED = "(or-delayed ";
 Blockly.Yail.YAIL_IF = "(if ";
 Blockly.Yail.YAIL_INIT_RUNTIME = "(init-runtime)";
 Blockly.Yail.YAIL_INITIALIZE_COMPONENTS = "(call-Initialize-of-components";
+Blockly.Yail.YAIL_LAMBDA = "(lambda ";
 Blockly.Yail.YAIL_LET = "(let ";
 Blockly.Yail.YAIL_LEXICAL_VALUE = "(lexical-value ";
 Blockly.Yail.YAIL_SET_LEXICAL_VALUE = "(set-lexical! ";
