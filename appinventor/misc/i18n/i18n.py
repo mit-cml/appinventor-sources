@@ -140,6 +140,7 @@ def propescape(s):
 
 
 def read_block_translations():
+    linere = re.compile(r"(Blockly.Msg.[A-Z_]+) *= *'([A-Za-z_]+)';")
     prefix = re.compile(r'Blockly\.Msg\.([A-Z_]+)')
     value = re.compile(r'\'([^\'])*\'|\"([^\"]*)\"')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', 'en', '_messages.js')) as js:
@@ -151,17 +152,15 @@ def read_block_translations():
         for line in js:
             line = line.strip()
             if line == '':
-                pass
+                continue
             if line.startswith('//'):
                 comment = line[3:]
-            match = prefix.match(line)
+            match = linere.match(line)
             if match is not None:
-                items.append('blockseditor.%s = %s' % (key, propescape(current_item)))
+                items.append('blockseditor.%s = %s' % (match.group(1), propescape(match.group(2))))
                 if comment:
                     items.append('# Description: %s' % comment)
                     comment = None
-                match2 = value.match(line)
-                current_item = match2.group(0)
                 if line.endswith('+'):
                     continuation = True
             elif continuation or line.startswith('+'):
