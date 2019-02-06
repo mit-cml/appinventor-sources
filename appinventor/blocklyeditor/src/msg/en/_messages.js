@@ -1013,6 +1013,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Call a procedure with a return value.';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'call return';
 
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS = 'arguments';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
+
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';
 

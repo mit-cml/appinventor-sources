@@ -908,6 +908,7 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias AnonymousProcedure <com.google.appinventor.components.runtime.util.AnonymousProcedure>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
@@ -2328,6 +2329,20 @@ list, use the make-yail-list constructor with no arguments.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;Anonymous Procedure implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (create-anonymous-procedure x)
+  (AnonymousProcedure:create x))
+
+(define (call-anonymous-procedure procedure . args)
+  (AnonymousProcedure:callProcedure procedure args))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Anonymous Procedure implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
