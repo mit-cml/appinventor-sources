@@ -140,34 +140,51 @@ def propescape(s):
 
 
 def read_block_translations():
-    linere = re.compile(r"(Blockly.Msg.[A-Z_]+) *= *'([A-Za-z_]+)';")
-    prefix = re.compile(r'Blockly\.Msg\.([A-Z_]+)')
+    linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
     value = re.compile(r'\'([^\'])*\'|\"([^\"]*)\"')
+    continuation = re.compile('\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', 'en', '_messages.js')) as js:
         comment = None
-        current_item = ''
         items = []
-        continuation = False
-        key = ''
+        full_line = ''
+        is_block_comment = False
+        is_line_continuation = False
         for line in js:
             line = line.strip()
             if line == '':
                 continue
             if line.startswith('//'):
                 comment = line[3:]
-            match = linere.match(line)
-            if match is not None:
-                items.append('blockseditor.%s = %s' % (match.group(1), propescape(match.group(2))))
-                if comment:
-                    items.append('# Description: %s' % comment)
-                    comment = None
-                if line.endswith('+'):
-                    continuation = True
-            elif continuation or line.startswith('+'):
-                match2 = value.match(line[1:].strip())
-                current_item += match2.group(0)
-        items.append(current_item)
-
+                continue
+            if is_block_comment:
+                full_line += line
+                if line.endswith('*/'):
+                    comment = full_line
+                    is_block_comment = False
+                    full_line = ''
+                continue
+            if line.startswith('/*'):
+                full_line = line
+                is_block_comment = True
+                continue
+            if line.endswith('{'):
+                full_line = ''
+                continue
+            if line.startswith('+') or line.endswith('+'):
+                line = continuation.match(line).group(1)
+                is_line_continuation = True
+            elif is_line_continuation:
+                line = line[1:]
+                is_line_continuation = False
+            full_line += line
+            if full_line.endswith(';'):
+                match = linere.match(full_line)
+                if match is not None:
+                    items.append('blockseditor.%s = %s' % (match.group(1), propescape(match.group(2))))
+                    if comment:
+                        items.append('# Description: %s' % comment)
+                        comment = None
+                full_line = ''
         return '\n'.join(items) + '\n'
 
 
@@ -175,7 +192,10 @@ def combine(args):
     javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
                              'com.google.appinventor.client.OdeMessages_default.properties')
     blockprops = read_block_translations()  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
-    with open(os.path.join(appinventor_dir, 'i18n', 'translation_template.properties'), 'w', encoding='utf8') as out:
+    test = os.path.join(appinventor_dir, 'i18n', 'translation_template.properties')
+#    f = open('fred.txt', 'w+', encoding='utf8')
+#    with open(test, 'w+', encoding='utf8') as out:
+    with open('translation_template.properties', 'w+', encoding='utf8') as out:
         out.write('# Frontend definitions\n')
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
@@ -187,6 +207,7 @@ def combine(args):
                     out.write(line)
         out.write('\n# Blocks editor definitions\n')
         out.write(blockprops)
+        out.close()
 
 
 def parse_args():
