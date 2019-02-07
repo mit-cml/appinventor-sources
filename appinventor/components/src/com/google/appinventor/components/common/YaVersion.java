@@ -1212,11 +1212,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.50";
+  public static final String PREFERRED_COMPANION = "2.51";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.50" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.51" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
