@@ -5385,6 +5385,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MakePhoneCallMethods();
 
+  @DefaultMessage("MakePhoneCallDirect")
+  @Description("")
+  String MakePhoneCallDirectMethods();
+
   @DefaultMessage("GetWifiIpAddress")
   @Description("")
   String GetWifiIpAddressMethods();
@@ -5424,6 +5428,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SendMessage")
   @Description("")
   String SendMessageMethods();
+
+  @DefaultMessage("SendMessageDirect")
+  @Description("")
+  String SendMessageDirectMethods();
 
   @DefaultMessage("GetValue")
   @Description("")
