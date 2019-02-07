@@ -87,6 +87,8 @@ def js_stringify(text):
 def split(args):
     if args.lang is None:
         raise ValueError('No --lang specified for splitting file')
+    if args.lang_name is None:
+        raise ValueError('No --lang_name specified for splitting file')
     appengine_file = os.path.join(appinventor_dir, 'appengine', 'src', 'com',
                                   'google', 'appinventor', 'client',
                                   'OdeMessages_%s.properties' % args.lang[0])
@@ -95,8 +97,8 @@ def split(args):
         os.mkdir(blockly_dir)
     blockly_file = os.path.join(blockly_dir, '_messages.js')
     with open(args.source) as source:
-        with open(appengine_file, 'w') as ode_output:
-            with open(blockly_file, 'w') as blockly_output:
+        with open(appengine_file, 'w+') as ode_output:
+            with open(blockly_file, 'w+') as blockly_output:
                 blockly_output.write(blockly_header % {'lang': args.lang[0], 'lang_name': args.lang_name[0]})
                 description = None
                 for line in source:
@@ -141,8 +143,8 @@ def propescape(s):
 
 def read_block_translations():
     linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
-    value = re.compile(r'\'([^\'])*\'|\"([^\"]*)\"')
-    continuation = re.compile('\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
+    #value = re.compile(r'\'([^\'])*\'|\"([^\"]*)\"')
+    continuation = re.compile(r'\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', 'en', '_messages.js')) as js:
         comment = None
         items = []
@@ -153,17 +155,17 @@ def read_block_translations():
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith('//'):
+            if line.startswith(r'//'):
                 comment = line[3:]
                 continue
             if is_block_comment:
                 full_line += line
-                if line.endswith('*/'):
+                if line.endswith(r'*/'):
                     comment = full_line
                     is_block_comment = False
                     full_line = ''
                 continue
-            if line.startswith('/*'):
+            if line.startswith(r'/*'):
                 full_line = line
                 is_block_comment = True
                 continue
@@ -192,15 +194,13 @@ def combine(args):
     javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
                              'com.google.appinventor.client.OdeMessages_default.properties')
     blockprops = read_block_translations()  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
-    test = os.path.join(appinventor_dir, 'i18n', 'translation_template.properties')
-#    f = open('fred.txt', 'w+', encoding='utf8')
-#    with open(test, 'w+', encoding='utf8') as out:
-    with open('translation_template.properties', 'w+', encoding='utf8') as out:
+    test = os.path.join(appinventor_dir, 'misc', 'i18n', 'translation_template.properties')
+    with open(test, 'w+', encoding='utf8') as out:
         out.write('# Frontend definitions\n')
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
             for line in props:
-                if lastline.endswith('\\\n') or line.startswith('#') or line.strip() == '':
+                if lastline.endswith(r'\n') or line.startswith('#') or line.strip() == '':
                     out.write(line)
                 else:
                     out.write('appengine.')
