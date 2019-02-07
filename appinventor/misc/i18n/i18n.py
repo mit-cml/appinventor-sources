@@ -51,7 +51,7 @@ blockly_header = """// -*- mode: javascript; js-indent-level: 2; -*-
 goog.provide('AI.Blockly.Msg.%(lang)s');
 goog.require('Blockly.Msg.%(lang)s');
 
-Blockly.Msg.%(lang).switch_language_to_%(lang)s = {
+Blockly.Msg.%(lang)s.switch_language_to_%(lang_name)s = {
   // Switch language to %(lang_name)s.
   category: '',
   helpUrl: '',
