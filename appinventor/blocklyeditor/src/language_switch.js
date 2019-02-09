@@ -74,6 +74,9 @@ Blockly.language_switch = {
       case 'nl':
         Blockly.Msg.nl.switch_language_to_dutch.init();
         break;
+      case 'fil':
+        AI.Blockly.Msg.fil.switch_language_to_fil.init();
+        break;
       case 'en_US':
       case 'en':
       default:

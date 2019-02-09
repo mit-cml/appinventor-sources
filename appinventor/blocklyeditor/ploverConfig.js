@@ -30,6 +30,7 @@
     './src/msg/pt_br/_messages.js',
     './src/msg/pt/_messages.js',
     './src/msg/nl/_messages.js',
+    './src/msg/fil/_messages.js',
     './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code

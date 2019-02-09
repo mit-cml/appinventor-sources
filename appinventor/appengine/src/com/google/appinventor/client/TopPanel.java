@@ -255,6 +255,8 @@ public class TopPanel extends Composite {
       nativeName = MESSAGES.switchToPortuguese();
     } else if (localeName == "nl") {
       nativeName = MESSAGES.switchToDutch();
+    } else if (localeName.equals("fil")) {
+      nativeName = MESSAGES.switchToFilipino();
     }
     return nativeName;
   }
