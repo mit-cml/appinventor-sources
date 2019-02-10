@@ -974,7 +974,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure that does not return a value.';
     
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
-    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create procedure';
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'TODO:';
     
     Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP = 'TODO:';
@@ -1015,13 +1015,19 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'call return';
 
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
-    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call procedure';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS = 'arguments';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
 
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'get number of arguments';
-    Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'procedure';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'TODO:';
+
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = 'get global procedure';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GLOBALNAME = 'procedure name';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';

@@ -1,8 +1,14 @@
 package com.google.appinventor.components.runtime.util;
 
+import java.io.ObjectStreamException;
+import java.lang.reflect.InvocationTargetException;
+
+import android.util.Log;
 import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.lists.Pair;
+import gnu.mapping.Procedure;
+import gnu.mapping.SimpleSymbol;
 
 public final class AnonymousProcedure {
 
@@ -15,6 +21,28 @@ public final class AnonymousProcedure {
     public static final AnonymousProcedure create(ModuleMethod method) {
         return new AnonymousProcedure(method);
     }
+    public static final AnonymousProcedure create(String procedureName) {
+        try {
+            Class.forName("com.google.youngandroid.runtime")
+                .getMethod("setThisForm")
+                .invoke(null);
+            return new AnonymousProcedure(
+                (Procedure) Class.forName("com.google.youngandroid.runtime")
+                    .getMethod("lookupGlobalVarInCurrentFormEnvironment", gnu.mapping.Symbol.class, Object.class)
+                    .invoke(
+                        /* invoking instance (null for static method) */ null,
+                        /* global var name */ new SimpleSymbol("p$" + procedureName).readResolve(),
+                        /* default value */ null));
+        } catch (ClassNotFoundException | NoSuchMethodException |
+                 IllegalAccessException | InvocationTargetException impossible) {
+            // impossible with static & specified class.methods
+            Log.wtf("AnonymousProcedure", impossible);
+            throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\" (internal error)",
+                                       impossible);
+        } catch (ObjectStreamException e) {
+            throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\"", e);
+        }
+    }
     public static final Object callProcedure(AnonymousProcedure procedure, Pair args) {
         return callProcedure(procedure, (LList) args);
     }
@@ -25,14 +53,14 @@ public final class AnonymousProcedure {
         return procedure.numArgs();
     }
 
-    public static final Object VALUE_WHEN_NULL = false;
+    public static final Object RETURN_VALUE_WHEN_NULL = false;
 
     private final Executable executable;
 
     public AnonymousProcedure(Executable executable) {
         this.executable = executable;
     }
-    public AnonymousProcedure(final ModuleMethod methodToCall) {
+    public AnonymousProcedure(final Procedure methodToCall) {
         this(new Executable(){
             @Override
             public Object execute(Object... args) {
@@ -64,7 +92,7 @@ public final class AnonymousProcedure {
      */
     public Object call(Object... args) {
         Object returnVal = executable.execute(args);
-        return returnVal == null ? VALUE_WHEN_NULL : returnVal;
+        return returnVal == null ? RETURN_VALUE_WHEN_NULL : returnVal;
     }
 
     public int numArgs() {

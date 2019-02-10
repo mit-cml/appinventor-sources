@@ -1176,7 +1176,7 @@ Blockly.Blocks['procedures_callanonreturn'] = {
   updateContainerBlock: function(containerBlock) {
     containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS, "CONTAINER_TEXT");
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON}]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON + "2"}]
 };
 
 Blockly.Blocks['anon_proc_arg'] = {
@@ -1192,7 +1192,7 @@ Blockly.Blocks['anon_proc_arg'] = {
 
 Blockly.Blocks['procedures_numArgs'] = {
   category: 'Procedures',
-  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendDummyInput('HEADER')
@@ -1205,4 +1205,21 @@ Blockly.Blocks['procedures_numArgs'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET}]
+};
+
+Blockly.Blocks['procedures_globalToAnonymous'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET);
+    this.appendValueInput('PROCEDURENAME')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GLOBALNAME)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET }]
 };

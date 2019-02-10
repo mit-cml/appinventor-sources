@@ -62,7 +62,7 @@ Blockly.Yail['procedures_defanonnoreturn'] = function() {
     Blockly.Yail.YAIL_LAMBDA
       + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
       + body + Blockly.Yail.YAIL_CLOSE_COMBINATION,
-    "any", "call anonymous procedure");
+    "any", "create anonymous procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
@@ -77,7 +77,7 @@ Blockly.Yail['procedures_defanonreturn'] = function() {
     Blockly.Yail.YAIL_LAMBDA
       + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
       + returnVal + Blockly.Yail.YAIL_CLOSE_COMBINATION,
-    "any", "call anonymous procedure");
+    "any", "create anonymous procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
@@ -149,5 +149,12 @@ Blockly.Yail['procedures_numArgs'] = function() {
       "num-args-anonymous-procedure",
       Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
       "any", "get number of arguments");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}
+
+Blockly.Yail['procedures_globalToAnonymous'] = function() {
+  var procName = Blockly.Yail.valueToCode(this, 'PROCEDURENAME', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "create-anonymous-procedure", procName, "any", "create anonymous procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 }
