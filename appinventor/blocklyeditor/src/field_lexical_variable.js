@@ -643,7 +643,8 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
   if (Blockly.showPrefixToUser) {
     if (sourceBlock.type == "procedures_mutatorarg"
         || sourceBlock.type == "procedures_defnoreturn"
-        || sourceBlock.type == "procedures_defreturn") {
+        || sourceBlock.type == "procedures_defreturn"
+        || sourceBlock.type == "procedures_defanonnoreturn") {
       sourcePrefix = Blockly.procedureParameterPrefix;
     } else if (sourceBlock.type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;

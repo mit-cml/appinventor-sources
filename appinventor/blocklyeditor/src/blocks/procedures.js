@@ -659,11 +659,12 @@ Blockly.Blocks.procedures_mutatorarg.validator = function(newVar) {
 Blockly.Blocks['procedures_defanonnoreturn'] = { //TODO:
   category: 'Procedures',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL,
+  bodyInputName: 'STACK',
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
-    this.appendStatementInput('STACK')
+    this.appendStatementInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
