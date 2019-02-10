@@ -4,7 +4,7 @@ import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.lists.Pair;
 
-public class AnonymousProcedure {
+public final class AnonymousProcedure {
 
     public static interface Executable {
         public Object execute(Object... args);
@@ -24,6 +24,8 @@ public class AnonymousProcedure {
     public static final int numArgs(AnonymousProcedure procedure) {
         return procedure.numArgs();
     }
+
+    public static final Object VALUE_WHEN_NULL = false;
 
     private final Executable executable;
 
@@ -56,8 +58,13 @@ public class AnonymousProcedure {
         });
     }
 
+    /**
+     * @param args
+     * @return never be null, any null will be replaced by {@link AnonymousProcedure.VALUE_WHEN_NULL}
+     */
     public Object call(Object... args) {
-        return executable.execute(args);
+        Object returnVal = executable.execute(args);
+        return returnVal == null ? VALUE_WHEN_NULL : returnVal;
     }
 
     public int numArgs() {
