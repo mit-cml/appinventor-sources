@@ -1369,9 +1369,9 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-	  // Added PasswordDialog
-	  srcCompVersion = 6;
-	}
+      // Added PasswordDialog
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
