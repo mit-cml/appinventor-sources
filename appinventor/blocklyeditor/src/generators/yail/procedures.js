@@ -55,12 +55,12 @@ Blockly.Yail['procedures_defnoreturn'] = function() {
 Blockly.Yail['procedures_defanonnoreturn'] = function() {
   var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = this.getVars().map(function (arg) {return argPrefix + arg;});
-  var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YailCallYialPrimitive(
     "create-anonymous-procedure",
     Blockly.Yail.YAIL_LAMBDA
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
       + body + Blockly.Yail.YAIL_CLOSE_COMBINATION,
     "any", "call anonymous procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];

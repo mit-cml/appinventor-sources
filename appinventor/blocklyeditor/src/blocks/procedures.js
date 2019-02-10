@@ -662,72 +662,149 @@ Blockly.Blocks['procedures_defanonnoreturn'] = { //TODO:
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendDummyInput('HEADER')
-        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_VAR_NAME,
-            true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR');
-    this.appendStatementInput('DO')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
+    this.appendStatementInput('STACK')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
+    this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+    this.arguments_ = [];
+    this.horizontalParameters = true;
   },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  declaredNames: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-      this.setFieldValue(newName, 'VAR');
+  // below are modified from Blockly.Blocks.procedures_defnoreturn
+  onchange: Blockly.Blocks.procedures_defnoreturn.onchange,
+  updateParams_: function(opt_params) {
+    if (opt_params) {
+      this.arguments_ = opt_params;
     }
-  },
-  renameBound: function(boundSubstitution, freeSubstitution) {
-    var oldIndexVar = this.getFieldValue('VAR');
-    var newIndexVar = boundSubstitution.apply(oldIndexVar);
-    if (newIndexVar !== oldIndexVar) {
-      this.renameVar(oldIndexVar, newIndexVar);
-      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
-      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
-      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    var badArg = false;
+    var hash = {};
+    for (var x = 0; x < this.arguments_.length; x++) {
+      if (hash['arg_' + this.arguments_[x].toLowerCase()]) {
+        badArg = true;
+        break;
+      }
+      hash['arg_' + this.arguments_[x].toLowerCase()] = true;
+    }
+    if (badArg) {
+      this.setWarningText(Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING);
     } else {
-      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
-      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+      this.setWarningText(null);
     }
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    var bodyInput = this.inputList[this.inputList.length - 1];
+    var savedRendered = this.rendered;
+    this.rendered = false;
+    var thisBlock = this;
+    Blockly.FieldParameterFlydown.withChangeHanderDisabled(function() {thisBlock.removeInput('HEADER');});
+    var oldArgCount = this.inputList.length - 1;
+    if (oldArgCount > 0) {
+      var paramInput0 = this.getInput('VAR0');
+      if (paramInput0) { // vertical
+        for (var i = 0; i < oldArgCount; i++) {
+          try {
+            Blockly.FieldParameterFlydown.withChangeHanderDisabled(function() {thisBlock.removeInput('VAR' + i);});
+          } catch(err) {
+            console.log(err);
+          }
+        }
+      }
+    }
+    this.inputList = [];
+    var headerInput = this.appendDummyInput('HEADER').appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
+    if (this.horizontalParameters) {
+      for (var i = 0; i < this.arguments_.length; i++) {
+        headerInput.appendField(' ').appendField(this.parameterFlydown(i), 'VAR' + i);
+      }
+    } else { // vertical
+      for (var i = 0; i < this.arguments_.length; i++) {
+        this.appendDummyInput('VAR' + i)
+          .appendField(this.parameterFlydown(i), 'VAR' + i)
+          .setAlign(Blockly.ALIGN_RIGHT);
+      }
+    }
+    this.inputList = this.inputList.concat(bodyInput);
+    this.rendered = savedRendered;
+    if (this.rendered) {
+      for (var i = 0; i < this.inputList.length; i++) {
+        this.inputList[i].init();
+      }
+      this.render();
     }
   },
-  renameFree: function(freeSubstitution) {
-    var indexVar = this.getFieldValue('VAR');
-    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
-    bodyFreeVars.deleteName(indexVar);
-    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
-    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
-      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
-      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
-      this.renameBound(boundSubstitution, freeSubstitution);
-    } else {
-      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+  parameterFlydown: function (paramIndex) {
+    var initialParamName = this.arguments_[paramIndex];
+    var procDecl = this;
+    var procedureParameterChangeHandler = function (newParamName) {
+      var newArguments = procDecl.arguments_;
+      newArguments[paramIndex] = newParamName;
+      if (procDecl.mutator && procDecl.mutator.rootBlock_) {
+        var mutatorContainer = procDecl.mutator.rootBlock_;
+        var mutatorargIndex = 0;
+        var mutatorarg = mutatorContainer.getInputTargetBlock('STACK');
+        while (mutatorarg && mutatorargIndex < paramIndex) {
+            mutatorarg = mutatorarg.nextConnection && mutatorarg.nextConnection.targetBlock();
+            mutatorargIndex++;
+        }
+        if (mutatorarg && mutatorargIndex == paramIndex) {
+            Blockly.Field.prototype.setText.call(mutatorarg.getField("NAME"), newParamName);
+        }
+      }
+    };
+    return new Blockly.FieldParameterFlydown(initialParamName, true, 
+                                             this.horizontalParameters ? Blockly.FieldFlydown.DISPLAY_BELOW
+                                                                        : Blockly.FieldFlydown.DISPLAY_RIGHT,
+                                             procedureParameterChangeHandler);
+  },
+  setParameterOrientation: Blockly.Blocks.procedures_defnoreturn.setParameterOrientation,
+  mutationToDom: Blockly.Blocks.procedures_defnoreturn.mutationToDom,
+  domToMutation: Blockly.Blocks.procedures_defnoreturn.domToMutation,
+  decompose: function(workspace) {
+    var containerBlock = workspace.newBlock('procedures_mutatorcontainer');
+    containerBlock.initSvg();
+    // [lyn, 11/24/12] Remember the associated procedure, so can
+    // appropriately change body when update name in param block.
+    containerBlock.setProcBlock(this);
+    this.paramIds_ = []; // [lyn, 10/26/13] Added
+    var connection = containerBlock.getInput('STACK').connection;
+    for (var x = 0; x < this.arguments_.length; x++) {
+      var paramBlock = workspace.newBlock('procedures_mutatorarg');
+      this.paramIds_.push(paramBlock.id); // [lyn, 10/26/13] Added
+      paramBlock.initSvg();
+      paramBlock.setFieldValue(this.arguments_[x], 'NAME');
+      // Store the old location.
+      paramBlock.oldLocation = x;
+      connection.connect(paramBlock.previousConnection);
+      connection = paramBlock.nextConnection;
+    }
+    return containerBlock;
+  },
+  compose: function(containerBlock) {
+    var params = [];
+    this.paramIds_ = [];
+    var paramBlock = containerBlock.getInputTargetBlock('STACK');
+    while (paramBlock) {
+      params.push(paramBlock.getFieldValue('NAME'));
+      this.paramIds_.push(paramBlock.id);
+      paramBlock = paramBlock.nextConnection &&
+          paramBlock.nextConnection.targetBlock();
+    }
+    if (!Blockly.LexicalVariable.stringListsEqual(params, this.arguments_)) {
+      this.updateParams_(params);
     }
   },
-  freeVariables: function() { // return the free variables of this block
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
-    result.deleteName(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
-    if (this.nextConnection) {
-      var nextBlock = this.nextConnection.targetBlock();
-      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
-    }
-    return result;
+  dispose: function() {
+    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
   },
-  blocksInScope: function() {
-    var doBlock = this.getInputTargetBlock('DO');
-    if (doBlock) {
-      return [doBlock];
-    } else {
-      return [];
-    }
-  },
+  getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
+  declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
+  renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
+  renameVars: Blockly.Blocks.procedures_defnoreturn.renameVars,
+  renameBound: Blockly.Blocks.procedures_defnoreturn.renameBound,
+  renameFree: Blockly.Blocks.procedures_defnoreturn.renameFree,
+  freeVariables: Blockly.Blocks.procedures_defnoreturn.freeVariables,
+  blocksInScope: Blockly.Blocks.procedures_defnoreturn.blocksInScope,
+  customContextMenu: Blockly.Blocks.procedures_defnoreturn.customContextMenu,
+  getParameters: Blockly.Blocks.procedures_defnoreturn.getParameters,
   typeblock: [
     { translatedName: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE }
   ]

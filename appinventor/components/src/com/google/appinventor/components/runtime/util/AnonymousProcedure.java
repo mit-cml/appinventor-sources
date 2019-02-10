@@ -1,6 +1,8 @@
 package com.google.appinventor.components.runtime.util;
 
+import android.util.Log;
 import gnu.expr.ModuleMethod;
+import gnu.lists.LList;
 import gnu.lists.Pair;
 
 public class AnonymousProcedure {
@@ -14,11 +16,10 @@ public class AnonymousProcedure {
         return new AnonymousProcedure(method);
     }
     public static final Object callProcedure(AnonymousProcedure procedure, Pair args) {
-        Object[] argsObj = new Object[args.length()];
-        for (int i=0; i<args.length(); i++) {
-            argsObj[i] = args.get(i);
-        }
-        return procedure.call(argsObj);
+        return callProcedure(procedure, (LList) args);
+    }
+    public static final Object callProcedure(AnonymousProcedure procedure, LList args) {
+        return procedure.call(args.toArray());
     }
 
     private final Executable executable;
