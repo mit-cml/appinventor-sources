@@ -1,6 +1,6 @@
 .blocklyWarningIconGroup .blocklyIconShape {
   cursor: default;
-  fill: #ff5;
+  fill: black;
   stroke-width: 1px;
   stroke: #555;
 }
@@ -27,4 +27,12 @@
 .blocklybackpackFlyoutBackground {
   fill: #ddd;
   fill-opacity: .8;
+}
+
+.blocklybackpackImage:hover {
+  cursor: pointer;
+}
+
+.blocklyZoomButton:hover {
+  cursor: pointer;
 }
