@@ -1118,3 +1118,20 @@ Blockly.Blocks['anon_proc_arg'] = {
     this.contextMenu = false;
   }
 };
+
+Blockly.Blocks['procedures_numArgs'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET}]
+};

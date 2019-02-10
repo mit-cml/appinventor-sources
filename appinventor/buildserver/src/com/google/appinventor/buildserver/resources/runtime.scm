@@ -2341,6 +2341,9 @@ list, use the make-yail-list constructor with no arguments.
 (define (call-anonymous-procedure procedure . args)
   (AnonymousProcedure:callProcedure procedure args))
 
+(define (num-args-anonymous-procedure procedure)
+  (AnonymousProcedure:numArgs procedure))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Anonymous Procedure implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

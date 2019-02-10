@@ -115,3 +115,11 @@ Blockly.Yail['procedures_callanonnoreturn'] = function() {
   var code = Blockly.Yail.YailCallYialPrimitive("call-anonymous-procedure", argCode, argTypes, "call anonymous procedure");
   return code;
 };
+
+Blockly.Yail['procedures_numArgs'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "num-args-anonymous-procedure",
+      Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+      "any", "get number of arguments");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}

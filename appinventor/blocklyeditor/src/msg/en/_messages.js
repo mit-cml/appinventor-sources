@@ -1018,6 +1018,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS = 'arguments';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
 
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'get number of arguments';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'anonymous procedure';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'TODO:';
+
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';
 
