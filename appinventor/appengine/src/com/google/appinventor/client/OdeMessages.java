@@ -5209,6 +5209,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShowTextDialogMethods();
 
+  @DefaultMessage("ShowPasswordDialog")
+  @Description("")
+  String ShowPasswordDialogMethods();
+
   @DefaultMessage("ShowProgressDialog")
   @Description("")
   String ShowProgressDialogMethods();
@@ -5576,7 +5580,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
-  
+
   @DefaultMessage("UriDecode")
   @Description("")
   String UriDecodeMethods();
