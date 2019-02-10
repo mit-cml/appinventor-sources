@@ -8,12 +8,10 @@ package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -257,7 +255,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
 
       Date dateCreated = new Date(project.getDateCreated());
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));

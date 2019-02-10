@@ -61,7 +61,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
     super(nextCommand);
     this.target = target;
     messagesOutput = MessagesOutput.getMessagesOutput();
-    buildRequestTime = DateTimeFormat.getMediumDateTimeFormat().format(new Date());
+    buildRequestTime = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date());
   }
 
   @Override

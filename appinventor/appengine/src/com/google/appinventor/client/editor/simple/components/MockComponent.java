@@ -870,7 +870,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Prevent browser from doing its own event handling and consume event
    */
   private static void cancelBrowserEvent(Event event) {
-    DOM.eventPreventDefault(event);
+    event.preventDefault();
     DOM.eventCancelBubble(event, true);
   }
 

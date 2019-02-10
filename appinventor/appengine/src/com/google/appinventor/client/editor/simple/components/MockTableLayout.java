@@ -8,8 +8,9 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.output.OdeLog;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -132,7 +133,9 @@ final class MockTableLayout extends MockLayout {
     if (dropTargetArea == null) {
       dropTargetArea = DOM.createDiv();
       setDropTargetAreaVisible(false);
-      DOM.setStyleAttribute(dropTargetArea, "border", "2px solid " + DROP_TARGET_AREA_COLOR);
+      dropTargetArea.getStyle().setBorderWidth(2, Style.Unit.PX);
+      dropTargetArea.getStyle().setBorderStyle(Style.BorderStyle.SOLID);
+      dropTargetArea.getStyle().setBorderColor(DROP_TARGET_AREA_COLOR);
       DOM.appendChild(container.getRootPanel().getElement(), dropTargetArea);
     }
   }
@@ -150,15 +153,15 @@ final class MockTableLayout extends MockLayout {
   }
 
   private void setDropTargetAreaVisible(boolean visible) {
-    DOM.setStyleAttribute(dropTargetArea, "visibility", visible ? "visible" : "hidden");
+    dropTargetArea.getStyle().setVisibility(visible ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
   }
 
   private void setDropTargetAreaBoundsAndShow(int x, int y, int width, int height) {
-    DOM.setStyleAttribute(dropTargetArea, "position", "absolute");
-    DOM.setStyleAttribute(dropTargetArea, "left", x + "px");
-    DOM.setStyleAttribute(dropTargetArea, "top", y + "px");
-    DOM.setStyleAttribute(dropTargetArea, "width", width + "px");
-    DOM.setStyleAttribute(dropTargetArea, "height", height + "px");
+    dropTargetArea.getStyle().setPosition(Style.Position.ABSOLUTE);
+    dropTargetArea.getStyle().setLeft(x, Style.Unit.PX);
+    dropTargetArea.getStyle().setTop(y, Style.Unit.PX);
+    dropTargetArea.getStyle().setWidth(width, Style.Unit.PX);
+    dropTargetArea.getStyle().setHeight(height, Style.Unit.PX);
     setDropTargetAreaVisible(true);
   }
 
@@ -433,7 +436,7 @@ final class MockTableLayout extends MockLayout {
   @Override
   void dispose() {
     if (dropTargetArea != null) {
-      DOM.removeChild(container.getRootPanel().getElement(), dropTargetArea);
+      container.getRootPanel().getElement().removeChild(dropTargetArea);
     }
   }
 }

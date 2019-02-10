@@ -14,7 +14,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -54,8 +53,8 @@ public class YoungAndroidDefaultURLPropertyEditor extends PropertyEditor {
     urlField.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          if (setDefaultCheckbox.isChecked()) {
-            setDefaultCheckbox.setChecked(false);
+          if (setDefaultCheckbox.getValue()) {
+            setDefaultCheckbox.setValue(false);
           }
         }
       });
@@ -74,9 +73,9 @@ public class YoungAndroidDefaultURLPropertyEditor extends PropertyEditor {
       }
     });
 
-    urlField.addValueChangeHandler(new ValueChangeHandler() {
+    urlField.addValueChangeHandler(new ValueChangeHandler<String>() {
         @Override
-        public void onValueChange(ValueChangeEvent event) {
+        public void onValueChange(ValueChangeEvent<String> event) {
           property.setValue(urlField.getText());
         }
       });
@@ -86,15 +85,15 @@ public class YoungAndroidDefaultURLPropertyEditor extends PropertyEditor {
         public void onBlur(BlurEvent event) {
           // We lost focus
           if (urlField.getText().equals(defaultURL)) {
-            setDefaultCheckbox.setChecked(true);
+            setDefaultCheckbox.setValue(true);
           }
         }
       });
 
-    setDefaultCheckbox.addValueChangeHandler(new ValueChangeHandler() {
+    setDefaultCheckbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
         @Override
-        public void onValueChange(ValueChangeEvent event) {
-          if (setDefaultCheckbox.isChecked()) {
+        public void onValueChange(ValueChangeEvent<Boolean> event) {
+          if (setDefaultCheckbox.getValue()) {
             urlField.setText(defaultURL);
             property.setValue(defaultURL);
           }
@@ -112,9 +111,9 @@ public class YoungAndroidDefaultURLPropertyEditor extends PropertyEditor {
     String propertyValue = property.getValue();
     urlField.setText(propertyValue);
     if (propertyValue.equals("DEFAULT")) {
-      setDefaultCheckbox.setChecked(true);
+      setDefaultCheckbox.setValue(true);
     } else {
-      setDefaultCheckbox.setChecked(false);
+      setDefaultCheckbox.setValue(false);
     }
   }
 

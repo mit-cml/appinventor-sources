@@ -7,10 +7,7 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.ErrorReporter;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Command for testing if the phone is connected

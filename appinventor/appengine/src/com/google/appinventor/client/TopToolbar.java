@@ -30,8 +30,6 @@ import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
-import com.google.appinventor.client.wizards.ComponentImportWizard;
-import com.google.appinventor.client.wizards.ComponentUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
@@ -44,19 +42,18 @@ import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,12 +103,6 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
-  private static final String WIDGET_NAME_COMPONENTS = "Components";
-  private static final String WIDGET_NAME_MY_COMPONENTS = "MyComponents";
-  private static final String WIDGET_NAME_START_NEW_COMPONENT = "StartNewComponent";
-  private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
-  private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
-  private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -152,7 +143,6 @@ public class TopToolbar extends Composite {
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
     List<DropDownItem> fileItems = Lists.newArrayList();
-    List<DropDownItem> componentItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
@@ -250,7 +240,7 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
-    Config config = Ode.getInstance().getSystemConfig();
+    Config config = Ode.getSystemConfig();
     String libraryUrl = config.getLibraryUrl();
     if (!Strings.isNullOrEmpty(libraryUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
@@ -760,7 +750,6 @@ public class TopToolbar extends Composite {
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateYailCommand(null));
         //updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,
@@ -789,7 +778,7 @@ public class TopToolbar extends Composite {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
           "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
-      Config config = Ode.getInstance().getSystemConfig();
+      Config config = Ode.getSystemConfig();
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
         html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
@@ -804,8 +793,9 @@ public class TopToolbar extends Composite {
 
       SimplePanel holder = new SimplePanel();
       Button ok = new Button("Close");
-      ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      ok.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
           db.hide();
         }
       });
@@ -843,8 +833,8 @@ public class TopToolbar extends Composite {
 
       SimplePanel holder = new SimplePanel();
       Button ok = new Button("Close");
-      ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
+      ok.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
           db.hide();
         }
       });
@@ -886,27 +876,6 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
-    }
-  }
-
-  private static class ImportComponentAction implements Command {
-    @Override
-    public void execute() {
-      new ComponentImportWizard().center();
-    }
-  }
-
-  private static class BuildComponentAction implements Command {
-    @Override
-    public void execute() {
-      // to be added
-    }
-  }
-
-  private static class UploadComponentAction implements Command {
-    @Override
-    public void execute() {
-      new ComponentUploadWizard().show();
     }
   }
 

@@ -8,10 +8,11 @@ package com.google.appinventor.client.widgets.dnd;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
@@ -70,14 +71,14 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
     }
 
     public void eventPreventDefaultOfCurrentEvent() {
-      DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+      DOM.eventGetCurrentEvent().preventDefault();
     }
 
-    public com.google.gwt.dom.client.Element getFromElementOfCurrentEvent() {
+    public Element getFromElementOfCurrentEvent() {
       return DOM.eventGetCurrentEvent().getFromElement();
     }
 
-    public com.google.gwt.dom.client.Element getToElementOfCurrentEvent() {
+    public Element getToElementOfCurrentEvent() {
       return DOM.eventGetCurrentEvent().getToElement();
     }
   }
@@ -213,9 +214,9 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
    */
   public static void configureDragWidgetToAppearWithCursorAt(Widget w, int x, int y) {
     Element e = w.getElement();
-    DOM.setStyleAttribute(e, "position", "absolute");
-    DOM.setStyleAttribute(e, "left", -x + "px");
-    DOM.setStyleAttribute(e, "top", -y + "px");
+    e.getStyle().setPosition(Style.Position.ABSOLUTE);
+    e.getStyle().setLeft(-x, Style.Unit.PX);
+    e.getStyle().setTop(-y, Style.Unit.PX);
   }
 
   /**
@@ -223,7 +224,7 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
    * drag-widget's coordinate system.
    */
   private static int getDragWidgetOffsetX(Widget w) {
-    return -parsePixelValue(DOM.getStyleAttribute(w.getElement(), "left"));
+    return -parsePixelValue(w.getElement().getStyle().getLeft());
   }
 
   /**
@@ -231,7 +232,7 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
    * drag-widget's coordinate system.
    */
   private static int getDragWidgetOffsetY(Widget w) {
-    return -parsePixelValue(DOM.getStyleAttribute(w.getElement(), "top"));
+    return -parsePixelValue(w.getElement().getStyle().getTop());
   }
 
   private static int parsePixelValue(String pixelValueStr) {

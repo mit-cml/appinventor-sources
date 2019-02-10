@@ -46,7 +46,7 @@ public class SaveAllEditorsCommand extends ChainableCommand {
       public void execute() {
         ode.lockScreens(false); // Screen switch OK now
         ErrorReporter.reportInfo(MESSAGES.savedProject(
-            DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
+            DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date())));
         executeNextCommand(node);
       }
     });

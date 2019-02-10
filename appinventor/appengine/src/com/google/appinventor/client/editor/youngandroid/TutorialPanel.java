@@ -5,19 +5,19 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 public class TutorialPanel extends Frame {
@@ -41,11 +41,12 @@ public class TutorialPanel extends Frame {
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button ok = new Button("Close");
-    ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+    ok.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialogBox.hide();
+      }
+    });
     ok.setStyleName("DialogBox-button");
     holder.add(ok);
     DialogBoxContents.add(message);
@@ -67,11 +68,12 @@ public class TutorialPanel extends Frame {
     VerticalPanel DialogBoxContents = new VerticalPanel();
     FlowPanel holder = new FlowPanel();
     Button ok = new Button("Close");
-    ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+    ok.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialogBox.hide();
+      }
+    });
     ok.setStyleName("DialogBox-button");
 
     // Adds Image

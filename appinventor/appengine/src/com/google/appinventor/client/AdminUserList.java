@@ -4,20 +4,15 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.admin.AdminComparators;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -28,7 +23,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
@@ -38,9 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A list of User elements used in the Admin interface
@@ -69,7 +61,7 @@ public class AdminUserList extends Composite {
   private final Label visitedSortIndicator;
 
   // Date Time Formatter
-  static final DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+  static final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
 
   private static class GalleryEnabledHolder {
     boolean enabled;
@@ -88,7 +80,7 @@ public class AdminUserList extends Composite {
       // may not yet have completed. This call tells us whether or not the Gallery
       // is enabled. By default it isn't enabled, but it may have been by the time
       // the search button is pressed, so we have to redraw stuff.
-      boolean tmp = Ode.getInstance().getGallerySettings().galleryEnabled();
+      boolean tmp = Ode.getGallerySettings().galleryEnabled();
       if (tmp != galleryEnabledHolder.enabled) {
         galleryEnabledHolder.enabled = tmp;
         setHeaderRow();
@@ -114,7 +106,7 @@ public class AdminUserList extends Composite {
     sortField = SortField.NAME;
     sortOrder = SortOrder.ASCENDING;;
 
-    galleryEnabledHolder.enabled = Ode.getInstance().getGallerySettings().galleryEnabled();
+    galleryEnabledHolder.enabled = Ode.getGallerySettings().galleryEnabled();
 
     // Initialize UI
     if (galleryEnabledHolder.enabled) {
@@ -138,17 +130,17 @@ public class AdminUserList extends Composite {
     searchPanel.add(searchText);
     searchPanel.add(searchButton);
     Button addUserButton = new Button("Add User");
-    addUserButton.addClickListener(new ClickListener() {
+    addUserButton.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           addUpdateUserDialog(null);
         }
       });
     searchPanel.add(addUserButton);
 
-    searchButton.addClickListener(new ClickListener() {
+    searchButton.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           Ode.getInstance().getAdminInfoService().searchUsers(searchText.getText(), searchCallback);
         }
       });
@@ -159,9 +151,9 @@ public class AdminUserList extends Composite {
     panel.add(searchPanel);
     panel.add(table);
     Button dismissButton = new Button("Dismiss");
-    dismissButton.addClickListener(new ClickListener() {
+    dismissButton.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           Ode.getInstance().switchToDesignView();
         }
       });
@@ -409,10 +401,10 @@ public class AdminUserList extends Composite {
     HorizontalPanel buttonPanel = new HorizontalPanel();
     Button okButton = new Button("OK");
     buttonPanel.add(okButton);
-    hidePasswordCheckbox.addClickListener(new ClickListener() {
+    hidePasswordCheckbox.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
-          if (hidePasswordCheckbox.isChecked()) { // We just asked to mask passwords
+        public void onClick(ClickEvent event) {
+          if (hidePasswordCheckbox.getValue()) { // We just asked to mask passwords
             userInfo.setWidget(1, 0, passwordLabel);
             userInfo.setWidget(1, 1, passwordBox1);
             userInfo.setWidget(2, 0, passwordLabel2);
@@ -424,11 +416,11 @@ public class AdminUserList extends Composite {
           }
         }
       });
-    okButton.addClickListener(new ClickListener() {
+    okButton.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           String password = passwordBox.getText();
-          if (hidePasswordCheckbox.isChecked()) {
+          if (hidePasswordCheckbox.getValue()) {
             password = passwordBox1.getText();
             String checkPassword = passwordBox2.getText();
             if (!checkPassword.equals(password)) {
@@ -444,12 +436,12 @@ public class AdminUserList extends Composite {
             // Work!!
             AdminUser nuser = user;
             if (nuser == null) {
-              nuser = new AdminUser(null, email, email, false, isAdminBox.isChecked(),
-                galleryEnabledHolder.enabled? isModeratorBox.isChecked(): false, null);
+              nuser = new AdminUser(null, email, email, false, isAdminBox.getValue(),
+                galleryEnabledHolder.enabled? isModeratorBox.getValue(): false, null);
             } else {
-              nuser.setIsAdmin(isAdminBox.isChecked());
+              nuser.setIsAdmin(isAdminBox.getValue());
               if (galleryEnabledHolder.enabled) {
-                nuser.setIsModerator(isModeratorBox.isChecked());
+                nuser.setIsModerator(isModeratorBox.getValue());
               }
               nuser.setEmail(email);
             }
@@ -476,17 +468,17 @@ public class AdminUserList extends Composite {
       });
     Button cancelButton = new Button("Cancel");
     buttonPanel.add(cancelButton);
-    cancelButton.addClickListener(new ClickListener() {
+    cancelButton.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
         }
       });
     vPanel.add(buttonPanel);
     dialogBox.setWidget(vPanel);
     if (!adding) {
-      isAdminBox.setChecked(user.getIsAdmin());
-      isModeratorBox.setChecked(user.getIsModerator());
+      isAdminBox.setValue(user.getIsAdmin());
+      isModeratorBox.setValue(user.getIsModerator());
       userName.setText(user.getEmail());
     }
     // switchUserPanel -- Put up a button to permit us to
@@ -494,9 +486,9 @@ public class AdminUserList extends Composite {
     if (!adding) {
       HorizontalPanel switchUserPanel = new HorizontalPanel();
       Button switchButton = new Button("Switch to This User");
-      switchButton.addClickListener(new ClickListener() {
+      switchButton.addClickHandler(new ClickHandler() {
           @Override
-          public void onClick(Widget sender) {
+          public void onClick(ClickEvent event) {
             Ode.getInstance().setReadOnly();  // Must make sure we are read only.
                                               // When we call reloadWindow (below) the onClosing
                                               // handler in Ode will be called. It will attempt
@@ -507,7 +499,7 @@ public class AdminUserList extends Composite {
             Ode.getInstance().getAdminInfoService().switchUser(user, new OdeAsyncCallback<Void>("Oops") {
                 @Override
                 public void onSuccess(Void v) {
-                  Ode.getInstance().reloadWindow(false);
+                  Ode.reloadWindow(false);
                 }
               });
           }

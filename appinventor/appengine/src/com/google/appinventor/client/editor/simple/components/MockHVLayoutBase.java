@@ -13,8 +13,9 @@ import java.util.Map;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 
 
 
@@ -98,7 +99,7 @@ abstract class MockHVLayoutBase extends MockLayout {
   private void ensureDividerInited() {
     if (dividerElement == null) {
       dividerElement = DOM.createDiv();
-      DOM.setStyleAttribute(dividerElement, "backgroundColor", DIVIDER_COLOR);
+      dividerElement.getStyle().setBackgroundColor(DIVIDER_COLOR);
       setDividerVisible(false);
       DOM.appendChild(container.getRootPanel().getElement(), dividerElement);
     }
@@ -125,15 +126,15 @@ abstract class MockHVLayoutBase extends MockLayout {
   }
 
   private void setDividerVisible(boolean visible) {
-    DOM.setStyleAttribute(dividerElement, "visibility", visible ? "visible" : "hidden");
+    dividerElement.getStyle().setVisibility(visible ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
   }
 
   private void setDividerBoundsAndShow(int x, int y, int width, int height) {
-    DOM.setStyleAttribute(dividerElement, "position", "absolute");
-    DOM.setStyleAttribute(dividerElement, "left", x + "px");
-    DOM.setStyleAttribute(dividerElement, "top", y + "px");
-    DOM.setStyleAttribute(dividerElement, "width", width + "px");
-    DOM.setStyleAttribute(dividerElement, "height", height + "px");
+    dividerElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+    dividerElement.getStyle().setLeft(x, Style.Unit.PX);
+    dividerElement.getStyle().setTop(y, Style.Unit.PX);
+    dividerElement.getStyle().setWidth(width, Style.Unit.PX);
+    dividerElement.getStyle().setHeight(height, Style.Unit.PX);
     setDividerVisible(true);
   }
 
@@ -688,7 +689,7 @@ abstract class MockHVLayoutBase extends MockLayout {
   @Override
   void dispose() {
     if (dividerElement != null) {
-      DOM.removeChild(container.getRootPanel().getElement(), dividerElement);
+      container.getRootPanel().getElement().removeChild(dividerElement);
     }
   }
 

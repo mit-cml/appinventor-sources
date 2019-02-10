@@ -9,7 +9,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.MessageDialog;
@@ -89,7 +88,7 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
     // is loaded from the "Flag" module which reads properties from
     // appengine-web.xml (in the App Engine version). The standalone version
     // stores it in appinventor.xml (at least for now)
-    String defaultURL = Ode.getInstance().getSystemConfig().getFirebaseURL();
+    String defaultURL = Ode.getSystemConfig().getFirebaseURL();
     changeProperty(PROPERTY_NAME_DEFAULT_URL, defaultURL);
     OdeLog.log("Default Firebase URL = " + defaultURL);
 

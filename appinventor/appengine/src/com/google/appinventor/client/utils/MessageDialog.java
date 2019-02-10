@@ -5,15 +5,13 @@
 
 package com.google.appinventor.client.utils;
 
-import com.google.appinventor.client.widgets.boxes.Box;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A Utility for Dialog Boxes
@@ -68,24 +66,25 @@ public class MessageDialog {
     messageHtml.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button(OK);
-    okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          if (actions != null)
-            actions.onOK();
-        }
-      });
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialogBox.hide();
+        if (actions != null)
+          actions.onOK();
+      }
+    });
     holder.add(okButton);
     if (Cancel != null) {
       Button cancelButton = new Button(Cancel);
-      cancelButton.addClickListener(new ClickListener() {
-          @Override
-          public void onClick(Widget sender) {
-            dialogBox.hide();
-            if (actions != null)
-              actions.onCancel();
-          }
-        });
+      cancelButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          dialogBox.hide();
+          if (actions != null)
+            actions.onCancel();
+        }
+      });
       holder.add(cancelButton);
     }
     DialogBoxContents.add(messageHtml);

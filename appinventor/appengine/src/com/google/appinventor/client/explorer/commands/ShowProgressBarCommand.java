@@ -31,7 +31,6 @@ public class ShowProgressBarCommand extends ChainableCommand {
 
   // The build target
   private int counter = 0;
-  private int currentProgress = 0;
   // 0 means just initialize, 1 means click once, 2 means click twice
   private int progressBarShow = 0;
   private String target;
@@ -55,7 +54,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
     super(nextCommand); // no next command
     this.target = target;
     this.nextCommand = nextCommand;
-    this.buildRequestTime = DateTimeFormat.getMediumDateTimeFormat().format(new Date());
+    this.buildRequestTime = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date());
     this.serviceName = serviceName;
   }
 

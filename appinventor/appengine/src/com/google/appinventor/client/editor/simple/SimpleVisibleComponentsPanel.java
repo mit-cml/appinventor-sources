@@ -112,8 +112,8 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   }
 
   private void changeFormPreviewSize(boolean isChecked) {
-    if (form != null){
-      if (isChecked){
+    if (form != null) {
+      if (isChecked) {
         form.changePreviewSize(true);
         checkboxPhoneTablet.setText(MESSAGES.previewPhoneSize());
       }
@@ -124,12 +124,12 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     }
   }
 
-  public void enableTabletPreviewCheckBox(boolean enable){
-    if (form != null){
-      if (!enable){
+  public void enableTabletPreviewCheckBox(boolean enable) {
+    if (form != null) {
+      if (!enable) {
         form.changePreviewSize(false);
         checkboxPhoneTablet.setText(MESSAGES.previewTabletSize());
-        checkboxPhoneTablet.setChecked(false);
+        checkboxPhoneTablet.setValue(false);
       }
     }
     checkboxPhoneTablet.setEnabled(enable);
