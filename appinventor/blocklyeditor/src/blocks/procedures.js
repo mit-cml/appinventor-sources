@@ -811,6 +811,46 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
   ]
 };
 
+Blockly.Blocks['procedures_defanonreturn'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_HELPURL,
+  bodyInputName: 'RETURN',
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
+    this.appendIndentedValueInput(this.bodyInputName)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
+    this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+    this.arguments_ = [];
+    this.horizontalParameters = true;
+  },
+  onchange: Blockly.Blocks.procedures_defanonnoreturn.onchange,
+  updateParams_: Blockly.Blocks.procedures_defanonnoreturn.updateParams_,
+  parameterFlydown: Blockly.Blocks.procedures_defanonnoreturn.parameterFlydown,
+  setParameterOrientation: Blockly.Blocks.procedures_defanonnoreturn.setParameterOrientation,
+  mutationToDom: Blockly.Blocks.procedures_defanonnoreturn.mutationToDom,
+  domToMutation: Blockly.Blocks.procedures_defanonnoreturn.domToMutation,
+  decompose: Blockly.Blocks.procedures_defanonnoreturn.decompose,
+  compose: Blockly.Blocks.procedures_defanonnoreturn.compose,
+  dispose: Blockly.Blocks.procedures_defanonnoreturn.dispose,
+  getVars: Blockly.Blocks.procedures_defanonnoreturn.getVars,
+  declaredNames: Blockly.Blocks.procedures_defanonnoreturn.declaredNames,
+  renameVar: Blockly.Blocks.procedures_defanonnoreturn.renameVar,
+  renameVars: Blockly.Blocks.procedures_defanonnoreturn.renameVars,
+  renameBound: Blockly.Blocks.procedures_defanonnoreturn.renameBound,
+  renameFree: Blockly.Blocks.procedures_defanonnoreturn.renameFree,
+  freeVariables: Blockly.Blocks.procedures_defanonnoreturn.freeVariables,
+  blocksInScope: Blockly.Blocks.procedures_defanonnoreturn.blocksInScope,
+  customContextMenu: Blockly.Blocks.procedures_defanonnoreturn.customContextMenu,
+  getParameters: Blockly.Blocks.procedures_defanonnoreturn.getParameters,
+  typeblock: [
+    { translatedName: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE + "2" }
+  ]
+};
+
 Blockly.Blocks['procedures_callnoreturn'] = {
   // Call a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
@@ -1074,7 +1114,6 @@ Blockly.Blocks['procedures_callreturn'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
 
-
 Blockly.Blocks['procedures_callanonnoreturn'] = {
   category: 'Procedures',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
@@ -1085,6 +1124,38 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+    this.setMutator(new Blockly.Mutator(['anon_proc_arg']));
+    this.itemCount_ = 0;
+    this.emptyInputName = null;
+    this.repeatingInputName = 'ARG';
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace, 'anon_proc_arg', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){},
+  addInput: function(inputNum) {
+    return this.appendValueInput(this.repeatingInputName + inputNum);
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS, "CONTAINER_TEXT");
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON}]
+};
+
+Blockly.Blocks['procedures_callanonreturn'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['anon_proc_arg']));
     this.itemCount_ = 0;

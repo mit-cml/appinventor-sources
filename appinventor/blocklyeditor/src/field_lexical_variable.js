@@ -253,7 +253,7 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
     if (parent) {
       while (parent) {
           if ((parent.type === "procedures_defnoreturn") || (parent.type === "procedures_defreturn") ||
-              (parent.type === "procedures_defanonnoreturn")) {
+          (parent.type === "procedures_defanonnoreturn") || (parent.type === "procedures_defanonreturn")) {
             params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not arguments_ instance var
             for (i = 0; i < params.length; i++) {
               rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix);
@@ -644,7 +644,8 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
     if (sourceBlock.type == "procedures_mutatorarg"
         || sourceBlock.type == "procedures_defnoreturn"
         || sourceBlock.type == "procedures_defreturn"
-        || sourceBlock.type == "procedures_defanonnoreturn") {
+        || sourceBlock.type == "procedures_defanonnoreturn"
+        || sourceBlock.type == "procedures_defanonreturn") {
       sourcePrefix = Blockly.procedureParameterPrefix;
     } else if (sourceBlock.type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;

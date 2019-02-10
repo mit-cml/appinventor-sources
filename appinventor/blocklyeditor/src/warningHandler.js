@@ -223,7 +223,8 @@ Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
     var surroundParent = block;
     while (surroundParent) {
       surroundParent = surroundParent.getSurroundParent();
-      if (surroundParent.type == "procedures_defanonnoreturn") {
+      if ((surroundParent.type == "procedures_defanonnoreturn")
+          || (surroundParent.type == "procedures_defanonreturn")) {
         return false;
       }
     }

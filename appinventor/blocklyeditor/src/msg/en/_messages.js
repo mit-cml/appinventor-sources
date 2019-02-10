@@ -975,8 +975,9 @@ Blockly.Msg.en.switch_language_to_english = {
     
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create anonymous procedure';
-    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_VAR_NAME = 'param';
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'TODO:';
+    
+    Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';
