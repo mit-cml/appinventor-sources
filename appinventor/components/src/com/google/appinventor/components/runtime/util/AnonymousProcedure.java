@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime.util;
 
-import android.util.Log;
 import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.lists.Pair;

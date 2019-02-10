@@ -656,7 +656,7 @@ Blockly.Blocks.procedures_mutatorarg.validator = function(newVar) {
   return newVar || null;
 };
 
-Blockly.Blocks['procedures_defanonnoreturn'] = { //TODO:
+Blockly.Blocks['procedures_defanonnoreturn'] = {
   category: 'Procedures',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL,
   bodyInputName: 'STACK',
@@ -809,7 +809,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = { //TODO:
   typeblock: [
     { translatedName: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE }
   ]
-}; //TODO:
+};
 
 Blockly.Blocks['procedures_callnoreturn'] = {
   // Call a procedure with no return value.
@@ -1075,7 +1075,7 @@ Blockly.Blocks['procedures_callreturn'] = {
 };
 
 
-Blockly.Blocks['procedures_callanonnoreturn'] = { // TODO:
+Blockly.Blocks['procedures_callanonnoreturn'] = {
   category: 'Procedures',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
   init: function() {
