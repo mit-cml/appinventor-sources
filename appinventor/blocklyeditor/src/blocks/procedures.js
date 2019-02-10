@@ -1142,7 +1142,7 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
     return this.appendValueInput(this.repeatingInputName + inputNum);
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS, "CONTAINER_TEXT");
+    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE, "CONTAINER_TEXT");
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON}]
 };
@@ -1162,20 +1162,14 @@ Blockly.Blocks['procedures_callanonreturn'] = {
     this.emptyInputName = null;
     this.repeatingInputName = 'ARG';
   },
-  mutationToDom: Blockly.mutationToDom,
-  domToMutation: Blockly.domToMutation,
-  decompose: function(workspace){
-    return Blockly.decompose(workspace, 'anon_proc_arg', this);
-  },
-  compose: Blockly.compose,
-  saveConnections: Blockly.saveConnections,
-  addEmptyInput: function(){},
-  addInput: function(inputNum) {
-    return this.appendValueInput(this.repeatingInputName + inputNum);
-  },
-  updateContainerBlock: function(containerBlock) {
-    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_ARGUMENTS, "CONTAINER_TEXT");
-  },
+  mutationToDom: Blockly.Blocks.procedures_callanonnoreturn.mutationToDom,
+  domToMutation: Blockly.Blocks.procedures_callanonnoreturn.domToMutation,
+  decompose: Blockly.Blocks.procedures_callanonnoreturn.decompose,
+  compose: Blockly.Blocks.procedures_callanonnoreturn.compose,
+  saveConnections: Blockly.Blocks.procedures_callanonnoreturn.saveConnections,
+  addEmptyInput: Blockly.Blocks.procedures_callanonnoreturn.addEmptyInput,
+  addInput: Blockly.Blocks.procedures_callanonnoreturn.addInput,
+  updateContainerBlock: Blockly.Blocks.procedures_callanonnoreturn.updateContainerBlock,
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON + "2"}]
 };
 
