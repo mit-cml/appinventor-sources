@@ -88,7 +88,7 @@ public final class AnonymousProcedure {
 
     /**
      * @param args
-     * @return never be null, any null will be replaced by {@link AnonymousProcedure.VALUE_WHEN_NULL}
+     * @return never be null, any null will be replaced by {@link AnonymousProcedure.RETURN_VALUE_WHEN_NULL}
      */
     public Object call(Object... args) {
         Object returnVal = executable.execute(args);
