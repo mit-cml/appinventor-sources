@@ -943,12 +943,13 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TITLE)) {
       titleBar.changeTitle(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SIZING)) {
-      if (newValue.equals("Fixed")){ // Disable Tablet Preview
-        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);
-      }
-      else {
-        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
-      }
+      // if (newValue.equals("Fixed")){ // Disable Tablet Preview
+      //   editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);
+      // }
+      // else {
+      //   editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
+      // }
+      editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
       setSizingProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
       setIconProperty(newValue);
