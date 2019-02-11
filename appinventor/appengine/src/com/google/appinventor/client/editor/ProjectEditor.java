@@ -25,12 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract superclass for all project editors.
- * Each ProjectEditor is associated with a single project and may have multiple
- * FileEditors open in a DeckPanel.
+ * Abstract superclass for all project editors. Each ProjectEditor is associated
+ * with a single project and may have multiple FileEditors open in a DeckPanel.
  * 
- * TODO(sharon): consider merging this into YaProjectEditor, since we now
- * only have one type of project editor. 
+ * TODO(sharon): consider merging this into YaProjectEditor, since we now only
+ * have one type of project editor.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -43,18 +42,18 @@ public abstract class ProjectEditor extends Composite {
   // Invariants: openFileEditors, fileIds, and deckPanel contain corresponding
   // elements, i.e., if a FileEditor is in openFileEditors, its fileid should be
   // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
-  // is non-null, it is one of the file editors in openFileEditors and the 
-  // one currently showing in deckPanel. 
+  // is non-null, it is one of the file editors in openFileEditors and the
+  // one currently showing in deckPanel.
   private final Map<String, FileEditor> openFileEditors;
-  protected final List<String> fileIds; 
-  private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
+  protected final List<String> fileIds;
+  private final HashMap<String, String> locationHashMap = new HashMap<String, String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
 
   /**
    * Creates a {@code ProjectEditor} instance.
    *
-   * @param projectRootNode  the project root node
+   * @param projectRootNode the project root node
    */
   public ProjectEditor(ProjectRootNode projectRootNode) {
     this.projectRootNode = projectRootNode;
@@ -76,39 +75,39 @@ public abstract class ProjectEditor extends Composite {
   }
 
   /**
-   * Processes the project before loading into the project editor.
-   * To do any any pre-processing of the Project
-   * Calls the loadProject() after prepareProject() is fully executed.
-   * Currently, prepareProject loads all external components associated with project.
+   * Processes the project before loading into the project editor. To do any any
+   * pre-processing of the Project Calls the loadProject() after prepareProject()
+   * is fully executed. Currently, prepareProject loads all external components
+   * associated with project.
    */
   public abstract void processProject();
 
   /**
-   * Called when the ProjectEditor widget is loaded after having been hidden. 
-   * Subclasses must implement this method, taking responsiblity for causing 
-   * the onShow method of the selected file editor to be called and for updating 
-   * any other UI elements related to showing the project editor.
+   * Called when the ProjectEditor widget is loaded after having been hidden.
+   * Subclasses must implement this method, taking responsiblity for causing the
+   * onShow method of the selected file editor to be called and for updating any
+   * other UI elements related to showing the project editor.
    */
   protected abstract void onShow();
-  
+
   /**
-   * Called when the ProjectEditor widget is about to be unloaded. Subclasses
-   * must implement this method, taking responsiblity for causing the onHide 
-   * method of the selected file editor to be called and for updating any 
-   * other UI elements related to hiding the project editor.
+   * Called when the ProjectEditor widget is about to be unloaded. Subclasses must
+   * implement this method, taking responsiblity for causing the onHide method of
+   * the selected file editor to be called and for updating any other UI elements
+   * related to hiding the project editor.
    */
   protected abstract void onHide();
 
   /**
    * Adds a file editor to this project editor.
    *
-   * @param fileEditor  file editor to add
+   * @param fileEditor file editor to add
    */
   public final void addFileEditor(FileEditor fileEditor) {
     String fileId = fileEditor.getFileId();
     openFileEditors.put(fileId, fileEditor);
     fileIds.add(fileId);
-    
+
     deckPanel.add(fileEditor);
   }
 
@@ -116,7 +115,7 @@ public abstract class ProjectEditor extends Composite {
    * Inserts a file editor in this editor at the specified index.
    *
    * @param fileEditor  file editor to insert
-   * @param beforeIndex  the index before which fileEditor will be inserted
+   * @param beforeIndex the index before which fileEditor will be inserted
    */
   public final void insertFileEditor(FileEditor fileEditor, int beforeIndex) {
     String fileId = fileEditor.getFileId();
@@ -129,15 +128,15 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Selects the given file editor in the deck panel and calls its onShow()
-   * method. Calls onHide() for a previously selected file editor if there was 
-   * one (and it wasn't the same one).
+   * method. Calls onHide() for a previously selected file editor if there was one
+   * (and it wasn't the same one).
    * 
-   * Note: all actions that cause the selected file editor to change should
-   * be going through DesignToolbar.SwitchScreenAction.execute(), which calls
-   * this method. If you're thinking about calling this method directly from 
-   * somewhere else, please reconsider!
+   * Note: all actions that cause the selected file editor to change should be
+   * going through DesignToolbar.SwitchScreenAction.execute(), which calls this
+   * method. If you're thinking about calling this method directly from somewhere
+   * else, please reconsider!
    *
-   * @param fileEditor  file editor to select
+   * @param fileEditor file editor to select
    */
   public final void selectFileEditor(FileEditor fileEditor) {
     int index = deckPanel.getWidgetIndex(fileEditor);
@@ -148,15 +147,14 @@ public abstract class ProjectEditor extends Composite {
         OdeLog.wlog("Not expecting selectFileEditor(null)");
       }
     }
-    OdeLog.log("ProjectEditor: got selectFileEditor for " 
-        + ((fileEditor == null) ? null : fileEditor.getFileId())
-        +  " selectedFileEditor is " 
-        + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
+    OdeLog.log("ProjectEditor: got selectFileEditor for " + ((fileEditor == null) ? null : fileEditor.getFileId())
+        + " selectedFileEditor is " + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
-    // Note that we still want to do the following statements even if 
-    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // Note that we still want to do the following statements even if
+    // selectedFileEdtior == fileEditor already. This handles the case of switching
+    // back
     // to a previously opened project from another project.
     selectedFileEditor = fileEditor;
     deckPanel.showWidget(index);
@@ -166,19 +164,19 @@ public abstract class ProjectEditor extends Composite {
   /**
    * Returns the file editor for the given file ID.
    *
-   * @param fileId  file ID of the file
+   * @param fileId file ID of the file
    */
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
   }
-  
+
   /**
    * Returns the set of open file editors
    */
   public final Iterable<FileEditor> getOpenFileEditors() {
     return Collections.unmodifiableCollection(openFileEditors.values());
   }
-  
+
   /**
    * Returns the currently selected file editor
    */
@@ -187,11 +185,11 @@ public abstract class ProjectEditor extends Composite {
   }
 
   /**
-   * Closes the file editors for the given file IDs, without saving.
-   * This is used when the files are about to be deleted. If  
-   * selectedFileEditor is closed, sets selectedFileEditor to null.
+   * Closes the file editors for the given file IDs, without saving. This is used
+   * when the files are about to be deleted. If selectedFileEditor is closed, sets
+   * selectedFileEditor to null.
    *
-   * @param closeFileIds  file IDs of the files to be closed
+   * @param closeFileIds file IDs of the files to be closed
    */
   public final void closeFileEditors(String[] closeFileIds) {
     for (String fileId : closeFileIds) {
@@ -209,12 +207,12 @@ public abstract class ProjectEditor extends Composite {
       fileEditor.onClose();
     }
   }
-  
+
   /**
    * Returns the value of a project settings property.
    *
-   * @param category  property category
-   * @param name  property name
+   * @param category property category
+   * @param name     property name
    * @return the property value
    */
   public final String getProjectSettingsProperty(String category, String name) {
@@ -226,17 +224,16 @@ public abstract class ProjectEditor extends Composite {
   /**
    * Changes the value of a project settings property.
    *
-   * @param category  property category
-   * @param name  property name
-   * @param newValue  new property value
+   * @param category property category
+   * @param name     property name
+   * @param newValue new property value
    */
   public final void changeProjectSettingsProperty(String category, String name, String newValue) {
     ProjectSettings projectSettings = project.getSettings();
     Settings settings = projectSettings.getSettings(category);
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
-      OdeLog.log("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
-                 " => " + newValue);
+      OdeLog.log("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue + " => " + newValue);
       settings.changePropertyValue(name, newValue);
       // Deal with the Tutorial Panel
       Ode ode = Ode.getInstance();
@@ -249,22 +246,22 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Keep track of components that require the
-   * "android.permission.ACCESS_FINE_LOCATION" (and related
-   * permissions). This code is in particular for use of the WebViewer
-   * component. The WebViewer exports the Javascript location
-   * API. However it cannot be used by an app with location
-   * permissions. Each WebViewer has a "UsesLocation" property which
-   * is only available from the designer. Each WebViewer then
-   * registers its value here. Each time this hashtable is updated we
-   * recompute whether or not location permission is needed based on a
-   * logical OR of all of the WebViwer components registered. Note:
-   * Even if no WebViewer component requires location permisson, other
-   * components, such as the LocationSensor may require it. That is
-   * handled via the @UsesPermissions mechanism and is independent of
-   * this code.
+   * "android.permission.ACCESS_FINE_LOCATION" (and related permissions). This
+   * code is in particular for use of the WebViewer component. The WebViewer
+   * exports the Javascript location API. However it cannot be used by an app with
+   * location permissions. Each WebViewer has a "UsesLocation" property which is
+   * only available from the designer. Each WebViewer then registers its value
+   * here. Each time this hashtable is updated we recompute whether or not
+   * location permission is needed based on a logical OR of all of the WebViwer
+   * components registered. Note: Even if no WebViewer component requires location
+   * permisson, other components, such as the LocationSensor may require it. That
+   * is handled via the @UsesPermissions mechanism and is independent of this
+   * code.
    *
-   * @param componentName The name of the component registering location permission
-   * @param newVlue either "True" or "False" indicating whether permission is need.
+   * @param componentName The name of the component registering location
+   *                      permission
+   * @param newVlue       either "True" or "False" indicating whether permission
+   *                      is need.
    */
 
   public final void recordLocationSetting(String componentName, String newValue) {
@@ -282,8 +279,8 @@ public abstract class ProjectEditor extends Composite {
         break;
       }
     }
-    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
-      usesLocation);
+    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, usesLocation);
   }
 
   public void clearLocation(String componentName) {
@@ -295,7 +292,7 @@ public abstract class ProjectEditor extends Composite {
   /**
    * Notification that the file with the given file ID has been saved.
    *
-   * @param fileId  file ID of the file that was saved
+   * @param fileId file ID of the file that was saved
    */
   public final void onSave(String fileId) {
     FileEditor fileEditor = openFileEditors.get(fileId);
@@ -308,15 +305,18 @@ public abstract class ProjectEditor extends Composite {
 
   @Override
   protected void onLoad() {
-    // onLoad is called immediately after a widget becomes attached to the browser's document.
-    // onLoad will be called both when a project is opened the first time and when an
+    // onLoad is called immediately after a widget becomes attached to the browser's
+    // document.
+    // onLoad will be called both when a project is opened the first time and when
+    // an
     // already-opened project is re-opened.
-    // This is different from the ProjectEditor method loadProject, which is called to load the
+    // This is different from the ProjectEditor method loadProject, which is called
+    // to load the
     // project just after the editor is created.
     OdeLog.log("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                                                    SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);
@@ -327,7 +327,8 @@ public abstract class ProjectEditor extends Composite {
 
   @Override
   protected void onUnload() {
-    // onUnload is called immediately before a widget becomes detached from the browser's document.
+    // onUnload is called immediately before a widget becomes detached from the
+    // browser's document.
     Ode ode = Ode.getInstance();
     ode.setTutorialVisible(false);
     ode.getDesignToolbar().setTutorialToggleVisible(false);

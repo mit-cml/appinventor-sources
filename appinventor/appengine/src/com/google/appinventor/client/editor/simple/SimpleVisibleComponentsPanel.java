@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockForm;
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.ListBox;
 
 import java.util.List;
 import java.util.Map;
@@ -28,13 +31,16 @@ import java.util.Map;
  * Panel in the Simple design editor holding visible Simple components.
  *
  */
-public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
+public final class SimpleVisibleComponentsPanel extends Composite
+    implements DropTarget, ComponentDatabaseChangeListener {
   // UI elements
   private final VerticalPanel phoneScreen;
   private final CheckBox checkboxShowHiddenComponents;
-  private final CheckBox checkboxPhoneTablet; // A CheckBox for Phone/Tablet preview sizes
+  private final ListBox checkboxPhoneTablet; // A CheckBox for Phone/Tablet preview sizes
+  private final int[] drop_lst = new int[] { 320, 505, 480, 675, 800, 995 };
 
-  // Corresponding panel for non-visible components (because we allow users to drop
+  // Corresponding panel for non-visible components (because we allow users to
+  // drop
   // non-visible components onto the form, but we show them in the non-visible
   // components panel)
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
@@ -45,8 +51,8 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   /**
    * Creates new component design panel for visible components.
    *
-   * @param nonVisibleComponentsPanel  corresponding panel for non-visible
-   *                                   components
+   * @param nonVisibleComponentsPanel corresponding panel for non-visible
+   *                                  components
    */
   public SimpleVisibleComponentsPanel(final SimpleEditor editor,
       SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
@@ -60,11 +66,11 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     checkboxShowHiddenComponents = new CheckBox(MESSAGES.showHiddenComponentsCheckbox()) {
       @Override
       protected void onLoad() {
-        // onLoad is called immediately after a widget becomes attached to the browser's document.
-        boolean showHiddenComponents = Boolean.parseBoolean(
-            projectEditor.getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
+        // onLoad is called immediately after a widget becomes attached to the browser's
+        // document.
+        boolean showHiddenComponents = Boolean
+            .parseBoolean(projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+                SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
         checkboxShowHiddenComponents.setValue(showHiddenComponents);
       }
     };
@@ -72,10 +78,8 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
         boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-        projectEditor.changeProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
-            isChecked ? "True" : "False");
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS, isChecked ? "True" : "False");
         if (form != null) {
           form.refresh();
         }
@@ -83,53 +87,55 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     });
     phoneScreen.add(checkboxShowHiddenComponents);
 
-    checkboxPhoneTablet = new CheckBox(MESSAGES.previewPhoneSize()) {
+    checkboxPhoneTablet = new ListBox() {
       @Override
       protected void onLoad() {
-        // onLoad is called immediately after a widget becomes attached to the browser's document.
-        boolean showPhoneTablet = Boolean.parseBoolean(
-            projectEditor.getProjectSettingsProperty(
-                SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET));
-        checkboxPhoneTablet.setValue(showPhoneTablet);
-        changeFormPreviewSize(showPhoneTablet);
+        projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
+        changeFormPreviewSize(0, 320, 505);
       }
+
     };
-    checkboxPhoneTablet.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+    checkboxPhoneTablet.addItem("Select 'phone' to see Preview on Phone size.");
+    checkboxPhoneTablet.addItem("Select 'tablet' to see Preview on Tablet size.");
+    checkboxPhoneTablet.addItem("Select 'monitor' to see Preview on Monitor size.");
+    changeFormPreviewSize(0, 320, 505);
+    checkboxPhoneTablet.addChangeHandler(new ChangeHandler() {
       @Override
-      public void onValueChange(ValueChangeEvent<Boolean> event) {
-          boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          projectEditor.changeProjectSettingsProperty(
-              SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-              SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET,
-              isChecked ? "True" : "False");
-          changeFormPreviewSize(isChecked);
-        }
+      public void onChange(ChangeEvent event) {
+        int idx = checkboxPhoneTablet.getSelectedIndex();
+        int width = drop_lst[2 * idx];
+        int height = drop_lst[2 * idx + 1];
+        String val = Integer.toString(width) + "," + Integer.toString(height);
+        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
+        changeFormPreviewSize(idx, width, height);
+      }
     });
+
     phoneScreen.add(checkboxPhoneTablet);
 
     initWidget(phoneScreen);
   }
 
-  private void changeFormPreviewSize(boolean isChecked) {
-    if (form != null){
-      if (isChecked){
-        form.changePreviewSize(true);
-        checkboxPhoneTablet.setText(MESSAGES.previewPhoneSize());
-      }
-      else {
-        form.changePreviewSize(false);
-        checkboxPhoneTablet.setText(MESSAGES.previewTabletSize());
+  private void changeFormPreviewSize(int idx, int width, int height) {
+    if (form != null) {
+      form.changePreviewSize(width, height);
+      if (idx == 0) {
+        checkboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize());
+      } else if (idx == 1) {
+        checkboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize());
+      } else {
+        checkboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize());
       }
     }
   }
 
-  public void enableTabletPreviewCheckBox(boolean enable){
-    if (form != null){
-      if (!enable){
-        form.changePreviewSize(false);
-        checkboxPhoneTablet.setText(MESSAGES.previewTabletSize());
-        checkboxPhoneTablet.setChecked(false);
+  public void enableTabletPreviewCheckBox(Boolean enable) {
+    if (form != null) {
+      if (!enable) {
+        form.changePreviewSize(320, 505);
+        checkboxPhoneTablet.setItemSelected(0, true);
       }
     }
     checkboxPhoneTablet.setEnabled(enable);
@@ -138,7 +144,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   /**
    * Associates a Simple form component with this panel.
    *
-   * @param form  backing mocked form component
+   * @param form backing mocked form component
    */
   public void setForm(MockForm form) {
     this.form = form;
@@ -147,8 +153,10 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
 
   // DropTarget implementation
 
-  // Non-visible components will be forwarded to the non-visible components design panel
-  // as a courtesy. Visible components will be accepted by individual MockContainers.
+  // Non-visible components will be forwarded to the non-visible components design
+  // panel
+  // as a courtesy. Visible components will be accepted by individual
+  // MockContainers.
 
   @Override
   public Widget getDropTargetWidget() {
@@ -158,9 +166,8 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   @Override
   public boolean onDragEnter(DragSource source, int x, int y) {
     // Accept palette items for non-visible components only
-    return (source instanceof SimplePaletteItem) &&
-      !((SimplePaletteItem) source).isVisibleComponent() &&
-      nonVisibleComponentsPanel.onDragEnter(source, -1, -1);
+    return (source instanceof SimplePaletteItem) && !((SimplePaletteItem) source).isVisibleComponent()
+        && nonVisibleComponentsPanel.onDragEnter(source, -1, -1);
   }
 
   @Override
