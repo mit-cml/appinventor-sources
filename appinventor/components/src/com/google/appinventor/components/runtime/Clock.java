@@ -19,8 +19,17 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+// Sherry
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 
 /**
  * Clock provides the phone's clock, a timer, calendar and time calculations.
@@ -205,6 +214,72 @@ public final class Clock extends AndroidNonvisibleComponent
           "Argument to MakeInstant should have form MM/dd/YYYY hh:mm:ss, or MM/dd/YYYY or hh:mm",
           "Sorry to be so picky.");
     }
+  }
+
+
+  /** Sherry Wang
+    * 
+  */
+  @SimpleFunction(description = "Allows the user to set the clock to be "
+    +"a date value.\n" +
+    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  public Calendar ClockMakeDate(int year, int month, int day) {
+    int jMonth = month - 1;
+    try {
+      GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
+      cal.setLenient(false);
+      cal.getTime();
+    } catch (java.lang.IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "ClockMakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    
+    Calendar instant = Dates.DateInstant(year, month, day);
+    return instant;
+  }
+
+  /** Sherry Wang
+    * 
+  */
+  @SimpleFunction(description = "Allows the user to set the time of the clock - " +
+    "Valid format is hh:mm\n")
+  public Calendar ClockMakeTime(int hour, int minute) {
+    Calendar instant = null;
+    try {
+      String time_str = String.valueOf(hour) + ":" + String.valueOf(minute);
+      DateFormat timeFormat = new SimpleDateFormat("hh:mm");
+      timeFormat.setLenient(false);
+      Date time = timeFormat.parse(time_str);
+      instant = Calendar.getInstance();
+      instant.setTime(time);
+    }catch (Exception e) {
+    throw new YailRuntimeError(
+        "Argument to ClockMakeTime should have form hh:mm",
+        "Sorry to be so picky.");
+    }
+
+    
+    return instant;
+  }
+
+
+  /** Sherry Wang
+    * 
+  */
+  @SimpleFunction(
+    description = "Allows the user to set the date and time to be displayed when the clock opens.\n" +
+    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  public Calendar MakeInstantFromParts(int year, int month, int day, int hour, int minute, int second) {
+    Clock clock = new Clock();
+    Calendar calendar_day = clock.ClockMakeDate(year, month, day);
+    Calendar calendar_time = clock.ClockMakeTime(hour, minute);
+
+    
+    calendar_day.set(Calendar.HOUR_OF_DAY, calendar_time.get(Calendar.HOUR_OF_DAY));
+    calendar_day.set(Calendar.MINUTE, calendar_time.get(Calendar.MINUTE));
+    calendar_day.set(Calendar.SECOND, second);
+    
+    return calendar_day;
+    
   }
 
   /**
