@@ -1,0 +1,13 @@
+package galleryAuth;
+
+option java_package = "com.google.appinventor.server.galleryAuth";
+option java_outer_classname = "GalleryAuth";
+
+message token {
+    required string uuid = 1;
+    required string email = 2;
+    required uint64 ts = 3;
+    optional bool isAdmin = 4;
+    optional string domain = 5;
+}
+

@@ -65,6 +65,8 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
+import com.google.appinventor.shared.rpc.gallery.GalleryAuthService;
+import com.google.appinventor.shared.rpc.gallery.GalleryAuthServiceAsync;
 import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -97,12 +99,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
@@ -270,6 +267,9 @@ public class Ode implements EntryPoint {
 
   //Web service for CloudDB authentication operations
   private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
+
+  //Web service for Gallery authentication operations
+  private final GalleryAuthServiceAsync galleryAuthService = GWT.create(GalleryAuthService.class);
 
   private boolean windowClosing;
 
@@ -850,6 +850,14 @@ public class Ode implements EntryPoint {
           }
         });
         editorManager = new EditorManager();
+        galleryAuthService.getToken(new OdeAsyncCallback<String>() {
+          @Override
+          public void onSuccess(String token) {
+            Cookies.setCookie("galleryToken", token);
+            String url = "http://localhost:3000/api/user/set_login_cookie?token=" + token;
+            loginGalleryDialog(url);
+          }
+        });
 
         // Initialize UI
         initializeUi();
@@ -2136,6 +2144,21 @@ public class Ode implements EntryPoint {
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * This dialog is "shown" when the user logs in so that th
+   *
+   * @param url the URL to display in the dialog box.
+   */
+  public void loginGalleryDialog(String url) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(true, false); // DialogBox(autohide, modal)
+    dialogBox.setHeight("0px");
+    dialogBox.setWidth("0px");
+    HTML message = new HTML("<iframe src=\"" + url + "\" style=\"width: 0px; height: 0px;\"></iframe>");
+    dialogBox.add(message);
     dialogBox.show();
   }
 

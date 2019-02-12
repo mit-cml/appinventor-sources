@@ -265,6 +265,20 @@
     <servlet-name>cloudDBAuthService</servlet-name>
   </filter-mapping>
 
+  <!-- galleryAuth -->
+  <servlet>
+    <servlet-name>galleryAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.galleryAuth.GalleryAuthServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>galleryAuthService</servlet-name>
+    <url-pattern>/ode/galleryAuth</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>galleryAuthService</servlet-name>
+  </filter-mapping>
+
   <!-- android -->
   <servlet>
     <servlet-name>androidServlet</servlet-name>

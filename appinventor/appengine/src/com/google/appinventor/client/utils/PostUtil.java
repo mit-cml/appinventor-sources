@@ -7,6 +7,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONException;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 
@@ -24,7 +25,7 @@ public class PostUtil {
             @Override
             public void onReadyStateChange(XMLHttpRequest xhr) {
                 if (xhr.getReadyState() == XMLHttpRequest.DONE) {
-                    new PostUtil().postAddAppToGallery(user.getUserId(), projectId, projectName);
+                    new PostUtil().postAddAppToGallery(user.getUserEmail(), projectId, projectName);
                 }
             }
         });
@@ -32,7 +33,7 @@ public class PostUtil {
         xhr.setRequestHeader("Content-Type", "application/json");
         JSONObject json = new JSONObject();
         try {
-            json.put("authorId", new JSONString(user.getUserId()));
+            json.put("authorId", new JSONString(user.getUserEmail()));
             json.put("name", new JSONString(user.getUserName()));
             json.put("username", new JSONString(user.getUserName() + "_" + user.getUserId()));
             json.put("appInventorInstance", new JSONString(appInventorInstance));
@@ -42,9 +43,10 @@ public class PostUtil {
         }
     }
 
-    public void postAddAppToGallery(String userId, long projectId, String projectName) {
+    public void postAddAppToGallery(String email, long projectId, String projectName) {
         String aiaUrl = GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Objects.toString(projectId);
-        addAppToGalleryPostHelper(aiaUrl, projectName, userId, Objects.toString(projectId));
+        String authToken = Cookies.getCookie("galleryToken");
+        addAppToGalleryPostHelper(aiaUrl, projectName, email, Objects.toString(projectId), authToken);
     }
 
     public static void updateProjectPublishedOrUnpublished(final long projectId) {
@@ -73,7 +75,7 @@ public class PostUtil {
         updateProjectPublishedOrUnpublished(Long.parseLong(projectId));
     }
 
-    public static native void addAppToGalleryPostHelper(String aiaUrl, String title, String authorId, String projectId)/*-{
+    public static native void addAppToGalleryPostHelper(String aiaUrl, String title, String authorId, String projectId, String authToken)/*-{
     var aiaRequest = new XMLHttpRequest();
     aiaRequest.responseType = "blob";
     aiaRequest.onreadystatechange = function() {
@@ -85,6 +87,7 @@ public class PostUtil {
             formData.append("projectId", projectId);
             formData.append("appInventorInstance", "ai2");
             formData.append("aia", aiaRequest.response);
+            formData.append("token", authToken);
 
             var request = new XMLHttpRequest();
             request.responseType = "json";

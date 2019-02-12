@@ -249,6 +249,13 @@ public class ServerLayout {
    */
   public static final String CLOUD_DB_AUTH_SERVICE = "cloudDBAuth";
 
+  /**
+   * Relative path of the
+   * {@link com.google.appinventor.shared.rpc.gallery.GalleryAuthService} within the
+   * ODE GWT module.
+   */
+  public static final String GALLERY_AUTH_SERVICE = "galleryAuth";
+
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;
   }
