@@ -95,17 +95,15 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
 
         int idx = 0;
-        int width = 120;
+        int width = 320;
         int height = 505;
-        // System.out.println("hi" + val);
         String[] parts = val.split(",");
-        // System.out.println(parts[0]);
         if (parts.length == 3) {
           idx = Integer.parseInt(parts[0]);
           width = Integer.parseInt(parts[1]);
           height = Integer.parseInt(parts[2]);
         }
-            // in this part, read width and height and put it into changeFormPreviewSize
+        listboxPhoneTablet.setItemSelected(idx, true);
         changeFormPreviewSize(idx, width, height);
       }
     };
