@@ -37,7 +37,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   private final VerticalPanel phoneScreen;
   private final CheckBox checkboxShowHiddenComponents;
   private final ListBox listboxPhoneTablet; // A CheckBox for Phone/Tablet preview sizes
-  private final int[] drop_lst = new int[] { 320, 505, 480, 675, 800, 995 };
+  private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
 
   // Corresponding panel for non-visible components (because we allow users to drop
   // non-visible components onto the form, but we show them in the non-visible
@@ -91,22 +91,35 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     listboxPhoneTablet = new ListBox() {
       @Override
       protected void onLoad() {
-        projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
-        changeFormPreviewSize(0, 320, 505);
+
+        int idx = 0;
+        int width = 120;
+        int height = 505;
+        // System.out.println("hi" + val);
+        String[] parts = val.split(",");
+        // System.out.println(parts[0]);
+        if (parts.length == 3) {
+          idx = Integer.parseInt(parts[0]);
+          width = Integer.parseInt(parts[1]);
+          height = Integer.parseInt(parts[2]);
+        }
+            // in this part, read width and height and put it into changeFormPreviewSize
+        changeFormPreviewSize(idx, width, height);
       }
     };
-    listboxPhoneTablet.addItem("Select 'phone' to see Preview on Phone size.");
-    listboxPhoneTablet.addItem("Select 'tablet' to see Preview on Tablet size.");
-    listboxPhoneTablet.addItem("Select 'monitor' to see Preview on Monitor size.");
-    changeFormPreviewSize(0, 320, 505);
+    listboxPhoneTablet.addItem("Phone size");
+    listboxPhoneTablet.addItem("Tablet size");
+    listboxPhoneTablet.addItem("Monitor size");
     listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
         int idx = listboxPhoneTablet.getSelectedIndex();
-        int width = drop_lst[2 * idx];
-        int height = drop_lst[2 * idx + 1];
-        String val = Integer.toString(width) + "," + Integer.toString(height);
+        int width = drop_lst[idx][0];
+        int height = drop_lst[idx][1];
+        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
+        // here, we can change settings by putting val into it
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
         changeFormPreviewSize(idx, width, height);
@@ -120,13 +133,22 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   private void changeFormPreviewSize(int idx, int width, int height) {
     if (form != null) {
       form.changePreviewSize(width, height);
+      String info = "(" + height + "," + width + ")";
       if (idx == 0) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize());
+        listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
+        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
+        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
       } else if (idx == 1) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize());
+        listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
+        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+
       } else {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize());
+        listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
+        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
       }
+      // change settings
     }
   }
 

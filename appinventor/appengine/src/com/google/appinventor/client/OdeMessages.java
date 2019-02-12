@@ -953,15 +953,15 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
-  @DefaultMessage("Select to see Preview on Tablet size.(320,470)")
+  @DefaultMessage("Tablet size")
   @Description("Listbox (tablet) controlling whether to display a preview on Tablet size.")
   String previewTabletSize();
 
-  @DefaultMessage("Selected to see Preview on Phone size.(480,640)")
+  @DefaultMessage("Phone size")
   @Description("Listbox (phone) controlling whether to display a preview on Phone size.")
   String previewPhoneSize();
 
-  @DefaultMessage("Selected to see Preview on Monitor size.(800,960)")
+  @DefaultMessage("Monitor size")
   @Description("Listbox (monitor) controlling whether to display a preview on Monitor size.")
   String previewMonitorSize();
 
