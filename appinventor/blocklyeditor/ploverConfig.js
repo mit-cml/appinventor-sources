@@ -16,6 +16,7 @@
     '../lib/blockly/msg/js/ru.js',
     '../lib/blockly/msg/js/sv.js',
     '../lib/blockly/msg/js/nl.js',
+    '../lib/blockly/msg/js/tr.js',
     '../lib/blockly/msg/js/pt-br.js',
     '../lib/blockly/msg/js/pt.js',
     '../lib/blockly/msg/js/en.js',
@@ -30,6 +31,7 @@
     './src/msg/pt_br/_messages.js',
     './src/msg/pt/_messages.js',
     './src/msg/nl/_messages.js',
+    './src/msg/tr/_messages.js',
     './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code
