@@ -193,8 +193,8 @@ def combine(args):
     javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
                              'com.google.appinventor.client.OdeMessages_default.properties')
     blockprops = read_block_translations()  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
-    test = os.path.join(appinventor_dir, 'misc', 'i18n', 'translation_template.properties')
-    with open(test, 'w+', encoding='utf8') as out:
+    prop_file = os.path.join(appinventor_dir, 'misc', 'i18n', 'translation_template.properties')
+    with open(prop_file, 'w+', encoding='utf8') as out:
         out.write('# Frontend definitions\n')
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
@@ -219,8 +219,7 @@ def tmx_merge(args):
             tmx_tree = data
         else:
             for tu in data.iter('tu'):
-                test = tu.attrib["tuid"]
-                insertion_point = tmx_tree.find("./body/tu/[@tuid='%s']" % test)
+                insertion_point = tmx_tree.find("./body/tu/[@tuid='%s']" % tu.attrib["tuid"])
                 if insertion_point is not None:
                     for child in tu:
                         insertion_point.append(child)
