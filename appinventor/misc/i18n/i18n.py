@@ -143,7 +143,6 @@ def propescape(s):
 
 def read_block_translations():
     linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
-    #value = re.compile(r'\'([^\'])*\'|\"([^\"]*)\"')
     continuation = re.compile(r'\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', 'en', '_messages.js')) as js:
         comment = None
@@ -209,6 +208,27 @@ def combine(args):
         out.write(blockprops)
         out.close()
 
+from xml.etree import ElementTree as et
+def tmx_merge(args):
+    if args.dest is None:
+        raise ValueError('No --dest specified for splitting file')
+    tmx_tree = None
+    for sfile in args.source_files:
+        data = et.parse(sfile).getroot()
+        if tmx_tree is None:
+            tmx_tree = data
+        else:
+            for tu in data.iter('tu'):
+                test = tu.attrib["tuid"]
+                insertion_point = tmx_tree.find("./body/tu/[@tuid='%s']" % test)
+                if insertion_point is not None:
+                    for child in tu:
+                        insertion_point.append(child)
+    if tmx_tree is not None:
+        with open(args.dest[0], 'w+') as ofile:
+            ofile.write(et.tostring(tmx_tree, encoding='utf8').decode('utf8'))
+    else:
+        raise ValueError('No output')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='App Inventor internationalization toolkit')
@@ -220,6 +240,10 @@ def parse_args():
     parser_split.add_argument('--lang_name', nargs=1, type=str, action='store')
     parser_split.add_argument('source')
     parser_split.set_defaults(func=split)
+    parser_tmxmerge = subparsers.add_parser('tmx_merge')
+    parser_tmxmerge.add_argument('--dest', nargs=1, type=str, action='store')
+    parser_tmxmerge.add_argument('source_files', nargs=argparse.REMAINDER)
+    parser_tmxmerge.set_defaults(func=tmx_merge)
     args = parser.parse_args()
     if not hasattr(args, 'func'):
         parser.error('One of either combine or split must be specified')

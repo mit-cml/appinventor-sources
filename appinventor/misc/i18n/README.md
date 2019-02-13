@@ -1,12 +1,13 @@
-Rough sketch of the process (as I remember it):
 
-To combine for translation:
-1. Run Blockly's js_to_json on the English messages file in blocklyeditor. This should create a message.json file.
-2. Build App Inventor, this will output a OdeMessages_en.properties file under appengine/build/extras/ode
-3. Run translate.java on messages.json to produce messages.properties
-4. Run merge.py to combine the two properties files with prefixed keys (appengine. and blockseditor.)
+To combine to create translation template:
+1. Build App Inventor, this will output a OdeMessages_en.properties file under appengine/build/extras/ode
+2. Run i18n.py combine
+3. Upload the resulting translation_template.properties to Google Translation Toolkit
 
 To split the translated file:
-1. Run split.py on the translated file to produce a messages.properties file and a messages.js file.
-2. Add the language to appengine/src/com/google/appinventor/client/languages.json
-3. Add the language to appengine/src/com/google/appinventor/YaClient.xml
+1. Download appropriate translated faile from Google Translation Toolkit
+2. Run i18n.py [translated_file].properties --lang [two character language code] --lang_name [full name of language]
+3. Add the language to appengine/src/com/google/appinventor/client/languages.json
+4. Add the language to appengine/src/com/google/appinventor/YaClient.xml
+5. Add the language to blocklyeditor/src/language_switch.js
+6. Add the language to blocklyeditor/ploverConfig.js
