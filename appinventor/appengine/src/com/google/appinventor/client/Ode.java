@@ -855,7 +855,7 @@ public class Ode implements EntryPoint {
           public void onSuccess(String token) {
             Cookies.setCookie("galleryToken", token);
             String url = "http://localhost:3000/api/user/set_login_cookie?token=" + token;
-            loginGalleryDialog(url);
+            loginGalleryIFrame(url);
           }
         });
 
@@ -2148,18 +2148,13 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * This dialog is "shown" when the user logs in so that th
+   * This iframe is added to log the user into the gallery.
    *
    * @param url the URL to display in the dialog box.
    */
-  public void loginGalleryDialog(String url) {
-    // Create the UI elements of the DialogBox
-    final DialogBox dialogBox = new DialogBox(true, false); // DialogBox(autohide, modal)
-    dialogBox.setHeight("0px");
-    dialogBox.setWidth("0px");
-    HTML message = new HTML("<iframe src=\"" + url + "\" style=\"width: 0px; height: 0px;\"></iframe>");
-    dialogBox.add(message);
-    dialogBox.show();
+  public void loginGalleryIFrame(String url) {
+    HTML message = new HTML("<iframe src=\"" + url + "\" style=\"width: 0px; height: 0px; display: none;\"></iframe>");
+    RootPanel.get().add(message);
   }
 
   /**

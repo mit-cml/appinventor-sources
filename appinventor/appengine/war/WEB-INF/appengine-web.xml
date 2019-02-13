@@ -182,6 +182,8 @@
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
+    <property name="gallery.url" value="http://localhost:3000" />
+    <property name="gallery.api.url" value="http://localhost:8090" />
 
     <!-- CloudDB secret keys -->
     <property name="clouddb.server" value="clouddb.example.com"/>
