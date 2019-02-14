@@ -21,10 +21,10 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
 
   init() {
     self._scanViewRect = UIView(frame: CGRect(x: 30, y: 105, width: 260, height: 260))
-    self._scanViewRect.backgroundColor = UIColor(colorLiteralRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.3)
+    self._scanViewRect.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.3)
     self._captureSizeTransform = CGAffineTransform()
     super.init(nibName: nil, bundle: nil)
-    let _cancel = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel,
+    let _cancel = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel,
                                   target: self,
                                   action: #selector(BarcodeScannerViewController.cancel))
     _cancel.title = "Cancel"
@@ -57,7 +57,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     super.viewDidLoad()
     _capture = ZXCapture()
     _capture.camera = self._capture.back()
-    _capture.focusMode = AVCaptureFocusMode.continuousAutoFocus
+    _capture.focusMode = AVCaptureDevice.FocusMode.continuousAutoFocus
     _capture.delegate = self
   }
 
@@ -67,7 +67,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
                                  y: (11.0/48.0)*self.view.frame.height,
                                  width: (13.0/16.0)*self.view.frame.width,
                                  height: (13.0/24.0)*self.view.frame.height)
-    _scanViewRect.autoresizingMask = UIViewAutoresizing.flexibleHeight.union(.flexibleWidth).union(.flexibleTopMargin).union(.flexibleBottomMargin)
+    _scanViewRect.autoresizingMask = UIView.AutoresizingMask.flexibleHeight.union(.flexibleWidth).union(.flexibleTopMargin).union(.flexibleBottomMargin)
     view.layer.addSublayer(self._capture.layer)
     self.view.addSubview(_scanViewRect)
     applyOrientation()
@@ -101,7 +101,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     _barcodeDelegate.receivedResult(result.text)
   }
 
-  func cancel() {
+  @objc func cancel() {
     if self._capture.running {
       _capture.stop()
       _capture.delegate = nil
@@ -144,24 +144,24 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
         scanRectRotation = 90
     }
     applyRectOfInterest(orientation)
-    let transform = CGAffineTransform(rotationAngle: CGFloat(Double(captureRotation / 180) * M_PI))
+    let transform = CGAffineTransform(rotationAngle: CGFloat(Double(captureRotation / 180) * .pi))
     self._capture.transform = transform
     self._capture.rotation = CGFloat(scanRectRotation)
     self._capture.layer.frame = self.view.frame
   }
   
-  func applyRectOfInterest(_ orientation: UIInterfaceOrientation) {
+  @objc func applyRectOfInterest(_ orientation: UIInterfaceOrientation) {
     var scaleVideo: CGFloat, scaleVideoX: CGFloat, scaleVideoY: CGFloat
     var videoSizeX: CGFloat, videoSizeY: CGFloat
     var transformedVideoRect = self._scanViewRect.frame
-    if(self._capture.sessionPreset == AVCaptureSessionPreset1920x1080) {
+    if(self._capture.sessionPreset == convertFromAVCaptureSessionPreset(AVCaptureSession.Preset.hd1920x1080)) {
       videoSizeX = 1080;
       videoSizeY = 1920;
     } else {
       videoSizeX = 720;
       videoSizeY = 1280;
     }
-    if(UIInterfaceOrientationIsPortrait(orientation)) {
+    if(orientation.isPortrait) {
       scaleVideoX = self.view.frame.size.width / videoSizeX;
       scaleVideoY = self.view.frame.size.height / videoSizeY;
       scaleVideo = max(scaleVideoX, scaleVideoY)
@@ -198,13 +198,13 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     super.init(container)
   }
 
-  open var Result: String {
+  @objc open var Result: String {
     get {
       return _result
     }
   }
 
-  open func HasPermission() -> Bool {
+  @objc open func HasPermission() -> Bool {
     if let result = PermissionHandler.HasPermission(for: .camera) {
       return result
     } else {
@@ -212,7 +212,7 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
-  open func RequestPermission() {
+  @objc open func RequestPermission() {
     doRequestPermission()
   }
 
@@ -220,11 +220,11 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     PermissionHandler.RequestPermission(for: .camera, with: completionHandler)
   }
 
-  open func PermissionChange(_ allowed: Bool){
+  @objc open func PermissionChange(_ allowed: Bool){
     EventDispatcher.dispatchEvent(of: self, called: "PermissionChange", arguments: allowed as AnyObject)
   }
 
-  open func DoScan() {
+  @objc open func DoScan() {
     doRequestPermission() { allowed, changed in
       if changed {
         self.PermissionChange(allowed)
@@ -256,12 +256,12 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
-  open func AfterScan(_ result: String) {
+  @objc open func AfterScan(_ result: String) {
     _navController?.dismiss(animated: true, completion: nil)
     EventDispatcher.dispatchEvent(of: self, called: "AfterScan", arguments: result as AnyObject)
   }
 
-  open var UseExternalScanner: Bool {
+  @objc open var UseExternalScanner: Bool {
     get {
       return false
     }
@@ -270,13 +270,18 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
-  open func receivedResult(_ result: String) {
+  @objc open func receivedResult(_ result: String) {
     _result = result
     self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(_:)), with: _result, waitUntilDone: false)
   }
 
-  open func canceled() {
+  @objc open func canceled() {
     _result = ""
     self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(_:)), with: _result, waitUntilDone: false)
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVCaptureSessionPreset(_ input: AVCaptureSession.Preset) -> String {
+	return input.rawValue
 }

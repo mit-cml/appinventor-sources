@@ -24,7 +24,7 @@ open class Web: NonvisibleComponent {
     return text.data(using: encodingType)
   }
   
-  open var Url: String {
+  @objc open var Url: String {
     get {
       return _url
     }
@@ -33,7 +33,7 @@ open class Web: NonvisibleComponent {
     }
   }
   
-  open var RequestHeaders: YailList {
+  @objc open var RequestHeaders: YailList {
     get {
       return _requestHeaders
     }
@@ -44,7 +44,7 @@ open class Web: NonvisibleComponent {
     }
   }
 
-  open var AllowCookies: Bool {
+  @objc open var AllowCookies: Bool {
     get {
       return _allowCookies
     }
@@ -53,7 +53,7 @@ open class Web: NonvisibleComponent {
     }
   }
   
-  open var SaveResponse: Bool {
+  @objc open var SaveResponse: Bool {
     get {
       return _saveResponse
     }
@@ -62,7 +62,7 @@ open class Web: NonvisibleComponent {
     }
   }
   
-  open var ResponseFileName: String {
+  @objc open var ResponseFileName: String {
     get {
       return _responseFileName
     }
@@ -71,7 +71,7 @@ open class Web: NonvisibleComponent {
     }
   }
   
-  open func ClearCookies() {
+  @objc open func ClearCookies() {
     _cookieStorage = HTTPCookieStorage.init()
   }
   
@@ -87,40 +87,40 @@ open class Web: NonvisibleComponent {
     return false
   }
   
-  open func Get() {
+  @objc open func Get() {
     guard let webProps = capturePropertyValues("Get") else {
       return
     }
     performRequest(webProps, nil, nil, "GET")
   }
   
-  open func PostTextWithEncoding(_ text: String, _ encoding: String?) {
+  @objc open func PostTextWithEncoding(_ text: String, _ encoding: String?) {
     requestTextImpl(text: text, encoding: encoding, functionName: "PostTextWithEncoding", httpVerb: "POST")
   }
   
-  open func PostFile(_ path: String) {
+  @objc open func PostFile(_ path: String) {
     guard let webProps = capturePropertyValues("PostFile") else {
       return
     }
     performRequest(webProps, nil, path, "POST")
   }
   
-  open func PutText(_ text: String) {
+  @objc open func PutText(_ text: String) {
     requestTextImpl(text: text, encoding: "UTF-8", functionName: "PutText", httpVerb: "PUT")
   }
   
-  open func PutTextWithEncoding(_ text: String, _ encoding: String?) {
+  @objc open func PutTextWithEncoding(_ text: String, _ encoding: String?) {
     requestTextImpl(text: text, encoding: encoding, functionName: "PutTextWithEncoding", httpVerb: "PUT")
   }
   
-  open func PutFile(_ path: String) {
+  @objc open func PutFile(_ path: String) {
     guard let webProps = capturePropertyValues("PutFile") else {
       return
     }
     performRequest(webProps, nil, path, "PUT")
   }
   
-  open func Delete() {
+  @objc open func Delete() {
     guard let webProps = capturePropertyValues("Delete") else {
       return
     }
@@ -265,11 +265,11 @@ open class Web: NonvisibleComponent {
     return nil
   }
   
-  open func GotText(_ url: NSString, responseCode: NSNumber, responseType: NSString, responseContent: NSString) {
+  @objc open func GotText(_ url: NSString, responseCode: NSNumber, responseType: NSString, responseContent: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotText", arguments: url, responseCode, responseType, responseContent)
   }
   
-  open func GotFile(_ url: NSString, responseCode: NSNumber, responseType: NSString, fileName: NSString) {
+  @objc open func GotFile(_ url: NSString, responseCode: NSNumber, responseType: NSString, fileName: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotFile", arguments: url, responseCode, responseType, fileName)
   }
   

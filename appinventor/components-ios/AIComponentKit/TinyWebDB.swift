@@ -13,7 +13,7 @@ open class TinyWebDB: NonvisibleComponent {
     fileprivate var _serviceURL: String = "http://tinywebdb.appinventor.mit.edu/"
     
     // MARK: TinyWebDB Properties
-    open var ServiceURL: String {
+    @objc open var ServiceURL: String {
         get {
             return _serviceURL
         }
@@ -23,7 +23,7 @@ open class TinyWebDB: NonvisibleComponent {
     }
     
     // MARK: TinyWebDB Methods
-    open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
+    @objc open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
         // post a store value command
         do {
             let parameters: Parameters = [_tagParameter: tag, _valueParameter: try getJsonRepresentation(valueToStore)]
@@ -40,7 +40,7 @@ open class TinyWebDB: NonvisibleComponent {
         }
     }
     
-    open func GetValue(_ tag: String) {
+    @objc open func GetValue(_ tag: String) {
         // get value for a specific tag
         let parameters: Parameters = [_tagParameter: tag]
         Alamofire.request(_serviceURL + _getValueCommand, method: .post, parameters: parameters, encoding: URLEncoding.default).validate().responseJSON { response in
@@ -64,15 +64,15 @@ open class TinyWebDB: NonvisibleComponent {
     }
     
     // MARK: TinyWebDB Events
-    open func ValueStored() {
+    @objc open func ValueStored() {
         EventDispatcher.dispatchEvent(of: self, called: "ValueStored")
     }
     
-    open func GotValue(_ tagFromWebDB: String, _ valueFromWebDB: AnyObject) {
+    @objc open func GotValue(_ tagFromWebDB: String, _ valueFromWebDB: AnyObject) {
         EventDispatcher.dispatchEvent(of: self, called: "GotValue", arguments: tagFromWebDB as NSString, valueFromWebDB)
     }
     
-    open func WebServiceError(_ message: String) {
+    @objc open func WebServiceError(_ message: String) {
         EventDispatcher.dispatchEvent(of: self, called: "WebServiceError", arguments: message as NSString)
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 
 open class AssetManager: NSObject {
   fileprivate static var manager: AssetManager?
-  open static var isRepl = false
+  @objc public static var isRepl = false
   fileprivate let appname: String
   fileprivate let privatePath: String
   fileprivate let cachePath: String
@@ -41,7 +41,7 @@ open class AssetManager: NSObject {
     }
   }
   
-  init(for unpackedApp: Application) {
+  @objc init(for unpackedApp: Application) {
     appname = unpackedApp.name
     do {
       privatePath = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
@@ -56,7 +56,7 @@ open class AssetManager: NSObject {
     }
   }
   
-  open class var shared: AssetManager {
+  @objc open class var shared: AssetManager {
     get {
       if manager == nil {
         manager = AssetManager()
@@ -78,22 +78,22 @@ open class AssetManager: NSObject {
     }
   }
 
-  open func pathForPublicAsset(_ filename: String) -> String {
+  @objc open func pathForPublicAsset(_ filename: String) -> String {
     let documentDir = publicPath
     return "\(documentDir)/\(filename)"
   }
   
-  open func pathForCacheAsset(_ filename: String) -> String {
+  @objc open func pathForCacheAsset(_ filename: String) -> String {
     let documentDir = cachePath
     return "\(documentDir)/\(filename)"
   }
   
-  open func pathForPrivateAsset(_ filename: String) -> String {
+  @objc open func pathForPrivateAsset(_ filename: String) -> String {
     let documentDir = privatePath
     return "\(documentDir)/\(filename)"
   }
 
-  open func pathForExistingFileAsset(_ filename: String) -> String {
+  @objc open func pathForExistingFileAsset(_ filename: String) -> String {
     var path = pathForPrivateAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
@@ -109,7 +109,7 @@ open class AssetManager: NSObject {
     return ""
   }
 
-  public func pathForAssetInBundle(filename: String) -> String {
+  @objc public func pathForAssetInBundle(filename: String) -> String {
     let documentDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
     let lastDot = filename.range(of: ".", options: String.CompareOptions.backwards, range: nil, locale: nil)
     if lastDot == nil {
@@ -121,8 +121,8 @@ open class AssetManager: NSObject {
       return "\(documentDir)/\(filename)"
     }
 
-    let firstPart = filename.substring(to: (lastDot?.lowerBound)!)
-    let lastPart = filename.substring(from: filename.index(after: (lastDot?.upperBound)!))
+    let firstPart = String(filename[..<(lastDot?.lowerBound)!])
+    let lastPart = String(filename[filename.index(after: (lastDot?.upperBound)!)...])
     let path = Bundle.main.path(forResource: firstPart, ofType: lastPart, inDirectory: documentDir)
     if path == nil {
       return pathForExistingFileAsset(filename)
@@ -131,7 +131,7 @@ open class AssetManager: NSObject {
     }
   }
 
-  public func imageFromPath(path: String) -> UIImage? {
+  @objc public func imageFromPath(path: String) -> UIImage? {
     if path.isEmpty {
       return nil
     } else if let image =  UIImage(contentsOfFile: pathForExistingFileAsset(path)){
@@ -146,7 +146,7 @@ open class AssetManager: NSObject {
     return nil
   }
   
-  public func transformPotentialAndroidPath(path: String) -> String {
+  @objc public func transformPotentialAndroidPath(path: String) -> String {
     let relativePathComp = path.components(separatedBy: "sdcard/").last!
     let relativePath = relativePathComp[relativePathComp.startIndex] == "/" ? relativePathComp.chopPrefix() : relativePathComp
     let iOSPath = relativePathComp == path ? AssetManager.shared.pathForPrivateAsset(relativePath) : AssetManager.shared.pathForPublicAsset(relativePath)

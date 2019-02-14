@@ -49,7 +49,7 @@ open class Pedometer: NonvisibleComponent {
     _startTime = currentTimeInMillis()
   }
 
-  open func Start() {
+  @objc open func Start() {
     if _paused {
       _paused = false
       _startTime = currentTimeInMillis()
@@ -61,11 +61,11 @@ open class Pedometer: NonvisibleComponent {
     }
   }
 
-  open func Stop() {
+  @objc open func Stop() {
     Pause()
   }
 
-  open func Reset() {
+  @objc open func Reset() {
     _numWalkingSteps = 0
     _numRawSteps = 0
     _totalDistance = 0
@@ -73,11 +73,11 @@ open class Pedometer: NonvisibleComponent {
     _startTime = currentTimeInMillis()
   }
 
-  open func Resume() {
+  @objc open func Resume() {
     Start()
   }
 
-  open func Pause() {
+  @objc open func Pause() {
     if !_paused {
       _paused = true
       _prevStopTime += currentTimeInMillis() - _startTime
@@ -85,7 +85,7 @@ open class Pedometer: NonvisibleComponent {
     }
   }
 
-  open func Save() {
+  @objc open func Save() {
     let settings = UserDefaults()
     settings.setPersistentDomain([
       "clockTime": _paused ? _prevStopTime: _prevStopTime + (currentTimeInMillis() - _startTime),
@@ -171,15 +171,15 @@ open class Pedometer: NonvisibleComponent {
     return  (_winPos + kWindowSize / 2) % kWindowSize
   }
 
-  open func SimpleStep(steps: Int32, distance: Double) {
+  @objc open func SimpleStep(steps: Int32, distance: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "SimpleStep", arguments: NSNumber(value: steps), NSNumber(floatLiteral: distance))
   }
 
-  open func WalkStep(steps: Int32, distance: Double) {
+  @objc open func WalkStep(steps: Int32, distance: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "WalkStep", arguments: NSNumber(value: steps), NSNumber(floatLiteral: distance))
   }
 
-  open var StrideLength: Double {
+  @objc open var StrideLength: Double {
     get {
       return _strideLength
     }
@@ -188,7 +188,7 @@ open class Pedometer: NonvisibleComponent {
     }
   }
 
-  open var StopDetectionTimeout: Int32 {
+  @objc open var StopDetectionTimeout: Int32 {
     get {
       return _stopDetectionTimeout
     }
@@ -197,19 +197,19 @@ open class Pedometer: NonvisibleComponent {
     }
   }
 
-  open var Distance: Double {
+  @objc open var Distance: Double {
     return _totalDistance
   }
 
-  open var ElapsedTime: Int64 {
+  @objc open var ElapsedTime: Int64 {
     return _prevStopTime + (_paused ? 0: currentTimeInMillis() - _startTime)
   }
 
-  open var SimpleSteps: Int32 {
+  @objc open var SimpleSteps: Int32 {
     return _numRawSteps
   }
 
-  open var WalkSteps: Int32 {
+  @objc open var WalkSteps: Int32 {
     return _numWalkingSteps
   }
 
@@ -253,21 +253,21 @@ open class Pedometer: NonvisibleComponent {
 
   // MARK: deprecated methods
 
-  open func StartedMoving() {}
+  @objc open func StartedMoving() {}
 
-  open func StoppedMoving() {}
+  @objc open func StoppedMoving() {}
 
-  open func UseGPS(_ gps: Bool) {}
+  @objc open func UseGPS(_ gps: Bool) {}
 
-  open func CalibrationFailed() {}
+  @objc open func CalibrationFailed() {}
 
-  open func GPSAvailable() {}
+  @objc open func GPSAvailable() {}
 
-  open func GPSLost() {}
+  @objc open func GPSLost() {}
 
-  open func CalibrateStrideLength(_ calibrate: Bool) {}
+  @objc open func CalibrateStrideLength(_ calibrate: Bool) {}
 
-  open func CalibrateStrideLength() -> Bool { return false }
+  @objc open func CalibrateStrideLength() -> Bool { return false }
 
-  open func Moving() -> Bool { return false }
+  @objc open func Moving() -> Bool { return false }
 }

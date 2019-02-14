@@ -9,7 +9,7 @@
 import Foundation
 
 open class HorizontalArrangement: HVArrangement {
-  public init(_ parent: ComponentContainer) {
+  @objc public init(_ parent: ComponentContainer) {
     super.init(parent, orientation: .horizontal, scrollable: false)
   }
 }

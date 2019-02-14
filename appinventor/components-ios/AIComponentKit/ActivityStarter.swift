@@ -26,7 +26,7 @@ open class ActivityStarter: NonvisibleComponent {
   }
 
   // MARK: ActivityStarter Properties
-  open var Action: String {
+  @objc open var Action: String {
     get {
       return _action
     }
@@ -35,7 +35,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var ActivityClass: String {
+  @objc open var ActivityClass: String {
     get {
       return _activityClass
     }
@@ -44,7 +44,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var ActivityPackage: String {
+  @objc open var ActivityPackage: String {
     get {
       return _activityPackage
     }
@@ -53,7 +53,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var DataType: String {
+  @objc open var DataType: String {
     get {
       return _dataType
     }
@@ -62,7 +62,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var DataUri: String {
+  @objc open var DataUri: String {
     get {
       return _dataUri
     }
@@ -71,7 +71,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var ExtraKey: String {
+  @objc open var ExtraKey: String {
     get {
       return _extraKey
     }
@@ -80,7 +80,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var ExtraValue: String {
+  @objc open var ExtraValue: String {
     get {
       return _extraValue
     }
@@ -89,7 +89,7 @@ open class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  open var ResultName: String {
+  @objc open var ResultName: String {
     get {
       return _resultName
     }
@@ -99,7 +99,7 @@ open class ActivityStarter: NonvisibleComponent {
   }
 
   // MARK: ActivityStarter Methods
-  open func ResolveActivity() -> Bool {
+  @objc open func ResolveActivity() -> Bool {
     if _action == ACTION_VIEW, let url = URL(string: _dataUri) {
       if UIApplication.shared.canOpenURL(url) {
           return true
@@ -108,7 +108,7 @@ open class ActivityStarter: NonvisibleComponent {
     return false
   }
 
-  open func StartActivity() {
+  @objc open func StartActivity() {
     if self._action == "" {
       _form.dispatchErrorOccurredEvent(self, "StartActivity",
                                        ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.code,
@@ -125,15 +125,15 @@ open class ActivityStarter: NonvisibleComponent {
   }
 
   // MARK: ActivityStarter Events
-  open func ActivityCanceled() {
+  @objc open func ActivityCanceled() {
     EventDispatcher.dispatchEvent(of: self, called: "ActivityCanceled")
   }
 
-  open func ActivityError(_ message: String) {
+  @objc open func ActivityError(_ message: String) {
     EventDispatcher.dispatchEvent(of: self, called: "ActivityError", arguments: message as NSString)
   }
 
-  open func AfterActivity(_ result: String) {
+  @objc open func AfterActivity(_ result: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterActivity", arguments: result as NSString)
   }
 }

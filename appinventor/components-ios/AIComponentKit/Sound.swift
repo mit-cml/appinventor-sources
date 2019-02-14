@@ -24,7 +24,7 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
     super.init(container)
   }
 
-  open var Source: String {
+  @objc open var Source: String {
     get {
       return _sourcePath
     }
@@ -48,7 +48,7 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
     }
   }
   
-  open var MinimumInterval: Int32 {
+  @objc open var MinimumInterval: Int32 {
     get {
       return _minimumInterval
     }
@@ -57,7 +57,7 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
     }
   }
   
-  open func Play() {
+  @objc open func Play() {
     let currentTime = Date().timeIntervalSince1970
     if (_timeLastPlayed == 0.0 || currentTime >= _timeLastPlayed + Double(_minimumInterval)/1000.0) {
       _timeLastPlayed = currentTime
@@ -73,7 +73,7 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
     _audioPlayer?.play()
   }
 
-  open func Pause() {
+  @objc open func Pause() {
     _audioPlayer?.pause()
   }
 
@@ -83,23 +83,23 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
     }
   }
 
-  open func Resume() {
+  @objc open func Resume() {
     if let audio = _audioPlayer, !audio.isPlaying,
       audio.currentTime != audio.duration, _started {
       audio.play()
     }
   }
   
-  open func Stop() {
+  @objc open func Stop() {
     _started = false
     _audioPlayer?.stop()
   }
   
-  open func Vibrate(_ duration: Int32) {
+  @objc open func Vibrate(_ duration: Int32) {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
   }
   
-  open func SoundError(_ message: String) {
+  @objc open func SoundError(_ message: String) {
     // deprecated
   }
 }

@@ -58,7 +58,7 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
    * @param status the specific status being requested
    * @returns true if the user has explicitly granted permissions, false if the user has explicitly denied permissions, or nil if permissions are uncertain
    */
-  open static func HasPermission(for status: Permission) -> Bool? {
+  public static func HasPermission(for status: Permission) -> Bool? {
     switch status {
     case .camera:
       return HasCameraPermission()
@@ -76,7 +76,7 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
    * @returns true if the user has granted camera permissions, false if the user has denied permissions, and nil if the status is unknown
    */
   fileprivate static func HasCameraPermission() -> Bool? {
-    switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
+    switch AVCaptureDevice.authorizationStatus(for: AVMediaType(rawValue: convertFromAVMediaType(AVMediaType.video))) {
     case .authorized:
       return true
     case .restricted, .denied:
@@ -110,7 +110,7 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
    * @returns true if the user has granted microphone permissions, nil if the status is unknown, and false otherwise
    */
   fileprivate static func HasMicrophonePermission() -> Bool? {
-    switch AVAudioSession.sharedInstance().recordPermission() {
+    switch AVAudioSession.sharedInstance().recordPermission {
     case .granted:
       return true
     case .undetermined:
@@ -147,7 +147,7 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
    * @param allowed whether the requested permission was granted
    * @param changed whether the status changed for the requested permission
    */
-  open static func RequestPermission(for permission: Permission, with completionHandler: ResultBlock? = nil){
+  public static func RequestPermission(for permission: Permission, with completionHandler: ResultBlock? = nil){
     switch permission {
     case .camera:
       RequestCameraPermission(with: completionHandler)
@@ -166,7 +166,7 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
    */
   fileprivate static func RequestCameraPermission(with completionHandler: ResultBlock?  = nil){
     let cameraAuthorized = HasCameraPermission()
-    AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { allowed in
+    AVCaptureDevice.requestAccess(for: AVMediaType.video) { allowed in
       if let handler = completionHandler{
         let permissionChanged = cameraAuthorized == nil || cameraAuthorized != allowed
         handler(allowed, permissionChanged)
@@ -246,4 +246,9 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
       }
     }
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVMediaType(_ input: AVMediaType) -> String {
+	return input.rawValue
 }

@@ -5,7 +5,7 @@ import Foundation
 import SchemeKit
 
 open class ReplForm: Form {
-  internal static weak var topform: ReplForm?
+  @objc internal static weak var topform: ReplForm?
   fileprivate var _httpdServer: AppInvHTTPD?
   fileprivate var _assetsLoaded = false
   
@@ -55,13 +55,13 @@ open class ReplForm: Form {
     EventDispatcher.dispatchEvent(of: self, called: "Initialize")
   }
 
-  open func startHTTPD(_ secure: Bool) {
+  @objc open func startHTTPD(_ secure: Bool) {
     if _httpdServer == nil {
       _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
     }
   }
   
-  open var interpreter: SCMInterpreter? {
+  @objc open var interpreter: SCMInterpreter? {
     get {
       return _httpdServer?.interpreter
     }
@@ -83,7 +83,7 @@ open class ReplForm: Form {
     RetValManager.shared().pushScreen(formName, withValue: newForm.startText as NSString)
   }
 
-  open var activeForm: ReplForm? {
+  @objc open var activeForm: ReplForm? {
     get {
       if let form = Form.activeForm {
         if form is ReplForm {
@@ -101,7 +101,7 @@ open class ReplForm: Form {
     }
   }
   
-  open func setAssetsLoaded() {
+  @objc open func setAssetsLoaded() {
     _assetsLoaded = true
   }
 

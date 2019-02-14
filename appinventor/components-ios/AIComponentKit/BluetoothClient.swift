@@ -11,27 +11,27 @@ import Foundation
 public final class BluetoothClient: BluetoothConnectionBase {
   fileprivate let TAG = "BluetoothClient"
  
-  public init(_ parent: ComponentContainer) {
+  @objc public init(_ parent: ComponentContainer) {
     super.init(parent, TAG)
   }
 
   // MARK: BluetoothClient Properties
-  public var AddressesAndNames: [String] {
+  @objc public var AddressesAndNames: [String] {
     get {
       return []
     }
   }
 
   // MARK: BluetoothClient Methods
-  public func IsDevicePaired(_ device: String) -> Bool {
+  @objc public func IsDevicePaired(_ device: String) -> Bool {
     return false
   }
   
-  public func Connect(_ address: String) -> Bool {
+  @objc public func Connect(_ address: String) -> Bool {
     return false
   }
 
-  public func ConnectWithUUID(_ address: String, _ uuid: String) -> Bool {
+  @objc public func ConnectWithUUID(_ address: String, _ uuid: String) -> Bool {
     return false
   }
 }

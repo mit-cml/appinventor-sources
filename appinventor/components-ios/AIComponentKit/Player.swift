@@ -28,7 +28,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     super.init(container)
   }
   
-  open var Source: String {
+  @objc open var Source: String {
     get {
       return _sourcePath
     }
@@ -66,7 +66,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     }
   }
 
-  open var Loop: Bool {
+  @objc open var Loop: Bool {
     get {
       return _loop
     }
@@ -75,13 +75,13 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     }
   }
 
-  open var IsPlaying: Bool {
+  @objc open var IsPlaying: Bool {
     get {
       return _audioPlayer?.isPlaying ?? false
     }
   }
 
-  open var PlayOnlyInForeground: Bool {
+  @objc open var PlayOnlyInForeground: Bool {
     get {
       return _playOnlyInForeground
     }
@@ -90,7 +90,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     }
   }
 
-  open var Volume: Int32 {
+  @objc open var Volume: Int32 {
     get {
       if let fVolume = _audioPlayer?.volume {
         return Int32(fVolume * 100.0)
@@ -109,32 +109,32 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     }
   }
 
-  open func Start() {
+  @objc open func Start() {
     _audioPlayer?.numberOfLoops = _loop ? -1 : 0
     _audioPlayer?.play()
   }
   
-  open func Pause() {
+  @objc open func Pause() {
     _audioPlayer?.pause()
   }
   
-  open func Stop() {
+  @objc open func Stop() {
     _audioPlayer?.stop()
   }
   
-  open func Vibrate(_ duration: Int32) {
+  @objc open func Vibrate(_ duration: Int32) {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
   }
   
-  open func PlayerError(_ message: String) {
+  @objc open func PlayerError(_ message: String) {
     // deprecated
   }
 
-  open func Completed() {
+  @objc open func Completed() {
     EventDispatcher.dispatchEvent(of: self, called: "Completed")
   }
 
-  open func OtherPlayerStarted() {
+  @objc open func OtherPlayerStarted() {
     EventDispatcher.dispatchEvent(of: self, called: "OtherPlayerStarted")
   }
 
@@ -146,16 +146,16 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     _form.dispatchErrorOccurredEvent(self, "Source", ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, _sourcePath)
   }
 
-  open func onResume() {
+  @objc open func onResume() {
   }
 
-  open func onPause() {
+  @objc open func onPause() {
   }
 
-  open func onDestroy() {
+  @objc open func onDestroy() {
   }
 
-  open func onDelete() {
+  @objc open func onDelete() {
   }
 
   private func prepareToDie() {

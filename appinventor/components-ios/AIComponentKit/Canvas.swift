@@ -25,7 +25,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   fileprivate var _paintColor = Int32(bitPattern: kCanvasDefaultPaintColor)
   fileprivate var _lineWidth = kCanvasDefaultLineWidth
   fileprivate var _fontSize = kCanvasDefaultFontSize
-  fileprivate var _textAlignment = kCAAlignmentCenter
+  fileprivate var _textAlignment = convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.center)
   fileprivate var _frame = CGRect(x: 0, y: 0, width: kCanvasPreferredWidth, height: kCanvasPreferredHeight)
   
   fileprivate var _flingStartX = CGFloat(0)
@@ -74,7 +74,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   }
   
   // Returns a UIImage filled with the current background color
-  func backgroundColorImage() -> UIImage? {
+  @objc func backgroundColorImage() -> UIImage? {
     let color = argbToColor(_backgroundColor)
     var width = Int(_view.bounds.width)
     var height = Int(_view.bounds.height)
@@ -96,7 +96,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   }
 
   // MARK: Properties
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -134,7 +134,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open var BackgroundImage: String {
+  @objc open var BackgroundImage: String {
     get {
       return _backgroundImage
     }
@@ -183,7 +183,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
   
-  func updateLayerWidth() {
+  @objc func updateLayerWidth() {
     let newWidth = _view.bounds.width
     if newWidth >= 0 {
       _view.frame.size.width = CGFloat(newWidth)
@@ -230,7 +230,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  func updateLayerHeight() {
+  @objc func updateLayerHeight() {
     let newHeight = _view.bounds.height
     if newHeight >= 0 {
       _view.frame.size.height = CGFloat(newHeight)
@@ -264,7 +264,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
   
-  open var PaintColor: Int32 {
+  @objc open var PaintColor: Int32 {
     get {
       return _paintColor
     }
@@ -273,7 +273,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open var FontSize: Float {
+  @objc open var FontSize: Float {
     get {
       return _fontSize
     }
@@ -282,7 +282,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open var LineWidth: Float {
+  @objc open var LineWidth: Float {
     get {
       return Float(_lineWidth)
     }
@@ -291,12 +291,12 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open var TextAlignment: Int32 {
+  @objc open var TextAlignment: Int32 {
     get {
       switch _textAlignment {
-        case kCAAlignmentRight: // ending at the specified point
+        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right): // ending at the specified point
           return Alignment.opposite.rawValue
-        case kCAAlignmentLeft: // starting at the specified point
+        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left): // starting at the specified point
           return Alignment.normal.rawValue
         default:
           return Alignment.center.rawValue
@@ -305,11 +305,11 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     set(alignment) {
       switch alignment {
         case Alignment.normal.rawValue:
-          _textAlignment = kCAAlignmentLeft
+          _textAlignment = convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left)
         case Alignment.opposite.rawValue:
-          _textAlignment = kCAAlignmentRight
+          _textAlignment = convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right)
         default:
-          _textAlignment = kCAAlignmentCenter
+          _textAlignment = convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.center)
       }
     }
   }
@@ -320,7 +320,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
   
-  open var canvasView: CanvasView {
+  @objc open var canvasView: CanvasView {
     get {
       return _view
     }
@@ -342,7 +342,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
 
   // MARK: Events
   // Returns bounding box within canvas borders centered at the start of the gesture.
-  func getGestureBoundingBox(_ x: CGFloat, _ y: CGFloat) -> CGRect {
+  @objc func getGestureBoundingBox(_ x: CGFloat, _ y: CGFloat) -> CGRect {
     let startX = max(0, x - HALF_FINGER_WIDTH)
     let startY = max(0, y - HALF_FINGER_HEIGHT)
     let origin = CGPoint(x: startX, y: startY)
@@ -358,7 +358,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     return (gestureRecognizer is DragGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is DragGestureRecognizer)
   }
   
-  func onTap(gesture: UITapGestureRecognizer) {
+  @objc func onTap(gesture: UITapGestureRecognizer) {
     let x = gesture.location(in: _view).x
     let y = gesture.location(in: _view).y
     let rect = getGestureBoundingBox(x, y)
@@ -372,18 +372,18 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     Touched(Float(x), Float(y), touchedAnySprite)
   }
 
-  func onLongTouch(gesture: UILongPressGestureRecognizer) {
+  @objc func onLongTouch(gesture: UILongPressGestureRecognizer) {
     let x = gesture.location(in: _view).x
     let y = gesture.location(in: _view).y
     let rect = getGestureBoundingBox(x, y)
-    if gesture.state == UIGestureRecognizerState.began {
+    if gesture.state == UIGestureRecognizer.State.began {
       for sprite in _sprites {
         if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
           sprite.TouchDown(Float(x), Float(y))
         }
       }
       TouchDown(Float(x), Float(y))
-    } else if gesture.state == UIGestureRecognizerState.ended {
+    } else if gesture.state == UIGestureRecognizer.State.ended {
       for sprite in _sprites {
         if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
           sprite.TouchUp(Float(x), Float(y))
@@ -393,20 +393,20 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
   
-  open func Touched(_ x: Float, _ y: Float, _ touchedAnySprite: Bool) {
+  @objc open func Touched(_ x: Float, _ y: Float, _ touchedAnySprite: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber, touchedAnySprite as AnyObject)
   }
 
-  open func TouchDown(_ x: Float, _ y: Float) {
+  @objc open func TouchDown(_ x: Float, _ y: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: x as NSNumber, y as NSNumber)
   }
 
-  open func TouchUp(_ x: Float, _ y: Float) {
+  @objc open func TouchUp(_ x: Float, _ y: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
   }
 
   // Fling and Gesture are simultaneously recognized.
-  open func onFling(gesture: UIPanGestureRecognizer) {
+  @objc open func onFling(gesture: UIPanGestureRecognizer) {
     var velocity = gesture.velocity(in: _view)
     velocity.x = velocity.x / FLING_INTERVAL
     velocity.y = velocity.y / FLING_INTERVAL
@@ -434,7 +434,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
+  @objc open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
                   _ velocityX: Float, _ velocityY: Float, _ flungSprite: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
                                   flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
@@ -442,7 +442,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
                                   flungSprite as NSNumber)
   }
 
-  open func onDrag(gesture: DragGestureRecognizer) {
+  @objc open func onDrag(gesture: DragGestureRecognizer) {
     var draggedAnySprite = false
     if gesture.state == .began || gesture.state == .changed {
       let viewWidth = _view.bounds.width
@@ -464,7 +464,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
+  @objc open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
                     _ currentX: Float, _ currentY: Float, _ draggedAnySprite: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
                                   startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
@@ -492,7 +492,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   }
   
   //MARK: LifeCycleDelegate methods
-  public func onResume() {
+  @objc public func onResume() {
     for s in _sprites {
         if s.Enabled {
             s.restartTimer()
@@ -500,31 +500,31 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
   
-  public func onPause() {
+  @objc public func onPause() {
     for s in _sprites {
         s.removeTimer()
     }
   }
   
-  public func onDelete() {
+  @objc public func onDelete() {
     for s in _sprites {
       s.removeTimer()
     }
   }
   
-  public func onDestroy() {
+  @objc public func onDestroy() {
     for s in _sprites {
       s.removeTimer()
     }
   }
   
-  func addSprite(_ sprite: Sprite) {
+  @objc func addSprite(_ sprite: Sprite) {
     _sprites.append(sprite)
     _view.layer.addSublayer(sprite.DisplayLayer)
   }
   
   // Re-render the sprite imageLayer when change has been registered.
-  func registerChange(_ sprite: Sprite) {
+  @objc func registerChange(_ sprite: Sprite) {
     sprite.updateDisplayLayer()
     findSpriteCollisions(sprite)
   }
@@ -556,7 +556,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     return x >= 0 && x <= _view.frame.size.width && y >= 0 && y <= _view.frame.size.height
   }
   
-  open func Clear() {
+  @objc open func Clear() {
     // background image and background color are not cleared
     for l in _shapeLayers {
       l.removeFromSuperlayer()
@@ -566,7 +566,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open func DrawCircle(_ centerX: Float, _ centerY: Float, _ radius: Float, _ fill: Bool) {
+  @objc open func DrawCircle(_ centerX: Float, _ centerY: Float, _ radius: Float, _ fill: Bool) {
     let finalX = CGFloat(centerX)
     let finalY = CGFloat(centerY)
     if !isInCanvasBoundaries(finalX, finalY) {
@@ -587,7 +587,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _shapeLayers.append(shapeLayer)
   }
 
-  open func DrawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float) {
+  @objc open func DrawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float) {
     let finalX1 = CGFloat(x1); let finalY1 = CGFloat(y1)
     var finalX2 = CGFloat(x2); var finalY2 = CGFloat(y2)
     if !isInCanvasBoundaries(finalX1, finalY1) {
@@ -610,7 +610,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _shapeLayers.append(shapeLayer)
   }
   
-  open func DrawPoint(_ x: Float, _ y: Float) {
+  @objc open func DrawPoint(_ x: Float, _ y: Float) {
     let finalX = CGFloat(x)
     let finalY = CGFloat(y)
     if !isInCanvasBoundaries(finalX, finalY) {
@@ -632,20 +632,20 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     textLayer.fontSize = CGFloat(_fontSize)
     textLayer.anchorPoint = CGPoint(x: 0, y: 0)
     switch _textAlignment {
-    case kCAAlignmentRight: // text layer ends at x,y
+    case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right): // text layer ends at x,y
       textLayer.anchorPoint = CGPoint(x: 1, y:0)
-    case kCAAlignmentLeft: // text layer starts at x,y
+    case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left): // text layer starts at x,y
       textLayer.anchorPoint = CGPoint(x: 0, y:0)
     default: // text layer is centered at x,y
       textLayer.anchorPoint = CGPoint(x: 0.5, y: 0)
     }
     textLayer.position = CGPoint(x: CGFloat(x), y: CGFloat(y))
     textLayer.foregroundColor = argbToColor(_paintColor).cgColor
-    textLayer.alignmentMode = _textAlignment
+    textLayer.alignmentMode = convertToCATextLayerAlignmentMode(_textAlignment)
     return textLayer
   }
   
-  open func DrawText(_ text: String, _ x: Float, _ y: Float) {
+  @objc open func DrawText(_ text: String, _ x: Float, _ y: Float) {
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
       let textLayer = makeTextLayer(text: text, x: x, y: y)
       _view.layer.addSublayer(textLayer)
@@ -653,7 +653,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
 
-  open func DrawTextAtAngle(_ text: String, _ x: Float, _ y: Float, _ angle: Float) {
+  @objc open func DrawTextAtAngle(_ text: String, _ x: Float, _ y: Float, _ angle: Float) {
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
       let textLayer = makeTextLayer(text: text, x: x, y: y)
 
@@ -669,7 +669,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
    * Gets the color of the specified point. This includes the background
    * and any drawn points, lines, or circles but not sprites.
    */
-  open func GetBackgroundPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
+  @objc open func GetBackgroundPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
     var pixel: [CUnsignedChar] = [0, 0, 0, 0]
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -693,7 +693,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   /**
    * Gets the color of the specified point. This includes sprites.
    */
-  open func GetPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
+  @objc open func GetPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
     if !isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
       return Int32(Color.none.rawValue)
     }
@@ -727,7 +727,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     return GetBackgroundPixelColor(x, y)
   }
 
-  open func SetBackgroundPixelColor(_ x: Float, _ y: Float, _ color: Int32) {
+  @objc open func SetBackgroundPixelColor(_ x: Float, _ y: Float, _ color: Int32) {
     let finalX = CGFloat(x); let finalY = CGFloat(y)
     if !isInCanvasBoundaries(finalX, finalY) {
       return
@@ -741,7 +741,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _shapeLayers.append(shapeLayer)
   }
 
-  open func Save() -> String {
+  @objc open func Save() -> String {
     // get image data
     UIGraphicsBeginImageContextWithOptions(_view.bounds.size, true, 0)
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
@@ -749,7 +749,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       _container.form.dispatchErrorOccurredEvent(self, "SaveAs", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code, ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
       return ""
     }
-    let data = UIImagePNGRepresentation(image)
+    let data = image.pngData()
 
     // save data to fileURL
     do {
@@ -764,7 +764,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
   }
     
-  open func SaveAs(_ fileName: String) -> String {
+  @objc open func SaveAs(_ fileName: String) -> String {
     UIGraphicsBeginImageContextWithOptions(_view.bounds.size, true, 0)
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
     var finalFileName = ""
@@ -777,13 +777,13 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     var data: Data?
     let lowercaseFileName = fileName.lowercased()
     if lowercaseFileName.hasSuffix(".jpg") || lowercaseFileName.hasSuffix(".jpeg") {
-      data = UIImageJPEGRepresentation(image, 1.0)
+      data = image.jpegData(compressionQuality: 1.0)
       finalFileName = fileName
     } else if lowercaseFileName.hasSuffix(".png") {
-      data = UIImagePNGRepresentation(image)
+      data = image.pngData()
       finalFileName = fileName
     } else if !lowercaseFileName.contains(".") {
-      data = UIImagePNGRepresentation(image)
+      data = image.pngData()
       finalFileName = fileName + ".png"
     } else {
       _container.form.dispatchErrorOccurredEvent(self, "SaveAs", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code, ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
@@ -837,37 +837,37 @@ open class DragGestureRecognizer: UIGestureRecognizer {
     super.init(target: target, action: action)
   }
 
-  open var prevX: CGFloat {
+  @objc open var prevX: CGFloat {
     get {
       return _prevX
     }
   }
 
-  open var prevY: CGFloat {
+  @objc open var prevY: CGFloat {
     get {
       return _prevY
     }
   }
 
-  open var startX: CGFloat {
+  @objc open var startX: CGFloat {
     get {
       return _startX
     }
   }
 
-  open var startY: CGFloat {
+  @objc open var startY: CGFloat {
     get {
       return _startY
     }
   }
   
-  open var currentX: CGFloat {
+  @objc open var currentX: CGFloat {
     get {
       return _currentX
     }
   }
   
-  open var currentY: CGFloat {
+  @objc open var currentY: CGFloat {
     get {
       return _currentY
     }
@@ -937,7 +937,7 @@ open class DragGestureRecognizer: UIGestureRecognizer {
     self.samples.removeAll()
   }
   
-  func addSample(for touch: UITouch) {
+  @objc func addSample(for touch: UITouch) {
     let newSample = LocationSample(location: touch.location(in: self.view))
     self.samples.append(newSample)
   }
@@ -955,13 +955,13 @@ open class CanvasView: UIView {
     super.init(frame: frame)
   }
   
-  open var Drawn: Bool {
+  @objc open var Drawn: Bool {
     get {
       return _drawn
     }
   }
   
-  open var Canvas: Canvas? {
+  @objc open var Canvas: Canvas? {
     get {
       return _canvas
     }
@@ -984,3 +984,13 @@ open class CanvasView: UIView {
   }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromCATextLayerAlignmentMode(_ input: CATextLayerAlignmentMode) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToCATextLayerAlignmentMode(_ input: String) -> CATextLayerAlignmentMode {
+	return CATextLayerAlignmentMode(rawValue: input)
+}

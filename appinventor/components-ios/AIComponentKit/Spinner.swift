@@ -29,12 +29,12 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  public func reloadComponents(){
+  @objc public func reloadComponents(){
     _menuView.reloadData()
   }
 
-  public func selectItem(_ row: Int){
-    _menuView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: UITableViewScrollPosition.middle)
+  @objc public func selectItem(_ row: Int){
+    _menuView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
   }
 
   open override func viewDidLoad() {
@@ -71,11 +71,11 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
     fatalError("init(coder:) has not been implemented")
   }
 
-  public func reloadComponents(){
+  @objc public func reloadComponents(){
     _pickerView.reloadAllComponents()
   }
 
-  public func selectItem(_ row: Int){
+  @objc public func selectItem(_ row: Int){
     _pickerView.selectRow(row, inComponent: 0, animated: true)
   }
 
@@ -108,17 +108,17 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     } else {
       _viewController = SpinnerPadController(self)
     }
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
     self.Text = _prompt
   }
 
-  open func AfterSelecting() {
+  @objc open func AfterSelecting() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterSelecting", arguments: _selection as AnyObject)
     self.Text = _selection
   }
 
-  open func click() {
+  @objc open func click() {
     if !_isPhone {
       if let popover = (_viewController as! UIViewController).popoverPresentationController {
         popover.delegate = self
@@ -132,7 +132,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
 
   }
   
-  open func CancelSelection(for pickerView: UIPickerView) {
+  @objc open func CancelSelection(for pickerView: UIPickerView) {
     _selection = _currSelection
     _selectionIndex = _currSelectionIndex
     if _selectionIndex > 0 {
@@ -140,11 +140,11 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
   }
 
-  open func DisplayDropdown() {
+  @objc open func DisplayDropdown() {
     click()
   }
 
-  open var Elements: [String] {
+  @objc open var Elements: [String] {
     get {
       return _items
     }
@@ -155,7 +155,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
   }
 
-  open var ElementsFromString: String {
+  @objc open var ElementsFromString: String {
     get {
       return ""
     }
@@ -186,7 +186,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     return _items[row]
   }
 
-  open var Prompt : String {
+  @objc open var Prompt : String {
     get {
       return _prompt
     }
@@ -198,7 +198,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
   }
 
-  open var Selection: String {
+  @objc open var Selection: String {
     get {
       return _selection
     }
@@ -215,7 +215,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
   }
 
-  open var SelectionIndex: Int32 {
+  @objc open var SelectionIndex: Int32 {
     get {
       return _selectionIndex
     }

@@ -21,7 +21,7 @@ open class Ball: Sprite {
   }
   
   // MARK: Properties
-  open var PaintColor : Int32 {
+  @objc open var PaintColor : Int32 {
     get {
       return _paintColor
     }
@@ -33,7 +33,7 @@ open class Ball: Sprite {
     }
   }
   
-  open var Radius : Int32 {
+  @objc open var Radius : Int32 {
     get {
       return _radius
     }
@@ -46,7 +46,7 @@ open class Ball: Sprite {
     }
   }
   
-  open var Image: UIImage {
+  @objc open var Image: UIImage {
     get {
       return _image
     }

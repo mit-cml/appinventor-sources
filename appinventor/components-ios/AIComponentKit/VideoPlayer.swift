@@ -41,7 +41,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     _controller.view.frame = _view.bounds
   }
 
-  open var FullScreen: Bool {
+  @objc open var FullScreen: Bool {
     get {
       return isFullScreen()
     }
@@ -74,7 +74,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     return _controller.videoBounds.width != _view.bounds.width && _controller.videoBounds.height != _view.bounds.height
   }
 
-  open var Source: String {
+  @objc open var Source: String {
     get {
       return ""
     }
@@ -104,7 +104,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open var Volume: Int32 {
+  @objc open var Volume: Int32 {
     get {
       if let player = _controller.player {
         return Int32(player.volume * 100)
@@ -125,7 +125,7 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open func GetDuration() -> Int32 {
+  @objc open func GetDuration() -> Int32 {
     if let player = _controller.player, let item = player.currentItem {
       return Int32(CMTimeGetSeconds(item.duration))
     } else {
@@ -133,30 +133,30 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open func Pause() {
+  @objc open func Pause() {
     if let player = _controller.player {
       player.pause()
     }
   }
 
-  open func SeekTo(_ ms: Int32) {
+  @objc open func SeekTo(_ ms: Int32) {
     if let player = _controller.player {
       player.seek(to: CMTime(seconds: Double(ms), preferredTimescale: 1))
       player.pause()
     }
   }
 
-  open func Start() {
+  @objc open func Start() {
     if let player = _controller.player {
       player.play()
     }
   }
 
-  open func Completed(){
+  @objc open func Completed(){
     EventDispatcher.dispatchEvent(of: self, called: "Completed")
   }
 
   // Deprecated
-  open func VideoPlayerError(_ message: String) {}
+  @objc open func VideoPlayerError(_ message: String) {}
 }
 

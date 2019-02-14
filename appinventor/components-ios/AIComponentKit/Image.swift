@@ -28,7 +28,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   /**
    * Applies or cancels a horizontal scrolling animation
    */
-  open var Animation: String {
+  @objc open var Animation: String {
     get {
       return ""
     }
@@ -86,7 +86,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     _view.transform = CGAffineTransform.identity.rotated(by: angle)
   }
   
-  open var Picture: String {
+  @objc open var Picture: String {
     get {
       return _picturePath
     }
@@ -113,7 +113,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open var RotationAngle: Double {
+  @objc open var RotationAngle: Double {
     get {
       return _rotationAngle
     }
@@ -126,7 +126,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open var ScalePictureToFit: Bool {
+  @objc open var ScalePictureToFit: Bool {
     get {
       return _scaleToFit
     }
@@ -139,7 +139,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   }
 
   // Deprecated
-  open var Scaling: Int32 = 0
+  @objc open var Scaling: Int32 = 0
 
   private func updateImage(_ image: UIImage?) {
     if let image = image {

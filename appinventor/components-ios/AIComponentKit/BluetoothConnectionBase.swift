@@ -9,7 +9,7 @@
 import Foundation
 
 open class BluetoothConnectionBase: NonvisibleComponent {
-  public init(_ parent: ComponentContainer, _ logTag: String) {
+  @objc public init(_ parent: ComponentContainer, _ logTag: String) {
     super.init(parent)
   }
 }

@@ -12,7 +12,7 @@ let kRoundedCornersArray = [kRoundedCornersRadius, kRoundedCornersRadius]
 let kShapedDefaultBackgroundColor = Color.lightGray
 
 open class ButtonBase: ViewComponent {
-  final var _view: UIButton
+  @objc final var _view: UIButton
   fileprivate weak var _delegate: AbstractMethodsForButton?
   fileprivate var _textAlignment = Alignment.center
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
@@ -26,13 +26,13 @@ open class ButtonBase: ViewComponent {
   fileprivate var _defaultTextColor: UIColor
 
   public override init(_ parent: ComponentContainer) {
-    self._view = UIButton(type: UIButtonType.system)
+    self._view = UIButton(type: UIButton.ButtonType.system)
     _defaultTextColor = self._view.tintColor
     super.init(parent)
     self._view.backgroundColor = argbToColor(_backgroundColor)
     self._view.translatesAutoresizingMaskIntoConstraints = false
-    self._view.addTarget(self, action: #selector(TouchDown), for: UIControlEvents.touchDown)
-    self._view.addTarget(self, action: #selector(TouchUp), for: UIControlEvents.touchUpInside)
+    self._view.addTarget(self, action: #selector(TouchDown), for: UIControl.Event.touchDown)
+    self._view.addTarget(self, action: #selector(TouchUp), for: UIControl.Event.touchUpInside)
     BackgroundColor = Int32(Color.default.rawValue)
     Enabled = true
     FontSize = kFontSizeDefault
@@ -56,7 +56,7 @@ open class ButtonBase: ViewComponent {
     }
   }
   
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -66,7 +66,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _view.isEnabled
     }
@@ -75,7 +75,7 @@ open class ButtonBase: ViewComponent {
     }
   }
   
-  open var FontBold: Bool {
+  @objc open var FontBold: Bool {
     get {
       return _bold
     }
@@ -85,7 +85,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var FontItalic: Bool {
+  @objc open var FontItalic: Bool {
     get {
       return _italic
     }
@@ -95,7 +95,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var FontTypeface: Int32 {
+  @objc open var FontTypeface: Int32 {
     get {
       return _fontTypeface.rawValue
     }
@@ -110,7 +110,7 @@ open class ButtonBase: ViewComponent {
   }
 
 
-  open var FontSize: Float32 {
+  @objc open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
@@ -119,13 +119,13 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var Image: String? {
+  @objc open var Image: String? {
     get {
       return _imagePath
     }
     set(path) {
       if (path == nil || path == "") {
-        _view.setImage(nil, for: UIControlState.normal)
+        _view.setImage(nil, for: UIControl.State.normal)
       } else {
         NSLog("Path: \(String(describing: path))")
         var image = UIImage(named: path!);
@@ -135,7 +135,7 @@ open class ButtonBase: ViewComponent {
         if (image != nil) {
           NSLog("Image is not nil");
           _imagePath = path
-          _view.setBackgroundImage(image, for: UIControlState.normal)
+          _view.setBackgroundImage(image, for: UIControl.State.normal)
           NSLog("Width: \((image?.size.width)!) Height: \((image?.size.height)!)")
           _view.frame.size = (image?.size)!
 //          _view.sizeToFit()
@@ -156,7 +156,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var Shape: Int32 {
+  @objc open var Shape: Int32 {
     get {
       return _shape.rawValue
     }
@@ -168,7 +168,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var ShowFeedback: Bool {
+  @objc open var ShowFeedback: Bool {
     get {
       return _showFeedback
     }
@@ -180,17 +180,17 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var Text: String? {
+  @objc open var Text: String? {
     get {
-      return _view.title(for: UIControlState.normal)
+      return _view.title(for: UIControl.State.normal)
     }
     set(text) {
-      _view.setTitle(text, for: UIControlState.normal)
+      _view.setTitle(text, for: UIControl.State.normal)
       _view.frame.size = _view.intrinsicContentSize
     }
   }
 
-  open var TextAlignment: Int32 {
+  @objc open var TextAlignment: Int32 {
     get {
       return _textAlignment.rawValue
     }
@@ -219,7 +219,7 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-  open var TextColor: Int32 {
+  @objc open var TextColor: Int32 {
     get {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
@@ -234,23 +234,23 @@ open class ButtonBase: ViewComponent {
   }
 
   // MARK: Events
-  open func GotFocus() {
+  @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
 
-  open func LostFocus() {
+  @objc open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }
 
-  open func TouchDown() {
+  @objc open func TouchDown() {
     EventDispatcher.dispatchEvent(of: self, called: "TouchDown")
   }
 
-  open func TouchUp() {
+  @objc open func TouchUp() {
     EventDispatcher.dispatchEvent(of: self, called: "TouchUp")
   }
 
-  open func longClick() -> Bool {
+  @objc open func longClick() -> Bool {
     return false;
   }
 }

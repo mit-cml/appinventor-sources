@@ -25,20 +25,20 @@ open class Picker: ButtonBase, AbstractMethodsForButton {
     super.setDelegate(delegate as AbstractMethodsForButton)
   }
 
-  open func click() {
+  @objc open func click() {
     BeforePicking()
     _delegate?.open()
   }
   
-  open func Open() {
+  @objc open func Open() {
     click()
   }
   
-  open func BeforePicking() {
+  @objc open func BeforePicking() {
     EventDispatcher.dispatchEvent(of: self, called: "BeforePicking")
   }
   
-  open func AfterPicking() {
+  @objc open func AfterPicking() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicking")
   }
 }

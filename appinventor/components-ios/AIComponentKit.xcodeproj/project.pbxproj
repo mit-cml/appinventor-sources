@@ -36,6 +36,7 @@
 		0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */; };
 		0644F7031F38EDF200642E4D /* LinearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F7021F38EDF200642E4D /* LinearView.swift */; };
 		06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06473B841F327E5400A9A29B /* TextToSpeech.swift */; };
+		064884D621E682EA0086411C /* iOS9Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064884D521E682EA0086411C /* iOS9Util.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
 		0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD71F9719920052065A /* RuntimeTests.swift */; };
@@ -197,6 +198,7 @@
 		0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LifecycleDelegate.swift; sourceTree = "<group>"; };
 		0644F7021F38EDF200642E4D /* LinearView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearView.swift; sourceTree = "<group>"; };
 		06473B841F327E5400A9A29B /* TextToSpeech.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextToSpeech.swift; sourceTree = "<group>"; };
+		064884D521E682EA0086411C /* iOS9Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS9Util.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		0653CBD71F9719920052065A /* RuntimeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeTests.swift; sourceTree = "<group>"; };
@@ -530,6 +532,7 @@
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
 				DE4CDF562093982F008412BC /* FontUtil.swift */,
+				064884D521E682EA0086411C /* iOS9Util.swift */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -789,7 +792,7 @@
 				TargetAttributes = {
 					0618A2831D8CF4EE0013A191 = {
 						CreatedOnToolsVersion = 8.0;
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 					};
 					0618A28B1D8CF4EE0013A191 = {
@@ -974,6 +977,7 @@
 				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
+				064884D621E682EA0086411C /* iOS9Util.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
 				0846B64620BBBF92008FB20C /* Sprite.swift in Sources */,
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,
@@ -1065,14 +1069,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
-					"$(PROJECT_DIR)/build/Release-iphoneos",
-					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
-					"$(PROJECT_DIR)/build/Debug-iphoneos/SQLite.swift",
-					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include",
 					"$(inherited)",
@@ -1087,7 +1084,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1107,14 +1104,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
-					"$(PROJECT_DIR)/build/Release-iphoneos",
-					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
-					"$(PROJECT_DIR)/build/Debug-iphoneos/SQLite.swift",
-					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include",
@@ -1129,7 +1119,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

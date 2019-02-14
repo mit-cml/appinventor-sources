@@ -12,7 +12,7 @@ open class ListPickerActivity: UINavigationController {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
   }
 
-  public init(delegate: UITableViewDelegate, dataSource: UITableViewDataSource, cancelTarget: Any?, cancelAction: Selector?) {
+  @objc public init(delegate: UITableViewDelegate, dataSource: UITableViewDataSource, cancelTarget: Any?, cancelAction: Selector?) {
     let tableVC = UITableViewController()
     super.init(rootViewController: tableVC)
     _tableViewController = tableVC
@@ -48,13 +48,13 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     _searchBar.delegate = self
     _searchBar.returnKeyType = .done
     super.setDelegate(self)
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     _viewController = ListPickerActivity(delegate: self, dataSource: self, cancelTarget: self, cancelAction: #selector(cancelPicking(_:)))
     parent.add(self)
   }
 
   // MARK: ListPicker Properties
-  open var Elements: [String] {
+  @objc open var Elements: [String] {
     get {
       return _items
     }
@@ -63,7 +63,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var ElementsFromString: String {
+  @objc open var ElementsFromString: String {
     get {
       return ""
     }
@@ -72,7 +72,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var ItemBackgroundColor: Int32 {
+  @objc open var ItemBackgroundColor: Int32 {
     get {
       return colorToArgb(_itemBackgroundColor)
     }
@@ -86,7 +86,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var ItemTextColor: Int32 {
+  @objc open var ItemTextColor: Int32 {
     get {
       return colorToArgb(_itemTextColor)
     }
@@ -99,7 +99,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var ShowFilterBar: Bool {
+  @objc open var ShowFilterBar: Bool {
     get {
       return _showSearch
     }
@@ -109,7 +109,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var Selection: String {
+  @objc open var Selection: String {
     get {
       return _selection
     }
@@ -123,7 +123,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var SelectionIndex: Int32 {
+  @objc open var SelectionIndex: Int32 {
     get {
       return _selectionIndex
     }
@@ -137,7 +137,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
   }
 
-  open var Title: String {
+  @objc open var Title: String {
     get {
       if let title = _viewController?._tableViewController.navigationItem.title {
         return title
@@ -165,7 +165,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   }
 
   // MARK: AbstractMethodsForPicker
-  open func open() {
+  @objc open func open() {
     if _needsReload, let tableVC = _viewController?._tableViewController {
       tableVC.tableView.reloadData()
       _needsReload = false

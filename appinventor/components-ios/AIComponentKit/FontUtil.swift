@@ -3,7 +3,7 @@
 
 import Foundation
 
-func getFontTrait(font: UIFont?, trait: UIFontDescriptorSymbolicTraits, shouldSet: Bool) -> UIFont? {
+func getFontTrait(font: UIFont?, trait: UIFontDescriptor.SymbolicTraits, shouldSet: Bool) -> UIFont? {
   var fontDescriptor: UIFontDescriptor?
   if let tempDescriptor = font?.fontDescriptor {
     var fontOps = tempDescriptor.symbolicTraits

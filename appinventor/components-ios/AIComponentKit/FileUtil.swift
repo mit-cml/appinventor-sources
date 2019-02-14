@@ -10,27 +10,27 @@ private let DIRECTORY_PICTURES: String = "Pictures"
 
 open class FileUtil {
   
-  open static func getRecordingFile(_ fileExtension: String) throws -> String {
+  public static func getRecordingFile(_ fileExtension: String) throws -> String {
     return try getFile(DIRECTORY_RECORDINGS, fileExtension)
   }
   
-  open static func getRecordingFileFromAndroidPath(_ filePath: String) throws -> String {
+  public static func getRecordingFileFromAndroidPath(_ filePath: String) throws -> String {
     let aacFilePath = transformFileExtension(filePath, toExtension: ANDROID_TO_IOS_RECORDING_EXTENSION)
     return try transformAndroidFilePath(aacFilePath)
   }
   
-  open static func getPictureFile(_ fileExtension: String) throws -> String {
+  public static func getPictureFile(_ fileExtension: String) throws -> String {
     return try getFile(DIRECTORY_PICTURES, fileExtension)
   }
   
-  open static func transformFileExtension(_ fileName: String, toExtension fileExtension: String) -> String {
+  public static func transformFileExtension(_ fileName: String, toExtension fileExtension: String) -> String {
     let originalName: NSString = NSString(string: fileName)
     let pathPrefix: NSString = NSString(string: originalName.deletingPathExtension)
     let transformedName = pathPrefix.appendingPathExtension(fileExtension)
     return transformedName!
   }
   
-  open static func transformAndroidFilePath(_ filePath: String) throws -> String {
+  public static func transformAndroidFilePath(_ filePath: String) throws -> String {
     let filePath = AssetManager.shared.transformPotentialAndroidPath(path: filePath)
     
     try createFullFilePath(filePath)
@@ -40,17 +40,17 @@ open class FileUtil {
   /**
    * Used to create absolute file names as specified by the File Component
    */
-  open static func absoluteFileName(_ fileName: String, _ isRepl: Bool) throws -> String {
+  public static func absoluteFileName(_ fileName: String, _ isRepl: Bool) throws -> String {
     var filePath = ""
     if fileName.starts(with: "//") {
       let postSlashIndex = fileName.index(fileName.startIndex, offsetBy: 2)
       if isRepl {
-        let file = fileName.substring(from: postSlashIndex)
+        let file = fileName[postSlashIndex...]
         let assetsFileName = "assets/\(file)"
         filePath = AssetManager.shared.pathForExistingFileAsset(assetsFileName)
         try createFullFilePath(filePath)
       } else {
-        filePath = AssetManager.shared.pathForAssetInBundle(filename: fileName.substring(from: postSlashIndex))
+        filePath = AssetManager.shared.pathForAssetInBundle(filename: String(fileName[postSlashIndex...]))
         try createFullFilePath(filePath)
       }
     } else if fileName.starts(with: "/") {

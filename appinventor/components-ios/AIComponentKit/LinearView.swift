@@ -5,21 +5,21 @@ import Foundation
 
 public class LinearViewItem: NSObject {
 
-  public let view: UIView
+  @objc public let view: UIView
 
-  public init(_ view: UIView) {
+  @objc public init(_ view: UIView) {
     self.view = view
   }
 
 }
 
 extension UIView {
-  func isRTL() -> Bool {
+  @objc func isRTL() -> Bool {
     return UIView.userInterfaceLayoutDirection(for: self.semanticContentAttribute) == UIUserInterfaceLayoutDirection.rightToLeft
   }
 }
 
-let UILayoutPriorityDefaultMedium = (UILayoutPriorityDefaultHigh + UILayoutPriorityDefaultLow) / 2
+let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue + UILayoutPriority.defaultLow.rawValue)) / 2
 
 public class LinearView: UIView {
   fileprivate var _container = UIView()
@@ -52,10 +52,10 @@ public class LinearView: UIView {
 //    _container.isDirectionalLockEnabled = true
     addSubview(_container)
     let width = widthAnchor.constraint(equalToConstant: CGFloat(kEmptyHVArrangementWidth))
-    width.priority = UILayoutPriorityDefaultLow
+    width.priority = UILayoutPriority.defaultLow
     addConstraint(width)
     let height = heightAnchor.constraint(equalToConstant: CGFloat(kEmptyHVArrangementHeight))
-    height.priority = UILayoutPriorityDefaultLow
+    height.priority = UILayoutPriority.defaultLow
     addConstraint(height)
     _verticalConstraint = topAnchor.constraint(equalTo: _container.topAnchor)
     _horizontalConstraint = leadingAnchor.constraint(equalTo: _container.leadingAnchor)
@@ -71,7 +71,7 @@ public class LinearView: UIView {
     addConstraint(_container.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor))
   }
 
-  open var isScrollEnabled: Bool {
+  @objc open var isScrollEnabled: Bool {
     get {
       return false//_container.isScrollEnabled
     }
@@ -122,7 +122,7 @@ public class LinearView: UIView {
     }
   }
 
-  open func addItem(_ item: LinearViewItem) {
+  @objc open func addItem(_ item: LinearViewItem) {
     _container.addSubview(item.view)
     addHorizontalConstraint(for: item.view)
     addVerticalConstraint(for: item.view)
@@ -149,13 +149,13 @@ public class LinearView: UIView {
       }
 
       var constraint = view.leadingAnchor.constraint(equalTo: _items.count == 0 ? _container.leadingAnchor : (_items.last?.view.trailingAnchor)!)
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _hConstraints.append(constraint)
       _container.addConstraint(constraint)
 
       // the following constraint must always be last
       constraint = _container.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor)
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _hConstraints.append(constraint)
       _container.addConstraint(constraint)
     } else {
@@ -171,7 +171,7 @@ public class LinearView: UIView {
         constraint = _container.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         break;
       }
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _hConstraints.append(constraint)
       _container.addConstraint(constraint)
     }
@@ -185,12 +185,12 @@ public class LinearView: UIView {
       }
 
       var constraint = view.topAnchor.constraint(equalTo: _items.count == 0 ? _container.topAnchor : (_items.last?.view.bottomAnchor)!)
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _vConstraints.append(constraint)
       _container.addConstraint(constraint)
 
       constraint = _container.bottomAnchor.constraint(greaterThanOrEqualTo: view.bottomAnchor)
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _vConstraints.append(constraint)
       _container.addConstraint(constraint)
     } else {
@@ -206,7 +206,7 @@ public class LinearView: UIView {
         constraint = _container.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         break;
       }
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       _vConstraints.append(constraint)
       _container.addConstraint(constraint)
     }

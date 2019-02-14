@@ -85,7 +85,7 @@ class CsvParser {
 }
 
 @objc class CsvUtil: NSObject {
-  public class func toCsvRow(_ csvRow: [Any]) -> String {
+  @objc public class func toCsvRow(_ csvRow: [Any]) -> String {
     var row = ""
     if csvRow.count == 0 {
       return row
@@ -101,7 +101,7 @@ class CsvParser {
     }
   }
 
-  public class func toCsvTable(_ csvList: [[Any]]) -> String {
+  @objc public class func toCsvTable(_ csvList: [[Any]]) -> String {
     var table = ""
     for row in csvList {
       table.append(toCsvRow(row))
@@ -110,7 +110,7 @@ class CsvParser {
     return table
   }
 
-  public class func fromCsvRow(_ csvString: String) throws -> [String] {
+  @objc public class func fromCsvRow(_ csvString: String) throws -> [String] {
     let parser = CsvParser(input: csvString)
     if parser.hasNext() {
       return try parser.next()
@@ -119,7 +119,7 @@ class CsvParser {
     }
   }
 
-  public class func fromCsvTable(_ csvString: String) throws -> [[String]] {
+  @objc public class func fromCsvTable(_ csvString: String) throws -> [[String]] {
     let parser = CsvParser(input: csvString)
     var result = [[String]]()
     while parser.hasNext() {

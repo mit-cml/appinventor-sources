@@ -77,7 +77,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   // MARK: Properties
 
-  open var Pitch: Float32 {
+  @objc open var Pitch: Float32 {
     get {
       return _pitch
     }
@@ -93,7 +93,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
   }
 
   //MARK: Transformed SpeechRate. The below function maps an input of [0, 2] to [.19, .68], half-speed to double-speed (roughly). Speeds < .2 are virtually the same, and speeds > .62 are difficult to understand.
-  open var SpeechRate: Float32 {
+  @objc open var SpeechRate: Float32 {
     get {
       return _speechRate
     }
@@ -109,13 +109,13 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
   }
 
-  open var Result: Bool {
+  @objc open var Result: Bool {
     get {
       return _result
     }
   }
 
-  open var Language: String {
+  @objc open var Language: String {
     get {
       return _language.uppercased()
     }
@@ -128,7 +128,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
   }
 
-  open var Country: String {
+  @objc open var Country: String {
     get {
       return _countryCode.lowercased()
     }
@@ -144,13 +144,13 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
   }
 
-  open var AvailableLanguages: [String] {
+  @objc open var AvailableLanguages: [String] {
     get {
       return TextToSpeech.LANGUAGES
     }
   }
 
-  open var AvailableCountries: [String] {
+  @objc open var AvailableCountries: [String] {
     get {
       return TextToSpeech.COUNTRIES
     }
@@ -158,7 +158,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   // MARK: Methods
 
-  open func Speak(_ message: String) {
+  @objc open func Speak(_ message: String) {
     BeforeSpeaking()
     let utterance = AVSpeechUtterance(string: message)
     utterance.pitchMultiplier = _pitch
@@ -169,11 +169,11 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   // MARK: Events
 
-  open func BeforeSpeaking() {
+  @objc open func BeforeSpeaking() {
     EventDispatcher.dispatchEvent(of: self, called: "BeforeSpeaking")
   }
 
-  open func AfterSpeaking(_ result: Bool) {
+  @objc open func AfterSpeaking(_ result: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterSpeaking", arguments: result as AnyObject)
   }
 

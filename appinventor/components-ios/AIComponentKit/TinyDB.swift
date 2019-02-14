@@ -36,7 +36,7 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 
-  open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
+  @objc open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
     do {
       let valueAsString = try getJsonRepresentation(valueToStore)
       _ = try _database.run(_table.insert(or: .replace, _key <- tag, _value <- valueAsString))
@@ -45,7 +45,7 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 
-  open func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
+  @objc open func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
     do {
       if let value = try _database.pluck(_table.select(_value).filter(_key == tag)) {
         if let result = try getObjectFromJson(value[_value]) {
@@ -58,7 +58,7 @@ open class TinyDB: NonvisibleComponent {
     return valueIfTagNotThere
   }
 
-  open func GetTags() -> [String] {
+  @objc open func GetTags() -> [String] {
     var result: [String] = []
     do {
       for tag in try _database.prepare(_table.select(_key)) {
@@ -70,7 +70,7 @@ open class TinyDB: NonvisibleComponent {
     return result
   }
 
-  open func ClearAll() {
+  @objc open func ClearAll() {
     do {
       _ = try _database.run(_table.delete())
     } catch {
@@ -78,7 +78,7 @@ open class TinyDB: NonvisibleComponent {
     }
   }
 
-  open func ClearTag(_ tag: String) {
+  @objc open func ClearTag(_ tag: String) {
     do {
       _ = try _database.run(_table.filter(_key == tag).delete())
     } catch {

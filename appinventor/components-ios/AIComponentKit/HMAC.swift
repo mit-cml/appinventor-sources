@@ -53,13 +53,13 @@ public extension String {
 
     let digest = stringFromResult(result: result, length: digestLen)
 
-    result.deallocate(capacity: digestLen)
+    result.deallocate()
 
     return digest
   }
 
   private func stringFromResult(result: UnsafeMutablePointer<CUnsignedChar>, length: Int) -> String {
-    var hash = NSMutableString()
+    let hash = NSMutableString()
     for i in 0..<length {
       hash.appendFormat("%02x", result[i])
     }

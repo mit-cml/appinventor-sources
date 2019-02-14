@@ -43,7 +43,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   }
 
   // MARK: TextboxBase Properties
-  open var TextAlignment: Int32 {
+  @objc open var TextAlignment: Int32 {
     get {
       return _textAlignment
     }
@@ -63,7 +63,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -73,7 +73,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return (_delegate?.view.isUserInteractionEnabled)!
     }
@@ -82,7 +82,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
 
-  open var FontBold: Bool {
+  @objc open var FontBold: Bool {
     get {
       return _bold
     }
@@ -92,7 +92,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var FontItalic: Bool {
+  @objc open var FontItalic: Bool {
     get {
       return _italic
     }
@@ -102,7 +102,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
 
-  open var FontSize: Float32 {
+  @objc open var FontSize: Float32 {
     get {
       if let size = _delegate?.font.pointSize {
         return Float32(size)
@@ -115,7 +115,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var FontTypeface: Int32 {
+  @objc open var FontTypeface: Int32 {
     get {
       return _fontTypeface.rawValue
     }
@@ -131,7 +131,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var Hint: String {
+  @objc open var Hint: String {
     get {
       return _hint
     }
@@ -141,7 +141,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var Text: String {
+  @objc open var Text: String {
     get {
       if let delegate = _delegate {
         if let text = delegate.text {
@@ -155,7 +155,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  open var TextColor: Int32 {
+  @objc open var TextColor: Int32 {
     get {
       return _textColor
     }
@@ -166,16 +166,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   }
   
   // MARK: TextboxBase Methods
-  open func RequestFocus() {
+  @objc open func RequestFocus() {
     _delegate?.view.becomeFirstResponder()
   }
   
   // MARK: TextboxBase Events
-  open func GotFocus() {
+  @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
   
-  open func LostFocus() {
+  @objc open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }
 

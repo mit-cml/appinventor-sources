@@ -12,7 +12,7 @@ open class YandexTranslate: NonvisibleComponent {
     super.init(container)
   }
 
-  open func RequestTranslation(_ languageToTranslateTo: String, _ textToTranslate: String){
+  @objc open func RequestTranslation(_ languageToTranslateTo: String, _ textToTranslate: String){
     if (yandexKey == ""){
       _form.dispatchErrorOccurredEvent(self, "RequestTranslation", ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.code, ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.message)
       return;
@@ -40,7 +40,7 @@ open class YandexTranslate: NonvisibleComponent {
         do {
           let parsedData = try JSONSerialization.jsonObject(with: data) as! [String:Any]
           if let text = parsedData["text"] as? NSArray {
-            let swiftArray: [String] = NSMutableArray(array: text).flatMap({ $0 as? String })
+            let swiftArray: [String] = NSMutableArray(array: text).compactMap({ $0 as? String })
             translation = swiftArray[0]
           }
         } catch {
@@ -53,7 +53,7 @@ open class YandexTranslate: NonvisibleComponent {
     task.resume()
   }
 
-  open func GotTranslation(_ responseCode: NSNumber, _ translation: NSString) {
+  @objc open func GotTranslation(_ responseCode: NSNumber, _ translation: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotTranslation", arguments: responseCode, translation)
 
   }

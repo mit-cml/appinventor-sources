@@ -15,7 +15,7 @@ open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelega
     }
   }
 
-  open func Result() -> String {
+  @objc open func Result() -> String {
     return _result
   }
 
@@ -31,11 +31,11 @@ open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelega
     }
   }
 
-  open func HasPermission() -> Bool {
+  @objc open func HasPermission() -> Bool {
     return PermissionHandler.HasPermission(for: .speech) ?? false
   }
 
-  open func RequestPermission() {
+  @objc open func RequestPermission() {
     if #available(iOS 10.0, *) {
       doRequestPermission() { allowed, changed in
         if changed {
@@ -55,11 +55,11 @@ open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelega
     }
   }
 
-  open func PermissionChange(_ allowed: Bool) {
+  @objc open func PermissionChange(_ allowed: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "PermissionChange", arguments: allowed as AnyObject)
   }
 
-  open func GetText(){
+  @objc open func GetText(){
     if #available(iOS 10.0, *) {
       doRequestPermission() { allowed, changed in
         if allowed {
@@ -74,10 +74,7 @@ open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelega
           let request = SFSpeechAudioBufferRecognitionRequest()
           request.shouldReportPartialResults = true
 
-          guard let node = audioEngine.inputNode else {
-            self._form.dispatchErrorOccurredEvent(self, "GetText", ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR.code, ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR.message)
-            return
-          }
+          let node = audioEngine.inputNode
 
           let recordingFormat = node.inputFormat(forBus: 0)
           node.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
@@ -144,11 +141,11 @@ open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelega
     }
   }
 
-  open func BeforeGettingText(){
+  @objc open func BeforeGettingText(){
     EventDispatcher.dispatchEvent(of: self, called: "BeforeGettingText")
   }
 
-  open func AfterGettingText(_ text: String){
+  @objc open func AfterGettingText(_ text: String){
     EventDispatcher.dispatchEvent(of: self, called: "AfterGettingText", arguments: text as AnyObject)
   }
 }

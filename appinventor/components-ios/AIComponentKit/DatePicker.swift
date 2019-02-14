@@ -29,45 +29,45 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     
     _viewController = getDateTimePickerController(self, isDatePicker: true, isPhone: _isPhone)
     _viewController?.setDateTime(calendar)
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
   }
   
   // MARK: DatePicker Properties
-  open var Year: Int {
+  @objc open var Year: Int {
     get {
       return _year
     }
   }
   
   // Month where 1 = January and 12 = December
-  open var Month: Int {
+  @objc open var Month: Int {
     get {
       return _month
     }
   }
   
-  open var MonthInText: String {
+  @objc open var MonthInText: String {
     get {
       return _localizedMonths[_month - 1]
     }
   }
   
-  open var Day: Int {
+  @objc open var Day: Int {
     get {
       return _day
     }
   }
   
   // the instant of the date that was last picked
-  open var Instant: Date {
+  @objc open var Instant: Date {
     get {
       return _instant
     }
   }
   
   // MARK: DatePicker Events
-  open func SetDateToDisplay(_ year: Int32, _ month: Int32, _ day: Int32) {
+  @objc open func SetDateToDisplay(_ year: Int32, _ month: Int32, _ day: Int32) {
     var dateComponents = DateComponents()
     dateComponents.year = Int(year)
     dateComponents.month = Int(month)
@@ -88,17 +88,17 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     _customDate = true
   }
   
-  open func SetDateToDisplayFromInstant(_ instant: Date) {
+  @objc open func SetDateToDisplayFromInstant(_ instant: Date) {
     _instant = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: instant)!
     self._viewController?.setDate(_instant)
     _customDate = true
   }
   
-  open func LaunchPicker() {
+  @objc open func LaunchPicker() {
     click()
   }
   
-  open func dateTimePicked(_ date: Date) {
+  @objc open func dateTimePicked(_ date: Date) {
     let calendar = Calendar.current
     _year = calendar.component(.year, from: date)
     _month = calendar.component(.month, from: date)
@@ -108,7 +108,7 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     AfterDateSet()
   }
   
-  open func AfterDateSet() {
+  @objc open func AfterDateSet() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterDateSet")
   }
   

@@ -17,7 +17,7 @@ open class FusiontablesControl: NonvisibleComponent {
   fileprivate let tablesURL = "https://www.googleapis.com/fusiontables/v2/query"
   fileprivate let createURL = "https://www.googleapis.com/fusiontables/v2/tables"
 
-  open var ApiKey: String {
+  @objc open var ApiKey: String {
     get {
       return _apiKey
     }
@@ -26,7 +26,7 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open var KeyFile: String {
+  @objc open var KeyFile: String {
     get {
       return _keyPath
     }
@@ -35,7 +35,7 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open var Query: String {
+  @objc open var Query: String {
     get {
       return _query
     }
@@ -44,7 +44,7 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open var ServiceAccountEmail: String {
+  @objc open var ServiceAccountEmail: String {
     get {
       return _serviceEmail
     }
@@ -53,7 +53,7 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open var UseServiceAuthentication: Bool {
+  @objc open var UseServiceAuthentication: Bool {
     get {
       return _isServiceAuth
     }
@@ -62,30 +62,30 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open func DoQuery() {
+  @objc open func DoQuery() {
     SendQuery()
   }
 
-  open func ForgetLogin() {
+  @objc open func ForgetLogin() {
     _authToken = ""
   }
 
-  open func GetRows(_ tableId: String, _ columns: String) {
+  @objc open func GetRows(_ tableId: String, _ columns: String) {
     _query = "SELECT \(columns) FROM \(tableId)"
     SendQuery()
   }
 
-  open func GetRowsWithConditions(_ tableId: String, _ columns: String, _ conditions: String) {
+  @objc open func GetRowsWithConditions(_ tableId: String, _ columns: String, _ conditions: String) {
     _query = "SELECT \(columns) FROM \(tableId) WHERE \(conditions)"
     SendQuery()
   }
 
-  open func InsertRow(_ tableId: String, _ columns: String, values: String) {
+  @objc open func InsertRow(_ tableId: String, _ columns: String, values: String) {
     _query = "INSERT INTO \(tableId) (\(columns)) VALUES (\(values))"
     SendQuery()
   }
 
-  open func SendQuery() {
+  @objc open func SendQuery() {
     if _isServiceAuth {
       if Date() > _expirationDate || _authToken == "" {
         let parameters = [
@@ -116,7 +116,7 @@ open class FusiontablesControl: NonvisibleComponent {
     }
   }
 
-  open func GotResult(_ result: String) {
+  @objc open func GotResult(_ result: String) {
     EventDispatcher.dispatchEvent(of: self, called: "GotResult", arguments: result as NSString)
   }
 
@@ -191,7 +191,7 @@ open class FusiontablesControl: NonvisibleComponent {
     request.httpMethod = "POST"
     
     if let start = query.index(of: "("), let end = query.index(of: ")"), start < end {
-      let columns = query.substring(with: query.index(after: start)..<end).split(", ")
+      let columns = String(query[query.index(after: start)..<end]).split(", ")
       for i in 0..<columns.count {
         let item = columns[i].split(":")
         if item.count > 1 {
@@ -199,7 +199,7 @@ open class FusiontablesControl: NonvisibleComponent {
         }
       }
       let parameters: Parameters = [
-        "name": query.substring(with: query.index(query.startIndex, offsetBy: "CREATE TABLE".count + 2)..<query.index(of: "(")).trimmingCharacters(in: .whitespaces),
+        "name": query[query.index(query.startIndex, offsetBy: "CREATE TABLE".count + 2)..<(query.index(of: "(") ?? query.endIndex)].trimmingCharacters(in: .whitespaces),
         "isExportable": true,
         "columns": columnNames
       ]

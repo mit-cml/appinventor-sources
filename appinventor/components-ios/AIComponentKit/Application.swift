@@ -11,7 +11,7 @@ import UIKit
 
 @objc open class Application: UIResponder, UIApplicationDelegate {
   fileprivate var assetManager_: AssetManager?
-  let name: String
+  @objc let name: String
 
   /**
    * Create an Application using the currently running application bundle.
@@ -29,12 +29,12 @@ import UIKit
   /**
    *
    */
-  public init(from url: URL) {
+  @objc public init(from url: URL) {
     var temp_name = "UnknownApp"
     do {
       let fileregex = try NSRegularExpression(pattern: "/([^./]+).aia$")
       if let result = fileregex.firstMatch(in: url.absoluteString, range: NSMakeRange(0, url.absoluteString.lengthOfBytes(using: .utf8))) {
-        let range = result.rangeAt(1)
+        let range = result.range(at: 1)
         temp_name = (url.absoluteString as NSString).substring(with: range)
       }
     } catch {
@@ -44,7 +44,7 @@ import UIKit
     super.init()
   }
 
-  convenience init(from url: URL, isRepl: Bool) {
+  @objc convenience init(from url: URL, isRepl: Bool) {
     if isRepl {
       self.init()
     } else {
@@ -52,7 +52,7 @@ import UIKit
     }
   }
 
-  open var assetManager: AssetManager {
+  @objc open var assetManager: AssetManager {
     get {
       if assetManager_ == nil {
         assetManager_ = AssetManager(for: self)

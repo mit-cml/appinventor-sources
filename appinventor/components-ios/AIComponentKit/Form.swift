@@ -5,18 +5,18 @@ import Foundation
 import UIKit
 import Toast_Swift
 
-open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate {
+@objc open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate {
   fileprivate static var _showListsAsJson = false
   fileprivate let TAG = "Form"
   fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
   fileprivate let ARGUMENT_NAME = "APP_INVENTOR_START"
-  open let APPINVENTOR_URL_SCHEME = "appinventor"
-  open var application: Application?
-  weak static var activeForm: Form?
+  @objc public let APPINVENTOR_URL_SCHEME = "appinventor"
+  @objc open var application: Application?
+  @objc weak static var activeForm: Form?
   fileprivate var deviceDensity: Float = 1.0
   fileprivate var compatScalingFactor: Float?
   fileprivate var applicationIsBeingClosed = false
-  var formName: String = ""
+  @objc var formName: String = ""
   fileprivate var screenInitialized = false
   fileprivate var _components: [Component] = []
   fileprivate var _aboutScreen: String?
@@ -38,14 +38,15 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate var _compatibilityMode = true
   fileprivate var _verticalLayout = CSLinearLayoutView()
   fileprivate var _verticalItem: CSLinearLayoutItem!
-  internal var _componentWithActiveEvent: Component?
+  @objc internal var _componentWithActiveEvent: Component?
   fileprivate var _linearView: LinearView!
+  fileprivate var _statusBarHidden: Bool = true
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  open var components: [Component] {
+  @objc open var components: [Component] {
     get {
       return _components
     }
@@ -122,7 +123,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     view.setNeedsUpdateConstraints()
   }
 
-  open func layoutSubviews() {
+  @objc open func layoutSubviews() {
     view.layoutSubviews()
     NSLog("Horizontal frame size: \(view.frame)")
     NSLog("Vertical frame size: \(_verticalLayout.frame)")
@@ -164,7 +165,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     form.view.setNeedsLayout()
   }
 
-  open func clear() {
+  @objc open func clear() {
     let subviews = view.subviews
     for subview in subviews {
       subview.removeFromSuperview()
@@ -190,12 +191,12 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     defaultPropertyValues()
   }
 
-  func clearComponents() {
+  @objc func clearComponents() {
     onDelete()
     _components = []
   }
 
-  public func onResume() {
+  @objc public func onResume() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
         delegate.onResume()
@@ -203,7 +204,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open func onPause() {
+  @objc open func onPause() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
         delegate.onPause()
@@ -211,7 +212,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open func onDelete() {
+  @objc open func onDelete() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
         delegate.onDelete()
@@ -219,7 +220,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  public func onDestroy() {
+  @objc public func onDestroy() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
         delegate.onDestroy()
@@ -227,7 +228,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open func callInitialize(_ component: Component) {
+  @objc open func callInitialize(_ component: Component) {
     if let obj = component as? NSObject {
       if obj.responds(to: #selector(Initialize)) {
         obj.perform(#selector(Initialize))
@@ -254,7 +255,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
   
   // MARK: Form Properties
-  open var AboutScreen: String? {
+  @objc open var AboutScreen: String? {
     get {
       return _aboutScreen
     }
@@ -263,7 +264,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var AccentColor: Int32 {
+  @objc open var AccentColor: Int32 {
     get {
       return _accentColor
     }
@@ -274,7 +275,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var ActionBar: Bool {
+  @objc open var ActionBar: Bool {
     get {
       return false
     }
@@ -283,7 +284,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var AlignHorizontal: Int32 {
+  @objc open var AlignHorizontal: Int32 {
     get {
       return _horizontalAlignment
     }
@@ -312,7 +313,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
   
-  open var AlignVertical: Int32 {
+  @objc open var AlignVertical: Int32 {
     get {
       return _verticalAlignment
     }
@@ -335,7 +336,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var AppName: String? {
+  @objc open var AppName: String? {
     get {
       return _appName
     }
@@ -344,7 +345,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return colorToArgb(self.view.backgroundColor!)
     }
@@ -353,7 +354,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var BackgroundImage: String {
+  @objc open var BackgroundImage: String {
     get {
       return _backgroundImage
     }
@@ -365,7 +366,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var CloseScreenAnimation: String {
+  @objc open var CloseScreenAnimation: String {
     get {
       return "slide"
     }
@@ -374,7 +375,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
   
-  open var DeviceDensity: Float {
+  @objc open var DeviceDensity: Float {
     get {
       return deviceDensity
     }
@@ -396,7 +397,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var Icon: String {
+  @objc open var Icon: String {
     get {
       return ""
     }
@@ -405,7 +406,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var OpenScreenAnimation: String {
+  @objc open var OpenScreenAnimation: String {
     get {
       return "slide"
     }
@@ -414,7 +415,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var PrimaryColor: Int32 {
+  @objc open var PrimaryColor: Int32 {
     get {
       return _primaryColor
     }
@@ -426,7 +427,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var PrimaryColorDark: Int32 {
+  @objc open var PrimaryColorDark: Int32 {
     get {
       return _primaryColorDark
     }
@@ -438,7 +439,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var ScreenOrientation: String {
+  @objc open var ScreenOrientation: String {
     get {
       return "portrait"
     }
@@ -447,7 +448,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var Scrollable: Bool {
+  @objc open var Scrollable: Bool {
     get {
       return _scrollable
     }
@@ -456,7 +457,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var ShowListsAsJson: Bool {
+  @objc open var ShowListsAsJson: Bool {
     get {
       return Form._showListsAsJson
     }
@@ -465,16 +466,20 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var ShowStatusBar: Bool {
+  @objc open var ShowStatusBar: Bool {
     get {
       return UIApplication.shared.isStatusBarHidden
     }
     set(show) {
-      UIApplication.shared.isStatusBarHidden = !show
+      _statusBarHidden = !show
     }
   }
+  
+  open override var prefersStatusBarHidden: Bool {
+    return _statusBarHidden
+  }
 
-  open var Sizing: String {
+  @objc open var Sizing: String {
     get {
       return _compatibilityMode ? "Fixed" : "Responsive"
     }
@@ -483,7 +488,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var Theme: String {
+  @objc open var Theme: String {
     get {
       return _theme.rawValue
     }
@@ -508,11 +513,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // For App Inventor naming compatability
-  open func Title() -> String {
+  @objc open func Title() -> String {
     return super.title!
   }
 
-  open var TitleVisible: Bool {
+  @objc open var TitleVisible: Bool {
     get {
       return (self.navigationController?.isNavigationBarHidden)!
     }
@@ -521,7 +526,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var TutorialURL: String {
+  @objc open var TutorialURL: String {
     get {
       return ""  // not used in companion
     }
@@ -530,7 +535,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var VersionCode: Int32 {
+  @objc open var VersionCode: Int32 {
     get {
       return 1  // not used in companion
     }
@@ -539,7 +544,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open var VersionName: String {
+  @objc open var VersionName: String {
     get {
       return ""  // not used in companion
     }
@@ -562,7 +567,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // MARK: Form Methods
-  open func HideKeyboard() {
+  @objc open func HideKeyboard() {
     self.view.endEditing(true)
   }
 
@@ -574,7 +579,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
+  @objc open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
     // TODO: Implementation
   }
 
@@ -582,79 +587,79 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     // TODO: Implementation
   }
 
-  open func BackPressed() {
+  @objc open func BackPressed() {
     EventDispatcher.dispatchEvent(of: self, called: "BackPressed")
   }
 
-  open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
+  @objc open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
     EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: functionName as NSString, NSNumber(value: errorNumber), message as NSString)
   }
 
-  open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
+  @objc open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
     // TODO: Implementation
   }
 
-  open func Initialize() {
+  @objc open func Initialize() {
     _screenInitialized = true
   }
 
-  open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
+  @objc open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
     EventDispatcher.dispatchEvent(of: self, called: "OtherScreenClosed", arguments: otherScreenName as NSString, result)
   }
 
-  open func ScreenOrientationChanged() {
+  @objc open func ScreenOrientationChanged() {
     EventDispatcher.dispatchEvent(of: self, called: "ScreenOrientationChanged")
   }
 
   // Private implementation
 
-  public class func getActiveForm() -> Form? {
+  @objc public class func getActiveForm() -> Form? {
     return Form.activeForm
   }
 
-  open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
+  @objc open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
     dispatchErrorOccurredEvent(self, functionName, errorNumber, message as NSString)
   }
 
-  open class func switchForm(_ name: String) {
+  @objc open class func switchForm(_ name: String) {
     activeForm?.doSwitchForm(to: name)
   }
 
-  open class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
+  @objc open class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
     activeForm?.doSwitchForm(to: name, startValue: value)
   }
 
-  open func doSwitchForm(to formName: String, startValue: AnyObject? = nil) {
+  @objc open func doSwitchForm(to formName: String, startValue: AnyObject? = nil) {
     view.makeToast("Switching screens is not yet supported on iOS")
   }
 
-  open class func closeScreen() {
+  @objc open class func closeScreen() {
     activeForm?.doCloseScreen()
   }
 
-  func doCloseScreen(withValue value: AnyObject? = nil) {
+  @objc func doCloseScreen(withValue value: AnyObject? = nil) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
       Form.activeForm?.OtherScreenClosed(self.formName, value ?? "" as NSString)
     }
   }
 
-  func doCloseScreen(withPlainText text: String) {
+  @objc func doCloseScreen(withPlainText text: String) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
       Form.activeForm?.OtherScreenClosed(self.formName, text as NSString)
     }
   }
 
-  open class func closeApplication() {
+  @objc open class func closeApplication() {
     activeForm?.doCloseApplication()
   }
 
-  func doCloseApplication() {
+  @objc func doCloseApplication() {
     exit(0)
   }
 
-  open var startValue: AnyObject {
+  @objc open var startValue: AnyObject {
     get {
       do {
         return try getObjectFromJson(_startText) ?? _startText as NSString
@@ -671,7 +676,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open class func getStartValue() -> AnyObject {
+  @objc open class func getStartValue() -> AnyObject {
     if let form = Form.activeForm {
       return form.startValue
     } else {
@@ -679,11 +684,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open class func closeScreenWithValue(_ value: AnyObject) {
+  @objc open class func closeScreenWithValue(_ value: AnyObject) {
     activeForm?.doCloseScreen(withValue: value)
   }
 
-  open var startText: String {
+  @objc open var startText: String {
     get {
       return _startText
     }
@@ -692,7 +697,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open class func getStartText() -> String {
+  @objc open class func getStartText() -> String {
     if let form = Form.activeForm {
       return form.startText
     } else {
@@ -700,7 +705,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open class func closeScreenWithPlainText(_ text: String) {
+  @objc open class func closeScreenWithPlainText(_ text: String) {
     if let form = activeForm, let vcs = activeForm?.navigationController?.viewControllers {
       if vcs.count > 1 {
         if let parentForm = vcs[vcs.count - 2] as? Form {
@@ -720,12 +725,12 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
-  open func updateNavbar() {
+  @objc open func updateNavbar() {
     if let parent = navigationController {
       let navbar = parent.navigationBar
       navbar.tintColor = UIColor.white
       navbar.backgroundColor = argbToColor(_primaryColor)
-      navbar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
+      navbar.titleTextAttributes = convertToOptionalNSAttributedStringKeyDictionary([NSAttributedString.Key.foregroundColor.rawValue:UIColor.white])
       switch _theme {
       case .Classic, .DeviceDefault:
         navbar.barTintColor = argbToColor(_primaryColor)
@@ -733,7 +738,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       case .BlackText:
         navbar.barTintColor = argbToColor(_primaryColor)
         navbar.tintColor = UIColor.black
-        navbar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.black]
+        navbar.titleTextAttributes = convertToOptionalNSAttributedStringKeyDictionary([NSAttributedString.Key.foregroundColor.rawValue:UIColor.black])
         break
       case .Dark:
         navbar.barTintColor = argbToColor(_primaryColorDark)
@@ -742,4 +747,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       parent.setNeedsStatusBarAppearanceUpdate()
     }
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

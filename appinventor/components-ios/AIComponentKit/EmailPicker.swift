@@ -219,7 +219,7 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
   fileprivate let separator = " " //MARK: Left here because unsure whether to automatically separate autocompleted emails or not
   fileprivate var toolBarConstraint : NSLayoutConstraint?
 
-  public init(_ parent: ComponentContainer) {
+  @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
     if EmailPicker.tree.isEmpty() {
       let store = CNContactStore()
@@ -251,7 +251,7 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
     _accView.addSubview(_tableView)
 
     _toolBar.barStyle = UIBarStyle.default
-    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(dismissAcc))
+    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(dismissAcc))
     _toolBar.setItems([doneButton], animated: true)
     _toolBar.isUserInteractionEnabled = true
     _toolBar.translatesAutoresizingMaskIntoConstraints = false
@@ -272,7 +272,7 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
     _tableView.separatorStyle = .none
   }
 
-  open func dismissAcc() {
+  @objc open func dismissAcc() {
     _adapter._field.resignFirstResponder()
   }
 
@@ -310,7 +310,7 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
 
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     if let index = _adapter.text?.range(of: " ", options: .backwards)?.lowerBound {
-      _adapter.text = _adapter.text!.substring(to: index) + " " + options[indexPath.row] + separator
+      _adapter.text = _adapter.text![..<index] + " " + options[indexPath.row] + separator
     } else {
       _adapter.text = options[indexPath.row] + separator
     }

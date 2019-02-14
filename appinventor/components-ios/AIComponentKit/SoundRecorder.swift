@@ -20,7 +20,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     
     _recordingSession = AVAudioSession.sharedInstance()
     do {
-      try _recordingSession.setCategory(AVAudioSessionCategoryRecord)
+      setCategory(.record, for: _recordingSession)
       try _recordingSession.setActive(true)
       _recordingSession.requestRecordPermission() { [unowned self] allowed in
         DispatchQueue.main.async {
@@ -35,7 +35,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   }
   
   // MARK: Properties
-  open var SavedRecording: String {
+  @objc open var SavedRecording: String {
     get {
       return _savedRecordingPath
     }
@@ -45,7 +45,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   }
   
   // MARK: Events
-  open func Start() {
+  @objc open func Start() {
     if let _recorder = _recorder {
       NSLog("Start() called, but already recording to " + _recorder.url.absoluteString)
       return
@@ -74,7 +74,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     }
   }
   
-  open func Stop() {
+  @objc open func Stop() {
     if _recorder == nil {
       NSLog("Stop() called, but already stopped")
       return
@@ -88,15 +88,15 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     }
   }
   
-  open func AfterSoundRecorded(_ sound: String) {
+  @objc open func AfterSoundRecorded(_ sound: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterSoundRecorded", arguments: sound as NSString)
   }
   
-  open func StartedRecording() {
+  @objc open func StartedRecording() {
     EventDispatcher.dispatchEvent(of: self, called: "StartedRecording")
   }
   
-  open func StoppedRecording() {
+  @objc open func StoppedRecording() {
     EventDispatcher.dispatchEvent(of: self, called: "StoppedRecording")
   }
   
@@ -145,5 +145,3 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     }
   }
 }
-
-

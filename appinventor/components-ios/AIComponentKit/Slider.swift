@@ -41,7 +41,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var ThumbEnabled: Bool {
+  @objc public var ThumbEnabled: Bool {
     get {
       return _view.isEnabled
     }
@@ -50,7 +50,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var ThumbPosition: Float32 {
+  @objc public var ThumbPosition: Float32 {
     get {
       return _thumbPosition
     }
@@ -60,7 +60,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var MinValue: Float32 {
+  @objc public var MinValue: Float32 {
     get {
       return _minValue
     }
@@ -71,7 +71,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var MaxValue: Float32 {
+  @objc public var MaxValue: Float32 {
     get {
       return _maxValue
     }
@@ -82,7 +82,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var ColorLeft: Int32 {
+  @objc public var ColorLeft: Int32 {
     get {
       return colorToArgb(_leftColor)
     }
@@ -92,7 +92,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var ColorRight: Int32 {
+  @objc public var ColorRight: Int32 {
     get {
       return colorToArgb(_rightColor)
     }
@@ -115,7 +115,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     PositionChanged(_thumbPosition + _minValue)
   }
   
-  open func PositionChanged(_ thumbPosition: Float) {
+  @objc open func PositionChanged(_ thumbPosition: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: thumbPosition as NSNumber)
   }
 }

@@ -55,13 +55,13 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
     self.preferredContentSize = CGSize(width: _pickerView.frame.width, height: 300)
   }
 
-  func dateTimeSet() {
+  @objc func dateTimeSet() {
     dismiss(animated: true) {
       self._delegate.dateTimePicked(self._pickerView.date)
     }
   }
 
-  func setDateTime(_ calendar: Calendar) {
+  @objc func setDateTime(_ calendar: Calendar) {
     _pickerView.calendar = calendar
   }
 
@@ -90,7 +90,7 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
     fatalError("init(coder:) has not been implemented")
   }
 
-  func setDateTime(_ calendar: Calendar) {
+  @objc func setDateTime(_ calendar: Calendar) {
     _pickerView.calendar = calendar
   }
 

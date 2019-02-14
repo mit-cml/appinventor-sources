@@ -50,7 +50,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   }
   
   // MARK: LocationSensor Properties
-  open var ProviderName: String {
+  @objc open var ProviderName: String {
     get {
       return _providerName
     }
@@ -59,7 +59,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var ProviderLocked: Bool {
+  @objc open var ProviderLocked: Bool {
     get {
       return _providerLocked
     }
@@ -68,7 +68,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var TimeInterval: Int32 {
+  @objc open var TimeInterval: Int32 {
     get {
       return Int32(_timeInterval)
     }
@@ -85,7 +85,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var DistanceInterval: Int32 {
+  @objc open var DistanceInterval: Int32 {
     get {
       return Int32(_distanceInterval)
     }
@@ -103,43 +103,43 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var HasLongitudeLatitude: Bool {
+  @objc open var HasLongitudeLatitude: Bool {
     get {
       return _hasLocationData && _enabled
     }
   }
   
-  open var HasAltitude: Bool {
+  @objc open var HasAltitude: Bool {
     get {
       return _hasAltitude && _enabled
     }
   }
   
-  open var HasAccuracy: Bool {
+  @objc open var HasAccuracy: Bool {
     get {
       return Accuracy != LocationSensor.UNKNOWN_VALUE && _enabled
     }
   }
   
-  open var Longitude: Double {
+  @objc open var Longitude: Double {
     get {
       return _longitude
     }
   }
   
-  open var Latitude: Double {
+  @objc open var Latitude: Double {
     get {
       return _latitude
     }
   }
   
-  open var Altitude: Double {
+  @objc open var Altitude: Double {
     get {
       return _altitude
     }
   }
   
-  open var Accuracy: Double {
+  @objc open var Accuracy: Double {
     get {
       if let _lastLocation = _lastLocation {
         return _lastLocation.horizontalAccuracy
@@ -149,7 +149,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -175,24 +175,24 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open var CurrentAddress: String {
+  @objc open var CurrentAddress: String {
     get {
       return getAddressFromLocation(location: _lastLocation)
     }
   }
   
-  open var AvailableProviders: [String] {
+  @objc open var AvailableProviders: [String] {
     get {
       return _allProviders
     }
   }
   
   // MARK: Events
-  open func LocationChanged(_ latitude: Double, _ longitude: Double, _ altitude: Double, _ speed: Float) {
+  @objc open func LocationChanged(_ latitude: Double, _ longitude: Double, _ altitude: Double, _ speed: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "LocationChanged", arguments: latitude as NSNumber, longitude as NSNumber, altitude as NSNumber, speed as NSNumber)
   }
   
-  open func LatitudeFromAddress(_ addressStr: String) -> Double {
+  @objc open func LatitudeFromAddress(_ addressStr: String) -> Double {
     var latitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
       guard let placemarks = placemarks, let location = placemarks.first?.location else {
@@ -203,7 +203,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     return latitude
   }
   
-  open func LongitudeFromAddress(_ addressStr: String) -> Double {
+  @objc open func LongitudeFromAddress(_ addressStr: String) -> Double {
     var longitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
       guard let placemarks = placemarks, let location = placemarks.first?.location else {
@@ -308,11 +308,11 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   }
 
   // wrapper for coverage
-  open func StatusChanged(_ provider: String, _ status: String) {
+  @objc open func StatusChanged(_ provider: String, _ status: String) {
     EventDispatcher.dispatchEvent(of: self, called: "StatusChanged", arguments: provider as NSString, status as NSString)
   }
   
-  open func RefreshProvider() {
+  @objc open func RefreshProvider() {
     // we cannot blindly start updating and refreshing location --> enabled can be sent to true or false
     _locationManager.distanceFilter = _distanceInterval > Int(LocationSensor.UNKNOWN_VALUE) ? Double(_distanceInterval) : kCLDistanceFilterNone
     _locationManager.startUpdatingLocation()
@@ -326,17 +326,17 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
   
-  open func onResume() {
+  @objc open func onResume() {
     if _enabled {
       RefreshProvider()
     }
   }
   
-  open func onStop() {
+  @objc open func onStop() {
     stopListening()
   }
   
-  open func onDelete() {
+  @objc open func onDelete() {
     stopListening()
   }
 }
@@ -346,7 +346,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
  * @author Nichole Clarke
  */
 extension CLLocation {
-  func hasAccuracy() -> Bool {
+  @objc func hasAccuracy() -> Bool {
     return self.verticalAccuracy >= 0.0
   }
 }
@@ -357,10 +357,10 @@ extension CLLocation {
  * @author https://stackoverflow.com/a/37886956
  */
 extension CNMutablePostalAddress {
-  convenience init(placemark: CLPlacemark) {
+  @objc convenience init(placemark: CLPlacemark) {
     self.init()
     street = [placemark.subThoroughfare, placemark.thoroughfare]
-      .flatMap { $0 }
+      .compactMap { $0 }
       .joined(separator: " ")
     city = placemark.locality ?? ""
     state = placemark.administrativeArea ?? ""

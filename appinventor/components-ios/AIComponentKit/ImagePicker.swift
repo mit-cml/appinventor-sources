@@ -12,12 +12,12 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     super.setDelegate(self)
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
   }
   
   //MARK: ImagePicker Properties
-  open var Selection: String {
+  @objc open var Selection: String {
     get {
       return _selectedImage
     }
@@ -30,21 +30,24 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
     AfterPicking()
   }
   
-  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
     // The asset manager encodes the image URL's original path name to a new URL. The image data is then written to the new URL.
-    let url = info[UIImagePickerControllerReferenceURL] as! NSURL
+    let url = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] as! NSURL
     let urlPath = url.path
     let assetmgr = _container.form.application?.assetManager
     _selectedImage = assetmgr?.pathForPrivateAsset(urlPath!) ?? ""
     _selectedImage = "file://" + _selectedImage.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlPathAllowed)!
     let selectedImageURL = URL(string: _selectedImage)
-    let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+    let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
     var data:Data?
     let pathExtension = url.pathExtension?.lowercased()
     if pathExtension == "jpg" || pathExtension == "jpeg" {
-      data = UIImageJPEGRepresentation(image, 1.0)
+      data = image.jpegData(compressionQuality: 1.0)
     } else if pathExtension == "png" {
-      data = UIImagePNGRepresentation(image)
+      data = image.pngData()
     }
     do {
       try data?.write(to: selectedImageURL!)
@@ -57,9 +60,9 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
   }
     
   //MARK: AbstractMethodsForPicker Implementation
-  public func open() {
+  @objc public func open() {
     let picker = UIImagePickerController()
-    if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.photoLibrary) {
+    if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary) {
       picker.sourceType = .photoLibrary
       picker.mediaTypes = [kUTTypeImage as String]
       picker.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
@@ -76,4 +79,14 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
     }
   }
   
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

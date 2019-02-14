@@ -25,7 +25,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   fileprivate var _timer: Timer?
   fileprivate var _initialized = false
   fileprivate var _registeredCollisions = Set<Sprite>()
-  var _canvas: Canvas
+  @objc var _canvas: Canvas
 
   // Layer displays either ball or image set by user.
   fileprivate var _displayLayer: CAShapeLayer
@@ -47,7 +47,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     restartTimer()
   }
   
-  open func Initialize() {
+  @objc open func Initialize() {
     _initialized = true
     _canvas.registerChange(self)
   }
@@ -57,7 +57,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * Controls whether the sprite moves when its speed is non-zero.
    * Overridden by subclasses ImageSprite and Ball to enable animations.
    */
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -76,7 +76,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * The direction in which sprite should move.
    */
-  open var Heading: CGFloat {
+  @objc open var Heading: CGFloat {
     get {
       return -_heading
     }
@@ -87,7 +87,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     }
   }
   
-  public var HeadingRadians: CGFloat {
+  @objc public var HeadingRadians: CGFloat {
     get {
       return _headingRadians
     }
@@ -99,7 +99,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * 50 and the speed is 10, the sprite will move 10 pixels
    * every 50 milliseconds.
    */
-  open var Interval: Int32 {
+  @objc open var Interval: Int32 {
     get {
       return _interval
     }
@@ -115,7 +115,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * The speed is the magnitude in pixels moved every
    * interval.
    */
-  open var Speed: Float {
+  @objc open var Speed: Float {
     get {
       return Float(_speed)
     }
@@ -144,7 +144,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * Distance to the left edge of the canvas.
    */
-  open var X: Double {
+  @objc open var X: Double {
     get {
       return Double(_xLeft)
     }
@@ -159,7 +159,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * Distance from the top edge of canvas.
    */
-  open var Y: Double {
+  @objc open var Y: Double {
     get {
       return Double(_yTop)
     }
@@ -178,7 +178,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * Higher-numbered layers appear in front of lower-numbered
    * ones. Layers of equal value can have either one in front.
    */
-  public var Z: Double {
+  @objc public var Z: Double {
     get {
       return _z
     }
@@ -196,7 +196,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     }
   }
   
-  open var DisplayLayer: CAShapeLayer {
+  @objc open var DisplayLayer: CAShapeLayer {
     get {
       return _displayLayer
     }
@@ -212,7 +212,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     * position.  Therefore, collision checking will be inaccurate for tall narrow
     * or short wide sprites that are rotated.
     */
-  open func CollidedWith(_ other: Sprite) {
+  @objc open func CollidedWith(_ other: Sprite) {
     if _registeredCollisions.contains(other) {
       return
     }
@@ -221,7 +221,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
   
   // Handler called when a pair of sprites cease colliding.
-  open func NoLongerCollidingWith(_ other: Sprite) {
+  @objc open func NoLongerCollidingWith(_ other: Sprite) {
     _registeredCollisions.remove(other)
     EventDispatcher.dispatchEvent(of: self, called: "NoLongerCollidingWith", arguments: other as AnyObject)
   }
@@ -235,7 +235,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * Makes this sprite bounce, as if off a wall.
    * For normal bouncing, the edge argument should be the one returned by EdgeReached.
    */
-  open func Bounce(_ edge: Int32) {
+  @objc open func Bounce(_ edge: Int32) {
     let e = Direction(rawValue: edge)
     MoveIntoBounds()
     
@@ -270,7 +270,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * Returns whether Sprite is currently colliding with other Sprite
    */
-  open func CollidingWith(_ other: Sprite) -> Bool {
+  @objc open func CollidingWith(_ other: Sprite) -> Bool {
     return _registeredCollisions.contains(other)
   }
 
@@ -280,7 +280,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * left side of the canvas. If the sprite is too tall to fit on the canvas, this aligns the top side
    * of the sprite with the top side of the canvas.
    */
-  open func MoveIntoBounds() {
+  @objc open func MoveIntoBounds() {
     var moved = false
     let canvasWidth = Int32(_canvas.canvasView.bounds.width)
     let canvasHeight = Int32(_canvas.canvasView.bounds.height)
@@ -331,7 +331,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * Moves the sprite so that its left top corner is at the specfied x and y coordinates.
    */
-  open func MoveTo(_ x: Double, _ y: Double) {
+  @objc open func MoveTo(_ x: Double, _ y: Double) {
     X = x
     Y = y
   }
@@ -339,7 +339,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   /**
    * Turns the sprite to point towards the point with coordinates as (x, y).
    */
-  open func PointInDirection(_ x: Double, _ y: Double) {
+  @objc open func PointInDirection(_ x: Double, _ y: Double) {
     // we adjust for the fact that the sprite's X() and Y()
     // is not the center point.
     let yDiff = y - Y - Double(Height) / 2
@@ -352,7 +352,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * Turns the sprite to point towards a designated target sprite.
    * The new heading will be parallel to the line joining the centerpoints of the two sprites.
    */
-  open func PointTowards(_ target: Sprite) {
+  @objc open func PointTowards(_ target: Sprite) {
     // we adjust for the fact that the sprites' X() and Y() are not the center points.
     let yDiff = target.Y - Y + Double(target.Height - Height) / 2
     let xDiff = target.X - X - Double(target.Width - Width) / 2
@@ -360,26 +360,26 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     Heading = -radians / CGFloat.pi * 180
   }
   
-  open func Touched(_ x: Float, _ y: Float) {
+  @objc open func Touched(_ x: Float, _ y: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber)
   }
 
-  open func TouchDown(_ x: Float, _ y: Float) {
+  @objc open func TouchDown(_ x: Float, _ y: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: x as NSNumber, y as NSNumber)
   }
 
-  open func TouchUp(_ x: Float, _ y: Float) {
+  @objc open func TouchUp(_ x: Float, _ y: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
   }
 
-  open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
+  @objc open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
                   _ velocityX: Float, _ velocityY: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
                                   flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
                                   velocityX as NSNumber, velocityY as NSNumber)
   }
   
-  open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
+  @objc open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
                     _ currentX: Float, _ currentY: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
                                   startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
@@ -387,10 +387,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   // To be overriden in sub-classes (ImageSprite and Ball)
-  func updateDisplayLayer(){}
+  @objc func updateDisplayLayer(){}
   
   // Notifies canvas of a sprite change and raises any EdgeReached events.
-  func registerChanges() {
+  @objc func registerChanges() {
     if _initialized {
       let edge = hitEdge()
       if edge != Direction.none {
@@ -464,18 +464,18 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     return Y + Double(Height) > Double(canvasHeight)
   }
 
-  open func intersectsWith(_ rect: CGRect) -> Bool {
+  @objc open func intersectsWith(_ rect: CGRect) -> Bool {
     return getBoundingBox(border: 0).intersects(rect)
   }
   
   // Returns bounding box of sprite
-  open func getBoundingBox(border: Int) -> CGRect {
+  @objc open func getBoundingBox(border: Int) -> CGRect {
     let start_x = CGFloat(X)
     let start_y = CGFloat(Y)
     return CGRect(origin: CGPoint(x: start_x, y: start_y), size: CGSize(width: CGFloat(Width), height: CGFloat(Height)))
   }
   
-  static open func colliding(_ sprite1: Sprite, _ sprite2: Sprite) -> Bool {
+  @objc static public func colliding(_ sprite1: Sprite, _ sprite2: Sprite) -> Bool {
     let box1 = sprite1.getBoundingBox(border: 1)
     let box2 = sprite2.getBoundingBox(border: 1)
     let intersect = box1.intersection(box2)
@@ -496,30 +496,30 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     return false
   }
   
-  func contains(_ point: CGPoint) -> Bool {
+  @objc func contains(_ point: CGPoint) -> Bool {
     return CGFloat(X) <= point.x && point.x <= CGFloat(X + Double(Width)) && CGFloat(Y) <= point.y && point.y <= CGFloat(Y + Double(Height))
   }
   
-  func restartTimer() {
+  @objc func restartTimer() {
     removeTimer()
     
     if Enabled {
       _timer = Foundation.Timer(timeInterval: TimeInterval(Double(Interval) / 1000.0), target: self, selector: #selector(animate), userInfo: nil, repeats: true)
-      RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
+      RunLoop.main.add(_timer!, forMode: RunLoop.Mode.default)
     }
   }
   
-  func removeTimer() {
+  @objc func removeTimer() {
     if let t = _timer {
       t.invalidate()
     }
     _timer = nil
   }
   
-  func updateWidth(){}
-  func updateHeight(){}
+  @objc func updateWidth(){}
+  @objc func updateHeight(){}
   
-  func animate() {
+  @objc func animate() {
     let layer = DisplayLayer
 
     let headingCos = cos(_headingRadians)

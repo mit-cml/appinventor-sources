@@ -18,7 +18,7 @@ public func argbToColor( _ argb: Int32) -> UIColor {
   r = Float(argb & 0xFF) / 255.0
   argb >>= 8
   a = Float(argb & 0xFF) / 255.0
-  return UIColor(colorLiteralRed: r, green: g, blue: b, alpha: a)
+  return UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: CGFloat(a))
 }
 
 public func colorToArgb(_ color: UIColor) -> Int32 {

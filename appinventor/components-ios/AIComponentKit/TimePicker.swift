@@ -27,33 +27,33 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     
     _viewController = getDateTimePickerController(self, isDatePicker: false, isPhone: _isPhone)
     _viewController?.setDateTime(calendar)
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
   }
   
   // MARK: DatePicker Properties
   // hour is in 24 hour format -- 11pm returns 23
-  open var Hour: Int {
+  @objc open var Hour: Int {
     get {
       return _hour
     }
   }
   
-  open var Minute: Int {
+  @objc open var Minute: Int {
     get {
       return _minute
     }
   }
   
   // the instant of the time that was last picked
-  open var Instant: Date {
+  @objc open var Instant: Date {
     get {
       return _instant
     }
   }
   
   // MARK: TimePicker Events
-  open func SetTimeToDisplay(_ hour: Int32, _ minute: Int32) {
+  @objc open func SetTimeToDisplay(_ hour: Int32, _ minute: Int32) {
     if !(0...23 ~= hour) {
       _container.form.dispatchErrorOccurredEvent(self, "SetTimeToDisplay", ErrorMessage.ERROR_ILLEGAL_HOUR.code, ErrorMessage.ERROR_ILLEGAL_HOUR.message)
     } else if !(0...59 ~= minute) {
@@ -69,18 +69,18 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     }
   }
   
-  open func SetTimeToDisplayFromInstant(_ instant: Date) {
+  @objc open func SetTimeToDisplayFromInstant(_ instant: Date) {
     let timeComponents = Calendar.current.dateComponents([.day, .month, .year, .hour, .minute, .timeZone], from: instant)
     _instant = Calendar.current.date(from: timeComponents)!
     self._viewController?.setTime(_instant)
     _customTime = true
   }
   
-  open func LaunchPicker() {
+  @objc open func LaunchPicker() {
     click()
   }
   
-  open func dateTimePicked(_ date: Date) {
+  @objc open func dateTimePicked(_ date: Date) {
     let calendar = Calendar.current
     let timeComponents = calendar.dateComponents([.day, .month, .year, .hour, .minute, .timeZone], from: date)
     
@@ -91,7 +91,7 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     AfterTimeSet()
   }
   
-  open func AfterTimeSet() {
+  @objc open func AfterTimeSet() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterTimeSet")
   }
   

@@ -18,7 +18,7 @@ open class ImageSprite: Sprite {
   }
   
   // MARK: Properties
-  open var Picture: String {
+  @objc open var Picture: String {
     get {
       return _picturePath
     }
@@ -32,13 +32,13 @@ open class ImageSprite: Sprite {
     }
   }
 
-  open var Image: UIImage {
+  @objc open var Image: UIImage {
     get {
       return _image
     }
   }
   
-  open var Rotates: Bool {
+  @objc open var Rotates: Bool {
     get {
       return _rotates
     }

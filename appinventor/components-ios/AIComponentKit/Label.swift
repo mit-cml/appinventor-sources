@@ -29,7 +29,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  public var TextAlignment: Int32 {
+  @objc public var TextAlignment: Int32 {
     get {
       return _alignment
     }
@@ -58,7 +58,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var BackgroundColor: Int32 {
+  @objc public var BackgroundColor: Int32 {
     get {
       if let color = _view.backgroundColor {
         return colorToArgb(color)
@@ -70,7 +70,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var FontBold: Bool {
+  @objc public var FontBold: Bool {
     get {
       return false
     }
@@ -79,7 +79,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var FontItalic: Bool {
+  @objc public var FontItalic: Bool {
     get {
       return false
     }
@@ -88,7 +88,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var HasMargins: Bool {
+  @objc public var HasMargins: Bool {
     get {
       return false
     }
@@ -97,7 +97,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var FontSize: Float64 {
+  @objc public var FontSize: Float64 {
     get {
       return Float64(_view.font.pointSize)
     }
@@ -107,7 +107,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var FontTypeface: Int32 {
+  @objc public var FontTypeface: Int32 {
     get {
       return Typeface.normal.rawValue
     }
@@ -117,7 +117,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var Text: String {
+  @objc public var Text: String {
     get {
       if let text = _view.text {
         return text
@@ -134,7 +134,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var HTMLFormat: Bool {
+  @objc public var HTMLFormat: Bool {
     get {
       return false
     }
@@ -143,7 +143,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var TextColor: Int32 {
+  @objc public var TextColor: Int32 {
     get {
       return colorToArgb(_view.textColor)
     }

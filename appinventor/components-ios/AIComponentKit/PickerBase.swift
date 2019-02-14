@@ -20,11 +20,11 @@ class PickerPadController: UIViewController {
     addLayoutConstraints()
   }
 
-  func setupViews() {
+  @objc func setupViews() {
     fatalError("setupViews() has not been implemented")
   }
 
-  func addLayoutConstraints() {
+  @objc func addLayoutConstraints() {
     fatalError("addLayoutConstraints() has not been implemented")
   }
 }
@@ -33,14 +33,14 @@ class PickerPhoneController: UIViewController {
   private var _toolBar = UIToolbar()
   private var _contentView: UIView
 
-  public init(contentView: UIView) {
+  @objc public init(contentView: UIView) {
     _contentView = contentView
     super.init(nibName: nil, bundle: nil)
     modalPresentationStyle = .custom
     _toolBar.barStyle = .default
-    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissPicker))
-    let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-    let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPicker))
+    let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.dismissPicker))
+    let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+    let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
     _toolBar.setItems([doneButton, flexibleSpace, cancelButton], animated: true)
     _toolBar.isUserInteractionEnabled = true
     _toolBar.sizeToFit()
@@ -72,17 +72,17 @@ class PickerPhoneController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  public func dismissPicker() {
+  @objc public func dismissPicker() {
     doDismissPicker()
     self.dismiss(animated: true)
   }
 
-  func doDismissPicker() {}
+  @objc func doDismissPicker() {}
 
-  public func cancelPicker() {
+  @objc public func cancelPicker() {
     doCancelPicker()
     self.dismiss(animated: true)
   }
 
-  func doCancelPicker() {}
+  @objc func doCancelPicker() {}
 }

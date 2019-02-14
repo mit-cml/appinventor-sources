@@ -14,7 +14,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
   fileprivate var _message = ""
 
   // MARK: Texting Properties
-  open var PhoneNumber: String {
+  @objc open var PhoneNumber: String {
     get {
       return _phoneNumber
     }
@@ -23,7 +23,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     }
   }
 
-  open var Message: String {
+  @objc open var Message: String {
     get {
       return _message
     }
@@ -36,7 +36,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
    * GoogleVoiceEnabled is provided for compatbility with the Android version. Sending a message
    * using Google Voice is not supported on iOS, so this is a no-op.
    */
-  open var GoogleVoiceEnabled: Bool {
+  @objc open var GoogleVoiceEnabled: Bool {
     get {
       return false  // Google Voice not supported on iOS
     }
@@ -46,7 +46,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     }
   }
 
-  open var ReceivingEnabled: Bool {
+  @objc open var ReceivingEnabled: Bool {
     get {
       return false  // Receiving messages not supported on iOS
     }
@@ -57,7 +57,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
   }
 
   // MARK: Texting Methods
-  open func SendMessage() {
+  @objc open func SendMessage() {
     if !MFMessageComposeViewController.canSendText() {
       let alert = UIAlertController(title: "Texting not available", message: "Texting is not supported on this device.", preferredStyle: .alert)
       alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -72,7 +72,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
   }
 
   // MARK: Texting Events
-  open func MessageReceived(_ number: String, _ messageText: String) {
+  @objc open func MessageReceived(_ number: String, _ messageText: String) {
     EventDispatcher.dispatchEvent(of: self, called: "MessageReceived", arguments: number as NSString, messageText as NSString)
   }
 

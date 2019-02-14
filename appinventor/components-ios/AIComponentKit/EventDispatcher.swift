@@ -81,7 +81,7 @@ open class EventDispatcher: NSObject {
     return dispatched
   }
   
-  open class func registerEventForDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
+  @objc open class func registerEventForDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
     let er = getEventRegistry(dispatchDelegate)
     var eventClosures = er.eventClosuresMap[eventName]
     if eventClosures == nil {
@@ -93,7 +93,7 @@ open class EventDispatcher: NSObject {
     er.eventClosuresMap[eventName] = eventClosures
   }
   
-  open class func unregisterForEventDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
+  @objc open class func unregisterForEventDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
     let er = getEventRegistry(dispatchDelegate)
     let eventClosures = er.eventClosuresMap[eventName]
     if eventClosures == nil || eventClosures?.count == 0 {
@@ -105,7 +105,7 @@ open class EventDispatcher: NSObject {
     }))
   }
   
-  open class func unregisterAllEventsForDelegation() {
+  @objc open class func unregisterAllEventsForDelegation() {
     for er in mapDispatchDelegateToEventRegistry.allValues {
       if er is EventRegistry {
         (er as! EventRegistry).eventClosuresMap.removeAll()
@@ -113,7 +113,7 @@ open class EventDispatcher: NSObject {
     }
   }
   
-  open class func removeDispatchDelegate(_ dispatchDelegate: HandlesEventDispatching) {
+  @objc open class func removeDispatchDelegate(_ dispatchDelegate: HandlesEventDispatching) {
     let er = removeEventRegistry(dispatchDelegate)
     if er != nil {
       er?.eventClosuresMap.removeAll()

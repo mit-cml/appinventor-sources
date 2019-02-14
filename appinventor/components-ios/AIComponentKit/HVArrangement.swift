@@ -58,7 +58,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     let child = component.view
     if width >= 0 {
       let constraint = child.widthAnchor.constraint(equalToConstant: CGFloat(width))
-      constraint.priority = UILayoutPriorityRequired
+      constraint.priority = UILayoutPriority.required
       view.addConstraint(constraint)
     } else if width == kLengthPreferred {
 
@@ -95,7 +95,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   // MARK: HVArrangement Properties
-  open var AlignHorizontal: Int32 {
+  @objc open var AlignHorizontal: Int32 {
     get {
       return _horizontalAlign.rawValue
     }
@@ -109,7 +109,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
   }
 
-  open var AlignVertical: Int32 {
+  @objc open var AlignVertical: Int32 {
     get {
       return _verticalAlign.rawValue
     }
@@ -123,7 +123,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
   }
 
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return colorToArgb(_backgroundColor)
     }
@@ -135,7 +135,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
   }
 
-  open var Image: String {
+  @objc open var Image: String {
     get {
       return _imagePath
     }
@@ -159,11 +159,11 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     if _orientation == .horizontal {
       if _components.count == 1 {
         let constraint = child.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor)
-        constraint.priority = UILayoutPriorityRequired
+        constraint.priority = UILayoutPriority.required
         view.addConstraint(constraint)
       } else {
         let constraint = _components[_components.count - 2].view.trailingAnchor.constraint(equalTo: child.leadingAnchor)
-        constraint.priority = UILayoutPriorityRequired
+        constraint.priority = UILayoutPriority.required
         view.addConstraint(constraint)
       }
       _lastConstraint = _view.trailingAnchor.constraint(greaterThanOrEqualTo: child.trailingAnchor)
@@ -175,27 +175,27 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   private func updateVerticalConstraints(_ child: UIView) {
     if _orientation == .horizontal {
       var constraint = _view.heightAnchor.constraint(greaterThanOrEqualTo: child.heightAnchor)
-      constraint.priority = UILayoutPriorityDefaultLow
+      constraint.priority = UILayoutPriority.defaultLow
       view.addConstraint(constraint)
       if _components.count == 1 {
         constraint = child.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor)
-        constraint.priority = UILayoutPriorityRequired
+        constraint.priority = UILayoutPriority.required
         view.addConstraint(constraint)
       } else {
         constraint = _components[_components.count - 2].view.trailingAnchor.constraint(equalTo: child.leadingAnchor)
-        constraint.priority = UILayoutPriorityRequired
+        constraint.priority = UILayoutPriority.required
         view.addConstraint(constraint)
       }
       _lastConstraint = _view.trailingAnchor.constraint(greaterThanOrEqualTo: child.trailingAnchor)
       view.addConstraint(_lastConstraint)
     } else {
       var constraint = _view.widthAnchor.constraint(greaterThanOrEqualTo: child.widthAnchor)
-      constraint.priority = UILayoutPriorityDefaultLow
+      constraint.priority = UILayoutPriority.defaultLow
       view.addConstraint(constraint)
       if _components.count == 0 {
       } else {
         constraint = _components[_components.count - 2].view.bottomAnchor.constraint(equalTo: child.topAnchor)
-        constraint.priority = UILayoutPriorityRequired
+        constraint.priority = UILayoutPriority.required
         view.addConstraint(constraint)
       }
       _lastConstraint = _view.bottomAnchor.constraint(greaterThanOrEqualTo: child.bottomAnchor)

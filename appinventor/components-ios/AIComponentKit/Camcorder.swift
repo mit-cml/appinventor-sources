@@ -8,7 +8,7 @@ import AVFoundation
 open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
   fileprivate var recordRequest = false
 
-  open func HasPermission() -> Bool {
+  @objc open func HasPermission() -> Bool {
     if let camPermission = PermissionHandler.HasPermission(for: .camera), let micPermission = PermissionHandler.HasPermission(for: .microphone) {
       return camPermission && micPermission
     } else {
@@ -16,7 +16,7 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     }
   }
 
-  open func RequestPermission() {
+  @objc open func RequestPermission() {
     PermissionHandler.RequestPermission(for: .camera) { camAllowed, camChanged in
       if camAllowed {
         PermissionHandler.RequestPermission(for: .microphone) { micAllowed, micChanged in
@@ -30,11 +30,11 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     }
   }
 
-  open func PermissionChange(_ allowed: Bool) {
+  @objc open func PermissionChange(_ allowed: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "PermissionChange", arguments: allowed as AnyObject)
   }
 
-  open func presentNotice(camStatus: Bool, micStatus: Bool){
+  @objc open func presentNotice(camStatus: Bool, micStatus: Bool){
     let picker = UIImagePickerController()
     picker.delegate = self
     picker.sourceType = .camera
@@ -68,7 +68,7 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     }
   }
 
-  open func RecordVideo() {
+  @objc open func RecordVideo() {
     PermissionHandler.RequestPermission(for: .camera) { camAllowed, camChanged in
       if camAllowed {
         PermissionHandler.RequestPermission(for: .microphone) { micAllowed, micChanged in
@@ -90,8 +90,11 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     }
   }
 
-  open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-    if let moviePath = info[UIImagePickerControllerMediaURL] as? URL {
+  open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
+    if let moviePath = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.mediaURL)] as? URL {
       do {
         let newPath =  URL(string: "file://\(AssetManager.shared.pathForPublicAsset(moviePath.lastPathComponent))")
         try FileManager.default.moveItem(at: moviePath, to: newPath!)
@@ -108,7 +111,17 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     }
   }
 
-  open func AfterRecording(_ clip: String) {
+  @objc open func AfterRecording(_ clip: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterRecording", arguments: clip as AnyObject)
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

@@ -61,7 +61,7 @@ open class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Properties
-  open var PhoneNumber: String {
+  @objc open var PhoneNumber: String {
     get {
       return _phoneNumber
     }
@@ -71,11 +71,11 @@ open class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Methods
-  open func MakePhoneCall() {
+  @objc open func MakePhoneCall() {
     let cleanNumber = _phoneNumber.components(separatedBy: CharacterSet(charactersIn: "0123456789+-()").inverted).joined()
     if let telurl = URL(string: "tel:" + cleanNumber) {
       if #available(iOS 10.0, *) {
-        UIApplication.shared.open(telurl, options: [:], completionHandler: { (success: Bool) in
+        UIApplication.shared.open(telurl, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: { (success: Bool) in
           self.PhoneCallStarted(1, self._phoneNumber)
         })
       } else {
@@ -85,15 +85,20 @@ open class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Events
-  open func IncomingCallAnswered(_ phoneNumber: String) {
+  @objc open func IncomingCallAnswered(_ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "IncomingCallAnswered", arguments: phoneNumber as NSString)
   }
 
-  open func PhoneCallEnded(_ status: Int32, _ phoneNumber: String) {
+  @objc open func PhoneCallEnded(_ status: Int32, _ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "PhoneCallEndded", arguments: NSNumber(value: status), phoneNumber as NSString)
   }
 
-  open func PhoneCallStarted(_ status: Int32, _ phoneNumber: String) {
+  @objc open func PhoneCallStarted(_ status: Int32, _ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "PhoneCallStarted", arguments: NSNumber(value: status), phoneNumber as NSString)
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

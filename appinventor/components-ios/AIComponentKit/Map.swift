@@ -26,7 +26,7 @@ enum AIMapType: Int32 {
  * The Map Component.  A two dimensional-container that renders a map.
  */
 open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
-  final var _mapView: MKMapView
+  @objc final var _mapView: MKMapView
   private var _locationSensor: LocationSensor
   private var _mapType: AIMapType = .roads
   private var _zoomLevel: Int32 = 1
@@ -134,7 +134,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var CenterFromString: String {
+  @objc open var CenterFromString: String {
     get {
       return "" // write-only
     }
@@ -143,19 +143,19 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var Latitude: Double {
+  @objc open var Latitude: Double {
     get {
       return _mapView.centerCoordinate.latitude
     }
   }
   
-  open var Longitude: Double {
+  @objc open var Longitude: Double {
     get {
       return _mapView.centerCoordinate.longitude
     }
   }
   
-  open var ZoomLevel: Int32 {
+  @objc open var ZoomLevel: Int32 {
     get {
       return _mapView.zoomLevel
     }
@@ -170,7 +170,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var EnableZoom: Bool {
+  @objc open var EnableZoom: Bool {
     get {
       return _mapView.isZoomEnabled
     }
@@ -179,7 +179,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var MapType: Int32 {
+  @objc open var MapType: Int32 {
     get {
       return _mapType.rawValue
     }
@@ -203,7 +203,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var ShowCompass: Bool {
+  @objc open var ShowCompass: Bool {
     get {
       return _mapView.showsCompass
     }
@@ -212,7 +212,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var ShowZoom: Bool {
+  @objc open var ShowZoom: Bool {
     get {
       return !_zoomControls.isHidden
     }
@@ -221,7 +221,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var ShowUser: Bool {
+  @objc open var ShowUser: Bool {
     get {
       return _mapView.showsUserLocation
     }
@@ -230,7 +230,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var EnableRotation: Bool {
+  @objc open var EnableRotation: Bool {
     get {
       return _mapView.isRotateEnabled
     }
@@ -239,7 +239,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var EnablePan: Bool {
+  @objc open var EnablePan: Bool {
     get {
       return _mapView.isScrollEnabled
     }
@@ -248,7 +248,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var BoundingBox: [[Float32]] {
+  @objc open var BoundingBox: [[Float32]] {
     get {
       return calculateBoundingBox()
     }
@@ -265,9 +265,9 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
         
         let northwestCoord = CLLocationCoordinate2D(latitude: Double(northwest_lat), longitude: Double(northwest_long))
         let southeastCoord = CLLocationCoordinate2D(latitude: Double(southeast_lat), longitude: Double(southeast_long))
-        let nwPoint = MKMapPointForCoordinate(northwestCoord)
-        let sePoint = MKMapPointForCoordinate(southeastCoord)
-        let boundingRect = MKMapRectMake(fmin(nwPoint.x, sePoint.x), fmin(nwPoint.y, sePoint.y), fabs(nwPoint.x - sePoint.x), fabs(nwPoint.y - sePoint.y))
+        let nwPoint = MKMapPoint.init(northwestCoord)
+        let sePoint = MKMapPoint.init(southeastCoord)
+        let boundingRect = MKMapRect.init(x: fmin(nwPoint.x, sePoint.x), y: fmin(nwPoint.y, sePoint.y), width: fabs(nwPoint.x - sePoint.x), height: fabs(nwPoint.y - sePoint.y))
         
         // setting the Bounding Box is equivalent to setting both the zoomLevel and the mapCenter
         self.setNeedsUpdate()
@@ -278,7 +278,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var LocationSensor: LocationSensor {
+  @objc open var LocationSensor: LocationSensor {
     get {
       return _locationSensor
     }
@@ -287,23 +287,23 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open var UserLatitude: Double {
+  @objc open var UserLatitude: Double {
     get {
       return  (_mapView.userLocation.location != nil) ? _mapView.userLocation.coordinate.latitude : Double(-999)
     }
   }
   
-  open var UserLongitude: Double {
+  @objc open var UserLongitude: Double {
     get {
       return (_mapView.userLocation.location != nil) ? _mapView.userLocation.coordinate.longitude: Double(-999)
     }
   }
   
-  open func CreateMarker(_ latitude: Double, _ longitude: Double) {
+  @objc open func CreateMarker(_ latitude: Double, _ longitude: Double) {
     // TODO: in Marker Branch
   }
   
-  open func PanTo(_ latitude: Double, _ longitude: Double, _ zoom: Int32) {
+  @objc open func PanTo(_ latitude: Double, _ longitude: Double, _ zoom: Int32) {
     if !(-90.0...90.0 ~= latitude) {
       InvalidPoint(String(format: ERROR_LATITUDE_OUT_OF_BOUNDS, latitude))
     } else if !(-180.0...180.0 ~= longitude) {
@@ -315,11 +315,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open func Save(_ path: String) {
+  @objc open func Save(_ path: String) {
     // TODO: in Marker Branch (when implementing features)
   }
   
-  open func Ready() {
+  @objc open func Ready() {
     EventDispatcher.dispatchEvent(of: self, called: "Ready")
   }
   
@@ -339,7 +339,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open func BoundsChange() {
+  @objc open func BoundsChange() {
     EventDispatcher.dispatchEvent(of: self, called: "BoundsChange")
   }
   
@@ -360,7 +360,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
   }
   
-  open func ZoomChange() {
+  @objc open func ZoomChange() {
     EventDispatcher.dispatchEvent(of: self, called: "ZoomChange")
   }
   
@@ -385,15 +385,15 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     _zoomOutBtn.isEnabled = _zoomLevel > MIN_ZOOM_LEVEL
   }
   
-  open func InvalidPoint(_ message: String) {
+  @objc open func InvalidPoint(_ message: String) {
     EventDispatcher.dispatchEvent(of: self, called: "InvalidPoint", arguments: message as NSString)
   }
   
-  open func TapAtPoint(_ latitude: Double, _ longitude: Double) {
+  @objc open func TapAtPoint(_ latitude: Double, _ longitude: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: latitude as NSNumber, longitude as NSNumber)
   }
   
-  open func singleTap(_ sender: UIGestureRecognizer) {
+  @objc open func singleTap(_ sender: UIGestureRecognizer) {
     if sender.state != .ended {
       return
     }
@@ -401,11 +401,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     TapAtPoint(coordinate.latitude, coordinate.longitude)
   }
   
-  open func DoubleTapAtPoint(_ latitude: Double, _ longitude: Double) {
+  @objc open func DoubleTapAtPoint(_ latitude: Double, _ longitude: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "DoubleTapAtPoint", arguments: latitude as NSNumber, longitude as NSNumber)
   }
   
-  open func doubleTap(_ sender: UIGestureRecognizer) {
+  @objc open func doubleTap(_ sender: UIGestureRecognizer) {
     if sender.state != .ended {
       return
     }
@@ -413,11 +413,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     DoubleTapAtPoint(coordinate.latitude, coordinate.longitude)
   }
   
-  open func LongPressAtPoint(_ latitude: Double, _ longitude: Double) {
+  @objc open func LongPressAtPoint(_ latitude: Double, _ longitude: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "LongPressAtPoint", arguments: latitude as NSNumber, longitude as NSNumber)
   }
   
-  open func longPress(_ sender: UIGestureRecognizer) {
+  @objc open func longPress(_ sender: UIGestureRecognizer) {
     if sender.state != .ended {
       return
     }
@@ -495,7 +495,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
       _updatePending = true
       DispatchQueue.main.async {
         if let boundingBox = self._boundingBoxUpdate {
-          let region = MKCoordinateRegionForMapRect(boundingBox)
+          let region = MKCoordinateRegion.init(boundingBox)
           let zoom = self._mapView.calculateZoomLevelFromRegion(region: region)
           /**
            * We first set from the centerUpdate and zoomLevel as those are set to nil once we set a
@@ -524,12 +524,12 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate {
     let template = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}"
     _terrainOverlay = MKTileOverlay(urlTemplate: template)
     _terrainOverlay!.canReplaceMapContent = true
-    _mapView.add(_terrainOverlay!, level: .aboveLabels)
+    _mapView.addOverlay(_terrainOverlay!, level: .aboveLabels)
   }
   
   private func removeTerrainTileRenderer() {
     if let overlay = _terrainOverlay {
-      _mapView.remove(overlay)
+      _mapView.removeOverlay(overlay)
     }
   }
   
@@ -547,12 +547,12 @@ extension MKMapView {
   typealias VisibleRectCoordinates = (northWest: CLLocationCoordinate2D, northEast: CLLocationCoordinate2D, southEast: CLLocationCoordinate2D, southWest: CLLocationCoordinate2D)
   
   func visibleRectCornerCoordinates() -> VisibleRectCoordinates {
-    let nwPoint = MKMapPointMake(MKMapRectGetMinX(self.visibleMapRect), self.visibleMapRect.origin.y)
-    let nePoint = MKMapPointMake(MKMapRectGetMaxX(self.visibleMapRect), self.visibleMapRect.origin.y)
-    let sePoint = MKMapPointMake(MKMapRectGetMaxX(self.visibleMapRect), MKMapRectGetMaxY(self.visibleMapRect))
-    let swPoint = MKMapPointMake(self.visibleMapRect.origin.x, MKMapRectGetMaxY(self.visibleMapRect))
+    let nwPoint = MKMapPoint.init(x: self.visibleMapRect.minX, y: self.visibleMapRect.minY)
+    let nePoint = MKMapPoint.init(x: self.visibleMapRect.maxX, y: self.visibleMapRect.minY)
+    let sePoint = MKMapPoint.init(x: self.visibleMapRect.maxX, y: self.visibleMapRect.maxY)
+    let swPoint = MKMapPoint.init(x: self.visibleMapRect.minX, y: self.visibleMapRect.maxY)
     
-    return (northWest: MKCoordinateForMapPoint(nwPoint), northEast: MKCoordinateForMapPoint(nePoint), southEast: MKCoordinateForMapPoint(sePoint), southWest: MKCoordinateForMapPoint(swPoint))
+    return (northWest: nwPoint.coordinate, northEast: nePoint.coordinate, southEast: sePoint.coordinate, southWest: swPoint.coordinate)
   }
 }
 
@@ -561,7 +561,7 @@ extension MKMapView {
  */
 extension MKMapView {
   
-  open var zoomLevel: Int32 {
+  @objc open var zoomLevel: Int32 {
     get {
       return Int32(min(round(calculateZoomLevel()), Double(MAX_ZOOM_LEVEL)))
     }
@@ -570,13 +570,13 @@ extension MKMapView {
     }
   }
   
-  func setCenterCoordinate(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool) {
+  @objc func setCenterCoordinate(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool) {
     // clamp large numbers to 28
     let zoom = min(zoomLevel, 28)
     
     // use the zoom level to compute the region
     let span = self.coordinateSpanWithMapView(mapView: self, centerCoordinate:centerCoordinate, andZoomLevel:zoom)
-    let region = MKCoordinateRegionMake(centerCoordinate, span)
+    let region = MKCoordinateRegion.init(center: centerCoordinate, span: span)
     
     // set the region like normal
     self.setRegion(region, animated:animated)
@@ -645,7 +645,7 @@ extension MKMapView {
     let latitudeDelta: CLLocationDegrees = -1 * (maxLat - minLat)
     
     // create and return the lat/lng span
-    let span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta)
+    let span = MKCoordinateSpan.init(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
     
     return span
   }
@@ -666,7 +666,7 @@ extension MKMapView {
   /**
    * Allows for calculating the map zoom level based on a given MapRect
    */
-  public func calculateZoomLevelFromRegion(region: MKCoordinateRegion) -> Double {
+  @objc public func calculateZoomLevelFromRegion(region: MKCoordinateRegion) -> Double {
     let centerPixelSpaceX = self.longitudeToPixelSpaceX(longitude: region.center.longitude)
     let lonLeft = region.center.longitude - (region.span.longitudeDelta / 2)
     let leftPixelSpaceX = self.longitudeToPixelSpaceX(longitude: lonLeft)
@@ -689,8 +689,8 @@ private class ZoomButton: UIButton {
   }
   
   var zoom: ZoomType
-  let disabledGreyBG = UIColor(red: 0.9569, green: 0.9569, blue: 0.9569, alpha: 1.0)
-  let disabledGreyText = UIColor(red: 0.8078, green: 0.8078, blue: 0.8078, alpha: 1.0)
+  @objc let disabledGreyBG = UIColor(red: 0.9569, green: 0.9569, blue: 0.9569, alpha: 1.0)
+  @objc let disabledGreyText = UIColor(red: 0.8078, green: 0.8078, blue: 0.8078, alpha: 1.0)
   
   required init(zoom: ZoomType) {
     self.zoom = zoom

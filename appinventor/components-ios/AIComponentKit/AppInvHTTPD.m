@@ -178,11 +178,11 @@ static NSString *kMimeJson = @"application/json";
       yail = [NSString stringWithFormat:@"(process-repl-input %@ (begin %@))", blockid, yail];
       NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
         NSLog(@"To Eval: %@", yail);
-        [_interpreter evalForm:yail];
-        if (_interpreter.exception) {
-          [[RetValManager sharedManager] appendReturnValue:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]
+        [self->_interpreter evalForm:yail];
+        if (self->_interpreter.exception) {
+          [[RetValManager sharedManager] appendReturnValue:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", self->_interpreter.exception.name, self->_interpreter.exception]
                                                   forBlock:blockid withStatus:@"BAD"];
-          [_interpreter clearException];
+          [self->_interpreter clearException];
         }
       }];
       // Blocks the web server, but allows us to immediately return a REPL result for "Do It"

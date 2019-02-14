@@ -46,7 +46,7 @@ open class AccelerometerSensor: NonvisibleComponent {
   }
 
   // MARK: AccelerometerSensor Properties
-  open var MinimumInterval: Int32 {
+  @objc open var MinimumInterval: Int32 {
     get {
       return Int32(_manager.accelerometerUpdateInterval * 1000)
     }
@@ -55,7 +55,7 @@ open class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  open var Sensitivity: Int32 {
+  @objc open var Sensitivity: Int32 {
     get {
       return _sensitivity.rawValue
     }
@@ -68,13 +68,13 @@ open class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  open var Available: Bool {
+  @objc open var Available: Bool {
     get {
       return _manager.isAccelerometerAvailable || _manager.isDeviceMotionAvailable
     }
   }
   
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -107,7 +107,7 @@ open class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  open var LegacyMode: Bool {
+  @objc open var LegacyMode: Bool {
     get {
       return false
     }
@@ -116,26 +116,26 @@ open class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  open var XAccel: Double {
+  @objc open var XAccel: Double {
     get {
       return _x
     }
   }
   
-  open var YAccel: Double {
+  @objc open var YAccel: Double {
     get {
       return _y
     }
   }
   
-  open var ZAccel: Double {
+  @objc open var ZAccel: Double {
     get {
       return _z
     }
   }
   
   // MARK: AccelerometerSensor Events
-  open func AccelerationChanged(_ x: Double, y: Double, z: Double) {
+  @objc open func AccelerationChanged(_ x: Double, y: Double, z: Double) {
     _x = x
     _y = y
     _z = z
@@ -177,7 +177,7 @@ open class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  open func Shaking() {
+  @objc open func Shaking() {
     EventDispatcher.dispatchEvent(of: self, called: "Shaking")
   }
 }

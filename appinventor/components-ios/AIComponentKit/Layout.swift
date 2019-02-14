@@ -9,7 +9,7 @@
 import Foundation
 
 extension UIView {
-  func removeAllViews() {
+  @objc func removeAllViews() {
     let subviews = self.subviews
     for view in subviews {
       view.removeFromSuperview()

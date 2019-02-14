@@ -27,7 +27,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
 
     // Set up the minimum size constraint for the UITextView
     let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 26.5)
-    heightConstraint.priority = UILayoutPriorityDefaultHigh
+    heightConstraint.priority = UILayoutPriority.defaultHigh
     _view.addConstraint(heightConstraint)
 
     // We are single line by default
@@ -44,7 +44,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var alignment: NSTextAlignment {
+  @objc open var alignment: NSTextAlignment {
     get {
       return _field.textAlignment
     }
@@ -54,7 +54,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var backgroundColor: UIColor? {
+  @objc open var backgroundColor: UIColor? {
     get {
       return _field.backgroundColor
     }
@@ -64,7 +64,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var textColor: UIColor? {
+  @objc open var textColor: UIColor? {
     get {
       return _field.textColor
     }
@@ -74,7 +74,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var font: UIFont {
+  @objc open var font: UIFont {
     get {
       return _field.font!
     }
@@ -84,7 +84,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var placeholderText: String? {
+  @objc open var placeholderText: String? {
     get {
       return _field.placeholder
     }
@@ -96,7 +96,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  open var text: String? {
+  @objc open var text: String? {
     get {
       return _multiLine ? _view.text: _field.text
     }
@@ -106,7 +106,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  var multiLine: Bool {
+  @objc var multiLine: Bool {
     get {
       return _multiLine
     }
@@ -122,7 +122,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
-  var numbersOnly: Bool {
+  @objc var numbersOnly: Bool {
     get {
       return _numbersOnly
     }
@@ -220,13 +220,13 @@ open class TextBox: TextBoxBase {
   fileprivate var _colorSet = false
   fileprivate var _empty = true
 
-  public init(_ parent: ComponentContainer) {
+  @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
     MultiLine = false
   }
 
   // MARK: TextBox Properties
-  open var NumbersOnly: Bool {
+  @objc open var NumbersOnly: Bool {
     get {
       return _adapter._numbersOnly
     }
@@ -235,7 +235,7 @@ open class TextBox: TextBoxBase {
     }
   }
 
-  public var MultiLine: Bool {
+  @objc public var MultiLine: Bool {
     get {
       return _adapter.multiLine
     }
@@ -245,7 +245,7 @@ open class TextBox: TextBoxBase {
   }
 
   // MARK: TextBox Methods
-  public func HideKeyboard() {
+  @objc public func HideKeyboard() {
     _adapter._view.resignFirstResponder()
   }
 }

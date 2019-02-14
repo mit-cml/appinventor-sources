@@ -4,7 +4,7 @@
 import Foundation
 
 open class File: NonvisibleComponent {
-  let NO_ASSETS = "No_Assets"
+  @objc let NO_ASSETS = "No_Assets"
   private var _isRepl: Bool = false
   private let LOG_TAG: String = "FileComponent"
   
@@ -13,15 +13,15 @@ open class File: NonvisibleComponent {
     _isRepl = _form is ReplForm
   }
   
-  open func SaveFile(_ text: String, _ fileName: String) {
+  @objc open func SaveFile(_ text: String, _ fileName: String) {
     write(fileName, text, false)
   }
   
-  open func AppendToFile(_ text: String, _ fileName: String) {
+  @objc open func AppendToFile(_ text: String, _ fileName: String) {
     write(fileName, text, true)
   }
   
-  open func ReadFrom(_ fileName: String) {
+  @objc open func ReadFrom(_ fileName: String) {
     DispatchQueue.global(qos: .background).async {
       do {
         let filePath: String = try FileUtil.absoluteFileName(fileName, self._isRepl)
@@ -43,7 +43,7 @@ open class File: NonvisibleComponent {
     }
   }
   
-  open func Delete(_ fileName: String) {
+  @objc open func Delete(_ fileName: String) {
     if fileName.starts(with: "//") {
       _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_DELETE_ASSET.code, ErrorMessage.ERROR_CANNOT_DELETE_ASSET.message, fileName)
       return
@@ -104,11 +104,11 @@ open class File: NonvisibleComponent {
     return text.replace(target: "\r\n", withString: "\n")
   }
   
-  open func GotText(_ text: String) {
+  @objc open func GotText(_ text: String) {
     EventDispatcher.dispatchEvent(of: self, called: "GotText", arguments: text as NSString)
   }
   
-  open func AfterFileSaved(_ fileName: String) {
+  @objc open func AfterFileSaved(_ fileName: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterFileSaved", arguments: fileName as NSString)
   }
 }

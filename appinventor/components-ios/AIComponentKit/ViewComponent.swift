@@ -12,9 +12,9 @@ import Foundation
   var view: UIView { get }
 }
 
-open class ViewComponent: NSObject, VisibleComponent {
+@objc open class ViewComponent: NSObject, VisibleComponent {
   fileprivate weak var _delegate: AbstractMethodsForViewComponent?
-  internal let _container: ComponentContainer
+  @objc internal let _container: ComponentContainer
 
   fileprivate var _percentWidthHolder = kLengthUnknown
   fileprivate var _percentHeightHolder = kLengthUnknown
@@ -25,7 +25,7 @@ open class ViewComponent: NSObject, VisibleComponent {
   fileprivate var _row = kDefaultRowColumn
 
   // needs to be public for extensions
-  public init(_ parent: ComponentContainer) {
+  @objc public init(_ parent: ComponentContainer) {
     self._container = parent
   }
 
@@ -33,17 +33,17 @@ open class ViewComponent: NSObject, VisibleComponent {
     return self
   }
   
-  internal func setDelegate(_ delegate: AbstractMethodsForViewComponent) {
+  @objc internal func setDelegate(_ delegate: AbstractMethodsForViewComponent) {
     self._delegate = delegate
   }
 
-  open var view: UIView {
+  @objc open var view: UIView {
     get {
       return (_delegate?.view)!
     }
   }
 
-  open var Visible: Bool {
+  @objc open var Visible: Bool {
     get {
       return !(_delegate?.view.isHidden)!
     }
@@ -92,15 +92,15 @@ open class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  open func setNestedViewHeight(nestedView: UIView, height: Int32, shouldAddConstraints: Bool){
+  @objc open func setNestedViewHeight(nestedView: UIView, height: Int32, shouldAddConstraints: Bool){
     resetNestedViewConstraints(for: nestedView, width: Width, height: height, shouldAddConstraint: shouldAddConstraints)
   }
 
-  open func setNestedViewWidth(nestedView: UIView, width: Int32, shouldAddConstraints: Bool){
+  @objc open func setNestedViewWidth(nestedView: UIView, width: Int32, shouldAddConstraints: Bool){
     resetNestedViewConstraints(for: nestedView, width: width, height: Height, shouldAddConstraint: shouldAddConstraints)
   }
 
-  open func resetNestedViewConstraints(for nestedView: UIView, width: Int32, height: Int32, shouldAddConstraint: Bool) {
+  @objc open func resetNestedViewConstraints(for nestedView: UIView, width: Int32, height: Int32, shouldAddConstraint: Bool) {
     let constraintsToRemove = _container.form.view.constraints.filter { constraint in
       if let vi = constraint.firstItem, type(of: vi) == type(of: view) {
         let tempView = vi as! UIView
@@ -131,7 +131,7 @@ open class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  open var Column: Int32 {
+  @objc open var Column: Int32 {
     get {
       return _column
     }
@@ -140,7 +140,7 @@ open class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  open var Row: Int32 {
+  @objc open var Row: Int32 {
     get {
       return _row
     }

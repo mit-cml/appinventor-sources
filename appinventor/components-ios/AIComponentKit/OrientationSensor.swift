@@ -23,20 +23,20 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     _location.delegate = self
   }
 
-  open func Initialize() {
+  @objc open func Initialize() {
     if _enabled {
       _enabled = false
       Enabled = true
     }
   }
 
-  open var Available: Bool {
+  @objc open var Available: Bool {
     get {
       return _motion.isDeviceMotionAvailable
     }
   }
 
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -54,31 +54,31 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
 
-  open var Azimuth: Double {
+  @objc open var Azimuth: Double {
     get {
       return _azimuth
     }
   }
 
-  open var Pitch: Double {
+  @objc open var Pitch: Double {
     get {
       return _pitch
     }
   }
 
-  open var Roll: Double {
+  @objc open var Roll: Double {
     get {
       return _roll
     }
   }
 
-  open var Angle: Double {
+  @objc open var Angle: Double {
     get {
       return radToDeg(atan2(degToRad(_pitch), -degToRad(_roll)))
     }
   }
 
-  open var Magnitude: Double {
+  @objc open var Magnitude: Double {
     get {
       return 1.0 - cos(degToRad(_pitch)) * cos(degToRad(_roll))
     }
@@ -112,7 +112,7 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
   }
 
-  open func OrientationChanged(_ azimuth: Double, _ pitch: Double, _ roll: Double) {
+  @objc open func OrientationChanged(_ azimuth: Double, _ pitch: Double, _ roll: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "OrientationChanged", arguments: NSNumber(floatLiteral: azimuth), NSNumber(floatLiteral: pitch), NSNumber(floatLiteral: roll))
   }
 

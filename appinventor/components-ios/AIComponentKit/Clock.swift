@@ -17,7 +17,7 @@ open class Clock: NonvisibleComponent {
   }
 
   // MARK: Clock Properties
-  open var TimerInterval: Int32 {
+  @objc open var TimerInterval: Int32 {
     get {
       return _interval
     }
@@ -27,7 +27,7 @@ open class Clock: NonvisibleComponent {
     }
   }
 
-  open var TimerEnabled: Bool {
+  @objc open var TimerEnabled: Bool {
     get {
       return _enabled
     }
@@ -39,7 +39,7 @@ open class Clock: NonvisibleComponent {
     }
   }
 
-  open var TimerAlwaysFires: Bool {
+  @objc open var TimerAlwaysFires: Bool {
     get {
       return _alwaysFires
     }
@@ -49,15 +49,15 @@ open class Clock: NonvisibleComponent {
   }
 
   // MARK: Clock Methods
-  open func SystemTime() -> Int64 {
+  @objc open func SystemTime() -> Int64 {
     return Int64(Date().timeIntervalSince1970 * 1000.0)
   }
 
-  open func Now() -> Date {
+  @objc open func Now() -> Date {
     return Date()
   }
   
-  open func MakeInstant(_ from: String) throws -> Date {
+  @objc open func MakeInstant(_ from: String) throws -> Date {
     guard let components = dateParser(from) else {
       throw YailRuntimeError("Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm", "Sorry to be so picky.")
     }
@@ -65,124 +65,124 @@ open class Clock: NonvisibleComponent {
     return _calendar.date(from: components)!
   }
   
-  open func MakeInstantFromMillis(_ millis: Int64) -> Date {
+  @objc open func MakeInstantFromMillis(_ millis: Int64) -> Date {
     return Date(timeIntervalSince1970: TimeInterval(millis / 1000))
   }
   
-  open func GetMillis(_ instant: Date) -> Int64 {
+  @objc open func GetMillis(_ instant: Date) -> Int64 {
     return Int64(instant.timeIntervalSince1970 * 1000)
   }
   
-  open func AddDuration(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddDuration(_ instant: Date, _ quantity: Int64) -> Date {
     let _newInstant = instant
     return _newInstant.addingTimeInterval(TimeInterval(quantity/1000))
   }
   
-  open func AddSeconds(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddSeconds(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .second, value: Int(quantity), to: instant)!
   }
   
-  open func AddMinutes(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddMinutes(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .minute, value: Int(quantity), to: instant)!
   }
   
-  open func AddHours(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddHours(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .hour, value: Int(quantity), to: instant)!
   }
   
-  open func AddDays(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddDays(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .day, value: Int(quantity), to: instant)!
   }
   
-  open func AddWeeks(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddWeeks(_ instant: Date, _ quantity: Int64) -> Date {
     return AddDays(instant, quantity * 7)
   }
   
-  open func AddMonths(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddMonths(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .month, value: Int(quantity), to: instant)!
   }
   
-  open func AddYears(_ instant: Date, _ quantity: Int64) -> Date {
+  @objc open func AddYears(_ instant: Date, _ quantity: Int64) -> Date {
     return _calendar.date(byAdding: .year, value: Int(quantity), to: instant)!
   }
   
-  open func Duration(_ start: Date, _ end: Date) -> Int64 {
+  @objc open func Duration(_ start: Date, _ end: Date) -> Int64 {
     return Int64(end.timeIntervalSince(start) * 1000.0)
   }
   
-  open func DurationToSeconds(_ duration: Int64) -> Int64 {
+  @objc open func DurationToSeconds(_ duration: Int64) -> Int64 {
     return duration/1000
   }
   
-  open func DurationToMinutes(_ duration: Int64) -> Int64 {
+  @objc open func DurationToMinutes(_ duration: Int64) -> Int64 {
     return DurationToSeconds(duration)/60
   }
   
-  open func DurationToHours(_ duration: Int64) -> Int64 {
+  @objc open func DurationToHours(_ duration: Int64) -> Int64 {
     return DurationToMinutes(duration)/60
   }
   
-  open func DurationToDays(_ duration: Int64) -> Int64 {
+  @objc open func DurationToDays(_ duration: Int64) -> Int64 {
     return DurationToHours(duration) / 24
   }
   
-  open func DurationToWeeks(_ duration: Int64) -> Int64 {
+  @objc open func DurationToWeeks(_ duration: Int64) -> Int64 {
     return DurationToDays(duration) / 7
   }
   
-  open func Second(_ instant: Date) -> Int {
+  @objc open func Second(_ instant: Date) -> Int {
     return _calendar.component(.second, from: instant)
   }
   
-  open func Minute(_ instant: Date) -> Int {
+  @objc open func Minute(_ instant: Date) -> Int {
     return _calendar.component(.minute, from: instant)
   }
   
-  open func Hour(_ instant: Date) -> Int {
+  @objc open func Hour(_ instant: Date) -> Int {
     return _calendar.component(.hour, from: instant)
   }
   
-  open func DayOfMonth(_ instant: Date) -> Int {
+  @objc open func DayOfMonth(_ instant: Date) -> Int {
     return _calendar.component(.day, from: instant)
   }
   
-  open func Weekday(_ instant: Date) -> Int {
+  @objc open func Weekday(_ instant: Date) -> Int {
     return _calendar.component(.weekday, from: instant)
   }
   
-  open func WeekdayName(_ instant: Date) -> String {
+  @objc open func WeekdayName(_ instant: Date) -> String {
     let dayName = DateFormatter()
     dayName.dateFormat = "EEEE"
     return dayName.string(from: instant)
   }
   
-  open func Month(_ instant: Date) -> Int {
+  @objc open func Month(_ instant: Date) -> Int {
     return _calendar.component(.month, from: instant)
   }
   
-  open func MonthName(_ instant: Date) -> String {
+  @objc open func MonthName(_ instant: Date) -> String {
     let dayName = DateFormatter()
     dayName.dateFormat = "LLLL"
     return dayName.string(from: instant)
   }
   
-  open func Year(_ instant: Date) -> Int {
+  @objc open func Year(_ instant: Date) -> Int {
     return _calendar.component(.year, from: instant)
   }
   
-  open func FormatDateTime(_ instant: Date, _ pattern: String) -> String {
+  @objc open func FormatDateTime(_ instant: Date, _ pattern: String) -> String {
     let dateTimeFormatter = DateFormatter()
     dateTimeFormatter.dateFormat = pattern
     return dateTimeFormatter.string(from: instant)
   }
   
-  open func FormatDate(_ instant: Date, _ pattern: String) -> String {
+  @objc open func FormatDate(_ instant: Date, _ pattern: String) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = pattern
     return dateFormatter.string(from: instant)
   }
   
-  open func FormatTime(_ instant: Date) -> String {
+  @objc open func FormatTime(_ instant: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "h:mm:ss a"
     return dateFormatter.string(from: instant)
@@ -208,22 +208,22 @@ open class Clock: NonvisibleComponent {
   }
   
   // MARK: Clock Events
-  open func Timer() {
+  @objc open func Timer() {
     if (_alwaysFires || _onScreen) {
       EventDispatcher.dispatchEvent(of: self, called: "Timer")
     }
   }
 
   // MARK: Private implementation
-  func timerFired(_ timer: Timer) {
+  @objc func timerFired(_ timer: Timer) {
     self.performSelector(onMainThread: #selector(self.Timer), with: nil, waitUntilDone: false)
   }
 
-  func restartTimer() {
+  @objc func restartTimer() {
     _timer?.invalidate()
     if _enabled {
       _timer = Foundation.Timer(timeInterval: TimeInterval(Double(_interval) / 1000.0), target: self, selector: #selector(self.timerFired(_:)), userInfo: nil, repeats: true)
-      RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
+      RunLoop.main.add(_timer!, forMode: RunLoop.Mode.default)
     } else {
       _timer = nil
     }

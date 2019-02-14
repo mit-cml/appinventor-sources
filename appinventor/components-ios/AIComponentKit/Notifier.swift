@@ -19,7 +19,7 @@ open class Notifier: NonvisibleComponent {
   }
 
   // MARK: Notifier Properties
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -28,7 +28,7 @@ open class Notifier: NonvisibleComponent {
     }
   }
 
-  open var NotifierLength: Int32 {
+  @objc open var NotifierLength: Int32 {
     get {
       return _notifierLength
     }
@@ -37,7 +37,7 @@ open class Notifier: NonvisibleComponent {
     }
   }
 
-  open var TextColor: Int32 {
+  @objc open var TextColor: Int32 {
     get {
       return _textColor
     }
@@ -47,28 +47,28 @@ open class Notifier: NonvisibleComponent {
   }
 
   // MARK: Notifier Methods
-  open func DismissProgressDialog() {
+  @objc open func DismissProgressDialog() {
     // TODO: implementation
   }
 
-  open func LogError(_ message: String) {
+  @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
   }
 
-  open func LogInfo(_ message: String) {
+  @objc open func LogInfo(_ message: String) {
     NSLog("Info: \(message)")
   }
 
-  open func LogWarning(_ message: String) {
+  @objc open func LogWarning(_ message: String) {
     NSLog("Warning: \(message)")
   }
 
-  open func ShowAlert(_ notice: String) {
+  @objc open func ShowAlert(_ notice: String) {
     let duration = TimeInterval(_notifierLength == 1 ? 3.5 : 2.0)
     _form.view.window?.makeToast(notice, duration: duration, position: ToastPosition.center)
   }
 
-  open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
+  @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
     let dialog = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
     let btn1Action = UIAlertAction(title: button1text, style: .default) { (action: UIAlertAction) in
       self.performSelector(onMainThread: #selector(self.AfterChoosing(_:)), with: button1text, waitUntilDone: false)
@@ -96,7 +96,7 @@ open class Notifier: NonvisibleComponent {
     _form.present(dialog, animated: true)
   }
 
-  open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
+  @objc open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
     let dialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
     let okAction = UIAlertAction(title: buttonText, style: .default) { (action: UIAlertAction) in }
     dialog.addAction(okAction)
@@ -113,11 +113,11 @@ open class Notifier: NonvisibleComponent {
     _form.present(dialog, animated: true)
   }
 
-  open func ShowProgressDialog(_ message: String, _ title: String) {
+  @objc open func ShowProgressDialog(_ message: String, _ title: String) {
     // TODO: implementation
   }
 
-  open func ShowTextDialog(_ message: String, _ title: String, _ cancelable: Bool) {
+  @objc open func ShowTextDialog(_ message: String, _ title: String, _ cancelable: Bool) {
     let dialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
     dialog.addTextField { (textbox: UITextField) in }
     let okAction = UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction) in
@@ -135,11 +135,11 @@ open class Notifier: NonvisibleComponent {
   }
 
   // MARK: Notifier Events
-  open func AfterChoosing(_ choice: String) {
+  @objc open func AfterChoosing(_ choice: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterChoosing", arguments: choice as NSString)
   }
 
-  open func AfterTextInput(_ response: String) {
+  @objc open func AfterTextInput(_ response: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterTextInput", arguments: response as NSString)
   }
 }

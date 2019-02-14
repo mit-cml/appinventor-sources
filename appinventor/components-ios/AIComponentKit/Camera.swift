@@ -14,7 +14,7 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
     super.init(parent)
   }
 
-  open func HasPermission() -> Bool {
+  @objc open func HasPermission() -> Bool {
     if let camPermission = PermissionHandler.HasPermission(for: .camera) {
       return camPermission
     } else {
@@ -22,7 +22,7 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
     }
   }
 
-  open func RequestPermission() {
+  @objc open func RequestPermission() {
     PermissionHandler.RequestPermission(for: .camera) { camAllowed, camChanged in
       if camChanged {
         self.PermissionChange(camAllowed)
@@ -30,7 +30,7 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
     }
   }
 
-  open func PermissionChange(_ allowed: Bool) {
+  @objc open func PermissionChange(_ allowed: Bool) {
     EventDispatcher.dispatchEvent(of: self, called: "PermissionChange", arguments: allowed as AnyObject)
   }
 
@@ -54,7 +54,7 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
     }
   }
 
-  open func TakePicture() {
+  @objc open func TakePicture() {
     PermissionHandler.RequestPermission(for: .camera) { camAllowed, camChanged in
       if camChanged {
         self.PermissionChange(camAllowed)
@@ -66,11 +66,14 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
   }
 
   // Deprecated
-  open var UseFront: Bool = false
+  @objc open var UseFront: Bool = false
 
-  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-    if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-      if let data = UIImageJPEGRepresentation(image, 0.8) {
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
+    if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+      if let data = image.jpegData(compressionQuality: 0.8) {
         let filename = AssetManager.shared.pathForPublicAsset("AI_\(_dateFormatter.string(from: Date())).jpg")
         do {
           try data.write(to: URL(fileURLWithPath: filename))
@@ -90,8 +93,18 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
     }
   }
 
-  open func AfterPicture(_ image: String) {
+  @objc open func AfterPicture(_ image: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicture", arguments: image as AnyObject)
   }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
+}

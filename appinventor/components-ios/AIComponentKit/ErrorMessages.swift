@@ -239,8 +239,6 @@ import Foundation
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
       return "Installing packages from URLs is not supported on iOS"
-    case .ERROR_CANNOT_ENCODE_TEXT_AS_UTF8:
-      return "Cannot encode text %s as utf8"
 
     // iOS Specific SpeechRecognizer Errors
     case .ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED:

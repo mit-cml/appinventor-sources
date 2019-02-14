@@ -50,7 +50,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   }
 
   // MARK: Properties
-  open var BackgroundColor: Int32 {
+  @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -64,7 +64,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var ElementsFromString: String {
+  @objc open var ElementsFromString: String {
     get {
       return ""
     }
@@ -73,7 +73,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var Elements: [String] {
+  @objc open var Elements: [String] {
     get {
       return _elements
     }
@@ -84,7 +84,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var Selection: String {
+  @objc open var Selection: String {
     get {
       return _selection
     }
@@ -103,7 +103,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var SelectionColor: Int32 {
+  @objc open var SelectionColor: Int32 {
     get {
       return _selectionColor
     }
@@ -113,7 +113,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var SelectionIndex: Int32 {
+  @objc open var SelectionIndex: Int32 {
     get {
       return _selectionIndex + 1
     }
@@ -122,12 +122,12 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       if _selectionIndex < 0 {
         _view.deselectRow(at: _view.indexPathForSelectedRow!, animated: true)
       } else {
-        _view.selectRow(at: IndexPath(row: Int(_selectionIndex), section: 0), animated: true, scrollPosition: UITableViewScrollPosition.middle)
+        _view.selectRow(at: IndexPath(row: Int(_selectionIndex), section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       }
     }
   }
 
-  open var ShowFilterBar: Bool {
+  @objc open var ShowFilterBar: Bool {
     get {
       return _showFilter
     }
@@ -137,7 +137,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var TextColor: Int32 {
+  @objc open var TextColor: Int32 {
     get {
       return _textColor
     }
@@ -147,7 +147,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
   }
 
-  open var TextSize: Int32 {
+  @objc open var TextSize: Int32 {
     get {
       return _textSize
     }
@@ -159,7 +159,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
 
   // MARK: Events
 
-  open func AfterPicking() {
+  @objc open func AfterPicking() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicking")
   }
 

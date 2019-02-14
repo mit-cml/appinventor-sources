@@ -9,9 +9,9 @@
 import Foundation
 
 open class NonvisibleComponent: NSObject, Component {
-  final var _form: Form
+  @objc final var _form: Form
 
-  public init(_ container: ComponentContainer) {
+  @objc public init(_ container: ComponentContainer) {
     self._form = container.form
   }
 

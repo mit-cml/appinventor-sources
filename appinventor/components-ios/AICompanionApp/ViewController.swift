@@ -1,25 +1,27 @@
-//
-//  ViewController.swift
-//  AICompanionApp
-//
-//  Created by Evan Patton on 9/23/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import UIKit
 import AIComponentKit
 import AVKit
 
+/**
+ * Root view controller for the MIT AI Companion for iOS. Eventually this will go away
+ * once we have the capability to build apps from YAIL files, in which case we will be
+ * able to build the app from the aiplayapp sources.
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
 public class ViewController: UINavigationController {
-  public var Height: Int32 = 0
-  public var Width: Int32 = 0
+  @objc public var Height: Int32 = 0
+  @objc public var Width: Int32 = 0
   private static var controller: ViewController?
 
-  public func setChildHeight(of component: ViewComponent, height: Int32) {
+  @objc public func setChildHeight(of component: ViewComponent, height: Int32) {
     
   }
 
-  public func setChildWidth(of component: ViewComponent, width: Int32) {
+  @objc public func setChildWidth(of component: ViewComponent, width: Int32) {
     
   }
 
@@ -30,8 +32,8 @@ public class ViewController: UINavigationController {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
-  var barcodeScanner: BarcodeScanner?
-  var phoneStatus: PhoneStatus!
+  @objc var barcodeScanner: BarcodeScanner?
+  @objc var phoneStatus: PhoneStatus!
 
   public override func viewDidLoad() {
     super.viewDidLoad()
@@ -72,35 +74,12 @@ public class ViewController: UINavigationController {
       let ipaddr: String! = NetworkUtils.getIPAddress()
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
       versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
-      connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControlEvents.primaryActionTriggered)
-      barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControlEvents.primaryActionTriggered)
+      connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
+      barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
     }
-  }
-
-  var audioPlayer: AVAudioPlayer? = nil
-
-  func playSound(_ sender: AnyObject?) {
-    if audioPlayer == nil {
-      let meow = URL(fileURLWithPath: Bundle.main.path(forResource: "meow.mp3", ofType: nil)!)
-      NSLog("Meow: \(meow)")
-      do {
-        try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-        try AVAudioSession.sharedInstance().setActive(true)
-        audioPlayer = try AVAudioPlayer(contentsOf: meow)
-        audioPlayer?.prepareToPlay()
-      } catch {
-        NSLog("Error")
-        return
-      }
-    }
-    audioPlayer?.play()
-  }
-
-  public override func viewDidAppear(_ animated: Bool) {
-//    self.playSound(self)
   }
 
   public override func didReceiveMemoryWarning() {
@@ -108,19 +87,19 @@ public class ViewController: UINavigationController {
     // Dispose of any resources that can be recreated.
   }
 
-  func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
+  @objc func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     return true
   }
 
-  func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
+  @objc func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     return true
   }
 
-  func add(_ component: ViewComponent) {
+  @objc func add(_ component: ViewComponent) {
     
   }
   
-  func connect(_ sender: UIButton?) {
+  @objc func connect(_ sender: UIButton?) {
     let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
     NSLog("Seed = \((connectCode?.text)!)")
     NSLog("Code = \(code)")
@@ -133,7 +112,7 @@ public class ViewController: UINavigationController {
     URLSession.shared.dataTask(with: request).resume()
   }
   
-  func showBarcodeScanner(_ sender: UIButton?) {
+  @objc func showBarcodeScanner(_ sender: UIButton?) {
     let repl = (form! as! ReplForm)
     repl.interpreter?.evalForm("(yail:invoke (lookup-in-form-environment 'BarcodeScanner1) 'DoScan)")
     if let exception = repl.interpreter?.exception {
@@ -141,15 +120,14 @@ public class ViewController: UINavigationController {
     }
   }
   
-  public class func gotText(_ text: String) {
+  @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if (text != "") {
       ViewController.controller?.connect(nil)
     }
   }
 
-  override public var childViewControllerForStatusBarStyle: UIViewController? {
+  override public var childForStatusBarStyle: UIViewController? {
     return form
   }
 }
-

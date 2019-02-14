@@ -11,12 +11,12 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     super.init(parent)
     super.setDelegate(self)
     _view.titleLabel?.text = NSLocalizedString("ContactPicker", comment: "The class name of the contact picker.") + "1"
-    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
   }
 
   // MARK: Properties
-  open var ContactName: String {
+  @objc open var ContactName: String {
     get {
       if let contact = _contact {
         return CNContactFormatter.string(from: contact, style: .fullName) ?? ""
@@ -26,13 +26,13 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     }
   }
 
-  open var ContactUri: String {
+  @objc open var ContactUri: String {
     get {
       return _contact?.identifier ?? ""
     }
   }
 
-  open var EmailAddress: String {
+  @objc open var EmailAddress: String {
     get {
       if let contact = _contact {
         if contact.emailAddresses.count > 0 {
@@ -43,7 +43,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     }
   }
 
-  open var EmailAddressList: [String] {
+  @objc open var EmailAddressList: [String] {
     get {
       var result = [String]()
       if let contact = _contact {
@@ -55,7 +55,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     }
   }
 
-  open var PhoneNumber: String {
+  @objc open var PhoneNumber: String {
     get {
       if let contact = _contact {
         if contact.phoneNumbers.count > 0 {
@@ -66,7 +66,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     }
   }
 
-  open var PhoneNumberList: [String] {
+  @objc open var PhoneNumberList: [String] {
     get {
       var result = [String]()
       if let contact = _contact {
@@ -78,7 +78,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     }
   }
 
-  open var Picture: String {
+  @objc open var Picture: String {
     get {
       if let contact = _contact {
         if contact.imageDataAvailable, let imageData = contact.imageData {
@@ -97,12 +97,12 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
   }
 
   // MARK: Methods
-  open func ViewContact(_ uri: String) {
+  @objc open func ViewContact(_ uri: String) {
     if let contact = _contact {
       let abUrl = "addressbook://\(contact.identifier)"
       if let url = URL(string: abUrl) {
         if #available(iOS 10.0, *) {
-          UIApplication.shared.open(url, options: [String : Any]()) { (success: Bool) in
+          UIApplication.shared.open(url, options: [UIApplication.OpenExternalURLOptionsKey : Any]()) { (success: Bool) in
             if !success {
               self.reportViewContactError()
             }
@@ -131,7 +131,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
   }
 
   // MARK: AbstractMethodsForPicker Implementation
-  open func open() {
+  @objc open func open() {
     let picker = CNContactPickerViewController()
     picker.delegate = self
     _container.form.present(picker, animated: true)

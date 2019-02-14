@@ -13,7 +13,7 @@ class LinearLayout: Layout {
   
   init() {
     _view.spacing = 0.0
-    _view.axis = UILayoutConstraintAxis.vertical
+    _view.axis = NSLayoutConstraint.Axis.vertical
   }
   
   func getLayoutManager() -> UIView {

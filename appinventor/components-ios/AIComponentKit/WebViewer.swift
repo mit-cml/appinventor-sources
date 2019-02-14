@@ -39,7 +39,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     parent.add(self)
   }
 
-  open func CurrentPageTitle() -> String {
+  @objc open func CurrentPageTitle() -> String {
     if let title = _view.title {
       return title
     } else {
@@ -47,7 +47,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open func CurrentUrl() -> String {
+  @objc open func CurrentUrl() -> String {
     if let url = _view.url {
       return url.absoluteString
     } else {
@@ -55,7 +55,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open var FollowLinks : Bool {
+  @objc open var FollowLinks : Bool {
     get {
       return _followLinks
     }
@@ -64,7 +64,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open var HomeUrl : String {
+  @objc open var HomeUrl : String {
     get {
       return _homeURL
     }
@@ -74,7 +74,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open var IgnoreSslErrors : Bool {
+  @objc open var IgnoreSslErrors : Bool {
     get {
       return _ignoreSSLErrors
     }
@@ -84,7 +84,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   }
 
   //iOS will prompt for location services whenever a specific site asks
-  open var PromptforPermission : Bool {
+  @objc open var PromptforPermission : Bool {
     get {
       return true
     }
@@ -94,7 +94,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   }
 
   //iOS will prompt for location services, so status cannot be set programmatically
-  open var UsesLocation : Bool {
+  @objc open var UsesLocation : Bool {
     get {
       switch CLLocationManager.authorizationStatus() {
       case .notDetermined, .denied, .restricted: return false
@@ -106,7 +106,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open var WebViewString : String {
+  @objc open var WebViewString : String {
     get {
       return _webViewString
     }
@@ -149,36 +149,36 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open func CanGoBack() -> Bool {
+  @objc open func CanGoBack() -> Bool {
     return _view.canGoBack
   }
 
-  open func CanGoForward() -> Bool {
+  @objc open func CanGoForward() -> Bool {
     return _view.canGoForward
   }
 
-  open func ClearCaches() {
+  @objc open func ClearCaches() {
     _view.configuration.websiteDataStore.removeData(ofTypes: Set([WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeOfflineWebApplicationCache]), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
   }
 
   //does nothing, as you cannot programmatically revoke location permissions
-  open func ClearLocations() {
+  @objc open func ClearLocations() {
     _container.form.dispatchErrorOccurredEvent(self, "ClearLocations", ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code, ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
   }
 
-  open func GoBack() {
+  @objc open func GoBack() {
     _view.goBack()
   }
 
-  open func GoForward() {
+  @objc open func GoForward() {
     _view.goForward()
   }
 
-  open func GoHome() {
+  @objc open func GoHome() {
     processURL(_homeURL)
   }
 
-  open func GoToUrl(_ url: String) {
+  @objc open func GoToUrl(_ url: String) {
     processURL(url)
   }
 
@@ -226,11 +226,11 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
   }
 
-  open func navigation(gesture: UISwipeGestureRecognizer) {
+  @objc open func navigation(gesture: UISwipeGestureRecognizer) {
     let isRTL = UIView.userInterfaceLayoutDirection(for: _view.semanticContentAttribute) == UIUserInterfaceLayoutDirection.rightToLeft
     switch gesture.direction {
-    case UISwipeGestureRecognizerDirection.right: isRTL ? _view.goForward(): _view.goBack()
-    case UISwipeGestureRecognizerDirection.left: isRTL ? _view.goBack(): _view.goForward()
+    case UISwipeGestureRecognizer.Direction.right: _ = (isRTL ? _view.goForward(): _view.goBack())
+    case UISwipeGestureRecognizer.Direction.left: _ = (isRTL ? _view.goBack(): _view.goForward())
     default: break
     }
   }

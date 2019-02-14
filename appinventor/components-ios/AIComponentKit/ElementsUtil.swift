@@ -25,7 +25,7 @@ extension String {
 
 public func elementsFromString(_ itemString: String) -> [String] {
   let items = [String]()
-  if itemString.characters.count > 0 {
+  if itemString.count > 0 {
     return itemString.split(" *, *")
   }
   return items

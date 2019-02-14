@@ -24,16 +24,16 @@ open class Sharing: NonvisibleComponent {
   }
 
   // MARK: Sharing Methods
-  open func ShareMessage(_ message: String) {
+  @objc open func ShareMessage(_ message: String) {
     showActivityPicker([message])
   }
 
-  open func ShareFile(_ file: String) {
+  @objc open func ShareFile(_ file: String) {
     let fileUrl = URL(fileURLWithPath: file)
     showActivityPicker([fileUrl])
   }
 
-  open func ShareFileWithMessage(_ file: String, _ message: String) {
+  @objc open func ShareFileWithMessage(_ file: String, _ message: String) {
     let fileUrl = URL(fileURLWithPath: file)
     showActivityPicker([message, fileUrl])
   }
