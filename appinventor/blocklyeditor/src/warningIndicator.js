@@ -115,12 +115,13 @@ Blockly.WarningIndicator.prototype.createDom = function() {
        //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.iconErrorGroup_);
 
+  this.warningToggleGroup_ = Blockly.utils.createSvgElement('g', {}, this.svgGroup_);
   this.warningToggle_ = Blockly.utils.createSvgElement('rect',
       {'fill': "#eeeeee",'width':"120", 'height':"20", 'x':"-15",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
-      this.svgGroup_);
+      this.warningToggleGroup_);
   this.warningToggleText_ = Blockly.utils.createSvgElement('text',
       {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
-      this.svgGroup_);
+      this.warningToggleGroup_);
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
   return this.svgGroup_;
@@ -133,8 +134,15 @@ Blockly.WarningIndicator.prototype.init = function() {
   this.position_();
   // If the document resizes, reposition the warning indicator.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
-  Blockly.bindEvent_(this.warningToggle_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
-  Blockly.bindEvent_(this.warningToggleText_, 'mouseup', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.warningToggleGroup_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+
+  // We stop propagating the mousedown event so that Blockly doesn't prevent click events in Firefox, which breaks
+  // the click event handler above.
+  Blockly.bindEvent_(this.warningToggleGroup_, 'mousedown', this, function(e) { e.stopPropagation() });
+
+  // Stopping propagation of the mousedown event breaks touch events on tablets. We register here for touchend on the
+  // toggle button so that we can simulate a click event.
+  Blockly.bindEvent_(this.warningToggleGroup_, 'touchend', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
 };
 
 /**

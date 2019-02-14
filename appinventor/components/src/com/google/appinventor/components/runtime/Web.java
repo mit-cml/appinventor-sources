@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -21,6 +21,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
@@ -53,6 +54,7 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -344,8 +346,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void Get() {
+    final String METHOD = "Get";
     // Capture property values in local variables before running asynchronously.
-    final CapturedProperties webProps = capturePropertyValues("Get");
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
     if (webProps == null) {
       // capturePropertyValues has already called form.dispatchErrorOccurredEvent
       return;
@@ -356,12 +359,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       public void run() {
         try {
           performRequest(webProps, null, null, "GET");
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, "Get",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
         } catch (Exception e) {
           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-          form.dispatchErrorOccurredEvent(Web.this, "Get",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
         }
       }
@@ -415,8 +420,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostFile(final String path) {
+    final String METHOD = "PostFile";
     // Capture property values before running asynchronously.
-    final CapturedProperties webProps = capturePropertyValues("PostFile");
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
     if (webProps == null) {
       // capturePropertyValues has already called form.dispatchErrorOccurredEvent
       return;
@@ -427,11 +433,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       public void run() {
         try {
           performRequest(webProps, null, path, "POST");
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, "PostFile",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
         } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, "PostFile",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
         }
       }
@@ -485,8 +493,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PutFile(final String path) {
+    final String METHOD = "PutFile";
     // Capture property values before running asynchronously.
-    final CapturedProperties webProps = capturePropertyValues("PutFile");
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
     if (webProps == null) {
       // capturePropertyValues has already called form.dispatchErrorOccurredEvent
       return;
@@ -497,11 +506,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       public void run() {
         try {
           performRequest(webProps, null, path, "PUT");
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
         } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
         }
       }
@@ -519,8 +530,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void Delete() {
+    final String METHOD = "Delete";
     // Capture property values in local variables before running asynchronously.
-    final CapturedProperties webProps = capturePropertyValues("Delete");
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
     if (webProps == null) {
       // capturePropertyValues has already called form.dispatchErrorOccurredEvent
       return;
@@ -531,11 +543,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       public void run() {
         try {
           performRequest(webProps, null, null, "DELETE");
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
         } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
         } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
         }
       }
@@ -586,6 +600,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
         try {
           performRequest(webProps, requestData, null, httpVerb);
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, functionName, e);
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               e.getErrorMessageNumber());
@@ -699,6 +715,26 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+    
+  /**
+   * Decodes the encoded text value.
+   *
+   * @param text the text to encode
+   * @return the decoded text
+   */
+  @SimpleFunction
+  public String UriDecode(String text) {
+    try {
+      return URLDecoder.decode(text, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // If UTF-8 is not supported, we're in big trouble!
+      // According to Javadoc and Android documentation for java.nio.charset.Charset, UTF-8 is
+      // available on every Java implementation.
+      Log.e(LOG_TAG, "UTF-8 is unsupported?", e);
+      return "";
+    }
+  }
+    
   /**
    * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
    * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,

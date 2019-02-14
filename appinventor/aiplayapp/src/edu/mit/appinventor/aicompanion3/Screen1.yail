@@ -6,15 +6,15 @@ $Source $Yail
 (require <com.google.youngandroid.runtime>)
 
 (def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
-(def (p$callrendezvous $code)  (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (get-var g$rendezvousServer) "/rendezvous/" ) '(text text text ) "join") 'text)(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")) '(list))) '(text)))
+(def (p$callrendezvous $code)  (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (get-var g$rendezvousServer) "/rendezvous/" ) '(text text text ) "join") 'text)(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "webrtc" (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "version" (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "api" (call-component-method 'PhoneStatus1 'SdkLevel (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "installer" (call-component-method 'PhoneStatus1 'GetInstaller (*list-for-runtime*) '()) ) '(any any ) "make a list") ) '(any any any any any any any ) "make a list")) '(list))) '(text)))
 (def (p$checkWiFi )  (if (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive string-starts-at (*list-for-runtime* (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) "Error") '(text text) "starts at")) '(any any) "=") (begin   (call-component-method 'Notifier1 'ShowChooseDialog (*list-for-runtime* "Your Device does not appear to have a WiFi Connection"  "No WiFi"  "Continue without WiFi"  "Exit"  #f) '(text text text text boolean)))))
 (def (p$getRendezvousServer ) (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "rendezvousServer"  (get-var g$rendezvousServer)) '(text any)))
 (def (p$isAPK $input) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "="))
-(def (p$processcode $x)  (if ((get-var p$isAPK) (lexical-value $x)) (begin   (call-component-method 'PhoneStatus1 'installURL (*list-for-runtime* (lexical-value $x)) '(text))) (begin   ((get-var p$callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* ((get-var p$extractRendezvousServer) (lexical-value $x))) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f) '(boolean)))))
+(def (p$processcode $x)  (if ((get-var p$isAPK) (lexical-value $x)) (begin   (call-component-method 'PhoneStatus1 'installURL (*list-for-runtime* (lexical-value $x)) '(text))) (begin   (set-and-coerce-property! 'PhoneStatus1 'WebRTC (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") 'boolean)((get-var p$callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* ((get-var p$extractRendezvousServer) (lexical-value $x))  (get-var g$rendezvousServer)) '(text text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f) '(boolean)))))
 (def (p$extractRendezvousServer $code) (if (call-yail-primitive string-contains (*list-for-runtime* (lexical-value $code) ";") '(text text) "contains") (let ( ($codes (call-yail-primitive string-split (*list-for-runtime* (lexical-value $code) ";") '(text text) "split"))  ) (begin   ((get-var p$setRendezvousServer) (call-yail-primitive yail-list-get-item (*list-for-runtime* (lexical-value $codes) 1) '(list number) "select list item") #f) (call-yail-primitive yail-list-get-item (*list-for-runtime* (lexical-value $codes) 2) '(list number) "select list item")) ) (lexical-value $code)))
 (def (p$resetRendezvousServer )  (set-var! g$rendezvousServer "rendezvous.appinventor.mit.edu")(call-component-method 'TinyDB1 'ClearTag (*list-for-runtime* "rendezvousServer") '(text)))
 (def (p$setRendezvousServer $value $permanent)  (set-var! g$rendezvousServer (lexical-value $value))(if (lexical-value $permanent) (begin   (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "rendezvousServer"  (lexical-value $value)) '(text any)))))
-(def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator") '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
+(def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"  (get-var g$rendezvousServer)) '(text text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
 (def g$rendezvousServer "rendezvous.appinventor.mit.edu")
 ;;; Screen1
 
@@ -32,7 +32,7 @@ $Source $Yail
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*) '()) 'text))
+    (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'PhoneStatus1 'WebRTC (get-property 'CheckBox1 'Checked) 'boolean))
 ;;; SettingsPanel
 
 (add-component Screen1 com.google.appinventor.components.runtime.VerticalArrangement SettingsPanel 
@@ -220,7 +220,7 @@ $Source $Yail
 
 ;;; CodeBox
 
-(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox
+(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox 
 (set-and-coerce-property! 'CodeBox 'BackgroundColor #xFFFFFFFF 'number)
 
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
@@ -346,6 +346,15 @@ $Source $Yail
 
 )
 
+;;; CheckBox1
+
+(add-component MainPanel com.google.appinventor.components.runtime.CheckBox CheckBox1 
+(set-and-coerce-property! 'CheckBox1 'Text "Use Legacy Connection" 'text)
+
+)
+
+(define-event CheckBox1 Changed()(set-this-form)
+    (set-and-coerce-property! 'PhoneStatus1 'WebRTC (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") 'boolean))
 ;;; PhoneStatus1
 
 (add-component MainPanel com.google.appinventor.components.runtime.PhoneStatus PhoneStatus1 

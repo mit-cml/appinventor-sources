@@ -784,9 +784,15 @@
                    <dd>Sets or gets the tile layer used to draw the Map background. Defaults to Roads. Valid values are
                    1 (Roads), 2 (Aerial), or 3 (Terrain). Road layers are provided by OpenStreetMap and aerial and
                    terrain layers are provided by the U.S. Geological Survey.</dd>
+                   <dt class="number" id="Map.ScaleUnits">ScaleUnits<i></i></dt>
+                   <dd>Sets or gets the units used for the scale overlay. 1 (the default) will give metric units (km, m)
+                   whereas 2 will give imperial units (mi, ft).</dd>
                    <dt class="boolean" id="Map.ShowCompass">ShowCompass<i></i></dt>
                    <dd>Shows or hides a compass overlay on the Map. The compass will be rotated based on the
                    device&apos;s orientation if a digital compass is present in hardware.</dd>
+                   <dt class="boolean" id="Map.ShowScale">ShowScale<i></i></dt>
+                   <dd>Shows or hides a scale overlay on the Map. The scale will change with the zoom level and its units
+                   can be controlled by the <a href="#Map.ScaleUnits">ScaleUnits</a> property.</dd>
                    <dt class="boolean" id="Map.ShowUser">ShowUser<i></i></dt>
                    <dd>Shows or hides an icon indicating the user&apos;s current location on the Map. The availability
                    and accuracy of this feature will depend on whether the user has location services enabled and which

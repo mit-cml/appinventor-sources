@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -84,4 +84,23 @@ public @interface DesignerComponent {
    * the global App Inventor minimum SDK unless otherwise specified.
    */
   int androidMinSdk() default ComponentConstants.APP_INVENTOR_MIN_SDK;
+
+  /**
+   * A custom version name for the component version. If provided, it
+   * will be shown in the component help popup in place of the
+   * {@link #version()}. This can be useful for marking beta or release
+   * candidate versions of extensions, for example.
+   * @return The custom version name, if any.
+   */
+  String versionName() default "";
+
+  /**
+   * A ISO 8601 datetime string that indicates when the component was
+   * built. This information will be shown in the component help popup
+   * for extensions. This is automatically populated by
+   * {@link com.google.appinventor.components.scripts.ExternalComponentGenerator}.
+   * @return An ISO 8601 string containing the compilation time of
+   * the component.
+   */
+  String dateBuilt() default "";
 }

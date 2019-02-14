@@ -57,7 +57,12 @@ public class CloudDBJedisListener extends JedisPubSub {
       for (Object value : valueList) {
         // Note: DataChanged will arrange to dispatch the event
         // on the UI thread.
-        cloudDB.DataChanged(tag, value);
+        String retValue = JsonUtil.getJsonRepresentationIfValueFileName(value);
+        if (retValue == null) {
+          cloudDB.DataChanged(tag, value);
+        } else {
+          cloudDB.DataChanged(tag, retValue);
+        }
       }
     } catch (JSONException e) {
       Log.e(LOG_TAG, "onMessage: JSONException", e);

@@ -40,6 +40,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -405,7 +406,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editors.formEditor = newFormEditor;
       editorMap.put(formName, editors);
     }
-    newFormEditor.loadFile(new Command() {
+    final Command afterLoadCommand = new Command() {
       @Override
       public void execute() {
         int pos = Collections.binarySearch(fileIds, newFormEditor.getFileId(),
@@ -417,7 +418,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         if (isScreen1(formName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
-            OdeLog.log("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen " 
+            OdeLog.log("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen "
                 + formName + " for project " + newFormEditor.getProjectId());
             Ode.getInstance().getDesignToolbar().switchToScreen(newFormEditor.getProjectId(),
                 formName, DesignToolbar.View.FORM);
@@ -425,7 +426,24 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         }
         loadBlocksEditor(formName);
       }
-    });
+    };
+    if (!isScreen1(formName) && !screen1FormLoaded) {
+      // Defer loading other screens until Screen1 is loaded. Otherwise we can end up in an
+      // inconsistent state during project upgrades with Screen1-only properties.
+      Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+        @Override
+        public boolean execute() {
+          if (screen1FormLoaded) {
+            newFormEditor.loadFile(afterLoadCommand);
+            return false;
+          } else {
+            return true;
+          }
+        }
+      }, 100);
+    } else {
+      newFormEditor.loadFile(afterLoadCommand);
+    }
   }
     
   private boolean readyToShowScreen1() {

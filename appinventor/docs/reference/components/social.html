@@ -648,16 +648,41 @@ none
 <dl>
   <dt><code>IncomingCallAnswered(text phoneNumber)</code></dt>
   <dd>Event indicating that an incoming phone call is
-  answered. phoneNumber is the incoming call phone number.</dd>
+  answered. phoneNumber is the incoming call phone
+  number. <strong>Using this block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your app is
+  submitted to the Google Play Store.</strong></dd>
   <dt><code>PhoneCallEnded(number status, text phoneNumber)</code></dt>
-  <dd>Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.</dd>
+  <dd>Event indicating that a phone call has ended. If status is 1,
+  incoming call is missed or rejected; if status is 2, incoming call
+  is answered before hanging up; if status is 3, outgoing call is hung
+  up. phoneNumber is the ended call phone number. <strong>Using this
+  block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your app is
+  submitted to the Google Play Store.</strong></dd>
   <dt><code>PhoneCallStarted(number status, text phoneNumber)</code></dt>
-  <dd>Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.</dd>
+  <dd>Event indicating that a phonecall has started. If status is 1,
+  incoming call is ringing; if status is 2, outgoing call is
+  dialled. phoneNumber is the incoming/outgoing phone
+  number. <strong>Using this block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your app is
+  submitted to the Google Play Store.</strong></dd>
 </dl>
 <h3>Methods</h3>
 <dl>
   <dt><code>MakePhoneCall()</code></dt>
-  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+  <dd>Launches the phone's default dialer app to initiate a phone call.</dd>
+  <dt><code>MakePhoneCallDirect()</code></dt>
+  <dd>Makes a phone call using the number in the PhoneNumber
+  property. This block is intended for advanced developers who want to
+  build apps that may act as the default phone call app on a
+  phone. Using this block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your app is
+  submitted to the Google Play Store.</dd>
 </dl>
 <h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
 <p>A button that, when clicked on, displays a list of the contacts' phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
@@ -786,7 +811,7 @@ none
                       An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
                     </p>
                     <p>
-                      If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.
+                      If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher. <strong>Using this block will add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous permissions</a> that will require additional approval if your app is submitted to the Google Play Store.</strong>
                     </p>
                     <p>
                       To specify the phone number (e.g., 650-555-1212), set the
@@ -842,12 +867,22 @@ none
                     <h3>Events</h3>
                     <dl>
                       <dt><code>MessageReceived(text number, text messageText)</code></dt>
-                      <dd>Event that's raised when a text message is received by the phone.</dd>
+                      <dd>Event that's raised when a text message is received by
+                      the phone. <strong>Using this block will
+                      add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+                      permissions</a> that will require additional approval if your
+                      app is submitted to the Google Play Store.</strong></dd>
                     </dl>
                     <h3>Methods</h3>
                     <dl>
                       <dt><code>SendMessage()</code></dt>
-                      <dd>Send a text message</dd>
+                      <dd>Launch the phone's default text messaging app with the
+                      message and phone number prepopulated.</dd>
+                      <dt><code>SendMessageDirect()</code></dt>
+                      <dd>Send a text message. <strong>Using this block will
+                      add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+                      permissions</a> that will require additional approval if your
+                      app is submitted to the Google Play Store.</strong></dd>
                     </dl>
 
 

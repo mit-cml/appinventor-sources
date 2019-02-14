@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -659,9 +659,17 @@ public interface OdeMessages extends Messages {
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
 
+  @DefaultMessage("App for Google Play ( provide QR code for .apk )")
+  @Description("Label of item for building a project and show barcode")
+  String showBarcodeMenuItem2();
+
   @DefaultMessage("App ( save .apk to my computer )")
   @Description("Label of item for building a project and downloading")
   String downloadToComputerMenuItem();
+
+  @DefaultMessage("App for Google Play ( save .apk to my computer )")
+  @Description("Label of item for building a project and downloading")
+  String downloadToComputerMenuItem2();
 
   @DefaultMessage("Generate YAIL")
   @Description("Label of the cascade item for generating YAIL for a project")
@@ -977,12 +985,15 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component type would be the same as a component instance name")
   String sameAsComponentInstanceNameError();
 
-  @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
+  @DefaultMessage("Name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
-      "Pattern, YailList, YailNumberToString, YailRuntimeError")
-  @Description("Error shown when a new component name is a variable name already used in the" +
-      "Yail code")
-  String badComponentNameError();
+      "Pattern, YailList, YailNumberToString, YailRuntimeError, abstract, continue, for, new, " +
+      "switch, assert, default, goto, package, synchronized, boolean, do, if, private, this, break, " +
+      "double, implements, protected, throw, byte, else, import, public, throws, case, enum, instanceof, " +
+      "return, transient, catch, extends, int, short, try, char, final, interface, static, void, class, " +
+      "finally, long, strictfp, volatile, const, float, native, super, while")
+  @Description("Error shown when a new name is a reserved name in Yail or Java code")
+  String reservedNameError();
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
@@ -1031,6 +1042,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Extension Version:")
   @Description("Header for extension version information")
   String externalComponentVersion();
+
+  @DefaultMessage("Date Built:")
+  @Description("Header to indicate the date an extension was compiled")
+  String dateBuilt();
 
   @DefaultMessage("More information")
   @Description("Label of the link to a component's reference docs")
@@ -1111,7 +1126,7 @@ public interface OdeMessages extends Messages {
   String horizontalAlignmentChoiceLeft();
 
   @DefaultMessage("Right")
-  @Description("Text for horizontal alignemt choice 'Right'")
+  @Description("Text for horizontal alignment choice 'Right'")
   String horizontalAlignmentChoiceRight();
 
   @DefaultMessage("Center")
@@ -2212,9 +2227,9 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Starting asset transfer to companion...")
-  @Description("Message to display at the start of an asset transfer before any assets are sent")
-  String startingAssetTransfer();
+  @DefaultMessage("0 Starting Up")
+  @Description("")
+  String startingConnectionDialog();
 
   @DefaultMessage("Downloading {0} from the App Inventor server...")
   @Description("Message to display when an asset is being downloaded from the server")
@@ -2907,6 +2922,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LineWidthProperties();
 
+  @DefaultMessage("LoadingDialogMessage")
+  @Description("")
+  String LoadingDialogMessageProperties();
+
   @DefaultMessage("Message")
   @Description("")
   String MessageProperties();
@@ -2918,6 +2937,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MultiLine")
   @Description("")
   String MultiLineProperties();
+
+  @DefaultMessage("Namespace")
+  @Description("")
+  String NamespaceProperties();
 
   @DefaultMessage("NumbersOnly")
   @Description("")
@@ -3018,6 +3041,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ServiceURL")
   @Description("")
   String ServiceURLProperties();
+
+  @DefaultMessage("ShowLoadingDialog")
+  @Description("")
+  String ShowLoadingDialogProperties();
 
   @DefaultMessage("FirebaseURL")
   @Description("")
@@ -3607,6 +3634,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebViewStringProperties();
 
+  @DefaultMessage("WebViewStringChange")
+  @Description("")
+  String WebViewStringChangeEvents();
+
   @DefaultMessage("EnableSpeedRegulation")
   @Description("")
   String EnableSpeedRegulationProperties();
@@ -3908,6 +3939,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String functionNameParams();
 
+  @DefaultMessage("permissionName")
+  @Description("The name of the parameter that is used to report the name of a needed permission.")
+  String permissionNameParams();
+
   @DefaultMessage("errorNumber")
   @Description("")
   String errorNumberParams();
@@ -4131,6 +4166,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("seed")
   @Description("")
   String seedParams();
+
+  @DefaultMessage("rendezvousServer")
+  @Description("")
+  String rendezvousServerParams();
 
   @DefaultMessage("millisecs")
   @Description("")
@@ -4481,6 +4520,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String OtherScreenClosedEvents();
 
+  @DefaultMessage("PermissionDenied")
+  @Description("The name of the event handler for when the app is denied a dangerous permission by the user.")
+  String PermissionDeniedEvents();
+
+  @DefaultMessage("PermissionGranted")
+  @Description("The name of the event handler for when the app is granted a dangerous permission by the user.")
+  String PermissionGrantedEvents();
+
   @DefaultMessage("ScreenOrientationChanged")
   @Description("")
   String ScreenOrientationChangedEvents();
@@ -4560,6 +4607,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("AfterTextInput")
   @Description("")
   String AfterTextInputEvents();
+
+  @DefaultMessage("ChoosingCanceled")
+  @Description("")
+  String ChoosingCanceledEvents();
+
+  @DefaultMessage("TextInputCanceled")
+  @Description("")
+  String TextInputCanceledEvents();
 
   @DefaultMessage("AboveRange")
   @Description("")
@@ -5334,6 +5389,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MakePhoneCallMethods();
 
+  @DefaultMessage("MakePhoneCallDirect")
+  @Description("")
+  String MakePhoneCallDirectMethods();
+
   @DefaultMessage("GetWifiIpAddress")
   @Description("")
   String GetWifiIpAddressMethods();
@@ -5362,6 +5421,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HideKeyboardMethods();
 
+  @DefaultMessage("AskForPermission")
+  @Description("")
+  String AskForPermissionMethods();
+
   @DefaultMessage("Speak")
   @Description("")
   String SpeakMethods();
@@ -5369,6 +5432,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SendMessage")
   @Description("")
   String SendMessageMethods();
+
+  @DefaultMessage("SendMessageDirect")
+  @Description("")
+  String SendMessageDirectMethods();
 
   @DefaultMessage("GetValue")
   @Description("")
@@ -5513,6 +5580,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
+  
+  @DefaultMessage("UriDecode")
+  @Description("")
+  String UriDecodeMethods();
 
   @DefaultMessage("CanGoBack")
   @Description("")
@@ -5829,9 +5900,9 @@ public interface OdeMessages extends Messages {
     + "regularly set intervals and perform time calculations, "
     + "manipulations, and conversions.</p> <p>Methods to convert an "
     + "instant to text are also available. Acceptable patterns are "
-    + "empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy "
+    + "empty string, MM/dd/YYYY hh:mm:ss a, or MMM d, yyyy "
     + "HH:mm. The empty string will provide the default format, "
-    + "which is \"MMM d, yyyy HH:mm:ss a\" for FormatDateTime \"MMM "
+    + "which is \"MMM d, yyyy hh:mm:ss a\" for FormatDateTime \"MMM "
     + "d, yyyy\" for FormatDate.  To see all possible format, "
     + "please see <a "
     + "href=\"https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\" "
@@ -6235,7 +6306,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("<p>It appears that <b>" + "%1" +
       "</b> has had all blocks removed.</p><p>" +
-      "<ul><li>You can save the enpty screen, and then all those blocks will be " +
+      "<ul><li>You can save the empty screen, and then all those blocks will be " +
       "permanently gone from the project.</li>" +
       "<li>Alternatively, you can restore the previously saved version " +
       "of the project.</li></ul></p>")
@@ -6355,6 +6426,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Error on Fusion Tables query")
   @Description("")
   String FusionTablesStandardErrorMessage();
+
+  @DefaultMessage("WARNING: Google has Deprecated the Fusion Tables Service. " +
+    "It will stop working on December 3, 2019 " +
+    "<a href=\"https://support.google.com/fusiontables/answer/9185417\" target=\"_blank\"> " +
+    "Learn More</a>")
+  @Description("")
+  String FusionTablesDeprecated();
 
   @DefaultMessage("SelectionColor")
   @Description("")
@@ -6592,9 +6670,17 @@ public interface OdeMessages extends Messages {
   @Description("The type of map tile to be displayed")
   String MapTypeProperties();
 
+  @DefaultMessage("ScaleUnits")
+  @Description("Display name for the property to adjust the map's scale units")
+  String ScaleUnitsProperties();
+
   @DefaultMessage("ShowCompass")
   @Description("Show a compass control on the Map")
   String ShowCompassProperties();
+
+  @DefaultMessage("ShowScale")
+  @Description("Show a scale indicator on the Map")
+  String ShowScaleProperties();
 
   @DefaultMessage("ShowUser")
   @Description("Show a marker on the Map for the user's current location")
@@ -6643,6 +6729,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Terrain")
   @Description("Terrain map type")
   String mapTypeTerrain();
+
+  @DefaultMessage("Metric")
+  @Description("Display name for the metric unit system")
+  String mapScaleUnitsMetric();
+
+  @DefaultMessage("Imperial")
+  @Description("Display name for the imperial unit system")
+  String mapScaleUnitsImperial();
 
   @DefaultMessage("ImageAsset")
   @Description("ImageAsset")
@@ -7007,4 +7101,38 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetCenter")
   @Description("")
   String SetCenterMethods();
+
+  @DefaultMessage("Rotation")
+  @Description("")
+  String RotationProperties();
+
+  @DefaultMessage("WebRTC")     // Note: This is INTERNAL so doesn't need translation
+  @Description("")
+  String WebRTCProperties();
+
+  @DefaultMessage("GetVersionName")
+  @Description("")
+  String GetVersionNameMethods();
+
+  @DefaultMessage("SdkLevel")
+  @Description("")
+  String SdkLevelMethods();
+
+  @DefaultMessage("GetInstaller")
+  @Description("")
+  String GetInstallerMethods();
+
+  @DefaultMessage("Notice!")
+  @Description("Title for the Warning Dialog Box")
+  String NoticeTitle();
+
+  @DefaultMessage("Use this option to build apps that that will work back to Android version 2.1 (Eclair)," +
+      "<br/>but will not be publishable in the Google Play Store.")
+  @Description("Text for the Package non-SDK 26 Warning Dialog Box (HTML)")
+  String PackageNotice();
+
+  @DefaultMessage("Use this option to create applications that can be submitted to the Google Play Store." +
+      "<br/>These applications will not run on Android versions older than 4.0.")
+  @Description("Text for the Package SDK 26 Warning Dialog Box (HTML)")
+  String Package26Notice();
 }
