@@ -50,7 +50,7 @@
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
             <srcfiles dir="src/" includes="**/*.js" />
             <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
-            <srcfiles dir="${lib.dir}/closure-library_old/" includes="closure/goog/**/*.js" />
+            <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
             <srcfiles dir="${basedir}" includes="ploverConfig.js" />
             <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
           </uptodate>
