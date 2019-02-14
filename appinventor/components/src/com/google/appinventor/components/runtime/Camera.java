@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -15,9 +14,9 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.NougatUtil;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -213,7 +212,7 @@ public class Camera extends AndroidNonvisibleComponent
    */
   private void scanFileToAdd(File image) {
     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-    Uri contentUri = Uri.fromFile(image);
+    Uri contentUri = NougatUtil.getPackageUri(form, image);
     mediaScanIntent.setData(contentUri);
     container.$context().getApplicationContext().sendBroadcast(mediaScanIntent);
   }
