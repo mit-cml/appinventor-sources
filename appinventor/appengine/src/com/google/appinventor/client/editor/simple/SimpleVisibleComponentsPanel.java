@@ -97,6 +97,13 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         int idx = 0;
         int width = 320;
         int height = 505;
+
+        if (val.equals("False")) {
+          idx = 1;
+          width = drop_lst[idx][0];
+          height = drop_lst[idx][1];
+        }
+
         String[] parts = val.split(",");
         if (parts.length == 3) {
           idx = Integer.parseInt(parts[0]);
