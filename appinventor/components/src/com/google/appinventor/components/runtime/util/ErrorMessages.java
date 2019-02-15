@@ -627,7 +627,7 @@ public final class ErrorMessages {
 
     // Augmented Reality errors
     errorMessages.put(ERROR_INVALID_CONFIGURATION_VALUE,
-            "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
+        "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
   }
 
   private ErrorMessages() {
