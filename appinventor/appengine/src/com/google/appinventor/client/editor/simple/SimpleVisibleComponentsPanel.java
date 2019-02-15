@@ -98,7 +98,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         int width = 320;
         int height = 505;
 
-        if (val.equals("False")) {
+        if (val.equals("True")) {
           idx = 1;
           width = drop_lst[idx][0];
           height = drop_lst[idx][1];
