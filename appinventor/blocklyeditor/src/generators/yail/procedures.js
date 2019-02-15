@@ -116,7 +116,7 @@ Blockly.Yail['procedures_callreturn'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-// Generator code for anonymous procedure call with return
+// Generator code for anonymous procedure call with no return
 Blockly.Yail['procedures_callanonnoreturn'] = function() {
   var argCode = [];
   var argTypes = [];
@@ -141,6 +141,28 @@ Blockly.Yail['procedures_callanonreturn'] = function() {
     argTypes.push('any');
   }
   var code = Blockly.Yail.YailCallYialPrimitive("call-anonymous-procedure", argCode, argTypes, "call anonymous procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+// Generator code for anonymous procedure call with no return (input list version)
+Blockly.Yail['procedures_callanonnoreturn_inputlist'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "call-anonymous-procedure-input-list",
+      [ Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+        Blockly.Yail.valueToCode(this, 'INPUTLIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call anonymous procedure(with input list)");
+  return code;
+};
+
+// Generator code for anonymous procedure call with return (input list version)
+Blockly.Yail['procedures_callanonreturn_inputlist'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "call-anonymous-procedure-input-list",
+      [ Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+        Blockly.Yail.valueToCode(this, 'INPUTLIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call anonymous procedure(with input list)");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 

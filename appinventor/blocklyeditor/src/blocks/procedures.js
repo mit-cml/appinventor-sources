@@ -1184,6 +1184,49 @@ Blockly.Blocks['anon_proc_arg'] = {
   }
 };
 
+Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.appendValueInput('INPUTLIST')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('list', Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
+            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST
+  }]
+};
+
+Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.appendValueInput('INPUTLIST')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('list', Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
+            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST + "2"
+  }]
+};
+
 Blockly.Blocks['procedures_numArgs'] = {
   category: 'Procedures',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL,

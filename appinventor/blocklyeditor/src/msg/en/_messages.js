@@ -1016,6 +1016,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call procedure';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = 'input list';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL = '/reference/blocks/procedures.html#TODO:';

@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import android.util.Log;
 import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
-import gnu.lists.Pair;
 import gnu.mapping.Procedure;
 import gnu.mapping.SimpleSymbol;
 
@@ -42,9 +41,6 @@ public final class AnonymousProcedure {
         } catch (ObjectStreamException e) {
             throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\"", e);
         }
-    }
-    public static final Object callProcedure(AnonymousProcedure procedure, Pair args) {
-        return callProcedure(procedure, (LList) args);
     }
     public static final Object callProcedure(AnonymousProcedure procedure, LList args) {
         return procedure.call(args.toArray());
