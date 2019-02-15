@@ -10,20 +10,21 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/bionic64"
 
-  config.vm.boot_timeout = 400 
- 
+  config.vm.boot_timeout = 400
+
   config.vm.provider "virtualbox" do |v|
-    v.default_nic_type = "Am79C973"
-    v.name = "ForAppinventor2-xenial64"
+    v.name = "ForAppinventor2-bionic64"
+    v.memory = "4096"
+    v.customize ["modifyvm", :id, "--usb", "on"]
+    # fix for slow network
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.customize ["modifyvm", :id, "--nictype1", "virtio"]
   end
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = "4096"
-  end
-  
   config.vm.provision :shell, path: "bootstrap.sh"
-  
+
   config.vm.network :forwarded_port, guest: 8888, host: 8888
   config.vm.network :forwarded_port, guest: 9990, host: 9990
-  
+
 end
