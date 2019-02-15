@@ -1020,7 +1020,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL = '/reference/blocks/procedures.html#TODO:';
-    Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'get number of inputs';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'number of inputs';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'procedure';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'TODO:';
 
