@@ -235,11 +235,11 @@ public final class MockForm extends MockContainer {
   private static int verticalScrollbarWidth;
 
   private MockFormLayout myLayout;
-  
+
   // flag to control attempting to enable/disable vertical
   // alignment when scrollable property is changed
   private boolean initialized = false;
-  
+
   private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
 
   public static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
@@ -278,7 +278,7 @@ public final class MockForm extends MockContainer {
     formWidget.add(new NavigationBar());
 
     initComponent(formWidget);
-    
+
     // Set up the initial state of the vertical alignment property editor and its dropdowns
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
@@ -292,19 +292,12 @@ public final class MockForm extends MockContainer {
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
   }
 
-  public void changePreviewSize(boolean isTablet) {
-    if (isTablet) {
-      PORTRAIT_WIDTH   = TABLET_PORTRAIT_WIDTH;
-      PORTRAIT_HEIGHT  = TABLET_PORTRAIT_HEIGHT;
-      LANDSCAPE_WIDTH  = TABLET_LANDSCAPE_WIDTH;
-      LANDSCAPE_HEIGHT = TABLET_LANDSCAPE_HEIGHT;
-    }
-    else {
-      PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
-      PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
-      LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
-      LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
-    }
+  public void changePreviewSize(int width, int height) {
+    // It will definitely be modified in the future to add more options.
+    PORTRAIT_WIDTH = width;
+    PORTRAIT_HEIGHT = height;
+    LANDSCAPE_WIDTH = height;
+    LANDSCAPE_HEIGHT = width;
 
     if (landscape)
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
@@ -627,7 +620,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aname);
     }
   }
-  
+
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
