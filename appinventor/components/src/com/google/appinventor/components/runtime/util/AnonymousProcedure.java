@@ -8,6 +8,7 @@ import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.mapping.Procedure;
 import gnu.mapping.SimpleSymbol;
+import gnu.mapping.Values;
 
 public final class AnonymousProcedure {
 
@@ -88,7 +89,11 @@ public final class AnonymousProcedure {
      */
     public Object call(Object... args) {
         Object returnVal = executable.execute(args);
-        return returnVal == null ? RETURN_VALUE_WHEN_NULL : returnVal;
+        return (returnVal == null ||
+                // for case that calling a procedure that have no return (defined by block)
+                (returnVal instanceof Values && ((Values)returnVal).getValues().length == 0))
+             ? RETURN_VALUE_WHEN_NULL
+             : returnVal;
     }
 
     public int numArgs() {
