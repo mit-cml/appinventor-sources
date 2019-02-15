@@ -5633,10 +5633,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String doFaultMethods();
 
-  @DefaultMessage("getVersionName")
-  @Description("")
-  String getVersionNameMethods();
-
   @DefaultMessage("installURL")
   @Description("")
   String installURLMethods();
