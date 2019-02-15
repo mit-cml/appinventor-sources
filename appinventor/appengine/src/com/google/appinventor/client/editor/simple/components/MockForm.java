@@ -294,22 +294,10 @@ public final class MockForm extends MockContainer {
 
   public void changePreviewSize(int width, int height) {
     // It will definitely be modified in the future to add more options.
-    if (width == TABLET_PORTRAIT_WIDTH) {
-      PORTRAIT_WIDTH = TABLET_PORTRAIT_WIDTH;
-      PORTRAIT_HEIGHT = TABLET_PORTRAIT_HEIGHT;
-      LANDSCAPE_WIDTH = TABLET_LANDSCAPE_WIDTH;
-      LANDSCAPE_HEIGHT = TABLET_LANDSCAPE_HEIGHT;
-    } else if (width == PHONE_PORTRAIT_WIDTH) {
-      PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
-      PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
-      LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
-      LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
-    } else {
-      PORTRAIT_WIDTH = width;
-      PORTRAIT_HEIGHT = height;
-      LANDSCAPE_WIDTH = height;
-      LANDSCAPE_HEIGHT = width;
-    }
+    PORTRAIT_WIDTH = width;
+    PORTRAIT_HEIGHT = height;
+    LANDSCAPE_WIDTH = height;
+    LANDSCAPE_HEIGHT = width;
 
     if (landscape)
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);

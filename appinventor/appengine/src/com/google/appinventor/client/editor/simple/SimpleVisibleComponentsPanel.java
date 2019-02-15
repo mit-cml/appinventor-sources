@@ -36,7 +36,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   // UI elements
   private final VerticalPanel phoneScreen;
   private final CheckBox checkboxShowHiddenComponents;
-  private final ListBox listboxPhoneTablet; // A CheckBox for Phone/Tablet preview sizes
+  private final ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
 
   // Corresponding panel for non-visible components (because we allow users to drop
@@ -91,6 +91,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     listboxPhoneTablet = new ListBox() {
       @Override
       protected void onLoad() {
+        // onLoad is called immediately after a widget becomes attached to the browser's document.
         String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
 
@@ -138,7 +139,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   private void changeFormPreviewSize(int idx, int width, int height) {
     if (form != null) {
       form.changePreviewSize(width, height);
-      String info = "(" + height + "," + width + ")";
+      String info = " (" + height + "," + width + ")";
       if (idx == 0) {
         listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
         listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
