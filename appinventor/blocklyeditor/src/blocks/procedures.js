@@ -1251,7 +1251,7 @@ Blockly.Blocks['procedures_globalToAnonymous'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET);
     this.appendValueInput('PROCEDURENAME')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GLOBALNAME)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));

@@ -1026,7 +1026,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = 'get global procedure';
-    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GLOBALNAME = 'procedure name';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME = 'name';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = 'TODO:';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
