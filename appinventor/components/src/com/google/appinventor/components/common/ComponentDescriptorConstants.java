@@ -1,6 +1,16 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.common;
 
-public class ComponentDescriptorConstants {
+/**
+ * Contains constants related to the description of Simple components.
+ *
+ */
+public final class ComponentDescriptorConstants {
   private ComponentDescriptorConstants() {
     // nothing
   }
@@ -17,7 +27,6 @@ public class ComponentDescriptorConstants {
   public static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
   public static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   public static final String CONDITIONALS_TARGET = "conditionals";
-  // public static final String CONDITONAL_TARGET = "conditional";
 
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should

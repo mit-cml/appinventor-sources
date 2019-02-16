@@ -104,10 +104,10 @@ public final class ComponentListGenerator extends ComponentProcessor {
         component.conditionalBroadcastReceivers.size() == 0) {
       return;
     }
-    sb.append(", \"conditionals\": { ");
-    sb.append("\"permissions\": ");
+    sb.append(", \"" + ComponentDescriptorConstants.CONDITIONALS_TARGET + "\": { ");
+    sb.append("\"" + ComponentDescriptorConstants.PERMISSIONS_TARGET + "\": ");
     appendMap(sb, component.conditionalPermissions);
-    sb.append(", \"broadcastReceivers\": ");
+    sb.append(", \"" + ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET + "\": ");
     appendMap(sb, component.conditionalBroadcastReceivers);
     sb.append("}");
   }
