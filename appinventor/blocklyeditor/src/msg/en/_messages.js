@@ -1031,7 +1031,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'Get the number of inputs that is expected by the procedure';
 
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL = '/reference/blocks/procedures.html#TODO:';
-    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = 'get global procedure';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = 'get procedure';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME = 'name';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = 'Get a named procedure.';
 

@@ -1247,12 +1247,10 @@ Blockly.Blocks['procedures_globalToAnonymous'] = {
   helpUrl: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.appendDummyInput('HEADER')
-        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET);
     this.appendValueInput('PROCEDURENAME')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
   },
