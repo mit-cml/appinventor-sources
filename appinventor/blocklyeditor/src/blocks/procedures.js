@@ -1139,7 +1139,9 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){},
   addInput: function(inputNum) {
-    return this.appendValueInput(this.repeatingInputName + inputNum);
+    return this.appendValueInput(this.repeatingInputName + inputNum)
+               .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT + " " + (inputNum + 1))
+               .setAlign(Blockly.ALIGN_RIGHT);
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE, "CONTAINER_TEXT");

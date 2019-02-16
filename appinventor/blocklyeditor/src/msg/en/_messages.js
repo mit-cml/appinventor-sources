@@ -1016,6 +1016,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call procedure';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT = 'input';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = 'input list';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'Call a procedure with no return value. The number of inputs must match the procedure.';
 
