@@ -385,7 +385,7 @@ public class Ode implements EntryPoint {
       @Override
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
-        if(gallerySettings.galleryEnabled() == true){
+        if(gallerySettings.galleryEnabled()){
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
           projectToolbar.setPublishOrUpdateButtonVisible(true);
           GalleryClient.getInstance().setSystemEnvironment(settings.getEnvironment());
@@ -850,11 +850,14 @@ public class Ode implements EntryPoint {
           }
         });
         editorManager = new EditorManager();
+
+        // Set cookies for new gallery user authentication
         galleryAuthService.getToken(new OdeAsyncCallback<String>() {
           @Override
           public void onSuccess(String token) {
             Cookies.setCookie("galleryToken", token);
-            String url = "http://localhost:3000/api/user/set_login_cookie?token=" + token;
+            String galleryUrl = Ode.getSystemConfig().getGalleryUrl();
+            String url = galleryUrl + "/api/user/set_login_cookie?token=" + token;
             loginGalleryIFrame(url);
           }
         });

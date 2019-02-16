@@ -33,13 +33,8 @@ public class ShareToGalleryCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    final Ode ode = Ode.getInstance();
-    Project currentProject = ode.getProjectManager().getProject(node);
-    publishToGallery(currentProject);
-  }
-
-  private void publishToGallery(Project p) {
+    Project project = Ode.getInstance().getProjectManager().getProject(node);
     User user = Ode.getInstance().getUser();
-    PostUtil.addAppToGallery(user, p.getProjectId(), p.getProjectName());
+    PostUtil.addAppToGallery(user, project.getProjectId(), project.getProjectName());
   }
 }
