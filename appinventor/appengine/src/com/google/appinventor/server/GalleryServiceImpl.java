@@ -63,9 +63,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public GalleryServiceImpl() {
     String bucket = Flag.createFlag("gallery.bucket", "").get();
     boolean galleryEnabled = Flag.createFlag("use.gallery",false).get();
+    boolean newGalleryEnabled = Flag.createFlag("use.newgallery",false).get();
     String envirnment = SystemProperty.environment.value().toString();
     String adminEmail = Flag.createFlag("gallery.admin.email", "").get();
-    settings = new GallerySettings(galleryEnabled, bucket, envirnment, adminEmail);
+    settings = new GallerySettings(galleryEnabled, newGalleryEnabled, bucket, envirnment, adminEmail);
   }
 
   @Override

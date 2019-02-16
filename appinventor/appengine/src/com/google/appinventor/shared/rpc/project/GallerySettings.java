@@ -8,7 +8,7 @@ package com.google.appinventor.shared.rpc.project;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * GallerySettings is the shared class holding gallery settings (enabled, bucket)
+ * GallerySettings is the shared class holding gallery settings (enabled, bucket, newgallery)
  */
 public class GallerySettings implements IsSerializable {
 
@@ -25,6 +25,7 @@ public class GallerySettings implements IsSerializable {
   private String GCSCLIENTURLSTART="http://storage.googleapis.com/";
 
   private boolean enabled;
+  private boolean newGalleryEnabled;
   private String bucket;
   private String environment;
   private String adminEmail;
@@ -34,6 +35,7 @@ public class GallerySettings implements IsSerializable {
    */
   public GallerySettings() {
     this.enabled = false;
+    this.newGalleryEnabled = false;
     this.bucket = "";
     this.environment = "";
     this.adminEmail = "";
@@ -42,10 +44,12 @@ public class GallerySettings implements IsSerializable {
   /**
    * constructor with given parameters
    * @param enabled
+   * @param newGalleryEnabled
    * @param bucket
    */
-  public GallerySettings(boolean enabled, String bucket, String environment, String adminEmail) {
+  public GallerySettings(boolean enabled, boolean newGalleryEnabled, String bucket, String environment, String adminEmail) {
     this.enabled = enabled;
+    this.newGalleryEnabled = newGalleryEnabled;
     this.bucket = bucket;
     this.environment = environment;
     this.adminEmail = adminEmail;
@@ -69,6 +73,13 @@ public class GallerySettings implements IsSerializable {
    */
   public boolean galleryEnabled() {
     return enabled;
+  }
+
+  /**
+   * @return true if gallery is enabled
+   */
+  public boolean newGalleryEnabled() {
+    return newGalleryEnabled;
   }
 
   /**

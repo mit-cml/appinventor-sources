@@ -35,7 +35,6 @@ public class Config implements IsSerializable, Serializable {
   private String firebaseURL;   // Default Firebase URL
   private String defaultCloudDBserver;
   private String galleryUrl;
-  private String galleryApiUrl;
   private int noop;            // No-op interval
   private boolean secondBuildserver; // Whether or not we have a second
                                      // buildserver (used for a different
@@ -186,14 +185,6 @@ public class Config implements IsSerializable, Serializable {
 
   public void setGalleryUrl(String url) {
     galleryUrl = url;
-  }
-
-  public String getGalleryApiUrl() {
-    return galleryApiUrl;
-  }
-
-  public void setGalleryApiUrl(String url) {
-    galleryApiUrl = url;
   }
 
   public int getNoop() {

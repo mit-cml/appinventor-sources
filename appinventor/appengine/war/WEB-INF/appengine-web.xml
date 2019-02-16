@@ -81,6 +81,8 @@
     <property name="gallery.bucket" value="" />
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="true" />
+    <!-- Whether or not to use the new gallery -->
+    <property name="use.newgallery" value="false" />
 
     <!-- Gallery Admin Email -->
     <property name="gallery.admin.email" value="" />
@@ -183,7 +185,6 @@
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
     <property name="gallery.url" value="http://localhost:3000" />
-    <property name="gallery.api.url" value="http://localhost:8090" />
 
     <!-- CloudDB secret keys -->
     <property name="clouddb.server" value="clouddb.example.com"/>

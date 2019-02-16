@@ -17,7 +17,6 @@ public class PostUtil {
 
   // used in native code below
   private static String galleryUrl = Ode.getSystemConfig().getGalleryUrl();
-  private static String galleryApiUrl = Ode.getSystemConfig().getGalleryApiUrl();
 
   public static void addAppToGallery(User user, long projectId, String projectName) {
     new PostUtil().postAddNewUserAndPublishApp(user, "ai2", projectId, projectName);
@@ -33,7 +32,7 @@ public class PostUtil {
           }
         }
       });
-      xhr.open("POST",  galleryApiUrl + "/api/user/create");
+      xhr.open("POST",  galleryUrl + "/api/user/create");
       xhr.setRequestHeader("Content-Type", "application/json");
       JSONObject json = new JSONObject();
       try {
@@ -69,7 +68,7 @@ public class PostUtil {
         }
           }
       });
-      xhr.open("GET", galleryApiUrl + "/api/project/gallery_id?projectId=" + Objects.toString(projectId) + "&appInventorInstance=ai2");
+      xhr.open("GET", galleryUrl + "/api/project/gallery_id?projectId=" + Objects.toString(projectId) + "&appInventorInstance=ai2");
       xhr.send();
     }
 
@@ -103,7 +102,7 @@ public class PostUtil {
             }
           }
         }
-        request.open("POST", @com.google.appinventor.client.utils.PostUtil::galleryApiUrl + "/api/project/update_or_create");
+        request.open("POST", @com.google.appinventor.client.utils.PostUtil::galleryUrl + "/api/project/update_or_create");
         request.send(formData);
       }
     }
