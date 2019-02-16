@@ -13,8 +13,6 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
@@ -22,23 +20,15 @@ import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -123,7 +113,11 @@ public class TopPanel extends Composite {
     gallery.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        Window.open("http://localhost:3000/", "_blank", "");
+        if (Ode.getGallerySettings().newGalleryEnabled()) {
+          Window.open(Ode.getSystemConfig().getGalleryUrl(), "_blank", "");
+        } else {
+          ode.switchToGalleryView();
+        }
       }
     });
     links.add(gallery);

@@ -9,9 +9,6 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -35,7 +32,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.Scheduler;
 
 import com.google.gwt.user.client.Command;
@@ -396,7 +392,8 @@ public class DesignToolbar extends Toolbar implements ProjectManagerEventListene
     public void execute() {
       long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
       Project project = Ode.getInstance().getProjectManager().getProject(projectId);
-      Window.open("http://localhost:3000/#/project/" + project.getGalleryId(), "_blank", "");
+      String galleryUrl = Ode.getSystemConfig().getGalleryUrl();
+      Window.open(galleryUrl + "/#/project/" + project.getGalleryId(), "_blank", "");
     }
   }
 
@@ -546,11 +543,13 @@ public class DesignToolbar extends Toolbar implements ProjectManagerEventListene
   }
 
   private void updateViewAppInGalleryButton(long projectId) {
-    Project currentProject = Ode.getInstance().getProjectManager().getProject(projectId);
-    if (currentProject.isPublished()) {
-      setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, true);
-    } else {
-      setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, false);
+    if (Ode.getGallerySettings().newGalleryEnabled()) {
+      Project currentProject = Ode.getInstance().getProjectManager().getProject(projectId);
+      if (currentProject.isPublished()) {
+        setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, true);
+      } else {
+        setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, false);
+      }
     }
   }
 
