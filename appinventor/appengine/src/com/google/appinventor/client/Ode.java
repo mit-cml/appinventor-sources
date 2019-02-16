@@ -399,6 +399,8 @@ public class Ode implements EntryPoint {
           topPanel.showGalleryLink(false);
           projectToolbar.setPublishOrUpdateButtonVisible(false);
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
+        }
+        if (!gallerySettings.newGalleryEnabled()) {
           topToolbar.removeGalleryMenuItems();
         }
       }
@@ -452,7 +454,9 @@ public class Ode implements EntryPoint {
           // the button). When the person switches to the projects list view again (here)
           // we re-enable it.
           projectToolbar.enableStartButton();
-          ProjectListBox.getProjectListBox().getProjectList().refreshPublishedOrUnpublished();
+          if (getGallerySettings().newGalleryEnabled()) {
+            ProjectListBox.getProjectListBox().getProjectList().refreshPublishedOrUnpublished();
+          }
         }
       };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
