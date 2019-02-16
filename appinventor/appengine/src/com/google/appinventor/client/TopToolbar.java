@@ -69,7 +69,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
-public class TopToolbar extends Composite implements ProjectManagerEventListener {
+public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
@@ -193,7 +193,7 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
     fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.addUpdateProjectInGalleryMenuItem(),
         new ShareToGalleryAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_VIEW_IN_GALLERY, MESSAGES.viewProjectInGalleryMenuItem(),
-        new ViewAppInGalleryAction()));
+        new ViewProjectInGalleryAction()));
     fileItems.add(null);
     if (!isReadOnly) {
       fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
@@ -1031,6 +1031,7 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
@@ -1039,9 +1040,11 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
+      updateViewProjectInGalleryButton(Ode.PROJECTS);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), true);
+      fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
@@ -1050,6 +1053,7 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
+      updateViewProjectInGalleryButton(Ode.DESIGNER);
     }
     updateKeystoreFileMenuButtons(true);
   }
@@ -1117,6 +1121,10 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
     }
   }
 
+  private void updateViewProjectInGalleryButton(int view) {
+    // TODO
+  }
+
   //Admin commands
   private static class DownloadUserSourceAction implements Command {
     @Override
@@ -1139,46 +1147,7 @@ public class TopToolbar extends Composite implements ProjectManagerEventListener
     }
   }
 
-  // Handle Project Manager Listener events
-  @Override
-  public void onProjectAdded(Project project) {
-
-  }
-
-  @Override
-  public void onProjectRemoved(Project project) {
-
-  }
-
-  @Override
-  public void onProjectsLoaded() {
-
-  }
-
-  @Override
-  public void onProjectPublishedOrUnpublished() {
-    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
-      //If we are in the projects view
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() == 1 && selectedProjects.get(0).isPublished()) {
-        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
-      } else {
-        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
-      }
-    } else {
-      // Editor view
-      long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-      Project project = Ode.getInstance().getProjectManager().getProject(projectId);
-      if (project.isPublished()) {
-        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
-      } else {
-        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
-      }
-    }
-  }
-
-  private class ViewAppInGalleryAction implements Command {
+  private class ViewProjectInGalleryAction implements Command {
     @Override
     public void execute() {
       Project project;
