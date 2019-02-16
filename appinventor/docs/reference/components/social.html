@@ -834,10 +834,12 @@ none
                         or tablet, with a Google Voice account.  If
                         GoogleVoiceEnabled is false, the device must have phone and
                         texting service in order to send or receive messages with
-                        this component.
+                        this component. Google Voice is available only in the USA, and some phone networks do not
+                        support it.
                       </dd>
                       <dt><code>Message</code></dt>
-                      <dd>The message that will be sent when the SendMessage method is called.</dd>
+                      <dd>The message that will be sent when the SendMessage method is called. The maximum length of a
+                          standard SMS message is usually 170. It may be less for languages using diacritical marks.</dd>
                       <dt><code>PhoneNumber</code></dt>
                       <dd>
                         The number that the message will be sent to when the
@@ -850,17 +852,17 @@ none
                       <dt><code>ReceivingEnabled</code></dt>
                       <dd>
                         If set to 1 (OFF) no messages will be received.  If set to
-                        2 (FOREGROUND) or3 (ALWAYS) the component will respond to
-                        messages if it is running. If theapp is not running then
-                        the message will be discarded if set to 2(FOREGROUND). If
-                        set to 3 (ALWAYS) and the app is not running the phone
-                        willshow a notification.  Selecting the notification will
-                        bring up the appand signal the MessageReceived event.
-                        Messages received when the appis dormant will be queued,
-                        and so several MessageReceived events mightappear when the
+                        2 (FOREGROUND) or 3 (ALWAYS) the component will respond to
+                        messages if it is running. In the case of 2 (FOREGROUND),
+                          messages received while the app is not running are discarded.
+                          In the case of 3 (ALWAYS), messagess receive while the app is
+                          not running will show a notification.  Selecting the notification will
+                        bring up the app and signal the MessageReceived event.
+                        Messages received when the app is dormant will be queued,
+                        and so several MessageReceived events might appear when the
                         app awakens.  As an app developer, it would be a good idea
                         to give your users control over this property, so they can
-                        maketheir phones ignore text messages when your app is
+                        make their phones ignore text messages when your app is
                         installed.
                       </dd>
                     </dl>

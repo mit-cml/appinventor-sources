@@ -953,13 +953,17 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
-  @DefaultMessage("Check to see Preview on Tablet size.")
-  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  @DefaultMessage("Tablet size")
+  @Description("Listbox (tablet) controlling whether to display a preview on Tablet size.")
   String previewTabletSize();
 
-  @DefaultMessage("Un-check to see Preview on Phone size.")
-  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  @DefaultMessage("Phone size")
+  @Description("Listbox (phone) controlling whether to display a preview on Phone size.")
   String previewPhoneSize();
+
+  @DefaultMessage("Monitor size")
+  @Description("Listbox (monitor) controlling whether to display a preview on Monitor size.")
+  String previewMonitorSize();
 
   // Used in editor/simple/components/MockComponent.java
 
@@ -5576,7 +5580,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UriEncode")
   @Description("")
   String UriEncodeMethods();
-  
+
   @DefaultMessage("UriDecode")
   @Description("")
   String UriDecodeMethods();
