@@ -181,7 +181,7 @@ public class DesignToolbar extends Toolbar implements ProjectManagerEventListene
           new RemoveFormAction()));
     }
 
-    addButton(new ToolbarItem(WIDGET_NAME_VIEW_APP_IN_GALLERY, MESSAGES.viewAppInGalleryButton(), new ViewAppInGalleryAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_VIEW_APP_IN_GALLERY, MESSAGES.viewProjectInGalleryButton(), new ViewAppInGalleryAction()));
     setButtonVisible(WIDGET_NAME_VIEW_APP_IN_GALLERY, false);
 
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,

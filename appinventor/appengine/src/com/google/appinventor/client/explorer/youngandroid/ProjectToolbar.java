@@ -17,6 +17,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.PostUtil;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.user.client.Command;
@@ -52,9 +53,10 @@ public class ProjectToolbar extends Toolbar {
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.exportToGalleryButton(),
+    addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.addToGalleryButton(),
         new PublishOrUpdateAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_VIEW_IN_GALLERY, MESSAGES.viewAppInGalleryButton(), new ViewAppInGalleryAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_VIEW_IN_GALLERY, MESSAGES.viewProjectInGalleryButton(),
+        new ViewAppInGalleryAction()));
 
     updateButtons();
   }
@@ -192,12 +194,23 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
         Project currentSelectedProject = ProjectListBox.getProjectListBox().getProjectList()
-                .getSelectedProjects().get(0);
-        User user = Ode.getInstance().getUser();
-        PostUtil.addAppToGallery(user, currentSelectedProject.getProjectId(), currentSelectedProject.getProjectName());
+            .getSelectedProjects().get(0);
+        if (Ode.getGallerySettings().newGalleryEnabled()) {
+          User user = Ode.getInstance().getUser();
+          // Handles publishing new and updating existing projects
+          PostUtil.addAppToGallery(user, currentSelectedProject.getProjectId(), currentSelectedProject.getProjectName());
+        } else {
+          // Old gallery actions
+          if(!currentSelectedProject.isPublished()){
+            // app is not yet published
+            publishToGallery(currentSelectedProject);
+          }else{
+            updateGalleryApp(currentSelectedProject);
+          }
+        }
       } else {
         // The publish/update button will be disabled if selectedProjects.size != 1
         // This should not happen, but just in case
@@ -205,17 +218,40 @@ public class ProjectToolbar extends Toolbar {
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectSelectedForPublishOrUpdate());
       }
     }
+
+    private void publishToGallery(Project p) {
+      // first create an app object with default data
+      final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
+              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
+      Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
+    }
+
+    private void updateGalleryApp(Project p) {
+      // setup what happens when we load the app in
+      final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(GalleryApp app) {
+          // the server has returned us something
+          int editStatus=GalleryPage.UPDATEAPP;
+          Ode.getInstance().switchToGalleryAppView(app, editStatus);
+        }
+      };
+      // ok, this is below the call back, but of course it is done first
+      Ode.getInstance().getGalleryService().getApp(p.getGalleryId(),callback);
+    }
   }
 
   private static class ViewAppInGalleryAction implements Command {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
         Project currentSelectedProject = ProjectListBox.getProjectListBox().getProjectList()
-                .getSelectedProjects().get(0);
-        Window.open("http://localhost:3000/#/project/" + currentSelectedProject.getGalleryId(), "_blank", "");
+            .getSelectedProjects().get(0);
+        String galleryUrl = Ode.getSystemConfig().getGalleryUrl();
+        Window.open(galleryUrl + "/#/project/" + currentSelectedProject.getGalleryId(), "_blank", "");
       }
     }
   }
@@ -234,13 +270,7 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
-      if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
-              .getSelectedProjects().get(0).isPublished()){
-        setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, true);
-      }else{
-        setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, false);
-      }
-      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectToGalleryMenuItem(),
+      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(),
               numSelectedProjects == 1);
       Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
         numSelectedProjects > 0);
@@ -252,15 +282,15 @@ public class ProjectToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
     if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
         .getSelectedProjects().get(0).isPublished()){
-      setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.updateGalleryAppButton());
+      setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.updateGalleryProjectButton());
       setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, true);
     }else{
-      setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.exportToGalleryButton());
+      setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.addToGalleryButton());
       setButtonVisible(WIDGET_NAME_VIEW_IN_GALLERY, false);
     }
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
         numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectToGalleryMenuItem(),
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(),
             numSelectedProjects == 1);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
         numSelectedProjects > 0);

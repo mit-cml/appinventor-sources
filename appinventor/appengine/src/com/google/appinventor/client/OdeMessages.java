@@ -58,17 +58,17 @@ public interface OdeMessages extends Messages {
   @Description("Text on \"Publish to Gallery\" button")
   String publishToGalleryButton();
 
-  @DefaultMessage("Export to Gallery")
-  @Description("Text on \"Export to Gallery\" button")
-  String exportToGalleryButton();
+  @DefaultMessage("Add to Gallery")
+  @Description("Text on \"Add to Gallery\" button")
+  String addToGalleryButton();
 
-  @DefaultMessage("Update Gallery App")
-  @Description("Text on \"Update Gallery App\" button")
-  String updateGalleryAppButton();
+  @DefaultMessage("Update Gallery Project")
+  @Description("Text on \"Update Gallery Project\" button")
+  String updateGalleryProjectButton();
 
-  @DefaultMessage("View App in Gallery")
-  @Description("Text on \"View App in Gallery\" button")
-  String viewAppInGalleryButton();
+  @DefaultMessage("View Project in Gallery")
+  @Description("Text on \"View Project in Gallery\" button")
+  String viewProjectInGalleryButton();
 
   @DefaultMessage("Show Warnings")
   @Description("Text on Toggle Warning Button")
@@ -487,9 +487,13 @@ public interface OdeMessages extends Messages {
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
 
-  @DefaultMessage("Export selected project to gallery")
-  @Description("Name of Export Project to gallery menuitem")
-  String exportProjectToGalleryMenuItem();
+  @DefaultMessage("Add project to gallery")
+  @Description("Name of Add project to gallery menuitem")
+  String addUpdateProjectInGalleryMenuItem();
+
+  @DefaultMessage("View project in gallery")
+  @Description("Name of View project in gallery menuitem")
+  String viewProjectInGalleryMenuItem();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")

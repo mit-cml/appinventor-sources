@@ -399,6 +399,7 @@ public class Ode implements EntryPoint {
           topPanel.showGalleryLink(false);
           projectToolbar.setPublishOrUpdateButtonVisible(false);
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
+          topToolbar.removeGalleryMenuItems();
         }
       }
     };

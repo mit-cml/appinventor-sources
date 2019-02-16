@@ -51,6 +51,8 @@ public class Tracking {
       "RemoveForm-YA";
   public static final String PROJECT_SUBACTION_BUILD_YA = PROJECT_ACTION_PREFIX +
       "Build-Subcommand-YA";
+  public static final String PROJECT_PUBLISH_TO_GALLERY_YA = PROJECT_ACTION_PREFIX +
+      "PublishToGallery-YA";
 
   public static final String USER_EVENT = "User";
   public static final String USER_ACTION_PREFIX = "User_";

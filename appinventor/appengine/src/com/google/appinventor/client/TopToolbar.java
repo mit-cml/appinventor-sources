@@ -10,8 +10,18 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.explorer.commands.*;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
+import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -59,7 +69,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
-public class TopToolbar extends Composite {
+public class TopToolbar extends Composite implements ProjectManagerEventListener {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
@@ -105,6 +115,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
   private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
   private static final String WIDGET_NAME_SHARE_TO_GALLERY = "ShareToGallery";
+  private static final String WIDGET_NAME_VIEW_IN_GALLERY = "ViewInGallery";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -175,12 +186,14 @@ public class TopToolbar extends Composite {
           new CheckpointAction()));
       fileItems.add(null);
     }
-    fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.exportProjectToGalleryMenuItem(),
-            new ShareToGalleryAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
         new ExportAllProjectsAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_SHARE_TO_GALLERY, MESSAGES.addUpdateProjectInGalleryMenuItem(),
+        new ShareToGalleryAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_VIEW_IN_GALLERY, MESSAGES.viewProjectInGalleryMenuItem(),
+        new ViewAppInGalleryAction()));
     fileItems.add(null);
     if (!isReadOnly) {
       fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
@@ -334,6 +347,11 @@ public class TopToolbar extends Composite {
 
     initWidget(toolbar);
 
+  }
+
+  public void removeGalleryMenuItems() {
+    fileDropDown.removeItem(MESSAGES.addUpdateProjectInGalleryMenuItem());
+    fileDropDown.removeItem(MESSAGES.viewProjectInGalleryMenuItem());
   }
 
   // -----------------------------
@@ -550,9 +568,10 @@ public class TopToolbar extends Composite {
   private static class ShareToGalleryAction implements Command {
     @Override
     public void execute() {
+      Ode ode = Ode.getInstance();
       List<Project> selectedProjects =
               ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+      if (ode.getCurrentView() == Ode.PROJECTS) {
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
           publishToGallery(selectedProjects.get(0));
@@ -561,9 +580,9 @@ public class TopToolbar extends Composite {
           ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
         }
       } else {
-        ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-        ChainableCommand cmd = new SaveAllEditorsCommand(new ShareToGalleryCommand(null));
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
+        long projectId = ode.getCurrentYoungAndroidProjectId();
+        Project project = ode.getProjectManager().getProject(projectId);
+        publishToGallery(project);
       }
     }
 
@@ -1011,7 +1030,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectToGalleryMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
@@ -1022,7 +1041,7 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectToGalleryMenuItem(), true);
+      fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
@@ -1120,4 +1139,57 @@ public class TopToolbar extends Composite {
     }
   }
 
+  // Handle Project Manager Listener events
+  @Override
+  public void onProjectAdded(Project project) {
+
+  }
+
+  @Override
+  public void onProjectRemoved(Project project) {
+
+  }
+
+  @Override
+  public void onProjectsLoaded() {
+
+  }
+
+  @Override
+  public void onProjectPublishedOrUnpublished() {
+    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+      //If we are in the projects view
+      List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() == 1 && selectedProjects.get(0).isPublished()) {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
+      } else {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
+      }
+    } else {
+      // Editor view
+      long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+      Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      if (project.isPublished()) {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
+      } else {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
+      }
+    }
+  }
+
+  private class ViewAppInGalleryAction implements Command {
+    @Override
+    public void execute() {
+      Project project;
+      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        // Get first selected project in list
+        project = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().get(0);
+      } else {
+        long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+        project = Ode.getInstance().getProjectManager().getProject(projectId);
+      }
+      Window.open(Ode.getSystemConfig().getGalleryUrl() + "/#/project/" + project.getGalleryId(), "_blank", "");
+    }
+  }
 }
