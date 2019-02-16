@@ -975,9 +975,9 @@ Blockly.Msg.en.switch_language_to_english = {
     
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create procedure';
-    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'TODO:';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'A procedure that does not return a value. Those blocks inside would not be executed when created, instead, they will be executed when called by call blocks.';
     
-    Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP = 'TODO:';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP = 'A procedure returning a result value. Those blocks inside would not be executed when created, instead, they will be executed when called by call blocks.';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';
@@ -1017,17 +1017,23 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call procedure';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = 'input list';
-    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'TODO:';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'Call a procedure with no return value. The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP = 'Call a procedure with a return value. The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP = 'Call a procedure with no return value (with a list of inputs). The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP = 'Call a procedure with a return value (with a list of inputs). The number of inputs must match the procedure.';
 
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'number of inputs';
     Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'procedure';
-    Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'TODO:';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'Get the number of inputs that is expected by the procedure';
 
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = 'get global procedure';
     Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME = 'name';
-    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = 'TODO:';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = 'Get a named procedure.';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';

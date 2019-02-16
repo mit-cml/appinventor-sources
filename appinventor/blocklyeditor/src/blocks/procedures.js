@@ -822,7 +822,7 @@ Blockly.Blocks['procedures_defanonreturn'] = {
     this.appendIndentedValueInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.arguments_ = [];
     this.horizontalParameters = true;
@@ -1156,7 +1156,7 @@ Blockly.Blocks['procedures_callanonreturn'] = {
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['anon_proc_arg']));
     this.itemCount_ = 0;
     this.emptyInputName = null;
@@ -1198,7 +1198,7 @@ Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP);
   },
   typeblock: [{
     translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
@@ -1219,7 +1219,7 @@ Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP);
   },
   typeblock: [{
     translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
