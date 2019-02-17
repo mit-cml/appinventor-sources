@@ -231,8 +231,11 @@ public final class Clock extends AndroidNonvisibleComponent
     try {
       GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
       cal.setLenient(false);
+
+      // A non-lenient GregorianCalendar throws an exception upon 
+      // calculating its time or calendar field values if any out-of-range field value has been set.
       cal.getTime();
-    } catch (java.lang.IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
     
@@ -254,9 +257,9 @@ public final class Clock extends AndroidNonvisibleComponent
       instant.set(Calendar.HOUR_OF_DAY, hour);
       instant.set(Calendar.MINUTE, minute);
       instant.set(Calendar.SECOND, 0);
-    } catch (java.lang.IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
-    }
+    } 
 
     
     return instant;
@@ -282,8 +285,11 @@ public final class Clock extends AndroidNonvisibleComponent
     try {
       instant = new GregorianCalendar(year, jMonth, day);
       instant.setLenient(false);
+
+      // A non-lenient GregorianCalendar throws an exception upon 
+      // calculating its time or calendar field values if any out-of-range field value has been set.
       instant.getTime();
-    } catch (java.lang.IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
     
@@ -294,7 +300,7 @@ public final class Clock extends AndroidNonvisibleComponent
       instant.set(Calendar.MINUTE, minute);
       instant.set(Calendar.SECOND, second);
 
-    } catch (java.lang.IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
 
