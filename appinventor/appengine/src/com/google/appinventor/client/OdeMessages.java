@@ -3930,7 +3930,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("millis")
   @Description("")
   String millisParams();
-  
+
   @DefaultMessage("second")
   @Description("")
   String secondParams();
@@ -5057,18 +5057,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MakeInstantMethods();
 
-//  Sherry Wang
   @DefaultMessage("MakeInstantFromParts")
   @Description("")
   String MakeInstantFromPartsMethods();
 
-  @DefaultMessage("ClockMakeDate")
+  @DefaultMessage("MakeDate")
   @Description("")
-  String ClockMakeDateMethods();
+  String MakeDateMethods();
 
-  @DefaultMessage("ClockMakeTime")
+  @DefaultMessage("MakeTime")
   @Description("")
-  String ClockMakeTimeMethods();
+  String MakeTimeMethods();
 
   @DefaultMessage("secondParams")
   @Description("")

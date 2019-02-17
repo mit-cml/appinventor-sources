@@ -21,7 +21,7 @@ import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-// Sherry
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Date;
@@ -220,10 +220,20 @@ public final class Clock extends AndroidNonvisibleComponent
   /** Sherry Wang
     * 
   */
+
+  /**
+   * An instant in time specified by MM/DD/YYYY 
+   * where MM is the month (01-12), DD the day (01-31), YYYY the year
+   * (0000-9999)
+   * @param year year integer
+   * @param month month integer
+   * @param day day integer
+   * @return  Calendar instant
+   */
   @SimpleFunction(description = "Allows the user to set the clock to be "
     +"a date value.\n" +
     "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
-  public Calendar ClockMakeDate(int year, int month, int day) {
+  public Calendar MakeDate(int year, int month, int day) {
     int jMonth = month - 1;
     try {
       GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
@@ -240,9 +250,16 @@ public final class Clock extends AndroidNonvisibleComponent
   /** Sherry Wang
     * 
   */
+  /**
+   * An instant in time specified by hh:mm
+   * where hh is the hour, mm the minute
+   * @param hour hour integer
+   * @param minute minute integer
+   * @return  Calendar instant since 1/1/1970
+   */
   @SimpleFunction(description = "Allows the user to set the time of the clock - " +
     "Valid format is hh:mm\n")
-  public Calendar ClockMakeTime(int hour, int minute) {
+  public Calendar MakeTime(int hour, int minute) {
     Calendar instant = null;
     try {
       String time_str = String.valueOf(hour) + ":" + String.valueOf(minute);
@@ -265,20 +282,45 @@ public final class Clock extends AndroidNonvisibleComponent
   /** Sherry Wang
     * 
   */
+  /**
+   * An instant in time specified by MM/DD/YYYY hh:mm
+   * where MM is the month (01-12), DD the day (01-31), YYYY the year
+   * hh is the hour, mm the minute
+   * @param year year integer
+   * @param month month integer
+   * @param day day integer
+   * @param hour hour integer
+   * @param minute minute integer
+   * @return  Calendar instant
+   */
   @SimpleFunction(
     description = "Allows the user to set the date and time to be displayed when the clock opens.\n" +
     "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
   public Calendar MakeInstantFromParts(int year, int month, int day, int hour, int minute, int second) {
-    Clock clock = new Clock();
-    Calendar calendar_day = clock.ClockMakeDate(year, month, day);
-    Calendar calendar_time = clock.ClockMakeTime(hour, minute);
+    int jMonth = month - 1;
+    Calendar instant = null;
+    try {
+      instant = new GregorianCalendar(year, jMonth, day);
+      instant.setLenient(false);
+      instant.getTime();
+    } catch (java.lang.IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    
+    instant = Dates.DateInstant(year, month, day);
+    
+    try {
+      instant.set(Calendar.HOUR_OF_DAY, hour);
+      instant.set(Calendar.MINUTE, minute);
+      instant.set(Calendar.SECOND, second);
 
-    
-    calendar_day.set(Calendar.HOUR_OF_DAY, calendar_time.get(Calendar.HOUR_OF_DAY));
-    calendar_day.set(Calendar.MINUTE, calendar_time.get(Calendar.MINUTE));
-    calendar_day.set(Calendar.SECOND, second);
-    
-    return calendar_day;
+    }catch (Exception e) {
+    throw new YailRuntimeError(
+        "Argument to MakeInstantFromParts hour and minute should have form hh:mm",
+        "Sorry to be so picky.");
+    }
+
+    return instant;
     
   }
 

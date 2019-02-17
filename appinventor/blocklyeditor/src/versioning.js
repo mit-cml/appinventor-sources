@@ -1407,7 +1407,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // Duration Support was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // MakeDate, MakeTime, MakeInstantFromParts methods added
+    4: "noUpgrade"
 
   }, // End Clock upgraders
 
