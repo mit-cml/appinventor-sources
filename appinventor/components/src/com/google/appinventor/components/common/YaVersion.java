@@ -668,7 +668,10 @@ public class YaVersion {
   // - Add Duration Support
 
   // For CLOCK_COMPONENT_VERSION 3:
-  // - Add MakeTime, MakeDate, MakeInstantFromParts methods
+  // - Duration Support was added
+
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - MakeTime, MakeDate, MakeInstantFromParts methods were added
   public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:

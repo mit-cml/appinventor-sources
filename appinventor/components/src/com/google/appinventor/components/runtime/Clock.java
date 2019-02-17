@@ -217,9 +217,7 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * An instant in time specified by MM/DD/YYYY 
-   * where MM is the month (01-12), DD the day (01-31), YYYY the year
-   * (0000-9999)
+   * An instant in time specified by number year, number month, number day
    * @param year year integer
    * @param month month integer
    * @param day day integer
@@ -235,7 +233,7 @@ public final class Clock extends AndroidNonvisibleComponent
       cal.setLenient(false);
       cal.getTime();
     } catch (java.lang.IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, "ClockMakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
+      form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
     
     Calendar instant = Dates.DateInstant(year, month, day);
@@ -243,8 +241,7 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * An instant in time specified by hh:mm
-   * where hh is the hour, mm the minute
+   * An instant in time specified by integer hour and integer minute
    * @param hour hour integer
    * @param minute minute integer
    * @return  Calendar instant since 1/1/1970
@@ -252,18 +249,13 @@ public final class Clock extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Allows the user to set the time of the clock - " +
     "Valid format is hh:mm\n")
   public Calendar MakeTime(int hour, int minute) {
-    Calendar instant = null;
+    Calendar instant = new GregorianCalendar();
     try {
-      String time_str = String.valueOf(hour) + ":" + String.valueOf(minute);
-      DateFormat timeFormat = new SimpleDateFormat("hh:mm");
-      timeFormat.setLenient(false);
-      Date time = timeFormat.parse(time_str);
-      instant = Calendar.getInstance();
-      instant.setTime(time);
-    }catch (Exception e) {
-    throw new YailRuntimeError(
-        "Argument to ClockMakeTime should have form hh:mm",
-        "Sorry to be so picky.");
+      instant.set(Calendar.HOUR_OF_DAY, hour);
+      instant.set(Calendar.MINUTE, minute);
+      instant.set(Calendar.SECOND, 0);
+    } catch (java.lang.IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
 
     
@@ -271,14 +263,14 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * An instant in time specified by MM/DD/YYYY hh:mm
-   * where MM is the month (01-12), DD the day (01-31), YYYY the year
-   * hh is the hour, mm the minute
+   * An instant in time specified by number year, number month, number day, number hour,
+   * number minute, number second
    * @param year year integer
    * @param month month integer
    * @param day day integer
    * @param hour hour integer
    * @param minute minute integer
+   * @param second minute integer
    * @return  Calendar instant
    */
   @SimpleFunction(
@@ -302,10 +294,8 @@ public final class Clock extends AndroidNonvisibleComponent
       instant.set(Calendar.MINUTE, minute);
       instant.set(Calendar.SECOND, second);
 
-    }catch (Exception e) {
-    throw new YailRuntimeError(
-        "Argument to MakeInstantFromParts hour and minute should have form hh:mm",
-        "Sorry to be so picky.");
+    } catch (java.lang.IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
 
     return instant;

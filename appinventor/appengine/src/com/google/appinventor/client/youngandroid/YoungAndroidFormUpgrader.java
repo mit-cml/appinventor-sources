@@ -726,6 +726,8 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       // (3) Duration Support was added
       // No properties need to be added to upgrade to version 3.
+      // (4) Added MakeDate, MakeTime, MakeInstantFromParts methods
+      // No properties need to be added to upgrade to version 4.
       srcCompVersion = 4;
     }
     return srcCompVersion;
