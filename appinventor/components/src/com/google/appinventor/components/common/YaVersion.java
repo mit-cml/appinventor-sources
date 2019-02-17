@@ -507,8 +507,10 @@ public class YaVersion {
   // - Break block was added.
   // For BLOCKS_LANGUAGE_VERSION 23:
   // - Bitwise and, ior, and xor blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 24:
+  // - Anonymous proceudre related (create, call, get global) were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 23;
+  public static final int BLOCKS_LANGUAGE_VERSION = 24;
 
   // ................................. Component Version Numbers ..................................
 
