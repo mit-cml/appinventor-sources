@@ -835,6 +835,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = '调用有返回值的过程';
 
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = '调用过程';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT = '输入项';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = '输入列表';
     Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = '调用一个无返回值的过程。输入项数量必须与被调用过程所需数量的相同。';
 
