@@ -909,6 +909,7 @@
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
 (define-alias AnonymousProcedure <com.google.appinventor.components.runtime.util.AnonymousProcedure>)
+(define-alias MultiThreadUtil <com.google.appinventor.components.runtime.util.MultiThreadUtil>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
@@ -2332,7 +2333,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;Anonymous Procedure implementation
+;;;;Anonymous Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (create-anonymous-procedure x)
@@ -2347,8 +2348,11 @@ list, use the make-yail-list constructor with no arguments.
 (define (num-args-anonymous-procedure procedure)
   (AnonymousProcedure:numArgs procedure))
 
+(define (run-in-background procedure-to-run callback)
+  (MultiThreadUtil:runInNewThread procedure-to-run callback))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; End of Anonymous Procedure implementation
+;;;; End of Anonymous Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

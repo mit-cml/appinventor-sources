@@ -396,8 +396,19 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="STEP"><block type="math_number"><title name="NUM">1</title></block></value>' +
     '</block>' +
   '</xml>' },
-
-   math_random_int: {xmlString:
+  controls_run_in_background: {xmlString:
+  '<xml>' +
+    '<block type="controls_run_in_background">' +
+      '<value name="PROCEDURE"><block type="procedures_defanonreturn"></block></value>' +
+      '<value name="CALLBACK">' +
+        '<block type="procedures_defanonnoreturn">' +
+          '<mutation><arg name="result"></arg></mutation>' +
+          '<field name="VAR0">result</field>' +
+        '</block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>' },
+  math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
     '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
@@ -426,7 +437,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
-   lists_lookup_in_pairs: {xmlString:
+  lists_lookup_in_pairs: {xmlString:
   '<xml>' +
     '<block type="lists_lookup_in_pairs">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +

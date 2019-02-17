@@ -221,6 +221,11 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = '执行语句/返回结果';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = '执行并返回';
 
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE = '后台运行';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE = '运行内容';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK = '回调过程';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP = '在后台运行一段过程，再通过回调来处理结果。在后台运行的过程不被允许对手机屏幕上的任何内容做变更，这些变更应该被放到回调过程中。';
+
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = '求值但忽略结果'
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = '求值但不返回';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = '运行所连接的代码块但不返回运算值，用于调用求值过程但不需要其运算值。';

@@ -492,6 +492,26 @@ Blockly.Blocks['controls_do_then_return'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE}]
 };
 
+Blockly.Blocks['controls_run_in_background'] = {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE);
+    this.appendValueInput('PROCEDURE')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('CALLBACK')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE}]
+};
+
 // [lyn, 01/15/2013] Added
 Blockly.Blocks['controls_eval_but_ignore'] = {
   category: 'Control',

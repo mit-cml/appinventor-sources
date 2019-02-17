@@ -247,6 +247,12 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
 
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_HELPURL = '/reference/blocks/control.html#TODO:';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE = 'run in background';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE = 'procedure';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK = 'callback';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP = 'Run procedure in background, then call the callback procedure with the running result. You should not add any block that would change the content of the screen into the background procedure, instead, they should be put into the callback.';
+
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate but ignore result'
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = '/reference/blocks/control.html#evaluate';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'

@@ -142,6 +142,14 @@ Blockly.Yail['controls_do_then_return'] = function() {
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
+Blockly.Yail['controls_run_in_background'] = function() {
+  var procedure = Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
+  var callback = Blockly.Yail.valueToCode(this, 'CALLBACK', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "run-in-background", [ procedure, callback ], [ "any", "any"], "run in background");
+  return code;
+};
+
  // [lyn, 01/15/2013] Added
 // adding 'ignored' here is only for the printout in Do-It.  The value will be ignored because the block shape
 // has no output
