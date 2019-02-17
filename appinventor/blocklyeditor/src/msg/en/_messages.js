@@ -975,9 +975,6 @@ Blockly.Msg.en.switch_language_to_english = {
     
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
     Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create procedure';
-    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP = 'A procedure that does not return a value. Those blocks inside would not be executed when created, instead, they will be executed when called by call blocks.';
-    
-    Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP = 'A procedure returning a result value. Those blocks inside would not be executed when created, instead, they will be executed when called by call blocks.';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';

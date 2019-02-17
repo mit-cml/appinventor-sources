@@ -667,7 +667,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
     this.appendStatementInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.arguments_ = [];
     this.horizontalParameters = true;
@@ -822,7 +822,7 @@ Blockly.Blocks['procedures_defanonreturn'] = {
     this.appendIndentedValueInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.arguments_ = [];
     this.horizontalParameters = true;
