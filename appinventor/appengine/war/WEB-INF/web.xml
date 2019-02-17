@@ -88,12 +88,36 @@
   <!-- Generate Login Page for OpenID -->
 
   <servlet>
-    <servlet-name>LoginServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.LoginServlet</servlet-class>
+    <servlet-name>LoginEntryServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.LoginEntryServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>LoginServlet</servlet-name>
-    <url-pattern>/login/*</url-pattern>
+    <servlet-name>LoginEntryServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+
+ <!-- Google account login -->
+
+  <servlet>
+    <servlet-name>LoginGoogleServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.LoginGoogleServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginGoogleServlet</servlet-name>
+    <url-pattern>/login/google</url-pattern>
+  </servlet-mapping>
+
+ <!-- Local account login -->
+
+  <servlet>
+    <servlet-name>LoginLocalServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.LoginLocalServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginLocalServlet</servlet-name>
+    <url-pattern>/login/setpw</url-pattern>
+    <url-pattern>/login/sendlink</url-pattern>
+    <url-pattern>/login/linksent</url-pattern>
   </servlet-mapping>
 
   <!-- Remote API -->

@@ -24,6 +24,7 @@ import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.Server;
+import com.google.appinventor.server.util.PasswordHash;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
@@ -96,6 +97,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Date;
 import java.util.UUID;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import javax.annotation.Nullable;
 
@@ -337,19 +340,19 @@ public class ObjectifyStorageIo implements  StorageIo {
   // Get User from email address alone. This version will create the user
   // if they don't exist
   @Override
-  public User getUserFromEmail(String email) {
+  public User getOrCreateUserFromEmail(String email) {
     String emaillower = email.toLowerCase();
-    LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
+    LOG.info("getOrCreateUserFromEmail: email = " + email + " emaillower = " + emaillower);
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
     UserData user = datastore.query(UserData.class).filter("email", email).get();
     if (user == null) {
-      LOG.info("getUserFromEmail: first attempt failed using " + email);
+      LOG.info("getOrCreateUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
       user = datastore.query(UserData.class).filter("emaillower", emaillower).get();
       if (user == null) {       // Finally, create it (in lower case)
-        LOG.info("getUserFromEmail: second attempt failed using " + emaillower);
+        LOG.info("getOrCreateUserFromEmail: second attempt failed using " + emaillower);
         user = createUser(datastore, newId, email);
       }
     }
@@ -498,15 +501,27 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void setUserPassword(final String userId, final String password) {
+    // Generate password hash
+    final String hashedPassword;
+    try {
+      hashedPassword = PasswordHash.createHash(password);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+
+          // Flush memcache
           String cachekey = User.usercachekey + "|" + userId;
           memcache.delete(cachekey);  // Flush cached copy prior to update
+
+          // Update password
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
-            userData.password = password;
+            userData.password = hashedPassword;
             datastore.put(userData);
           }
         }
