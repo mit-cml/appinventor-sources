@@ -216,11 +216,6 @@ public final class Clock extends AndroidNonvisibleComponent
     }
   }
 
-
-  /** Sherry Wang
-    * 
-  */
-
   /**
    * An instant in time specified by MM/DD/YYYY 
    * where MM is the month (01-12), DD the day (01-31), YYYY the year
@@ -247,9 +242,6 @@ public final class Clock extends AndroidNonvisibleComponent
     return instant;
   }
 
-  /** Sherry Wang
-    * 
-  */
   /**
    * An instant in time specified by hh:mm
    * where hh is the hour, mm the minute
@@ -278,10 +270,6 @@ public final class Clock extends AndroidNonvisibleComponent
     return instant;
   }
 
-
-  /** Sherry Wang
-    * 
-  */
   /**
    * An instant in time specified by MM/DD/YYYY hh:mm
    * where MM is the month (01-12), DD the day (01-31), YYYY the year
