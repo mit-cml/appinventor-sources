@@ -150,6 +150,14 @@ Blockly.Yail['controls_run_in_background'] = function() {
   return code;
 };
 
+Blockly.Yail['controls_run_after_period'] = function() {
+  var millis = Blockly.Yail.valueToCode(this, 'MILLIS', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
+  var procedure = Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "run-after-period", [ millis, procedure ], [ "any", "any" ], "run after period");
+  return code;
+};
+
  // [lyn, 01/15/2013] Added
 // adding 'ignored' here is only for the printout in Do-It.  The value will be ignored because the block shape
 // has no output

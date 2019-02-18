@@ -2351,6 +2351,9 @@ list, use the make-yail-list constructor with no arguments.
 (define (run-in-background procedure-to-run callback)
   (MultiThreadUtil:runInNewThread procedure-to-run callback))
 
+(define (run-after-period millis procedure-to-run)
+  (MultiThreadUtil:runAfterPeriod millis procedure-to-run))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Anonymous Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

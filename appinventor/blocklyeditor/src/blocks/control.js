@@ -514,6 +514,28 @@ Blockly.Blocks['controls_run_in_background'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE}]
 };
 
+Blockly.Blocks['controls_run_after_period'] = {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE);
+    this.appendValueInput('MILLIS')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_MILLIS)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE}]
+};
+
 // [lyn, 01/15/2013] Added
 Blockly.Blocks['controls_eval_but_ignore'] = {
   category: 'Control',

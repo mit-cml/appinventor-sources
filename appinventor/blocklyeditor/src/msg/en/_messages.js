@@ -253,6 +253,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK = 'callback';
     Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP = 'Run procedure in background, then call the callback procedure with the running result. You should not add any block that would change the content of the screen into the background procedure, instead, they should be put into the callback.';
 
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_HELPURL = '/reference/blocks/control.html#TODO:';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE = 'run after period';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_MILLIS = 'millis';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TOOLTIP = 'Run procedure after a certain period (time unit: milli-second)';
+
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate but ignore result'
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = '/reference/blocks/control.html#evaluate';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'

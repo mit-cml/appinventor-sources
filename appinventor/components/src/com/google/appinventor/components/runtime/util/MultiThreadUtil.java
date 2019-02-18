@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 
 public final class MultiThreadUtil {
 
@@ -40,6 +41,15 @@ public final class MultiThreadUtil {
             }
             throw new MultiThreadException("Multi-Thread Exception:" + e.getClass().getName(), e);
         }
+    }
+
+    public static void runAfterPeriod(long millis, final YailProcedure procedure) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                procedure.call();
+            }
+        }, millis);
     }
 
 }
