@@ -10,7 +10,7 @@ import gnu.mapping.Procedure;
 import gnu.mapping.SimpleSymbol;
 import gnu.mapping.Values;
 
-public final class AnonymousProcedure {
+public final class YailProcedure {
 
     public static interface Executable {
         public Object execute(Object... args);
@@ -18,15 +18,15 @@ public final class AnonymousProcedure {
     }
 
     // static methods are called in runtime.scm
-    public static final AnonymousProcedure create(ModuleMethod method) {
-        return new AnonymousProcedure(method);
+    public static final YailProcedure create(ModuleMethod method) {
+        return new YailProcedure(method);
     }
-    public static final AnonymousProcedure create(String procedureName) {
+    public static final YailProcedure create(String procedureName) {
         try {
             Class.forName("com.google.youngandroid.runtime")
                 .getMethod("setThisForm")
                 .invoke(null);
-            return new AnonymousProcedure(
+            return new YailProcedure(
                 (Procedure) Class.forName("com.google.youngandroid.runtime")
                     .getMethod("lookupGlobalVarInCurrentFormEnvironment", gnu.mapping.Symbol.class, Object.class)
                     .invoke(
@@ -36,17 +36,17 @@ public final class AnonymousProcedure {
         } catch (ClassNotFoundException | NoSuchMethodException |
                  IllegalAccessException | InvocationTargetException impossible) {
             // impossible with static & specified class.methods
-            Log.wtf("AnonymousProcedure", impossible);
+            Log.wtf("YailProcedure", impossible);
             throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\" (internal error)",
                                        impossible);
         } catch (ObjectStreamException e) {
             throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\"", e);
         }
     }
-    public static final Object callProcedure(AnonymousProcedure procedure, LList args) {
+    public static final Object callProcedure(YailProcedure procedure, LList args) {
         return procedure.call(args.toArray());
     }
-    public static final int numArgs(AnonymousProcedure procedure) {
+    public static final int numArgs(YailProcedure procedure) {
         return procedure.numArgs();
     }
 
@@ -54,24 +54,24 @@ public final class AnonymousProcedure {
 
     private final Executable executable;
 
-    public AnonymousProcedure(Executable executable) {
+    public YailProcedure(Executable executable) {
         this.executable = executable;
     }
-    public AnonymousProcedure(final Procedure methodToCall) {
+    public YailProcedure(final Procedure methodToCall) {
         this(new Executable(){
             @Override
             public Object execute(Object... args) {
                 if (args.length < numArgs()) {
-                    throw new RuntimeException("Unable to call anonymousProcedure: not enough arguments: require "
+                    throw new RuntimeException("Unable to call YailProcedure: not enough arguments: require "
                         + numArgs() + ", get " + args.length);
                 } else if (args.length > numArgs()) {
-                    throw new RuntimeException("Unable to call anonymousProcedure: too many arguments: require "
+                    throw new RuntimeException("Unable to call YailProcedure: too many arguments: require "
                         + numArgs() + ", get " + args.length);
                 }
                 try {
                     return methodToCall.applyN(args);
                 } catch (Throwable t) {
-                    throw new RuntimeException("Unable to call anonymousProcedure", t);
+                    throw new RuntimeException("Unable to call YailProcedure", t);
                 }
             }
             @Override
@@ -85,7 +85,7 @@ public final class AnonymousProcedure {
 
     /**
      * @param args
-     * @return never be null, any null will be replaced by {@link AnonymousProcedure.RETURN_VALUE_WHEN_NULL}
+     * @return never be null, any null will be replaced by {@link YailProcedure.RETURN_VALUE_WHEN_NULL}
      */
     public Object call(Object... args) {
         Object returnVal = executable.execute(args);

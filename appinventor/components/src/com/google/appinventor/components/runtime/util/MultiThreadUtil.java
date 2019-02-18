@@ -13,7 +13,7 @@ public final class MultiThreadUtil {
         }
     }
 
-    public static void runInNewThread(final AnonymousProcedure procedure, final AnonymousProcedure callback) {
+    public static void runInNewThread(final YailProcedure procedure, final YailProcedure callback) {
         AsyncTask<Object, Object, Object> task = new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object... args) {

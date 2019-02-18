@@ -600,7 +600,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       return block.instanceName;
     if (block.category === 'Procedures')
       return (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')
-           || block.category); // for anonymous procedures
+           || block.category); // for yail procedures
     return block.category;
   }
 
