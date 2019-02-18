@@ -1244,17 +1244,17 @@ Blockly.Blocks['procedures_numArgs'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET}]
 };
 
-Blockly.Blocks['procedures_globalToAnonymous'] = {
+Blockly.Blocks['procedures_getWithName'] = {
   category: 'Procedures',
-  helpUrl: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_HELPURL,
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURENAME')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET)
-        .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP);
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_NAME);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_TOOLTIP);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET }]
 };

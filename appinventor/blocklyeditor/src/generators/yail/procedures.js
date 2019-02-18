@@ -174,7 +174,7 @@ Blockly.Yail['procedures_numArgs'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 }
 
-Blockly.Yail['procedures_globalToAnonymous'] = function() {
+Blockly.Yail['procedures_getWithName'] = function() {
   var procName = Blockly.Yail.valueToCode(this, 'PROCEDURENAME', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YailCallYialPrimitive(
       "create-yail-procedure", procName, "any", "get procedure");
