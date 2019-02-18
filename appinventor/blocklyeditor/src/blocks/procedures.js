@@ -666,7 +666,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
     this.appendStatementInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.arguments_ = [];
@@ -821,7 +821,7 @@ Blockly.Blocks['procedures_defanonreturn'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
     this.appendIndentedValueInput(this.bodyInputName)
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.arguments_ = [];
@@ -1120,7 +1120,7 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -1155,7 +1155,7 @@ Blockly.Blocks['procedures_callanonreturn'] = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP);
@@ -1192,7 +1192,7 @@ Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.appendValueInput('INPUTLIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('list', Blockly.Blocks.Utilities.INPUT))
@@ -1214,7 +1214,7 @@ Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.appendValueInput('INPUTLIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('list', Blockly.Blocks.Utilities.INPUT))
@@ -1235,7 +1235,7 @@ Blockly.Blocks['procedures_numArgs'] = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET)
         .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP);
@@ -1254,7 +1254,7 @@ Blockly.Blocks['procedures_globalToAnonymous'] = {
         .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET)
         .appendField(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("AnonProcedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET }]
 };
