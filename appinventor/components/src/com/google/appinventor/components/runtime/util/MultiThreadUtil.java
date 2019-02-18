@@ -39,7 +39,7 @@ public final class MultiThreadUtil {
                     throw new MultiThreadException("Multi-Thread Exception:" + exceptionInProcedure.getClass().getName(), e);
                 }
             }
-            throw new MultiThreadException("Multi-Thread Exception:" + e.getClass().getName(), e);
+            throw new MultiThreadException("Multi-Thread Exception:" + e.getCause().getClass().getName(), e);
         }
     }
 
