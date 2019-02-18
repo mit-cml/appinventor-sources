@@ -1258,3 +1258,26 @@ Blockly.Blocks['procedures_getWithName'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET }]
 };
+
+Blockly.Blocks['procedures_getWithDropdown'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    this.procNamesFxn = function() {
+      var items = procDb.getMenuItems('all');
+      return items.length > 0 ? items : ['',''];
+    };
+    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
+    this.procDropDown.block = this;
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET)
+        .appendField(this.procDropDown, "PROCNAME");
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+  },
+  setProcedureParameters: function() {}, // dont need to display parameter this here
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET }]
+};

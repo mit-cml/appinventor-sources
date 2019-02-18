@@ -52,9 +52,8 @@ Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) {
   var procNameArray = [Blockly.FieldProcedure.defaultValue];
   for(var i=0;i<topBlocks.length;i++){
     var procName = topBlocks[i].getFieldValue('NAME')
-    if(topBlocks[i].type == "procedures_defnoreturn" && !returnValue) {
-      procNameArray.push([procName,procName]);
-    } else if (topBlocks[i].type == "procedures_defreturn" && returnValue) {
+    if ((topBlocks[i].type == "procedures_defnoreturn" && (returnValue == 'all' || !returnValue)) ||
+        (topBlocks[i].type == "procedures_defreturn" && (returnValue == 'all' || returnValue))) {
       procNameArray.push([procName,procName]);
     }
   }

@@ -180,3 +180,11 @@ Blockly.Yail['procedures_getWithName'] = function() {
       "create-yail-procedure", procName, "any", "get procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 }
+
+Blockly.Yail['procedures_getWithDropdown'] = function() {
+  var procName = Blockly.Yail.YAIL_GET_VARIABLE +
+      Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME') + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+    "create-yail-procedure", procName, "any", "get procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}

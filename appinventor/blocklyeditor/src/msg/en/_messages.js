@@ -1044,6 +1044,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_NAME = 'name';
     Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_TOOLTIP = 'Get a named procedure.';
 
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET = 'get procedure';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP = 'Get a defined procedure.';
+
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';
 
