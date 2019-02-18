@@ -500,9 +500,11 @@ Blockly.Blocks['controls_run_in_background'] = {
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE);
     this.appendValueInput('PROCEDURE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('CALLBACK')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
