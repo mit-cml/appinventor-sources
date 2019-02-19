@@ -546,11 +546,11 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     return function() {
       Blockly.Instrument.initializeStats('expandAllCollapsedBlocks');
       Blockly.Instrument.timer(
-          function() { callback.call(self); },
-          function(result, timeDiff) {
-            Blockly.Instrument.stats.totalTime = timeDiff;
-            Blockly.Instrument.displayStats('expandAllCollapsedBlocks');
-          });
+        function() { callback.call(self); },
+        function(result, timeDiff) {
+          Blockly.Instrument.stats.totalTime = timeDiff;
+          Blockly.Instrument.displayStats('expandAllCollapsedBlocks');
+        });
     };
   }
   for (var i = 0; i < menuOptions.length; ++i) {
@@ -638,7 +638,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var spacing = Blockly.mainWorkspace.options.gridOptions.spacing;
     var spacingInv = 1 / spacing;
     var snap = Blockly.mainWorkspace.options.gridOptions.snap ?
-        function(x) { return (Math.ceil(x * spacingInv) - .5) * spacing; } : function(x) { return x; };
+      function(x) { return (Math.ceil(x * spacingInv) - .5) * spacing; } : function(x) { return x; };
     var viewLeft = snap(metrics.viewLeft + 5);
     var viewTop = snap(metrics.viewTop + 5);
     var x = viewLeft;
@@ -654,38 +654,38 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       var blkHgt = blockHW.height;
       var blkWidth = blockHW.width;
       switch (layout) {
-        case Blockly.BLKS_HORIZONTAL:
-          if (x < wsRight) {
-            blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
-            x = snap(x + blkWidth + SPACER);
-            if (blkHgt > maxHgt) // Remember highest block
-              maxHgt = blkHgt;
-          } else {
-            y = snap(y + maxHgt + SPACER);
+      case Blockly.BLKS_HORIZONTAL:
+        if (x < wsRight) {
+          blk.moveBy(x - blkXY.x, y - blkXY.y);
+          blk.select();
+          x = snap(x + blkWidth + SPACER);
+          if (blkHgt > maxHgt) // Remember highest block
             maxHgt = blkHgt;
-            x = viewLeft;
-            blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
-            x = snap(x + blkWidth + SPACER);
-          }
-          break;
-        case Blockly.BLKS_VERTICAL:
-          if (y < wsBottom) {
-            blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
-            y = snap(y + blkHgt + SPACER);
-            if (blkWidth > maxWidth)  // Remember widest block
-              maxWidth = blkWidth;
-          } else {
-            x = snap(x + maxWidth + SPACER);
+        } else {
+          y = snap(y + maxHgt + SPACER);
+          maxHgt = blkHgt;
+          x = viewLeft;
+          blk.moveBy(x - blkXY.x, y - blkXY.y);
+          blk.select();
+          x = snap(x + blkWidth + SPACER);
+        }
+        break;
+      case Blockly.BLKS_VERTICAL:
+        if (y < wsBottom) {
+          blk.moveBy(x - blkXY.x, y - blkXY.y);
+          blk.select();
+          y = snap(y + blkHgt + SPACER);
+          if (blkWidth > maxWidth)  // Remember widest block
             maxWidth = blkWidth;
-            y = viewTop;
-            blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
-            y = snap(y + blkHgt + SPACER);
-          }
-          break;
+        } else {
+          x = snap(x + maxWidth + SPACER);
+          maxWidth = blkWidth;
+          y = viewTop;
+          blk.moveBy(x - blkXY.x, y - blkXY.y);
+          blk.select();
+          y = snap(y + blkHgt + SPACER);
+        }
+        break;
       }
     }
     Blockly.Events.fire(event);  // end arrangement
@@ -773,7 +773,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
   backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
-      Blockly.getMainWorkspace().getBackpack().count() + ")";
+    Blockly.getMainWorkspace().getBackpack().count() + ")";
   backpackRetrieve.callback = function() {
     if (Blockly.getMainWorkspace().hasBackpack()) {
       Blockly.getMainWorkspace().getBackpack().pasteBackpack();
@@ -805,7 +805,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   // Enable grid
   var gridOption = {enabled: true};
   gridOption.text = this.options.gridOptions['enabled'] ? Blockly.Msg.DISABLE_GRID :
-      Blockly.Msg.ENABLE_GRID;
+    Blockly.Msg.ENABLE_GRID;
   gridOption.callback = function() {
     self.options.gridOptions['enabled'] = !self.options.gridOptions['enabled'];
     self.options.gridOptions['snap'] = self.options.gridOptions['enabled'] && top.BlocklyPanel_getSnapEnabled();
@@ -827,7 +827,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     // Enable Snapping
     var snapOption = {enabled: this.options.gridOptions['enabled']};
     snapOption.text = this.options.gridOptions['snap'] ? Blockly.Msg.DISABLE_SNAPPING :
-        Blockly.Msg.ENABLE_SNAPPING;
+      Blockly.Msg.ENABLE_SNAPPING;
     snapOption.callback = function() {
       self.options.gridOptions['snap'] = !self.options.gridOptions['snap'];
       if (top.BlocklyPanel_setSnapEnabled) {
@@ -884,7 +884,7 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
       }
       var delta = e.deltaY > 0 ? -1 : 1;
       var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
-          this.getInverseScreenCTM());
+        this.getInverseScreenCTM());
       this.zoom(position.x, position.y, delta);
     } else {
       // pan using mouse wheel
@@ -1044,9 +1044,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
           goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
-              function(block) {
-                handler.checkErrors(block);
-              });
+            function(block) {
+              handler.checkErrors(block);
+            });
         }
       } finally {
         this.pendingErrorCheck = null;
