@@ -92,7 +92,7 @@ def split(args):
     appengine_file = os.path.join(appinventor_dir, 'appengine', 'src', 'com',
                                   'google', 'appinventor', 'client',
                                   'OdeMessages_%s.properties' % args.lang[0])
-    blockly_dir = os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', args.lang[0])
+    blockly_dir = os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', args.lang[0].lower())
     if not os.path.isdir(blockly_dir):
         os.mkdir(blockly_dir)
     blockly_file = os.path.join(blockly_dir, '_messages.js')
@@ -141,10 +141,10 @@ def propescape(s):
     return s.replace('\\\\', '\\').replace('\\\'', '\'').replace('\\\"', '\"').replace('\'', '\'\'').replace(':', '\\:').replace('=', '\\=')
 
 
-def read_block_translations():
+def read_block_translations(lang_code):
     linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
     continuation = re.compile(r'\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
-    with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', 'en', '_messages.js')) as js:
+    with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', lang_code, '_messages.js')) as js:
         comment = None
         items = []
         full_line = ''
@@ -190,11 +190,16 @@ def read_block_translations():
 
 
 def combine(args):
-    javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
-                             'com.google.appinventor.client.OdeMessages_default.properties')
-    blockprops = read_block_translations()  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
-    prop_file = os.path.join(appinventor_dir, 'misc', 'i18n', 'translation_template.properties')
-    with open(prop_file, 'w+', encoding='utf8') as out:
+    if args.lang is None:
+        javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
+                              'com.google.appinventor.client.OdeMessages_default.properties')
+        lang_code = 'en'
+    else:
+        lang_code = args.lang[0]
+        javaprops = os.path.join(appinventor_dir, 'appengine', 'build', 'extra', 'ode',
+                              'com.google.appinventor.client.OdeMessages_%s.properties' % lang_code)
+    blockprops = read_block_translations(lang_code.lower())  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
+    with open(os.path.join(appinventor_dir, 'misc', 'i18n', 'translation_template_%s.properties' % lang_code), 'w+', encoding='utf8') as out:
         out.write('# Frontend definitions\n')
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
@@ -233,6 +238,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='App Inventor internationalization toolkit')
     subparsers = parser.add_subparsers()
     parser_combine = subparsers.add_parser('combine')
+    parser_combine.add_argument('--lang', nargs=1, type=str, action='store')
     parser_combine.set_defaults(func=combine)
     parser_split = subparsers.add_parser('split')
     parser_split.add_argument('--lang', nargs=1, type=str, action='store')
