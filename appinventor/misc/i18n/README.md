@@ -12,7 +12,7 @@ To split the translated file:
 5. Add the language to blocklyeditor/src/language_switch.js
 6. Add the language to blocklyeditor/ploverConfig.js
 
-To add an existing tranlation that needs to be updated:
+To add an existing tranlation to Google Translator Toolkit:
 1. Build App App Inventor
 2. Run i18n.py combine [language_code] where language_code is the case-sensitive identifier used by the OdeMessages file. Don't worry that the blocklyeditor file is lower case. The script will handle that.
 3. Convert the out to tmx (I have been using http://converter.webtranslateit.com/)
