@@ -260,12 +260,12 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
     if (Blockly.Instrument.useRenderDown) {
       for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
         Blockly.Instrument.timer(
-            function () {
-              topBlock.renderDown();
-            },
-            function (result, timeDiffInner) {
-              Blockly.Instrument.stats.renderDownTime += timeDiffInner;
-            }
+          function () {
+            topBlock.renderDown();
+          },
+          function (result, timeDiffInner) {
+            Blockly.Instrument.stats.renderDownTime += timeDiffInner;
+          }
         );
       }
     } else {
@@ -987,7 +987,7 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
     Blockly.workspace_arranged_position = null;
     Blockly.workspace_arranged_type = null;
     var oldParent = this.blockDB_[event.oldParentId],
-        block = this.blockDB_[event.blockId];
+      block = this.blockDB_[event.blockId];
     oldParent && this.requestErrorChecking(oldParent);
     block && this.requestErrorChecking(block);
   }
