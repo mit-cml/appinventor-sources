@@ -2333,7 +2333,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;Anonymous Procedure & Multi-thread implementation
+;;;;Yail Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (create-yail-procedure x)
@@ -2355,7 +2355,7 @@ list, use the make-yail-list constructor with no arguments.
   (MultiThreadUtil:runAfterPeriod millis procedure-to-run))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; End of Anonymous Procedure & Multi-thread implementation
+;;;; End of Yail Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
