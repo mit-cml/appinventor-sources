@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -122,6 +122,18 @@ public final class AppInventorFeatures {
    */
   public static boolean doCompanionSplashScreen() {
     return false;
+  }
+
+  /** limitPermissions -- Remove Google defined "dangerous" permissions when
+   *                      building the MIT AI2 Companion. These include:
+   *                      android.permission.RECEIVE_SMS
+   *                      android.permission.SEND_SMS
+   *                      android.permission.PROCESS_OUTGOING_CALLS
+   *
+   * @return true to limit permissions in the Companion
+   */
+  public static boolean limitPermissions() {
+    return true;
   }
 
 }

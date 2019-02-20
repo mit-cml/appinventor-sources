@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -105,6 +106,8 @@ public final class Compiler {
   private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
   // Must match ComponentListGenerator.ANDROIDMINSDK_TARGET
   private static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
+  // Must match ComponentListGenerator.CONDITIONALS_TARGET
+  private static final String CONDITIONALS_TARGET = "conditionals";
   
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -194,6 +197,21 @@ public final class Compiler {
   private final ConcurrentMap<String, Set<String>> minSdksNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
+  private final ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals =
+      new ConcurrentHashMap<>();
+  /**
+   * Maps component type names to a set of blocks used in the project from the
+   * named component. For example, Hello Purr might produce:
+   *
+   * <code>
+   *   {
+   *     "Button": {"Click", "Image", "Text"},
+   *     "Screen": {"Title"},
+   *     "Sound": {"Play", "Source", "Vibrate"}
+   *   }
+   * </code>
+   */
+  private final Map<String, Set<String>> compBlocks;
   
   /**
    * Set of exploded AAR libraries.
@@ -295,12 +313,76 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "Permissions"));
     }
 
+    mergeConditionals(conditionals.get(PERMISSIONS_TARGET), permissionsNeeded);
+
     int n = 0;
     for (String type : permissionsNeeded.keySet()) {
       n += permissionsNeeded.get(type).size();
     }
 
     System.out.println("Permissions needed, n = " + n);
+  }
+
+  /**
+   * Merge the given {@code values} into the set at {@code key} in {@code map}.
+   * If {@code key} is not set, then its value is treated as the empty set and
+   * the key is set to a copy of {@code values}. {@code values} can be unmodifiable.
+   * @param map A mapping of strings to sets of strings, representing component
+   *            types to, e.g., permissions
+   * @param key The key to evaluate, e.g., "Texting"
+   * @param values The values associated with the key that need to be merged, e.g.,
+   *               {"android.permission.SEND_SMS"}
+   */
+  private void setOrMerge(Map<String, Set<String>> map, String key, Set<String> values) {
+    if (map.containsKey(key)) {
+      map.get(key).addAll(values);
+    } else {
+      map.put(key, new HashSet<>(values));
+    }
+  }
+
+  /**
+   * Merge the conditionals from the given conditional map into the existing
+   * map of required infos.
+   * @param conditionalMap A map of component type names to maps of blocks to
+   *                       sets of values (e.g., permission names)
+   * @param infoMap A map of component type names to sets of values (e.g.,
+   *                permission names)
+   */
+  private void mergeConditionals(Map<String, Map<String, Set<String>>> conditionalMap,
+                                 Map<String, Set<String>> infoMap) {
+    if (conditionalMap != null) {
+      if (isForCompanion) {
+        // For the companion, we take all of the conditionals
+        for (Map.Entry<String, Map<String, Set<String>>> entry : conditionalMap.entrySet()) {
+          for (Set<String> items : entry.getValue().values()) {
+            setOrMerge(infoMap, entry.getKey(), items);
+          }
+        }
+        // If necessary, we can remove permissions at this point (e.g., Texting, PhoneCall)
+      } else {
+        // We walk the set of components and the blocks used in the project. If
+        // any <component, block> combination is in the set of conditionals,
+        // then we merge the associated set of values into the existing set. If
+        // no existing set exists, we create one.
+        for (Map.Entry<String, Set<String>> entry : compBlocks.entrySet()) {
+          if (conditionalMap.containsKey(entry.getKey())) {
+            Map<String, Set<String>> blockPermsMap = conditionalMap.get(entry.getKey());
+            for (String blockName : entry.getValue()) {
+              Set<String> blockPerms = blockPermsMap.get(blockName);
+              if (blockPerms != null) {
+                Set<String> typePerms = infoMap.get(entry.getKey());
+                if (typePerms != null) {
+                  typePerms.addAll(blockPerms);
+                } else {
+                  infoMap.put(entry.getKey(), new HashSet<>(blockPerms));
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   // Just used for testing
@@ -438,6 +520,8 @@ public final class Compiler {
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceivers"));
     }
+
+    mergeConditionals(conditionals.get(BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
   }
   
   /*
@@ -725,6 +809,14 @@ public final class Compiler {
         permissions.addAll(compPermissions);
       }
 
+      // Remove Google's Forbidden Permissions
+      // This code is crude because we had to do this on short notice
+      if (isForCompanion && AppInventorFeatures.limitPermissions()) {
+        permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
+      }
+
       for (String permission : permissions) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
@@ -907,6 +999,7 @@ public final class Compiler {
    *
    * @param project  project to build
    * @param compTypes component types used in the project
+   * @param compBlocks component type mapped to blocks used in project
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
@@ -916,7 +1009,7 @@ public final class Compiler {
    * @throws JSONException
    * @throws IOException
    */
-  public static boolean compile(Project project, Set<String> compTypes,
+  public static boolean compile(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForCompanion, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir,
@@ -924,7 +1017,7 @@ public final class Compiler {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, out, err, userErrors, isForCompanion,
+    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors, isForCompanion,
                                      childProcessRam, dexCacheDir, reporter);
 
     compiler.generateAssets();
@@ -1176,16 +1269,18 @@ public final class Compiler {
    *
    * @param project  project to build
    * @param compTypes component types used in the project
+   * @param compBlocks component types mapped to blocks used in project
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
    * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
-  Compiler(Project project, Set<String> compTypes, PrintStream out, PrintStream err,
+  Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
            PrintStream userErrors, boolean isForCompanion,
            int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
     this.project = project;
+    this.compBlocks = compBlocks;
 
     prepareCompTypes(compTypes);
     readBuildInfo();
@@ -1979,6 +2074,44 @@ public final class Compiler {
 
         if (!infoSet.isEmpty()) {
           infoMap.put(type, infoSet);
+        }
+
+        processConditionalInfo(compJson, type, targetInfo);
+      }
+    }
+  }
+
+  /**
+   * Processes the conditional info from simple_components_build_info.json into
+   * a structure mapping annotation types to component names to block names to
+   * values.
+   *
+   * @param compJson Parsed component data from JSON
+   * @param type The name of the type being processed
+   * @param targetInfo Name of the annotation target being processed (e.g.,
+   *                   permissions). Any of: PERMISSIONS_TARGET,
+   *                   BROADCAST_RECEIVERS_TARGET
+   */
+  private void processConditionalInfo(JSONObject compJson, String type, String targetInfo) {
+    // Strip off the package name since SCM and BKY use unqualified names
+    type = type.substring(type.lastIndexOf('.') + 1);
+
+    JSONObject conditionals = compJson.optJSONObject(CONDITIONALS_TARGET);
+    if (conditionals != null) {
+      JSONObject jsonBlockMap = conditionals.optJSONObject(targetInfo);
+      if (jsonBlockMap != null) {
+        if (!this.conditionals.containsKey(targetInfo)) {
+          this.conditionals.put(targetInfo, new HashMap<String, Map<String, Set<String>>>());
+        }
+        Map<String, Set<String>> blockMap = new HashMap<>();
+        this.conditionals.get(targetInfo).put(type, blockMap);
+        for (String key : (List<String>) Lists.newArrayList(jsonBlockMap.keys())) {
+          JSONArray data = jsonBlockMap.optJSONArray(key);
+          HashSet<String> result = new HashSet<>();
+          for (int i = 0; i < data.length(); i++) {
+            result.add(data.optString(i));
+          }
+          blockMap.put(key, result);
         }
       }
     }

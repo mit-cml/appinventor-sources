@@ -117,18 +117,10 @@
        AndroidRuntime: library providing runtime support for components
        ===================================================================== -->
   <path id="AndroidSupportLibs.path">
-    <pathelement location="${lib.dir}/android/support/animated-vector-drawable-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/appcompat-v7-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/core-common-1.0.0.jar" />
-    <pathelement location="${lib.dir}/android/support/runtime-1.0.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-annotations-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-compat-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-core-ui-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-core-utils-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-fragment-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-media-compat-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-v4-26.1.0.jar" />
-    <pathelement location="${lib.dir}/android/support/support-vector-drawable-26.1.0.jar" />
+    <fileset dir="${lib.dir}/android/support">
+      <include name="*.jar"/>
+      <exclude name="testing-support-R-classes.jar"/>
+    </fileset>
     <pathelement location="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
   </path>
 

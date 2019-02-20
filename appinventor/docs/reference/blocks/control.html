@@ -253,6 +253,11 @@ The gif below shows how to use the if else mutator block.<br /><img src="images/
 <h3 id="openscreen">open another screen</h3>
 <p><img src="images/control/openscreen.png" /></p>
 <p>Opens the screen with the provided name.</p>
+      <p>The screenName must be one of the Screens created using the Designer. The screenName should be entered into a Text component and typed exactly as named in the Designer. (Case is important, if the designed screen name is myNewScreen, what you use in the puzzle piece cannot be mynewscreen or MyNewScreen for example.)</p>
+      <p>If you do open another screen, you should close it when returning to your main screen to free system memory.
+          Failure to close a screen upon leaving it will eventually lead to memory problems.</p>
+      <p>App developers should never close Screen1 or use this block to return to Screen1. Use the Close
+          Screen block instead.</p>
 <h3 id="openscreenwithvalue">open another screen with start value</h3>
 <p><img src="images/control/openscreenwithvalue.png" /></p>
 <p>Opens another screen and passes a value to it.</p>
