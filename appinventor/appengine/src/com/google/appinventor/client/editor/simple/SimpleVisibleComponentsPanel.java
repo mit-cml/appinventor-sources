@@ -131,7 +131,10 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         changeFormPreviewSize(idx, width, height);
       }
     });
+    listboxPhoneTablet.setVisible(false);
     phoneScreen.add(listboxPhoneTablet);
+    // changeFormPreviewSize(1, 320, 505); doesn't work
+
 
     initWidget(phoneScreen);
   }
@@ -158,14 +161,16 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     }
   }
 
-  public void enableTabletPreviewCheckBox(boolean enable){
+    public void enableTabletPreviewCheckBox(boolean enable){
     if (form != null){
       if (!enable){
         form.changePreviewSize(320, 505);
         listboxPhoneTablet.setItemSelected(0, true);
       }
+
     }
     listboxPhoneTablet.setEnabled(enable);
+    listboxPhoneTablet.setVisible(enable);
   }
 
   /**
