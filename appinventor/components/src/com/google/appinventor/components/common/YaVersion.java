@@ -508,7 +508,8 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 23:
   // - Bitwise and, ior, and xor blocks were added.
   // For BLOCKS_LANGUAGE_VERSION 24:
-  // - Anonymous proceudre related (create, call, get global) were added.
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
 
   public static final int BLOCKS_LANGUAGE_VERSION = 24;
 
