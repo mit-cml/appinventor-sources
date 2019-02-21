@@ -22,16 +22,16 @@ Blockly.Msg.ru.switch_language_to_russian = {
   helpUrl: '',
   init: function() {
 
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = 'Этот блок не может использоваться в определении';
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = 'Это дубликат обработчика события для этого элемента.';
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = 'Выберите подходящий пункт из выпадающего меню.';
-    Blockly.MSG_CHANGE_VALUE_TITLE = 'Изменить значение:';
-    Blockly.MSG_NEW_VARIABLE = 'Новая переменная...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = 'Новое имя переменной:';
-    Blockly.MSG_PROCEDURE_CATEGORY = 'Процедуры';
-    Blockly.MSG_RENAME_VARIABLE = 'Переименовать переменную...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = 'Переименовать все переменные "%1" в:';
-    Blockly.MSG_VARIABLE_CATEGORY = 'Переменные';
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = 'Этот блок не может использоваться в определении';
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = 'Это дубликат обработчика события для этого элемента.';
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = 'Выберите подходящий пункт из выпадающего меню.';
+    Blockly.Msg.CHANGE_VALUE_TITLE = 'Изменить значение:';
+    Blockly.Msg.NEW_VARIABLE = 'Новая переменная...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = 'Новое имя переменной:';
+    Blockly.Msg.PROCEDURE_CATEGORY = 'Процедуры';
+    Blockly.Msg.RENAME_VARIABLE = 'Переименовать переменную...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Переименовать все переменные "%1" в:';
+    Blockly.Msg.VARIABLE_CATEGORY = 'Переменные';
     Blockly.Msg.ADD_COMMENT = 'Добавить комментарий';
     Blockly.Msg.ARRANGE_H = 'Упорядочить блоки по горизонтали';
     Blockly.Msg.ARRANGE_S = 'Упорядочить блоки по диагонали';
