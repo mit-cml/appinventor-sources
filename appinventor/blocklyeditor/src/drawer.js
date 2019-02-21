@@ -290,8 +290,8 @@ Blockly.Drawer.blockInfoToXML = function(blockInfo) {
 
 /**
  * Show the contents of the built-in drawer named drawerName. drawerName
- * should be one of Blockly.MSG_VARIABLE_CATEGORY,
- * Blockly.MSG_PROCEDURE_CATEGORY, or one of the built-in block categories.
+ * should be one of Blockly.Msg.VARIABLE_CATEGORY,
+ * Blockly.Msg.PROCEDURE_CATEGORY, or one of the built-in block categories.
  * @param drawerName
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
