@@ -933,7 +933,8 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_SIZING)) {
       if (newValue.equals("Fixed")){ // Disable Tablet Preview
         editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);
-      } else {
+      }
+      else {
         editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
       }
       setSizingProperty(newValue);

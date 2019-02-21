@@ -159,7 +159,7 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     }
   }
 
-    public void enableTabletPreviewCheckBox(boolean enable){
+  public void enableTabletPreviewCheckBox(boolean enable){
     if (form != null){
       if (enable){
         listboxPhoneTablet.setEnabled(enable);
