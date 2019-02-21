@@ -449,8 +449,8 @@ Blockly.Backpack.prototype.openBackpackMenu = function(e) {
       Blockly.getMainWorkspace().getBackpack().clear();
     }
   };
-
   options.push(backpackClear);
+  
   Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();
