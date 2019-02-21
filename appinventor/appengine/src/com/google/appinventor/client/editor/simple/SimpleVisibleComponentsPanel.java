@@ -133,7 +133,6 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     });
     phoneScreen.add(listboxPhoneTablet);
 
-
     initWidget(phoneScreen);
   }
 
