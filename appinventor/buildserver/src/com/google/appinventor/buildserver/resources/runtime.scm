@@ -551,7 +551,7 @@
                      var-val-pairs))
 
          ;; Create each component and set its corresponding field
-         (define (init-components component-descriptors)
+         (define (create-components component-descriptors)
            (for-each (lambda (component-info)
                        (let ((component-name (caddr component-info))
                              (init-thunk (cadddr component-info))
@@ -566,14 +566,10 @@
                            ;; Add the mapping from component name -> component object to the
                            ;; form-environment
                            (add-to-form-environment component-name component-object))))
-                     component-descriptors)
-           ;; Now that all the components are constructed we can call
-           ;; their init-thunk and their Initialize methods.  We need
-           ;; to do this after all the construction steps because the
-           ;; init-thunk (i.e. design-time initializations) and
-           ;; Initialize methods may contain references to other
-           ;; components.
-           ;;
+                     component-descriptors))
+
+         ;; Initialize all of the components
+         (define (init-components component-descriptors)
            ;; First all the init-thunks
            (for-each (lambda (component-info)
                        (let ((component-name (caddr component-info))
@@ -618,12 +614,13 @@
          (register-events events-to-register)
 
          (try-catch
-          (begin
+          (let ((components (reverse components-to-create)))
             ;; We need this binding because the block parser sends this symbol
             ;; to represent an uninitialized value
             ;; We have to explicity write #!null here, rather than
             ;; *the-null-value* because that external defintion hasn't happened yet
             (add-to-global-vars '*the-null-value* (lambda () #!null))
+            (create-components components)
             ;; These next three clauses need to be in this order:
             ;; Properties can't be set until after the global variables are
             ;; assigned.   And some properties can't be set after the components are
@@ -631,7 +628,13 @@
             ;; components have been installed.  (This gives an error.)
             (init-global-variables (reverse global-vars-to-create))
             (for-each force (reverse form-do-after-creation))
-            (init-components (reverse components-to-create)))
+            ;; Now that all the components are constructed we can call
+            ;; their init-thunk and their Initialize methods.  We need
+            ;; to do this after all the construction steps because the
+            ;; init-thunk (i.e. design-time initializations) and
+            ;; Initialize methods may contain references to other
+            ;; components.
+            (init-components components))
           (exception com.google.appinventor.components.runtime.errors.YailRuntimeError
                      ;;(android-log-form "Caught exception in define-form ")
                      (process-exception exception))))))))
