@@ -1771,7 +1771,10 @@ Blockly.Versioning.AllUpgradeMaps =
     22: "noUpgrade",
 
     // AI2: Added Bitwise Blocks
-    23: "noUpgrade"
+    23: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 24, added List Reverse Block
+    24: "noUpgrade"
 
 
   }, // End Language upgraders
