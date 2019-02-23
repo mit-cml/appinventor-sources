@@ -259,9 +259,7 @@ public final class Clock extends AndroidNonvisibleComponent
       instant.set(Calendar.SECOND, 0);
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
-    } 
-
-    
+    }
     return instant;
   }
 
