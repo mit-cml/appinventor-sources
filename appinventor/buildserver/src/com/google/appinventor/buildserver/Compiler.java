@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -806,6 +807,14 @@ public final class Compiler {
       Set<String> permissions = Sets.newHashSet();
       for (Set<String> compPermissions : permissionsNeeded.values()) {
         permissions.addAll(compPermissions);
+      }
+
+      // Remove Google's Forbidden Permissions
+      // This code is crude because we had to do this on short notice
+      if (isForCompanion && AppInventorFeatures.limitPermissions()) {
+        permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
       }
 
       for (String permission : permissions) {
