@@ -131,7 +131,12 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         changeFormPreviewSize(idx, width, height);
       }
     });
-    listboxPhoneTablet.setVisible(false);
+
+    String sizing = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
+    boolean fixed = (sizing.equals("Fixed"));
+    listboxPhoneTablet.setVisible(!fixed);
+
     phoneScreen.add(listboxPhoneTablet);
 
     initWidget(phoneScreen);
