@@ -17,7 +17,7 @@ struct EventDescription: Hashable {
   }
 
   var hashValue: Int {
-    return ObjectIdentifier(component).hashValue &* 37 + eventName.hashValue
+    return ObjectIdentifier(component).hashValue &* 37 &+ eventName.hashValue
   }
 
   static func == (lhs: EventDescription, rhs: EventDescription) -> Bool {
