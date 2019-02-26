@@ -13,7 +13,7 @@ import XCTest
  * @returns A list of the procedure names for evaluation
  */
 public func loadTestYail(path: String, into interpreter: SCMInterpreter) throws -> [String] {
-  let subpath = path.substring(to: path.index(path.endIndex, offsetBy: -5))
+  let subpath = String(path[..<path.index(path.endIndex, offsetBy: -5)])
   if let url = Bundle(for: BuiltinBlockTests.self).url(forResource: subpath, withExtension: "yail") {
     do {
       let yail = try String(contentsOf: url, encoding: String.Encoding.utf8)
@@ -26,7 +26,7 @@ public func loadTestYail(path: String, into interpreter: SCMInterpreter) throws 
       var tests = [String]()
       let matches = regex.matches(in: yail, options: [], range: NSRange(location: 0, length: yail.count))
       for match in matches {
-        tests.append(yail[Range(match.range, in: yail)!])
+        tests.append(String(yail[Range(match.range, in: yail)!]))
       }
       return tests
     } catch {
