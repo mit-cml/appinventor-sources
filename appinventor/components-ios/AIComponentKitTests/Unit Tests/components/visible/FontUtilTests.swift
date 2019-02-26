@@ -12,8 +12,8 @@ class FontUtilTests: AppInventorTestCase {
 
   override func setUp() {
     font = UIFont.systemFont(ofSize: 14.0)
-    _fontName = font.familyName
     setFont(size: 14.0)
+    _fontName = font.familyName
   }
   
   func testBold() {
@@ -67,7 +67,7 @@ class FontUtilTests: AppInventorTestCase {
   func testSetBoldItalicAndResizeFont() {
     setFont(.traitBold, to: true)
     setFont(.traitItalic, to: true)
-    setFont(size: 30.0)
+    setFont(size: 11.0)
     testFont(bold: true, italic: true)
   }
 
@@ -105,7 +105,7 @@ class FontUtilTests: AppInventorTestCase {
     _fontName = "Menlo"
     setFont(.traitBold, to: true)
     setFont(.traitItalic, to: true)
-    setFont(size: 20.0)
+    setFont(size: 11.0)
     testFont(bold: true, italic: true)
     font = getFontTypeface(font: font, typeFace: .serif)!
     _fontName = "Cochin"
@@ -117,7 +117,7 @@ class FontUtilTests: AppInventorTestCase {
     testFont(bold: true, italic: true)
   }
 
-  fileprivate func setFont(_ trait: UIFontDescriptorSymbolicTraits, to shouldSet: Bool) {
+  fileprivate func setFont(_ trait: UIFontDescriptor.SymbolicTraits, to shouldSet: Bool) {
     if let newFont = getFontTrait(font: font, trait: trait, shouldSet: shouldSet) {
       font = newFont
     } else {
