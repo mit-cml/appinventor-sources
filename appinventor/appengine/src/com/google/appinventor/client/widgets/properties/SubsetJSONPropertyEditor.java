@@ -10,8 +10,12 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import sun.java2d.pipe.SpanShapeRenderer;
@@ -21,20 +25,44 @@ import java.util.Iterator;
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         implements ProjectChangeListener {
 
+  Frame subsetSelector;
+  SimplePanel framePanel;
+
+
   public SubsetJSONPropertyEditor() {
     super();
-    Frame subsetSelector = new Frame();
-    SimplePanel framePanel = new SimplePanel();
+    subsetSelector = new Frame();
+    framePanel = new SimplePanel();
 
-    subsetSelector.setUrl("http://fred.com");
+    subsetSelector.setUrl("JSONGenerator/index.html");
+    subsetSelector.setWidth("100%");
+    subsetSelector.setHeight("100%");
+    framePanel.setWidth("100%");
+    framePanel.setHeight("100%");
     framePanel.add(subsetSelector);
     initAdditionalChoicePanel(framePanel);
 
+
+  }
+
+  @Override
+  protected void openAdditionalChoiceDialog() {
+    popup.setHeight("500px");
+    popup.setWidth("800px");
+    popup.show();
+    popup.center();
   }
 
   // AdditionalChoicePropertyEditor implementation
   @Override
   protected boolean okAction() {
+    Document d = IFrameElement.as(subsetSelector.getElement()).getContentDocument();
+    Element b = d.getBody();
+//    Element e = d.getElementById("jsonStr");
+    Element e = DOM.getElementById("jsonStr");
+    property.setValue(e.getNodeValue());
+    property.setValue(b.getNodeValue());
+
     return true;
   }
 

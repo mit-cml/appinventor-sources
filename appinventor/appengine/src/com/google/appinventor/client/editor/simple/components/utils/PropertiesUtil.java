@@ -198,6 +198,8 @@ public class PropertiesUtil {
       return new YoungAndroidGeographicPointPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_GEOJSON_TYPE)) {
       return new YoungAndroidGeoJSONPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON)) {
+      return new SubsetJSONPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_INTEGER)) {
       return new IntegerPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LATITUDE)) {
