@@ -135,6 +135,7 @@
 		DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE102DB820F53189002C71F0 /* FontUtilTests.swift */; };
 		DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D520C80BF900A250F1 /* OrientationSensor.swift */; };
 		DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1443D720C842EE00A250F1 /* Pedometer.swift */; };
+		DE3E730820C72AFE0063B339 /* GyroscopeSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3E730720C72AFE0063B339 /* GyroscopeSensor.swift */; };
 		DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3F6B082080F72400A0BA69 /* Camera.swift */; };
 		DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */; };
 		DE4CDF572093982F008412BC /* FontUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4CDF562093982F008412BC /* FontUtil.swift */; };
@@ -304,6 +305,7 @@
 		DE102DB820F53189002C71F0 /* FontUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtilTests.swift; sourceTree = "<group>"; };
 		DE1443D520C80BF900A250F1 /* OrientationSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationSensor.swift; sourceTree = "<group>"; };
 		DE1443D720C842EE00A250F1 /* Pedometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pedometer.swift; sourceTree = "<group>"; };
+		DE3E730720C72AFE0063B339 /* GyroscopeSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroscopeSensor.swift; sourceTree = "<group>"; };
 		DE3F6B082080F72400A0BA69 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		DE4CDF562093982F008412BC /* FontUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtil.swift; sourceTree = "<group>"; };
@@ -503,6 +505,7 @@
 			isa = PBXGroup;
 			children = (
 				06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */,
+				DE3E730720C72AFE0063B339 /* GyroscopeSensor.swift */,
 				DE1443D520C80BF900A250F1 /* OrientationSensor.swift */,
 				DE1443D720C842EE00A250F1 /* Pedometer.swift */,
 			);
@@ -1034,6 +1037,7 @@
 				06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */,
 				DE4EA34620AE2CDD009681D8 /* HTMLEntities.swift in Sources */,
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
+				DE3E730820C72AFE0063B339 /* GyroscopeSensor.swift in Sources */,
 				DE4CDF572093982F008412BC /* FontUtil.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,

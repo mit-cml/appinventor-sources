@@ -58,5 +58,7 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App Inventor accesses your photo library when you include an ImagePicker component in your app.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>App Inventor accesses your motion data when you include a Gyroscope Sensor</string>
 </dict>
 </plist>
