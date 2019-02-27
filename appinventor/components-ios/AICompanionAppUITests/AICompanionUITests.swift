@@ -7,6 +7,9 @@
 //
 
 import XCTest
+import CoreLocation
+import MapKit
+import Foundation
 
 class AICompanionUITests: XCTestCase {
         

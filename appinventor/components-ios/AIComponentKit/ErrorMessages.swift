@@ -22,22 +22,22 @@ import Foundation
   // ActivityStarter Errors
   case ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601
   case ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602
-  
+
   // Media Errors
   case ERROR_UNABLE_TO_LOAD_MEDIA = 701
   case ERROR_UNABLE_TO_PREPARE_MEDIA = 702
   case ERROR_MEDIA_IMAGE_FILE_FORMAT = 706
   case ERROR_MEDIA_FILE_ERROR = 708
-  
+
   // SoundRecorder Errors
   case ERROR_SOUND_RECORDER = 801
   case ERROR_SOUND_RECORDER_CANNOT_CREATE = 802
   case ERROR_SOUND_RECORDER_PERMISSION_DENIED = 806
-  
+
   // ContactPicker and PhoneNumberPicker Errors
   // "Error message for when contact data cannot be used on the device."
   case ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107
-  
+
   // Web Errors
   case ERROR_WEB_UNSUPPORTED_ENCODING = 1102
   case ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105
@@ -65,7 +65,7 @@ import Foundation
 
   // AccelerometerSensor Errors
   case ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901
-  
+
   // File Errors
   case ERROR_CANNOT_FIND_FILE = 2101
   case ERROR_CANNOT_READ_FILE = 2102
@@ -82,16 +82,24 @@ import Foundation
   // TimePicker Errors
   case ERROR_ILLEGAL_HOUR = 2301
   case ERROR_ILLEGAL_MINUTE = 2302
-  
+
   // DatePicker Errors
   case ERROR_ILLEGAL_DATE = 2401
-  
-  // Map Errors
-  case ERROR_INVALID_MAP_TYPE = 3421
-  
+
   // FusionTables Errors
   case FUSION_TABLES_QUERY_ERROR = 2601
   case FUSION_TABLES_AUTH_ERROR = 2602
+
+  // Map Errors
+  case ERROR_LINESTRING_TOO_FEW_POINTS = 3401
+  case ERROR_LINESTRING_PARSE_ERROR = 3402
+  case ERROR_POLYGON_PARSE_ERROR = 3404
+  case ERROR_EXCEPTION_DURING_MAP_SAVE = 3412
+  case ERROR_INVALID_LATITUDE = 3413
+  case ERROR_INVALID_LONGITUDE = 3414
+  case ERROR_INVALID_ANCHOR_VERTICAL = 3416
+  case ERROR_INVALID_ANCHOR_HORIZONTAL = 3417
+  case ERROR_INVALID_MAP_TYPE = 3421
 
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
@@ -108,15 +116,15 @@ import Foundation
   var code: Int32 {
     return Int32(self.rawValue)
   }
-  
+
   public var _code: Int {
     return self.rawValue
   }
-  
+
   var localizedDescription: String {
     return self.message
   }
-  
+
   public var message: String {
     switch self {
     // LocationSensor Errors
@@ -140,7 +148,7 @@ import Foundation
       return "No corresponding activity was found."
     case .ERROR_ACTIVITY_STARTER_NO_ACTION_INFO:
       return "No Action information in ActivityStarter was found."
-      
+
     // Media Errors
     case .ERROR_UNABLE_TO_LOAD_MEDIA:
       return "Unable to load media."
@@ -150,7 +158,7 @@ import Foundation
       return "Image file name must end in \".jpg\", \".jpeg\", or \".png\"."
     case .ERROR_MEDIA_FILE_ERROR:
       return  "Got file error: %s."
-      
+
     // SoundRecorder Errors
     case .ERROR_SOUND_RECORDER:
       return "An unexpected error occurred while recording sound."
@@ -158,11 +166,11 @@ import Foundation
       return "Cannot start recording: %s"
     case .ERROR_SOUND_RECORDER_PERMISSION_DENIED:
       return "Permission to record audio was denied."
-      
+
     // ContactPicker and PhoneNumberPicker Errors
     case .ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER:
       return "The software used in this app cannot extract contacts from this type of phone."
-      
+
     // Web Errors
     case .ERROR_WEB_UNSUPPORTED_ENCODING:
       return "The encoding %s is not supported."
@@ -206,21 +214,37 @@ import Foundation
     // AccelerometerSensor Errors
     case .ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY:
       return "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. The only legal values are 1, 2, or 3."
-      
+
     // TimePicker Errors
     case .ERROR_ILLEGAL_HOUR:
       return "The hour must be set to a value between 0 and 23."
     case .ERROR_ILLEGAL_MINUTE:
       return "The minute must be set to a value between 0 and 59."
-    
+
     // DatePicker Errors
     case .ERROR_ILLEGAL_DATE:
       return "The date you entered is invalid."
-      
+
     // Map Errors
+    case .ERROR_LINESTRING_TOO_FEW_POINTS:
+      return "Need at least 2 points for a LineString. Got only %d."
+    case .ERROR_LINESTRING_PARSE_ERROR:
+      return "Parse error attempting to create LineString: %1$s."
+    case .ERROR_POLYGON_PARSE_ERROR:
+      return "Parse error attempting to create Polygon: %1$s."
+    case .ERROR_EXCEPTION_DURING_MAP_SAVE:
+      return "Unable to save Map due to an internal exception: %1$s."
+    case .ERROR_INVALID_LATITUDE:
+      return "Latitude %f was not in the expected range [-90, 90]."
+    case .ERROR_INVALID_LONGITUDE:
+      return "Longitude %f was not in the expected range [-180, 180]."
+    case .ERROR_INVALID_ANCHOR_VERTICAL:
+      return "Invalid value %d given for AnchorVertical. Valid settings are 1, 2, or 3."
+    case .ERROR_INVALID_ANCHOR_HORIZONTAL:
+      return "Invalid value %d given for AnchorHorizontal. Valid settings are 1, 2, or 3."
     case .ERROR_INVALID_MAP_TYPE:
       return "The MapType must be 1, 2, or 3"
-    
+
     // File Errors
     case .ERROR_CANNOT_FIND_FILE:
       return "The file %s could not be found"

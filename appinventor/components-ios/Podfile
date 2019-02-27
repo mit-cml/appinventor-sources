@@ -25,6 +25,7 @@ target 'SchemeKit' do
     pod 'Alamofire', '~> 4.8'
     pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
     pod 'SwiftSVG', '~> 2.0'
+    pod 'GEOSwift', '~> 3.1.0'
 
     target 'AIComponentKitTests' do
     end
@@ -41,6 +42,7 @@ target 'SchemeKit' do
       pod 'SQLite.swift', '~> 0.11.5'
       pod 'Alamofire', '~> 4.8'
       pod 'SwiftSVG', '~> 2.0'
+      pod 'GEOSwift', '~> 3.1.0'
 
       target 'AICompanionAppTests' do
         inherit! :search_paths

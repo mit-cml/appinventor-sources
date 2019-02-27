@@ -28,9 +28,9 @@
 		06B216181DBC5F1B000B3366 /* Instructions.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216131DBC5F1B000B3366 /* Instructions.png */; };
 		06B216191DBC5F1B000B3366 /* mooning.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216141DBC5F1B000B3366 /* mooning.png */; };
 		06B2161A1DBC5F1B000B3366 /* Title.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216151DBC5F1B000B3366 /* Title.png */; };
-		3E00D5171861199F0F840A99 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
-		4E32EE2B5774DDC11A559C6C /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
-		6DE2875385B627524469BFEE /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
+		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
+		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
+		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,7 +122,7 @@
 				063D678F1FA0CEB1002E907D /* SchemeKit.framework in Frameworks */,
 				062ACEF91F705D3F00FA31AD /* CoreData.framework in Frameworks */,
 				062ACEF81F705CD200FA31AD /* Pods_AICompanionApp.framework in Frameworks */,
-				3E00D5171861199F0F840A99 /* Pods_AICompanionApp.framework in Frameworks */,
+				38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6DE2875385B627524469BFEE /* Pods_AICompanionAppTests.framework in Frameworks */,
+				18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				06A6869E2225D886006E7F60 /* Alamofire.framework in Frameworks */,
-				4E32EE2B5774DDC11A559C6C /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */,
+				7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,21 +407,25 @@
 				"${PODS_ROOT}/Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
+				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
+				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KTVJSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -493,11 +497,13 @@
 				"${PODS_ROOT}/Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
+				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
+				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
@@ -505,11 +511,13 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KTVJSONWebToken.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

@@ -490,11 +490,13 @@ yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
   } else if (pic_int_p(pic, value)) {
     return [NSNumber numberWithInt:pic_int(pic, value)];
   } else if (pic_float_p(pic, value)) {
-    return [NSNumber numberWithDouble:pic_float_p(pic, value)];
+    return [NSNumber numberWithDouble:pic_float(pic, value)];
   } else if (pic_true_p(pic, value)) {
     return [NSNumber numberWithBool:YES];
   } else if (pic_false_p(pic, value)) {
     return [NSNumber numberWithBool:NO];
+  } else if (yail_native_instance_p(pic, value)) {
+    return yail_native_instance_ptr(pic, value)->object_;
   } else {
     NSLog(@"Unknown type to convert in yail_to_objc: %s", pic_typename(pic, pic_type(pic, value)));
     return nil;

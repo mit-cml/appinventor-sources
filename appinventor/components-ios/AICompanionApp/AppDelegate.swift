@@ -51,7 +51,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       form.onDestroy()
     }
   }
-
-
 }
 
