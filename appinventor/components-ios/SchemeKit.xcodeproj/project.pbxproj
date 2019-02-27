@@ -88,8 +88,8 @@
 		06FCDEEA1D94383000199DD4 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FCDEE01D94383000199DD4 /* SchemeKit.framework */; };
 		06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCDEEE1D94383000199DD4 /* SchemeKitTests.m */; };
 		06FCDEF11D94383000199DD4 /* SchemeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 06FCDEE31D94383000199DD4 /* SchemeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4D6B17FC843436CB46F76971 /* libPods-SchemeKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */; };
 		5DEA70CE5B7AE0F23E524397 /* libPods-SchemeKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 64469D1E07EB96B095A3BB37 /* libPods-SchemeKit.a */; };
+		7E2FCA9DDCB92E67ACD4D306 /* libPods-SchemeKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -196,8 +196,11 @@
 		204F1FDF05CF92B191E641DC /* Pods-SchemeKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKitTests/Pods-SchemeKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		63E21421CF316B8F9FF5C8F6 /* Pods-SchemeKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKitTests/Pods-SchemeKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		64469D1E07EB96B095A3BB37 /* libPods-SchemeKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B2973A1163EC9ECFE756328 /* Pods-SchemeKit-SchemeKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-SchemeKitTests/Pods-SchemeKit-SchemeKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		811D9C3705A774DF269EC1B7 /* Pods-SchemeKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit/Pods-SchemeKit.release.xcconfig"; sourceTree = "<group>"; };
 		86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		987A65C30EAFA15380F02DD8 /* libPods-SchemeKit-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F243069F800F441816C960F7 /* Pods-SchemeKit-SchemeKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-SchemeKitTests/Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				06FCDEEA1D94383000199DD4 /* SchemeKit.framework in Frameworks */,
-				4D6B17FC843436CB46F76971 /* libPods-SchemeKitTests.a in Frameworks */,
+				7E2FCA9DDCB92E67ACD4D306 /* libPods-SchemeKitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +399,7 @@
 			children = (
 				64469D1E07EB96B095A3BB37 /* libPods-SchemeKit.a */,
 				86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */,
+				987A65C30EAFA15380F02DD8 /* libPods-SchemeKit-SchemeKitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -407,6 +411,8 @@
 				811D9C3705A774DF269EC1B7 /* Pods-SchemeKit.release.xcconfig */,
 				204F1FDF05CF92B191E641DC /* Pods-SchemeKitTests.debug.xcconfig */,
 				63E21421CF316B8F9FF5C8F6 /* Pods-SchemeKitTests.release.xcconfig */,
+				F243069F800F441816C960F7 /* Pods-SchemeKit-SchemeKitTests.debug.xcconfig */,
+				6B2973A1163EC9ECFE756328 /* Pods-SchemeKit-SchemeKitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -554,7 +560,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp ${SRCROOT}/../buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm ${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/android-runtime.scm";
+			shellScript = "cp ${SRCROOT}/../buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm ${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/android-runtime.scm\n";
 		};
 		07633F38ACC56D00BA74B8E6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

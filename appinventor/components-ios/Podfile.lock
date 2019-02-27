@@ -1,6 +1,5 @@
 PODS:
   - Alamofire (4.8.0)
-  - CSLinearLayoutView (1.0)
   - GCDWebServer (3.4.2):
     - GCDWebServer/Core (= 3.4.2)
   - GCDWebServer/Core (3.4.2)
@@ -15,7 +14,6 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 4.8)
-  - CSLinearLayoutView (~> 1.0)
   - GCDWebServer (~> 3.4.1)
   - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
   - SQLite.swift (~> 0.11.5)
@@ -25,7 +23,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
-    - CSLinearLayoutView
     - GCDWebServer
     - SQLite.swift
     - Toast-Swift
@@ -48,13 +45,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
-  CSLinearLayoutView: ce5a4b49267e0a5820203659045f42c0d1faab64
   GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
   KTVJSONWebToken: c3cc06e26876d63c62a5c40c5e89939899de48cf
   SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
   Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: cab55299d0d5e18f6c2c6ca7de3e64a2e12e778b
+PODFILE CHECKSUM: 79842851dc95f420714958b8c036c0552168cca7
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1

@@ -28,19 +28,15 @@ import Toast_Swift
   fileprivate var _theme = AIComponentKit.Theme.DeviceDefault
   fileprivate var _title = "Screen1"
   fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
-  fileprivate var _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
-  fileprivate var _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
   fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
   fileprivate var _backgroundImage = ""
   fileprivate var _screenInitialized = false
   fileprivate var _startText = ""
   fileprivate var _viewLayout = LinearLayout()
   fileprivate var _compatibilityMode = true
-  fileprivate var _verticalLayout = CSLinearLayoutView()
-  fileprivate var _verticalItem: CSLinearLayoutItem!
   @objc internal var _componentWithActiveEvent: Component?
-  fileprivate var _linearView: LinearView!
   fileprivate var _statusBarHidden: Bool = true
+  fileprivate var _linearView = LinearView()
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -91,34 +87,8 @@ import Toast_Swift
   }
 
   open func add(_ component: ViewComponent) {
-    // TODO(ewpatton): Implementation
     _components.append(component)
-    if view is CSLinearLayoutView {
-      component.view.sizeToFit()
-      let item = CSLinearLayoutItem(for: component.view)
-      item?.verticalAlignment = _csVerticalAlignment
-      item?.horizontalAlignment = _csHorizontalAlignment
-      _verticalLayout.addItem(item!)
-      _verticalLayout.setNeedsLayout()
-      _verticalLayout.setNeedsUpdateConstraints()
-      NSLog("Horizontal frame size: \(view.frame)")
-      NSLog("Vertical frame size: \(_verticalLayout.frame)")
-    } else if let _linearView = _linearView {
-      _linearView.addItem(LinearViewItem(component.view))
-    } else {
-      view.addSubview(component.view)
-      if _components.count > 1, let priorComponent = _components[_components.count - 2] as? ViewComponent {
-        view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .top, relatedBy: .equal, toItem: priorComponent.view, attribute: .bottom, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
-      }
-      if AlignHorizontal == HorizontalGravity.center.rawValue {
-        view.addConstraint(component.view.centerXAnchor.constraint(equalTo: view.centerXAnchor))
-      }
-    }
-//    if components.count > 0 && components[components.count-1] is ViewComponent {
-//      let lastComponent = components[components.count-1] as! ViewComponent
-//      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lastComponent.view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0))
-//    }
-//    view.sizeToFit()
+    _linearView.addItem(LinearViewItem(component.view))
     view.setNeedsLayout()
     view.setNeedsUpdateConstraints()
   }
@@ -126,7 +96,7 @@ import Toast_Swift
   @objc open func layoutSubviews() {
     view.layoutSubviews()
     NSLog("Horizontal frame size: \(view.frame)")
-    NSLog("Vertical frame size: \(_verticalLayout.frame)")
+    NSLog("Vertical frame size: \(_linearView.frame)")
   }
 
   open func setChildWidth(of component: ViewComponent, width: Int32) {
@@ -174,20 +144,10 @@ import Toast_Swift
     _linearView = LinearView(frame: view.frame)
     _linearView.accessibilityIdentifier = "Form root view"
     view.addSubview(_linearView)
-    view.addConstraint(view.widthAnchor.constraint(equalTo: _linearView.widthAnchor, multiplier: 1.0))
-    view.addConstraint(view.heightAnchor.constraint(equalTo: _linearView.heightAnchor, multiplier: 1.0))
+    view.addConstraint(view.widthAnchor.constraint(equalTo: _linearView.widthAnchor))
+    view.addConstraint(view.heightAnchor.constraint(equalTo: _linearView.heightAnchor))
     view.addConstraint(view.topAnchor.constraint(equalTo: _linearView.topAnchor))
     view.addConstraint(view.leadingAnchor.constraint(equalTo: _linearView.leadingAnchor))
-//    let horizontal = CSLinearLayoutView(frame: view.frame)  // vertical alignment
-//    horizontal.orientation = CSLinearLayoutViewOrientationHorizontal
-//    view = horizontal
-//    _verticalLayout = CSLinearLayoutView()
-//    _verticalLayout.orientation = CSLinearLayoutViewOrientationVertical
-//    _verticalLayout.autoAdjustFrameSize = true
-//    _verticalLayout.autoAdjustContentSize = true
-//    _verticalLayout.frame.size.width = horizontal.frame.size.width
-//    _verticalItem = CSLinearLayoutItem(for: _verticalLayout)
-//    horizontal.addItem(_verticalItem)
     defaultPropertyValues()
   }
 
@@ -291,24 +251,8 @@ import Toast_Swift
     set(alignment) {
       if let halign = HorizontalGravity(rawValue: alignment) {
         _horizontalAlignment = alignment
-        switch(halign) {
-          case .left:
-            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
-          case .center:
-            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentCenter
-          case .right:
-            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentRight
-        }
-        if view is CSLinearLayoutView {
-          let items = _verticalLayout.items
-          for item in items! {
-            let viewitem = item as! CSLinearLayoutItem
-            viewitem.horizontalAlignment = _csHorizontalAlignment
-          }
-        } else {
-          // TODO(ewpatton): Update existing constraints
-        }
-        view.layoutSubviews()
+        _linearView.horizontalAlignment = halign
+        view.setNeedsLayout()
       }
     }
   }
@@ -320,18 +264,8 @@ import Toast_Swift
     set(alignment) {
       if let valign = VerticalGravity(rawValue: alignment) {
         _verticalAlignment = alignment
-        switch(valign) {
-        case .top:
-          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
-        case .center:
-          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentCenter
-        case .bottom:
-          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentBottom
-        }
-        if view is CSLinearLayoutView {
-          _verticalItem.verticalAlignment = _csVerticalAlignment
-        }
-        view.layoutSubviews()
+        _linearView.verticalAlignment = valign
+        view.setNeedsLayout()
       }
     }
   }
@@ -359,8 +293,8 @@ import Toast_Swift
       return _backgroundImage
     }
     set(path) {
-      if let image = UIImage(named: path) {
-        self.view.backgroundColor = UIColor(patternImage: image)
+      if let image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
+        _linearView.backgroundColor = UIColor(patternImage: image)
         _backgroundImage = path
       }
     }

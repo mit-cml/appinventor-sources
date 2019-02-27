@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -19,66 +19,78 @@ extension UIView {
   }
 }
 
-let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue + UILayoutPriority.defaultLow.rawValue)) / 2
+private class HelperView: UIView {
+  open override var intrinsicContentSize: CGSize {
+    get {
+      return CGSize.zero
+    }
+  }
+}
 
-public class LinearView: UIView {
-  fileprivate var _container = UIView()
+let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue + UILayoutPriority.defaultLow.rawValue)) / 2
+let TightSizingPriority = UILayoutPriority(10)
+let ConstraintPriority = UILayoutPriority(8)
+let DefaultSizingPriority = UILayoutPriority(6)
+
+public class LinearView: UIStackView {
+  fileprivate var _inner = UIStackView()
   fileprivate var _horizontalAlign = HorizontalGravity.left
   fileprivate var _verticalAlign = VerticalGravity.top
   fileprivate var _orientation = HVOrientation.vertical
   fileprivate var _items = [LinearViewItem]()
-  fileprivate var _hConstraints = [NSLayoutConstraint]()
-  fileprivate var _vConstraints = [NSLayoutConstraint]()
-  fileprivate var _verticalConstraint: NSLayoutConstraint!
-  fileprivate var _horizontalConstraint: NSLayoutConstraint!
-  fileprivate var _axisSizeConstraint: NSLayoutConstraint!
+  fileprivate var _head = HelperView()
+  fileprivate var _tail = HelperView()
+  fileprivate var _innerHead = HelperView()
+  fileprivate var _innerTail = HelperView()
+  fileprivate var _outerEqualConstraint: NSLayoutConstraint!
+  fileprivate var _innerEqualConstraint: NSLayoutConstraint!
+  fileprivate var _equalConstraint: NSLayoutConstraint!
+  fileprivate var _backgroundView = UIView()
 
   override init(frame aRect: CGRect) {
     super.init(frame: aRect)
     setup()
   }
   
-  required public init?(coder aDecoder: NSCoder) {
+  required public init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     setup()
   }
 
   private func setup() {
     translatesAutoresizingMaskIntoConstraints = false
-    _container.translatesAutoresizingMaskIntoConstraints = false
-//    _container.isScrollEnabled = false
-//    _container.showsVerticalScrollIndicator = false
-//    _container.showsHorizontalScrollIndicator = false
-//    _container.isDirectionalLockEnabled = true
-    addSubview(_container)
-    let width = widthAnchor.constraint(equalToConstant: CGFloat(kEmptyHVArrangementWidth))
-    width.priority = UILayoutPriority.defaultLow
-    addConstraint(width)
-    let height = heightAnchor.constraint(equalToConstant: CGFloat(kEmptyHVArrangementHeight))
-    height.priority = UILayoutPriority.defaultLow
-    addConstraint(height)
-    _verticalConstraint = topAnchor.constraint(equalTo: _container.topAnchor)
-    _horizontalConstraint = leadingAnchor.constraint(equalTo: _container.leadingAnchor)
-    _axisSizeConstraint = widthAnchor.constraint(equalTo: _container.widthAnchor)
-    addConstraint(_verticalConstraint)
-    addConstraint(_horizontalConstraint)
-    addConstraint(_axisSizeConstraint)
-//    addConstraint(widthAnchor.constraint(lessThanOrEqualTo: _container.widthAnchor))
-//    addConstraint(heightAnchor.constraint(lessThanOrEqualTo: _container.heightAnchor))
-    addConstraint(_container.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor))
-    addConstraint(_container.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor))
-    addConstraint(_container.topAnchor.constraint(greaterThanOrEqualTo: topAnchor))
-    addConstraint(_container.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor))
+    _inner.translatesAutoresizingMaskIntoConstraints = false
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(_backgroundView)
+    addConstraint(_backgroundView.widthAnchor.constraint(equalTo: widthAnchor))
+    addConstraint(_backgroundView.heightAnchor.constraint(equalTo: heightAnchor))
+    addConstraint(_backgroundView.topAnchor.constraint(equalTo: topAnchor))
+    addConstraint(_backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor))
+    spacing = 0
+    alignment = .top
+    distribution = .fill
+    axis = .horizontal
+    _inner.spacing = 0
+    _inner.alignment = .leading
+    _inner.distribution = .fill
+    _inner.axis = .vertical
+    addArrangedSubview(_head)
+    addArrangedSubview(_inner)
+    addArrangedSubview(_tail)
+    _inner.addArrangedSubview(_innerHead)
+    _inner.addArrangedSubview(_innerTail)
+    updatePositioningConstraints()
+    updatePriorities()
+    addDefaultDimension(for: widthAnchor, length: kEmptyHVArrangementWidth)
+    addDefaultDimension(for: heightAnchor, length: kEmptyHVArrangementHeight)
   }
 
-  @objc open var isScrollEnabled: Bool {
+  @objc open var scrollEnabled: Bool {
+    @objc(isScrollEnabled)
     get {
-      return false//_container.isScrollEnabled
+      return false
     }
     set(scroll) {
-//      _container.isScrollEnabled = scroll
-//      _container.showsVerticalScrollIndicator = scroll && _orientation == .vertical
-//      _container.showsHorizontalScrollIndicator = scroll && _orientation == .horizontal
     }
   }
 
@@ -87,8 +99,11 @@ public class LinearView: UIView {
       return _horizontalAlign
     }
     set(align) {
-      _horizontalAlign = align
-      updateHorizontalConstraints()
+      if _horizontalAlign != align {
+        _horizontalAlign = align
+        updatePriorities()
+        updateHorizontalAlignment()
+      }
     }
   }
 
@@ -97,8 +112,11 @@ public class LinearView: UIView {
       return _verticalAlign
     }
     set(align) {
-      _verticalAlign = align
-      updateVerticalConstraints()
+      if _verticalAlign != align {
+        _verticalAlign = align
+        updatePriorities()
+        updateVerticalAlignment()
+      }
     }
   }
 
@@ -107,228 +125,156 @@ public class LinearView: UIView {
       return _orientation
     }
     set(orientation) {
-      _orientation = orientation
-//      removeConstraint(_axisSizeConstraint)
-//      if orientation == .horizontal {
-//        _axisSizeConstraint = heightAnchor.constraint(equalTo: _container.heightAnchor)
-//      } else {
-//        _axisSizeConstraint = widthAnchor.constraint(equalTo: _container.widthAnchor)
-//      }
-//      addConstraint(_axisSizeConstraint)
-      updateHorizontalConstraints()
-      updateVerticalConstraints()
-      setNeedsLayout()
-      _container.setNeedsLayout()
+      if _orientation != orientation {
+        _orientation = orientation
+        removeConstraint(_outerEqualConstraint)
+        _inner.removeConstraint(_innerEqualConstraint)
+        if _orientation == .horizontal {
+          _inner.axis = .horizontal
+          axis = .vertical
+        } else {
+          _inner.axis = .vertical
+          axis = .horizontal
+        }
+        updatePositioningConstraints()
+        updatePriorities()
+        updateHorizontalAlignment()
+        updateVerticalAlignment()
+      }
     }
   }
 
   @objc open func addItem(_ item: LinearViewItem) {
-    _container.addSubview(item.view)
-    addHorizontalConstraint(for: item.view)
-    addVerticalConstraint(for: item.view)
+    _inner.insertSubview(item.view, at: _inner.subviews.count - 1)
+    _inner.insertArrangedSubview(item.view, at: _inner.arrangedSubviews.count - 1)
     _items.append(item)
   }
 
-  open  override var backgroundColor: UIColor? {
+  open override var backgroundColor: UIColor? {
     get {
       return super.backgroundColor
     }
     set(color) {
-      super.backgroundColor = color
-      _container.backgroundColor = color
+      _backgroundView.backgroundColor = color
     }
   }
 
-  // MARK: Private implementation
+  // MARK: Private Implementation
 
-  private func addHorizontalConstraint(for view: UIView) {
-    if _orientation == .horizontal {
-      if let trailingConstraint = _hConstraints.popLast() {
-        // cleans up constraint between scroll view and previous "last" component
-        _container.removeConstraint(trailingConstraint)
-      }
-
-      var constraint = view.leadingAnchor.constraint(equalTo: _items.count == 0 ? _container.leadingAnchor : (_items.last?.view.trailingAnchor)!)
-      constraint.priority = UILayoutPriority.required
-      _hConstraints.append(constraint)
-      _container.addConstraint(constraint)
-
-      // the following constraint must always be last
-      constraint = _container.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor)
-      constraint.priority = UILayoutPriority.required
-      _hConstraints.append(constraint)
-      _container.addConstraint(constraint)
-    } else {
-      var constraint: NSLayoutConstraint!
+  private func updateHorizontalAlignment() {
+    if _orientation == .vertical {
       switch _horizontalAlign {
       case .left:
-        constraint = _container.leadingAnchor.constraint(equalTo: view.leadingAnchor)
-        break;
+        _inner.alignment = .leading
       case .center:
-        constraint = _container.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        break;
+        _inner.alignment = .center
       case .right:
-        constraint = _container.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        break;
+        _inner.alignment = .trailing
       }
-      constraint.priority = UILayoutPriority.required
-      _hConstraints.append(constraint)
-      _container.addConstraint(constraint)
     }
   }
 
-  private func addVerticalConstraint(for view: UIView) {
-    if _orientation == .vertical {
-      if let bottomConstraint = _vConstraints.popLast() {
-        // cleans up constraint between scroll view and previous "last" component
-        removeConstraint(bottomConstraint)
-      }
-
-      var constraint = view.topAnchor.constraint(equalTo: _items.count == 0 ? _container.topAnchor : (_items.last?.view.bottomAnchor)!)
-      constraint.priority = UILayoutPriority.required
-      _vConstraints.append(constraint)
-      _container.addConstraint(constraint)
-
-      constraint = _container.bottomAnchor.constraint(greaterThanOrEqualTo: view.bottomAnchor)
-      constraint.priority = UILayoutPriority.required
-      _vConstraints.append(constraint)
-      _container.addConstraint(constraint)
-    } else {
-      var constraint: NSLayoutConstraint!
+  private func updateVerticalAlignment() {
+    if _orientation == .horizontal {
       switch _verticalAlign {
       case .top:
-        constraint = _container.topAnchor.constraint(equalTo: view.topAnchor)
-        break;
+        _inner.alignment = .top
       case .center:
-        constraint = _container.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        break;
+        _inner.alignment = .center
       case .bottom:
-        constraint = _container.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        break;
+        _inner.alignment = .bottom
       }
-      constraint.priority = UILayoutPriority.required
-      _vConstraints.append(constraint)
-      _container.addConstraint(constraint)
     }
   }
 
-  private func updateHorizontalConstraints() {
-    _container.removeConstraints(_hConstraints)
-    _hConstraints.removeAll(keepingCapacity: true)
-    removeConstraint(_horizontalConstraint)
+  private var horizontalHead: UIView {
+    get {
+      return _orientation == .horizontal ? _innerHead : _head
+    }
+  }
+
+  private var horizontalTail: UIView {
+    get {
+      return _orientation == .horizontal ? _innerTail : _tail
+    }
+  }
+
+  private var verticalHead: UIView {
+    get {
+      return _orientation == .vertical ? _innerHead : _head
+    }
+  }
+
+  private var verticalTail: UIView {
+    get {
+      return _orientation == .vertical ? _innerTail : _tail
+    }
+  }
+
+  private func updatePositioningConstraints() {
+    if _outerEqualConstraint != nil {
+      removeConstraint(_outerEqualConstraint)
+      _inner.removeConstraint(_innerEqualConstraint)
+    }
+    if _orientation == .horizontal {
+      _outerEqualConstraint = _head.heightAnchor.constraint(equalTo: _tail.heightAnchor)
+      _innerEqualConstraint = _innerHead.widthAnchor.constraint(equalTo: _innerTail.widthAnchor)
+      _equalConstraint = widthAnchor.constraint(equalTo: _inner.widthAnchor)
+    } else {
+      _outerEqualConstraint = _head.widthAnchor.constraint(equalTo: _tail.widthAnchor)
+      _innerEqualConstraint = _innerHead.heightAnchor.constraint(equalTo: _innerTail.heightAnchor)
+      _equalConstraint = heightAnchor.constraint(equalTo: _inner.heightAnchor)
+    }
+    _outerEqualConstraint.priority = ConstraintPriority
+    _innerEqualConstraint.priority = ConstraintPriority
+    addConstraint(_equalConstraint)
+    addConstraint(_outerEqualConstraint)
+    _inner.addConstraint(_innerEqualConstraint)
+  }
+
+  private func updatePriorities() {
+    // Horizontal Head has the following fixed properties
+    horizontalHead.setContentCompressionResistancePriority(DefaultSizingPriority, for: .horizontal)
+    horizontalHead.setContentCompressionResistancePriority(DefaultSizingPriority, for: .vertical)
+    horizontalHead.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
+
+    // Horizontal Tail has the following fixed properties
+    horizontalTail.setContentCompressionResistancePriority(DefaultSizingPriority, for: .horizontal)
+    horizontalTail.setContentCompressionResistancePriority(DefaultSizingPriority, for: .vertical)
+    horizontalTail.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
+
+    // Vertical Head has the following fixed properties
+    verticalHead.setContentCompressionResistancePriority(DefaultSizingPriority, for: .vertical)
+    verticalHead.setContentCompressionResistancePriority(DefaultSizingPriority, for: .horizontal)
+    verticalHead.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
+
+    // Vertical Tail has the following fixed properties
+    verticalTail.setContentCompressionResistancePriority(DefaultSizingPriority, for: .vertical)
+    verticalTail.setContentCompressionResistancePriority(DefaultSizingPriority, for: .horizontal)
+    verticalTail.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
+
+    // Dynamic horizontal control
+    horizontalHead.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
+    horizontalTail.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
     switch _horizontalAlign {
     case .left:
-      _horizontalConstraint = leadingAnchor.constraint(equalTo: _container.leadingAnchor)
-      break
+      horizontalHead.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
     case .center:
-      _horizontalConstraint = centerXAnchor.constraint(equalTo: _container.centerXAnchor)
       break
     case .right:
-      _horizontalConstraint = trailingAnchor.constraint(equalTo: _container.trailingAnchor)
-      break
+      horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
     }
-    addConstraint(_horizontalConstraint)
-    if orientation == .horizontal {
-      /* Theory of operation: We iterate over the child views creating constraints linking their
-       * top/bottom edges. If we lack children, do nothing. We keep track of the last view processed
-       * to serve two purposes: 1) it tracks whether we are processing the first view, and 2) it
-       * allows us to create the constraints between current and last view.
-       */
-      var lastView: UIView! = nil
-      for item in _items {
-        if lastView == nil {
-          let constraint = item.view.leadingAnchor.constraint(equalTo: _container.leadingAnchor)
-          _hConstraints.append(constraint)
-          _container.addConstraint(constraint)
-        } else {
-          let constraint = item.view.leadingAnchor.constraint(equalTo: lastView.trailingAnchor)
-          _hConstraints.append(constraint)
-          _container.addConstraint(constraint)
-        }
-        lastView = item.view
-      }
-      if lastView != nil {
-        let constraint = _container.trailingAnchor.constraint(greaterThanOrEqualTo: lastView.trailingAnchor)
-        _hConstraints.append(constraint)
-        _container.addConstraint(constraint)
-      }
-    } else {
-      for item in _items {
-        var constraint: NSLayoutConstraint!
-        switch _horizontalAlign {
-        case .left:
-          constraint = _container.leadingAnchor.constraint(equalTo: item.view.leadingAnchor)
-          break
-        case .center:
-          constraint = _container.centerXAnchor.constraint(equalTo: item.view.centerXAnchor)
-          break
-        case .right:
-          constraint = _container.trailingAnchor.constraint(equalTo: item.view.trailingAnchor)
-          break
-        }
-        _container.addConstraint(constraint)
-        _hConstraints.append(constraint)
-      }
-    }
-  }
 
-  private func updateVerticalConstraints() {
-    _container.removeConstraints(_vConstraints)
-    _vConstraints.removeAll(keepingCapacity: true)
-    removeConstraint(_verticalConstraint)
+    // Dynamic vertical control
+    verticalHead.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
+    verticalTail.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
     switch _verticalAlign {
     case .top:
-      _verticalConstraint = topAnchor.constraint(equalTo: _container.topAnchor)
-      break
+      verticalHead.setContentHuggingPriority(TightSizingPriority, for: .vertical)
     case .center:
-      _verticalConstraint = centerYAnchor.constraint(equalTo: _container.centerYAnchor)
       break
     case .bottom:
-      _verticalConstraint = bottomAnchor.constraint(equalTo: _container.bottomAnchor)
-      break
-    }
-    addConstraint(_verticalConstraint)
-    if orientation == .vertical {
-      /* Theory of operation: We iterate over the child views creating constraints linking their
-       * top/bottom edges. If we lack children, do nothing. We keep track of the last view processed
-       * to serve two purposes: 1) it tracks whether we are processing the first view, and 2) it
-       * allows us to create the constraints between current and last view.
-       */
-      var lastView: UIView! = nil
-      for item in _items {
-        if lastView == nil {
-          let constraint = item.view.topAnchor.constraint(equalTo: _container.topAnchor)
-          _vConstraints.append(constraint)
-          _container.addConstraint(constraint)
-        } else {
-          let constraint = item.view.topAnchor.constraint(equalTo: lastView.bottomAnchor)
-          _vConstraints.append(constraint)
-          _container.addConstraint(constraint)
-        }
-        lastView = item.view
-      }
-      if lastView != nil {
-        let constraint = _container.bottomAnchor.constraint(greaterThanOrEqualTo: lastView.bottomAnchor)
-        _vConstraints.append(constraint)
-        _container.addConstraint(constraint)
-      }
-    } else {
-      for item in _items {
-        var constraint: NSLayoutConstraint!
-        switch _verticalAlign {
-        case .top:
-          constraint = _container.topAnchor.constraint(equalTo: item.view.topAnchor)
-          break
-        case .center:
-          constraint = _container.centerYAnchor.constraint(equalTo: item.view.centerYAnchor)
-          break
-        case .bottom:
-          constraint = _container.bottomAnchor.constraint(equalTo: item.view.bottomAnchor)
-          break
-        }
-        _container.addConstraint(constraint)
-        _vConstraints.append(constraint)
-      }
+      verticalTail.setContentHuggingPriority(TightSizingPriority, for: .vertical)
     }
   }
 }

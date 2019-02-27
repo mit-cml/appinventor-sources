@@ -10,8 +10,7 @@
 #endif
 #endif
 
-#import "CSLinearLayoutView.h"
 
-FOUNDATION_EXPORT double CSLinearLayoutViewVersionNumber;
-FOUNDATION_EXPORT const unsigned char CSLinearLayoutViewVersionString[];
+FOUNDATION_EXPORT double Pods_AICompanionApp_AICompanionAppUITestsVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_AICompanionApp_AICompanionAppUITestsVersionString[];
 

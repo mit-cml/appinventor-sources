@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_AICompanionAppUITestsVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_AICompanionAppUITestsVersionString[];
+FOUNDATION_EXPORT double Pods_AIComponentKit_AIComponentKitTestsVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_AIComponentKit_AIComponentKitTestsVersionString[];
 

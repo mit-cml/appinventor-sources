@@ -20,14 +20,12 @@ target 'SchemeKit' do
 
     pod "GCDWebServer", "~> 3.4.1"
     pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
-    pod "CSLinearLayoutView", "~> 1.0"
     pod "Toast-Swift", '~> 4.0.0'
     pod 'SQLite.swift', '~> 0.11.5'
     pod 'Alamofire', '~> 4.8'
     pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
 
     target 'AIComponentKitTests' do
-      inherit! :search_paths
     end
 
     target 'AICompanionApp' do
@@ -38,7 +36,6 @@ target 'SchemeKit' do
       pod "GCDWebServer", "~> 3.4.1"
       pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
       pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
-      pod "CSLinearLayoutView", "~> 1.0"
       pod "Toast-Swift", '~> 4.0.0'
       pod 'SQLite.swift', '~> 0.11.5'
       pod 'Alamofire', '~> 4.8'
@@ -48,7 +45,6 @@ target 'SchemeKit' do
       end
 
       target 'AICompanionAppUITests' do
-        inherit! :search_paths
       end
     end
   end
