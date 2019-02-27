@@ -40,9 +40,13 @@ import Foundation
   
   // Web Errors
   case ERROR_WEB_UNSUPPORTED_ENCODING = 1102
+  case ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105
+  case ERROR_WEB_HTML_TEXT_DECODE_FAILED = 1106
   case ERROR_WEB_MALFORMED_URL = 1109
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
+  case ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST = 1112
+  case ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113
 
   // Camcorder Errors
   case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
@@ -159,12 +163,20 @@ import Foundation
     // Web Errors
     case .ERROR_WEB_UNSUPPORTED_ENCODING:
       return "The encoding %s is not supported."
+    case .ERROR_WEB_JSON_TEXT_DECODE_FAILED:
+      return "Unable to decode the JSON text: %s"
+    case .ERROR_WEB_HTML_TEXT_DECODE_FAILED:
+      return "Unable to decode the HTML text: %s"
     case .ERROR_WEB_MALFORMED_URL:
       return "The given URL was not valid."
     case .ERROR_WEB_REQUEST_HEADER_NOT_LIST:
       return "The specified request headers are not valid: element %s is not a list"
     case .ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS:
       return "The specified request headers are not valid: element %s does not contain two elements"
+    case .ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST:
+      return "Unable to build request data: element %s is not a list"
+    case .ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS:
+      return "Unable to build request data: element %s does not contain two elements"
 
     // Camcorder Errors
     case .ERROR_CAMCORDER_NO_CLIP_RETURNED:

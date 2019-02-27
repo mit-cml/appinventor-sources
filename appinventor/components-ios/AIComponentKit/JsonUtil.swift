@@ -1,15 +1,8 @@
-//
-//  JsonUtil.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 12/13/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
-
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 import Foundation
 
 // let numberRegex = NSRegularExpression(pattern: "-?[1-9]?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
-
 func getJsonRepresentation(_ object: AnyObject?) throws -> String {
   if object == nil {
     return "null"
@@ -32,4 +25,54 @@ func getObjectFromJson(_ json: String?) throws -> AnyObject? {
     return (result as! Array<AnyObject>)[0]
   }
   return nil
+}
+
+func getPublicObjectFromJson(_ json: String?) throws -> AnyObject {
+  let json = try getObjectFromJson(json)
+  return convertJsonItem(json)
+}
+
+fileprivate func getListFromJsonObject(_ json: NSDictionary) -> [[AnyObject]] {
+  var returnList = [[AnyObject]]()
+  for (key, value) in json {
+    var nestedArray = [AnyObject]()
+    nestedArray.append(key as AnyObject)
+    nestedArray.append(convertJsonItem(value as AnyObject))
+    returnList.append(nestedArray)
+  }
+  return returnList
+}
+
+fileprivate func getListFromJsonArray(_ json: NSArray) -> [AnyObject] {
+  var returnList = [AnyObject]()
+  for item in json {
+    returnList.append(convertJsonItem(item as AnyObject))
+  }
+  return returnList
+}
+
+fileprivate func convertJsonItem(_ item: AnyObject?) -> AnyObject {
+  if item == nil {
+    return "null" as AnyObject
+  }
+  if let jsonObject = item as? NSDictionary {
+    return getListFromJsonObject(jsonObject) as AnyObject
+  }
+  if let jsonArray = item as? NSArray {
+    return getListFromJsonArray(jsonArray) as AnyObject
+  }
+  if let bool = item as? Bool {
+    return bool as AnyObject
+  }
+  if let string = item as? String {
+    if string == "false" || string == "true" {
+      return (string == "false") as AnyObject
+    } else {
+      return string as AnyObject
+    }
+  }
+  if let number = item as? NSNumber {
+    return number as AnyObject
+  }
+  return item.debugDescription as AnyObject
 }

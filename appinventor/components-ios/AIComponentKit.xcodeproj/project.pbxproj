@@ -137,8 +137,11 @@
 		DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3F6B082080F72400A0BA69 /* Camera.swift */; };
 		DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */; };
 		DE4CDF572093982F008412BC /* FontUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4CDF562093982F008412BC /* FontUtil.swift */; };
+		DE4EA34620AE2CDD009681D8 /* HTMLEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4EA34520AE2CDD009681D8 /* HTMLEntities.swift */; };
+		DE4EA34820AE2D2D009681D8 /* XMLUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */; };
 		DE5CBD281FE36C8B00F5EDDE /* webviewer.js in Resources */ = {isa = PBXBuildFile; fileRef = DE5CBD271FE36C8B00F5EDDE /* webviewer.js */; };
 		DE67C49D1FCE5A8A004F0D35 /* WebViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */; };
+		DE68A88D20B4971400233AF9 /* XMLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE68A88C20B4971400233AF9 /* XMLTests.swift */; };
 		DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE85F125209CD9AB00A809AA /* SliderTests.swift */; };
 		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
 		DE97528D2034808A008CEBB9 /* FusiontablesControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE97528C2034808A008CEBB9 /* FusiontablesControl.swift */; };
@@ -300,8 +303,11 @@
 		DE3F6B082080F72400A0BA69 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DE4075E420126DA7000F4C3E /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		DE4CDF562093982F008412BC /* FontUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontUtil.swift; sourceTree = "<group>"; };
+		DE4EA34520AE2CDD009681D8 /* HTMLEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLEntities.swift; sourceTree = "<group>"; };
+		DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMLUtil.swift; sourceTree = "<group>"; };
 		DE5CBD271FE36C8B00F5EDDE /* webviewer.js */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.javascript; path = webviewer.js; sourceTree = "<group>"; tabWidth = 2; };
 		DE67C49C1FCE5A8A004F0D35 /* WebViewer.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = WebViewer.swift; sourceTree = "<group>"; tabWidth = 2; };
+		DE68A88C20B4971400233AF9 /* XMLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMLTests.swift; sourceTree = "<group>"; };
 		DE85F125209CD9AB00A809AA /* SliderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderTests.swift; sourceTree = "<group>"; };
 		DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPicker.swift; sourceTree = "<group>"; };
 		DE97528C2034808A008CEBB9 /* FusiontablesControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusiontablesControl.swift; sourceTree = "<group>"; };
@@ -528,7 +534,9 @@
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
 				0417584F20093AE5007D2C31 /* FileError.swift */,
 				CBC786812006AD2F005363A3 /* FileUtil.swift */,
+				DE4CDF562093982F008412BC /* FontUtil.swift */,
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
+				DE4EA34520AE2CDD009681D8 /* HTMLEntities.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
 				0644F7021F38EDF200642E4D /* LinearView.swift */,
@@ -541,8 +549,8 @@
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
+				DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
-				DE4CDF562093982F008412BC /* FontUtil.swift */,
 				064884D521E682EA0086411C /* iOS9Util.swift */,
 			);
 			name = util;
@@ -714,6 +722,7 @@
 			children = (
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
 				CB8539242075549A009E9030 /* ClockTests.swift */,
+				DE68A88C20B4971400233AF9 /* XMLTests.swift */,
 			);
 			path = nonvisible;
 			sourceTree = "<group>";
@@ -1009,6 +1018,7 @@
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
 				DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */,
 				06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */,
+				DE4EA34620AE2CDD009681D8 /* HTMLEntities.swift in Sources */,
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
 				DE4CDF572093982F008412BC /* FontUtil.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
@@ -1028,6 +1038,7 @@
 				DE67C49D1FCE5A8A004F0D35 /* WebViewer.swift in Sources */,
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
+				DE4EA34820AE2D2D009681D8 /* XMLUtil.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
 				08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */,
 				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
@@ -1051,6 +1062,7 @@
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
+				DE68A88D20B4971400233AF9 /* XMLTests.swift in Sources */,
 				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
 				0665ADE7210F592D0044C887 /* FileTests.swift in Sources */,
 				DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */,
@@ -1147,7 +1159,6 @@
 			baseConfigurationReference = D5BBCD0FB0908B711892BA4C /* Pods-AIComponentKit-AIComponentKitTests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
@@ -1166,7 +1177,6 @@
 			baseConfigurationReference = 58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
