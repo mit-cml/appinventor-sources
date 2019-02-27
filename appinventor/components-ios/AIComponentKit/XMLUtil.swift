@@ -7,7 +7,7 @@ open class XmlToJson: NSObject, XMLParserDelegate {
   fileprivate var elemStack = [AnyObject]()
   fileprivate var text = ""
 
-  open static let main = XmlToJson()
+  public static let main = XmlToJson()
 
   public func parserDidStartDocument(_ parser: XMLParser) {
     elemStack.removeAll()

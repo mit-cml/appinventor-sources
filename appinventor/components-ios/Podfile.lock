@@ -7,6 +7,7 @@ PODS:
   - SQLite.swift (0.11.5):
     - SQLite.swift/standard (= 0.11.5)
   - SQLite.swift/standard (0.11.5)
+  - SwiftSVG (2.2.0)
   - Toast-Swift (4.0.1)
   - ZXingObjC (3.6.2):
     - ZXingObjC/All (= 3.6.2)
@@ -17,6 +18,7 @@ DEPENDENCIES:
   - GCDWebServer (~> 3.4.1)
   - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
   - SQLite.swift (~> 0.11.5)
+  - SwiftSVG (~> 2.0)
   - Toast-Swift (~> 4.0.0)
   - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
 
@@ -25,6 +27,7 @@ SPEC REPOS:
     - Alamofire
     - GCDWebServer
     - SQLite.swift
+    - SwiftSVG
     - Toast-Swift
 
 EXTERNAL SOURCES:
@@ -48,9 +51,10 @@ SPEC CHECKSUMS:
   GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
   KTVJSONWebToken: c3cc06e26876d63c62a5c40c5e89939899de48cf
   SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
+  SwiftSVG: 19bc4e434dcf236ece45ddf75f5ee1d3ef8061e6
   Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 79842851dc95f420714958b8c036c0552168cca7
+PODFILE CHECKSUM: d603a45fd897fb468b0d22ddb29dc11c0533c1e5
 
 COCOAPODS: 1.6.1
