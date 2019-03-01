@@ -244,19 +244,20 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * An instant in time specified by integer hour and integer minute
+   * An instant in time specified by integer hour, integer minute, and integer second
    * @param hour hour integer
    * @param minute minute integer
+   * @param second second integer
    * @return  Calendar instant since 1/1/1970
    */
   @SimpleFunction(description = "Allows the user to set the time of the clock - " +
-    "Valid format is hh:mm\n")
-  public Calendar MakeTime(int hour, int minute) {
+    "Valid format is hh:mm:ss\n")
+  public Calendar MakeTime(int hour, int minute, int second) {
     Calendar instant = new GregorianCalendar();
     try {
       instant.set(Calendar.HOUR_OF_DAY, hour);
       instant.set(Calendar.MINUTE, minute);
-      instant.set(Calendar.SECOND, 0);
+      instant.set(Calendar.SECOND, second);
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
