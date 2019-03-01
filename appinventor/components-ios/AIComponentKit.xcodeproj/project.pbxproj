@@ -113,9 +113,17 @@
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
+		080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */; };
+		080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */; };
 		082778F720112FE300ACC99A /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082778F620112FE300ACC99A /* ImagePicker.swift */; };
 		0846B64620BBBF92008FB20C /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0846B64520BBBF92008FB20C /* Sprite.swift */; };
 		0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0846B64720BBBF9C008FB20C /* ImageSprite.swift */; };
+		086DC63221014C5900FDA182 /* Ev3Motors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086DC63121014C5900FDA182 /* Ev3Motors.swift */; };
+		086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086DC633210157BF00FDA182 /* Ev3Constants.swift */; };
+		086DC63621022E1B00FDA182 /* ByteTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086DC63521022E1B00FDA182 /* ByteTools.swift */; };
+		086DC63821023E1A00FDA182 /* EvCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086DC63721023E1A00FDA182 /* EvCommand.swift */; };
+		08815DB5210A64CE00FA89F7 /* EvConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08815DB4210A64CE00FA89F7 /* EvConnection.swift */; };
+		08815DB7210B532800FA89F7 /* Ev3Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08815DB6210B532800FA89F7 /* Ev3Commands.swift */; };
 		088CAFD020DABB2E002B1B67 /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088CAFCF20DABB2E002B1B67 /* Ball.swift */; };
 		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
@@ -291,9 +299,17 @@
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
+		080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ResponseManager.swift; sourceTree = "<group>"; };
+		080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ReportDelegate.swift; sourceTree = "<group>"; };
 		082778F620112FE300ACC99A /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		0846B64520BBBF92008FB20C /* Sprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
 		0846B64720BBBF9C008FB20C /* ImageSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSprite.swift; sourceTree = "<group>"; };
+		086DC63121014C5900FDA182 /* Ev3Motors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3Motors.swift; sourceTree = "<group>"; };
+		086DC633210157BF00FDA182 /* Ev3Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3Constants.swift; sourceTree = "<group>"; };
+		086DC63521022E1B00FDA182 /* ByteTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteTools.swift; sourceTree = "<group>"; };
+		086DC63721023E1A00FDA182 /* EvCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvCommand.swift; sourceTree = "<group>"; };
+		08815DB4210A64CE00FA89F7 /* EvConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvConnection.swift; sourceTree = "<group>"; };
+		08815DB6210B532800FA89F7 /* Ev3Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3Commands.swift; sourceTree = "<group>"; };
 		088CAFCF20DABB2E002B1B67 /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		08AB5803201AF2BA00F38C88 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -365,7 +381,6 @@
 				0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */,
 				0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */,
 				06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */,
-				06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */,
 				06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */,
 				06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */,
 				0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */,
@@ -710,6 +725,14 @@
 		06EAAC7B1DCE3E9300889C6D /* mindstorms */ = {
 			isa = PBXGroup;
 			children = (
+				086DC63121014C5900FDA182 /* Ev3Motors.swift */,
+				08815DB6210B532800FA89F7 /* Ev3Commands.swift */,
+				086DC63721023E1A00FDA182 /* EvCommand.swift */,
+				086DC633210157BF00FDA182 /* Ev3Constants.swift */,
+				08815DB4210A64CE00FA89F7 /* EvConnection.swift */,
+				080C7FE4210784F2007C94A8 /* Ev3ReportDelegate.swift */,
+				080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */,
+				086DC63521022E1B00FDA182 /* ByteTools.swift */,
 			);
 			name = mindstorms;
 			sourceTree = "<group>";
@@ -1025,6 +1048,7 @@
 				DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,
 				0417585020093AE5007D2C31 /* FileError.swift in Sources */,
+				08815DB7210B532800FA89F7 /* Ev3Commands.swift in Sources */,
 				068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */,
 				DEA5C6E220E1A2B00083A49B /* Rectangle.swift in Sources */,
 				04AB2224202129FA0033281F /* Map.swift in Sources */,
@@ -1039,6 +1063,7 @@
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
 				DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
+				086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */,
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
@@ -1062,6 +1087,7 @@
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				DEB9C54E21010F2D0069BAD7 /* Overlays.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
+				086DC63821023E1A00FDA182 /* EvCommand.swift in Sources */,
 				DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */,
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
@@ -1071,6 +1097,7 @@
 				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
+				080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */,
 				064884D621E682EA0086411C /* iOS9Util.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
 				0846B64620BBBF92008FB20C /* Sprite.swift in Sources */,
@@ -1090,6 +1117,7 @@
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
 				DE3F6B092080F72400A0BA69 /* Camera.swift in Sources */,
 				06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */,
+				080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */,
 				DE2EE36A20DBD3B700927587 /* LineString.swift in Sources */,
 				DE4EA34620AE2CDD009681D8 /* HTMLEntities.swift in Sources */,
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
@@ -1106,6 +1134,7 @@
 				06B215FA1DB950F6000B3366 /* HorizontalArrangement.swift in Sources */,
 				068E0EB31DC251890086FFDA /* PhoneCall.swift in Sources */,
 				06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */,
+				08815DB5210A64CE00FA89F7 /* EvConnection.swift in Sources */,
 				CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
@@ -1117,12 +1146,14 @@
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
 				DE4EA34820AE2D2D009681D8 /* XMLUtil.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
+				086DC63621022E1B00FDA182 /* ByteTools.swift in Sources */,
 				08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */,
 				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
 				06500854208E331900AC1327 /* UIView+AIHelpers.swift in Sources */,
 				0680ED591E012A2100732883 /* TableArrangement.swift in Sources */,
 				068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */,
 				06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */,
+				086DC63221014C5900FDA182 /* Ev3Motors.swift in Sources */,
 				DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
 				DEA5C6E020E17FDA0083A49B /* Polygon.swift in Sources */,
