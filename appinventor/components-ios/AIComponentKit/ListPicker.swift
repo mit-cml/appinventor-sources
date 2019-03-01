@@ -181,6 +181,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
     cell?.backgroundColor = _itemBackgroundColor
     let dataArr = _results ?? _items
+    cell?.textLabel?.numberOfLines = 0
     cell?.textLabel?.text = dataArr[indexPath.row]
     cell?.textLabel?.textColor = _itemTextColor
     return cell!
