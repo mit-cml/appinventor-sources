@@ -162,6 +162,7 @@ import Toast_Swift
         delegate.onResume()
       }
     }
+    Notifier.notices.setPausedState(false)
   }
 
   @objc open func onPause() {
@@ -170,6 +171,7 @@ import Toast_Swift
         delegate.onPause()
       }
     }
+    Notifier.notices.setPausedState(true)
   }
 
   @objc open func onDelete() {
@@ -178,6 +180,7 @@ import Toast_Swift
         delegate.onDelete()
       }
     }
+    Notifier.notices.clearNotices()
   }
 
   @objc public func onDestroy() {
@@ -186,6 +189,7 @@ import Toast_Swift
         delegate.onDestroy()
       }
     }
+    Notifier.notices.clearNotices()
   }
 
   @objc open func callInitialize(_ component: Component) {
