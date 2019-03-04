@@ -440,8 +440,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 176:
   // - PHONECALL_COMPONENT_VERSION was incremented to 3
   // - TEXTING_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 177:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 176;
+  public static final int YOUNG_ANDROID_VERSION = 177;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -912,7 +914,9 @@ public class YaVersion {
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
   // For NOTIFIER_COMPONENT_VERSION 5:
   // - Added TextInputCanceled & ChoosingCanceled event
-  public static final int NOTIFIER_COMPONENT_VERSION = 5;
+  // For NOTIFIER_COMPONENT_VERSION 6:
+  // - Added a ShowPasswordDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 6;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

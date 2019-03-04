@@ -1370,6 +1370,10 @@ public final class YoungAndroidFormUpgrader {
       // Added TextInputCanceled & ChoosingCanceled event
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added PasswordDialog
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 

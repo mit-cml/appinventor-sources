@@ -1918,7 +1918,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // Added TextInputCanceled & ChoosingCanceled event
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added a PasswordDialog for masked text input.
+    6: "noUpgrade"
 
   }, // End Notifier upgraders
 

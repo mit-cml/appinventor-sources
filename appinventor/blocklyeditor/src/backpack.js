@@ -218,7 +218,7 @@ Blockly.Backpack.prototype.init = function() {
   // Fixes a bug in Firefox where the backpack cannot be opened.
   Blockly.bindEvent_(this.svgBody_, 'mousedown', this, function(e) { e.stopPropagation(); e.preventDefault(); });
   Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
-  Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackDoc);
+  Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackMenu);
   this.flyout_.init(this.workspace_);
   this.flyout_.workspace_.isBackpack = true;
 
@@ -425,9 +425,9 @@ Blockly.Backpack.prototype.position_ = function() {
 };
 
 /**
- * On right click, open alert and show documentation
+ * On right click, open alert and show documentation and backpackClear
  */
-Blockly.Backpack.prototype.openBackpackDoc = function(e) {
+Blockly.Backpack.prototype.openBackpackMenu = function(e) {
   var options = [];
   var backpackDoc = {enabled : true};
   backpackDoc.text = Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION;
@@ -440,6 +440,17 @@ Blockly.Backpack.prototype.openBackpackDoc = function(e) {
                                          });
   };
   options.push(backpackDoc);
+
+  // Clear backpack.
+  var backpackClear = {enabled: true};
+  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
+  backpackClear.callback = function() {
+    if (Blockly.getMainWorkspace().hasBackpack()) {
+      Blockly.getMainWorkspace().getBackpack().clear();
+    }
+  };
+  options.push(backpackClear);
+  
   Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();
@@ -667,4 +678,3 @@ Blockly.Backpack.prototype.resize = function() {
     this.shrink();
   }
 };
-
