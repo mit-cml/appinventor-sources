@@ -442,6 +442,8 @@ public class YaVersion {
   // - TEXTING_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 177:
   // - NOTIFIER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 178:
+  // - CLOCK_COMPONENT_VERSION was incremented to 4
 
   public static final int YOUNG_ANDROID_VERSION = 177;
 
@@ -668,7 +670,11 @@ public class YaVersion {
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
-  public static final int CLOCK_COMPONENT_VERSION = 3;
+  // For CLOCK_COMPONENT_VERSION 3:
+  // - Duration Support was added
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - MakeTime, MakeDate, MakeInstantFromParts methods were added
+  public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
