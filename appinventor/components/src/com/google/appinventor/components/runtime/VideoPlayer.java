@@ -284,6 +284,16 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
 
   @SimpleFunction(
+      description = "Resets to start of video and pauses it if video was playing.")
+  public void Stop() {
+    Log.i("VideoPlayer", "Calling Stop");
+    // Call start() to ensure frame shown is updated
+    Start();
+    SeekTo(0);
+    Pause();
+  }
+
+  @SimpleFunction(
       description = "Seeks to the requested time (specified in milliseconds) in the video. " +
       "If the video is paused, the frame shown will not be updated by the seek. " +
       "The player can jump only to key frames in the video, so seeking to times that " +
