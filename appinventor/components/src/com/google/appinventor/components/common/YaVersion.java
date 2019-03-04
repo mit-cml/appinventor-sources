@@ -444,8 +444,10 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 178:
   // - CLOCK_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERISON 179:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 24
 
-  public static final int YOUNG_ANDROID_VERSION = 177;
+  public static final int YOUNG_ANDROID_VERSION = 179;
 
   // ............................... Blocks Language Version Number ...............................
 
