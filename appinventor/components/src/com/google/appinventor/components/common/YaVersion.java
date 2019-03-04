@@ -444,8 +444,10 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 178:
   // - CLOCK_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERISON 179:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 24
 
-  public static final int YOUNG_ANDROID_VERSION = 177;
+  public static final int YOUNG_ANDROID_VERSION = 179;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -511,8 +513,10 @@ public class YaVersion {
   // - Break block was added.
   // For BLOCKS_LANGUAGE_VERSION 23:
   // - Bitwise and, ior, and xor blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 24:
+  // - List reverse block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 23;
+  public static final int BLOCKS_LANGUAGE_VERSION = 24;
 
   // ................................. Component Version Numbers ..................................
 
