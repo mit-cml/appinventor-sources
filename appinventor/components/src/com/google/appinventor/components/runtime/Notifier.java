@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.text.Html;
+import android.text.InputType;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,6 +46,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *      for example, yes or no, after which the AfterChoosing event is raised.
  * <li> ShowTextDialog: lets the user enter text in response to the message, after
  *      which the AfterTextInput event is raised.
+ * <li> ShowPasswordDialog: lets the user enter password in response to the message, after
+ *      which the AfterTextInput event is raised.
  * <li> ShowAlert: displays an alert that goes away by itself after
  *      a short time.
  * <li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by
@@ -67,6 +70,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, " +
         "for example, yes or no, after which the AfterChoosing event is raised.</li>" +
         "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
+        "which the AfterTextInput event is raised. " +
+        "<li> ShowPasswordDialog: lets the user enter password in response to the message, after " +
         "which the AfterTextInput event is raised. " +
         "<li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li>" +
         "<li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by " +
@@ -144,7 +149,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * This method creates the actual ProgressDialog. If one is already being
    * displayed, then it dismisses it, and creates this new one.
-   * @param message	the message for the dialog
+   * @param message the message for the dialog
    * @param title the title for the dialog
    */
   public void progressDialog(String message, String title) {
@@ -241,7 +246,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     // Warning: The SDK button names are confusing.  If there are
     // three buttons, they go in the order  POSITIVE | NEUTRAL | NEGATIVE
-    // In our notifier, we want choices like YES | NO | CANCEL, so NO maps to 
+    // In our notifier, we want choices like YES | NO | CANCEL, so NO maps to
     // neutral and CANCEL maps to NEGATIVE.
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
@@ -305,7 +310,25 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      + "will be the text that was entered, or \"Cancel\" if the CANCEL button was pressed.")
 
   public void ShowTextDialog(String message, String title, boolean cancelable) {
-    textInputDialog(message, title, cancelable);
+    textInputDialog(message, title, cancelable, false);
+  }
+
+  /**
+   * Shows a dialog box in which the user can enter password (input is masked),
+   * after which the AfterTextInput event is raised.
+   * @param message the text in the alert box
+   * @param title the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of dialog.
+   *                   When true, an additional CANCEL button will be added allowing user to cancel
+   *                   out of dialog. If selected, it will raise AfterTextInput with text of CANCEL.
+   */
+  @SimpleFunction(description = "Shows a dialog box where the user can enter password (input is masked), "
+     + "after which the AfterTextInput event will be raised.  If cancelable is true there will be an "
+     + "additional CANCEL button. Entering password will raise the AfterTextInput event.  The \"response\" "
+     + "parameter to AfterTextInput will be the entered password, or \"Cancel\" if CANCEL button was pressed.")
+
+  public void ShowPasswordDialog(String message, String title, boolean cancelable) {
+    textInputDialog(message, title, cancelable, true);
   }
 
   /**
@@ -319,16 +342,20 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param cancelable indicates whether the user should be able to cancel out of dialog.
    *                   When true, an additional CANCEL button will be added allowing user to cancel
    *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
+   * @param maskInput When true, input text is masked. Suitable for sensitive information like passwords.
    */
   // TODO(hal):  It would be cleaner to define this in terms of oneButtonAlert and generalize
   // oneButtonAlert so it can be used both for messages and text input.  We could have merged
   // this method into ShowTextDialog, but that would make it harder to do the generalization.
-  private void textInputDialog(String message, String title, boolean cancelable) {
+  private void textInputDialog(String message, String title, boolean cancelable, boolean maskInput) {
     final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(stringToHTML(message));
     // Set an EditText view to get user input
     final EditText input = new EditText(activity);
+    if (maskInput) {
+      input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
     alertDialog.setView(input);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);

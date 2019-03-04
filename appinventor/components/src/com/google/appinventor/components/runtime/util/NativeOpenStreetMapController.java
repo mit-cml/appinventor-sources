@@ -49,6 +49,7 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -263,6 +264,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private final AppInventorLocationSensorAdapter locationProvider;
 
   NativeOpenStreetMapController(final Form form) {
+    OpenStreetMapTileProviderConstants.setUserAgentValue(form.getApplication().getPackageName());
     File osmdroid = new File(form.getCacheDir(), "osmdroid");
     if (osmdroid.exists() || osmdroid.mkdirs()) {
       Configuration.getInstance().setOsmdroidBasePath(osmdroid);
