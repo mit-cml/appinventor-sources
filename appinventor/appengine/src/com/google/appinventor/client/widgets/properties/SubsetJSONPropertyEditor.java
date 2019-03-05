@@ -74,8 +74,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
   }
 
   private native String getJSON(Document d)/*-{
-    var generateBtn = d.getElementById("generatebutton");
-    generateBtn.click();
     var jsonDiv = d.getElementById("jsonStr");
     return jsonDiv.innerText;
   }-*/;
