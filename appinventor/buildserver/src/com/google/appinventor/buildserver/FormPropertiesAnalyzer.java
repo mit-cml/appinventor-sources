@@ -169,21 +169,31 @@ public class FormPropertiesAnalyzer {
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document doc = builder.parse(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
       NodeList blocks = doc.getElementsByTagName("block");
-      for (int i = 0; i < blocks.getLength(); i++) {
+      Node parent;
+      FOR: for (int i = 0; i < blocks.getLength(); i++) {
         Element block = (Element) blocks.item(i);
         String type = block.getAttribute("type");
 
         // Skip non-component and disabled blocks
         if (!isComponentBlock(type) || "true".equals(block.getAttribute("disabled"))) continue;
-
+        parent = block;
+        while ((parent = parent.getParentNode()) != null) {
+          if ("block".equals(parent.getNodeName()) 
+              && "true".equals(((Element)parent).getAttribute("disabled"))) {
+            continue FOR;
+          }
+        }
+        
         Element mutation = getMutation(block);
         if (mutation != null) {  // Should always be true, in theory...
-          String componentType = mutation.getAttribute("component_type");
           String blockName = getBlockName(type, mutation);
-          if (!result.containsKey(componentType)) {
-            result.put(componentType, new HashSet<String>());
+          if (blockName != null) {
+            String componentType = mutation.getAttribute("component_type");
+            if (!result.containsKey(componentType)) {
+              result.put(componentType, new HashSet<String>());
+            }
+            result.get(componentType).add(blockName);
           }
-          result.get(componentType).add(blockName);
         }
       }
     } catch(SAXException | IOException | ParserConfigurationException e) {
