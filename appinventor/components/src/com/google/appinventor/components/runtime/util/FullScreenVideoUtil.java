@@ -115,7 +115,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
           values.putString(VIDEOPLAYER_SOURCE,
             mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
           mFullScreenPlayer.fullScreenKilled(values);
-            super.onBackPressed();
+          super.onBackPressed();
         }
 
         public void onStart() {
