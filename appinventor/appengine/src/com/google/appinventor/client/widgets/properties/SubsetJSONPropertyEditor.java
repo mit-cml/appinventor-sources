@@ -13,9 +13,14 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import sun.java2d.pipe.SpanShapeRenderer;
@@ -27,7 +32,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   Frame subsetSelector;
   SimplePanel framePanel;
-
 
   public SubsetJSONPropertyEditor() {
     super();
@@ -41,31 +45,45 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     framePanel.setHeight("100%");
     framePanel.add(subsetSelector);
     initAdditionalChoicePanel(framePanel);
-
-
   }
 
   @Override
   protected void openAdditionalChoiceDialog() {
-    popup.setHeight("500px");
-    popup.setWidth("800px");
+    subsetSelector.addLoadHandler(new LoadHandler() {
+      @Override
+      public void onLoad(LoadEvent loadEvent) {
+        Document d = IFrameElement.as(subsetSelector.getElement()).getContentDocument();
+        setJSON(d, property.getValue());
+      }
+    });
+    popup.setHeight("600px");
+    popup.setWidth("1000px");
     popup.show();
     popup.center();
+//    popup.setPopupPosition(0,0);
   }
 
   // AdditionalChoicePropertyEditor implementation
   @Override
   protected boolean okAction() {
     Document d = IFrameElement.as(subsetSelector.getElement()).getContentDocument();
-    Element b = d.getBody();
-//    Element e = d.getElementById("jsonStr");
-    Element e = DOM.getElementById("jsonStr");
-    property.setValue(e.getNodeValue());
-    property.setValue(b.getNodeValue());
+    String e = getJSON(d);
+    property.setValue(e);
 
     return true;
   }
 
+  private native String getJSON(Document d)/*-{
+    var generateBtn = d.getElementById("generatebutton");
+    generateBtn.click();
+    var jsonDiv = d.getElementById("jsonStr");
+    return jsonDiv.innerText;
+  }-*/;
+
+  private native void setJSON(Document d, String s)/*-{
+    var jsonDiv = d.getElementById("jsonStr");
+    jsonDiv.innerText = s;
+  }-*/;
 
   // ProjectChangeListener implementation
   @Override
