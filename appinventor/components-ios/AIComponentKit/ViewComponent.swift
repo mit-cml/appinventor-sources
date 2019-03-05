@@ -18,8 +18,8 @@ import Foundation
 
   fileprivate var _percentWidthHolder = kLengthUnknown
   fileprivate var _percentHeightHolder = kLengthUnknown
-  fileprivate var _lastSetWidth = kLengthPreferred
-  fileprivate var _lastSetHeight = kLengthPreferred
+  public var _lastSetWidth = kLengthPreferred
+  public var _lastSetHeight = kLengthPreferred
 
   fileprivate var _column = kDefaultRowColumn
   fileprivate var _row = kDefaultRowColumn
