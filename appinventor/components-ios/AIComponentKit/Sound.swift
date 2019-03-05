@@ -22,6 +22,11 @@ open class Sound: NonvisibleComponent, AVAudioPlayerDelegate {
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
+    if #available(iOS 10.0, *) {
+      // We need to switch the audiosession to playback mode in case the phone is in silent mode
+      // Otherwise, no sound will play.
+      try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+    }
   }
 
   @objc open var Source: String {
