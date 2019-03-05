@@ -287,7 +287,9 @@ public final class VideoPlayer extends AndroidViewComponent implements
       description = "Resets to start of video and pauses it if video was playing.")
   public void Stop() {
     Log.i("VideoPlayer", "Calling Stop");
-    // Call start() to ensure frame shown is updated
+    // Call start() to ensure frame shown is updated;
+    // Otherwise stopping while a video is on pause will not refresh its view
+    // until video is started again.
     Start();
     SeekTo(0);
     Pause();
