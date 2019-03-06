@@ -21,17 +21,25 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     super.setDelegate(self)
     _button.addTarget(self, action: #selector(Changed), for: .touchUpInside)
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
+    parent.add(self)
+    
+    setupViews()
+  }
+  
+  private func setupViews() {
     _view.translatesAutoresizingMaskIntoConstraints = false
     _button.translatesAutoresizingMaskIntoConstraints = false
     _text.translatesAutoresizingMaskIntoConstraints = false
     _text.numberOfLines = 0
-    parent.add(self)
+    
     _view.addSubview(_button)
     _view.addSubview(_text)
+    
     _button.centerYAnchor.constraint(equalTo: _view.centerYAnchor).isActive = true
     _button.leftAnchor.constraint(equalTo: _view.leftAnchor, constant: 15).isActive = true
     _button.widthAnchor.constraint(lessThanOrEqualToConstant: 15).isActive = true
     _button.heightAnchor.constraint(lessThanOrEqualToConstant: 15).isActive = true
+    
     _text.centerYAnchor.constraint(equalTo: _view.centerYAnchor).isActive = true
     _text.leftAnchor.constraint(equalTo: _button.rightAnchor, constant: 10).isActive = true
     _text.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
@@ -93,7 +101,6 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
           layer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 138.0 /
             255.0).cgColor
         }
-        layer.resizeToFit(self._button.frame)
       }
       _button.addSubview(checkBox)
     }
