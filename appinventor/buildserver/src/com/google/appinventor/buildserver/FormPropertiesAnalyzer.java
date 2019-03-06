@@ -9,15 +9,13 @@ package com.google.appinventor.buildserver;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -165,92 +163,59 @@ public class FormPropertiesAnalyzer {
       return result;
     }
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document doc = builder.parse(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
-      NodeList blocks = doc.getElementsByTagName("block");
-      Node parent;
-      FOR: for (int i = 0; i < blocks.getLength(); i++) {
-        Element block = (Element) blocks.item(i);
-        String type = block.getAttribute("type");
+      XMLReader reader = XMLReaderFactory.createXMLReader();
+      reader.setContentHandler(new DefaultHandler() {
+        private LinkedList<String> stack = new LinkedList<>();
+        private String blockType;
+        private boolean skipBlocks = false;
 
-        // Skip non-component and disabled blocks
-        if (!isComponentBlock(type) || "true".equals(block.getAttribute("disabled"))) continue;
-        parent = block;
-        while ((parent = parent.getParentNode()) != null) {
-          if ("block".equals(parent.getNodeName()) 
-              && "true".equals(((Element)parent).getAttribute("disabled"))) {
-            continue FOR;
-          }
-        }
-        
-        Element mutation = getMutation(block);
-        if (mutation != null) {  // Should always be true, in theory...
-          String blockName = getBlockName(type, mutation);
-          if (blockName != null) {
-            String componentType = mutation.getAttribute("component_type");
-            if (!result.containsKey(componentType)) {
-              result.put(componentType, new HashSet<String>());
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+            throws SAXException {
+          if ("block".equals(qName)) {
+            stack.addLast(qName);
+            if ("true".equals(attributes.getValue("disabled"))) {
+              skipBlocks = true;
+              return;
+            } else {
+              blockType = attributes.getValue("type");
             }
-            result.get(componentType).add(blockName);
+          } else if (!skipBlocks && "mutation".equals(qName)) {
+            String blockName = null;
+            if ("component_event".equals(blockType)) {
+              blockName = attributes.getValue("event_name");
+            } else if ("component_method".equals(blockType)) {
+              blockName = attributes.getValue("method_name");
+            } else if ("component_set_get".equals(blockType)) {
+              blockName = attributes.getValue("property_name");
+            }
+            if (blockName != null) {
+              String componentType = attributes.getValue("component_type");
+              if (!result.containsKey(componentType)) {
+                result.put(componentType, new HashSet<String>());
+              }
+              result.get(componentType).add(blockName);
+            }
           }
+
+          super.startElement(uri, localName, qName, attributes);
         }
-      }
-    } catch(SAXException | IOException | ParserConfigurationException e) {
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+          if ("block".equals(qName)) {
+            stack.removeLast();
+            if (stack.isEmpty()) {
+              skipBlocks = false;
+            }
+          }
+          super.endElement(uri, localName, qName);
+        }
+      });
+      reader.parse(new InputSource(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8))));
+    } catch (SAXException | IOException e) {
       throw new IllegalStateException(e);
     }
     return result;
-  }
-
-  /**
-   * Tests a block to see if it is a component block.
-   * @param type The type string from the block element
-   * @return true if the type string represents a component block, otherwise
-   * false.
-   */
-  private static boolean isComponentBlock(String type) {
-    return type != null && type.startsWith("component_");
-  }
-
-  /**
-   * Extracts the &lt;mutation&gt; element from the block XML.
-   *
-   * @param block The &lt;block&gt; element being processed
-   * @return An Element representing the &lt;mutation&gt; element of the block
-   * if one exists, otherwise null.
-   */
-  private static Element getMutation(Element block) {
-    NodeList children = block.getChildNodes();
-    for (int j = 0; j < children.getLength(); j++) {
-      Node child = children.item(j);
-      if (child instanceof Element) {
-        Element childEl = (Element) child;
-        if ("mutation".equals(childEl.getTagName())) {
-          return childEl;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Gets the name of a component block from the mutation.
-   *
-   * @param type The type of the block, e.g. component_event
-   * @param mutation The mutation element extracted from the XML
-   * @return the name of the block's event, method, or property, if the block
-   * is one of those types (either a specific instance or generic). Otherwise,
-   * null.
-   */
-  private static String getBlockName(String type, Element mutation) {
-    if ("component_event".equals(type)) {
-      return mutation.getAttribute("event_name");
-    } else if ("component_method".equals(type)) {
-      return mutation.getAttribute("method_name");
-    } else if ("component_set_get".equals(type)) {
-      return mutation.getAttribute("property_name");
-    } else {
-      return null;
-    }
   }
 }
