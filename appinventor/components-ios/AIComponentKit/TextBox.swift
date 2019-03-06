@@ -9,10 +9,10 @@ fileprivate protocol TextBoxDelegate: AbstractMethodsForTextBox, UITextFieldDele
 }
 
 fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
-  fileprivate let _field = UITextField(frame: CGRect.zero)
+  private let _field = UITextField(frame: CGRect.zero)
   fileprivate let _view = UITextView(frame: CGRect.zero)
-  fileprivate let _wrapper = UIView(frame: CGRect.zero)
-  fileprivate var _numbersOnly = false
+  private let _wrapper = UIView(frame: CGRect.zero)
+  private var _numbersOnly = false
   
   private var _multiLine = false
   private var _empty = true
@@ -28,6 +28,18 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     _view.isEditable = true
     _view.delegate = self
     _field.delegate = self
+    
+    setupView()
+    
+    // We are single line by default
+    makeSingleLine()
+    textColor = UIColor.black
+
+    // we want to be able to force unwrap
+    text = ""
+  }
+  
+  private func setupView() {
     // Set up the minimum size constraint for the UITextView
     let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
     heightConstraint.priority = UILayoutPriority.defaultHigh
@@ -36,13 +48,6 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     let selector = #selector(dismissKeyboard)
     _view.inputAccessoryView = getAccesoryView(selector)
     _field.inputAccessoryView = getAccesoryView(selector)
-
-    // We are single line by default
-    makeSingleLine()
-    textColor = UIColor.black
-
-    // we want to be able to force unwrap
-    text = ""
   }
 
   open var view: UIView {
@@ -247,10 +252,10 @@ open class TextBox: TextBoxBase {
   // MARK: TextBox Properties
   @objc open var NumbersOnly: Bool {
     get {
-      return _adapter._numbersOnly
+      return _adapter.numbersOnly
     }
     set(acceptsNumbersOnly) {
-      _adapter._numbersOnly = acceptsNumbersOnly
+      _adapter.numbersOnly = acceptsNumbersOnly
     }
   }
 
