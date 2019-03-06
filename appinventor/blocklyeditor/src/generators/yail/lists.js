@@ -318,7 +318,7 @@ Blockly.Yail['lists_from_csv_table'] = function() {
    // Joins list items into a string separated by specified separator
    var argument0 = Blockly.Yail.valueToCode(this, 'SEPARATOR', Blockly.Yail.ORDER_NONE) || "\"\"";
    var argument1 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
-   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "join-strings" + Blockly.Yail.YAIL_SPACER;
+   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-join-with-separator" + Blockly.Yail.YAIL_SPACER;
    code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
    code = code + argument1 + Blockly.Yail.YAIL_SPACER;
    code = code + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;

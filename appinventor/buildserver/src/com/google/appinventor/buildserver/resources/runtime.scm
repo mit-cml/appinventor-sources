@@ -1903,6 +1903,7 @@ Block name               Kawa implementation
 - is list?                (yail-list? object)
 - is empty?               (yail-list-empty? yail-list)
 - lookup in pairs         (yail-alist-lookup key yail-list-of-pairs default)
+- join with separator     (yail-list-join-with-separator yail-list separator)
 
 Lists in App Inventor are implemented as "Yail lists".  A Yail list is
 a Java pair whose car is a distinguished token
@@ -2323,7 +2324,11 @@ list, use the make-yail-list constructor with no arguments.
   (and (yail-list? candidate-pair)
        (= (length (yail-list-contents candidate-pair)) 2)))
 
-
+;;; Joins list elements into a string separated by separator
+;;; Important to convert yail-list to yail-list-contents so that *list*
+;;; is not included as first string.
+(define (yail-list-join-with-separator yail-list separator)
+  (join-strings (yail-list-contents yail-list) separator))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
