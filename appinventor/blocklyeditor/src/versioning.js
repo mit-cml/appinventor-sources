@@ -1407,7 +1407,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // Duration Support was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // MakeDate, MakeTime, MakeInstantFromParts methods added
+    4: "noUpgrade"
 
   }, // End Clock upgraders
 
@@ -1773,8 +1776,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added Bitwise Blocks
     23: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 24, added List Reverse Block
+    24: "noUpgrade",
+
     // AI2: Added Anonymous procedure Blocks
-    24: "noUpgrade"
+    25: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1917,7 +1923,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // Added TextInputCanceled & ChoosingCanceled event
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added a PasswordDialog for masked text input.
+    6: "noUpgrade"
 
   }, // End Notifier upgraders
 

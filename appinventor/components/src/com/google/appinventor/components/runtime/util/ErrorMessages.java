@@ -248,7 +248,10 @@ public final class ErrorMessages {
   // REPL Errors
   public static final int ERROR_UNABLE_TO_INSTALL_PACKAGE = 3601;
 
-  // Start the next group of errors at 3700
+  // Augmented Reality Errors
+  public static final int ERROR_INVALID_CONFIGURATION_VALUE = 3700;
+
+  // Start the next group of errors at 3800
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -621,6 +624,10 @@ public final class ErrorMessages {
     // REPL errors
     errorMessages.put(ERROR_UNABLE_TO_INSTALL_PACKAGE,
         "Unable to launch the package installer for %1$s.");
+
+    // Augmented Reality errors
+    errorMessages.put(ERROR_INVALID_CONFIGURATION_VALUE,
+        "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
   }
 
   private ErrorMessages() {

@@ -83,25 +83,25 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     + '</p><p><a href="/reference/other/backpack.html" target="_blank">/reference/other/backpack.html</a>';
 
 // Variable renaming.
-    Blockly.MSG_CHANGE_VALUE_TITLE = '修改数值:';
-    Blockly.MSG_NEW_VARIABLE = '新建变量...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = '新建变量名称:';
-    Blockly.MSG_RENAME_VARIABLE = '变量重命名...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = '将所有 "%1" 变量重命名为:';
+    Blockly.Msg.CHANGE_VALUE_TITLE = '修改数值:';
+    Blockly.Msg.NEW_VARIABLE = '新建变量...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = '新建变量名称:';
+    Blockly.Msg.RENAME_VARIABLE = '变量重命名...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = '将所有 "%1" 变量重命名为:';
 
 // Toolbox.
-    Blockly.MSG_VARIABLE_CATEGORY = '变量';
-    Blockly.MSG_PROCEDURE_CATEGORY = '过程';
+    Blockly.Msg.VARIABLE_CATEGORY = '变量';
+    Blockly.Msg.PROCEDURE_CATEGORY = '过程';
 
 // Warnings/Errors
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = '该代码块不能被定义';
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = '请从下拉列表中选择合适项';
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = '重复的组件事件处理器';
-    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "组件不存在";
-    Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "该代码块未定义。删除该代码块！";
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = '该代码块不能被定义';
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = '请从下拉列表中选择合适项';
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = '重复的组件事件处理器';
+    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "组件不存在";
+    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "该代码块未定义。删除该代码块！";
 
-    Blockly.ERROR_CAN_NOT_DO_IT_CONTENT = '只有连接AI伴侣或模拟器，才能执行该代码块';
-    Blockly.ERROR_CAN_NOT_DO_IT_TITLE = '无法执行该代码块';
+    Blockly.Msg.ERROR_CAN_NOT_DO_IT_CONTENT = '只有连接AI伴侣或模拟器，才能执行该代码块';
+    Blockly.Msg.ERROR_CAN_NOT_DO_IT_TITLE = '无法执行该代码块';
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = '点击方块选取所需颜色';

@@ -349,6 +349,22 @@ Blockly.Blocks['lists_is_list'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_IS_LIST_TITLE_IS_LIST }]
 };
 
+Blockly.Blocks['lists_reverse'] = {
+  // Reverse the list.
+  category : 'Lists',
+  helpUrl : Blockly.Msg.LANG_LISTS_REVERSE_HELPURL,
+  init : function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('LIST')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE)
+      .appendField(Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_REVERSE_TITLE_REVERSE }]
+}
+
 Blockly.Blocks['lists_to_csv_row'] = {
   // Make a csv row from list.
   category : 'Lists',

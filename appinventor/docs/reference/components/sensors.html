@@ -612,7 +612,13 @@ none
       <dt> <code> number Hour(InstantInTime instant) </code> </dt>
       <dd> Returns the hour of the day(0-23) from the instant </dd>
       <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
-      <dd> Returns an instant specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm. An example text input is "06/22/2015 12:18"</dd>
+      <dd> Returns an instant specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm. An example text input is "06/22/2015 12:18" </dd>
+      <dt> <code> InstantInTime MakeDate(number year, number month, number day) </code> </dt>
+      <dd> Returns an instant in time specified by year, month, date in UTC. </dd>
+      <dt> <code> InstantInTime MakeTime(number hour, number minute, number second) </code> </dt>
+      <dd> Returns an instant in time specified by hour, minute, second in UTC. </dd>
+      <dt> <code> InstantInTime MakeInstantFromParts(number year, number month, number day, number hour, number minute, number second) </code> </dt>
+      <dd> Returns an instant in time specified by year, month, date, hour, minute, second in UTC. </dd>
       <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
       <dd> Returns an instant in time specified by the milliseconds since 1970 in UTC. </dd>
       <dt> <code> number Minute(InstantInTime instant) </code> </dt>

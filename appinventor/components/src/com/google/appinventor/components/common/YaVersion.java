@@ -440,8 +440,14 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 176:
   // - PHONECALL_COMPONENT_VERSION was incremented to 3
   // - TEXTING_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 177:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 178:
+  // - CLOCK_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERISON 179:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 24
 
-  public static final int YOUNG_ANDROID_VERSION = 176;
+  public static final int YOUNG_ANDROID_VERSION = 179;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -508,10 +514,12 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 23:
   // - Bitwise and, ior, and xor blocks were added.
   // For BLOCKS_LANGUAGE_VERSION 24:
+  // - List reverse block was added.
+  // For BLOCKS_LANGUAGE_VERSION 25:
   // - Control: run-in-background & run-after-period were added.
   // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 24;
+  public static final int BLOCKS_LANGUAGE_VERSION = 25;
 
   // ................................. Component Version Numbers ..................................
 
@@ -669,7 +677,11 @@ public class YaVersion {
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
-  public static final int CLOCK_COMPONENT_VERSION = 3;
+  // For CLOCK_COMPONENT_VERSION 3:
+  // - Duration Support was added
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - MakeTime, MakeDate, MakeInstantFromParts methods were added
+  public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -909,7 +921,9 @@ public class YaVersion {
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
   // For NOTIFIER_COMPONENT_VERSION 5:
   // - Added TextInputCanceled & ChoosingCanceled event
-  public static final int NOTIFIER_COMPONENT_VERSION = 5;
+  // For NOTIFIER_COMPONENT_VERSION 6:
+  // - Added a ShowPasswordDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 6;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

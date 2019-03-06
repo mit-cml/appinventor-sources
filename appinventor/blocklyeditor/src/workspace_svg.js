@@ -792,17 +792,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(backpackCopyAll);
 
-  // Clear backpack.
-  var backpackClear = {enabled: true};
-  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
-  backpackClear.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().clear();
-    }
-    backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
-  };
-  menuOptions.push(backpackClear);
-
   // Enable grid
   var gridOption = {enabled: true};
   gridOption.text = this.options.gridOptions['enabled'] ? Blockly.Msg.DISABLE_GRID :

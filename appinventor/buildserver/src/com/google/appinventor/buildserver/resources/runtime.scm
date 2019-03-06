@@ -1888,6 +1888,7 @@ Block name               Kawa implementation
 - remove list item        (yail-list-remove-item! yail-list index)
 - length of list          (yail-list-length yail-list)
 - copy list               (yail-list-copy list)
+- reverse list            (yail-list-reverse list)
 - list to csv row         (yail-list-to-csv-row list)
 - list to csv table       (yail-list-to-csv-table list)
 - list from csv row       (yail-list-from-csv-row text)
@@ -1981,6 +1982,13 @@ list, use the make-yail-list constructor with no arguments.
   (cond ((yail-list-empty? yl) (make YailList))
         ((not (pair? yl)) yl)
         (else (YailList:makeList (map yail-list-copy (yail-list-contents yl))))))
+
+;;; does a shallow copy of the yail list yl with its order reversed.
+;;; yl should be a YailList
+(define (yail-list-reverse yl)
+  (if (not (yail-list? yl))
+    (signal-runtime-error "Argument value to \"reverse list\" must be a list" "Expecting list")
+    (insert-yail-list-header (reverse (yail-list-contents yl)))))
 
 ;;; converts a yail list to a CSV-formatted table and returns the text.
 ;;; yl should be a YailList, each element of which is a YailList as well.

@@ -360,8 +360,8 @@ public class Form extends AppInventorCompatActivity
     // process (onCreateFinish2). Sigh.
 
     boolean needSdcardWrite = doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
-        // Don't ask permission if we are REPL and using the splash screen
-        !(isRepl() && AppInventorFeatures.doCompanionSplashScreen());
+        // Only ask permission if we are in the REPL and not using the splash screen
+        isRepl() && !AppInventorFeatures.doCompanionSplashScreen();
     if (needSdcardWrite) {
       askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
         new PermissionResultHandler() {
