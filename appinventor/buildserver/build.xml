@@ -161,6 +161,7 @@
       <fileset dir="${local.lib.dir}" includes="*.jar"/>
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
+      <fileset dir="${build.dir}" includes="components/CommonConstants.jar" />
       <fileset dir="${lib.dir}" includes="bouncycastle/bcprov-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="bouncycastle/bcpkix-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/common-24.3.0.jar"/>
