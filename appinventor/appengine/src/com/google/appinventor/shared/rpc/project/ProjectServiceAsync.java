@@ -51,6 +51,11 @@ public interface ProjectServiceAsync {
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
 
+  /**
+   * @see ProjectService#renameProject(long, String)
+   */
+  void renameProject(long projectId, String newName, AsyncCallback<UserProject> callback);
+
    /**
    * @see ProjectService#setGalleryid
    */
