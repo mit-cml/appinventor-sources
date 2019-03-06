@@ -64,6 +64,10 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setDefaultCloudDBserver(Flag.createFlag("clouddb.server", "").get());
     config.setNoop(Flag.createFlag("session.noop", 0).get());
 
+    if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
+      config.setSecondBuildserver(true);
+    }
+
     // Check to see if we need to upgrade this user's project to GCS
     storageIo.checkUpgrade(userInfoProvider.getUserId());
     return config;
@@ -194,4 +198,32 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void noop() {
   }
+
+  /**
+   * fetch the contents of a shared backpack.
+   *
+   * @param BackPackId the uuid of the backpack
+   * @return the backpack's content as an XML string
+   */
+
+  @Override
+  public String getSharedBackpack(String backPackId) {
+    return storageIo.downloadBackpack(backPackId);
+  }
+
+  /**
+   * store a shared backpack.
+   *
+   * Note: We overwrite any existing backpack. If merging of contents
+   * is desired, our caller has to take care of it.
+   *
+   * @param BackPackId the uuid of the shared backpack
+   * @param the new contents of the backpack
+   */
+
+  @Override
+  public void storeSharedBackpack(String backPackId, String content) {
+    storageIo.uploadBackpack(backPackId, content);
+  }
+
 }

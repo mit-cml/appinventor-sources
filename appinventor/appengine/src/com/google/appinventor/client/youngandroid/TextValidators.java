@@ -28,6 +28,13 @@ public final class TextValidators {
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
           "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
 
+  protected static final List<String> JAVA_NAMES = Arrays.asList("abstract", "continue", "for", "new", "switch",
+          "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
+          "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+          "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
+          "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+          "float", "native", "super", "while");
+
   // This class should never be instantiated.
   private TextValidators() {}
 
@@ -45,6 +52,12 @@ public final class TextValidators {
     // Check the format of the project name
     if (!isValidIdentifier(projectName)) {
       Window.alert(MESSAGES.malformedProjectNameError());
+      return false;
+    }
+
+    // Check for names that reserved words
+    if (isReservedName(projectName)) {
+      Window.alert(MESSAGES.reservedNameError());
       return false;
     }
 
@@ -80,8 +93,8 @@ public final class TextValidators {
     }
 
     // Check that it is a variable name used in the Yail code
-    if (YAIL_NAMES.contains(componentName)) {
-      Window.alert(MESSAGES.badComponentNameError());
+    if (TextValidators.isReservedName(componentName)) {
+      Window.alert(MESSAGES.reservedNameError());
       return false;
     }
 
@@ -106,6 +119,17 @@ public final class TextValidators {
    */
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
+  }
+
+  /**
+   * Checks whether the argument is a word reserved by YAIL or JAVA.
+   *
+   * @param text the proposed identifier
+   * @return {@code true} if the argument is a reserved word, {@code false}
+   *         otherwise
+   */
+  public static boolean isReservedName(String text) {
+    return (YAIL_NAMES.contains(text) || JAVA_NAMES.contains(text));
   }
 
   /**

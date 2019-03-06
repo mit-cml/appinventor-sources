@@ -22,11 +22,14 @@ import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
@@ -65,6 +68,59 @@ import javax.ws.rs.core.Response;
 @Path("/buildserver")
 public class BuildServer {
   private ProjectBuilder projectBuilder = new ProjectBuilder();
+
+  static class ProgressReporter {
+    // We create a ProgressReporter instance which is handed off to the
+    // project builder and compiler. It is called to report the progress
+    // of the build. The reporting is done by calling the callback URL
+    // and putting the status inside a "build.status" file. This isn't
+    // particularly efficient, but this is the version 0.9 implementation
+    String callbackUrlStr;
+    ProgressReporter(String callbackUrlStr) {
+      this.callbackUrlStr = callbackUrlStr;
+    }
+
+    public void report(int progress) {
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ZipOutputStream zipoutput = new ZipOutputStream(output);
+        zipoutput.putNextEntry(new ZipEntry("build.status"));
+        PrintWriter pout = new PrintWriter(zipoutput);
+        pout.println(progress);
+        pout.flush();
+        zipoutput.flush();
+        zipoutput.close();
+        ByteArrayInputStream zipinput = new ByteArrayInputStream(output.toByteArray());
+        URL callbackUrl = new URL(callbackUrlStr);
+        HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        // Make sure we aren't misinterpreted as
+        // form-url-encoded
+        connection.addRequestProperty("Content-Type","application/zip; charset=utf-8");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
+        try {
+          BufferedInputStream bufferedInputStream = new BufferedInputStream(zipinput);
+          try {
+            ByteStreams.copy(bufferedInputStream,bufferedOutputStream);
+            bufferedOutputStream.flush();
+          } finally {
+            bufferedInputStream.close();
+          }
+        } finally {
+          bufferedOutputStream.close();
+        }
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+          LOG.severe("Bad Response Code! (sending status): "+ connection.getResponseCode());
+        }
+      } catch (IOException e) {
+        LOG.severe("IOException during progress report!");
+      }
+    }
+  }
+
 
   static class CommandLineOptions {
     @Option(name = "--shutdownToken",
@@ -218,6 +274,9 @@ public class BuildServer {
     variables.put("num-processors", osBean.getAvailableProcessors() + "");
     variables.put("load-average-past-1-min", osBean.getSystemLoadAverage() + "");
 
+    // Threads
+    variables.put("num-java-threads", ManagementFactory.getThreadMXBean().getThreadCount() + "");
+
     // Memory
     Runtime runtime = Runtime.getRuntime();
     MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
@@ -311,7 +370,7 @@ public class BuildServer {
         .entity("Entry point unavailable unless debugging.").build();
 
     try {
-      build(userName, zipFile);
+      build(userName, zipFile, null);
       String attachedFilename = outputApk.getName();
       FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
       // Set the outputApk field to null so that it won't be deleted in cleanUp().
@@ -354,7 +413,7 @@ public class BuildServer {
         .entity("Entry point unavailable unless debugging.").build();
 
     try {
-      buildAndCreateZip(userName, inputZipFile);
+      buildAndCreateZip(userName, inputZipFile, null);
       String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
       // Set the outputZip field to null so that it won't be deleted in cleanUp().
@@ -462,7 +521,7 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile);
+              buildAndCreateZip(userName, inputZipFile, new ProgressReporter(callbackUrlStr));
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
               URL callbackUrl = new URL(callbackUrlStr);
@@ -517,13 +576,16 @@ public class BuildServer {
         return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN_TYPE).entity("The build server is currently at maximum capacity.").build();
       }
     }
+    // Note: The code below should no longer be invoked. Progress reports
+    // are now handled via a callback mechanism. The "50" here is just a plug
+    // number.
     return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
-      .entity("" + projectBuilder.getProgress()).build();
+      .entity("" + 50).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile)
+  private void buildAndCreateZip(String userName, File inputZipFile, ProgressReporter reporter)
     throws IOException, JSONException {
-    Result buildResult = build(userName, inputZipFile);
+    Result buildResult = build(userName, inputZipFile, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -561,7 +623,7 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile) throws IOException {
+  private Result build(String userName, File zipFile, ProgressReporter reporter) throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't
@@ -569,7 +631,7 @@ public class BuildServer {
     // is happening, so we should be careful about that.
     outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
-      commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir);
+                              commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);
     String buildError = buildResult.getError();
@@ -623,6 +685,43 @@ public class BuildServer {
       cmdLineParser.printUsage(System.err);
       System.exit(1);
     }
+
+    // Add a Shutdown Hook. In a container swarm, the swarm orchestrator
+    // may choose to shutdown a container (running a buildserver) as part
+    // of load balancing and other maintenance tasks. It will send a
+    // SIGTERM signal to the container which will send it to us. This
+    // shutdown hook causes us to wait until all build tasks are completed
+    // before we exit, ensuring that people's build jobs are not interrupted
+    // We combine this code with a configuration in the swarm service to *not*
+    // hard kill a container for a period of time (say 15 minutes) to give
+    // running jobs a chance to finish.
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+        @Override
+        public void run() {
+          shuttingTime = System.currentTimeMillis();
+          if (buildExecutor == null) {
+            /* We haven't really started up yet... */
+            return;
+          }
+          while (true) {
+            int tasks = buildExecutor.getActiveTaskCount();
+            if (tasks <= 0) {
+              try {
+                Thread.sleep(10000); // One final wait so people can get
+                                     // their barcode
+              } catch (InterruptedException e) {
+              }
+              return;
+            }
+            try {
+              Thread.sleep(1000); // Wait one second and try again
+            } catch (InterruptedException e) {
+              // XXX
+            }
+          }
+        }
+      });
+
 
     // Now that the command line options have been processed, we can create the buildExecutor.
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);

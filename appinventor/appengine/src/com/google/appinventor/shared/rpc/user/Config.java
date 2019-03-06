@@ -35,6 +35,9 @@ public class Config implements IsSerializable, Serializable {
   private String firebaseURL;   // Default Firebase URL
   private String defaultCloudDBserver;
   private int noop;            // No-op interval
+  private boolean secondBuildserver; // Whether or not we have a second
+                                     // buildserver (used for a different
+                                     // target SDK).
 
   public Config() {
   }
@@ -181,6 +184,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setNoop(int noop) {
     this.noop = noop;
+  }
+
+  public boolean getSecondBuildserver() {
+    return secondBuildserver;
+  }
+
+  public void setSecondBuildserver(boolean value) {
+    secondBuildserver = value;
   }
 
 }

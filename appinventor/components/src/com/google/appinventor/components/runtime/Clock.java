@@ -19,8 +19,17 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 
 /**
  * Clock provides the phone's clock, a timer, calendar and time calculations.
@@ -226,15 +235,106 @@ public final class Clock extends AndroidNonvisibleComponent
    * @return  date
    */
   @SimpleFunction(
-      description = "An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm")
+      description = "An instant in time specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm")
   public static Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
     } catch (IllegalArgumentException e) {
       throw new YailRuntimeError(
-          "Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm",
+          "Argument to MakeInstant should have form MM/dd/YYYY hh:mm:ss, or MM/dd/YYYY or hh:mm",
           "Sorry to be so picky.");
     }
+  }
+
+  /**
+   * An instant in time specified by number year, number month, number day
+   * @param year year integer
+   * @param month month integer
+   * @param day day integer
+   * @return  Calendar instant
+   */
+  @SimpleFunction(description = "Allows the user to set the clock to be "
+    +"a date value.\n" +
+    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  public Calendar MakeDate(int year, int month, int day) {
+    int jMonth = month - 1;
+    try {
+      GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
+      cal.setLenient(false);
+
+      // A non-lenient GregorianCalendar throws an exception upon 
+      // calculating its time or calendar field values if any out-of-range field value has been set.
+      cal.getTime();
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    
+    Calendar instant = Dates.DateInstant(year, month, day);
+    return instant;
+  }
+
+  /**
+   * An instant in time specified by integer hour, integer minute, and integer second
+   * @param hour hour integer
+   * @param minute minute integer
+   * @param second second integer
+   * @return  Calendar instant since 1/1/1970
+   */
+  @SimpleFunction(description = "Allows the user to set the time of the clock - " +
+    "Valid format is hh:mm:ss\n")
+  public Calendar MakeTime(int hour, int minute, int second) {
+    Calendar instant = new GregorianCalendar();
+    try {
+      instant.set(Calendar.HOUR_OF_DAY, hour);
+      instant.set(Calendar.MINUTE, minute);
+      instant.set(Calendar.SECOND, second);
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    return instant;
+  }
+
+  /**
+   * An instant in time specified by number year, number month, number day, number hour,
+   * number minute, number second
+   * @param year year integer
+   * @param month month integer
+   * @param day day integer
+   * @param hour hour integer
+   * @param minute minute integer
+   * @param second minute integer
+   * @return  Calendar instant
+   */
+  @SimpleFunction(
+    description = "Allows the user to set the date and time to be displayed when the clock opens.\n" +
+    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  public Calendar MakeInstantFromParts(int year, int month, int day, int hour, int minute, int second) {
+    int jMonth = month - 1;
+    Calendar instant = null;
+    try {
+      instant = new GregorianCalendar(year, jMonth, day);
+      instant.setLenient(false);
+
+      // A non-lenient GregorianCalendar throws an exception upon 
+      // calculating its time or calendar field values if any out-of-range field value has been set.
+      instant.getTime();
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    
+    instant = Dates.DateInstant(year, month, day);
+    
+    try {
+      instant.set(Calendar.HOUR_OF_DAY, hour);
+      instant.set(Calendar.MINUTE, minute);
+      instant.set(Calendar.SECOND, second);
+
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+
+    return instant;
+    
   }
 
   /**
@@ -489,7 +589,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * Converts and formats an instant into a string of date and time with the specified pattern.   *
    *
    * @param instant  instant to format
-   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm
+   * @param pattern format of the date and time e.g. MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date and time of an"
@@ -499,7 +599,7 @@ public final class Clock extends AndroidNonvisibleComponent
       return Dates.FormatDateTime(instant, pattern);
     } catch (IllegalArgumentException e){
       throw new YailRuntimeError(
-        "Illegal argument for pattern in Clock.FormatDateTime. Acceptable values are empty string, MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm "
+        "Illegal argument for pattern in Clock.FormatDateTime. Acceptable values are empty string, MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm "
         + "For all possible patterns, see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html",
         "Sorry to be so picky.");
     }

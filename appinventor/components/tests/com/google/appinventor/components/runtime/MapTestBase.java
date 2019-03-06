@@ -1,10 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.view.ViewGroup;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.tileprovider.modules.ShadowMapTileModuleProviderBase;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
@@ -13,6 +14,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.osmdroid.util.GeoPoint;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.Shadow;
 
 import static com.google.appinventor.components.runtime.util.GeometryUtil.ONE_DEG_IN_METERS;
 
@@ -135,11 +137,15 @@ public class MapTestBase extends RobolectricTestBase {
     return map;
   }
 
+  public ShadowMapView getMapShadow() {
+    return Shadow.extract(((ViewGroup)map.getView()).getChildAt(0));
+  }
+
   @Before
   public void setUp() {
     super.setUp();
     map = new Map(getForm());
-    map.getView().measure(ComponentConstants.MAP_PREFERRED_WIDTH, ComponentConstants.MAP_PREFERRED_HEIGHT);
+    map.getView().requestLayout();
     map.getView().layout(0, 0, ComponentConstants.MAP_PREFERRED_WIDTH, ComponentConstants.MAP_PREFERRED_HEIGHT);
   }
 }

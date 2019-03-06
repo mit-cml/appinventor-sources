@@ -139,15 +139,6 @@
   </presetdef>
 
   <!-- =====================================================================
-       Define task ai.javac5 as the compilation task for building the blocks
-       editor and all of its dependencies.
-       ===================================================================== -->
-  <presetdef name="ai.javac5">
-    <ai.javac source="5"
-              target="5"/>
-  </presetdef>
-
-  <!-- =====================================================================
 
        Define task ai.dojunit as the default testing task for AI.  It
        compiles all the specified tests, builds them into a library,

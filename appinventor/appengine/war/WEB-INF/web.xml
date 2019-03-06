@@ -56,6 +56,7 @@
       <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
       <url-pattern>/rendezvous/*</url-pattern>
+      <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 
@@ -64,7 +65,6 @@
     <web-resource-collection>
       <url-pattern>/appstats/*</url-pattern>
       <url-pattern>/convert/</url-pattern>
-      <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>

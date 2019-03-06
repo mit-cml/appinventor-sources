@@ -157,9 +157,12 @@ Blockly.ComponentDatabase.prototype.renameInstance = function(uid, oldName, newN
   if (!this.hasInstance(uid)) {
     return false;
   }
+  if (oldName === newName) {  // oldName is the same as newName... don't waste time
+    return false;
+  }
   this.instances_[uid].name = newName;
-  this.instanceNameUid_[newName] = uid;
   delete this.instanceNameUid_[oldName];
+  this.instanceNameUid_[newName] = uid;
   return true;
 };
 

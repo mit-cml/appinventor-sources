@@ -1,5 +1,5 @@
 // -*- mode: javascript; js-indent-level: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2016-2018 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -332,6 +332,12 @@ Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeNa
  */
 Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   var component = this.componentDb_.getInstance(uid);
+
+  // Fixes #1175
+  if (this.drawer_ && component.name === this.drawer_.lastComponent) {
+    this.drawer_.hide();
+  }
+
   if (!this.componentDb_.removeInstance(uid)) {
     return this;
   }
@@ -397,10 +403,15 @@ Blockly.WorkspaceSvg.prototype.populateComponentTypes = function(strComponentInf
 Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent) {
   if (blocksContent.length != 0) {
     try {
-      Blockly.Block.isRenderingOn = false;
-      Blockly.Versioning.upgrade(formJson, blocksContent, this);
+      Blockly.Events.disable();
+      if (Blockly.Versioning.upgrade(formJson, blocksContent, this)) {
+        var self = this;
+        setTimeout(function() {
+          self.fireChangeListener(new AI.Events.ForceSave(self));
+        });
+      }
     } finally {
-      Blockly.Block.isRenderingOn = true;
+      Blockly.Events.enable();
     }
     if (this.getCanvas() != null) {
       this.render();
@@ -477,10 +488,12 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
   return this.flydown_;
 };
 
-Blockly.WorkspaceSvg.prototype.hideChaff = function() {
+Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.flydown_ && this.flydown_.hide();
   this.typeBlock_ && this.typeBlock_.hide();
-  this.backpack_ && this.backpack_.hide();
+  if (!opt_allowToolbox) {  // Fixes #1269
+    this.backpack_ && this.backpack_.hide();
+  }
   this.setScrollbarsVisible(true);
 };
 
@@ -701,6 +714,62 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       arrangeOptionV.callback(opt_type);
   }
 
+  // Enable all blocks
+  var enableAll = {enabled: true};
+  enableAll.text = Blockly.Msg.ENABLE_ALL_BLOCKS;
+  enableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(false);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(enableAll);
+
+  // Disable all blocks
+  var disableAll = {enabled: true};
+  disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
+  disableAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      block.setDisabled(true);
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(disableAll);
+
+  // Show all comments
+  var showAll = {enabled: true};
+  showAll.text = Blockly.Msg.SHOW_ALL_COMMENTS;
+  showAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      if (block.comment != null) {
+        block.comment.setVisible(true);
+      }
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(showAll);
+
+  // Hide all comments
+  var hideAll = {enabled: true};
+  hideAll.text = Blockly.Msg.HIDE_ALL_COMMENTS;
+  hideAll.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      if (block.comment != null) {
+        block.comment.setVisible(false);
+      }
+    }
+    Blockly.Events.setGroup(false);
+  };
+  menuOptions.push(hideAll);
+
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
   backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
@@ -721,17 +790,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     }
   };
   menuOptions.push(backpackCopyAll);
-
-  // Clear backpack.
-  var backpackClear = {enabled: true};
-  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
-  backpackClear.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().clear();
-    }
-    backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
-  };
-  menuOptions.push(backpackClear);
 
   // Enable grid
   var gridOption = {enabled: true};
@@ -1017,6 +1075,13 @@ Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
     connectionDB.sort(function(a, b) {
       return a.y_ - b.y_;
     });
+    // If we are rerendering due to a new error, we only redraw the error block, which means that
+    // we can't clear the database, otherwise all other connections disappear. Instead, we add
+    // the moved connections anyway, and at this point we can remove the duplicate entries in the
+    // database. We remove after sorting so that the operation is O(n) rather than O(n^2). This
+    // assumption may break in the future if Blockly decides on a different mechanism for indexing
+    // connections.
+    connectionDB.removeDupes();
   });
 };
 
@@ -1033,5 +1098,14 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
         this.pendingConnectionDBUpdate = null;
       }
     }.bind(this));
+  }
+};
+
+/**
+ * Refresh the state of the backpack. Called from BlocklyPanel.java
+ */
+Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
+  if (this.backpack_) {
+    this.backpack_.resize();
   }
 };

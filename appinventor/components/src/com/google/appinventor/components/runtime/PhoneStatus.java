@@ -1,34 +1,51 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import java.util.Formatter;
-import java.security.MessageDigest;
-
 import android.app.Activity;
+
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+
 import android.os.Build;
+
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesNativeLibraries;
+
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.AppInvHTTPD;
-import com.google.appinventor.components.runtime.util.PackageInstaller;
+
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.PackageInstaller;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
+
+import java.security.MessageDigest;
+
+import java.util.Formatter;
+
 
 /**
  * Component for obtaining Phone Information. Currently supports
@@ -44,12 +61,20 @@ import com.google.appinventor.components.runtime.ReplForm;
                    nonVisible = true,
                    iconName = "images/phoneip.png")
 @SimpleObject
+@UsesLibraries(libraries = "webrtc.jar," +
+    "google-http-client-beta.jar," +
+    "google-http-client-android2-beta.jar," +
+    "google-http-client-android3-beta.jar")
+@UsesNativeLibraries(v7aLibraries = "libjingle_peerconnection_so.so",
+  v8aLibraries = "libjingle_peerconnection_so.so",
+  x86_64Libraries = "libjingle_peerconnection_so.so")
 public class PhoneStatus extends AndroidNonvisibleComponent implements Component {
 
   private static Activity activity;
   private static final String LOG_TAG = "PhoneStatus";
   private final Form form;
   private static PhoneStatus mainInstance = null;
+  private static boolean useWebRTC = false;
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
@@ -87,9 +112,18 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
   @SimpleFunction(description = "Establish the secret seed for HOTP generation. " +
     "Return the SHA1 of the provided seed, this will be used to contact the " +
-    "rendezvous server.")
-  public String setHmacSeedReturnCode(String seed) {
-    AppInvHTTPD.setHmacKey(seed);
+    "rendezvous server. Note: This code also starts the connection negotiation " +
+    "process if we are using WebRTC. This is a bit of a kludge...")
+  public String setHmacSeedReturnCode(String seed, String rendezvousServer) {
+
+    /* Setup communications via WebRTC */
+    if (useWebRTC) {
+      WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer);
+      webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, seed);
+      ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
+    } else {
+      AppInvHTTPD.setHmacKey(seed);
+    }
     MessageDigest Sha1;
     try {
       Sha1 = MessageDigest.getInstance("SHA1");
@@ -113,7 +147,7 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   public boolean isDirect() {
     Log.d(LOG_TAG, "android.os.Build.VERSION.RELEASE = " + android.os.Build.VERSION.RELEASE);
     Log.d(LOG_TAG, "android.os.Build.PRODUCT = " + android.os.Build.PRODUCT);
-    if (android.os.Build.PRODUCT.contains("google_sdk")) { // Emulator is always direct
+    if (ReplForm.isEmulator()) { // Emulator is always direct
       return true;
     }
     if (form instanceof ReplForm) {
@@ -147,17 +181,6 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     // t.start();
   }
 
-  @SimpleFunction(description = "Obtain the Android Application Version")
-  public String getVersionName() {
-    try {
-      PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
-      return (pInfo.versionName);
-    } catch (NameNotFoundException e) {
-      Log.e(LOG_TAG, "Exception fetching package name.", e);
-      return ("");
-    }
-  }
-
   @SimpleFunction(description = "Downloads the URL and installs it as an Android Package")
   public void installURL(String url) {
     PackageInstaller.doPackageInstall(form, url);
@@ -176,6 +199,83 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   @SimpleEvent
   public void OnSettings() {
     EventDispatcher.dispatchEvent(this, "OnSettings");
+  }
+
+  /**
+   * Set whether or not we will use WebRTC to communicate with the server
+   *
+   * @param useWebRTC  Set True to use WebRTC
+   *
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty()
+  public void WebRTC(boolean useWebRTC) {
+    this.useWebRTC = useWebRTC;
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "If True we are using WebRTC to talk to the server.")
+  public boolean WebRTC() {
+    return useWebRTC;
+  }
+
+  /**
+   * SdkLevel -- Return the current Android SDK Level
+   *
+   * We use this to send the Rendezvous server our API leve which it
+   * can then log for statistics (so we know when we can deprecate an
+   * older version of Android because usage is low enough).
+   *
+   * @return SdkLevel
+   */
+
+  @SimpleFunction(description = "Get the current Android SDK Level")
+  public int SdkLevel() {
+    return SdkLevel.getLevel();
+  }
+
+  /**
+   * GetVersionName -- Return the package versionName
+   *
+   * We use this to determine whether or not the Companion is compatible
+   * with the current version of App Inventor. We provide this to the
+   * Rendezvous server. When in "WebRTC" mode, the MIT App Inventor
+   * client gets this value from the Rendezvous server (the older HTTPD
+   * approach has its own "_getversion" URL which is used to do this, but
+   * we cannot use that approach when using WebRTC, and the Rendezvous server
+   * approach we support here is actually better because it avoid a round
+   * trip between the client and the Companion...
+   *
+   * @return The VersionName as a string
+   */
+
+  @SimpleFunction(description = "Return the our VersionName property")
+  public String GetVersionName() {
+    try {
+      String packageName = form.getPackageName();
+      return form.getPackageManager().getPackageInfo(packageName, 0).versionName;
+    } catch (NameNotFoundException e) {
+      Log.e(LOG_TAG, "Unable to get VersionName", e);
+      return "UNKNOWN";
+    }
+  }
+
+  @SimpleFunction(description = "Return the app that installed us")
+  public String GetInstaller() {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      String installer = EclairUtil.getInstallerPackageName("edu.mit.appinventor.aicompanion3", form);
+      if (installer == null) {
+        return "sideloaded";
+      } else {
+        return installer;
+      }
+    } else {
+      return "unknown";
+    }
+  }
+
+  /* Static context way to get the useWebRTC flag */
+  public static boolean getUseWebRTC() {
+    return useWebRTC;
   }
 
   /**
