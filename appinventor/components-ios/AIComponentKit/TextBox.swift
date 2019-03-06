@@ -22,13 +22,20 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     _field.translatesAutoresizingMaskIntoConstraints = false
     _view.translatesAutoresizingMaskIntoConstraints = false
     _wrapper.translatesAutoresizingMaskIntoConstraints = false
+    _view.textContainerInset = .zero
+    _view.textContainer.lineFragmentPadding = 0
+    _view.isSelectable = true
+    _view.isEditable = true
     _view.delegate = self
     _field.delegate = self
-
     // Set up the minimum size constraint for the UITextView
-    let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 26.5)
+    let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
     heightConstraint.priority = UILayoutPriority.defaultHigh
     _view.addConstraint(heightConstraint)
+    _view.isScrollEnabled = false
+    let selector = #selector(dismissKeyboard)
+    _view.inputAccessoryView = getAccesoryView(selector)
+    _field.inputAccessoryView = getAccesoryView(selector)
 
     // We are single line by default
     makeSingleLine()
@@ -191,26 +198,38 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-    return processText(string, range: range)
+    processText(string, range: range)
+    if let cursorLocation = textField.position(from: textField.beginningOfDocument, offset: (range.location + string.count)) {
+      textField.selectedTextRange = textField.textRange(from: cursorLocation, to: cursorLocation)
+    }
+    return false
   }
 
   func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    return processText(text, range: range)
+    processText(text, range: range)
+    if let cursorLocation = textView.position(from: textView.beginningOfDocument, offset: (range.location + text.count)) {
+      textView.selectedTextRange = textView.textRange(from: cursorLocation, to: cursorLocation)
+    }
+    return false
   }
 
-  fileprivate func processText(_ newText: String, range: NSRange) -> Bool {
+  fileprivate func processText(_ newText: String, range: NSRange) {
     if let range = Range(range, in: _field.text!) {
       _field.text?.replaceSubrange(range, with: ensureNumber(newText))
     }
     if let range = Range(range, in: _view.text!) {
       _view.text?.replaceSubrange(range, with: ensureNumber(newText))
     }
-    return false
   }
 
   fileprivate func ensureNumber(_ text: String) -> String {
-    let result =  _numbersOnly ? text.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression): text
+    let result = _numbersOnly ? text.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression): text
     return result
+  }
+
+  @objc func dismissKeyboard() {
+    _view.endEditing(true)
+    _field.endEditing(true)
   }
 }
 
@@ -232,6 +251,12 @@ open class TextBox: TextBoxBase {
     }
     set(acceptsNumbersOnly) {
       _adapter._numbersOnly = acceptsNumbersOnly
+    }
+  }
+
+  @objc open override var Height: Int32 {
+    didSet {
+      _adapter._view.isScrollEnabled = Height != kLengthPreferred
     }
   }
 

@@ -1,10 +1,5 @@
-//
-//  TextBoxBase.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 11/30/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -15,6 +10,18 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var font: UIFont { get set }
   var placeholderText: String? { get set }
   var text: String? { get set }
+}
+
+// method for creating toolbar to allow users to dismiss keyboard
+extension AbstractMethodsForTextBox {
+  func getAccesoryView(_ selector: Selector) -> UIView {
+    let keyboardToolbar = UIToolbar()
+    keyboardToolbar.sizeToFit()
+    let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: selector)
+    keyboardToolbar.items = [flexBarButton, doneBarButton]
+    return keyboardToolbar
+  }
 }
 
 open class TextBoxBase: ViewComponent, UITextViewDelegate {
@@ -33,7 +40,9 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     _delegate = delegate
     super.setDelegate(delegate)
     parent.add(self)
-    parent.setChildWidth(of: self, width: kTextboxPreferredWidth)
+    let widthConstraint = _delegate.view.widthAnchor.constraint(greaterThanOrEqualToConstant: CGFloat(kTextboxPreferredWidth))
+    widthConstraint.priority = UILayoutPriority.defaultHigh
+    widthConstraint.isActive = true
     FontSize = 14.0
   }
 

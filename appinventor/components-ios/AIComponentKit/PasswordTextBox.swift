@@ -15,6 +15,7 @@ fileprivate class TextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFie
     _field.translatesAutoresizingMaskIntoConstraints = false
     _field.isSecureTextEntry = true
     super.init()
+    _field.inputAccessoryView = getAccesoryView(#selector(dismissKeyboard))
     _field.delegate = self
   }
 
@@ -76,6 +77,10 @@ fileprivate class TextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFie
     set(text) {
       _field.text = text
     }
+  }
+
+  @objc func dismissKeyboard() {
+    _field.endEditing(true)
   }
 
   // prevents clearing of password field when changing 
