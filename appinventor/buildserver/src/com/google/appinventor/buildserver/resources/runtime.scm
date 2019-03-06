@@ -1427,7 +1427,7 @@
   ;; NOTE: The elements in list-of-strings should be Kawa strings
   ;; but they might not be Java strings, since some (all?) Kawa strings
   ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
-  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+  (JavaJoinListOfStrings:joinStrings (yail-list-contents list-of-strings) separator))
 
 ;;; end of join-strings
 
