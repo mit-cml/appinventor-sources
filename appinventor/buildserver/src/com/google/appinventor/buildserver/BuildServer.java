@@ -274,6 +274,9 @@ public class BuildServer {
     variables.put("num-processors", osBean.getAvailableProcessors() + "");
     variables.put("load-average-past-1-min", osBean.getSystemLoadAverage() + "");
 
+    // Threads
+    variables.put("num-java-threads", ManagementFactory.getThreadMXBean().getThreadCount() + "");
+
     // Memory
     Runtime runtime = Runtime.getRuntime();
     MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();

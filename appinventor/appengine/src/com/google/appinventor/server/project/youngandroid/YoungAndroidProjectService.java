@@ -116,6 +116,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  // host[:port] to use for connecting to the second build server
+  private static final Flag<String> buildServerHost2 =
+      Flag.createFlag("build2.server.host", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> appengineHost =
       Flag.createFlag("appengine.host", "");
@@ -640,7 +643,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String nonce, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target,
+    boolean secondBuildserver) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -662,6 +666,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           user.getUserEmail(),
           userId,
           projectId,
+          secondBuildserver,
           outputFileDir));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
@@ -672,6 +677,25 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
         projectName + ".aia", true, false, true, false);
+      // The code below tests the size of the compressed project before
+      // we send it off to the buildserver. When using URLFetch we know that
+      // this size is limited to 10MB based on Google's documentation.
+      // It isn't clear if this is also enforced in the Java 8 environment
+      // when not using URLFetch. However we are being conservative for now.
+      // Keep in mind that large projects can lead to large APK files which
+      // may not be loadable into many memory restricted devices, so we
+      // may not want to encourage large projects...
+      if (zipFile.getContent().length > 10*1024*1024) { // 10 Megabyte size limit...
+        int zipFileLength = zipFile.getContent().length;
+        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+        RuntimeException exception = new RuntimeException(
+            "Sorry, can't package projects larger than 10Mb."
+            + " Yours is " + lengthMbs + "MB.");
+        CrashReport.createAndLogError(LOG, null,
+            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId),
+            exception);
+        return new RpcResult(false, "", exception.getMessage());
+      }
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
@@ -710,6 +734,16 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         }
 
         return new RpcResult(responseCode, "", StringUtils.escape(error));
+      } else {
+        // We get here if all went well and we sent the job to the
+        // buildserver. Below we read the response, but throw it away.
+        // We don't really care what was said. But we need to empty out
+        // the TCP Stream or App Engine will abort the connection by
+        // sending a RST packet instead of re-using it or closing it
+        // cleanly (by sending a FIN packet). Aborting connections can
+        // have a negative effect on some buildserver infrastructures,
+        // particularly those based on docker swarm (as of 2018).
+        readContent(connection.getInputStream());
       }
     } catch (MalformedURLException e) {
       CrashReport.createAndLogError(LOG, null,
@@ -766,20 +800,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
   private String getBuildServerUrlStr(String userName, String userId,
-                                      long projectId, String fileName)
+    long projectId, boolean secondBuildserver, String fileName)
       throws UnsupportedEncodingException, EncryptionException {
-    return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
-           + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + (sendGitVersion.get()
-               ? "&gitBuildVersion="
-                 + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
-               : "")
-           + "&callback="
-           + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
-                               + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
-                               + Security.encryptUserAndProjectId(userId, projectId)
-                               + "/" + fileName,
-                               "UTF-8");
+    return "http://" + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
+      "/buildserver/build-all-from-zip-async"
+      + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+      + (sendGitVersion.get()
+        ? "&gitBuildVersion="
+        + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
+        : "")
+      + "&callback="
+      + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
+        + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
+        + Security.encryptUserAndProjectId(userId, projectId)
+        + "/" + fileName,
+        "UTF-8");
   }
 
   private String getCurrentHost() {

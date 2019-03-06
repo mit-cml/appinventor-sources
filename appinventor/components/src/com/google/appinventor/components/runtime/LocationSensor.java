@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -121,14 +121,14 @@ public class LocationSensor extends AndroidNonvisibleComponent
       StatusChanged(provider, "Disabled");
       stopListening();
       if (enabled) {
-        RefreshProvider();
+        RefreshProvider("onProviderDisabled");
       }
     }
 
     @Override
     public void onProviderEnabled(String provider) {
       StatusChanged(provider, "Enabled");
-      RefreshProvider();
+      RefreshProvider("onProviderEnabled");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
           if (provider.equals(providerName)) {
             stopListening();
-            RefreshProvider();
+            RefreshProvider("onStatusChanged");
           }
           break;
         case LocationProvider.AVAILABLE:
@@ -154,7 +154,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
           StatusChanged(provider, "AVAILABLE");
           if (!provider.equals(providerName) &&
               !allProviders.contains(provider)) {
-            RefreshProvider();
+            RefreshProvider("onStatusChanged");
           }
           break;
       }
@@ -179,6 +179,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   private boolean providerLocked = false; // if true we can't change providerName
   private String providerName;
   // Invariant: providerLocked => providerName is non-empty
+
+  private boolean initialized = false;
 
   private int timeInterval;
   private int distanceInterval;
@@ -253,6 +255,12 @@ public class LocationSensor extends AndroidNonvisibleComponent
     Enabled(enabled);
   }
 
+  @SuppressWarnings({"unused"})  // Called from Scheme
+  public void Initialize() {
+    initialized = true;
+    Enabled(enabled);
+  }
+
   // Events
 
   /**
@@ -301,7 +309,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
     if (!empty(providerName) && startProvider(providerName)) {
       return;
     } else {
-      RefreshProvider();
+      RefreshProvider("ProviderName");
     }
   }
 
@@ -334,7 +342,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
       // restart listening for location updates, using the new time interval
       if (enabled) {
-          RefreshProvider();
+          RefreshProvider("TimeInterval");
       }
 
       for (LocationSensorListener listener : listeners) {
@@ -367,7 +375,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
       // restart listening for location updates, using the new distance interval
       if (enabled) {
-          RefreshProvider();
+          RefreshProvider("DistanceInterval");
       }
 
       for (LocationSensorListener listener : listeners) {
@@ -471,10 +479,13 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleProperty
   public void Enabled(boolean enabled) {
     this.enabled = enabled;
+    if (!initialized) {
+      return;
+    }
     if (!enabled) {
       stopListening();
     } else {
-      RefreshProvider();
+      RefreshProvider("Enabled");
     }
   }
 
@@ -579,7 +590,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
    */
 
   // @SimpleFunction(description = "Find and start listening to a location provider.")
-  public void RefreshProvider() {
+  public void RefreshProvider(final String caller) {
+    if (!initialized) return;    // Not yet ready to start...
     stopListening();             // In case another provider is active.
     final LocationSensor me = this;
     if (!havePermission) {
@@ -593,11 +605,12 @@ public class LocationSensor extends AndroidNonvisibleComponent
                 public void HandlePermissionResponse(String permission, boolean granted) {
                   if (granted) {
                     me.havePermission = true;
-                    me.RefreshProvider();
+                    me.RefreshProvider(caller);
                     Log.d(LOG_TAG, "Permission Granted");
                   } else {
-                    me.form.dispatchErrorOccurredEvent(me, "LocationSensor",
-                      ErrorMessages.ERROR_LOCATION_NO_PERMISSION);
+                    me.havePermission = false;
+                    me.enabled = false;
+                    me.form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.ACCESS_FINE_LOCATION);
                   }
                 }
               });
@@ -664,7 +677,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @Override
   public void onResume() {
     if (enabled) {
-      RefreshProvider();
+      RefreshProvider("onResume");
     }
   }
 

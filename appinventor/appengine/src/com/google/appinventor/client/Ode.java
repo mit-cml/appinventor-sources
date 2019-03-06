@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -295,6 +295,19 @@ public class Ode implements EntryPoint {
   private boolean didShowSplash = false;
 
   private SplashConfig splashConfig; // Splash Screen Configuration
+
+  private boolean secondBuildserver = false; // True if we have a second
+                                             // buildserver.
+
+  // The flags below are used by the Build menus. Because we have two
+  // different buildservers, we have two sets of build menu items, one
+  // for each buildserver.  The first time one is selected, we put up
+  // a warning/notice dialog box explaining its purpose. We don't show
+  // it again during the same session, and keeping track of that is
+  // the purpose of these two flags.
+
+  private boolean warnedBuild1 = false;
+  private boolean warnedBuild2 = false;
 
   /**
    * Returns global instance of Ode.
@@ -726,6 +739,9 @@ public class Ode implements EntryPoint {
       galleryIdLoadingFlag = true;
     }
 
+    // We call this below to initialize the ConnectProgressBar
+    ConnectProgressBar.getInstance();
+
     // Get user information.
     OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
         // failure message
@@ -779,6 +795,15 @@ public class Ode implements EntryPoint {
         }
 
         splashConfig = result.getSplashConfig();
+        secondBuildserver = result.getSecondBuildserver();
+        // The code below is invoked if we do not have a second buildserver
+        // configured. It sets the warnedBuild1 flag to true which inhibits
+        // the display of the dialog box used when building. This means that
+        // if no second buildserver is configured, there is no dialog box
+        // displayed when the build menu items are invoked.
+        if (!secondBuildserver) {
+          warnedBuild1 = true;
+        }
 
         if (result.getRendezvousServer() != null) {
           setRendezvousServer(result.getRendezvousServer());
@@ -2431,6 +2456,22 @@ public class Ode implements EntryPoint {
           OdeLog.log("Fetching backpack failed");
         }
       });
+  }
+
+  public boolean hasSecondBuildserver() {
+    return secondBuildserver;
+  }
+
+  public boolean getWarnBuild(boolean secondBuildserver) {
+    return secondBuildserver ? warnedBuild2 : warnedBuild1;
+  }
+
+  public void setWarnBuild(boolean secondBuildserver, boolean value) {
+    if (secondBuildserver) {
+      warnedBuild2 = value;
+    } else {
+      warnedBuild1 = value;
+    }
   }
 
   // Native code to set the top level rendezvousServer variable

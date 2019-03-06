@@ -1,13 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import com.android.ide.common.internal.AaptCruncher;
+import com.android.ide.common.internal.PngCruncher;
+import com.android.sdklib.build.ApkBuilder;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
+import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -15,42 +20,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
-import com.android.ide.common.internal.AaptCruncher;
-import com.android.ide.common.internal.PngCruncher;
-import com.android.sdklib.build.ApkBuilder;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
 
 /**
  * Main entry point for the YAIL compiler.
@@ -78,41 +60,17 @@ public final class Compiler {
 
   private static final String SLASH = File.separator;
   private static final String COLON = File.pathSeparator;
+  private static final String ZIPSLASH = "/";
 
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
-  // Build info constants. Used for permissions, libraries, assets and activities.
-  // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
-  private static final String ARMEABI_V7A_SUFFIX = "-v7a";
-  // Must match Component.ASSET_DIRECTORY
-  private static final String ASSET_DIRECTORY = "component";
-  // Must match ComponentListGenerator.ASSETS_TARGET
-  private static final String ASSETS_TARGET = "assets";
-  // Must match ComponentListGenerator.ACTIVITIES_TARGET
-  private static final String ACTIVITIES_TARGET = "activities";
-  // Must match ComponentListGenerator.LIBRARIES_TARGET
-  public static final String LIBRARIES_TARGET = "libraries";
-  // Must match ComponentListGenerator.NATIVE_TARGET
-  public static final String NATIVE_TARGET = "native";
-  // Must match ComponentListGenerator.PERMISSIONS_TARGET
-  private static final String PERMISSIONS_TARGET = "permissions";
-  // Must match ComponentListGenerator.BROADCAST_RECEIVERS_TARGET
-  private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
-  // Must match ComponentListGenerator.ANDROIDMINSDK_TARGET
-  private static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
-  
-  // TODO(Will): Remove the following target once the deprecated
-  //             @SimpleBroadcastReceiver annotation is removed. It should
-  //             should remain for the time being because otherwise we'll break
-  //             extensions currently using @SimpleBroadcastReceiver.
-  //
-  // Must match ComponentListGenerator.BROADCAST_RECEIVER_TARGET
-  private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
 
   // Native library directory names
   private static final String LIBS_DIR_NAME = "libs";
   private static final String ARMEABI_DIR_NAME = "armeabi";
   private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
+  private static final String ARM64_V8A_DIR_NAME = "arm64-v8a";
+  private static final String X86_64_DIR_NAME = "x86_64";
 
   private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
@@ -149,8 +107,8 @@ public final class Compiler {
   };
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
-  private static final String DX_JAR =
-      RUNTIME_FILES_DIR + "dx.jar";
+  private static final String D8_JAR =
+          RUNTIME_FILES_DIR + "d8.jar";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
@@ -187,7 +145,22 @@ public final class Compiler {
   private final ConcurrentMap<String, Set<String>> minSdksNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
-  
+  private final ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals =
+      new ConcurrentHashMap<>();
+  /**
+   * Maps component type names to a set of blocks used in the project from the
+   * named component. For example, Hello Purr might produce:
+   *
+   * <code>
+   *   {
+   *     "Button": {"Click", "Image", "Text"},
+   *     "Screen": {"Title"},
+   *     "Sound": {"Play", "Source", "Vibrate"}
+   *   }
+   * </code>
+   */
+  private final Map<String, Set<String>> compBlocks;
+
   /**
    * Set of exploded AAR libraries.
    */
@@ -266,7 +239,7 @@ public final class Compiler {
   @VisibleForTesting
   void generatePermissions() {
     try {
-      loadJsonInfo(permissionsNeeded, PERMISSIONS_TARGET);
+      loadJsonInfo(permissionsNeeded, ComponentDescriptorConstants.PERMISSIONS_TARGET);
       if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
         LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
         if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
@@ -288,6 +261,8 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "Permissions"));
     }
 
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET), permissionsNeeded);
+
     int n = 0;
     for (String type : permissionsNeeded.keySet()) {
       n += permissionsNeeded.get(type).size();
@@ -296,18 +271,80 @@ public final class Compiler {
     System.out.println("Permissions needed, n = " + n);
   }
 
+  /**
+   * Merge the given {@code values} into the set at {@code key} in {@code map}.
+   * If {@code key} is not set, then its value is treated as the empty set and
+   * the key is set to a copy of {@code values}. {@code values} can be unmodifiable.
+   * @param map A mapping of strings to sets of strings, representing component
+   *            types to, e.g., permissions
+   * @param key The key to evaluate, e.g., "Texting"
+   * @param values The values associated with the key that need to be merged, e.g.,
+   *               {"android.permission.SEND_SMS"}
+   */
+  private void setOrMerge(Map<String, Set<String>> map, String key, Set<String> values) {
+    if (map.containsKey(key)) {
+      map.get(key).addAll(values);
+    } else {
+      map.put(key, new HashSet<>(values));
+    }
+  }
+
+  /**
+   * Merge the conditionals from the given conditional map into the existing
+   * map of required infos.
+   * @param conditionalMap A map of component type names to maps of blocks to
+   *                       sets of values (e.g., permission names)
+   * @param infoMap A map of component type names to sets of values (e.g.,
+   *                permission names)
+   */
+  private void mergeConditionals(Map<String, Map<String, Set<String>>> conditionalMap,
+                                 Map<String, Set<String>> infoMap) {
+    if (conditionalMap != null) {
+      if (isForCompanion) {
+        // For the companion, we take all of the conditionals
+        for (Map.Entry<String, Map<String, Set<String>>> entry : conditionalMap.entrySet()) {
+          for (Set<String> items : entry.getValue().values()) {
+            setOrMerge(infoMap, entry.getKey(), items);
+          }
+        }
+        // If necessary, we can remove permissions at this point (e.g., Texting, PhoneCall)
+      } else {
+        // We walk the set of components and the blocks used in the project. If
+        // any <component, block> combination is in the set of conditionals,
+        // then we merge the associated set of values into the existing set. If
+        // no existing set exists, we create one.
+        for (Map.Entry<String, Set<String>> entry : compBlocks.entrySet()) {
+          if (conditionalMap.containsKey(entry.getKey())) {
+            Map<String, Set<String>> blockPermsMap = conditionalMap.get(entry.getKey());
+            for (String blockName : entry.getValue()) {
+              Set<String> blockPerms = blockPermsMap.get(blockName);
+              if (blockPerms != null) {
+                Set<String> typePerms = infoMap.get(entry.getKey());
+                if (typePerms != null) {
+                  typePerms.addAll(blockPerms);
+                } else {
+                  infoMap.put(entry.getKey(), new HashSet<>(blockPerms));
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   // Just used for testing
   @VisibleForTesting
   Map<String,Set<String>> getPermissions() {
     return permissionsNeeded;
   }
-  
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getBroadcastReceivers() {
     return broadcastReceiversNeeded;
   }
-  
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getActivities() {
@@ -320,7 +357,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateLibNames() {
     try {
-      loadJsonInfo(libsNeeded, LIBRARIES_TARGET);
+      loadJsonInfo(libsNeeded, ComponentDescriptorConstants.LIBRARIES_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -345,7 +382,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateNativeLibNames() {
     try {
-      loadJsonInfo(nativeLibsNeeded, NATIVE_TARGET);
+      loadJsonInfo(nativeLibsNeeded, ComponentDescriptorConstants.NATIVE_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -370,7 +407,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateAssets() {
     try {
-      loadJsonInfo(assetsNeeded, ASSETS_TARGET);
+      loadJsonInfo(assetsNeeded, ComponentDescriptorConstants.ASSETS_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -395,7 +432,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateActivities() {
     try {
-      loadJsonInfo(activitiesNeeded, ACTIVITIES_TARGET);
+      loadJsonInfo(activitiesNeeded, ComponentDescriptorConstants.ACTIVITIES_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -420,7 +457,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateBroadcastReceivers() {
     try {
-      loadJsonInfo(broadcastReceiversNeeded, BROADCAST_RECEIVERS_TARGET);
+      loadJsonInfo(broadcastReceiversNeeded, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET);
     }
     catch (IOException e) {
       // This is fatal.
@@ -431,8 +468,10 @@ public final class Compiler {
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceivers"));
     }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
   }
-  
+
   /*
    * TODO(Will): Remove this method once the deprecated @SimpleBroadcastReceiver
    *             annotation is removed. This should remain for the time being so
@@ -442,7 +481,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateBroadcastReceiver() {
     try {
-      loadJsonInfo(componentBroadcastReceiver, BROADCAST_RECEIVER_TARGET);
+      loadJsonInfo(componentBroadcastReceiver, ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET);
     }
     catch (IOException e) {
       // This is fatal.
@@ -457,7 +496,7 @@ public final class Compiler {
 
   private void generateMinSdks() {
     try {
-      loadJsonInfo(minSdksNeeded, ANDROIDMINSDK_TARGET);
+      loadJsonInfo(minSdksNeeded, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET);
     } catch (IOException|JSONException e) {
       // This is fatal.
       e.printStackTrace();
@@ -718,6 +757,14 @@ public final class Compiler {
         permissions.addAll(compPermissions);
       }
 
+      // Remove Google's Forbidden Permissions
+      // This code is crude because we had to do this on short notice
+      if (isForCompanion && AppInventorFeatures.limitPermissions()) {
+        permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
+      }
+
       for (String permission : permissions) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
@@ -823,13 +870,13 @@ public final class Compiler {
           out.write("    </activity>\n");
         }
       }
-      
+
       // Collect any additional <application> subelements into a single set.
       Set<Map.Entry<String, Set<String>>> subelements = Sets.newHashSet();
       subelements.addAll(activitiesNeeded.entrySet());
       subelements.addAll(broadcastReceiversNeeded.entrySet());
-      
-      
+
+
       // If any component needs to register additional activities or
       // broadcast receivers, insert them into the manifest here.
       if (!subelements.isEmpty()) {
@@ -840,18 +887,18 @@ public final class Compiler {
           }
         }
       }
-  
+
       // TODO(Will): Remove the following legacy code once the deprecated
       //             @SimpleBroadcastReceiver annotation is removed. It should
       //             should remain for the time being because otherwise we'll break
       //             extensions currently using @SimpleBroadcastReceiver.
-      
+
       // Collect any legacy simple broadcast receivers
       Set<String> simpleBroadcastReceivers = Sets.newHashSet();
       for (String componentType : componentBroadcastReceiver.keySet()) {
         simpleBroadcastReceivers.addAll(componentBroadcastReceiver.get(componentType));
       }
-      
+
       // The format for each legacy Broadcast Receiver in simpleBroadcastReceivers is
       // "className,Action1,Action2,..." where the class name is mandatory, and
       // actions are optional (and as many as needed).
@@ -900,6 +947,7 @@ public final class Compiler {
    *
    * @param project  project to build
    * @param compTypes component types used in the project
+   * @param compBlocks component type mapped to blocks used in project
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
@@ -909,7 +957,7 @@ public final class Compiler {
    * @throws JSONException
    * @throws IOException
    */
-  public static boolean compile(Project project, Set<String> compTypes,
+  public static boolean compile(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForCompanion, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir,
@@ -917,7 +965,7 @@ public final class Compiler {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, out, err, userErrors, isForCompanion,
+    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors, isForCompanion,
                                      childProcessRam, dexCacheDir, reporter);
 
     compiler.generateAssets();
@@ -927,7 +975,7 @@ public final class Compiler {
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
     compiler.generateMinSdks();
-  
+
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
@@ -1048,7 +1096,7 @@ public final class Compiler {
     // Android SDK's Dex Ant task
     File tmpDir = createDir(buildDir, "tmp");
     String dexedClassesDir = tmpDir.getAbsolutePath();
-    if (!compiler.runDx(classesDir, dexedClassesDir, false)) {
+    if (!compiler.runD8(classesDir, dexedClassesDir)) {
       return false;
     }
     if (reporter != null) {
@@ -1149,6 +1197,9 @@ public final class Compiler {
         apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
           "classes2.dex");
       }
+      if (nativeLibsNeeded.size() != 0) { // Need to add native libraries...
+        apkBuilder.addNativeLibraries(libsDir);
+      }
       apkBuilder.sealApk();
       return true;
     } catch (Exception e) {
@@ -1166,16 +1217,18 @@ public final class Compiler {
    *
    * @param project  project to build
    * @param compTypes component types used in the project
+   * @param compBlocks component types mapped to blocks used in project
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
    * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
-  Compiler(Project project, Set<String> compTypes, PrintStream out, PrintStream err,
+  Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
            PrintStream userErrors, boolean isForCompanion,
            int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
     this.project = project;
+    this.compBlocks = compBlocks;
 
     prepareCompTypes(compTypes);
     readBuildInfo();
@@ -1491,112 +1544,56 @@ public final class Compiler {
     return true;
   }
 
-  private boolean runDx(File classesDir, String dexedClassesDir, boolean secondTry) {
-    List<File> libList = new ArrayList<File>();
-    List<File> inputList = new ArrayList<File>();
-    List<File> class2List = new ArrayList<File>();
-    inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
-    inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
-    inputList.add(new File(getResource(KAWA_RUNTIME)));
-    inputList.add(new File(getResource(ACRA_RUNTIME)));
+  private boolean runD8(File classesDir, String dexedClassesDir) {
+    int mx = childProcessRamMb - 200;
 
-    for (String jar : SUPPORT_JARS) {
-      inputList.add(new File(getResource(jar)));
+    List<String> classes = getFilesWithExtensionRecursively(classesDir, ".class");
+
+    Set<String> jars = new LinkedHashSet<>();
+    jars.addAll(classes);
+    jars.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    jars.add(getResource(KAWA_RUNTIME));
+    jars.add(getResource(ACRA_RUNTIME));
+
+    for (String SUPPORT_JAR : SUPPORT_JARS) {
+      jars.add(getResource(SUPPORT_JAR));
     }
 
-    for (String lib : uniqueLibsNeeded) {
-      libList.add(new File(lib));
-    }
+    jars.addAll(uniqueLibsNeeded);
 
-    // BEGIN DEBUG -- XXX --
-    // System.err.println("runDx -- libraries");
-    // for (File aFile : inputList) {
-    //   System.err.println(" inputList => " + aFile.getAbsolutePath());
-    // }
-    // for (File aFile : libList) {
-    //   System.err.println(" libList => " + aFile.getAbsolutePath());
-    // }
-    // END DEBUG -- XXX --
-
-    // attach the jars of external comps to the libraries list
-    Set<String> addedExtJars = new HashSet<String>();
     for (String type : extCompTypes) {
       String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
-      if (!addedExtJars.contains(sourcePath)) {
-        libList.add(new File(sourcePath));
-        addedExtJars.add(sourcePath);
-      }
+      jars.add(sourcePath);
     }
 
-    int offset = libList.size();
-    // Note: The choice of 12 libraries is arbitrary. We note that things
-    // worked to put all libraries into the first classes.dex file when we
-    // had 16 libraries and broke at 17. So this is a conservative number
-    // to try.
-    if (!secondTry) {           // First time through, try base + 12 libraries
-      if (offset > 12)
-        offset = 12;
-    } else {
-      offset = 0;               // Add NO libraries the second time through!
-    }
-    for (int i = 0; i < offset; i++) {
-      inputList.add(libList.get(i));
-    }
+    // d8 --release --no-desugaring --lib ANDROID_RUNTIME --output dexedClassesDir ...jars
+    List<String> commandLineList = new ArrayList<>();
+    commandLineList.add(System.getProperty("java.home") + "/bin/java");
+    commandLineList.add("-mx" + mx + "M");
+    commandLineList.add("-jar");
+    commandLineList.add(getResource(D8_JAR));
+    commandLineList.add("--release");
+    commandLineList.add("--no-desugaring");
+    commandLineList.add("--lib");
+    commandLineList.add(getResource(ANDROID_RUNTIME));
+    commandLineList.add("--output");
+    commandLineList.add(dexedClassesDir);
 
-    if (libList.size() - offset > 0) { // Any left over for classes2?
-      for (int i = offset; i < libList.size(); i++) {
-        class2List.add(libList.get(i));
-      }
-    }
+    commandLineList.addAll(jars);
 
-    DexExecTask dexTask = new DexExecTask();
-    dexTask.setExecutable(getResource(DX_JAR));
-    dexTask.setOutput(dexedClassesDir + File.separator + "classes.dex");
-    dexTask.setChildProcessRamMb(childProcessRamMb);
-    if (dexCacheDir == null) {
-      dexTask.setDisableDexMerger(true);
-    } else {
-      createDir(new File(dexCacheDir));
-      dexTask.setDexedLibs(dexCacheDir);
-    }
+    String[] d8CommandLine = commandLineList.toArray(new String[0]);
 
-    long startDx = System.currentTimeMillis();
-    // Using System.err and System.out on purpose. Don't want to pollute build messages with
-    // tools output
-    boolean dxSuccess;
-    synchronized (SYNC_KAWA_OR_DX) {
-      setProgress(50);
-      dxSuccess = dexTask.execute(inputList);
-      if (dxSuccess && (class2List.size() > 0)) {
-        setProgress(60);
-        dexTask.setOutput(dexedClassesDir + File.separator + "classes2.dex");
-        inputList = new ArrayList<File>();
-        dxSuccess = dexTask.execute(class2List);
-        setProgress(75);
-        hasSecondDex = true;
-      } else if (!dxSuccess) {  // The initial dx blew out, try more conservative
-        LOG.info("DX execution failed, trying with fewer libraries.");
-        if (secondTry) {        // Already tried the more conservative approach!
-          LOG.warning("YAIL compiler - DX execution failed (secondTry!).");
-          err.println("YAIL compiler - DX execution failed.");
-          userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
-          return false;
-        } else {
-          return runDx(classesDir, dexedClassesDir, true);
-        }
-      }
-    }
-    if (!dxSuccess) {
-      LOG.warning("YAIL compiler - DX execution failed.");
-      err.println("YAIL compiler - DX execution failed.");
-      userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
+    long startD8 = System.currentTimeMillis();
+    if (!Execution.execute(null, d8CommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - D8 execution failed.");
+      err.println("YAIL compiler - D8 execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "D8"));
       return false;
     }
-    String dxTimeMessage = "DX time: " +
-        ((System.currentTimeMillis() - startDx) / 1000.0) + " seconds";
-    out.println(dxTimeMessage);
-    LOG.info(dxTimeMessage);
-
+    String d8TimeMessage = "D8 time: " +
+            ((System.currentTimeMillis() - startD8) / 1000.0) + " seconds";
+    out.println(d8TimeMessage);
+    LOG.info(d8TimeMessage);
     return true;
   }
 
@@ -1652,7 +1649,6 @@ public final class Compiler {
       appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
-    aaptPackageCommandLineArgs.add(libsDir.getAbsolutePath());
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
     libSetup();                 // Setup /tmp/lib64 on Linux
     long startAapt = System.currentTimeMillis();
@@ -1681,18 +1677,37 @@ public final class Compiler {
     libsDir = createDir(buildDir, LIBS_DIR_NAME);
     File armeabiDir = createDir(libsDir, ARMEABI_DIR_NAME);
     File armeabiV7aDir = createDir(libsDir, ARMEABI_V7A_DIR_NAME);
+    File arm64V8aDir = createDir(libsDir, ARM64_V8A_DIR_NAME);
+    File x8664Dir = createDir(libsDir, X86_64_DIR_NAME);
 
     try {
       for (String type : nativeLibsNeeded.keySet()) {
         for (String lib : nativeLibsNeeded.get(type)) {
-          boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
+          boolean isV7a = lib.endsWith(ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX);
+          boolean isV8a = lib.endsWith(ComponentDescriptorConstants.ARM64_V8A_SUFFIX);
+          boolean isx8664 = lib.endsWith(ComponentDescriptorConstants.X86_64_SUFFIX);
 
-          String sourceDirName = isV7a ? ARMEABI_V7A_DIR_NAME : ARMEABI_DIR_NAME;
-          File targetDir = isV7a ? armeabiV7aDir : armeabiDir;
-          lib = isV7a ? lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length()) : lib;
+          String sourceDirName;
+          File targetDir;
+          if (isV7a) {
+            sourceDirName = ARMEABI_V7A_DIR_NAME;
+            targetDir = armeabiV7aDir;
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX.length());
+          } else if (isV8a) {
+            sourceDirName = ARM64_V8A_DIR_NAME;
+            targetDir = arm64V8aDir;
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.ARM64_V8A_SUFFIX.length());
+          } else if (isx8664) {
+            sourceDirName = X86_64_DIR_NAME;
+            targetDir = x8664Dir;
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.X86_64_SUFFIX.length());
+          } else {
+            sourceDirName = ARMEABI_DIR_NAME;
+            targetDir = armeabiDir;
+          }
 
           String sourcePath = "";
-          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + SLASH + lib;
+          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
 
           if (simpleCompTypes.contains(type)) {
             sourcePath = getResource(pathSuffix);
@@ -1929,7 +1944,7 @@ public final class Compiler {
           if (e.getMessage().contains("broadcastReceiver")) {
             LOG.log(Level.INFO, "Component \"" + type + "\" does not have a broadcast receiver.");
             continue;
-          } else if (e.getMessage().contains(ANDROIDMINSDK_TARGET)) {
+          } else if (e.getMessage().contains(ComponentDescriptorConstants.ANDROIDMINSDK_TARGET)) {
             LOG.log(Level.INFO, "Component \"" + type + "\" does not specify a minimum SDK.");
             continue;
           } else {
@@ -1951,6 +1966,44 @@ public final class Compiler {
 
         if (!infoSet.isEmpty()) {
           infoMap.put(type, infoSet);
+        }
+
+        processConditionalInfo(compJson, type, targetInfo);
+      }
+    }
+  }
+
+  /**
+   * Processes the conditional info from simple_components_build_info.json into
+   * a structure mapping annotation types to component names to block names to
+   * values.
+   *
+   * @param compJson Parsed component data from JSON
+   * @param type The name of the type being processed
+   * @param targetInfo Name of the annotation target being processed (e.g.,
+   *                   permissions). Any of: PERMISSIONS_TARGET,
+   *                   BROADCAST_RECEIVERS_TARGET
+   */
+  private void processConditionalInfo(JSONObject compJson, String type, String targetInfo) {
+    // Strip off the package name since SCM and BKY use unqualified names
+    type = type.substring(type.lastIndexOf('.') + 1);
+
+    JSONObject conditionals = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
+    if (conditionals != null) {
+      JSONObject jsonBlockMap = conditionals.optJSONObject(targetInfo);
+      if (jsonBlockMap != null) {
+        if (!this.conditionals.containsKey(targetInfo)) {
+          this.conditionals.put(targetInfo, new HashMap<String, Map<String, Set<String>>>());
+        }
+        Map<String, Set<String>> blockMap = new HashMap<>();
+        this.conditionals.get(targetInfo).put(type, blockMap);
+        for (String key : (List<String>) Lists.newArrayList(jsonBlockMap.keys())) {
+          JSONArray data = jsonBlockMap.optJSONArray(key);
+          HashSet<String> result = new HashSet<>();
+          for (int i = 0; i < data.length(); i++) {
+            result.add(data.optString(i));
+          }
+          blockMap.put(key, result);
         }
       }
     }
@@ -2008,6 +2061,22 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static List<String> getFilesWithExtensionRecursively(File path, String extension) {
+    List<String> tmp = new ArrayList<>();
+
+    File[] files = path.listFiles();
+    if (files == null) return Collections.emptyList();
+
+    for (File file : files) {
+      if (file.isFile() && file.getName().endsWith(extension)) {
+        tmp.add(file.getAbsolutePath());
+      } else if (file.isDirectory()) {
+        tmp.addAll(getFilesWithExtensionRecursively(file));
+      }
+    }
+    return tmp;
   }
 
   private void setProgress(int increments) {

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -170,19 +170,23 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
       } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_KITKAT) {
         // On KitKat or higher, use the convience getMessageFromIntent method.
+        StringBuilder sb = new StringBuilder();
         List<SmsMessage> messages = KitkatUtil.getMessagesFromIntent(intent);
         for (SmsMessage smsMsg : messages) {
           if (smsMsg != null) {
-            msg = smsMsg.getMessageBody();
+            sb.append(smsMsg.getMessageBody());
           }
         }
+        msg = sb.toString();
       } else {
         // On SDK older than KitKat, we have to manually process the PDUs.
+        StringBuilder sb = new StringBuilder();
         Object[] pdus = (Object[]) intent.getExtras().get("pdus");
         for (Object pdu : pdus) {
           SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
-          msg = smsMsg.getMessageBody();
+          sb.append(smsMsg.getMessageBody());
         }
+        msg = sb.toString();
       }
     } catch(NullPointerException e) {
       // getMessageBody() can throw a NPE if its wrapped message is null, but there isn't an

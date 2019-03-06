@@ -1,13 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,11 +23,13 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.Manifest;
+import android.net.Uri;
 import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -117,7 +118,6 @@ import android.widget.Toast;
 
 @SimpleObject
 @UsesPermissions(permissionNames =
-  "android.permission.RECEIVE_SMS, android.permission.SEND_SMS, " +
   "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
   "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
@@ -130,19 +130,16 @@ import android.widget.Toast;
   "google-http-client-android3-beta.jar," +
   "google-oauth-client-beta.jar," +
   "guava-14.0.1.jar")
-@UsesBroadcastReceivers(receivers = {
-    @ReceiverElement(name = "com.google.appinventor.components.runtime.util.SmsBroadcastReceiver",
-                     intentFilters = {
-                         @IntentFilterElement(actionElements = {
-                             @ActionElement(name = "android.provider.Telephony.SMS_RECEIVED"),
-                             @ActionElement(name = "com.google.android.apps.googlevoice.SMS_RECEIVED")
-                         })
-    })
-})
 public class Texting extends AndroidNonvisibleComponent
-  implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
+  implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener,
+    Deleteable, ActivityResultListener {
 
   public static final String TAG = "Texting Component";
+
+  /**
+   * Magic number "TEXT" used to report when a text message has been sent.
+   */
+  public static final int TEXTING_REQUEST_CODE = 0x54455854;
 
   public static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
   public static final String GV_SMS_RECEIVED = "com.google.android.apps.googlevoice.SMS_RECEIVED";
@@ -239,7 +236,7 @@ public class Texting extends AndroidNonvisibleComponent
       googleVoiceEnabled = prefs.getBoolean(PREF_GVENABLED, false);
       Log.i(TAG, "Starting with receiving Enabled=" + receivingEnabled + " GV enabled=" + googleVoiceEnabled);
     } else {
-      receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
+      receivingEnabled = ComponentConstants.TEXT_RECEIVING_OFF;
       googleVoiceEnabled = false;
     }
 
@@ -279,7 +276,7 @@ public class Texting extends AndroidNonvisibleComponent
   public void Initialize() {
     if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
       // Request receive SMS permission if we are configured to receive but do not have permission
-      requestReceiveSmsPermission();
+      requestReceiveSmsPermission("Initialize");
     }
   }
 
@@ -337,6 +334,24 @@ public class Texting extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void SendMessage() {
+    String phoneNumber = this.phoneNumber;
+    String message = this.message;
+
+    Uri uri = Uri.parse("smsto:" + phoneNumber);
+    Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+    i.putExtra("sms_body", message);
+    if (i.resolveActivity(form.getPackageManager()) != null) {
+      form.registerForActivityResult(this, TEXTING_REQUEST_CODE);
+      form.startActivityForResult(i, TEXTING_REQUEST_CODE);
+    }
+  }
+
+  /**
+   * Send a text message directly
+   */
+  @UsesPermissions({Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE})
+  @SimpleFunction
+  public void SendMessageDirect() {
     Log.i(TAG, "Sending message "  + message + " to " + phoneNumber);
 
     // To avoid possible timing issues, save phoneNumber and message locally
@@ -372,7 +387,7 @@ public class Texting extends AndroidNonvisibleComponent
       // We're sending via built-in Sms
     } else {
       Log.i(TAG, "Sending via SMS");
-      this.sendViaSms();
+      this.sendViaSms("SendMessage");
     }
   }
 
@@ -437,6 +452,14 @@ public class Texting extends AndroidNonvisibleComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty()
+  @UsesBroadcastReceivers(receivers = {
+      @ReceiverElement(name = "com.google.appinventor.components.runtime.util.SmsBroadcastReceiver",
+          intentFilters = {
+              @IntentFilterElement(actionElements = {
+                  @ActionElement(name = "com.google.android.apps.googlevoice.SMS_RECEIVED")
+              })
+          })
+  })
   public void GoogleVoiceEnabled(boolean enabled) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
       this.googleVoiceEnabled = enabled;
@@ -480,8 +503,19 @@ public class Texting extends AndroidNonvisibleComponent
    * @param enabled  0 = never receive, 1 = receive foreground only, 2 = receive always
    *
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_RECEIVING, defaultValue = "2") // Default is FOREGROUND
+  @UsesPermissions(Manifest.permission.RECEIVE_SMS)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_RECEIVING,
+      alwaysSend = true,
+      defaultValue = "1") // Default is OFF (was FOREGROUND prior to Jan 2019)
   @SimpleProperty()
+  @UsesBroadcastReceivers(receivers = {
+      @ReceiverElement(name = "com.google.appinventor.components.runtime.util.SmsBroadcastReceiver",
+          intentFilters = {
+              @IntentFilterElement(actionElements = {
+                  @ActionElement(name = "android.provider.Telephony.SMS_RECEIVED"),
+              })
+          })
+  })
   public void ReceivingEnabled(int enabled) {
     if ((enabled < ComponentConstants.TEXT_RECEIVING_OFF) ||
         (enabled > ComponentConstants.TEXT_RECEIVING_ALWAYS)) {
@@ -497,7 +531,7 @@ public class Texting extends AndroidNonvisibleComponent
     editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
     editor.commit();
     if (enabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
-      requestReceiveSmsPermission();
+      requestReceiveSmsPermission("ReceivingEnabled");
     }
   }
 
@@ -576,16 +610,8 @@ public class Texting extends AndroidNonvisibleComponent
     Log.i(TAG, "Retrieving cached messages");
     String cache = "";
     try {
-      FileInputStream fis = activity.openFileInput(CACHE_FILE);
-      byte[] bytes = new byte[8192];
-      if (fis == null) {
-        Log.e(TAG, "Null file stream returned from openFileInput");
-        return null;
-      }
-      int n = fis.read(bytes);
-      Log.i(TAG, "Read " + n + " bytes from " + CACHE_FILE);
-      cache = new String(bytes, 0, n);
-      fis.close();
+      byte[] bytes = FileUtil.readFile(CACHE_FILE);
+      cache = new String(bytes);
       activity.deleteFile(CACHE_FILE);
       messagesCached = 0;
       Log.i(TAG, "Retrieved cache " + cache);
@@ -676,6 +702,15 @@ public class Texting extends AndroidNonvisibleComponent
     } catch (IOException e) {
       Log.e(TAG, "I/O Error writing to cache file");
       e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void resultReturned(int requestCode, int resultCode, Intent data) {
+    if (requestCode == TEXTING_REQUEST_CODE) {
+      handleSentMessage(form, null, resultCode, data == null ? "" :
+          data.getStringExtra("sms_body"));
+      form.unregisterForActivityResult(this);
     }
   }
 
@@ -956,7 +991,7 @@ public class Texting extends AndroidNonvisibleComponent
    * Sends a text message via SMS. No authentication required.
    * This method is called only when the UseGoogleVoice option is disabled.
    */
-  private void sendViaSms() {
+  private void sendViaSms(final String caller) {
     Log.i(TAG, "Sending via built-in Sms");
 
     // Need to make sure we have the SEND_SMS permission
@@ -972,10 +1007,9 @@ public class Texting extends AndroidNonvisibleComponent
                 public void HandlePermissionResponse(String permission, boolean granted) {
                   if (granted) {
                     me.havePermission = true;
-                    me.sendViaSms();
+                    me.sendViaSms(caller);
                   } else {
-                    form.dispatchErrorOccurredEvent(me, "Texting",
-                      ErrorMessages.ERROR_NO_SMS_PERMISSION, "");
+                    form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.SEND_SMS);
                   }
                 }
               });
@@ -1010,7 +1044,7 @@ public class Texting extends AndroidNonvisibleComponent
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 
-  private void requestReceiveSmsPermission() {
+  private void requestReceiveSmsPermission(final String caller) {
     form.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -1021,8 +1055,7 @@ public class Texting extends AndroidNonvisibleComponent
                 if (granted) {
                   haveReceivePermission = true;
                 } else {
-                  form.dispatchErrorOccurredEvent(Texting.this, "Texting",
-                      ErrorMessages.ERROR_NO_SMS_RECEIVE_PERMISSION);
+                  form.dispatchPermissionDeniedEvent(Texting.this, caller, Manifest.permission.RECEIVE_SMS);
                 }
               }
             });
@@ -1140,6 +1173,11 @@ public class Texting extends AndroidNonvisibleComponent
     editor.putInt(PREF_RCVENABLED, receivingEnabled);
     editor.putBoolean(PREF_GVENABLED, googleVoiceEnabled);
     editor.commit();
+  }
+
+  @Override
+  public void onDelete() {
+    form.unregisterForActivityResult(this);
   }
 
 }
