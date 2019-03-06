@@ -18,8 +18,8 @@ import Foundation
 
   fileprivate var _percentWidthHolder = kLengthUnknown
   fileprivate var _percentHeightHolder = kLengthUnknown
-  public var _lastSetWidth = kLengthPreferred
-  public var _lastSetHeight = kLengthPreferred
+  internal var _lastSetWidth = kLengthPreferred
+  internal var _lastSetHeight = kLengthPreferred
 
   fileprivate var _column = kDefaultRowColumn
   fileprivate var _row = kDefaultRowColumn
@@ -54,7 +54,7 @@ import Foundation
 
   open var Width: Int32 {
     get {
-      return _lastSetWidth
+      return Int32(view.bounds.width)
     }
     set(width) {
       _lastSetWidth = width
@@ -74,7 +74,7 @@ import Foundation
 
   open var Height: Int32 {
     get {
-      return _lastSetHeight
+      return Int32(view.bounds.height)
     }
     set(height) {
       _lastSetHeight = height
@@ -93,11 +93,11 @@ import Foundation
   }
 
   @objc open func setNestedViewHeight(nestedView: UIView, height: Int32, shouldAddConstraints: Bool){
-    resetNestedViewConstraints(for: nestedView, width: Width, height: height, shouldAddConstraint: shouldAddConstraints)
+    resetNestedViewConstraints(for: nestedView, width: _lastSetWidth, height: height, shouldAddConstraint: shouldAddConstraints)
   }
 
   @objc open func setNestedViewWidth(nestedView: UIView, width: Int32, shouldAddConstraints: Bool){
-    resetNestedViewConstraints(for: nestedView, width: width, height: Height, shouldAddConstraint: shouldAddConstraints)
+    resetNestedViewConstraints(for: nestedView, width: width, height: _lastSetHeight, shouldAddConstraint: shouldAddConstraints)
   }
 
   @objc open func resetNestedViewConstraints(for nestedView: UIView, width: Int32, height: Int32, shouldAddConstraint: Bool) {

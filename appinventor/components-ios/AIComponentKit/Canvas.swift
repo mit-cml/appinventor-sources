@@ -19,7 +19,7 @@ fileprivate let HALF_FINGER_HEIGHT: CGFloat = FINGER_HEIGHT / 2;
 // MARK: Canvas class
 public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentContainer, UIGestureRecognizerDelegate, LifecycleDelegate {
   fileprivate var _view: CanvasView
-  fileprivate var _backgroundColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
+  fileprivate var _backgroundColor: Int32 = 0
   fileprivate var _backgroundColorInitialized = false
   fileprivate var _backgroundImage = ""
   fileprivate var _paintColor = Int32(bitPattern: kCanvasDefaultPaintColor)
@@ -37,14 +37,16 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   // There is always just one background image layer and one background color layer.
   fileprivate var _shapeLayers = [CALayer]()
   fileprivate var _textLayers = [CALayer]()
-  fileprivate var _backgroundImageLayer = CALayer()
-  fileprivate var _backgroundColorLayer = CALayer()
+  fileprivate var _backgroundImageView = UIImageView(image: nil)
 
   // Old values are used to scale shapes when canvas size changes.
   fileprivate var _oldHeight = CGFloat(0)
   fileprivate var _oldWidth = CGFloat(0)
   
   fileprivate var _sprites = [Sprite]()
+
+  fileprivate var _imageSize: CGSize? = nil
+  fileprivate var _initialized = false
 
   public override init(_ parent: ComponentContainer) {
     _view = CanvasView()
@@ -67,6 +69,31 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.clipsToBounds = true
     parent.add(self)
+
+    /**
+     * constraints to force automatically sized width/height to match parent
+     * These constraints will break when setting pixel-based width or height greater than view's frame
+     */
+    if let superView = _view.superview {
+      _view.heightAnchor.constraint(lessThanOrEqualTo: superView.heightAnchor).isActive = true
+      _view.widthAnchor.constraint(lessThanOrEqualTo: superView.widthAnchor).isActive = true
+    }
+
+    _view.addSubview(_backgroundImageView)
+    _backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+
+    _backgroundImageView.topAnchor.constraint(equalTo: _view.topAnchor).isActive = true
+    _backgroundImageView.bottomAnchor.constraint(equalTo: _view.bottomAnchor).isActive = true
+    _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
+    _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
+
+    BackgroundColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
+    updateSize()
+  }
+
+  @objc open func Initialize() {
+    _initialized = true
+    updateSize()
     
     Height = Int32(kCanvasPreferredHeight)
     Width = Int32(kCanvasPreferredWidth)
@@ -106,30 +133,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
       
       // The color 'none' is rendered as white
       let newColor = backgroundColor != Int32(bitPattern: Color.none.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
-      if newColor != _backgroundColor || !_backgroundColorInitialized {
-        // _backgroundColorLayer is updated even when _backgroundImage is set; it is just hidden.
-        // Changes to _backgroundColor are only visible when _backgroundImage is not set.
-        _backgroundColor = newColor
-
-        if let backgroundImage = backgroundColorImage() {
-          _backgroundColorLayer.removeFromSuperlayer()
-          
-          _backgroundColorLayer.contents = backgroundImage.cgImage
-          _backgroundColorLayer.position = CGPoint(x: 0, y: 0)
-          _backgroundColorLayer.contents = backgroundImage.cgImage
-          
-          let centerX = CGFloat(Width) / 2
-          let centerY = CGFloat(Height) / 2
-          
-          _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
-          _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-
-          _view.layer.addSublayer(_backgroundColorLayer)
-          
-          if !_backgroundColorInitialized {
-            _backgroundColorInitialized = true
-          }
-        }
+      if newColor != _backgroundColor {
+        _backgroundImageView.backgroundColor = argbToColor(newColor)
       }
     }
   }
@@ -146,27 +151,36 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
         // There are two possibilities when the backgroud image is changed:
         // 1) the provided path is valid, so the background image is updated or
         // 2) the provided path is invalid, so the background color is shown
-        _backgroundImageLayer.removeFromSuperlayer()
-        
-        if let image = UIImage(named: path) ?? UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path)) {
+        if let image = AssetManager.shared.imageFromPath(path: path) {
           _backgroundImage = path
-          _backgroundImageLayer.contents = image.cgImage
-          
-          let centerX = CGFloat(Width) / 2
-          let centerY = CGFloat(Height) / 2
-          
-          _backgroundImageLayer.backgroundColor = UIColor.clear.cgColor
-          _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
-          _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-          _backgroundImageLayer.zPosition = -1
-
-          _view.layer.addSublayer(_backgroundImageLayer)
-          _backgroundColorLayer.isHidden = true
+          _imageSize = image.size
+          _backgroundImageView.image = image
         } else {
+          _imageSize = nil
           _backgroundImage = ""
-          _backgroundColorLayer.isHidden = false
+          _backgroundImageView.image = nil
         }
+        updateSize()
       }
+    }
+  }
+
+  fileprivate func updateSize() {
+//    if _initialized {
+      updateWidth()
+      updateHeight()
+//    }
+  }
+
+  fileprivate func updateWidth() {
+    if _lastSetWidth == kLengthPreferred {
+      _view.constrain(width: Int32(_imageSize?.width ?? CGFloat(kCanvasPreferredWidth)))
+    }
+  }
+
+  fileprivate func updateHeight() {
+    if _lastSetHeight == kLengthPreferred {
+      _view.constrain(height: Int32(_imageSize?.height ?? CGFloat(kCanvasPreferredHeight)))
     }
   }
 
@@ -179,7 +193,12 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
     set(width) {
       _oldWidth = _view.bounds.width
-      setNestedViewWidth(nestedView: _view, width: width, shouldAddConstraints: true)
+      if width == kLengthPreferred {
+        _view.constrain(width: Int32(_imageSize?.width ?? CGFloat(kCanvasPreferredWidth)))
+        _lastSetWidth = kLengthPreferred
+      } else {
+        setNestedViewWidth(nestedView: _view, width: width, shouldAddConstraints: true)
+      }
     }
   }
   
@@ -188,22 +207,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     if newWidth >= 0 {
       _view.frame.size.width = CGFloat(newWidth)
     }
-    
-    // adjust background image layer size to fill the newly sized canvas
-    let centerX = CGFloat(newWidth) / 2
-    let centerY = CGFloat(_view.bounds.height) / 2
-    _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
-    _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-    
-    // Resize background color layer
-    if _backgroundImage == "" {
-      _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
-      _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-      if let backgroundImage = backgroundColorImage() {
-        _backgroundColorLayer.contents = backgroundImage.cgImage
-      }
-    }
-    
+
     // Adjust all the shapeLayers transforms on the x-axis
     let xScaleFactor = CGFloat(newWidth) / _oldWidth
     for s in _shapeLayers {
@@ -219,14 +223,19 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     
   override open var Height: Int32 {
     get {
-      if super.Height < 0 && _view.Drawn {
+      if _lastSetHeight < 0 && _view.Drawn {
         return Int32(_view.bounds.height)
       }
       return super.Height
     }
     set(height) {
       _oldHeight = _view.bounds.height
-      setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
+      if height == kLengthPreferred {
+        _view.constrain(height: Int32(_imageSize?.height ?? CGFloat(kCanvasPreferredHeight)))
+        _lastSetHeight = kLengthPreferred
+      } else {
+        setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
+      }
     }
   }
 
@@ -235,22 +244,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     if newHeight >= 0 {
       _view.frame.size.height = CGFloat(newHeight)
     }
-    
-    // adjust background image layer size to fill the newly sized canvas
-    let centerX = CGFloat(_view.bounds.width) / 2
-    let centerY = CGFloat(newHeight) / 2
-    _backgroundImageLayer.position = CGPoint(x: centerX, y: centerY)
-    _backgroundImageLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-    
-    // Resize background color layer
-    if _backgroundImage == "" {
-      _backgroundColorLayer.frame = CGRect(x: 0, y: 0, width: centerX * 2, height: centerY * 2)
-      _backgroundColorLayer.bounds = CGRect(x: centerX, y: centerY, width: centerX * 2, height: centerY * 2)
-      if let backgroundImage = backgroundColorImage() {
-        _backgroundColorLayer.contents = backgroundImage.cgImage
-      }
-    }
-    
+
     // Adjust all the shapeLayers transforms on the y-axis
     let yScaleFactor = CGFloat(newHeight) / _oldHeight
     for s in _shapeLayers {
@@ -743,7 +737,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
 
   @objc open func Save() -> String {
     // get image data
-    UIGraphicsBeginImageContextWithOptions(_view.bounds.size, true, 0)
+    UIGraphicsBeginImageContextWithOptions(_view.bounds.size, true, 1)
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
     guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
       _container.form.dispatchErrorOccurredEvent(self, "SaveAs", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code, ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.message)
@@ -946,7 +940,11 @@ open class DragGestureRecognizer: UIGestureRecognizer {
 open class CanvasView: UIView {
   private var _drawn = false
   private weak var _canvas: Canvas?
-  
+  private var _oldSize: CGSize = .zero
+  private var _heightConstraint: NSLayoutConstraint? = nil
+  private var _widthConstraint: NSLayoutConstraint? = nil
+
+
   required public init?(coder aDecoder: NSCoder) {
     fatalError("This class does not support NSCoding")
   }
@@ -970,6 +968,24 @@ open class CanvasView: UIView {
     }
   }
 
+  fileprivate func constrain(height: Int32) {
+    if let constraint = _heightConstraint {
+      self.removeConstraint(constraint)
+    }
+    _heightConstraint = heightAnchor.constraint(equalToConstant: CGFloat(height))
+    _heightConstraint?.priority = UILayoutPriority.defaultHigh
+    addConstraint(_heightConstraint!)
+  }
+
+  fileprivate func constrain(width: Int32) {
+    if let constraint = _widthConstraint {
+      self.removeConstraint(constraint)
+    }
+    _widthConstraint = widthAnchor.constraint(equalToConstant: CGFloat(width))
+    _widthConstraint?.priority = UILayoutPriority.defaultHigh
+    addConstraint(_widthConstraint!)
+  }
+
   override open func draw(_ rect: CGRect) {
     super.draw(rect)
     _drawn = true
@@ -982,8 +998,32 @@ open class CanvasView: UIView {
       }
     }
   }
-}
 
+  open override func layoutSubviews() {
+    super.layoutSubviews()
+    if let canvas = _canvas, _oldSize != .zero {
+      if _oldSize != frame.size {
+        let xScale = frame.width / _oldSize.width
+        let yScale = frame.height / _oldSize.height
+
+        for s in canvas._shapeLayers {
+          canvas.transformLayerHeight(s, yScale)
+          canvas.transformLayerWidth(s, xScale)
+        }
+
+        for s in canvas._textLayers {
+          s.position.x *= xScale
+          s.position.y *= yScale
+          canvas.transformLayerHeight(s, yScale)
+          canvas.transformLayerWidth(s, xScale)
+        }
+      }
+    }
+    if frame.size != .zero {
+      _oldSize = frame.size
+    }
+  }
+}
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromCATextLayerAlignmentMode(_ input: CATextLayerAlignmentMode) -> String {

@@ -28,13 +28,20 @@ open class Sharing: NonvisibleComponent {
     showActivityPicker([message])
   }
 
+
   @objc open func ShareFile(_ file: String) {
-    let fileUrl = URL(fileURLWithPath: file)
-    showActivityPicker([fileUrl])
+    if let image = AssetManager.shared.imageFromPath(path: file) {
+      showActivityPicker([image])
+    } else {
+      showActivityPicker([URL(fileURLWithPath: file)])
+    }
   }
 
   @objc open func ShareFileWithMessage(_ file: String, _ message: String) {
-    let fileUrl = URL(fileURLWithPath: file)
-    showActivityPicker([message, fileUrl])
+    if let image = AssetManager.shared.imageFromPath(path: file) {
+      showActivityPicker([message, image])
+    } else {
+      showActivityPicker([message, URL(fileURLWithPath: file)])
+    }
   }
 }
