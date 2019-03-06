@@ -318,9 +318,6 @@ Blockly.Yail['lists_from_csv_table'] = function() {
    // Joins list items into a string separated by specified separator
    var argument0 = Blockly.Yail.valueToCode(this, 'SEPARATOR', Blockly.Yail.ORDER_NONE) || "\"\"";
    var argument1 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
-
-//   var code = '(call-yail-primitive join-strings (*list-for-runtime* ' + argument1 + ' ' + argument0 + ') \'(list text) "join with separator")';
-
    var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "join-strings" + Blockly.Yail.YAIL_SPACER;
    code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
    code = code + argument1 + Blockly.Yail.YAIL_SPACER;
@@ -328,8 +325,5 @@ Blockly.Yail['lists_from_csv_table'] = function() {
    code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE;
    code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + "list" + Blockly.Yail.YAIL_SPACER + "text" + Blockly.Yail.YAIL_CLOSE_COMBINATION;
    code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "join with separator" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-
-//   console.log(code);
-
     return [ code, Blockly.Yail.ORDER_ATOMIC ];
  };
