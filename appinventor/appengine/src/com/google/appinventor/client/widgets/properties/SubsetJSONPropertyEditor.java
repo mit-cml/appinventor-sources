@@ -70,6 +70,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     String e = getJSON(d);
     property.setValue(e);
 
+    Window.Location.reload();
     return true;
   }
 
