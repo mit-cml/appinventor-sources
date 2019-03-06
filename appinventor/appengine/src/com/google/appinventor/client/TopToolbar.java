@@ -22,6 +22,7 @@ import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand
 import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -1122,7 +1123,25 @@ public class TopToolbar extends Composite {
   }
 
   private void updateViewProjectInGalleryButton(int view) {
-    // TODO
+    if (view == Ode.DESIGNER) {
+      long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+      Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      if (project.isPublished()) {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
+      } else {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
+      }
+    } else {
+      // Project view
+      ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
+      int numSelectedProjects = projectList.getNumSelectedProjects();
+      if (numSelectedProjects == 1 && projectList.getSelectedProjects().get(0).isPublished()) {
+        // Only one project selected and is published
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
+      } else {
+        fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
+      }
+    }
   }
 
   //Admin commands

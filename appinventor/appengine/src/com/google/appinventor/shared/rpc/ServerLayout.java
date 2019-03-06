@@ -256,6 +256,13 @@ public class ServerLayout {
    */
   public static final String GALLERY_AUTH_SERVICE = "galleryAuth";
 
+  /**
+   * Relative path of the
+   * {@link com.google.appinventor.server.ReceiveBuildServlet} within
+   * {@link #ODE_BASEURL_NOAUTH}
+   */
+  public static final String RECEIVE_GALLERY_PROJECT_SERVLET = "receivegalleryproject";
+
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;
   }

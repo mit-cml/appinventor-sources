@@ -82,7 +82,10 @@
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="true" />
     <!-- Whether or not to use the new gallery -->
-    <property name="use.newgallery" value="true" />
+    <property name="use.newgallery" value="false" />
+
+    <!-- Whether or not to enable the servlet to receive gallery projects -->
+    <property name="enable.receivegalleryproject" value="true" />
 
     <!-- Gallery Admin Email -->
     <property name="gallery.admin.email" value="" />
@@ -184,7 +187,7 @@
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
-    <property name="gallery.url" value="http://localhost:3000" />
+    <property name="gallery.url" value="http://gallery-test.appinventor.mit.edu" />
 
     <!-- CloudDB secret keys -->
     <property name="clouddb.server" value="clouddb.example.com"/>
