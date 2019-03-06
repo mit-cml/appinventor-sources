@@ -117,7 +117,7 @@ public class FormPropertiesAnalyzer {
    * @return A mapping of component type names to sets of blocks used
    */
   public static Map<String, Set<String>> getComponentBlocksFromSchemeFile(String source) {
-    final Map<String, Set<String>> result = new HashMap<>();
+    Map<String, Set<String>> result = new HashMap<>();
     JSONObject propertiesObject = parseSourceFile(source);
     try {
       Queue<JSONObject> toProcess = new LinkedList<JSONObject>();
@@ -158,7 +158,7 @@ public class FormPropertiesAnalyzer {
    * @return A mapping of component type names to sets of blocks used
    */
   public static Map<String, Set<String>> getComponentBlocksFromBlocksFile(String source) {
-    Map<String, Set<String>> result = new HashMap<>();
+    final Map<String, Set<String>> result = new HashMap<>();
     if (source == null || source.isEmpty()) {
       return result;
     }
