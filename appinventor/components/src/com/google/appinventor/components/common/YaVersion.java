@@ -515,8 +515,10 @@ public class YaVersion {
   // - Bitwise and, ior, and xor blocks were added.
   // For BLOCKS_LANGUAGE_VERSION 24:
   // - List reverse block was added.
+  // For BLOCKS_LANGUAGE_VERSION 25:
+  // - List join with separator block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 24;
+  public static final int BLOCKS_LANGUAGE_VERSION = 25;
 
   // ................................. Component Version Numbers ..................................
 
