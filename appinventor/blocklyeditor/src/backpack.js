@@ -205,6 +205,9 @@ Blockly.Backpack.prototype.createDom = function(opt_workspace) {
       this.svgGroup_);
   this.svgBody_.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
       Blockly.pathToBlockly + this.BPACK_CLOSED_);
+
+  this.svgBody_.setAttribute('class', 'blocklybackpackImage');
+
   return this.svgGroup_;
 };
 

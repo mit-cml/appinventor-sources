@@ -444,10 +444,12 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 178:
   // - CLOCK_COMPONENT_VERSION was incremented to 4
-  // For YOUNG_ANDROID_VERISON 179:
+  // For YOUNG_ANDROID_VERSION 179:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 180:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 179;
+  public static final int YOUNG_ANDROID_VERSION = 180;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1158,7 +1160,9 @@ public class YaVersion {
   // - The FullScreen property was added to the VideoPlayer.
   // For VIDEOPLAYER_COMPONENT_VERSION 5:
   // - The Volume property (setter only) was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
+  // For VIDEOPLAYER_COMPONENT_VERSION 6:
+  // - The Stop method was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 6;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
