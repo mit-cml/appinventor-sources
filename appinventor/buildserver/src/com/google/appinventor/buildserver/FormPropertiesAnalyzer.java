@@ -165,8 +165,7 @@ public class FormPropertiesAnalyzer {
     try {
       XMLReader reader = XMLReaderFactory.createXMLReader();
       reader.setContentHandler(new DefaultHandler() {
-        private LinkedList<String> blockStack = new LinkedList<>();
-        private boolean skipBlocks = false;
+        private int skipBlocksCounter = 0;
         private String blockType;
 
         @Override
@@ -174,16 +173,15 @@ public class FormPropertiesAnalyzer {
             throws SAXException {
           if ("block".equals(qName)) {
             if ("true".equals(attributes.getValue("disabled"))) {
-              skipBlocks = true;
-              blockStack.addLast(qName);
+              skipBlocksCounter = 1;
               return;
             } else {
-              if (skipBlocks) {
-                blockStack.addLast(qName);
+              if (skipBlocksCounter > 0) {
+                skipBlocksCounter++;
               }
               blockType = attributes.getValue("type");
             }
-          } else if (!skipBlocks && "mutation".equals(qName)) {
+          } else if (skipBlocksCounter == 0 && "mutation".equals(qName)) {
             String blockName = null;
             if ("component_event".equals(blockType)) {
               blockName = attributes.getValue("event_name");
@@ -206,11 +204,8 @@ public class FormPropertiesAnalyzer {
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
-          if ("block".equals(qName) && skipBlocks) {
-            blockStack.removeLast();
-            if (blockStack.isEmpty()) {
-              skipBlocks = false;
-            }
+          if ("block".equals(qName) && skipBlocksCounter > 0) {
+            skipBlocksCounter--;
           }
           super.endElement(uri, localName, qName);
         }
