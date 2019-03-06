@@ -201,9 +201,9 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   // MARK: UITableViewDelegate
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     _viewController?.dismiss(animated: true, completion: {
-      self.resetSearch()
-      self._selection = self._items[indexPath.row]
+      self._selection = self._results != nil ? self._results![indexPath.row] : self._items[indexPath.row]
       self._selectionIndex = Int32(indexPath.row) + 1
+      self.resetSearch()
       self.AfterPicking()
     })
   }
