@@ -51,7 +51,7 @@ public final class Clock extends AndroidNonvisibleComponent
     implements Component, AlarmHandler, OnStopListener, OnResumeListener, OnDestroyListener,
                Deleteable {
   private static final int DEFAULT_INTERVAL = 1000;  // ms
-  private static final boolean DEFAULT_PRECISE_INTERVAL = true;
+  private static final boolean DEFAULT_PRECISE_INTERVAL = false;
   private static final boolean DEFAULT_ENABLED = true;
 
   private TimerInternal timerInternal;
