@@ -327,3 +327,4 @@ Blockly.Yail['lists_from_csv_table'] = function() {
    code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "join with separator" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
     return [ code, Blockly.Yail.ORDER_ATOMIC ];
  };
+ 
