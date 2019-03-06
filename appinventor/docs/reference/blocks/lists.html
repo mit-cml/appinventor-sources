@@ -226,6 +226,7 @@ jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":
 <li><a href="#listfromcsvrow">list from csv row</a></li>
 <li><a href="#listfromcsvtable">list from csv table</a></li>
 <li><a href="#lookupinpairs">lookup in pairs</a></li>
+<li><a href="#joinwithseparator">join with separator</a></li>
 </ul><h4><em>Need additional help understanding lists? Check out <a href="../concepts/lists.html">making lists</a> on the Concepts page.</em></h4>
 <h3 id="emptylist">create empty list</h3>
 <p><img src="images/lists/emptylist.png" /></p>
@@ -307,6 +308,10 @@ Here <em>pairs</em> must be a list of pairs, that is, a list where each element 
 element.   For example, if the list is ((a apple) (d dragon) (b boxcar) (cat 100)) then looking up 'b' will return 'boxcar'.<br />
 If there is no such pair in the list, then the <em>lookup in pairs</em> will return the <em>notFound</em> result.   If pairs is not a list of<br />
 pairs, then the operation will signal an error.</p>
+<h3 id="joinwithseparator">join with separator</h3>
+<p><img src="images/lists/joinwithseparator.png" /></p>
+<p>Joins all elements in the specified list by the specified separator, procuding a string as a result.<br />
+By default, the separator is an empty string ("")</p>
 </div></div></div>  </div>
 
 

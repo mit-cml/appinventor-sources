@@ -46,22 +46,12 @@ private static final boolean DEBUG = false;
   {
      StringBuilder sb = new StringBuilder();
      boolean first = true;
-     boolean firstSkip = false;
      for (Object item : list)
      {
-        // After making a list using Kawa, the first entry in the list becomes *list* no matter what.
-        // This step ensures that this entry is skipped.
-        if (!firstSkip && item.toString().equals("*list*"))
-        {
-           firstSkip = true;
-           continue;
-        }
-
         if (first)
            first = false;
         else
            sb.append(separator);
-         
         sb.append(item.toString());
      }
      return sb.toString();
