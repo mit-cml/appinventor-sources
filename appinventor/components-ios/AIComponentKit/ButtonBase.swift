@@ -26,7 +26,7 @@ open class ButtonBase: ViewComponent {
   fileprivate var _defaultTextColor: UIColor
 
   public override init(_ parent: ComponentContainer) {
-    self._view = UIButton(type: UIButton.ButtonType.system)
+    self._view = UIButton(type: UIButton.ButtonType.custom)
     _defaultTextColor = self._view.tintColor
     super.init(parent)
     self._view.backgroundColor = argbToColor(_backgroundColor)
@@ -35,6 +35,7 @@ open class ButtonBase: ViewComponent {
     self._view.addTarget(self, action: #selector(TouchUp), for: UIControl.Event.touchUpInside)
     BackgroundColor = Int32(Color.default.rawValue)
     Enabled = true
+    ShowFeedback = true
     FontSize = kFontSizeDefault
     FontBold = _bold
     FontItalic = _italic
@@ -173,10 +174,9 @@ open class ButtonBase: ViewComponent {
       return _showFeedback
     }
     set(feedback) {
-      if _showFeedback != feedback {
-        _showFeedback = feedback
-        _view.showsTouchWhenHighlighted = feedback
-      }
+      _view.showsTouchWhenHighlighted = feedback
+      _view.setTitleColor(feedback ? UIColor.lightGray : nil, for: .highlighted)
+      _showFeedback = feedback
     }
   }
 
