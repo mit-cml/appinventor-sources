@@ -2509,7 +2509,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: The Volume property (setter only) was added to the VideoPlayer.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Stop method was added to the VideoPlayer.
+    6: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 
