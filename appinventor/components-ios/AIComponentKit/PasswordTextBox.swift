@@ -8,11 +8,14 @@
 
 import Foundation
 
-fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
+fileprivate class TextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
 
-  fileprivate init() {
+  fileprivate override init() {
+    _field.translatesAutoresizingMaskIntoConstraints = false
     _field.isSecureTextEntry = true
+    super.init()
+    _field.delegate = self
   }
 
   open var view: UIView {
@@ -74,6 +77,22 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
       _field.text = text
     }
   }
+
+  // prevents clearing of password field when changing 
+  func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    if let range = Range(range, in: textField.text ?? "") {
+      textField.text?.replaceSubrange(range, with: string)
+    }
+    return false
+  }
+
+  func togggleVisible(_ visible: Bool) {
+    _field.isSecureTextEntry = !visible
+    // fix cursor position
+    let text = _field.text ?? ""
+    _field.text = ""
+    _field.text = text
+  }
 }
 
 open class PasswordTextBox: TextBoxBase {
@@ -81,5 +100,13 @@ open class PasswordTextBox: TextBoxBase {
 
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
+  }
+
+  open var PasswordVisible: Bool = false {
+    didSet {
+      _adapter.togggleVisible(PasswordVisible)
+      // maintain proper type face
+      FontTypeface = FontTypeface + 0
+    }
   }
 }
