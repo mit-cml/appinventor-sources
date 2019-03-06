@@ -448,8 +448,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 24
   // For YOUNG_ANDROID_VERSION 180:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 181:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 25
 
-  public static final int YOUNG_ANDROID_VERSION = 180;
+  public static final int YOUNG_ANDROID_VERSION = 181;
 
   // ............................... Blocks Language Version Number ...............................
 
