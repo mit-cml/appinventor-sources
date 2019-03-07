@@ -449,3 +449,22 @@ Blockly.Blocks['lists_lookup_in_pairs'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS }]
 };
+
+Blockly.Blocks['lists_join_with_separator'] = {
+  // Joins list items into a single string separated by specified separator
+  category : 'Lists',
+  helpUrl : Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_HELPURL,
+  init : function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
+    var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT,
+            ['SEPARATOR', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP);
+    this.setInputsInline(false);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE }]
+};

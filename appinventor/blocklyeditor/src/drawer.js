@@ -432,6 +432,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  lists_join_with_separator: {xmlString:
+    '<xml>' +
+      '<block type="lists_join_with_separator">' +
+      '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
+      '</block>' +
+    '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
