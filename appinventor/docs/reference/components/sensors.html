@@ -661,12 +661,12 @@ none
 
 <p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
 <p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>
-Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
-<p>The emulator does not emmulate sensors. Code must be tested on a physical device.</p>
+<p>Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
+<p>The emulator does not emmulate sensors on all devices. Code should be tested on a physical device.</p>
 <h3>Properties</h3>
 <dl>
   <dt><code><em>Accuracy</em></code></dt>
-  <dd><p>The LocationSensor will be able to locate the device with a varying degree of confidence, based on the quality of satellite, cell towers, and other data used to estimate location. The Accuracy value is the radius in meters around the sensor's detected location. The device is most likely located within this radius. More precise location detection will result in a smaller accuracy number, which allows the app to have more confidence where the device is actually located.</p>
+  <dd><p>The LocationSensor will be able to locate the device with a varying degree of confidence, based on the quality of satellite, cell towers, and other data used to estimate location. The Accuracy value is the radius in meters around the sensor's detected location. The device has a 68% chance to be located within this radius. More precise location detection will result in a smaller accuracy number, which allows the app to have more confidence where the device is actually located.</p>
       <p>If the accuracy is not known, the return value is 0.0</p></dd>
   <dt><code><em>Altitude</em></code></dt>
     <dd><p>Altitude of the Android device in meters, if available.</p>
@@ -700,12 +700,12 @@ Location information might not be immediately available when an app starts.  You
   <dd>If true, Android device can report longitude and latitude.</dd>
   <dt><code><em>Latitude</em></code></dt>
   <dd>Android device latitude. This is reported in decimal degrees to five decimal places. Latitude is a value between
-  90 and -90, where 0 marks the Equator.</dd>
+  90 (north) and -90 (south), where 0 marks the Equator.</dd>
   <dt><code><em>Longitude</em></code></dt>
   <dd>Android device longitude. This is reported in decimal degrees to five decimal places. Longitude is a value between
-  180 and -180, where negative values are the regions West of the Prime Meridian.</dd>
+  180 (east) and -180 (west), where 0 marks the Prime Meridian.</dd>
   <dt><code>ProviderLocked</code></dt>
-    <dd><p>The device will not change the service provider.</p>
+  <dd><p>The device will not change the service provider.</p>
   <p>It is possible for a device to switch service providers when the current provider is unable to provide adequate location information. ProviderLocked is a Boolean value: true/false. Set to true to prevent providers from changing. Set to false to allow for automatic switching when necessary.</p></dd>
   <dt><code>ProviderName</code></dt>
   <dd>The current service provider. The provider will most likely be either GPS or network.
