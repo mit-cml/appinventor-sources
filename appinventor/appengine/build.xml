@@ -187,6 +187,8 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
       <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
     </copy>
+    <!-- PostgreSQL JDBC -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/postgresql-jdbc/postgresql-42.2.5.jre7.jar" />
   </target>
 
   <!-- =====================================================================

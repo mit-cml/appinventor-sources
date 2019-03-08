@@ -76,6 +76,10 @@
     <property name="gcs.bucket" value="" />
     <!-- Whether or not to use GCS for storage -->
     <property name="use.gcs" value="true" />
+    <property name="storage.backend" value="postgresql" />
+    <property name="jdbc.url" value="jdbc:postgresql://localhost/appinventor" />
+    <property name="jdbc.user" value="postgres" />
+    <property name="jdbc.password" value="" />
 
     <!-- Name of gallery bucket in Google Cloud Store -->
     <property name="gallery.bucket" value="" />
