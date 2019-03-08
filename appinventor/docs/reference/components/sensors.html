@@ -654,7 +654,7 @@ none
 </dl>
 
 <h3>Methods</h3>
-none
+<p>none</p>
 
 
 <h2 id="LocationSensor">LocationSensor</h2>
@@ -690,8 +690,9 @@ none
     <p>It is also useful to check against Accuracy when using this property. When your device is moving, the accuracy
     of the detected location is constantly changing.</p></dd>
   <dt><code>Enabled</code></dt>
-  <dd>If true, the LocationSensor is reading data from the GPS. If false, it is not. This value does not affect whether
-  the device's GPS is on or off.</dd>
+  <dd>If true, the LocationSensor will attempt to read location information from GPS, WiFi location, or other means
+      available on the device. This setting does not control whether location information is actually available. Device
+      location must be enabled or disabled in the device settings.</dd>
   <dt><code><em>HasAccuracy</em></code></dt>
   <dd>If true, Android device can report its accuracy level.</dd>
   <dt><code><em>HasAltitude</em></code></dt>
