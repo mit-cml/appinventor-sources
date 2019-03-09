@@ -29,6 +29,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.PWData;
 
+import java.math.BigInteger;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
@@ -231,7 +232,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public User getUser(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     User user = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE id = ?")) {
@@ -307,7 +308,7 @@ public class PostgreSQLStorageIo implements StorageIo {
 
         if (rs.next()) {
           long userId = rs.getLong("id");
-          String strUserId = Long.toHexString(userId);
+          String strUserId = this.decodeUserId(userId);
           user = new User(
             strUserId,
             rs.getString("email"),
@@ -344,7 +345,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setUserEmail(@Nonnull String strUserId, @Nonnull String email) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET email = ? WHERE id = ?")) {
@@ -374,7 +375,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setTosAccepted(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET tosAccepted = ? WHERE id = ?")) {
@@ -405,7 +406,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setUserSessionId(@Nonnull String strUserId, @Nonnull String sessionId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET sessionId = ? WHERE id = ?")) {
@@ -435,7 +436,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setUserPassword(@Nonnull String strUserId, @Nullable String password) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     // Empty password is not allowed in database, we simply remove it.
@@ -470,7 +471,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String loadSettings(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String settings = null;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("SELECT settings FROM account WHERE id = ?")) {
@@ -502,7 +503,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setUserName(@Nonnull String strUserId, @Nonnull String name) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET name = ? WHERE id = ?")) {
@@ -532,7 +533,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String getUserName(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String name = null;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("SELECT name WHERE userId = ?")) {
@@ -566,7 +567,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String getUserLink(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String link = null;
     boolean found = false;
 
@@ -600,7 +601,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setUserLink(@Nonnull String strUserId, @Nonnull String link) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET link = ? WHERE id = ?")) {
@@ -630,7 +631,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public int getUserEmailFrequency(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     Integer freq = null;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("SELECT emailFrequency WHERE userId = ?")) {
@@ -666,7 +667,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw new IllegalArgumentException("emailFrequency should be non-negative, but get " + emailFrequency);
     }
 
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET emailFrequency = ? WHERE id = ?")) {
@@ -696,7 +697,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void storeSettings(@Nonnull String strUserId, @Nonnull String settings) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET settings = ?, visited = CURRENT_TIMESTAMP WHERE id = ?")) {
@@ -733,7 +734,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long createProject(@Nonnull String strUserId, @Nonnull Project project, @Nonnull String projectSettings) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     String name = project.getProjectName();
@@ -815,7 +816,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void deleteProject(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
 
     // Corresponding entries in projectFile table will be automatically remove by ON DELETE CASCADE
     try (PreparedStatement ustmt = conn.prepareStatement("DELETE FROM project WHERE id = ? AND userId = ?")) {
@@ -841,7 +842,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public List<Long> getProjects(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<Long> ret = new ArrayList<>();
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT id FROM project WHERE userId = ?")) {
@@ -872,7 +873,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setProjectGalleryId(@Nonnull final String strUserId, final long projectId,final long galleryId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET galleryId = ?, modifiedDate = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
@@ -903,7 +904,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void setProjectAttributionId(@Nonnull final String strUserId, final long projectId,final long attributionId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET attributionId = ?, modifiedDate = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
@@ -934,7 +935,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String loadProjectSettings(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String settings = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT settings FROM project WHERE id = ? AND userId = ?")) {
@@ -969,7 +970,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void storeProjectSettings(@Nonnull String strUserId, long projectId, @Nonnull String settings) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET settings = ?, modifiedDate = CURRENT_TIMESTAMP WHERE id = ? AND userId = ?")) {
@@ -1001,7 +1002,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String getProjectType(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String type = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT type FROM project WHERE id = ? AND userId = ?")) {
@@ -1036,7 +1037,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public UserProject getUserProject(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     UserProject proj = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM project WHERE id = ? AND userId = ?")) {
@@ -1086,7 +1087,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public List<UserProject> getUserProjects(@Nonnull String strUserId, @Nonnull List<Long> projectIds) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<UserProject> ret = new ArrayList<>();
 
     // degradation case
@@ -1154,7 +1155,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String getProjectName(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String name = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT name FROM project WHERE id = ? AND userId = ?")) {
@@ -1190,7 +1191,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long getProjectDateModified(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     Timestamp modifiedDate = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT modifiedDate FROM project WHERE id = ? AND userId = ?")) {
@@ -1226,7 +1227,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String getProjectHistory(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     String history = null;
     boolean found = false;
 
@@ -1265,7 +1266,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long getProjectDateCreated(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     Timestamp creationDate = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT creationDate FROM project WHERE id = ? AND userId = ?")) {
@@ -1302,7 +1303,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void addFilesToUser(@Nonnull String strUserId, String... fileNames) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
 
     // Degradation case
     if (fileNames.length == 0) {
@@ -1336,7 +1337,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public List<String> getUserFiles(@Nonnull String strUserId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<String> ret = new ArrayList<String>();
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM userFile WHERE userId = ?")) {
@@ -1387,7 +1388,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void uploadRawUserFile(@Nonnull String strUserId, @Nonnull String fileName, @Nonnull byte[] content) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO userFile (userId, fileName, content) VALUES (?, ?, ?) ON CONFLICT (userId, fileName) DO UPDATE SET content = ?")) {
@@ -1422,7 +1423,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String downloadUserFile(@Nonnull String strUserId, @Nonnull String fileName, @Nonnull String encoding) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     byte[] contentBytes = downloadRawUserFile(strUserId, fileName);
     String content = null;
 
@@ -1444,7 +1445,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public byte[] downloadRawUserFile(@Nonnull String strUserId, @Nonnull String fileName) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     byte[] ret = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT content FROM userFile WHERE userId = ? AND fileName = ?")) {
@@ -1478,7 +1479,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void deleteUserFile(@Nonnull String strUserId, @Nonnull String fileName) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("DELETE FROM userFile WHERE userId = ? AND fileName = ?")) {
@@ -1523,7 +1524,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void addSourceFilesToProject(@Nonnull String strUserId, long projectId, boolean changeModDate, String...fileNames) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     // Degradation case
@@ -1557,7 +1558,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void addOutputFilesToProject(@Nonnull String strUserId, long projectId, String...fileNames) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
 
     try {
       this.bulkCreateProjectFile(projectId, userId, FileData.RoleEnum.TARGET, fileNames, false);
@@ -1583,7 +1584,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void removeSourceFilesFromProject(@Nonnull String strUserId, long projectId, boolean changeModDate, String...fileNames) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     // Update project modified date
@@ -1611,7 +1612,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void removeOutputFilesFromProject(@Nonnull String strUserId, long projectId, String...fileNames) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
 
     // Degradation case
     if (fileNames.length == 0) {
@@ -1640,7 +1641,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public List<String> getProjectSourceFiles(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<String> ret = new ArrayList<String>();
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE projectId = ? AND userId = ? AND role = ?")) {
@@ -1675,7 +1676,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public List<String> getProjectOutputFiles(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<String> ret = new ArrayList<String>();
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE projectId = ? AND userId = ? AND role = ?")) {
@@ -1709,7 +1710,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long getProjectGalleryId(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     Long galleryId = null;
     boolean found = false;
 
@@ -1786,7 +1787,7 @@ public class PostgreSQLStorageIo implements StorageIo {
   public long uploadFile(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull String content, @Nonnull String encoding)
     throws BlocksTruncatedException {
 
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     long ts;
 
     byte[] contentBytes;
@@ -1823,7 +1824,7 @@ public class PostgreSQLStorageIo implements StorageIo {
   @Override
   public long uploadFileForce(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull String content, @Nonnull String encoding)  {
 
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     long ts;
 
     byte[] contentBytes;
@@ -1860,7 +1861,7 @@ public class PostgreSQLStorageIo implements StorageIo {
   @Override
   public long uploadRawFile(long projectId, @Nonnull String fileName, @Nonnull String strUserId, boolean force, @Nonnull byte[] content) {
 
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     long ts;
 
     try {
@@ -1888,7 +1889,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long uploadRawFileForce(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull byte[] content) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     long ts;
 
     try {
@@ -1914,7 +1915,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public long deleteFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
     long ts;
 
@@ -1956,7 +1957,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public String downloadFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName, @Nonnull String encoding) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     byte[] contentBytes = downloadProjectFile(projectId, userId, fileName);
     String content = null;
 
@@ -1978,7 +1979,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void recordCorruption(@Nonnull String strUserId, long projectId, @Nonnull String fileName, @Nonnull String message) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO corruptionReport (userId, projectId, fileName, message) VALUES (?, ?, ?, ?)")) {
@@ -2012,7 +2013,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public byte[] downloadRawFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     byte[] contentBytes = downloadProjectFile(projectId, userId, fileName);
     return contentBytes;
   }
@@ -2077,7 +2078,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     // Get file id
-    long fileId = Long.parseLong(fileName.substring(8), 16);
+    long fileId = new BigInteger(fileName.substring(8), 16).longValue();
     InputStream stream = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT content FROM tempFile WHERE id = ?")) {
@@ -2117,7 +2118,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     if (!fileName.substring(0, 8).equals("__TEMP__")) {
       throw new IllegalArgumentException("fileName argument should start with \"__TEMP__\", but get \"" + fileName + "\"");
     }
-    long fileId = Long.parseLong(fileName.substring(8), 16);
+    long fileId = new BigInteger(fileName.substring(8), 16).longValue();
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("DELETE FROM tempFile WHERE id = ?")) {
@@ -2245,7 +2246,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     final boolean forGallery,
     final boolean fatalError) throws IOException {
 
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     List<FileData> files = new ArrayList<FileData>();
     boolean projectFound = false;
     String projectName = null;
@@ -2425,7 +2426,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     if (userId == null) {
       throw new NoSuchElementException("Couldn't find a user with email: " + email);
     }
-    String strUserId = Long.toHexString(userId);
+    String strUserId = this.decodeUserId(userId);
     return strUserId;
   }
 
@@ -2570,7 +2571,7 @@ public class PostgreSQLStorageIo implements StorageIo {
         Timestamp ts = rs.getTimestamp("timestamp");
 
         Date dt = new Date(ts.getTime());
-        String strUserId = Long.toHexString(userId);
+        String strUserId = this.decodeUserId(userId);
         nonce = new Nonce(nonceValue, strUserId, projectId, dt);
       }
       this.conn.commit();
@@ -2588,7 +2589,7 @@ public class PostgreSQLStorageIo implements StorageIo {
 
   @Override
   public void storeNonce(@Nonnull final String nonceValue, @Nonnull final String strUserId, final long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement(
@@ -2844,7 +2845,7 @@ public class PostgreSQLStorageIo implements StorageIo {
 
       while (rs.next()) {
         long userId = rs.getLong("id");
-        String strUserId = Long.toHexString(userId);
+        String strUserId = this.decodeUserId(userId);
         Timestamp visitedTs = rs.getTimestamp("visited");
         Date visitedDt = visitedTs != null ? new Date(visitedTs.getTime()) : null;
         AdminUser user = new AdminUser(
@@ -2876,7 +2877,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     // We require non-null user.getId() and existince of this user.
 
     String strUserId = user.getId();
-    Long userId = strUserId != null ? Long.parseLong(strUserId, 16) : null;
+    Long userId = strUserId != null ? this.encodeUserId(strUserId) : null;
 
     String newPassword = user.getPassword();
     if (newPassword.equals("")) {
@@ -3007,7 +3008,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public void storeBuildStatus(@Nonnull String strUserId, long projectId, int progress) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO buildStatus (host, userId, projectId, progress) VALUES (?, ?, ?, ?) ON CONFLICT (host, userId, projectId) DO UPDATE SET progress = ?")) {
@@ -3034,7 +3035,7 @@ public class PostgreSQLStorageIo implements StorageIo {
 
   @Override
   public int getBuildStatus(@Nonnull String strUserId, long projectId) {
-    long userId = Long.parseLong(strUserId, 16);
+    long userId = this.encodeUserId(strUserId);
     Integer ret = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT progress FROM buildStatus WHERE projectId = ? AND userId = ?")) {
@@ -3114,7 +3115,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Database error in createUser()", e);
     }
 
-    String strUserId = Long.toHexString(userId);
+    String strUserId = this.decodeUserId(userId);
     User user = new User(
       strUserId,
       email,
@@ -3201,7 +3202,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
-      String strUserId = Long.toHexString(userId);
+      String strUserId = this.decodeUserId(userId);
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
   }
@@ -3234,7 +3235,7 @@ public class PostgreSQLStorageIo implements StorageIo {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
 
-      String strUserId = Long.toHexString(userId);
+      String strUserId = this.decodeUserId(userId);
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
   }
@@ -3318,31 +3319,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     return contentBytes;
   }
 
-  private String makeErrorMsg(
-    @Nullable final Long userId,
-    @Nullable final Long projectId,
-    @Nullable final String fileName) {
-
-    if (userId == null && projectId == null && fileName == null) {
-      throw new IllegalArgumentException("It's not allowed to set all params to null");
-    }
-
-    String strUserId = userId != null ? Long.toHexString(userId) : null;
-
-    String userIdToken = strUserId != null ? ("userId=\"" + strUserId + "\"") : null;
-    String projectIdToken = projectId != null ? ("projectId=\"" + projectId + "\"") : null;
-    String fileNameIdToken = fileName != null ? ("fileName=\"" + fileName + "\"") : null;
-
-    // No String.join() function in JDK 1.7. We do it manually.
-    String ret = null;
-    ret = userIdToken != null ? userIdToken : ret;
-    ret = projectIdToken != null ? (ret != null ? (ret + ", " + projectIdToken) : projectIdToken) : ret;
-    ret = fileName != null ? (ret != null ? (ret + ", " + fileName) : fileName) : ret;
-
-    return ret;
-  }
-
-  long updateProjectModifiedDate(long projectId, long userId, boolean doCommit) {
+  private long updateProjectModifiedDate(long projectId, long userId, boolean doCommit) {
     int ret = 0;
     Timestamp modifiedTs = null;
 
@@ -3383,5 +3360,41 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     return modifiedTs.getTime();
+  }
+
+  private long encodeUserId(@Nonnull String strUserId) {
+    try {
+      return new BigInteger(strUserId, 16).longValue();
+    } catch (NumberFormatException e) {
+      throw CrashReport.createAndLogError(LOG, null, "encoded userId = " + strUserId, e);
+    }
+  }
+
+  private String decodeUserId(long userId) {
+    return Long.toHexString(userId);
+  }
+
+  private String makeErrorMsg(
+    @Nullable final Long userId,
+    @Nullable final Long projectId,
+    @Nullable final String fileName) {
+
+    if (userId == null && projectId == null && fileName == null) {
+      throw new IllegalArgumentException("It's not allowed to set all params to null");
+    }
+
+    String strUserId = userId != null ? this.decodeUserId(userId) : null;
+
+    String userIdToken = strUserId != null ? ("userId=\"" + strUserId + "\"") : null;
+    String projectIdToken = projectId != null ? ("projectId=\"" + projectId + "\"") : null;
+    String fileNameIdToken = fileName != null ? ("fileName=\"" + fileName + "\"") : null;
+
+    // No String.join() function in JDK 1.7. We do it manually.
+    String ret = null;
+    ret = userIdToken != null ? userIdToken : ret;
+    ret = projectIdToken != null ? (ret != null ? (ret + ", " + projectIdToken) : projectIdToken) : ret;
+    ret = fileName != null ? (ret != null ? (ret + ", " + fileName) : fileName) : ret;
+
+    return ret;
   }
 }
