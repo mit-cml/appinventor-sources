@@ -171,7 +171,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
    *                            false to use internal copy of ZXing.
    *
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False", alwaysSend = true)
   @SimpleProperty()
   public void UseExternalScanner(boolean useExternalScanner) {
     this.useExternalScanner = useExternalScanner;
