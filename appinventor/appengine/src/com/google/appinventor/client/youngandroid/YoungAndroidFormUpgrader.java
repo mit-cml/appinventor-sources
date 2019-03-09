@@ -511,6 +511,11 @@ public final class YoungAndroidFormUpgrader {
       // The UseExternalScanner property was added.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The UseExternalScanner property default value was changed to false
+      srcCompVersion = 3;
+      componentProperties.put("UseExternalScanner", new ClientJsonString("False"));
+    }
     return srcCompVersion;
   }
 
