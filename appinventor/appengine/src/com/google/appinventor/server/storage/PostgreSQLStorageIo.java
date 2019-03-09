@@ -29,6 +29,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.PWData;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +45,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Savepoint;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -52,6 +52,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 
 import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * Interface of methods to simplify access to the storage systems.
@@ -88,124 +89,125 @@ public class PostgreSQLStorageIo implements StorageIo {
 
     // Initialize database
     try (Statement stmt = this.conn.createStatement()) {
-      stmt.execute("CREATE EXTENSION IF NOT EXISTS 'uuid-ossp'");
-      stmt.execute("CREATE TABLE user IF NOT EXISTS (" +
+      stmt.execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"");
+      stmt.execute("CREATE TABLE IF NOT EXISTS account (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  email VARCHAR UNIQUE," +
-                   "  name VARCHAR NOT NULL CHECK (name <> '')," +
-                   "  link VARCHAR," +
+                   "  email TEXT UNIQUE," +
+                   "  name TEXT NOT NULL CHECK (name <> '')," +
+                   "  link TEXT," +
                    "  emailFrequency INT NOT NULL CHECK (emailFrequency >= 0)," +
                    "  tosAccepted BOOLEAN DEFAULT FALSE NOT NULL," +
                    "  isAdmin BOOLEAN DEFAULT FALSE NOT NULL," +
                    "  isReadOnly BOOLEAN DEFAULT FALSE NOT NULL," +
                    "  type INT NOT NULL," +
-                   "  sessionId VARCHAR," +
-                   "  password VARCHAR CHECK (password <> '')," +
-                   "  backPackId VARCHAR," +
-                   "  settings VARCHAR NOT NULL DEFAULT ''," +
-                   "  visited TIMESTAMP WITH TIMEZONE" +
+                   "  sessionId TEXT," +
+                   "  password TEXT CHECK (password <> '')," +
+                   "  backPackId TEXT," +
+                   "  settings TEXT NOT NULL DEFAULT ''," +
+                   "  visited TIMESTAMPTZ" +
                    ")");
-      stmt.execute("CREATE TABLE project IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS project (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  userId BIGINT NOT NULL REFERENCES user ON DELETE CASCADE ON UPDATE CASCADE," +
-                   "  name VARCHAR NOT NULL CHECK (name <> '')," +
-                   "  link VARCHAR," +
-                   "  type VARCHAR," +
-                   "  settings VARCHAR NOT NULL DEFAULT ''," +
-                   "  dateCreated TIMESTAMP WITH TIMEZONE NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-                   "  dateModified TIMESTAMP WITH TIMEZONE NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-                   "  history VARCHAR," +
+                   "  userId BIGINT NOT NULL REFERENCES account ON DELETE CASCADE ON UPDATE CASCADE," +
+                   "  name TEXT NOT NULL CHECK (name <> '')," +
+                   "  link TEXT," +
+                   "  type TEXT," +
+                   "  settings TEXT NOT NULL DEFAULT ''," +
+                   "  creationDate TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                   "  modifiedDate TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                   "  history TEXT," +
                    "  galleryId BIGINT," +
                    "  attributionId BIGINT" +
                    ")");
-      stmt.execute("CREATE TABLE projectFile IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS projectFile (" +
                    "  id BIGSERIAL PRIMARY KEY," +
                    "  projectId BIGINT NOT NULL REFERENCES project ON DELETE CASCADE ON UPDATE CASCADE," +
-                   "  userId BIGINT NOT NULL REFERENCES user ON DELETE CASCADE ON UPDATE CASCADE," +
-                   "  fileName VARCHAR NOT NULL," +
-                   "  role VARCHAR NOT NULL," +
-                   "  content VARCHAR," +
-                   "  CONSTRAINT fileConst UNIQUE(projectId, userId, fileName)" +
+                   "  userId BIGINT NOT NULL REFERENCES account ON DELETE CASCADE ON UPDATE CASCADE," +
+                   "  fileName TEXT NOT NULL," +
+                   "  role TEXT NOT NULL," +
+                   "  content BYTEA NOT NULL DEFAULT ''," +
+                   "  UNIQUE (projectId, userId, fileName)" +
                    ")");
-      stmt.execute("CREATE TABLE userFile IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS userFile (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  userId BIGINT NOT NULL REFERENCES user ON DELETE CASCADE ON UPDATE CASCADE," +
-                   "  fileName VARCHAR NOT NULL," +
-                   "  content VARCHAR," +
-                   "  CONSTRAINT fileConst UNIQUE(userId, fileName)" +
+                   "  userId BIGINT NOT NULL REFERENCES account ON DELETE CASCADE ON UPDATE CASCADE," +
+                   "  fileName TEXT NOT NULL," +
+                   "  content BYTEA NOT NULL DEFAULT ''," +
+                   "  UNIQUE(userId, fileName)" +
                    ")");
-      stmt.execute("CREATE TABLE tempFile IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS tempFile (" +
                    "  id BIGINT PRIMARY KEY," +
-                   "  content BLOB" +
+                   "  content BYTEA" +
                    ")");
-      stmt.execute("CREATE TABLE corruptionReport IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS corruptionReport (" +
                    "  id BIGSERIAL PRIMARY KEY," +
                    "  userId BIGINT NOT NULL," +
                    "  projectId BIGINT NOT NULL," +
-                   "  fileName VARCHAR NOT NULL," +
-                   "  message VARCHAR NOT NULL," +
-                   "  timestamp TIMESTAMP WITH TIMEZONE NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                   "  fileName TEXT NOT NULL," +
+                   "  message TEXT NOT NULL," +
+                   "  timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP" +
                    ")");
-      stmt.execute("CREATE TABLE ipAddress IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS ipAddress (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  key VARCHAR UNIQUE NOT NULL," +
-                   "  address VARCHAR NOT NULL" +
+                   "  key TEXT UNIQUE NOT NULL," +
+                   "  address TEXT NOT NULL" +
                    ")");
-      stmt.execute("CREATE TABLE whitelist IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS whitelist (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  email VARCHAR UNIQUE NOT NULL," +
+                   "  email TEXT UNIQUE NOT NULL" +
                    ")");
-      stmt.execute("CREATE TABLE feedback IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS feedback (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  notes VARCHAR," +
-                   "  foundIn VARCHAR," +
-                   "  faultData VARCHAR," +
-                   "  comments VARCHAR," +
-                   "  datestamp VARCHAR," +
-                   "  email VARCHAR," +
-                   "  projectId VARCHAR" +
+                   "  notes TEXT," +
+                   "  foundIn TEXT," +
+                   "  faultData TEXT," +
+                   "  comments TEXT," +
+                   "  datestamp TEXT," +
+                   "  email TEXT," +
+                   "  projectId TEXT" +
                    ")");
-      stmt.execute("CREATE TABLE nonce IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS nonce (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  nonce VARCHAR UNIQUE NOT NULL," +
-                   "  userId BIGINT NOT NULL REFERENCES user ON DELETE CASCADE ON UPDATE CASCADE," +
+                   "  nonce TEXT UNIQUE NOT NULL," +
+                   "  userId BIGINT NOT NULL REFERENCES account ON DELETE CASCADE ON UPDATE CASCADE," +
                    "  projectId BIGINT NOT NULL REFERENCES project ON DELETE CASCADE ON UPDATE CASCADE," +
-                   "  timestamp TIMESTAMP WITH TIMEZONE NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                   "  timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP" +
                    ")");
-      stmt.execute("CREATE TABLE pwData IF NOT EXISTS (" +
-                   "  uuid UUID PRIMARY KEY," +
-                   "  email VARCHAR NOT NULL," +
-                   "  timestamp TIMESTAMP WITH TIMEZONE NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-                   ")");
-      stmt.execute("CREATE TABLE backpack IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS pwData (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  content VARCHAR NOT NULL" +
+                   "  uuid UUID UNIQUE NOT NULL," +
+                   "  email TEXT NOT NULL," +
+                   "  timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP" +
                    ")");
-      stmt.execute("CREATE TABLE buildStatus IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS backpack (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  host VARCHAR NOT NULL," +
+                   "  content TEXT NOT NULL" +
+                   ")");
+      stmt.execute("CREATE TABLE IF NOT EXISTS buildStatus (" +
+                   "  id BIGSERIAL PRIMARY KEY," +
+                   "  host TEXT NOT NULL," +
                    "  userId BIGINT NOT NULL," +
                    "  projectId BIGINT NOT NULL," +
                    "  progress INT," +
-                   "  CONSTRAINT buildConst UNIQUE(host, userId, projectId)" +
+                   "  UNIQUE(host, userId, projectId)" +
                    ")");
-      stmt.execute("CREATE TABLE misc IF NOT EXISTS (" +
+      stmt.execute("CREATE TABLE IF NOT EXISTS misc (" +
                    "  id BIGSERIAL PRIMARY KEY," +
-                   "  key VARCHAR UNIQUE NOT NULL," +
-                   "  value VARCHAR" +
+                   "  key TEXT UNIQUE NOT NULL," +
+                   "  value TEXT" +
                    ")");
-      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS ON user (lower(email))");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON user (userId)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON user (email)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON user (lower(email))");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON projectFile (projectId, userId, fileName)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON userFile (userId, fileName)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON ipAddress (key)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON whitelist (email)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON whitelist (lower(email))");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON nonce (nonce)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON buildStatus (host, userId, projectId)");
-      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ON misc (key)");
+      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS account_lower_email_index ON account (lower(email))");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS account_email_index ON account (email)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS account_lower_email_index ON account (lower(email))");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS projectFile_index ON projectFile (projectId, userId, fileName)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS userFile_index ON userFile (userId, fileName)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS ipAddress_key_index ON ipAddress (key)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS whitelist_email_index ON whitelist (email)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS whitelist_lower_email_index ON whitelist (lower(email))");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS nonce_nonce_index ON nonce (nonce)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS buildStatus_index ON buildStatus (host, userId, projectId)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS pwData_uuid_index ON pwData (uuid)");
+      stmt.executeUpdate("CREATE INDEX IF NOT EXISTS misc_key_index ON misc (key)");
 
       this.conn.commit();
     } catch (SQLException e) {
@@ -214,7 +216,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
-      throw CrashReport.createAndLogError(LOG, null, String.format("Failed to initialize database with url=\"%s\" user=\"%s\"", jdbcUrl, jdbcUser), e);
+      throw CrashReport.createAndLogError(LOG, null, String.format("Failed to initialize database with url=\"%s\" user=\"%s\"", jdbcUrl.get(), jdbcUser.get()), e);
     }
   }
 
@@ -228,12 +230,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return user data
    */
   @Override
-  public User getUser(String strUserId) {
-    assert strUserId != null;
+  public User getUser(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     User user = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM user WHERE userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE id = ?")) {
       qstmt.setLong(1, userId);
       ResultSet rs = qstmt.executeQuery();
 
@@ -255,7 +256,7 @@ public class PostgreSQLStorageIo implements StorageIo {
           // Here we have distinct behavior from ObjectifyStorageIo.getUser()
           // We do not create user.
           this.conn.rollback();
-          throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+          throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
         }
       }
       this.conn.commit();
@@ -281,7 +282,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return user data
    */
   @Override
-  public User getUser(String strUserId, String email) {
+  public User getUser(@Nonnull String strUserId, @Nonnull String email) {
     // Due to the colliding userId vulnerability, we omit the userId and query users merely by email
     // https://github.com/mit-cml/appinventor-sources/issues/1592
     return this.getUserFromEmail(email);
@@ -296,25 +297,17 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return user data
    */
   @Override
-  public User getUserFromEmail(String email) {
-    assert email != null;
+  public User getUserFromEmail(@Nonnull String email) {
     User user = null;
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM user WHERE lower(email) = lower(?)")) {
+      try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE lower(email) = lower(?)")) {
         qstmt.setString(1, email);
         ResultSet rs = qstmt.executeQuery();
-        long userId = rs.getLong("userId");
-        String strUserId = Long.toHexString(userId);
 
         if (rs.next()) {
+          long userId = rs.getLong("id");
+          String strUserId = Long.toHexString(userId);
           user = new User(
             strUserId,
             rs.getString("email"),
@@ -330,7 +323,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
 
       if (user == null) {
-        user = createUser(email, User.USER, false, null, save);
+        user = createUser(email, User.USER, false, null, false);
       }
       this.conn.commit();
     } catch (SQLException e) {
@@ -350,12 +343,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void setUserEmail(String strUserId, String email) {
-    assert strUserId != null && email != null;
+  public void setUserEmail(@Nonnull String strUserId, @Nonnull String email) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET email = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET email = ? WHERE id = ?")) {
       stmt.setString(1, email);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -371,7 +363,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -381,12 +373,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param userId user id
    */
   @Override
-  public void setTosAccepted(String strUserId) {
-    assert strUserId != null;
+  public void setTosAccepted(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET tosAccepted = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET tosAccepted = ? WHERE id = ?")) {
       stmt.setBoolean(1, true);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -401,7 +392,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -413,12 +404,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param sessionId the session id (uuid) value
    */
   @Override
-  public void setUserSessionId(String strUserId, String sessionId) {
-    assert strUserId != null && sessionId != null;
+  public void setUserSessionId(@Nonnull String strUserId, @Nonnull String sessionId) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET sessionId = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET sessionId = ? WHERE id = ?")) {
       stmt.setString(1, sessionId);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -433,7 +423,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -444,12 +434,16 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param hashed password
    */
   @Override
-  public void setUserPassword(String strUserId, String password) {
-    assert strUserId != null && password != null && !password.equals("");
+  public void setUserPassword(@Nonnull String strUserId, @Nullable String password) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET password = ? WHERE userId = ?")) {
+    // Empty password is not allowed in database, we simply remove it.
+    if (password.equals("")) {
+      password = null;
+    }
+
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET password = ? WHERE id = ?")) {
       stmt.setString(1, password);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -464,7 +458,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -475,12 +469,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return settings
    */
   @Override
-  public String loadSettings(String strUserId) {
-    assert strUserId != null;
+  public String loadSettings(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     String settings = null;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("SELECT settings WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("SELECT settings FROM account WHERE id = ?")) {
       stmt.setLong(1, userId);
       ResultSet rs = stmt.executeQuery();
 
@@ -498,7 +491,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (settings == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
     return settings;
   }
@@ -508,12 +501,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void setUserName(String strUserId, String name) {
-    assert strUserId != null && name != null;
+  public void setUserName(@Nonnull String strUserId, @Nonnull String name) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET name = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET name = ? WHERE id = ?")) {
       stmt.setString(1, name);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -528,7 +520,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -539,8 +531,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return name
    */
   @Override
-  public String getUserName(String strUserId) {
-    assert strUserId != null;
+  public String getUserName(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     String name = null;
 
@@ -562,7 +553,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (name == null) {        // name is not nullable
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
     return name;
   }
@@ -574,8 +565,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return name
    */
   @Override
-  public String getUserLink(String strUserId) {
-    assert strUserId != null;
+  public String getUserLink(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     String link = null;
     boolean found = false;
@@ -599,7 +589,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (!found) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
     return link;
   }
@@ -609,12 +599,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void setUserLink(String strUserId, String link) {
-    assert strUserId != null && link != null;
+  public void setUserLink(@Nonnull String strUserId, @Nonnull String link) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET link = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET link = ? WHERE id = ?")) {
       stmt.setString(1, link);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -629,7 +618,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -640,8 +629,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return emailFrequency email frequency
    */
   @Override
-  public int getUserEmailFrequency(String strUserId) {
-    assert strUserId != null;
+  public int getUserEmailFrequency(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     Integer freq = null;
 
@@ -663,7 +651,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (freq == null) {        // emailFrequency is not nullable
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
     return freq;
   }
@@ -673,12 +661,15 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void setUserEmailFrequency(String strUserId, int emailFrequency) {
-    assert strUserId != null && emailFrequency >= 0;
+  public void setUserEmailFrequency(@Nonnull String strUserId, int emailFrequency) {
+    if (emailFrequency < 0) {
+      throw new IllegalArgumentException("emailFrequency should be non-negative, but get " + emailFrequency);
+    }
+
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET emailFrequency = ? WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET emailFrequency = ? WHERE id = ?")) {
       stmt.setInt(1, emailFrequency);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -693,7 +684,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -704,12 +695,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param settings user's settings
    */
   @Override
-  public void storeSettings(String strUserId, String settings) {
-    assert strUserId != null && settings != null;
+  public void storeSettings(@Nonnull String strUserId, @Nonnull String settings) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE user SET settings = ?, visited = CURRENT_TIMESTAMP WHERE userId = ?")) {
+    try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE account SET settings = ?, visited = CURRENT_TIMESTAMP WHERE id = ?")) {
       stmt.setString(1, settings);
       stmt.setLong(2, userId);
       ret = stmt.executeUpdate();
@@ -724,7 +714,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -742,8 +732,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return project id
    */
   @Override
-  public long createProject(String strUserId, Project project, String projectSettings) {
-    assert strUserId != null && project != null && projectSettings != null;
+  public long createProject(@Nonnull String strUserId, @Nonnull Project project, @Nonnull String projectSettings) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
@@ -754,19 +743,12 @@ public class PostgreSQLStorageIo implements StorageIo {
     long attributionId = UserProject.FROMSCRATCH;
     Long projectId = null;             // Defined after insertion
 
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
     // Insert project data
     try {
 
       try (PreparedStatement ustmt = conn.prepareStatement(
-             "INSERT INTO project (userId, name, type, history, galleryId, attributionId, settings) VALUES (?, ?, ?, ?, ?, ?, ?)"
-             )) {
+             "INSERT INTO project (userId, name, type, history, galleryId, attributionId, settings) VALUES (?, ?, ?, ?, ?, ?, ?)",
+             Statement.RETURN_GENERATED_KEYS)) {
         ustmt.setLong(1, userId);
         ustmt.setString(2, name);
         ustmt.setString(3, type);
@@ -780,27 +762,28 @@ public class PostgreSQLStorageIo implements StorageIo {
         // Retrieve key
         if (ret > 0) {
           try (ResultSet keys = ustmt.getGeneratedKeys()) {
-            assert keys.next();
-            projectId = keys.getLong(1);
+            if (keys.next()) {
+              projectId = keys.getLong(1);
+            }
           }
         }
       }
 
       if (projectId == null) {
-        this.conn.rollback(save);
-        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException(""));
+        this.conn.rollback();
+        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, null), new RuntimeException("Unknown database error"));
       }
 
-      // Save source files
+      // Save files
       try {
         for (TextFile file : project.getSourceFiles()) {
           FileData.RoleEnum role = FileData.RoleEnum.SOURCE;
           String fileName = file.getFileName();
           byte[] content = file.getContent().getBytes(StorageUtil.DEFAULT_CHARSET);
-          this.createProjectFile(projectId, userId, role, fileName, content, save);
+          this.createProjectFile(projectId, userId, role, fileName, content, false);
         }
       } catch (UnsupportedEncodingException e) {
-        this.conn.rollback(save);
+        this.conn.rollback();
         throw CrashReport.createAndLogError(LOG, null, "Cannot decode file content", e);
       }
 
@@ -808,17 +791,17 @@ public class PostgreSQLStorageIo implements StorageIo {
         FileData.RoleEnum role = FileData.RoleEnum.SOURCE;
         String fileName = file.getFileName();
         byte[] content = file.getContent();
-        this.createProjectFile(projectId, userId, role, fileName, content, save);
+        this.createProjectFile(projectId, userId, role, fileName, content, false);
       }
 
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
 
     return projectId;
@@ -831,12 +814,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param projectId project ID
    */
   @Override
-  public void deleteProject(String strUserId, long projectId) {
-    assert strUserId != null;
+  public void deleteProject(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
 
     // Corresponding entries in projectFile table will be automatically remove by ON DELETE CASCADE
-    try (PreparedStatement ustmt = conn.prepareStatement("DELETE FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("DELETE FROM project WHERE id = ? AND userId = ?")) {
       ustmt.setLong(1, projectId);
       ustmt.setLong(2, userId);
       ustmt.executeUpdate();     // Don't care about result
@@ -858,17 +840,16 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  list of projects
    */
   @Override
-  public List<Long> getProjects(String strUserId) {
-    assert strUserId != null;
+  public List<Long> getProjects(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     List<Long> ret = new ArrayList<>();
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT projectId FROM project WHERE userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT id FROM project WHERE userId = ?")) {
       qstmt.setLong(1, userId);
       ResultSet rs = qstmt.executeQuery();
 
       while (rs.next()) {
-        ret.add(rs.getLong("projectId"));
+        ret.add(rs.getLong("id"));
       }
       this.conn.commit();
     } catch (SQLException e) {
@@ -890,12 +871,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param galleryId gallery ID
    */
   @Override
-  public void setProjectGalleryId(final String strUserId, final long projectId,final long galleryId) {
-    assert strUserId != null;
+  public void setProjectGalleryId(@Nonnull final String strUserId, final long projectId,final long galleryId) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET galleryId = ?, dateModified = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET galleryId = ?, modifiedDate = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
       ustmt.setLong(1, galleryId);
       ustmt.setLong(2, projectId);
       ustmt.setLong(3, userId);
@@ -911,7 +891,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -922,12 +902,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param attributionId attribution ID
    */
   @Override
-  public void setProjectAttributionId(final String strUserId, final long projectId,final long attributionId) {
-    assert strUserId != null;
+  public void setProjectAttributionId(@Nonnull final String strUserId, final long projectId,final long attributionId) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET attributionId = ?, dateModified = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET attributionId = ?, modifiedDate = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
       ustmt.setLong(1, attributionId);
       ustmt.setLong(2, projectId);
       ustmt.setLong(3, userId);
@@ -943,7 +922,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -954,12 +933,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return settings
    */
   @Override
-  public String loadProjectSettings(String strUserId, long projectId) {
-    assert strUserId != null;
+  public String loadProjectSettings(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     String settings = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT settings FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT settings FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -978,7 +956,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (settings == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return settings;
   }
@@ -990,12 +968,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param settings  project settings
    */
   @Override
-  public void storeProjectSettings(String strUserId, long projectId, String settings) {
-    assert strUserId != null && settings != null;
+  public void storeProjectSettings(@Nonnull String strUserId, long projectId, @Nonnull String settings) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET settingsId = ?, dateModified = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE project SET settings = ?, modifiedDate = CURRENT_TIMESTAMP WHERE id = ? AND userId = ?")) {
       ustmt.setString(1, settings);
       ustmt.setLong(2, projectId);
       ustmt.setLong(3, userId);
@@ -1011,7 +988,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -1023,12 +1000,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  project type
    */
   @Override
-  public String getProjectType(String strUserId, long projectId) {
-    assert strUserId != null;
+  public String getProjectType(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     String type = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT type FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT type FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -1047,7 +1023,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (type == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return type;
   }
@@ -1059,12 +1035,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return new UserProject object
    */
   @Override
-  public UserProject getUserProject(String strUserId, long projectId) {
-    assert strUserId != null;
+  public UserProject getUserProject(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     UserProject proj = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -1072,8 +1047,8 @@ public class PostgreSQLStorageIo implements StorageIo {
       if (rs.next()) {
         String name = rs.getString("name");
         String type = rs.getString("type");
-        Timestamp dateCreated = rs.getTimestamp("dateCreated");
-        Timestamp dateModified = rs.getTimestamp("dateModified");
+        Timestamp creationDate = rs.getTimestamp("creationDate");
+        Timestamp modifiedDate = rs.getTimestamp("modifiedDate");
         long attributionId = rs.getLong("attributionId");
         long galleryId = rs.getLong("galleryId");
 
@@ -1081,8 +1056,8 @@ public class PostgreSQLStorageIo implements StorageIo {
           projectId,
           name,
           type,
-          dateCreated.getTime(),
-          dateModified.getTime(),
+          creationDate.getTime(),
+          modifiedDate.getTime(),
           galleryId,
           attributionId
           );
@@ -1098,7 +1073,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (proj == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return proj;
   }
@@ -1110,34 +1085,36 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return new List of UserProject objects
    */
   @Override
-  public List<UserProject> getUserProjects(String strUserId, List<Long> projectIds) {
-    assert strUserId != null && projectIds != null && projectIds.size() > 0;
+  public List<UserProject> getUserProjects(@Nonnull String strUserId, @Nonnull List<Long> projectIds) {
     long userId = Long.parseLong(strUserId, 16);
-    int nIds = projectIds.size();
     List<UserProject> ret = new ArrayList<>();
 
+    // degradation case
+    if (projectIds.size() == 0) {
+      return ret;
+    }
+
     // Construct sql statement (Quick and dirty way for Java <= 7)
-    StringBuilder sql = new StringBuilder("SELECT * FROM project WHERE userId = ? AND projectId IN (?");
-    for (int cnt = 1; cnt < nIds; cnt += 1) {
+    StringBuilder sql = new StringBuilder("SELECT * FROM project WHERE userId = ? AND id IN (?");
+    for (int cnt = 1; cnt < projectIds.size(); cnt += 1) {
       sql.append(", ?");
     }
     sql.append(")");
 
     try (PreparedStatement qstmt = conn.prepareStatement(sql.toString())) {
       qstmt.setLong(1, userId);
-      for (int idx = 0; idx < nIds; idx += 1) {
-        qstmt.setLong(idx + 1, projectIds.get(idx));
+      for (int idx = 0; idx < projectIds.size(); idx += 1) {
+        qstmt.setLong(idx + 2, projectIds.get(idx));
       }
-
       ResultSet rs = qstmt.executeQuery();
 
       while (rs.next()) {
         UserProject proj = null;
-        long projectId = rs.getLong("projectId");
+        long projectId = rs.getLong("id");
         String name = rs.getString("name");
         String type = rs.getString("type");
-        Timestamp dateCreated = rs.getTimestamp("dateCreated");
-        Timestamp dateModified = rs.getTimestamp("dateModified");
+        Timestamp creationDate = rs.getTimestamp("creationDate");
+        Timestamp modifiedDate = rs.getTimestamp("modifiedDate");
         long attributionId = rs.getLong("attributionId");
         long galleryId = rs.getLong("galleryId");
 
@@ -1145,8 +1122,8 @@ public class PostgreSQLStorageIo implements StorageIo {
           projectId,
           name,
           type,
-          dateCreated.getTime(),
-          dateModified.getTime(),
+          creationDate.getTime(),
+          modifiedDate.getTime(),
           galleryId,
           attributionId
           );
@@ -1176,12 +1153,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return project name
    */
   @Override
-  public String getProjectName(String strUserId, long projectId) {
-    assert strUserId != null;
+  public String getProjectName(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     String name = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT name FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT name FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -1200,7 +1176,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (name == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return name;
   }
@@ -1213,18 +1189,17 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return long milliseconds
    */
   @Override
-  public long getProjectDateModified(String strUserId, long projectId) {
-    assert strUserId != null;
+  public long getProjectDateModified(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
-    Timestamp dateModified = null;
+    Timestamp modifiedDate = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT dateModified FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT modifiedDate FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
 
       if (rs.next()) {
-        dateModified = rs.getTimestamp("dateModified");
+        modifiedDate = rs.getTimestamp("modifiedDate");
       }
       this.conn.commit();
     } catch (SQLException e) {
@@ -1236,10 +1211,10 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
 
-    if (dateModified == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+    if (modifiedDate == null) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
-    return dateModified.getTime();
+    return modifiedDate.getTime();
   }
 
   /**
@@ -1250,13 +1225,12 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return String specially formatted history
    */
   @Override
-  public String getProjectHistory(String strUserId, long projectId) {
-    assert strUserId != null;
+  public String getProjectHistory(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     String history = null;
     boolean found = false;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT history FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT history FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -1276,7 +1250,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (!found) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return history;
   }
@@ -1290,18 +1264,17 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return long milliseconds
    */
   @Override
-  public long getProjectDateCreated(String strUserId, long projectId) {
-    assert strUserId != null;
+  public long getProjectDateCreated(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
-    Timestamp dateCreated = null;
+    Timestamp creationDate = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT dateCreated FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT creationDate FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
 
       if (rs.next()) {
-        dateCreated = rs.getTimestamp("dateCreated");
+        creationDate = rs.getTimestamp("creationDate");
       }
       this.conn.commit();
     } catch (SQLException e) {
@@ -1313,10 +1286,10 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
 
-    if (dateCreated == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+    if (creationDate == null) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
-    return dateCreated.getTime();
+    return creationDate.getTime();
   }
 
   // Non-project-specific file management
@@ -1328,9 +1301,13 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileNames list of file IDs to add to the projects source file list
    */
   @Override
-  public void addFilesToUser(String strUserId, String... fileNames) {
-    assert strUserId != null && fileNames.length > 0;
+  public void addFilesToUser(@Nonnull String strUserId, String... fileNames) {
     long userId = Long.parseLong(strUserId, 16);
+
+    // Degradation case
+    if (fileNames.length == 0) {
+      return;
+    }
 
     try (PreparedStatement ustmt = this.conn.prepareStatement("INSERT INTO userFile (userId, fileName) VALUES (?, ?) ON CONFLICT (userId, fileName) DO NOTHING")) {
       for (String fileName : fileNames) {
@@ -1358,8 +1335,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return list of source file ID
    */
   @Override
-  public List<String> getUserFiles(String strUserId) {
-    assert strUserId != null;
+  public List<String> getUserFiles(@Nonnull String strUserId) {
     long userId = Long.parseLong(strUserId, 16);
     List<String> ret = new ArrayList<String>();
 
@@ -1392,7 +1368,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param encoding encoding of content
    */
   @Override
-  public void uploadUserFile(String strUserId, String fileName, String content, String encoding) {
+  public void uploadUserFile(@Nonnull String strUserId, @Nonnull String fileName, @Nonnull String content, @Nonnull String encoding) {
     byte[] contentBytes;
     try {
       contentBytes = content.getBytes(content);
@@ -1410,8 +1386,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileName file name
    */
   @Override
-  public void uploadRawUserFile(String strUserId, String fileName, byte[] content) {
-    assert strUserId != null && fileName != null && content != null;
+  public void uploadRawUserFile(@Nonnull String strUserId, @Nonnull String fileName, @Nonnull byte[] content) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
@@ -1431,7 +1406,9 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), e);
     }
 
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), new RuntimeException("Unknown database error"));
+    }
   }
 
   /**
@@ -1444,8 +1421,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return text file content
    */
   @Override
-  public String downloadUserFile(String strUserId, String fileName, String encoding) {
-    assert strUserId != null && fileName != null && encoding != null;
+  public String downloadUserFile(@Nonnull String strUserId, @Nonnull String fileName, @Nonnull String encoding) {
     long userId = Long.parseLong(strUserId, 16);
     byte[] contentBytes = downloadRawUserFile(strUserId, fileName);
     String content = null;
@@ -1467,8 +1443,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return file content
    */
   @Override
-  public byte[] downloadRawUserFile(String strUserId, String fileName) {
-    assert strUserId != null && fileName != null;
+  public byte[] downloadRawUserFile(@Nonnull String strUserId, @Nonnull String fileName) {
     long userId = Long.parseLong(strUserId, 16);
     byte[] ret = null;
 
@@ -1491,7 +1466,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), new RuntimeException("Unknown database error"));
     }
     return ret;
   }
@@ -1502,8 +1477,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileName  file ID
    */
   @Override
-  public void deleteUserFile(String strUserId, String fileName) {
-    assert strUserId != null && fileName != null;
+  public void deleteUserFile(@Nonnull String strUserId, @Nonnull String fileName) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
@@ -1522,7 +1496,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, null, fileName), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -1534,7 +1508,8 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return int maximum job size in bytes
    */
   public int getMaxJobSizeBytes() {
-    throw new UnsupportedOperationException("Do not call getMaxJobSizeBytes()");
+    // TODO It maybe dynamically determined by configs. We set to 5 MiB now.
+    return 5 * 1024 * 1024;
   }
 
   /**
@@ -1547,48 +1522,26 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileNames  list of file IDs to add to the projects source file list
    */
   @Override
-  public void addSourceFilesToProject(
-    String strUserId,
-    long projectId,
-    boolean changeModDate,
-    String...fileNames) {
-
-    assert strUserId != null && fileNames.length > 0;
+  public void addSourceFilesToProject(@Nonnull String strUserId, long projectId, boolean changeModDate, String...fileNames) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
+    // Degradation case
+    if (fileNames.length == 0) {
+      return;
     }
 
     try {
-
-      // Update project modified date
-      try (PreparedStatement ustmt = this.conn.prepareStatement("UPDATE project SET dateModified = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
-        ustmt.setLong(1, projectId);
-        ustmt.setLong(2, userId);
-
-        ret = ustmt.executeUpdate();
-      }
-
-      if (ret == 0) {
-        try {
-          this.conn.rollback(save);
-        } catch (SQLException rollbackExc) {
-          throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
-        }
-        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Cannot find project"));
+      if (changeModDate) {
+        updateProjectModifiedDate(projectId, userId, false);
       }
 
       // Create files
-      this.bulkCreateProjectFile(userId, projectId, FileData.RoleEnum.SOURCE, fileNames, save);
+      this.bulkCreateProjectFile(projectId, userId, FileData.RoleEnum.SOURCE, fileNames, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1603,23 +1556,15 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileNames  list of file IDs to add to the projects output file list
    */
   @Override
-  public void addOutputFilesToProject(String strUserId, long projectId, String...fileNames) {
-    assert strUserId != null && fileNames.length > 0;
+  public void addOutputFilesToProject(@Nonnull String strUserId, long projectId, String...fileNames) {
     long userId = Long.parseLong(strUserId, 16);
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      this.bulkCreateProjectFile(userId, projectId, FileData.RoleEnum.TARGET, fileNames, save);
+      this.bulkCreateProjectFile(projectId, userId, FileData.RoleEnum.TARGET, fileNames, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1637,39 +1582,20 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileNames  list of file IDs to add to the projects source file list
    */
   @Override
-  public void removeSourceFilesFromProject(
-    String strUserId,
-    long projectId,
-    boolean changeModDate,
-    String...fileNames) {
-
-    assert strUserId != null && fileNames.length > 0;
+  public void removeSourceFilesFromProject(@Nonnull String strUserId, long projectId, boolean changeModDate, String...fileNames) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
     // Update project modified date
-    try (PreparedStatement ustmt = this.conn.prepareStatement("UPDATE project SET dateModified = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
-      ustmt.setLong(1, projectId);
-      ustmt.setLong(2, userId);
-      ret = ustmt.executeUpdate();
-
-      if (ret == 0) {
-        this.conn.rollback(save);
-        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+    try {
+      if (changeModDate) {
+        updateProjectModifiedDate(projectId, userId, false);
       }
-
-      this.bulkDeleteProjectFile(userId, projectId, FileData.RoleEnum.SOURCE, fileNames, save);
+      this.bulkDeleteProjectFile(projectId, userId, FileData.RoleEnum.SOURCE, fileNames, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1684,23 +1610,20 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileNames  list of file IDs to add to the projects source file list
    */
   @Override
-  public void removeOutputFilesFromProject(String strUserId, long projectId, String...fileNames) {
-    assert strUserId != null && fileNames.length > 0;
+  public void removeOutputFilesFromProject(@Nonnull String strUserId, long projectId, String...fileNames) {
     long userId = Long.parseLong(strUserId, 16);
 
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
+    // Degradation case
+    if (fileNames.length == 0) {
+      return;
     }
 
     try {
-      this.bulkDeleteProjectFile(userId, projectId, FileData.RoleEnum.TARGET, fileNames, save);
+      this.bulkDeleteProjectFile(projectId, userId, FileData.RoleEnum.TARGET, fileNames, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1716,15 +1639,14 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  list of source file ID
    */
   @Override
-  public List<String> getProjectSourceFiles(String strUserId, long projectId) {
-    assert strUserId != null;
+  public List<String> getProjectSourceFiles(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     List<String> ret = new ArrayList<String>();
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE userId = ? AND projectId = ? AND role = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE projectId = ? AND userId = ? AND role = ?")) {
       String roleString = FileData.RoleEnum.SOURCE.name();
-      qstmt.setLong(1, userId);
-      qstmt.setLong(2, projectId);
+      qstmt.setLong(1, projectId);
+      qstmt.setLong(2, userId);
       qstmt.setString(3, roleString);
       ResultSet rs = qstmt.executeQuery();
 
@@ -1752,15 +1674,14 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  list of output file ID
    */
   @Override
-  public List<String> getProjectOutputFiles(String strUserId, long projectId) {
-    assert strUserId != null;
+  public List<String> getProjectOutputFiles(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     List<String> ret = new ArrayList<String>();
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE userId = ? AND projectId = ? AND role = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT fileName FROM projectFile WHERE projectId = ? AND userId = ? AND role = ?")) {
       String roleString = FileData.RoleEnum.TARGET.name();
-      qstmt.setLong(1, userId);
-      qstmt.setLong(2, projectId);
+      qstmt.setLong(1, projectId);
+      qstmt.setLong(2, userId);
       qstmt.setString(3, roleString);
       ResultSet rs = qstmt.executeQuery();
 
@@ -1787,13 +1708,12 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  list of output file ID
    */
   @Override
-  public long getProjectGalleryId(String strUserId, long projectId) {
-    assert strUserId != null;
+  public long getProjectGalleryId(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     Long galleryId = null;
     boolean found = false;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT galleryId FROM project WHERE projectId = ? AND userId = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT galleryId FROM project WHERE id = ? AND userId = ?")) {
       qstmt.setLong(1, projectId);
       qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
@@ -1813,7 +1733,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (!found) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
     }
     return galleryId != null ? galleryId : UserProject.NOTPUBLISHED;
   }
@@ -1848,7 +1768,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (!found) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, projectId, null), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, projectId, null), new RuntimeException("Unknown database error"));
     }
     return attributionId != null ? attributionId : UserProject.FROMSCRATCH;
   }
@@ -1863,15 +1783,9 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return modification date for project
    */
   @Override
-  public long uploadFile(
-    long projectId,
-    String fileName,
-    String strUserId,
-    String content,
-    String encoding)
+  public long uploadFile(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull String content, @Nonnull String encoding)
     throws BlocksTruncatedException {
 
-    assert strUserId != null && fileName != null && content != null && encoding != null;
     long userId = Long.parseLong(strUserId, 16);
     long ts;
 
@@ -1882,19 +1796,12 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, " + makeErrorMsg(null, projectId, fileName), e);
     }
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      ts = updateProjectFileContent(strUserId, projectId, fileName, contentBytes, false, save);
+      ts = updateProjectFileContent(projectId, userId, fileName, contentBytes, false, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1914,14 +1821,8 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return modification date for project
    */
   @Override
-  public long uploadFileForce(
-    long projectId,
-    String fileName,
-    String strUserId,
-    String content,
-    String encoding)  {
+  public long uploadFileForce(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull String content, @Nonnull String encoding)  {
 
-    assert strUserId != null && fileName != null && content != null && encoding != null;
     long userId = Long.parseLong(strUserId, 16);
     long ts;
 
@@ -1932,19 +1833,12 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding," + makeErrorMsg(null, projectId, fileName), e);
     }
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      ts = updateProjectFileContent(strUserId, projectId, fileName, contentBytes, true, save);
+      ts = updateProjectFileContent(projectId, userId, fileName, contentBytes, true, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -1964,30 +1858,17 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return modification date for project
    */
   @Override
-  public long uploadRawFile(
-    long projectId,
-    String fileName,
-    String strUserId,
-    boolean force,
-    byte[] content) {
+  public long uploadRawFile(long projectId, @Nonnull String fileName, @Nonnull String strUserId, boolean force, @Nonnull byte[] content) {
 
-    assert strUserId != null;
     long userId = Long.parseLong(strUserId, 16);
     long ts;
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      ts = updateProjectFileContent(strUserId, projectId, fileName, content, false, save);
+      ts = updateProjectFileContent(projectId, userId, fileName, content, false, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2006,24 +1887,16 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return modification date for project
    */
   @Override
-  public long uploadRawFileForce(long projectId, String fileName, String strUserId, byte[] content) {
-    assert strUserId != null;
+  public long uploadRawFileForce(long projectId, @Nonnull String fileName, @Nonnull String strUserId, @Nonnull byte[] content) {
     long userId = Long.parseLong(strUserId, 16);
     long ts;
 
-    Savepoint save;
     try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
-    try {
-      ts = updateProjectFileContent(strUserId, projectId, fileName, content, true, save);
+      ts = updateProjectFileContent(projectId, userId, fileName, content, true, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2040,18 +1913,10 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return modification date for project
    */
   @Override
-  public long deleteFile(String strUserId, long projectId, String fileName) {
-    assert strUserId != null && fileName != null;
+  public long deleteFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
     long ts;
-
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
 
     try {
       try (PreparedStatement ustmt = this.conn.prepareStatement("DELETE FROM projectFile WHERE projectId = ? AND userId = ? AND fileName = ?")) {
@@ -2062,15 +1927,15 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
 
       if (ret == 0) {
-        this.conn.rollback(save);
-        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException(""));
+        this.conn.rollback();
+        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException("Unknown database error"));
       }
 
-      ts = updateProjectModifiedDate(projectId, userId, fileName, save);
+      ts = updateProjectModifiedDate(projectId, userId, false);
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2090,10 +1955,9 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  text file content
    */
   @Override
-  public String downloadFile(String strUserId, long projectId, String fileName, String encoding) {
-    assert strUserId != null && fileName != null && encoding != null;
+  public String downloadFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName, @Nonnull String encoding) {
     long userId = Long.parseLong(strUserId, 16);
-    byte[] contentBytes = downloadProjectFile(userId, projectId, fileName);
+    byte[] contentBytes = downloadProjectFile(projectId, userId, fileName);
     String content = null;
 
     try {
@@ -2113,8 +1977,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param message The message from the exception on the client
    */
   @Override
-  public void recordCorruption(String strUserId, long projectId, String fileName, String message) {
-    assert strUserId != null && fileName != null && message != null;
+  public void recordCorruption(@Nonnull String strUserId, long projectId, @Nonnull String fileName, @Nonnull String message) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
@@ -2134,7 +1997,9 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), e);
     }
 
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException("Unknown database error"));
+    }
   }
 
   /**
@@ -2146,10 +2011,9 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return  file content
    */
   @Override
-  public byte[] downloadRawFile(String strUserId, long projectId, String fileName) {
-    assert strUserId != null && fileName != null;
+  public byte[] downloadRawFile(@Nonnull String strUserId, long projectId, @Nonnull String fileName) {
     long userId = Long.parseLong(strUserId, 16);
-    byte[] contentBytes = downloadProjectFile(userId, projectId, fileName);
+    byte[] contentBytes = downloadProjectFile(projectId, userId, fileName);
     return contentBytes;
   }
 
@@ -2161,12 +2025,13 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return fileName the temporary fileName
    */
   @Override
-  public String uploadTempFile(byte [] content) throws IOException {
-    assert content != null;
+  public String uploadTempFile(@Nonnull byte [] content) throws IOException {
     Long fileId = null;
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO tempFile (content) VALUES (?)")) {
+    try (PreparedStatement ustmt = conn.prepareStatement(
+           "INSERT INTO tempFile (content) VALUES (?)",
+           Statement.RETURN_GENERATED_KEYS)) {
       ustmt.setBytes(1, content);
       ret = ustmt.executeUpdate();
 
@@ -2188,7 +2053,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (fileId == null) {
-      throw CrashReport.createAndLogError(LOG, null, "Database error in uploadTempFile()", new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, "Database error in uploadTempFile()", new RuntimeException("Unknown database error"));
     }
 
     String fileName = "__TEMP__" + Long.toHexString(fileId);
@@ -2205,8 +2070,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return inputstream
    */
   @Override
-  public InputStream openTempFile(String fileName) throws IOException {
-    assert fileName != null;
+  public InputStream openTempFile(@Nonnull String fileName) throws IOException {
 
     if (!fileName.substring(0, 8).equals("__TEMP__")) {
       throw new IllegalArgumentException("fileName argument should start with \"__TEMP__\", but get \"" + fileName + "\"");
@@ -2234,7 +2098,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (stream == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, null, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, null, fileName), new RuntimeException("Unknown database error"));
     }
     return stream;
   }
@@ -2247,8 +2111,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param fileName
    */
   @Override
-  public void deleteTempFile(String fileName) throws IOException {
-    assert fileName != null;
+  public void deleteTempFile(@Nonnull String fileName) throws IOException {
 
     // Get file id
     if (!fileName.substring(0, 8).equals("__TEMP__")) {
@@ -2271,7 +2134,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (ret == 0) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, null, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(null, null, fileName), new RuntimeException("Unknown database error"));
     }
   }
 
@@ -2290,13 +2153,6 @@ public class PostgreSQLStorageIo implements StorageIo {
       "This is still a prototype.  It would be a good idea to frequently back up " +
       "your projects to local storage.";
     Motd motd = null;
-
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
 
     try {
       String configText = null;
@@ -2344,15 +2200,15 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
 
         if (ret == 0) {
-          this.conn.rollback(save);
-          throw CrashReport.createAndLogError(LOG, null, "Database error in getCurrentMotd()", new RuntimeException(""));
+          this.conn.rollback();
+          throw CrashReport.createAndLogError(LOG, null, "Database error in getCurrentMotd()", new RuntimeException("Unknown database error"));
         }
       }
 
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2360,7 +2216,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (motd == null) {
-      throw CrashReport.createAndLogError(LOG, null, "Database error in getCurrentMotd()", new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, "Database error in getCurrentMotd()", new RuntimeException("Unknown database error"));
     }
 
     return motd;
@@ -2379,7 +2235,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(
-    String strUserId,
+    @Nonnull String strUserId,
     long projectId,
     boolean includeProjectHistory,
     boolean includeAndroidKeystore,
@@ -2389,7 +2245,6 @@ public class PostgreSQLStorageIo implements StorageIo {
     final boolean forGallery,
     final boolean fatalError) throws IOException {
 
-    assert strUserId != null;
     long userId = Long.parseLong(strUserId, 16);
     List<FileData> files = new ArrayList<FileData>();
     boolean projectFound = false;
@@ -2399,7 +2254,7 @@ public class PostgreSQLStorageIo implements StorageIo {
 
     try {
       // Get project
-      try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM project WHERE projectId = ? AND userId = ?")) {
+      try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM project WHERE id = ? AND userId = ?")) {
         qstmt.setLong(1, projectId);
         qstmt.setLong(2, userId);
         ResultSet rs = qstmt.executeQuery();
@@ -2424,9 +2279,16 @@ public class PostgreSQLStorageIo implements StorageIo {
 
         ResultSet rs = qstmt.executeQuery();
         while (rs.next()) {
+          FileData.RoleEnum role;
+          try {
+            role = FileData.RoleEnum.valueOf(rs.getString("role"));
+          } catch (IllegalArgumentException e) {
+            throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
+          }
+
           FileData fd = new FileData();
           fd.fileName = rs.getString("fileName");
-          fd.role = FileData.RoleEnum.valueOf(rs.getString("fileName"));
+          fd.role = role;
           fd.content = rs.getBytes("content");
 
           // Kick out some files
@@ -2434,17 +2296,20 @@ public class PostgreSQLStorageIo implements StorageIo {
             this.conn.rollback();
             throw new IOException("FATAL Error, external component in gallery app");
           }
-          if (fd.fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-            // Skip legacy remix history files that were previous stored with the project
+          if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
             continue;
           }
-          if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+          if (fd.fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+            // Skip legacy remix history files that were previous stored with the project
             continue;
           }
           if (!includeScreenShots && fd.fileName.startsWith("screenshots")) {
             continue;
           }
-          if ( !includeYail && fd.fileName.endsWith(".yail")) {
+
+          // We intentionally remove *.yail files for AI1 compatibility
+          // TODO remove it in the future
+          if (!includeYail && fd.fileName.endsWith(".yail")) {
             continue;
           }
 
@@ -2456,7 +2321,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       if (includeAndroidKeystore) {
         try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM userFile WHERE userId = ? AND fileName = ? AND content IS NOT NULL AND length(content) > 0")) {
           qstmt.setLong(1, userId);
-          qstmt.setString(1, StorageUtil.ANDROID_KEYSTORE_FILENAME);
+          qstmt.setString(2, StorageUtil.ANDROID_KEYSTORE_FILENAME);
           ResultSet rs = qstmt.executeQuery();
 
           if (rs.next()) {
@@ -2483,7 +2348,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     // Create zip file
-    // TODO use temp file instead in-memory buffer
+    // TODO Should we store in FS instead in-memory buffer?
     int fileCount = 0;
 
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
@@ -2516,7 +2381,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     // Finalize
     zipStream.close();
 
-    assert projectName != null;
+    assert projectFound && projectName != null;
     if (zipName == null) {
       zipName = projectName + ".aia";
     }
@@ -2537,29 +2402,20 @@ public class PostgreSQLStorageIo implements StorageIo {
    *    email address
    */
   @Override
-  public String findUserByEmail(String email) throws NoSuchElementException {
-    assert email != null;
+  public String findUserByEmail(@Nonnull String email) throws NoSuchElementException {
     Long userId = null;
 
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
-
     // Case-sensitive search
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM user WHERE email = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE email = ?")) {
       qstmt.setString(1, email);
       ResultSet rs = qstmt.executeQuery();
-
       if (rs.next()) {
-        userId = rs.getLong("userId");
+        userId = rs.getLong("id");
       }
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2570,7 +2426,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw new NoSuchElementException("Couldn't find a user with email: " + email);
     }
     String strUserId = Long.toHexString(userId);
-    return strUserId = null;
+    return strUserId;
   }
 
   /**
@@ -2582,16 +2438,8 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public String findIpAddressByKey(String key) {
-    assert key != null;
+  public String findIpAddressByKey(@Nonnull String key) {
     String addr = null;
-
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT address FROM ipAddress WHERE key = ?")) {
       qstmt.setString(1, key);
@@ -2603,7 +2451,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2626,11 +2474,10 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void storeIpAddressByKey(String key, String ipAddress) {
-    assert key != null && ipAddress != null;
+  public void storeIpAddressByKey(@Nonnull String key, @Nonnull String ipAddress) {
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO ipAddress (key, address) VALUES (?, ?) ON CONFLICT (key) DO UPDATE address = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO ipAddress (key, address) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET address = ?")) {
       ustmt.setString(1, key);
       ustmt.setString(2, ipAddress);
       ustmt.setString(3, ipAddress);
@@ -2645,12 +2492,13 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Database error in storeIpAddressByKey()", e);
     }
 
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, String.format("key=%s, ipAddress=%s", key, ipAddress), new RuntimeException("Unknown database error"));
+    }
   }
 
   @Override
-  public boolean checkWhiteList(String email) {
-    assert email != null;
+  public boolean checkWhiteList(@Nonnull String email) {
     boolean pass = false;
 
     // Try to get existing user
@@ -2673,13 +2521,13 @@ public class PostgreSQLStorageIo implements StorageIo {
 
   @Override
   public void storeFeedback(
-    final String notes,
-    final String foundIn,
-    final String faultData,
-    final String comments,
-    final String datestamp,
-    final String email,
-    final String projectId) {
+    @Nonnull final String notes,
+    @Nonnull final String foundIn,
+    @Nonnull final String faultData,
+    @Nonnull final String comments,
+    @Nonnull final String datestamp,
+    @Nonnull final String email,
+    @Nonnull final String projectId) {
 
     int ret = 0;
 
@@ -2703,11 +2551,13 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
       throw CrashReport.createAndLogError(LOG, null, "Database error in storeFeedback()", e);
     }
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, "Error in storeFeedback()", new RuntimeException("Unknown database error"));
+    }
   }
 
   @Override
-  public Nonce getNoncebyValue(String nonceValue) {
+  public Nonce getNoncebyValue(@Nonnull String nonceValue) {
     Nonce nonce = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM nonce WHERE nonce = ?")) {
@@ -2737,19 +2587,18 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeNonce(final String nonceValue, final String strUserId, final long projectId) {
-    assert strUserId != null && nonceValue != null;
+  public void storeNonce(@Nonnull final String nonceValue, @Nonnull final String strUserId, final long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
     try (PreparedStatement ustmt = conn.prepareStatement(
-           "INSERT INTO nonce (userId, projectId, nonce) VALUES (?, ?, ?) ON CONFLICT (nonce) DO UPDATE userId = ?, projectId = ?"
+           "INSERT INTO nonce (projectId, userId, nonce) VALUES (?, ?, ?) ON CONFLICT (nonce) DO UPDATE SET projectId = ?, userId = ?"
            )) {
-      ustmt.setLong(1, userId);
-      ustmt.setLong(2, projectId);
+      ustmt.setLong(1, projectId);
+      ustmt.setLong(2, userId);
       ustmt.setString(3, nonceValue);
-      ustmt.setLong(4, userId);
-      ustmt.setLong(5, projectId);
+      ustmt.setLong(4, projectId);
+      ustmt.setLong(5, userId);
 
       ret = ustmt.executeUpdate();
       this.conn.commit();
@@ -2761,7 +2610,10 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
       throw CrashReport.createAndLogError(LOG, null, "Database error in storeNonce()", e);
     }
-    assert ret > 0;
+
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
+    }
   }
 
   // Cleanup expired nonces
@@ -2785,13 +2637,13 @@ public class PostgreSQLStorageIo implements StorageIo {
   // Check to see if user needs projects upgraded (moved to GCS)
   // if so, add task to task queue
   @Override
-  public void checkUpgrade(String strUserId) {
+  public void checkUpgrade(@Nonnull String strUserId) {
     // Do nothing here
   }
 
   // called by the task queue to actually upgrade user's projects
   @Override
-  public void doUpgrade(String strUserId) {
+  public void doUpgrade(@Nonnull String strUserId) {
     // Do nothing here
   }
 
@@ -2805,13 +2657,6 @@ public class PostgreSQLStorageIo implements StorageIo {
     final int DEFAULT_HEIGHT = 100;
 
     SplashConfig result = null;
-
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
 
     try {
       String configText = null;
@@ -2853,7 +2698,7 @@ public class PostgreSQLStorageIo implements StorageIo {
         result = new SplashConfig(DEFAULT_VERSION, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_CONTENT);
 
         int ret = 0;
-        try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO misc (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE value = ?")) {
+        try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO misc (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = ?")) {
           String configString = config.toString();
           ustmt.setString(1, SPLASH_CONFIG_KEY);
           ustmt.setString(2, configString);
@@ -2862,15 +2707,15 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
 
         if (ret == 0) {
-          this.conn.rollback(save);
-          throw CrashReport.createAndLogError(LOG, null, "Database error in getSplashConfig()", new RuntimeException(""));
+          this.conn.rollback();
+          throw CrashReport.createAndLogError(LOG, null, "Database error in getSplashConfig()", new RuntimeException("Unknown database error"));
         }
 
         this.conn.commit();
       }
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2880,43 +2725,37 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public StoredData.PWData createPWData(String email) {
-    assert email != null;
+  public StoredData.PWData createPWData(@Nonnull String email) {
     int ret = 0;
+    Long id = null;
     String uuid = null;
     Timestamp ts = null;
-
-    Savepoint save;
-    try {
-      save = this.conn.setSavepoint();
-    } catch (SQLException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Cannot set save point", e);
-    }
 
     // It has (very) low probability to conflicts on colliding uuid.
     // If you have bad luck. We fail it anyway.
     try {
       try (PreparedStatement ustmt = conn.prepareStatement(
-             "INSERT INTO pwData (uuid, email) VALUES (uuid_generate_v4(), ?) ON CONFLICT (uuid) DO UPDATE SET uuid = uuid_generate_v4()"
-             )) {
+             "INSERT INTO pwData (uuid, email) VALUES (uuid_generate_v4(), ?) ON CONFLICT (uuid) DO UPDATE SET uuid = uuid_generate_v4()",
+             Statement.RETURN_GENERATED_KEYS)) {
         ustmt.setString(1, email);
         ret = ustmt.executeUpdate();
         if (ret > 0) {
           try (ResultSet keys = ustmt.getGeneratedKeys()) {
             if (keys.next()) {
-              uuid = keys.getString(1);
+              id = keys.getLong(1);
             }
           }
         }
       }
 
       // Get timestamp
-      if (uuid != null) {
-        try (PreparedStatement qstmt = conn.prepareStatement("SELECT timestamp FROM pwData WHERE uuid = ?")) {
-          qstmt.setString(1, uuid);
+      if (id != null) {
+        try (PreparedStatement qstmt = conn.prepareStatement("SELECT uuid::text AS uuid, timestamp FROM pwData WHERE id = ?")) {
+          qstmt.setLong(1, id);
           ResultSet rs = qstmt.executeQuery();
 
           if (rs.next()) {
+            uuid = rs.getString("uuid");
             ts = rs.getTimestamp("timestamp");
           }
         }
@@ -2925,7 +2764,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       this.conn.commit();
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -2933,9 +2772,10 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     // Finalize
-    if (ts == null) {
-      throw CrashReport.createAndLogError(LOG, null, "Database error in createPWData()", new RuntimeException(""));
+    if (id == null) {
+      throw CrashReport.createAndLogError(LOG, null, "Database error in createPWData()", new RuntimeException("Unknown database error"));
     }
+
     PWData result = new PWData();
     result.id = uuid;
     result.email = email;
@@ -2944,10 +2784,10 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public StoredData.PWData findPWData(String uuid) {
+  public StoredData.PWData findPWData(@Nonnull String uuid) {
     PWData ret = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM pwData WHERE uuid = ?")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM pwData WHERE uuid::text = lower(?)")) {
       qstmt.setString(1, uuid);
       ResultSet rs = qstmt.executeQuery();
 
@@ -2995,18 +2835,18 @@ public class PostgreSQLStorageIo implements StorageIo {
   // Routines for user admin interface
 
   @Override
-  public List<AdminUser> searchUsers(String partialEmail) {
-    List<AdminUser> ret = new ArrayList<AdminUser>();
+  public List<AdminUser> searchUsers(@Nonnull String partialEmail) {
+    List<AdminUser> result = new ArrayList<AdminUser>();
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM user WHERE email LIKE CONCAT(?, '%') LIMIT 20")) {
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE email LIKE CONCAT(?, '%') LIMIT 20")) {
       qstmt.setString(1, partialEmail);
       ResultSet rs = qstmt.executeQuery();
 
       while (rs.next()) {
-        long userId = rs.getLong("userId");
+        long userId = rs.getLong("id");
         String strUserId = Long.toHexString(userId);
         Timestamp visitedTs = rs.getTimestamp("visited");
-        Date visitedDt = new Date(visitedTs.getTime());
+        Date visitedDt = visitedTs != null ? new Date(visitedTs.getTime()) : null;
         AdminUser user = new AdminUser(
           strUserId,
           rs.getString("name"),
@@ -3015,6 +2855,7 @@ public class PostgreSQLStorageIo implements StorageIo {
           rs.getBoolean("isAdmin"),
           rs.getInt("type") == User.MODERATOR,
           visitedDt);
+        result.add(user);
       }
       this.conn.commit();
     } catch (SQLException e) {
@@ -3026,19 +2867,17 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Database error in searchUsers()", e);
     }
 
-    return ret;
+    return result;
   }
 
   @Override
-  public void storeUser(AdminUser user) throws AdminInterfaceException {
+  public void storeUser(@Nonnull AdminUser user) throws AdminInterfaceException {
     // The implementation has distinct behavior from ObjectifyStorageIo.storeUser()
     // We require non-null user.getId() and existince of this user.
 
-    assert user != null;
-    int ret = 0;
-
     String strUserId = user.getId();
-    long userId = Long.parseLong(strUserId, 16);
+    Long userId = strUserId != null ? Long.parseLong(strUserId, 16) : null;
+
     String newPassword = user.getPassword();
     if (newPassword.equals("")) {
       newPassword = null;
@@ -3047,26 +2886,36 @@ public class PostgreSQLStorageIo implements StorageIo {
     boolean newIsAdmin = user.getIsAdmin();
     int newType = user.getIsModerator() ? User.MODERATOR : User.USER;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("UPDATE user SET email = ?, isAdmin = ?, type = ?, password = COALESCE(?, password) WHERE userId = ?")) {
-      ustmt.setString(1, newEmail);
-      ustmt.setBoolean(2, newIsAdmin);
-      ustmt.setInt(3, newType);
-      ustmt.setString(4, newPassword);
-      ustmt.setLong(5, userId);
-      ret = ustmt.executeUpdate();
+    try {
+      if (userId != null) {
+        // If it conflicts on email, we fail it anyway.
+        int ret = 0;
+        try (PreparedStatement ustmt = conn.prepareStatement("UPDATE account SET email = ?, isAdmin = ?, type = ?, password = COALESCE(?, password) WHERE id = ?")) {
+          ustmt.setString(1, newEmail);
+          ustmt.setBoolean(2, newIsAdmin);
+          ustmt.setInt(3, newType);
+          ustmt.setString(4, newPassword);
+          ustmt.setLong(5, userId);
+          ret = ustmt.executeUpdate();
+        }
+
+        if (ret == 0) {
+          this.conn.rollback();
+          throw new AdminInterfaceException("Cannot find user with userId = " + strUserId);
+        }
+
+      } else {
+        createUser(newEmail, newType, newIsAdmin, newPassword, false);
+      }
+
       this.conn.commit();
     } catch (SQLException e) {
-      // If it conflicts on email, we fail it anyway.
       try {
         this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
       throw CrashReport.createAndLogError(LOG, null, "Database error in storeUser()", e);
-    }
-
-    if (ret == 0) {
-      throw new AdminInterfaceException("Cannot find user with userId = " + strUserId);
     }
   }
 
@@ -3085,8 +2934,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return the contents of the backpack as an XML encoded string
    */
   @Override
-  public String downloadBackpack(String backPackId) {
-    assert backPackId != null;
+  public String downloadBackpack(@Nonnull String backPackId) {
     String ret = "[]";
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT content FROM backpack WHERE id = ?")) {
@@ -3118,7 +2966,7 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @param String content the new contents of the backpack
    */
   @Override
-  public void uploadBackpack(String backPackId, String content) {
+  public void uploadBackpack(@Nonnull String backPackId, @Nonnull String content) {
     int ret = 0;
     try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO backpack (id, content) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET content = ?")) {
       ustmt.setString(1, backPackId);
@@ -3135,7 +2983,9 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Database error in uploadBackpack()", e);
     }
 
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, String.format("backPackId=?", backPackId), new RuntimeException("Unknown database error"));
+    }
   }
 
   /**
@@ -3156,12 +3006,11 @@ public class PostgreSQLStorageIo implements StorageIo {
    *
    */
   @Override
-  public void storeBuildStatus(String strUserId, long projectId, int progress) {
-    assert strUserId != null;
+  public void storeBuildStatus(@Nonnull String strUserId, long projectId, int progress) {
     long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO buildStatus (host, userId, projectId, progress) VALUES (?, ?, ?, ?) ON CONFLICT (userId, projectId) DO UPDATE SET progress = ?")) {
+    try (PreparedStatement ustmt = conn.prepareStatement("INSERT INTO buildStatus (host, userId, projectId, progress) VALUES (?, ?, ?, ?) ON CONFLICT (host, userId, projectId) DO UPDATE SET progress = ?")) {
       ustmt.setString(1, HOST_ID);
       ustmt.setLong(2, userId);
       ustmt.setLong(3, projectId);
@@ -3178,18 +3027,19 @@ public class PostgreSQLStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Database error in storeBuildStatus()", e);
     }
 
-    assert ret > 0;
+    if (ret == 0) {
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
+    }
   }
 
   @Override
-  public int getBuildStatus(String strUserId, long projectId) {
-    assert strUserId != null;
+  public int getBuildStatus(@Nonnull String strUserId, long projectId) {
     long userId = Long.parseLong(strUserId, 16);
     Integer ret = null;
 
-    try (PreparedStatement qstmt = conn.prepareStatement("SELECT progress FROM buildStatus WHERE userId = ? AND projectId = ?")) {
-      qstmt.setLong(1, userId);
-      qstmt.setLong(2, projectId);
+    try (PreparedStatement qstmt = conn.prepareStatement("SELECT progress FROM buildStatus WHERE projectId = ? AND userId = ?")) {
+      qstmt.setLong(1, projectId);
+      qstmt.setLong(2, userId);
       ResultSet rs = qstmt.executeQuery();
 
       if (rs.next()) {
@@ -3208,8 +3058,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     return ret != null ? ret : 50;
   }
 
-  private User createUser(String email, int type, boolean isAdmin, String password, Savepoint save) {
-    assert email != null;
+  private User createUser(@Nonnull String email, int type, boolean isAdmin, @Nonnull String password, boolean doCommit) {
 
     // Insert new user
     Long userId = null;
@@ -3219,44 +3068,50 @@ public class PostgreSQLStorageIo implements StorageIo {
     String nonEmptyPassword = password == null || password.equals("") ? null : password;
     int ret = 0;
 
-    try (PreparedStatement ustmt = conn.prepareStatement(
-           "INSERT INTO user (name, type, emailFrequency, tosAccepted, isAdmin, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)"
-           )) {
-      ustmt.setString(1, name);
-      ustmt.setInt(2, type);
-      ustmt.setInt(3, emailFrequency);
-      ustmt.setBoolean(4, tosAccepted);
-      ustmt.setBoolean(5, isAdmin);
-      ustmt.setString(6, email);
-      ustmt.setString(7, nonEmptyPassword);
-      ret = ustmt.executeUpdate();
+    try {
+      try (PreparedStatement ustmt = conn.prepareStatement(
+             "INSERT INTO account (name, type, emailFrequency, tosAccepted, isAdmin, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)",
+             Statement.RETURN_GENERATED_KEYS)) {
+        ustmt.setString(1, name);
+        ustmt.setInt(2, type);
+        ustmt.setInt(3, emailFrequency);
+        ustmt.setBoolean(4, tosAccepted);
+        ustmt.setBoolean(5, isAdmin);
+        ustmt.setString(6, email);
+        ustmt.setString(7, nonEmptyPassword);
+        ret = ustmt.executeUpdate();
 
-      // Get userId
-      if (ret > 0) {
-        try (ResultSet keys = ustmt.getGeneratedKeys()) {
-          if (keys.next()) {
-            userId = keys.getLong(1);
+        // Get userId
+        if (ret > 0) {
+          try (ResultSet keys = ustmt.getGeneratedKeys()) {
+            if (keys.next()) {
+              userId = keys.getLong(1);
+            }
           }
         }
+      }
+
+      if (userId == null) {
+        try {
+          this.conn.rollback();
+        } catch (SQLException rollbackExc) {
+          throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
+        }
+        throw CrashReport.createAndLogError(LOG, null, "email=" + email, new RuntimeException("Unknown database error"));
+      }
+
+      if (doCommit) {
+        this.conn.commit();
       }
     } catch (SQLException e) {
       // One possible case is that two servers insert users of the same email.
       // We fail one of them.
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
       throw CrashReport.createAndLogError(LOG, null, "Database error in createUser()", e);
-    }
-
-    if (userId == null) {
-      try {
-        this.conn.rollback(save);
-      } catch (SQLException rollbackExc) {
-        throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
-      }
-      throw CrashReport.createAndLogError(LOG, null, "email=" + email, new RuntimeException(""));
     }
 
     String strUserId = Long.toHexString(userId);
@@ -3278,10 +3133,10 @@ public class PostgreSQLStorageIo implements StorageIo {
   private void createProjectFile(
     long projectId,
     long userId,
-    FileData.RoleEnum role,
-    String fileName,
-    byte[] content,
-    Savepoint save) {
+    @Nonnull FileData.RoleEnum role,
+    @Nonnull String fileName,
+    @Nonnull byte[] content,
+    boolean doCommit) {
 
     int ret = 0;
     String roleString = role.name();
@@ -3298,24 +3153,30 @@ public class PostgreSQLStorageIo implements StorageIo {
       ustmt.setBytes(7, content);
 
       ret = ustmt.executeUpdate();
-      this.conn.commit();
+      if (ret == 0) {
+        this.conn.rollback();
+        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException("Unknown database error"));
+      }
+
+      if (doCommit) {
+        this.conn.commit();
+      }
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
     }
-
-    assert ret > 0;
   }
 
   private void bulkCreateProjectFile(
-    long userId,
     long projectId,
-    FileData.RoleEnum role,
-    String[] fileNames,
-    Savepoint save) {
+    long userId,
+    @Nonnull FileData.RoleEnum role,
+    @Nonnull String[] fileNames,
+    boolean doCommit) {
+    // We expect this block work when fileNames is empty
 
     String roleString = role.name();
 
@@ -3331,28 +3192,28 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
 
       ustmt.executeBatch();     // We don't care about the result
-      this.conn.commit();
+      if (doCommit) {
+        this.conn.commit();
+      }
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
       String strUserId = Long.toHexString(userId);
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
-
   }
 
   private void bulkDeleteProjectFile(
-    long userId,
     long projectId,
-    FileData.RoleEnum role,
-    String[] fileNames,
-    Savepoint save) {
-
-    assert role != null && fileNames != null && fileNames.length > 0 && save != null;
+    long userId,
+    @Nonnull FileData.RoleEnum role,
+    @Nonnull String[] fileNames,
+    boolean doCommit) {
     String roleString = role.name();
+    // We expect this block work when fileNames is empty
 
     try (PreparedStatement ustmt = this.conn.prepareStatement("DELETE FROM projectFile WHERE projectId = ? AND userId = ? AND fileName = ?")) {
       for (String fname : fileNames) {
@@ -3363,10 +3224,12 @@ public class PostgreSQLStorageIo implements StorageIo {
       }
 
       ustmt.executeBatch();     // We don't care about the result
-      this.conn.commit();
+      if (doCommit) {
+        this.conn.commit();
+      }
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
@@ -3374,20 +3237,18 @@ public class PostgreSQLStorageIo implements StorageIo {
       String strUserId = Long.toHexString(userId);
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
-
   }
 
   private long updateProjectFileContent(
-    String strUserId,
     long projectId,
-    String fileName,
-    byte[] content,
+    long userId,
+    @Nonnull String fileName,
+    @Nonnull byte[] content,
     boolean force,
-    Savepoint save) {
+    boolean doCommit) {
 
-    assert strUserId != null && fileName != null && content != null && save != null;
-    long userId = Long.parseLong(strUserId, 16);
     int ret = 0;
+    long time;
 
     // Update project modified date
     try (PreparedStatement ustmt = this.conn.prepareStatement("UPDATE projectFile SET content = ? WHERE projectId = ? AND userId = ? AND fileName = ?")) {
@@ -3396,35 +3257,44 @@ public class PostgreSQLStorageIo implements StorageIo {
       ustmt.setLong(3, userId);
       ustmt.setString(4, fileName);
       ret = ustmt.executeUpdate();
+
+      // Check if file is found
+      if (ret == 0) {
+        if (fileName.endsWith(".yail") || fileName.endsWith(".png")) {
+          // <Screen>.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a <Screen>.yail file
+          // TODO remove it in the future
+          this.createProjectFile(projectId, userId, FileData.RoleEnum.SOURCE, fileName, content, false);
+
+        } else {
+          this.conn.rollback();
+          throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException("Unknown database error"));
+        }
+      }
+
+      time = updateProjectModifiedDate(projectId, userId, false);
+      if (doCommit) {
+        this.conn.commit();
+      }
+
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
       throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), e);
     }
 
-    if (ret == 0) {             // Fail if such file is not found
-      try {
-        this.conn.rollback(save);
-      } catch (SQLException rollbackExc) {
-        throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
-      }
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException(""));
-    }
-
-    long ts = updateProjectModifiedDate(userId, projectId, fileName, save);
-    return ts;
+    return time;
   }
 
-  private byte[] downloadProjectFile(long userId, long projectId, String fileName) {
-    assert fileName != null;
+  private byte[] downloadProjectFile(long projectId, long userId, @Nonnull String fileName) {
     byte[] contentBytes = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT content FROM projectFile WHERE projectId = ? AND userId = ? AND fileName = ?")) {
-      qstmt.setLong(1, userId);
-      qstmt.setLong(2, projectId);
+      qstmt.setLong(1, projectId);
+      qstmt.setLong(2, userId);
       qstmt.setString(3, fileName);
       ResultSet rs = qstmt.executeQuery();
 
@@ -3442,22 +3312,26 @@ public class PostgreSQLStorageIo implements StorageIo {
     }
 
     if (contentBytes == null) {
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new FileNotFoundException(fileName));
     }
+
     return contentBytes;
   }
 
   private String makeErrorMsg(
-    final Long userId,
-    final Long projectId,
-    final String fileName) {
+    @Nullable final Long userId,
+    @Nullable final Long projectId,
+    @Nullable final String fileName) {
 
-    assert userId != null || projectId != null && fileName != null;
+    if (userId == null && projectId == null && fileName == null) {
+      throw new IllegalArgumentException("It's not allowed to set all params to null");
+    }
+
     String strUserId = userId != null ? Long.toHexString(userId) : null;
 
     String userIdToken = strUserId != null ? ("userId=\"" + strUserId + "\"") : null;
-    String projectIdToken = strUserId != null ? ("projectId=\"" + strUserId + "\"") : null;
-    String fileNameIdToken = strUserId != null ? ("fileName=\"" + fileName + "\"") : null;
+    String projectIdToken = projectId != null ? ("projectId=\"" + projectId + "\"") : null;
+    String fileNameIdToken = fileName != null ? ("fileName=\"" + fileName + "\"") : null;
 
     // No String.join() function in JDK 1.7. We do it manually.
     String ret = null;
@@ -3468,49 +3342,44 @@ public class PostgreSQLStorageIo implements StorageIo {
     return ret;
   }
 
-  long updateProjectModifiedDate(long userId, long projectId, String fileName, Savepoint save) {
+  long updateProjectModifiedDate(long projectId, long userId, boolean doCommit) {
     int ret = 0;
     Timestamp modifiedTs = null;
 
-    try (PreparedStatement ustmt = this.conn.prepareStatement("UPDATE project SET modifiedDate = CURRENT_TIMESTAMP WHERE projectId = ? AND userId = ?")) {
-      ustmt.setLong(1, projectId);
-      ustmt.setLong(2, userId);
-      ret = ustmt.executeUpdate();
+    try {
+      try (PreparedStatement ustmt = this.conn.prepareStatement("UPDATE project SET modifiedDate = CURRENT_TIMESTAMP WHERE id = ? AND userId = ?")) {
+        ustmt.setLong(1, projectId);
+        ustmt.setLong(2, userId);
+        ret = ustmt.executeUpdate();
+      }
+
+      if (ret > 0) {              // If timestamp update suceeds
+        try (PreparedStatement qstmt = conn.prepareStatement("SELECT modifiedDate FROM project WHERE id = ? AND userId = ?")) {
+          qstmt.setLong(1, projectId);
+          qstmt.setLong(2, userId);
+          ResultSet rs = qstmt.executeQuery();
+
+          if (rs.next()) {
+            modifiedTs = rs.getTimestamp("modifiedDate");
+          }
+        }
+      }
+
+      if (modifiedTs == null) {             // No such project found
+        this.conn.rollback();
+        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), new RuntimeException("Unknown database error"));
+      }
+
+      if (doCommit) {
+        this.conn.commit();
+      }
     } catch (SQLException e) {
       try {
-        this.conn.rollback(save);
+        this.conn.rollback();
       } catch (SQLException rollbackExc) {
         throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
       }
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), e);
-    }
-
-    if (ret > 0) {              // If timestamp update suceeds
-      try (PreparedStatement qstmt = conn.prepareStatement("SELECT modifiedDate FROM project WHERE projectId = ? AND userId = ?")) {
-        qstmt.setLong(1, projectId);
-        qstmt.setLong(2, userId);
-        ResultSet rs = qstmt.executeQuery();
-
-        if (rs.next()) {
-          modifiedTs = rs.getTimestamp("modifiedDate");
-        }
-      } catch (SQLException e) {
-        try {
-          this.conn.rollback(save);
-        } catch (SQLException rollbackExc) {
-          throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
-        }
-        throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), e);
-      }
-    }
-
-    if (modifiedTs == null) {             // No such project found
-      try {
-        this.conn.rollback(save);
-      } catch (SQLException rollbackExc) {
-        throw CrashReport.createAndLogError(LOG, null, "Rollback error", rollbackExc);
-      }
-      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, fileName), new RuntimeException(""));
+      throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
     }
 
     return modifiedTs.getTime();
