@@ -23,7 +23,7 @@ public class StorageIoInstanceHolder {
   static {
     String backend = storageBackend.get();
 
-    if (backend == null || backend.equals("gcs")) {
+    if (backend == null || backend.equals("objectify")) {
       INSTANCE = new ObjectifyStorageIo();
     } else if (backend.equals("postgresql")) {
       INSTANCE = new PostgreSQLStorageIo();

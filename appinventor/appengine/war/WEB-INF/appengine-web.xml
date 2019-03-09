@@ -78,7 +78,7 @@
     <property name="use.gcs" value="true" />
 
     <!-- The storage backend can be: objectify, postgresql -->
-    <property name="storage.backend" value="postgresql" />
+    <property name="storage.backend" value="objectify" />
 
     <!-- These properties are required if you set storage.backend = postgresql -->
     <property name="jdbc.url" value="jdbc:postgresql://localhost/appinventor" />
