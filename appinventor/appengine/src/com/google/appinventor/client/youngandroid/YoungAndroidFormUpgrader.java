@@ -512,9 +512,17 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 2;
     }
     if (srcCompVersion < 3) {
-      // The UseExternalScanner property default value was changed to false
+      // The UseExternalScanner property was set to True by default.
+      if (componentProperties.containsKey("UseExternalScanner")){
+        String value = ((ClientJsonString)componentProperties.get("UseExternalScanner")).getString();
+        if (value.equals("True")){
+          componentProperties.remove("UseExternalScanner");
+        }
+      }
+      else {
+        componentProperties.put("UseExternalScanner", new ClientJsonString("False"));
+      }
       srcCompVersion = 3;
-      componentProperties.put("UseExternalScanner", new ClientJsonString("False"));
     }
     return srcCompVersion;
   }
