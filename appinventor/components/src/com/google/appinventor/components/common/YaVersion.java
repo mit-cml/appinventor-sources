@@ -600,7 +600,9 @@ public class YaVersion {
 
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
-  public static final int BARCODESCANNER_COMPONENT_VERSION = 2;
+  // For BARCODESCANNER_COMPONENT_VERSION 3:
+  // -- UseExternalScanner property default value was changed to false
+  public static final int BARCODESCANNER_COMPONENT_VERSION = 3;
 
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 2:
   // - The BluetoothClient.Enabled property was added.
