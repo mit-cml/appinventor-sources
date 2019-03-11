@@ -66,17 +66,13 @@
                                                             <!--//--><![CDATA[// ><!--
 
                                                                                           var gotoappinventor = function() {
-                                                                                              var referrer = document.location.pathname;
-                                                                                              var patt = /.*hour-of-code.*/;
-                                                                                              if (referrer.match(patt)) {
-                                                                                                  window.open("http://code.appinventor.mit.edu", "new");
-                                                                                              } else {
-                                                                                                  window.open("http://ai2.appinventor.mit.edu", "new");
-                                                                                              }
+                                                                                              window.opener.name = 'appinventor';
+                                                                                              var goBack = window.open('', 'appinventor');
+                                                                                              goBack.focus();
                                                                                           }
 
                                                             //--><!]]>
-                        </script><p><a href="#" onclick="gotoappinventor();"><button style="font-size:120%">Create apps!</button></a></p>
+                        </script><p><a href="#" onclick="gotoappinventor();"><button style="font-size:120%">Go Back</button></a></p>
                         </div>
                     </div></section></div></div>    </div>
                 <div class="region region-header"><div class="region-inner clearfix"><section id="block-block-31" class="block block-block odd first block-count-3 block-region-header block-31" ><div class="block-inner clearfix">
