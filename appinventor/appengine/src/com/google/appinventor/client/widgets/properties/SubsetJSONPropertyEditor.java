@@ -7,9 +7,12 @@ package com.google.appinventor.client.widgets.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
@@ -23,8 +26,9 @@ import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
@@ -32,45 +36,56 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   Frame subsetSelector;
   SimplePanel framePanel;
+  Tree selectorTree;
 
   public SubsetJSONPropertyEditor() {
     super();
-    subsetSelector = new Frame();
-    framePanel = new SimplePanel();
+    VerticalPanel treePanel = new VerticalPanel();
+    selectorTree = new Tree();
+    SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
+    HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
+    for (ComponentCategory cat : ComponentCategory.values()) {
+      categoryItems.put(cat.getDocName(), new TreeItem(new CheckBox(cat.getName())));
+    }
+    for (String cname : db.getComponentNames()) {
 
-    subsetSelector.setUrl("JSONGenerator/index.html");
-    subsetSelector.setWidth("100%");
-    subsetSelector.setHeight("100%");
-    framePanel.setWidth("100%");
-    framePanel.setHeight("100%");
-    framePanel.add(subsetSelector);
-    initAdditionalChoicePanel(framePanel);
-  }
-
-  @Override
-  protected void openAdditionalChoiceDialog() {
-    subsetSelector.addLoadHandler(new LoadHandler() {
-      @Override
-      public void onLoad(LoadEvent loadEvent) {
-        Document d = IFrameElement.as(subsetSelector.getElement()).getContentDocument();
-        setJSON(d, property.getValue());
+      ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
+      if (cd.getCategoryDocUrlString() != "internal" || cd.getCategoryString() != "UNINITIALIZED") {
+        TreeItem subTree = new TreeItem(new CheckBox(cname));
+        subTree.addItem(new CheckBox(cd.getType()));
+        for (ComponentDatabaseInterface.PropertyDefinition pdef : cd.getProperties()) {
+          subTree.addItem(new CheckBox(pdef.getName()));
+        }
+        TreeItem t = categoryItems.get(cd.getCategoryDocUrlString());
+        t.addItem(subTree);
       }
-    });
-    popup.setHeight("600px");
-    popup.setWidth("1000px");
-    popup.show();
-    popup.center();
-//    popup.setPopupPosition(0,0);
+    }
+    for (ComponentCategory cat : ComponentCategory.values()) {
+      TreeItem t = categoryItems.get(cat.getDocName());
+      if (t.getChildCount() > 0)
+        selectorTree.addItem(t);
+    }
+
+    treePanel.add(selectorTree);
+    initAdditionalChoicePanel(treePanel);
+
+//    subsetSelector = new Frame();
+//    framePanel = new SimplePanel();
+//
+//    subsetSelector.setUrl("JSONGenerator/index.html");
+//    subsetSelector.setWidth("100%");
+//    subsetSelector.setHeight("100%");
+//    framePanel.setWidth("100%");
+//    framePanel.setHeight("100%");
+//    framePanel.add(subsetSelector);
+//    initAdditionalChoicePanel(framePanel);
   }
 
   // AdditionalChoicePropertyEditor implementation
   @Override
   protected boolean okAction() {
-    Document d = IFrameElement.as(subsetSelector.getElement()).getContentDocument();
-    String e = getJSON(d);
-    property.setValue(e);
-
-    Window.Location.reload();
+    Iterator<TreeItem> allItems = selectorTree.treeItemIterator();
+    property.setValue(allItems.toString());
     return true;
   }
 
