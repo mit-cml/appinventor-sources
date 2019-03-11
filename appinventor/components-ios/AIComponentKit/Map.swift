@@ -671,15 +671,22 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   // TODO: Implement Feature Functions in Marker Branch
   private func CenterFromString(_ center: String, animated: Bool = true) {
     let parts = center.split(",")
-    let lat = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
-    let long = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
-    if parts.count != 2 {
+    
+    guard parts.count == 2 else {
       InvalidPoint("\(center) is not a valid point.")
       return
-    } else if !lat.isNumber {
+    }
+    
+    let lat = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
+    let long = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+    
+    guard lat.isNumber else {
       InvalidPoint(String(format: ERROR_INVALID_NUMBER, lat))
-    } else if !long.isNumber {
+      return
+    }
+    guard long.isNumber else {
       InvalidPoint(String(format: ERROR_INVALID_NUMBER, long))
+      return
     }
     guard let latitude = Double(lat) else {
       InvalidPoint(String(format: ERROR_INVALID_NUMBER, lat))
@@ -689,6 +696,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       InvalidPoint(String(format: ERROR_INVALID_NUMBER, long))
       return
     }
+    
     if checkValidLatLong(latitude: latitude, longitude: longitude) {
       if _mapIsReady {
         _centerUpdate = CLLocationCoordinate2DMake(latitude, longitude)
