@@ -1287,6 +1287,141 @@ path.ode-SimpleMockMapFeature-selected {
 /* All dialog boxes */
 /* would pop more with a white border around their normal green border */
 
+/* Start of NoProjectsDialogBox. */
+
+.ode-noDialogDiv {
+  box-shadow: 0px 0px 10px gray;
+  min-height: 60%;
+  width: 60%;
+  background-color: white;
+  padding-bottom: 25px;
+}
+
+.ode-noDialogDivHeader {
+  background-color: #8fc202;
+  height: 10%;
+  padding: 10px;
+}
+
+.ode-noDialogDivInnerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 75%;
+}
+
+#ode-codiLogo {
+  width: 120px;
+  height: 60px;
+}
+
+.ode-headerTitle {
+  color: white;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+
+.ode-tutorialsTitle {
+  color: black;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.ode-noDialogExampleDivs {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.ode-noDialogExampleDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 25%;
+  min-height: 250px;
+  box-shadow: 0 0 2px gray;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.ode-noDialogExampleUpperDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ode-noDialogExampleLowerDiv {
+  height: 100%;
+  /* border: 2px black solid; */
+}
+
+.ode-noDialogExampleTitle {
+  margin-top: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.ode-noDialogExampleImages {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.ode-noDialogExampleImage {
+  width: 50px;
+  height: 75px;
+  border-radius: 7px;
+}
+
+.ode-noDialogExampleAbout {
+  font-size: 12px;
+}
+
+.ode-tutorialButton {
+  border: 1px #8fc202 solid;
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: #8fc202;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.ode-tutorialButton:hover {
+  background-color: #8fc2029d;
+  color: white;
+  cursor: pointer;
+}
+
+.ode-noDialogProjectHrefDiv {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px; 
+}
+
+/* .ode-noDialogExampleUpperDiv {
+  border: 2px black solid;
+} */
+
+.ode-noDialogProjectHref {
+  color: rgb(170, 170, 170);
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+}
+
+.ode-noDialogProjectHref:hover {
+  color: #8fc202;
+}
+
+/* End of NoProjectsDialogBox. */
+
 .ode-DialogBox {
   background-color: white;
   border-left: 4px solid #8fc202;

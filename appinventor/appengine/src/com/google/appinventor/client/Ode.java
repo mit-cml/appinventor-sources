@@ -33,6 +33,7 @@ import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
@@ -1539,6 +1540,10 @@ public class Ode implements EntryPoint {
    * @return The created and optionally displayed Dialog box.
    */
   public DialogBox createNoProjectsDialog(boolean showDialog) {
+    // final NoProjectDialogBox dialogBox = new NoProjectDialogBox(); 
+    // dialogBox.show();
+    // return dialogBox;
+
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");

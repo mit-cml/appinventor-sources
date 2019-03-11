@@ -1,0 +1,72 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+  <?xml-stylesheet type='text/css' href='../../../../../../../war/Ya.css' ?>
+
+  <g:HTMLPanel>
+    <div class="ode-noDialogDiv">
+      <div class="ode-noDialogDivHeader">
+        <div class="ode-noDialogDivInnerHeader">
+          <!-- <img id="ode-codiLogo" src="../../../images/logo.png" alt="Codi Logo"> -->
+          <h3 class="ode-headerTitle">Welcome to the MIT App Inventor 2!</h3>
+        </div>
+      </div>
+
+      <h3 class="ode-tutorialsTitle">Get started with some tutorials</h3>
+
+      <div class="ode-noDialogExampleDivs">
+        <div class="ode-noDialogExampleDiv">
+          <h4 class="ode-noDialogExampleTitle">Hello Purr</h4>
+          <div class="ode-noDialogExampleImages">
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+          </div>
+          <p class="ode-noDialogExampleAbout">
+            HelloPurr is a simple app that you can build in a very short time. You create a button that has a picture of a
+            cat on it, and then program the button so that when it is clicked a "meow" sound plays.
+          </p>
+
+          <div class="ode-tutorialButton">Go to Tutorial</div>
+        </div>
+
+        <div class="ode-noDialogExampleDiv">
+          <h4 class="ode-noDialogExampleTitle">Talk to Me</h4>
+          <div class="ode-noDialogExampleImages">
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+          </div>
+          <p class="ode-noDialogExampleAbout">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi illum dolore
+            eius recusandae unde! Laboriosam
+            neque corrupti deserunt ipsa molestias quis reprehenderit enim? Eum illum, aliquam culpa a voluptatum ratione.
+          </p>
+
+          <div class="ode-tutorialButton">Go to Tutorial</div>
+        </div>
+
+        <div class="ode-noDialogExampleDiv">
+          <div class="ode-noDialogExampleUpperDiv">
+            <h4 class="ode-noDialogExampleTitle">YR Media</h4>
+            <div class="ode-noDialogExampleImages">
+              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+            </div>
+            <p class="ode-noDialogExampleAbout">fjkdsafjkdlsafjklasdfjkals;dfjkla;fjksdl
+            </p>
+          </div>
+
+          <div class="ode-noDialogExampleLowerDiv">
+            <div class="ode-tutorialButton">Go to Tutorial</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ode-noDialogProjectHrefDiv">
+        <a class="ode-noDialogProjectHref" href="/">Or click here to start a new project!</a>
+      </div>
+    </div>
+  </g:HTMLPanel>
+
+</ui:UiBinder>
