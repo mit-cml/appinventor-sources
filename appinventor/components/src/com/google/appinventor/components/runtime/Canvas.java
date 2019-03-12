@@ -1301,7 +1301,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   private Path parsePath(float[][] points) throws IllegalArgumentException {
-    if (points == null) {
+    if (points == null || points.length == 0) {
       throw new IllegalArgumentException();
     }
     float scalingFactor = $form().deviceDensity();
@@ -1316,7 +1316,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   private float[][] parsePointList(YailList pointList) throws IllegalArgumentException {
-    if (pointList == null) {
+    if (pointList == null || pointList.size() == 0) {
       throw new IllegalArgumentException();
     }
     float[][] points = new float[pointList.size()][2];
