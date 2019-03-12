@@ -94,7 +94,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param  width in pixels
    */
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's horizontal width, measured in pixels.")
   public void Width(int width) {
     container.setChildWidth(this, width);
     lastSetWidth = width;
@@ -110,7 +110,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's horizontal width as a percentage of the Width of its parent Component.")
   public void WidthPercent(int pCent) {
     if (pCent < 0 || pCent > 100) {
       container.$form().dispatchErrorOccurredEvent(this, "WidthPercent",
@@ -180,7 +180,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param  height in pixels
    */
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's vertical height, measured in pixels.")
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
@@ -196,7 +196,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's vertical height as a percentage of the height of its parent Component.")
   public void HeightPercent(int pCent) {
     if (pCent < 0 || pCent > 100) {
       container.$form().dispatchErrorOccurredEvent(this, "HeightPercent",
