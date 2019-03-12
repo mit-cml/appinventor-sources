@@ -4,7 +4,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.server.storage;
+package com.google.appinventor.contrib.server.storage;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -26,6 +26,8 @@ import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.server.storage.StorageIo;
+// import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.PWData;
 
@@ -2246,8 +2248,20 @@ public class PostgreSQLStorageIo implements StorageIo {
     final boolean forGallery,
     final boolean fatalError) throws IOException {
 
+    class FileRow {
+      String fileName;
+      FileData.RoleEnum role;
+      byte[] content;
+
+      FileRow (String _fileName, FileData.RoleEnum _role, byte[] _content) {
+        fileName = _fileName;
+        role = _role;
+        content = _content;
+      }
+    }
+
     long userId = this.encodeUserId(strUserId);
-    List<FileData> files = new ArrayList<FileData>();
+    List<FileRow> files = new ArrayList<FileRow>();
     boolean projectFound = false;
     String projectName = null;
     String projectHistory = null;
@@ -2280,6 +2294,8 @@ public class PostgreSQLStorageIo implements StorageIo {
 
         ResultSet rs = qstmt.executeQuery();
         while (rs.next()) {
+
+          // Check role field integrity
           FileData.RoleEnum role;
           try {
             role = FileData.RoleEnum.valueOf(rs.getString("role"));
@@ -2287,34 +2303,31 @@ public class PostgreSQLStorageIo implements StorageIo {
             throw CrashReport.createAndLogError(LOG, null, makeErrorMsg(userId, projectId, null), e);
           }
 
-          FileData fd = new FileData();
-          fd.fileName = rs.getString("fileName");
-          fd.role = role;
-          fd.content = rs.getBytes("content");
+          FileRow fr = new FileRow(rs.getString("fileName"), role, rs.getBytes("content"));
 
           // Kick out some files
-          if (fd.fileName.startsWith("assets/external_comps") && forGallery) {
+          if (fr.fileName.startsWith("assets/external_comps") && forGallery) {
             this.conn.rollback();
             throw new IOException("FATAL Error, external component in gallery app");
           }
-          if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+          if (!fr.role.equals(FileData.RoleEnum.SOURCE)) {
             continue;
           }
-          if (fd.fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+          if (fr.fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
             // Skip legacy remix history files that were previous stored with the project
             continue;
           }
-          if (!includeScreenShots && fd.fileName.startsWith("screenshots")) {
+          if (!includeScreenShots && fr.fileName.startsWith("screenshots")) {
             continue;
           }
 
           // We intentionally remove *.yail files for AI1 compatibility
           // TODO remove it in the future
-          if (!includeYail && fd.fileName.endsWith(".yail")) {
+          if (!includeYail && fr.fileName.endsWith(".yail")) {
             continue;
           }
 
-          files.add(fd);
+          files.add(fr);
         }
       }
 
@@ -2356,9 +2369,9 @@ public class PostgreSQLStorageIo implements StorageIo {
     final ZipOutputStream zipStream = new ZipOutputStream(zipFile);
     zipStream.setComment("Built with MIT App Inventor");
 
-    for (FileData fd : files) { // project files
-      byte[] content = fd.content != null ? fd.content : new byte[0];
-      zipStream.putNextEntry(new ZipEntry(fd.fileName));
+    for (FileRow fr : files) { // project files
+      byte[] content = fr.content != null ? fr.content : new byte[0];
+      zipStream.putNextEntry(new ZipEntry(fr.fileName));
       zipStream.write(content, 0, content.length);
       zipStream.closeEntry();
       fileCount += 1;
@@ -2726,7 +2739,7 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public StoredData.PWData createPWData(@Nonnull String email) {
+  public PWData createPWData(@Nonnull String email) {
     int ret = 0;
     Long id = null;
     String uuid = null;
@@ -2785,7 +2798,7 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public StoredData.PWData findPWData(@Nonnull String uuid) {
+  public PWData findPWData(@Nonnull String uuid) {
     PWData ret = null;
 
     try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM pwData WHERE uuid::text = lower(?)")) {

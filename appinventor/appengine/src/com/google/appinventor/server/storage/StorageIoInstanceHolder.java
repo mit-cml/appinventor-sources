@@ -23,12 +23,20 @@ public class StorageIoInstanceHolder {
   static {
     String backend = storageBackend.get();
 
-    if (backend == null || backend.equals("objectify")) {
-      INSTANCE = new ObjectifyStorageIo();
-    } else if (backend.equals("postgresql")) {
-      INSTANCE = new PostgreSQLStorageIo();
-    } else {
-      throw new IllegalStateException("This storage.backend value \"" + backend + "\" is not supported");
+    try {
+      if (backend == null || backend.equals("objectify")) {
+        INSTANCE = new ObjectifyStorageIo();
+      } else if (backend.equals("postgresql")) {
+        INSTANCE = (StorageIo) StorageIoInstanceHolder.class
+          .getClassLoader()
+          .loadClass("com.google.appinventor.contrib.server.storage.PostgreSQLStorageIo")
+          .newInstance();
+      } else {
+        throw new IllegalStateException("This storage.backend value \"" + backend + "\" is not supported");
+      }
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      String message = String.format("Cannot load storage backend \"%s\". \"enable.contrib\" flag is not set: %s", backend, e.getMessage());
+      throw new IllegalStateException();
     }
   }
 
