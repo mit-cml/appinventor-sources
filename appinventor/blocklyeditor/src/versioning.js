@@ -1779,8 +1779,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: In BLOCKS_LANGUAGE_VERSION 24, added List Reverse Block
     24: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 25, added Join With Separator Block
+    25: "noUpgrade",
+
     // AI2: Added Anonymous procedure Blocks
-    25: "noUpgrade"
+    26: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2511,7 +2514,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: The Volume property (setter only) was added to the VideoPlayer.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Stop method was added to the VideoPlayer.
+    6: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 

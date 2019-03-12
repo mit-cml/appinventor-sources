@@ -9,6 +9,7 @@ package com.google.appinventor.buildserver;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -83,39 +84,6 @@ public final class Compiler {
 
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
-  // Build info constants. Used for permissions, libraries, assets and activities.
-  // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
-  private static final String ARMEABI_V7A_SUFFIX = "-v7a";
-  // Must match ComponentProcessor.ARM64_V8A_SUFFIX
-  private static final String ARM64_V8A_SUFFIX = "-v8a";
-  // Must match ComponentProcessor.X86_64_SUFFIX
-  private static final String X86_64_SUFFIX = "-x8a";
-  // Must match Component.ASSET_DIRECTORY
-  private static final String ASSET_DIRECTORY = "component";
-  // Must match ComponentListGenerator.ASSETS_TARGET
-  private static final String ASSETS_TARGET = "assets";
-  // Must match ComponentListGenerator.ACTIVITIES_TARGET
-  private static final String ACTIVITIES_TARGET = "activities";
-  // Must match ComponentListGenerator.LIBRARIES_TARGET
-  public static final String LIBRARIES_TARGET = "libraries";
-  // Must match ComponentListGenerator.NATIVE_TARGET
-  public static final String NATIVE_TARGET = "native";
-  // Must match ComponentListGenerator.PERMISSIONS_TARGET
-  private static final String PERMISSIONS_TARGET = "permissions";
-  // Must match ComponentListGenerator.BROADCAST_RECEIVERS_TARGET
-  private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
-  // Must match ComponentListGenerator.ANDROIDMINSDK_TARGET
-  private static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
-  // Must match ComponentListGenerator.CONDITIONALS_TARGET
-  private static final String CONDITIONALS_TARGET = "conditionals";
-  
-  // TODO(Will): Remove the following target once the deprecated
-  //             @SimpleBroadcastReceiver annotation is removed. It should
-  //             should remain for the time being because otherwise we'll break
-  //             extensions currently using @SimpleBroadcastReceiver.
-  //
-  // Must match ComponentListGenerator.BROADCAST_RECEIVER_TARGET
-  private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
 
   // Native library directory names
   private static final String LIBS_DIR_NAME = "libs";
@@ -212,7 +180,7 @@ public final class Compiler {
    * </code>
    */
   private final Map<String, Set<String>> compBlocks;
-  
+
   /**
    * Set of exploded AAR libraries.
    */
@@ -291,7 +259,7 @@ public final class Compiler {
   @VisibleForTesting
   void generatePermissions() {
     try {
-      loadJsonInfo(permissionsNeeded, PERMISSIONS_TARGET);
+      loadJsonInfo(permissionsNeeded, ComponentDescriptorConstants.PERMISSIONS_TARGET);
       if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
         LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
         if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
@@ -313,7 +281,7 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "Permissions"));
     }
 
-    mergeConditionals(conditionals.get(PERMISSIONS_TARGET), permissionsNeeded);
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET), permissionsNeeded);
 
     int n = 0;
     for (String type : permissionsNeeded.keySet()) {
@@ -390,13 +358,13 @@ public final class Compiler {
   Map<String,Set<String>> getPermissions() {
     return permissionsNeeded;
   }
-  
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getBroadcastReceivers() {
     return broadcastReceiversNeeded;
   }
-  
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getActivities() {
@@ -409,7 +377,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateLibNames() {
     try {
-      loadJsonInfo(libsNeeded, LIBRARIES_TARGET);
+      loadJsonInfo(libsNeeded, ComponentDescriptorConstants.LIBRARIES_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -434,7 +402,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateNativeLibNames() {
     try {
-      loadJsonInfo(nativeLibsNeeded, NATIVE_TARGET);
+      loadJsonInfo(nativeLibsNeeded, ComponentDescriptorConstants.NATIVE_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -459,7 +427,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateAssets() {
     try {
-      loadJsonInfo(assetsNeeded, ASSETS_TARGET);
+      loadJsonInfo(assetsNeeded, ComponentDescriptorConstants.ASSETS_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -484,7 +452,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateActivities() {
     try {
-      loadJsonInfo(activitiesNeeded, ACTIVITIES_TARGET);
+      loadJsonInfo(activitiesNeeded, ComponentDescriptorConstants.ACTIVITIES_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -509,7 +477,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateBroadcastReceivers() {
     try {
-      loadJsonInfo(broadcastReceiversNeeded, BROADCAST_RECEIVERS_TARGET);
+      loadJsonInfo(broadcastReceiversNeeded, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET);
     }
     catch (IOException e) {
       // This is fatal.
@@ -521,9 +489,9 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceivers"));
     }
 
-    mergeConditionals(conditionals.get(BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
   }
-  
+
   /*
    * TODO(Will): Remove this method once the deprecated @SimpleBroadcastReceiver
    *             annotation is removed. This should remain for the time being so
@@ -533,7 +501,7 @@ public final class Compiler {
   @VisibleForTesting
   void generateBroadcastReceiver() {
     try {
-      loadJsonInfo(componentBroadcastReceiver, BROADCAST_RECEIVER_TARGET);
+      loadJsonInfo(componentBroadcastReceiver, ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET);
     }
     catch (IOException e) {
       // This is fatal.
@@ -548,7 +516,7 @@ public final class Compiler {
 
   private void generateMinSdks() {
     try {
-      loadJsonInfo(minSdksNeeded, ANDROIDMINSDK_TARGET);
+      loadJsonInfo(minSdksNeeded, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET);
     } catch (IOException|JSONException e) {
       // This is fatal.
       e.printStackTrace();
@@ -922,13 +890,13 @@ public final class Compiler {
           out.write("    </activity>\n");
         }
       }
-      
+
       // Collect any additional <application> subelements into a single set.
       Set<Map.Entry<String, Set<String>>> subelements = Sets.newHashSet();
       subelements.addAll(activitiesNeeded.entrySet());
       subelements.addAll(broadcastReceiversNeeded.entrySet());
-      
-      
+
+
       // If any component needs to register additional activities or
       // broadcast receivers, insert them into the manifest here.
       if (!subelements.isEmpty()) {
@@ -939,18 +907,18 @@ public final class Compiler {
           }
         }
       }
-  
+
       // TODO(Will): Remove the following legacy code once the deprecated
       //             @SimpleBroadcastReceiver annotation is removed. It should
       //             should remain for the time being because otherwise we'll break
       //             extensions currently using @SimpleBroadcastReceiver.
-      
+
       // Collect any legacy simple broadcast receivers
       Set<String> simpleBroadcastReceivers = Sets.newHashSet();
       for (String componentType : componentBroadcastReceiver.keySet()) {
         simpleBroadcastReceivers.addAll(componentBroadcastReceiver.get(componentType));
       }
-      
+
       // The format for each legacy Broadcast Receiver in simpleBroadcastReceivers is
       // "className,Action1,Action2,..." where the class name is mandatory, and
       // actions are optional (and as many as needed).
@@ -1027,7 +995,7 @@ public final class Compiler {
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
     compiler.generateMinSdks();
-  
+
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
@@ -1791,24 +1759,24 @@ public final class Compiler {
     try {
       for (String type : nativeLibsNeeded.keySet()) {
         for (String lib : nativeLibsNeeded.get(type)) {
-          boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
-          boolean isV8a = lib.endsWith(ARM64_V8A_SUFFIX);
-          boolean isx8664 = lib.endsWith(X86_64_SUFFIX);
+          boolean isV7a = lib.endsWith(ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX);
+          boolean isV8a = lib.endsWith(ComponentDescriptorConstants.ARM64_V8A_SUFFIX);
+          boolean isx8664 = lib.endsWith(ComponentDescriptorConstants.X86_64_SUFFIX);
 
           String sourceDirName;
           File targetDir;
           if (isV7a) {
             sourceDirName = ARMEABI_V7A_DIR_NAME;
             targetDir = armeabiV7aDir;
-            lib = lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length());
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX.length());
           } else if (isV8a) {
             sourceDirName = ARM64_V8A_DIR_NAME;
             targetDir = arm64V8aDir;
-            lib = lib.substring(0, lib.length() - ARM64_V8A_SUFFIX.length());
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.ARM64_V8A_SUFFIX.length());
           } else if (isx8664) {
             sourceDirName = X86_64_DIR_NAME;
             targetDir = x8664Dir;
-            lib = lib.substring(0, lib.length() - X86_64_SUFFIX.length());
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.X86_64_SUFFIX.length());
           } else {
             sourceDirName = ARMEABI_DIR_NAME;
             targetDir = armeabiDir;
@@ -2052,7 +2020,7 @@ public final class Compiler {
           if (e.getMessage().contains("broadcastReceiver")) {
             LOG.log(Level.INFO, "Component \"" + type + "\" does not have a broadcast receiver.");
             continue;
-          } else if (e.getMessage().contains(ANDROIDMINSDK_TARGET)) {
+          } else if (e.getMessage().contains(ComponentDescriptorConstants.ANDROIDMINSDK_TARGET)) {
             LOG.log(Level.INFO, "Component \"" + type + "\" does not specify a minimum SDK.");
             continue;
           } else {
@@ -2096,7 +2064,7 @@ public final class Compiler {
     // Strip off the package name since SCM and BKY use unqualified names
     type = type.substring(type.lastIndexOf('.') + 1);
 
-    JSONObject conditionals = compJson.optJSONObject(CONDITIONALS_TARGET);
+    JSONObject conditionals = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
     if (conditionals != null) {
       JSONObject jsonBlockMap = conditionals.optJSONObject(targetInfo);
       if (jsonBlockMap != null) {
