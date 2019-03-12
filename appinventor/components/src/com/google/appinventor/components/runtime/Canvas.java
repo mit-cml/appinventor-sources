@@ -1371,8 +1371,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     Paint p = new Paint(paint);
     p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
     view.canvas.drawArc(
-      scalingFactor * left, scalingFactor * top,
-      scalingFactor * right, scalingFactor * bottom,
+      new RectF(scalingFactor * left, scalingFactor * top,
+                scalingFactor * right, scalingFactor * bottom),
       startAngle, sweepAngle, useCenter, p);
     view.invalidate();
   }
