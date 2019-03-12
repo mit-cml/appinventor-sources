@@ -61,7 +61,6 @@
 
     <!-- Copy files that will be loaded as resources -->
     <property name="classes.files.dir" location="${BuildServer-class.dir}/files" />
-    <property name="support.dir" location="${lib.dir}/android/support" />
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
@@ -72,67 +71,10 @@
       <!-- Component/extension assets (for testing) -->
       <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>
-    <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
-    <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
-    <copy toFile="${classes.files.dir}/webrtc.jar"
-          file="${lib.dir}/webrtc/webrtc.jar" />
-    <copy toFile="${classes.files.dir}/armeabi-v7a/libjingle_peerconnection_so.so"
-          file="${lib.dir}/webrtc/armeabi-v7a/libjingle_peerconnection_so.so" />
-    <copy toFile="${classes.files.dir}/arm64-v8a/libjingle_peerconnection_so.so"
-          file="${lib.dir}/webrtc/arm64-v8a/libjingle_peerconnection_so.so" />
-    <copy toFile="${classes.files.dir}/x86_64/libjingle_peerconnection_so.so"
-          file="${lib.dir}/webrtc/x86_64/libjingle_peerconnection_so.so" />
-    <copy toFile="${classes.files.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
-    <copy toFile="${classes.files.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
-    <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
-    <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
-    <copy toFile="${classes.files.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
-    <copy toFile="${classes.files.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
-    <copy toFile="${classes.files.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
-    <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
-    <copy toFile="${classes.files.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
-    <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
-    <copy toFile="${classes.files.dir}/json.jar" file="${lib.dir}/json/json.jar" />
-    <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-    <copy toFile="${classes.files.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
-    <copy toFile="${classes.files.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
-    <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
-    <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
-    <!-- BEGIN Android Support Libraries -->
-    <copy toFile="${classes.files.dir}/animated-vector-drawable.aar" file="${support.dir}/animated-vector-drawable-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/animated-vector-drawable.jar" file="${support.dir}/animated-vector-drawable-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${support.dir}/appcompat-v7-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/appcompat-v7.jar" file="${support.dir}/appcompat-v7-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/core-common.jar" file="${support.dir}/core-common-1.0.0.jar" />
-    <copy toFile="${classes.files.dir}/lifecycle-common.jar" file="${support.dir}/lifecycle-common-1.0.0.jar" />
-    <copy toFile="${classes.files.dir}/runtime.aar" file="${support.dir}/runtime-1.0.0.aar" />
-    <copy toFile="${classes.files.dir}/runtime.jar" file="${support.dir}/runtime-1.0.0.jar" />
-    <copy toFile="${classes.files.dir}/support-annotations.jar" file="${support.dir}/support-annotations-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-compat.aar" file="${support.dir}/support-compat-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-compat.jar" file="${support.dir}/support-compat-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-core-ui.aar" file="${support.dir}/support-core-ui-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-core-ui.jar" file="${support.dir}/support-core-ui-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-core-utils.aar" file="${support.dir}/support-core-utils-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-core-utils.jar" file="${support.dir}/support-core-utils-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-fragment.aar" file="${support.dir}/support-fragment-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-fragment.jar" file="${support.dir}/support-fragment-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-media-compat.aar" file="${support.dir}/support-media-compat-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-media-compat.jar" file="${support.dir}/support-media-compat-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-v4.aar" file="${support.dir}/support-v4-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-v4.jar" file="${support.dir}/support-v4-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/support-vector-drawable.aar" file="${support.dir}/support-vector-drawable-26.1.0.aar" />
-    <copy toFile="${classes.files.dir}/support-vector-drawable.jar" file="${support.dir}/support-vector-drawable-26.1.0.jar" />
-    <copy toFile="${classes.files.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
-    <!-- END Android Support Libraries -->
-    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
-    <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
-    <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+    <!-- Component library dependencies -->
+    <copy todir="${classes.files.dir}">
+      <fileset dir="${build.dir}/components/deps" />
+    </copy>
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
@@ -155,7 +97,7 @@
                         needed to compile the build server classes
        ===================================================================== -->
   <target name="CopyToRunLibDir"
-          depends="init,common_CommonUtils,common_CommonVersion">
+          depends="init,common_CommonUtils,common_CommonVersion,components_CommonConstants">
     <mkdir dir="${run.lib.dir}" />
     <copy todir="${run.lib.dir}" flatten="true">
       <fileset dir="${local.lib.dir}" includes="*.jar"/>
