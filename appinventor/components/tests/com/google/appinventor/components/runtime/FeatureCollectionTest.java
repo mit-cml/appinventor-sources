@@ -1,19 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
-import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
-import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowView;
 
 import java.util.Collections;
 
@@ -178,7 +177,7 @@ public class FeatureCollectionTest extends MapTestBase {
     Marker marker = new Marker(getMap());
     collection.removeFeature(marker);
     assertEquals(0, collection.Features().size());
-    ShadowMapView view = Shadow.extract(getMap().getView());
+    ShadowView view = Shadow.extract(getMap().getView());
     view.clearWasInvalidated();
     collection.Features(YailList.makeList(Collections.singletonList(marker)));
     assertTrue(view.wasInvalidated());
@@ -202,8 +201,20 @@ public class FeatureCollectionTest extends MapTestBase {
     assertEquals(getMap(), collection.getMap());
   }
 
+  /**
+   * Tests that the FeatureCollection can load a GeoJSON file with an invalid BOM. Technically, BOM is not allowed
+   * by the JSON RFC, but who needs standards anyway?
+   */
+  @Test
+  public void testGeoJSONWithBOM() {
+    ShadowEventDispatcher.clearEvents();
+    collection.FeaturesFromGeoJSON("\uFEFF{\"type\":\"FeatureCollection\",\"features\":[]}");
+    runAllEvents();
+    assertEventFiredAny(collection, "GotFeatures");
+  }
+
   private void testFeatureListSetter(MapFeature feature) {
-    ShadowMapView view = Shadow.extract(getMap().getView());
+    ShadowView view = Shadow.extract(getMap().getView());
     view.clearWasInvalidated();
     collection.Features(YailList.makeList(Collections.singletonList(feature)));
     assertTrue(view.wasInvalidated());

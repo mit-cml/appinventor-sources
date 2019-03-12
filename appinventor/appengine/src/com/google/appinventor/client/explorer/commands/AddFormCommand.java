@@ -184,6 +184,12 @@ public final class AddFormCommand extends ChainableCommand {
         return false;
       }
 
+      // Check for reserved words
+      if(TextValidators.isReservedName(newFormName)) {
+        Window.alert(MESSAGES.reservedNameError());
+        return false;
+      }
+
       // Check that it's unique.
       if (otherFormNames.contains(newFormName)) {
         Window.alert(MESSAGES.duplicateFormNameError());

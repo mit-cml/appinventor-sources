@@ -58,7 +58,7 @@ public final class YailNumberToString {
   public static String format(double number) {
     // We will print integer values without a decimal point.
     if (number == Math.rint(number)) {
-      return String.valueOf((int) number);
+      return String.valueOf((long) number);
     } else {
       double mag = Math.abs(number);
       if (mag < BIGBOUND && mag > SMALLBOUND) {

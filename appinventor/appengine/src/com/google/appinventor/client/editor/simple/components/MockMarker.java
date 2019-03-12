@@ -53,7 +53,6 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
   static MockMarker fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockMarker marker = new MockMarker(parent.editor);
     marker.feature = layer;
-    marker.setContainer(parent);
     String name = null;
     boolean hadImageAsset = false;
     for (String key : properties.keySet()) {
@@ -107,17 +106,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
         marker.onPropertyChange(PROPERTY_NAME_DESCRIPTION, value);
       }
     }
-    if (name == null) {
-      name = marker.getPropertyValue(PROPERTY_NAME_TITLE);
-    }
-    name = name.replaceAll("[ \t]+", "_");
-    if (name.equalsIgnoreCase("")) {
-      name = ComponentsTranslation.getComponentName("Marker") + "1";
-    }
-    name = ensureUniqueName(name, parent.editor.getComponentNames());
-    marker.changeProperty(PROPERTY_NAME_NAME, name);
-    marker.onPropertyChange(PROPERTY_NAME_NAME, name);
-    marker.getForm().fireComponentRenamed(marker, ComponentsTranslation.getComponentName("Marker"));
+    processFeatureName(marker, parent, name);
     if (!hadImageAsset) {
       marker.setImageAsset(null);
     }

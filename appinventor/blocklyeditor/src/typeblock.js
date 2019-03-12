@@ -210,6 +210,7 @@ Blockly.TypeBlock.prototype.hide = function(){
 //  if (this.typeBlockDiv_ == null)
 //    return;
   goog.style.showElement(goog.dom.getElement(this.typeBlockDiv_), false);
+  goog.events.unlisten(this.docKh_, 'key', this.handleKeyWrapper_);
   goog.events.unlisten(this.inputKh_, 'key', this.handleKeyWrapper_);
   this.handleKeyWrapper_ = this.handleKey.bind(this);
   goog.events.listen(this.docKh_, 'key', this.handleKeyWrapper_);
@@ -230,6 +231,7 @@ Blockly.TypeBlock.prototype.show = function(){
   // correctly (at times it was missing the first char)
   goog.dom.getElement(this.inputText_).value = '';
   goog.events.unlisten(this.docKh_, 'key', this.handleKeyWrapper_);
+  goog.events.unlisten(this.inputKh_, 'key', this.handleKeyWrapper_);
   this.handleKeyWrapper_ = this.handleKey.bind(this);
   goog.events.listen(this.inputKh_, 'key', this.handleKeyWrapper_);
   this.visible = true;

@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
+import android.view.ViewGroup;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -13,7 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.util.GeoPoint;
+import org.robolectric.internal.bytecode.ShadowMap;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowView;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -271,23 +274,23 @@ public class MarkerTest extends MapTestBase {
 
   @Test
   public void testVisibleNoInvalidate() {
-    ShadowMapView mapView = Shadow.extract(getMap().getView());
+    ShadowMapView mapView = Shadow.extract(((ViewGroup) getMap().getView()).getChildAt(0));
     Marker marker = new Marker(getMap());
-    int invalidateCalls = mapView.invalidateCalls;
+    mapView.clearWasInvalidated();
     marker.Visible(true);
     assertTrue(getMap().getController().isFeatureVisible(marker));
-    assertEquals(invalidateCalls, mapView.invalidateCalls);
+    assertFalse(mapView.wasInvalidated());  // Marker is visible by default
   }
 
   @Test
   public void testVisibleInvalidate() {
-    ShadowMapView mapView = Shadow.extract(getMap().getView());
+    ShadowMapView mapView = Shadow.extract(((ViewGroup) getMap().getView()).getChildAt(0));
     Marker marker = new Marker(getMap());
-    int invalidateCalls = mapView.invalidateCalls;
+    mapView.clearWasInvalidated();
     marker.Visible(true);
     marker.Visible(false);
     assertFalse(getMap().getController().isFeatureVisible(marker));
-    assertEquals(invalidateCalls + 1, mapView.invalidateCalls);
+    assertTrue(mapView.wasInvalidated());
   }
 
   @Test

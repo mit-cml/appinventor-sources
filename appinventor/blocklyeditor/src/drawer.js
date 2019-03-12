@@ -46,6 +46,7 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
     svg.insertBefore(flyoutGroup, this.workspace_.svgGroup_.nextSibling);
   }
   this.flyout_.init(parentWorkspace);
+  this.lastComponent = null;
 };
 
 /**
@@ -82,8 +83,8 @@ Blockly.Drawer.buildTree_ = function() {
 
 /**
  * Show the contents of the built-in drawer named drawerName. drawerName
- * should be one of Blockly.MSG_VARIABLE_CATEGORY,
- * Blockly.MSG_PROCEDURE_CATEGORY, or one of the built-in block categories.
+ * should be one of Blockly.Msg.VARIABLE_CATEGORY,
+ * Blockly.Msg.PROCEDURE_CATEGORY, or one of the built-in block categories.
  * @param drawerName
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
@@ -120,6 +121,7 @@ Blockly.Drawer.prototype.showComponent = function(instanceName) {
   if (component) {
     this.flyout_.hide();
     this.flyout_.show(this.instanceRecordToXMLArray(component));
+    this.lastComponent = instanceName;
   } else {
     console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName +
                 ") - unknown component name");
@@ -149,6 +151,7 @@ Blockly.Drawer.prototype.showGeneric = function(typeName) {
  * Hide the Drawer flyout
  */
 Blockly.Drawer.prototype.hide = function() {
+  this.lastComponent = null;
   this.flyout_.hide();
 };
 
@@ -429,6 +432,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  lists_join_with_separator: {xmlString:
+    '<xml>' +
+      '<block type="lists_join_with_separator">' +
+      '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
+      '</block>' +
+    '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
