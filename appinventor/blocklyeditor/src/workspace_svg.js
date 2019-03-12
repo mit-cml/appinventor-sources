@@ -1230,13 +1230,18 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
   if (!this.pendingRender) {
     this.needsRendering = [];
     this.pendingBlockIds = {};
-    this.pendingRender = setTimeout(function() {
+    this.pendingRenderFunc = function() {
       try {
         this.render(this.needsRendering.length === 0 ? undefined : this.needsRendering);
       } finally {
         this.pendingRender = null;
       }
-    }.bind(this));
+    }.bind(this);
+    if (this.svgGroup_.parentElement.parentElement.parentElement.style.display === 'none') {
+      this.pendingRender = true;
+    } else {
+      this.pendingRender = setTimeout(this.pendingRenderFunc, 0);
+    }
   }
   if (block) {
     // Rendering uses Blockly.BlockSvg.renderDown, so we only need a list of the topmost blocks

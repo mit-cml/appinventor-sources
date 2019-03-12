@@ -54,6 +54,13 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -190,6 +197,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     designProperties.setSize("100%", "100%");
     initWidget(componentsPanel);
     setSize("100%", "100%");
+    registerNativeListeners();
   }
 
   public boolean shouldDisplayHiddenComponents() {
@@ -604,15 +612,23 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return (MockForm) createMockComponent(propertiesObject, null);
   }
 
+  private MockComponent createMockComponent(JSONObject properties, MockContainer container) {
+    return createMockComponent(properties, container, null);
+  }
+
   /*
    * Parses the JSON properties and creates the component structure. This method is called
    * recursively for nested components. For the initial invocation parent shall be null.
    */
-  private MockComponent createMockComponent(JSONObject propertiesObject, MockContainer parent) {
+  private MockComponent createMockComponent(JSONObject propertiesObject, MockContainer parent, Map<String, String> substitution) {
     Map<String, JSONValue> properties = propertiesObject.getProperties();
 
     // Component name and type
     String componentType = properties.get("$Type").asString().getString();
+
+    // Set the name of the component (on instantiation components are assigned a generated name)
+    boolean shouldRename = false;
+    String componentName = properties.get("$Name").asString().getString();
 
     // Instantiate a mock component for the visual designer
     MockComponent mockComponent;
@@ -625,6 +641,21 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       mockComponent = SimpleComponentDescriptor.createMockComponent(componentType,
           COMPONENT_DATABASE.getComponentType(componentType), this);
 
+      // Ensure unique name on paste
+      if (substitution != null) {
+        List<String> names = getComponentNames();
+        if (names.contains(componentName)) {
+          String oldName = componentName;
+          componentName = gensymName(componentType, componentName);
+          substitution.put(oldName, componentName);
+          shouldRename = true;
+        } else if (!mockComponent.getPropertyValue(MockComponent.PROPERTY_NAME_NAME).equals(componentName)) {
+          // If the SCD gensyms a name, but it is free, we rename it back.
+          shouldRename = true;
+        }
+        properties.remove(MockComponent.PROPERTY_NAME_UUID);
+      }
+
       // Add the component to its parent component (and if it is non-visible, add it to the
       // nonVisibleComponent panel).
       parent.addComponent(mockComponent);
@@ -633,9 +664,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     }
 
-    // Set the name of the component (on instantiation components are assigned a generated name)
-    String componentName = properties.get("$Name").asString().getString();
-    mockComponent.changeProperty("Name", componentName);
+    if (shouldRename) {
+      mockComponent.rename(componentName);
+    } else {
+      mockComponent.changeProperty(MockComponent.PROPERTY_NAME_NAME, componentName);
+    }
 
     // Set component properties
     for (String name : properties.keySet()) {
@@ -656,15 +689,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
 
     // Add component type to the blocks editor
-    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
-    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
-    blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(),
+    getBlocksEditor().addComponent(mockComponent.getType(), mockComponent.getName(),
         mockComponent.getUuid());
 
     // Add nested components
     if (properties.containsKey("$Components")) {
       for (JSONValue nestedComponent : properties.get("$Components").asArray().getElements()) {
-        createMockComponent(nestedComponent.asObject(), (MockContainer) mockComponent);
+        createMockComponent(nestedComponent.asObject(), (MockContainer) mockComponent, substitution);
       }
     }
 
@@ -673,9 +704,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void getBlocksImage(Callback<String, String> callback) {
-    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
-    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
-    blockEditor.getBlocksImage(callback);
+    getBlocksEditor().getBlocksImage(callback);
   }
 
   /*
@@ -910,9 +939,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Push changes to a connected phone (or emulator).
    */
   private void updatePhone() {
-    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
-    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
-    blockEditor.sendComponentData();
+    getBlocksEditor().sendComponentData();
   }
 
   @Override
@@ -958,5 +985,172 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onResetDatabase();
     }
+  }
+
+
+  private native void registerNativeListeners()/*-{
+    var editor = this;
+
+    function copy(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // don't interfere with copy/pasting input
+        return false;
+      }
+      if (!editor.@com.google.appinventor.client.editor.FileEditor::isActiveEditor()()) {
+        // don't copy/paste in non-active editor
+        return false;
+      }
+      var data = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentJSON()();
+      var xml = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentBlocks()();
+      data = JSON.parse(data);
+      if (data instanceof Array) {
+        data = {'$components': data, '$blocks': xml};
+      } else {
+        data = {'$components': [data], '$blocks': xml};
+      }
+      data = JSON.stringify(data);
+      e.clipboardData.setData("application/json", data);
+      e.clipboardData.setData("text/plain", data);
+      e.preventDefault();
+      return true;
+    }
+
+    $wnd.addEventListener('cut', function (e) {
+      if (copy(e)) {
+        editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::deleteSelectedComponent()();
+      }
+    });
+
+    $wnd.addEventListener('copy', function (e) {
+      copy(e);
+    });
+
+    $wnd.addEventListener('keydown', function(e) {
+      if (e.keyCode === 16) {
+        editor.shiftDown = true;
+      }
+    });
+
+    $wnd.addEventListener('keyup', function(e) {
+      if (e.keyCode === 16) {
+        editor.shiftDown = false;
+      }
+    });
+
+    $wnd.addEventListener('paste', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // don't interfere with copy/pasting input
+        return;
+      }
+      if (!editor.@com.google.appinventor.client.editor.FileEditor::isActiveEditor()()) {
+        // don't copy/paste in non-active editor
+        return;
+      }
+      var data = e.clipboardData.getData('application/json');
+      if (data === undefined || data === '') {
+        data = e.clipboardData.getData('text/plain');
+      }
+      try {
+        JSON.parse(data);
+        e.preventDefault();
+      } catch(e) {
+        return;  // not valid JSON to paste, abort!
+      }
+      editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJSNI(*)(data, editor.shiftDown);
+    });
+  }-*/;
+
+  private void deleteSelectedComponent() {
+    form.getLastSelectedComponent().delete();
+  }
+
+  private native JsArrayString concat(JsArrayString first, JsArrayString second)/*-{
+    return first.concat(second);
+  }-*/;
+
+  private JsArrayString getSelectedComponentBlocks() {
+    JsArrayString code = (JsArrayString) JsArrayString.createArray();
+    final YaBlocksEditor editor = getBlocksEditor();
+    for (MockComponent component : form.getSelectedComponents()) {
+      code = concat(code, getSelectedComponentBlocks(component, editor));
+    }
+    return code;
+  }
+
+  private YaBlocksEditor getBlocksEditor() {
+    return ((YaProjectEditor) projectEditor).getBlocksFileEditor(formNode.getFormName());
+  }
+
+  private JsArrayString getSelectedComponentBlocks(MockComponent component, YaBlocksEditor blocksEditor) {
+    JsArrayString blocks = blocksEditor.getTopBlocksForComponentByName(component.getName());
+    if (component instanceof MockContainer) {
+      for (MockComponent child : ((MockContainer) component).getChildren()) {
+        JsArrayString childBlocks = getSelectedComponentBlocks(child, blocksEditor);
+        for (int i = 0; i < childBlocks.length(); i++) {
+          blocks.push(childBlocks.get(i));
+        }
+      }
+    }
+    return blocks;
+  }
+
+  private String getSelectedComponentJSON() {
+    StringBuilder sb = new StringBuilder();
+    String sep = "";
+    sb.append("[");
+    for (MockComponent component : form.getSelectedComponents()) {
+      if (component instanceof MockForm) {
+        continue;
+      }
+      sb.append(sep);
+      encodeComponentProperties(component, sb, false);
+      sep = ",";
+    }
+    sb.append("]");
+    if (sb.length() == 2) {
+      return "";  // Only had the MockForm selected and you can't copy a form.
+    }
+    if (!(form.getLastSelectedComponent() instanceof MockForm)) {
+      form.setPasteTarget(form.getLastSelectedComponent().getContainer());
+    }
+    return sb.toString();
+  }
+
+  private void pasteFromJSNI(String jso, boolean dropBlocks) {
+    final MockContainer container = form.getPasteTarget();
+    MockComponent lastComponentCreated = container;
+    JSONObject value = new ClientJsonParser().parse(jso).asObject();
+    Map<String, String> substitution = new HashMap<>();
+    JSONArray components = value.get("$components").asArray();
+    JSONArray blocks = value.get("$blocks").asArray();
+    int insertAfter = container.getChildren().indexOf(form.getLastSelectedComponent()) + 1;
+    boolean didPaste = false;
+    for (JSONValue element : components.getElements()) {
+      if (container.willAcceptComponentType(element.asObject().get("$Type").asString().getString())) {
+        MockComponent pasted = createMockComponent(element.asObject(), container, substitution);
+        if (insertAfter > 0) {
+          container.removeComponent(pasted, false);
+          container.addVisibleComponent(pasted, insertAfter);
+          insertAfter++;  // keep ordering if multiple items are copied.
+        }
+        lastComponentCreated = pasted;
+        didPaste = true;
+      }
+    }
+    if (didPaste && !dropBlocks) {
+      getBlocksEditor().pasteFromJSNI(YaBlocksEditor.toJSO(substitution),
+          YaBlocksEditor.toJsArrayString(blocks));
+    }
+    form.doRefresh();
+
+    final MockComponent componentToSelect = lastComponentCreated;
+    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+      @Override
+      public void execute() {
+        form.setSelectedComponent(componentToSelect, null);
+        onComponentSelectionChange(componentToSelect, true);
+        form.setPasteTarget(container);
+      }
+    });
   }
 }

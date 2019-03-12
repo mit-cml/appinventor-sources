@@ -263,6 +263,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return false;
   }
 
+  public boolean willAcceptComponentType(String type) {
+    return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+  }
+
   // TODO(user): Draw a colored border around the edges of the container
   //                    area while an eligible component is hovering over it.
   @Override
