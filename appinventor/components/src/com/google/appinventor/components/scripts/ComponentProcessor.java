@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -495,6 +495,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> permissions;
 
     /**
+     * Mapping of component block names to permissions that should be included
+     * if the block is used.
+     */
+    protected final Map<String, String[]> conditionalPermissions;
+
+    /**
+     * Mapping of component block names to broadcast receivers that should be
+     * included if the block is used.
+     */
+    protected final Map<String, String[]> conditionalBroadcastReceivers;
+
+    /**
      * Libraries required by this component.
      */
     protected final Set<String> libraries;
@@ -589,6 +601,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
+      conditionalPermissions = Maps.newTreeMap();
+      conditionalBroadcastReceivers = Maps.newTreeMap();
       libraries = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
@@ -1291,6 +1305,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
       // Get the name of the prospective property.
       String propertyName = element.getSimpleName().toString();
+      processConditionalAnnotations(componentInfo, element, propertyName);
 
       // Designer property information
       DesignerProperty designerProperty = element.getAnnotation(DesignerProperty.class);
@@ -1394,6 +1409,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
       // Get the name of the prospective event.
       String eventName = element.getSimpleName().toString();
+      processConditionalAnnotations(componentInfo, element, eventName);
+
       SimpleEvent simpleEventAnnotation = element.getAnnotation(SimpleEvent.class);
 
       // Remove overriden events unless SimpleEvent is again specified.
@@ -1446,6 +1463,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
       // Get the name of the prospective method.
       String methodName = element.getSimpleName().toString();
+      processConditionalAnnotations(componentInfo, element, methodName);
+
       SimpleFunction simpleFunctionAnnotation = element.getAnnotation(SimpleFunction.class);
 
       // Remove overriden methods unless SimpleFunction is again specified.
@@ -1491,6 +1510,37 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           method.returnType = e.getReturnType().toString();
           updateComponentTypes(e.getReturnType());
         }
+      }
+    }
+  }
+
+  /**
+   * Processes the conditional annotations for a component into a dictionary
+   * mapping blocks to those annotations.
+   *
+   * @param componentInfo Component info in which to store the conditional information.
+   * @param element The currently processed Java language element. This should be a method
+   *                annotated with either @UsesPermission or @UsesBroadcastReceivers.
+   * @param blockName The name of the block as it appears in the sources.
+   */
+  private void processConditionalAnnotations(ComponentInfo componentInfo, Element element,
+                                             String blockName) {
+    // Conditional UsesPermissions
+    UsesPermissions usesPermissions = element.getAnnotation(UsesPermissions.class);
+    if (usesPermissions != null) {
+      componentInfo.conditionalPermissions.put(blockName, usesPermissions.value());
+    }
+
+    UsesBroadcastReceivers broadcastReceiver = element.getAnnotation(UsesBroadcastReceivers.class);
+    if (broadcastReceiver != null) {
+      try {
+        Set<String> receivers = new HashSet<>();
+        for (ReceiverElement re : broadcastReceiver.receivers()) {
+          updateWithNonEmptyValue(receivers, receiverElementToString(re));
+        }
+        componentInfo.conditionalBroadcastReceivers.put(blockName, receivers.toArray(new String[0]));
+      } catch (Exception e) {
+        messager.printMessage(Kind.ERROR, "Unable to process broadcast receiver", element);
       }
     }
   }

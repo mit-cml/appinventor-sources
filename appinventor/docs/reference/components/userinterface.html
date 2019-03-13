@@ -983,7 +983,8 @@ none
   <dt><code><em>Height</em></code></dt>
   <dd>Screen height (y-size).</dd>
   <dt><code>Icon</code> (designer only)</dt>
-  <dd></dd>
+  <dd>The image used for your App's display icon should be a 48x48 pixel or 96x96 pixel png or jpeg image. Larger
+    images cause compiling to fail. These image dimensions are standard for Android devices.</dd>
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
   <dt><code>PrimaryColor</code></dt>
@@ -1348,7 +1349,7 @@ none
 <h2 id="WebViewer"> WebViewer </h2>
 <img src="images/webviewer.png" alt="Picture of WebViewer component" />
 
-<p>Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write("The answer is" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to "hello", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString("hello from Javascript")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. </p>
+<p>Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methods <em>getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write("The answer is" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to "hello", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString("hello from Javascript")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. <br />Calling setWebViewString from JavaScript will also run the WebViewStringChanged event so that the blocks can handle when the WebViewString property changes.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -1377,7 +1378,10 @@ none
 </dl>
 
 <h3>Events</h3>
-none
+<dl>
+  <dt><code>WebViewStringChange(text value)</code></dt>
+  <dd>Event that runs when the AppInventor.setWebViewString method is called from JavaScript. The new WebViewString is given by the value parameter.</dd>
+</dl>
 
 <h3>Methods</h3>
 <dl>

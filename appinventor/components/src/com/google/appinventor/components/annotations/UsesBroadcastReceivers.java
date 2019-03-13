@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2016 MIT, All rights reserved
+// Copyright 2016-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * @author will2596@gmail.com (William Byrne)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface UsesBroadcastReceivers {
 
   /**

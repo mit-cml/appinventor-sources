@@ -141,6 +141,7 @@ public class Polygon extends PolygonBase implements MapPolygon {
             "Unable to determine the structure of the points argument.");
       }
       clearGeometry();
+      map.getController().updateFeaturePosition(this);
     } catch(DispatchableError e) {
       container.$form().dispatchErrorOccurredEvent(this, "Points", e.getErrorCode(), e.getArguments());
     }
@@ -209,7 +210,7 @@ public class Polygon extends PolygonBase implements MapPolygon {
             "Unable to determine the structure of the points argument.");
       }
       clearGeometry();
-      map.getController().updateFeaturePosition(this);
+      map.getController().updateFeatureHoles(this);
     } catch(DispatchableError e) {
       container.$form().dispatchErrorOccurredEvent(this, "HolePoints",
           e.getErrorCode(), e.getArguments());
@@ -222,18 +223,18 @@ public class Polygon extends PolygonBase implements MapPolygon {
   public void HolePointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
       holePoints = new ArrayList<List<List<GeoPoint>>>();  // create a new list in case the user has saved a reference
-      map.getController().updateFeaturePosition(this);
+      map.getController().updateFeatureHoles(this);
       return;
     }
     try {
       JSONArray content = new JSONArray(pointString);
       if (content.length() == 0) {
         holePoints = new ArrayList<List<List<GeoPoint>>>();  // create a new list in case the user has saved a reference
-        map.getController().updateFeaturePosition(this);
+        map.getController().updateFeatureHoles(this);
         return;
       }
       holePoints = GeometryUtil.multiPolygonHolesToList(content);
-      map.getController().updateFeaturePosition(this);
+      map.getController().updateFeatureHoles(this);
       Log.d(TAG, "Points: " + points);
     } catch(JSONException e) {
       Log.e(TAG, "Unable to parse point string", e);

@@ -230,6 +230,11 @@ class DummyMapController implements MapController {
   }
 
   @Override
+  public void updateFeatureHoles(MapPolygon polygon) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public void updateFeaturePosition(MapCircle circle) {
     throw new UnsupportedOperationException();
   }

@@ -737,6 +737,14 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     MultiPolygon polygon = (MultiPolygon) featureOverlays.get(aiPolygon);
     if (polygon != null) {
       polygon.setMultiPoints(aiPolygon.getPoints());
+      view.invalidate();
+    }
+  }
+
+  @Override
+  public void updateFeatureHoles(MapPolygon aiPolygon) {
+    MultiPolygon polygon = (MultiPolygon) featureOverlays.get(aiPolygon);
+    if (polygon != null) {
       polygon.setMultiHoles(aiPolygon.getHolePoints());
       view.invalidate();
     }

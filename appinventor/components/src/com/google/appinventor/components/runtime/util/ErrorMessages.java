@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -245,7 +245,13 @@ public final class ErrorMessages {
   // Phone Call Errors
   public static final int ERROR_NO_CALL_PERMISSION = 3501;
 
-  // Start the next group of errors at 3600
+  // REPL Errors
+  public static final int ERROR_UNABLE_TO_INSTALL_PACKAGE = 3601;
+
+  // Augmented Reality Errors
+  public static final int ERROR_INVALID_CONFIGURATION_VALUE = 3700;
+
+  // Start the next group of errors at 3800
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -614,6 +620,14 @@ public final class ErrorMessages {
     // Phone Call errors
     errorMessages.put(ERROR_NO_CALL_PERMISSION,
         "You do not have permission to make phone calls.");
+
+    // REPL errors
+    errorMessages.put(ERROR_UNABLE_TO_INSTALL_PACKAGE,
+        "Unable to launch the package installer for %1$s.");
+
+    // Augmented Reality errors
+    errorMessages.put(ERROR_INVALID_CONFIGURATION_VALUE,
+        "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
   }
 
   private ErrorMessages() {

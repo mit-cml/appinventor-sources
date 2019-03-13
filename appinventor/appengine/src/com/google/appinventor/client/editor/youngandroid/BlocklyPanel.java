@@ -630,7 +630,7 @@ public class BlocklyPanel extends HTMLPanel {
         block.rename(e.oldValue, e.newValue);
       }
       cb(e);
-      if (workspace.rendered) {
+      if (workspace.rendered && !e.isTransient) {
         var handler = this.getWarningHandler();
         if (handler) {
           // [lyn 12/31/2013] Check for duplicate component event handlers before
