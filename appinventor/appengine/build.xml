@@ -199,7 +199,10 @@
           if="enable.contrib">
     <!-- PostgreSQL JDBC, requried by
          com.google.appinventor.contrib.server.storage.PostgreSQLStorageIo -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/postgresql-jdbc/postgresql-42.2.5.jre7.jar"/>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/postgresql-jdbc/postgresql-42.2.5.jre7.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/mchange-commons-java-0.2.15.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/c3p0-oracle-thin-extras-0.9.5.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/c3p0-0.9.5.3.jar" />
   </target>
 
   <!-- =====================================================================
