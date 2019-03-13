@@ -251,6 +251,10 @@ public class Form extends AppInventorCompatActivity
   private ProgressDialog progress;
   private static boolean _initialized = false;
 
+  // It should be changed from 100000 to 65535 if the functionality to extend
+  // FragmentActivity is added in future.
+  public static final int MAX_PERMISSION_NONCE = 100000;
+
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
@@ -2517,7 +2521,7 @@ public class Form extends AppInventorCompatActivity
     androidUIHandler.post(new Runnable() {
         @Override
         public void run() {
-          int nonce = permissionRandom.nextInt(100000);
+          int nonce = permissionRandom.nextInt(MAX_PERMISSION_NONCE);
           Log.d(LOG_TAG, "askPermission: permission = " + permission +
             " requestCode = " + nonce);
           permissionHandlers.put(nonce, responseRequestor);
