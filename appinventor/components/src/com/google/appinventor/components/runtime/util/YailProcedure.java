@@ -1,14 +1,12 @@
 package com.google.appinventor.components.runtime.util;
 
-import java.io.ObjectStreamException;
-import java.lang.reflect.InvocationTargetException;
-
 import android.util.Log;
+import gnu.expr.Language;
 import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.mapping.Procedure;
-import gnu.mapping.SimpleSymbol;
 import gnu.mapping.Values;
+import kawa.standard.Scheme;
 
 public final class YailProcedure {
 
@@ -22,24 +20,17 @@ public final class YailProcedure {
         return new YailProcedure(method);
     }
     public static final YailProcedure create(String procedureName) {
+        // see Blockly.LexicalVariable.checkIdentifier
+        if (!procedureName.matches(
+                "^[^-0-9!&%^/>=<`'\"#:;,\\\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]"
+                + "[^-!&%^/>=<'\"#:;,\\\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$")) {
+            throw new RuntimeException("Procedure name is not legal: " + procedureName);
+        }
         try {
-            Class.forName("com.google.youngandroid.runtime")
-                .getMethod("setThisForm")
-                .invoke(null);
-            return new YailProcedure(
-                (Procedure) Class.forName("com.google.youngandroid.runtime")
-                    .getMethod("lookupGlobalVarInCurrentFormEnvironment", gnu.mapping.Symbol.class, Object.class)
-                    .invoke(
-                        /* invoking instance (null for static method) */ null,
-                        /* global var name */ new SimpleSymbol("p$" + procedureName).readResolve(),
-                        /* default value */ null));
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                 IllegalAccessException | InvocationTargetException impossible) {
-            // impossible with static & specified class.methods
-            Log.wtf("YailProcedure", impossible);
-            throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\" (internal error)",
-                                       impossible);
-        } catch (ObjectStreamException e) {
+            Language scheme = Scheme.getInstance("scheme");
+            scheme.eval("(set-this-form)");
+            return new YailProcedure((Procedure) scheme.eval("(get-var p$" + procedureName + ")"));
+        } catch (Throwable e) {
             throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\"", e);
         }
     }
@@ -81,6 +72,7 @@ public final class YailProcedure {
                 return methodToCall.minArgs();
             }
         });
+        Log.d("YailProcedure", "String.valueOf(methodToCall)" + String.valueOf(methodToCall));
     }
 
     /**
