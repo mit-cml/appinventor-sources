@@ -5,36 +5,26 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.ScriptElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Frame;
 
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         implements ProjectChangeListener {
@@ -62,19 +52,22 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         CheckBox subcb = new CheckBox(cname);
         subcb.setName(cname);
         TreeItem subTree = new TreeItem(subcb);
-        for (ComponentDatabaseInterface.PropertyDefinition pdef : cd.getProperties()) {
+        for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
           CheckBox propcb = new CheckBox(pdef.getName());
           propcb.setName("blockProperties");
+          propcb.setFormValue(pdef.getRW());
           subTree.addItem(propcb);
         }
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
           CheckBox eventcb = new CheckBox(edef.getName());
           eventcb.setName("events");
+          eventcb.setFormValue("none");
           subTree.addItem(eventcb);
         }
         for (ComponentDatabaseInterface.MethodDefinition mdef : cd.getMethods()) {
           CheckBox methcb = new CheckBox(mdef.getName());
           methcb.setName("methods");
+          methcb.setFormValue("none");
           subTree.addItem(methcb);
         }
         TreeItem t = categoryItems.get(cd.getCategoryDocUrlString());
@@ -107,6 +100,8 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
   protected boolean okAction() {
     JSONObject jsonObj = new JSONObject();
     JSONObject jsonShownComponents = new JSONObject();
+    JSONObject jsonShownBlockTypes = new JSONObject();
+    JSONObject jsonComponents = new JSONObject();
     for (int i = 0; i < selectorTree.getItemCount(); ++i) {
       JSONArray jsonBlocks = new JSONArray();
       TreeItem catItem = selectorTree.getItem(i);
@@ -115,57 +110,66 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
           TreeItem compItem = catItem.getChild(j);
           CheckBox cbcomp = (CheckBox)compItem.getWidget();
           if (cbcomp.getValue()) {
+            JSONArray jsonComponentBlocks = new JSONArray();
             JSONObject jsonSingleComp = new JSONObject();
             jsonSingleComp.put("type", new JSONString(cbcomp.getName()));
             jsonBlocks.set(j, jsonSingleComp);
             for (int k = 0; k < compItem.getChildCount(); ++k) {
               CheckBox cbprop = (CheckBox) compItem.getChild(k).getWidget();
+              int blockCount = jsonComponentBlocks.size();
               if (cbprop.getValue()) {
-
+                JsArray<JavaScriptObject> jsonConvert = convertToJSONObjects(cbprop.getName(), cbcomp.getText(), cbprop.getText(), cbprop.getFormValue());
+                for(int l = 0; l < jsonConvert.length(); ++l) {
+                  JSONObject fred = new JSONObject(jsonConvert.get(l));
+                  jsonComponentBlocks.set(blockCount++, fred);
+                }
               }
             }
+            jsonComponents.put(cbcomp.getText(), jsonComponentBlocks);
           }
         }
         jsonShownComponents.put(cbcat.getName().toUpperCase(), jsonBlocks);
+        jsonShownBlockTypes.put("ComponentBlocks", jsonComponents);
     }
     jsonObj.put("shownComponentTypes", jsonShownComponents);
+    jsonObj.put("shownBlockTypes", jsonShownBlockTypes);
     property.setValue(jsonObj.toString());
     return true;
   }
 
-  private native JSONObject convertToXMLObjects(String type, String component, CheckBox blockObj)/*-{
-    var xmlObjList = [];
+  private native JsArray<JavaScriptObject> convertToJSONObjects(String type, String component, String blockName, String rw)/*-{
+    var jsonObjList = [];
     switch(type) {
       case "events":
         var obj = {};
         obj["type"] = "component_event";
         var mutator = {};
         mutator["component_type"] = component;
-        mutator["event_name"] = blockObj.name;
+        mutator["event_name"] = blockName;
         obj["mutatorNameToValue"] = mutator;
         obj["fieldNameToValue"] = {};
         // params??
-        xmlObjList.push(obj);
+        jsonObjList[0] = obj;
         break;
       case "blockProperties":
-        var rw = blockObj["rw"];
+        var rw = "read-write";
         if (rw != "invisible") {
           var obj = {};
           obj["type"] = "component_set_get";
           var mutator = {};
           mutator["component_type"] = component;
-          mutator["property_name"] = blockObj.name;
+          mutator["property_name"] = blockName;
           var fields = {};
-          fields["PROP"] = blockObj.name;
+          fields["PROP"] = blockName;
           obj["fieldNameToValue"] = fields;
           if (rw == "read-only") {
             mutator["set_or_get"] = "get";
             obj["mutatorNameToValue"] = mutator;
-            xmlObjList.push(obj);
+            jsonObjList[0] = obj;
           } else if (rw == "write-only") {
             mutator["set_or_get"] = "set";
             obj["mutatorNameToValue"] = mutator;
-            xmlObjList.push(obj);
+            jsonObjList[0] = obj;
           } else if (rw == "read-write") {
             var mutator_get = JSON.parse(JSON.stringify(mutator));
             var obj_get = JSON.parse(JSON.stringify(obj));
@@ -173,8 +177,8 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
             mutator_get["set_or_get"] = "get";
             obj["mutatorNameToValue"] = mutator;
             obj_get["mutatorNameToValue"] = mutator_get;
-            xmlObjList.push(obj);
-            xmlObjList.push(obj_get);
+            jsonObjList[0] = obj;
+            jsonObjList[1] = obj_get;
           }
         }
         break;
@@ -183,112 +187,14 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         obj["type"] = "component_method";
         var mutator = {};
         mutator["component_type"] = component;
-        mutator["method_name"] = blockObj.name;
+        mutator["method_name"] = blockName;
         obj["mutatorNameToValue"] = mutator;
         obj["fieldNameToValue"] = {};
         // params??
-        xmlObjList.push(obj);
+        jsonObjList[0] = obj;
         break;
     }
-    return xmlObjList;
-  }-*/;
-
-    private native void generate()/*-{
-    var jsonObj = {};
-    var jsonCompObj = {};
-    var jsonBlockObj = {};
-    var jsonString = "";
-    jsonBlockObj["ComponentBlocks"] = {};
-    componentCategories.forEach(function(category) {
-      jsonCompObj[category] = [];
-    });
-    blockCategories.forEach(function(category) {
-      jsonBlockObj[category] = [];
-    });
-    componentBlockCategories.forEach(function(category) {
-      jsonBlockObj["ComponentBlocks"][category] = [];
-    });
-
-    // Generates components
-    $.getJSON("simple_components.json", function(components) {
-      components.forEach(function(component) {
-        //checkbox id = component.type;
-        var checkedid = component.name;
-        if (document.getElementById(checkedid)!= null && document.getElementById(checkedid).checked) {
-          var obj = {type: checkedid};
-          if (jsonCompObj[component.categoryString]) {
-            jsonCompObj[component.categoryString].push(obj);
-          } else {
-            jsonCompObj[component.categoryString] = [obj];
-          }
-          component.events.forEach(function(prop) {
-            // var blockobj = {name: prop.name};
-            var blockPropId = checkedid + 'Blocks-' + prop.name;
-            if (document.getElementById(blockPropId) != null && document.getElementById(blockPropId).checked) {
-              //jsonBlockObj["ComponentBlocks"][checkedid].push(blockobj);
-              var list = convertToXMLObjects("events", checkedid, prop);
-              //console.log(list);
-              for (var i = 0; i < list.length; i++) {
-                var blockObj = list[i];
-                jsonBlockObj["ComponentBlocks"][checkedid].push(blockObj);
-              }
-            }
-          });
-          component.methods.forEach(function(prop) {
-            // var blockobj = {name: prop.name};
-            var blockPropId = checkedid + 'Blocks-' + prop.name;
-            if (document.getElementById(blockPropId) != null && document.getElementById(blockPropId).checked) {
-              //jsonBlockObj["ComponentBlocks"][checkedid].push(blockobj);
-              var list = convertToXMLObjects("methods", checkedid, prop);
-              //console.log(list);
-              for (var i = 0; i < list.length; i++) {
-                var blockObj = list[i];
-                jsonBlockObj["ComponentBlocks"][checkedid].push(blockObj);
-              }
-            }
-          });
-
-          //Get all the component blocks
-          component.blockProperties.forEach(function(prop) {
-            // var blockobj = {name: prop.name};
-            var blockPropId = checkedid + 'Blocks-' + prop.name;
-            if (document.getElementById(blockPropId) != null && document.getElementById(blockPropId).checked) {
-              //jsonBlockObj["ComponentBlocks"][checkedid].push(blockobj);
-              var list = convertToXMLObjects("blockProperties", checkedid, prop);
-              //console.log(list);
-              for (var i = 0; i < list.length; i++) {
-                var blockObj = list[i];
-                jsonBlockObj["ComponentBlocks"][checkedid].push(blockObj);
-              }
-            }
-
-          });
-        }
-      });
-
-      // Generates blocks
-      $.getJSON("global_blocks.json", function(data) {
-        for (key in data) {
-          data[key].forEach(function(block) {
-            //check if block.type or block.list is checked
-            var checkedid = "";
-            if (block.type != undefined) {
-              checkedid = block.type;
-            } else {
-              checkedid = block.list;
-            }
-            if (document.getElementById(checkedid)!=null && document.getElementById(checkedid).checked) {
-              jsonBlockObj[key].push(block);
-            }
-          });
-        }
-
-        jsonObj.shownComponentTypes = jsonCompObj;
-        jsonObj.shownBlockTypes = jsonBlockObj;
-        jsonString = JSON.stringify(jsonObj);
-        $('#jsonStr').html(JSON.stringify(jsonObj));
-      });
-    });
+    return jsonObjList;
   }-*/;
 
     private native String getJSON(Document d)/*-{
