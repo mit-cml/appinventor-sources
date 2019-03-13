@@ -38,7 +38,8 @@ public class PostUtil {
       try {
         json.put("authorId", new JSONString(user.getUserEmail()));
         json.put("name", new JSONString(user.getUserName()));
-        json.put("username", new JSONString(user.getUserName() + "_" + user.getUserId()));
+        // TODO: Avoid username conflicts
+        json.put("username", new JSONString(user.getUserName()));
         json.put("appInventorInstance", new JSONString(appInventorInstance));
         xhr.send(json.toString());
       } catch (JSONException e) {

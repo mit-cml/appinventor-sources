@@ -2,9 +2,9 @@
 <web-app
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
 
   <filter>
     <filter-name>odeAuthFilter</filter-name>
@@ -351,6 +351,17 @@
   <servlet-mapping>
     <servlet-name>receivegalleryprojectServlet</servlet-name>
     <url-pattern>/ode2/receivegalleryproject/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- usercreationservlet
+       Note: this servlet does not require user authentication -->
+  <servlet>
+    <servlet-name>userCreationServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.UserCreationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userCreationServlet</servlet-name>
+    <url-pattern>/ode2/usercreation</url-pattern>
   </servlet-mapping>
 
   <!-- default Firebase authentication -->

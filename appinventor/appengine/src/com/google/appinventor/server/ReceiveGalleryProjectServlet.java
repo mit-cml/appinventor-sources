@@ -26,8 +26,7 @@ import java.util.logging.Logger;
 /**
  * Servlet for receiving project information to import into the AI2 Gallery.
  *
- * This needs to be done from a servlet that does not require login because
- * posts from the Build Server do not contain login information.
+ * This needs to be done from a servlet that does not require login.
  */
 @MultipartConfig
 public class ReceiveGalleryProjectServlet extends OdeServlet {
@@ -57,6 +56,8 @@ public class ReceiveGalleryProjectServlet extends OdeServlet {
     User user = storageIo.getUserFromEmail(email);
 
     GalleryApp galleryApp = galleryStorageIo.createGalleryApp(title, projectName, description, moreInfo, credit, projectId, user.getUserId());
+    // put meta data in search indexReceiveGalleryProjectServlet
+    GallerySearchIndex.getInstance().indexApp(galleryApp);
 
     long galleryId = galleryApp.getGalleryAppId();
 

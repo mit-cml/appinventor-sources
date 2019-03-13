@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application></application>
-  <version>1</version>
+  <version>gallery-b</version>
   <runtime>java8</runtime>
 
   <!-- Configure serving/caching of GWT files -->
@@ -87,6 +87,9 @@
     <!-- Whether or not to enable the servlet to receive gallery projects -->
     <property name="enable.receivegalleryproject" value="true" />
 
+    <!-- Whether or not to enable the servlet to create users -->
+    <property name="enable.createuser" value="true" />
+
     <!-- Gallery Admin Email -->
     <property name="gallery.admin.email" value="" />
 
@@ -104,7 +107,7 @@
          to the site will receive an error page.
      -->
 
-    <property name="auth.usegoogle" value="true" />
+    <property name="auth.usegoogle" value="false" />
     <property name="auth.uselocal" value="true" />
 
     <!-- Flags associated with localauth code -->

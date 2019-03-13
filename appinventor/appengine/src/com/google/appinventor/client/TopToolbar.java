@@ -1126,6 +1126,7 @@ public class TopToolbar extends Composite {
     if (view == Ode.DESIGNER) {
       long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
       Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      if (project == null) return;
       if (project.isPublished()) {
         fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
       } else {
