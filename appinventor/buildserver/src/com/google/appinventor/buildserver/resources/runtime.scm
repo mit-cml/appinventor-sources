@@ -2350,7 +2350,10 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (create-yail-procedure x)
-  (YailProcedure:create x))
+(YailProcedure:create x))
+
+(define (create-yail-procedure-with-name x)
+  (YailProcedure:createWithName x))
 
 (define (call-yail-procedure procedure . args)
   (YailProcedure:callProcedure procedure args))

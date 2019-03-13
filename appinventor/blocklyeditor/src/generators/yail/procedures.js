@@ -177,14 +177,14 @@ Blockly.Yail['procedures_numArgs'] = function() {
 Blockly.Yail['procedures_getWithName'] = function() {
   var procName = Blockly.Yail.valueToCode(this, 'PROCEDURENAME', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YailCallYialPrimitive(
-      "create-yail-procedure", procName, "any", "get procedure");
+      "create-yail-procedure-with-name", procName, "any", "get procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 }
 
 Blockly.Yail['procedures_getWithDropdown'] = function() {
-  var procName = Blockly.Yail.YAIL_GET_VARIABLE +
+  var procedure = Blockly.Yail.YAIL_GET_VARIABLE +
       Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME') + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   var code = Blockly.Yail.YailCallYialPrimitive(
-    "create-yail-procedure", procName, "any", "get procedure");
+    "create-yail-procedure", procedure, "any", "get procedure");
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 }

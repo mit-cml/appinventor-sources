@@ -2,7 +2,6 @@ package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
 import gnu.expr.Language;
-import gnu.expr.ModuleMethod;
 import gnu.lists.LList;
 import gnu.mapping.Procedure;
 import gnu.mapping.Values;
@@ -16,10 +15,10 @@ public final class YailProcedure {
     }
 
     // static methods are called in runtime.scm
-    public static final YailProcedure create(ModuleMethod method) {
+    public static final YailProcedure create(Procedure method) {
         return new YailProcedure(method);
     }
-    public static final YailProcedure create(String procedureName) {
+    public static final YailProcedure createWithName(String procedureName) {
         // see Blockly.LexicalVariable.checkIdentifier
         if (!procedureName.matches(
                 "^[^-0-9!&%^/>=<`'\"#:;,\\\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]"
@@ -67,7 +66,7 @@ public final class YailProcedure {
             }
             @Override
             public int numArgs() {
-                // returning minArgs because the numArgs of ModuleMethod = minArgs | maxArgs<<12,
+                // returning minArgs because the numArgs of Procedure = minArgs | maxArgs<<12,
                 // and sometimes maxArgs may be -1 for unlimited
                 return methodToCall.minArgs();
             }
