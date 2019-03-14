@@ -6,6 +6,7 @@
 package com.google.appinventor.client.widgets.properties;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -21,10 +22,12 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import java.util.HashMap;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
@@ -36,7 +39,10 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
   public SubsetJSONPropertyEditor() {
     super();
     HorizontalPanel treePanel = new HorizontalPanel();
-    ScrollPanel treeScroll = new ScrollPanel();
+    VerticalPanel componentPanel = new VerticalPanel();
+    ScrollPanel componentScroll = new ScrollPanel();
+    VerticalPanel blockPanel = new VerticalPanel();
+    ScrollPanel blockScroll = new ScrollPanel();
     componentTree = new Tree();
     blockTree = new Tree();
 
@@ -90,7 +96,31 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     JavaScriptObject barney = getBlockDict();
     JSONObject blockDict = new JSONObject(barney);
     for (String blockCategory:blockDict.keySet()) {
-      CheckBox blockCatCb = new CheckBox(blockCategory);
+
+      // There appears to be no centralized method for internationalizing the built-in block category names.
+      // Fix if I'm wrong.
+      String blockCategoryTranslated;
+      if (blockCategory.equals("Control")) {
+        blockCategoryTranslated = MESSAGES.builtinControlLabel();
+      } else if (blockCategory.equals("Logic")) {
+        blockCategoryTranslated = MESSAGES.builtinLogicLabel();
+      } else if (blockCategory.equals("Math")) {
+        blockCategoryTranslated = MESSAGES.builtinMathLabel();
+      } else if (blockCategory.equals("Text")) {
+        blockCategoryTranslated = MESSAGES.builtinTextLabel();
+      } else if (blockCategory.equals("Lists")) {
+        blockCategoryTranslated = MESSAGES.builtinListsLabel();
+      } else if (blockCategory.equals("Colors")) {
+        blockCategoryTranslated = MESSAGES.builtinColorsLabel();
+      } else if (blockCategory.equals("Variables")) {
+        blockCategoryTranslated = MESSAGES.builtinVariablesLabel();
+      } else if (blockCategory.equals("Procedures")) {
+        blockCategoryTranslated = MESSAGES.builtinProceduresLabel();
+      } else {
+        blockCategoryTranslated = blockCategory;
+      }
+
+      CheckBox blockCatCb = new CheckBox(blockCategoryTranslated);
       TreeItem blockCatItem = new TreeItem(blockCatCb);
       JSONValue blockCatDictVal = blockDict.get(blockCategory);
       JSONObject blockCatDict = blockCatDictVal.isObject();
@@ -102,12 +132,15 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       blockTree.addItem(blockCatItem);
     }
 
-    treePanel.add(componentTree);
-    treePanel.add(blockTree);
-    treeScroll.add(treePanel);
-    treeScroll.setWidth("90%");
-    treeScroll.setHeight("90%");
-    initAdditionalChoicePanel(treeScroll);
+    componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
+    componentScroll.add(componentTree);
+    componentPanel.add(componentScroll);
+    blockPanel.add(new Label(MESSAGES.blockSelectorBoxCaption()));
+    blockScroll.add(blockTree);
+    blockPanel.add(blockScroll);
+    treePanel.add(componentPanel);
+    treePanel.add(blockPanel);
+    initAdditionalChoicePanel(treePanel);
   }
 
   @Override
