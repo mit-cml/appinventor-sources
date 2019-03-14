@@ -1,10 +1,5 @@
-//
-//  AppInvHTTPD.m
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/17/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: objective-c; c-basic-offset: 2; -*-
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 #import "AppInvHTTPD.h"
 #import <GCDWebServer/GCDWebServerDataResponse.h>
@@ -94,7 +89,7 @@ static NSString *kMimeJson = @"application/json";
     @"fqcn": @true,
     @"installer": @"unknown",
     @"package": @"edu.mit.appinventor.aicompanion3",
-    @"version": @"2.46"
+    @"version": @"2.51"
   };
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithData:data contentType:@"application/json"];

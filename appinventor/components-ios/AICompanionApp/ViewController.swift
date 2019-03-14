@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import UIKit
 import AIComponentKit
@@ -105,7 +105,7 @@ public class ViewController: UINavigationController {
     NSLog("Code = \(code)")
     let url = URL(string: "http://rendezvous.appinventor.mit.edu/rendezvous/");
     var request = URLRequest(url: url!)
-    let values = "key=\(code)&ipaddr=\((NetworkUtils.getIPAddress())!)&port=9987"
+    let values = "key=\(code)&ipaddr=\((NetworkUtils.getIPAddress())!)&port=9987&webrtc=false&version=2.51&api=12.0&os=ios&installer=unknown"
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
