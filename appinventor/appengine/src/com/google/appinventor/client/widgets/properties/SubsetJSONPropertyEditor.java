@@ -6,6 +6,7 @@
 package com.google.appinventor.client.widgets.properties;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -43,7 +44,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
     for (ComponentCategory cat : ComponentCategory.values()) {
-      CheckBox cb = new CheckBox(cat.getName());
+      CheckBox cb = new CheckBox(ComponentsTranslation.getCategoryName(cat.getName()));
       cb.setName(cat.getDocName());
       categoryItems.put(cat.getDocName(), new TreeItem(cb));
     }
@@ -52,25 +53,25 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
       if (cd.getCategoryDocUrlString() != "internal" && cd.getCategoryDocUrlString() != "") {
 
-        CheckBox subcb = new CheckBox(cname);
+        CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
         subcb.setName(cname);
         TreeItem subTree = new TreeItem(subcb);
         for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
           if (pdef.getRW() != "invisible") {
-            CheckBox propcb = new CheckBox(pdef.getName());
+            CheckBox propcb = new CheckBox(ComponentsTranslation.getPropertyName(pdef.getName()));
             propcb.setName("blockProperties");
             propcb.setFormValue(pdef.getRW());
             subTree.addItem(propcb);
           }
         }
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
-          CheckBox eventcb = new CheckBox(edef.getName());
+          CheckBox eventcb = new CheckBox(ComponentsTranslation.getEventName(edef.getName()));
           eventcb.setName("events");
           eventcb.setFormValue("none");
           subTree.addItem(eventcb);
         }
         for (ComponentDatabaseInterface.MethodDefinition mdef : cd.getMethods()) {
-          CheckBox methcb = new CheckBox(mdef.getName());
+          CheckBox methcb = new CheckBox(ComponentsTranslation.getMethodName(mdef.getName()));
           methcb.setName("methods");
           methcb.setFormValue("none");
           subTree.addItem(methcb);
