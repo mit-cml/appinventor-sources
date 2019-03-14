@@ -17,26 +17,29 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Frame;
-
 import java.util.HashMap;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         implements ProjectChangeListener {
 
-  Frame subsetSelector;
-  SimplePanel framePanel;
-  Tree selectorTree;
+  Tree componentTree;
+  Tree blockTree;
 
   public SubsetJSONPropertyEditor() {
     super();
-    VerticalPanel treePanel = new VerticalPanel();
-    selectorTree = new Tree();
+    HorizontalPanel treePanel = new HorizontalPanel();
+    ScrollPanel treeScroll = new ScrollPanel();
+    componentTree = new Tree();
+    blockTree = new Tree();
+
+    // Build tree of components and their related property/event/method blocks
     SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
     for (ComponentCategory cat : ComponentCategory.values()) {
@@ -47,16 +50,18 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     for (String cname : db.getComponentNames()) {
 
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
-      if (cd.getCategoryDocUrlString() != "internal" || cd.getCategoryDocUrlString() != "") {
+      if (cd.getCategoryDocUrlString() != "internal" && cd.getCategoryDocUrlString() != "") {
 
         CheckBox subcb = new CheckBox(cname);
         subcb.setName(cname);
         TreeItem subTree = new TreeItem(subcb);
         for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
-          CheckBox propcb = new CheckBox(pdef.getName());
-          propcb.setName("blockProperties");
-          propcb.setFormValue(pdef.getRW());
-          subTree.addItem(propcb);
+          if (pdef.getRW() != "invisible") {
+            CheckBox propcb = new CheckBox(pdef.getName());
+            propcb.setName("blockProperties");
+            propcb.setFormValue(pdef.getRW());
+            subTree.addItem(propcb);
+          }
         }
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
           CheckBox eventcb = new CheckBox(edef.getName());
@@ -77,23 +82,42 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     for (ComponentCategory cat : ComponentCategory.values()) {
       TreeItem t = categoryItems.get(cat.getDocName());
       if (t.getChildCount() > 0)
-        selectorTree.addItem(t);
+        componentTree.addItem(t);
     }
 
-    treePanel.add(selectorTree);
-    initAdditionalChoicePanel(treePanel);
+    // Build tree of
+    JavaScriptObject barney = getBlockDict();
+    JSONObject blockDict = new JSONObject(barney);
+    for (String blockCategory:blockDict.keySet()) {
+      CheckBox blockCatCb = new CheckBox(blockCategory);
+      TreeItem blockCatItem = new TreeItem(blockCatCb);
+      JSONValue blockCatDictVal = blockDict.get(blockCategory);
+      JSONObject blockCatDict = blockCatDictVal.isObject();
+      for (String blockID:blockCatDict.keySet()) {
+        CheckBox blockCb = new CheckBox(blockCatDict.get(blockID).isString().stringValue());
+        blockCb.setName(blockID);
+        blockCatItem.addItem(new TreeItem(blockCb));
+      }
+      blockTree.addItem(blockCatItem);
+    }
 
-//    subsetSelector = new Frame();
-//    framePanel = new SimplePanel();
-//
-//    subsetSelector.setUrl("JSONGenerator/index.html");
-//    subsetSelector.setWidth("100%");
-//    subsetSelector.setHeight("100%");
-//    framePanel.setWidth("100%");
-//    framePanel.setHeight("100%");
-//    framePanel.add(subsetSelector);
-//    initAdditionalChoicePanel(framePanel);
+    treePanel.add(componentTree);
+    treePanel.add(blockTree);
+    treeScroll.add(treePanel);
+    treeScroll.setWidth("90%");
+    treeScroll.setHeight("90%");
+    initAdditionalChoicePanel(treeScroll);
   }
+
+  @Override
+  protected void openAdditionalChoiceDialog() {
+    popup.setWidth(300 + "px");
+    popup.setHeight(500 + "px");
+    popup.show();
+    popup.center();
+
+  }
+
 
   // AdditionalChoicePropertyEditor implementation
   @Override
@@ -102,9 +126,9 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     JSONObject jsonShownComponents = new JSONObject();
     JSONObject jsonShownBlockTypes = new JSONObject();
     JSONObject jsonComponents = new JSONObject();
-    for (int i = 0; i < selectorTree.getItemCount(); ++i) {
+    for (int i = 0; i < componentTree.getItemCount(); ++i) {
       JSONArray jsonBlocks = new JSONArray();
-      TreeItem catItem = selectorTree.getItem(i);
+      TreeItem catItem = componentTree.getItem(i);
       CheckBox cbcat = (CheckBox)catItem.getWidget();
         for (int j = 0; j < catItem.getChildCount(); ++j) {
           TreeItem compItem = catItem.getChild(j);
@@ -120,8 +144,8 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
               if (cbprop.getValue()) {
                 JsArray<JavaScriptObject> jsonConvert = convertToJSONObjects(cbprop.getName(), cbcomp.getText(), cbprop.getText(), cbprop.getFormValue());
                 for(int l = 0; l < jsonConvert.length(); ++l) {
-                  JSONObject fred = new JSONObject(jsonConvert.get(l));
-                  jsonComponentBlocks.set(blockCount++, fred);
+                  JSONObject jsonCompBlockObj = new JSONObject(jsonConvert.get(l));
+                  jsonComponentBlocks.set(blockCount++, jsonCompBlockObj);
                 }
               }
             }
@@ -132,10 +156,44 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         jsonShownBlockTypes.put("ComponentBlocks", jsonComponents);
     }
     jsonObj.put("shownComponentTypes", jsonShownComponents);
+
+    // Add Blocks for the blocks editor that are not associated with components
+    for (int i = 0; i < blockTree.getItemCount(); ++i){
+      TreeItem blockCatItem = blockTree.getItem(i);
+      CheckBox cbcat = (CheckBox)blockCatItem.getWidget();
+      JSONArray jsonBlockCat = new JSONArray();
+      for (int j = 0; j < blockCatItem.getChildCount(); ++j) {
+          TreeItem blockItem = blockCatItem.getChild(j);
+          CheckBox blockCb = (CheckBox) blockItem.getWidget();
+        if (blockCb.getValue()) {
+          JSONObject jsonSingleBlock = new JSONObject();
+          jsonSingleBlock.put("type", new JSONString(blockCb.getName()));
+          jsonBlockCat.set(j, jsonSingleBlock);
+        }
+      }
+      jsonShownBlockTypes.put(cbcat.getText(), jsonBlockCat);
+    }
     jsonObj.put("shownBlockTypes", jsonShownBlockTypes);
+
     property.setValue(jsonObj.toString());
     return true;
   }
+
+  private native JavaScriptObject getBlockDict()/*-{
+    var blockCatDict = {};
+    for (var blockName in Blockly.Blocks) {
+      if (!Blockly.Blocks.hasOwnProperty(blockName)) continue;
+      var block = Blockly.Blocks[blockName];
+      // Component blocks are handled in the component tree and don't behave the same as the others
+      if (block.category && (block.category !== "Component") && (typeof block.typeblock !== 'undefined')) {
+        if (!blockCatDict[block.category]) {
+          blockCatDict[block.category] = {};
+        }
+        blockCatDict[block.category][blockName] = (block.typeblock[0]).translatedName;
+      }
+    }
+    return blockCatDict;
+  }-*/;
 
   private native JsArray<JavaScriptObject> convertToJSONObjects(String type, String component, String blockName, String rw)/*-{
     var jsonObjList = [];
@@ -197,7 +255,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     return jsonObjList;
   }-*/;
 
-    private native String getJSON(Document d)/*-{
+  private native String getJSON(Document d)/*-{
     var jsonDiv = d.getElementById("jsonStr");
     return jsonDiv.innerText;
   }-*/;
