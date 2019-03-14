@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  *
  * This needs to be done from a servlet that does not require login.
  */
-@MultipartConfig
 public class UserCreationServlet extends OdeServlet {
 
   // Logging support
