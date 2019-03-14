@@ -3351,7 +3351,7 @@ public class PostgreSQLStorageIo implements StorageIo {
       try {
         conn.setAutoCommit(false);
 
-        try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE email LIKE CONCAT(?, '%') LIMIT 20")) {
+        try (PreparedStatement qstmt = conn.prepareStatement("SELECT * FROM account WHERE email >= ? LIMIT 20")) {
           qstmt.setString(1, partialEmail);
           ResultSet rs = qstmt.executeQuery();
 
