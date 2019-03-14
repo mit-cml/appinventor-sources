@@ -141,7 +141,7 @@ public class WebRTCNativeMgr {
           Log.d(LOG_TAG, "IceCandidate = " + iceCandidate.toString());
           /* Send to Peer */
           JSONObject response = new JSONObject();
-          response.put("nonce", random.nextInt() % 100000);
+          response.put("nonce", random.nextInt(100000));
           JSONObject jsonCandidate = new JSONObject();
           jsonCandidate.put("candidate", iceCandidate.sdp);
           jsonCandidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
