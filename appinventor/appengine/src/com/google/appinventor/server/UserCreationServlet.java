@@ -35,6 +35,8 @@ public class UserCreationServlet extends OdeServlet {
     if (!Flag.createFlag("enable.createuser", false).get()) return;
 
     Map<String, String[]> map = req.getParameterMap();
+    LOG.info("parameter map " + map);
+    LOG.info("parameter map email " + map.get("email"));
     User user = storageIo.getUserFromEmail(map.get("email")[0]);
 
     try {
