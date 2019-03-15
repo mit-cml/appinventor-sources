@@ -1,32 +1,17 @@
 package com.google.appinventor.server;
 
-import com.google.appengine.api.images.Image;
-import com.google.appengine.api.images.ImagesService;
-import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.api.images.Transform;
-import com.google.appengine.tools.cloudstorage.*;
-import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
-import com.google.appinventor.server.http.MultipartMap;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryService;
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.user.User;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
