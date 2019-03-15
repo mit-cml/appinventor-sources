@@ -82,7 +82,7 @@
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="true" />
     <!-- Whether or not to use the new gallery -->
-    <property name="use.newgallery" value="false" />
+    <property name="use.newgallery" value="true" />
 
     <!-- Whether or not to enable the servlet to receive gallery projects -->
     <property name="enable.receivegalleryproject" value="false" />
