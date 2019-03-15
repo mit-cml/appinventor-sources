@@ -686,18 +686,8 @@ public class Form extends AppInventorCompatActivity
     Log.d(LOG_TAG, "ReplayFormOrientation()");
     LinkedHashMap<Integer, PercentStorageRecord> temp = (LinkedHashMap<Integer, PercentStorageRecord>) dimChanges.clone();
     dimChanges.clear();         // Empties it out
-    // for (int i = 0; i < temp.size(); i++) {
-    //   // Iterate over the list...
-    //   PercentStorageRecord r = temp.get(i);
-    //   if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
-    //     r.component.Height(r.length);
-    //   } else {
-    //     r.component.Width(r.length);
-    //   }
-    // }
     // Iterate temp
-    for (Integer key : temp.keySet()) {
-      PercentStorageRecord r = temp.get(key);
+    for (PercentStorageRecord r : temp.values()) {
       if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
         r.component.Height(r.length);
       } else {
@@ -708,9 +698,9 @@ public class Form extends AppInventorCompatActivity
 
   private Integer generateHashCode(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
     if (dim == PercentStorageRecord.Dim.HEIGHT) {
-      return (component.hashCode() + dim.hashCode()) * 2 + 1;
+      return component.hashCode() * 2 + 1;
     } else {
-      return (component.hashCode() + dim.hashCode()) * 2;
+      return component.hashCode() * 2;
     }
   }
 
