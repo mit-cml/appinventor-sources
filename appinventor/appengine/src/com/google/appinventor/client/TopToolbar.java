@@ -1032,7 +1032,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), false);
+      // TODO: Temp fix to wacky behavior with view project in gallery button
+      fileDropDown.setItemEnabled(MESSAGES.viewProjectInGalleryMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
@@ -1041,7 +1042,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
-      updateViewProjectInGalleryButton(Ode.PROJECTS);
+//      updateViewProjectInGalleryButton(Ode.PROJECTS);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.addUpdateProjectInGalleryMenuItem(), true);
@@ -1054,7 +1055,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
-      updateViewProjectInGalleryButton(Ode.DESIGNER);
+//      updateViewProjectInGalleryButton(Ode.DESIGNER);
     }
     updateKeystoreFileMenuButtons(true);
   }
