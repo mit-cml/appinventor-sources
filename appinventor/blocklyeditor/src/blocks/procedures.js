@@ -860,7 +860,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     var procDb = this.getTopWorkspace().getProcedureDatabase();
     this.procNamesFxn = function() {
       var items = procDb.getMenuItems(false);
-      return items.length > 0 ? items : ['',''];
+      return items.length > 0 ? items : [' ',' '];
     };
 
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
@@ -1069,7 +1069,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     var procDb = this.getTopWorkspace().getProcedureDatabase();
     this.procNamesFxn = function() {
       var items = procDb.getMenuItems(true);
-      return items.length > 0 ? items : ['',''];
+      return items.length > 0 ? items : [' ',' '];
     };
 
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
@@ -1254,7 +1254,7 @@ Blockly.Blocks['procedures_getWithDropdown'] = {
     var procDb = this.getTopWorkspace().getProcedureDatabase();
     this.procNamesFxn = function() {
       var items = procDb.getMenuItems('all');
-      return items.length > 0 ? items : ['',''];
+      return items.length > 0 ? items : [' ',' '];
     };
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
@@ -1264,7 +1264,8 @@ Blockly.Blocks['procedures_getWithDropdown'] = {
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"), this.getField("PROCNAME").getValue());
+    // ensure errors are checked
+    this.setFieldValue(this.getFieldValue('PROCNAME'), 'PROCNAME');
   },
   removeProcedureValue: function() {
     this.setFieldValue("none", 'PROCNAME');
