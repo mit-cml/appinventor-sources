@@ -1264,6 +1264,16 @@ Blockly.Blocks['procedures_getWithDropdown'] = {
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.OUTPUT));
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"), this.getField("PROCNAME").getValue());
+  },
+  removeProcedureValue: function() {
+    this.setFieldValue("none", 'PROCNAME');
+  },
+  renameProcedure: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
+      this.setFieldValue(newName, 'PROCNAME');
+      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
+    }
   },
   setProcedureParameters: function() {}, // dont need to display parameter this here
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET }]
