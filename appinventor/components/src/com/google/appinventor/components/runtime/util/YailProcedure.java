@@ -1,11 +1,14 @@
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ReplForm;
+
 import android.util.Log;
-import gnu.expr.Language;
 import gnu.lists.LList;
 import gnu.mapping.Procedure;
+import gnu.mapping.SimpleSymbol;
+import gnu.mapping.Symbol;
 import gnu.mapping.Values;
-import kawa.standard.Scheme;
 
 public final class YailProcedure {
 
@@ -15,8 +18,11 @@ public final class YailProcedure {
     }
 
     // static methods are called in runtime.scm
-    public static final YailProcedure create(Procedure method) {
-        return new YailProcedure(method);
+    public static final YailProcedure create(Procedure procedure) {
+        if (procedure == null) {
+            throw new RuntimeException("Cannot create YailProcedure since the procedure is null");
+        }
+        return new YailProcedure(procedure);
     }
     public static final YailProcedure createWithName(String procedureName) {
         // see Blockly.LexicalVariable.checkIdentifier
@@ -26,12 +32,37 @@ public final class YailProcedure {
             throw new RuntimeException("Procedure name is not legal: " + procedureName);
         }
         try {
-            Language scheme = Scheme.getInstance("scheme");
-            scheme.eval("(set-this-form)");
-            return new YailProcedure((Procedure) scheme.eval("(get-var p$" + procedureName + ")"));
+            Log.d("YailProcedure", "createWithName: procedureName=" + procedureName);
+            String processedName;
+            if (Form.getActiveForm() instanceof ReplForm) {
+                // Need to be escaped
+                // For non-ascii character 例 (\u4f8b)
+                // Symbol 'p$例 == 'p$u4f8b == (string->symbol "p$u4f8b") != (string->symbol "p$例")
+                processedName = escapeUnicode(procedureName);
+                Log.d("YailProcedure", "createWithName: escaped procedureName for Repl: " + processedName);
+            } else {
+                processedName = procedureName;
+            }
+            return create((Procedure) Class.forName("com.google.youngandroid.runtime")
+                .getMethod("lookupGlobalVarInCurrentFormEnvironment", Symbol.class, Object.class)
+                .invoke(
+                    /* invoking instance (null for static method) */ null,
+                    /* global var name */ new SimpleSymbol("p$" + processedName).readResolve(),
+                    /* default value */ null));
         } catch (Throwable e) {
-            throw new RuntimeException("Cannot read global procedure \"" + procedureName + "\"", e);
+            throw new RuntimeException("Cannot read global procedure: " + procedureName, e);
         }
+    }
+    private static String escapeUnicode(String str) {
+        StringBuilder b = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            if (c <= 0x007F) { // ASCII
+                b.append(c);
+            } else {
+                b.append("u").append(Integer.toHexString(c));
+            }
+        }
+        return b.toString();
     }
     public static final Object callProcedure(YailProcedure procedure, LList args) {
         return procedure.call(args.toArray());
@@ -71,7 +102,6 @@ public final class YailProcedure {
                 return methodToCall.minArgs();
             }
         });
-        Log.d("YailProcedure", "String.valueOf(methodToCall)" + String.valueOf(methodToCall));
     }
 
     /**
