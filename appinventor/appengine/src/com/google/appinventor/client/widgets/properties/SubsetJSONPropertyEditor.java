@@ -16,8 +16,12 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -40,7 +44,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     super();
     HorizontalPanel treePanel = new HorizontalPanel();
     VerticalPanel componentPanel = new VerticalPanel();
-    ScrollPanel componentScroll = new ScrollPanel();
+    final ScrollPanel componentScroll = new ScrollPanel();
     VerticalPanel blockPanel = new VerticalPanel();
     ScrollPanel blockScroll = new ScrollPanel();
     componentTree = new Tree();
@@ -52,35 +56,35 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     for (ComponentCategory cat : ComponentCategory.values()) {
       CheckBox cb = new CheckBox(ComponentsTranslation.getCategoryName(cat.getName()));
       cb.setName(cat.getDocName());
-      categoryItems.put(cat.getDocName(), new TreeItem(cb));
+      categoryItems.put(cat.getDocName(), createCascadeCheckboxItem(cb));
     }
     for (String cname : db.getComponentNames()) {
 
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
       if (cd.getCategoryDocUrlString() != "internal" && cd.getCategoryDocUrlString() != "") {
 
-        CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
+        final CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
+        final TreeItem subTree = createCascadeCheckboxItem(subcb);
         subcb.setName(cname);
-        TreeItem subTree = new TreeItem(subcb);
         for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
           if (pdef.getRW() != "invisible") {
             CheckBox propcb = new CheckBox(ComponentsTranslation.getPropertyName(pdef.getName()));
             propcb.setName("blockProperties");
             propcb.setFormValue(pdef.getRW());
-            subTree.addItem(propcb);
+            subTree.addItem(createCascadeCheckboxItem(propcb));
           }
         }
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
           CheckBox eventcb = new CheckBox(ComponentsTranslation.getEventName(edef.getName()));
           eventcb.setName("events");
           eventcb.setFormValue("none");
-          subTree.addItem(eventcb);
+          subTree.addItem(createCascadeCheckboxItem(eventcb));
         }
         for (ComponentDatabaseInterface.MethodDefinition mdef : cd.getMethods()) {
           CheckBox methcb = new CheckBox(ComponentsTranslation.getMethodName(mdef.getName()));
           methcb.setName("methods");
           methcb.setFormValue("none");
-          subTree.addItem(methcb);
+          subTree.addItem(createCascadeCheckboxItem(methcb));
         }
         TreeItem t = categoryItems.get(cd.getCategoryDocUrlString());
         t.addItem(subTree);
@@ -92,7 +96,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         componentTree.addItem(t);
     }
 
-    // Build tree of
+    // Build tree of global blocks by category
     JavaScriptObject barney = getBlockDict();
     JSONObject blockDict = new JSONObject(barney);
     for (String blockCategory:blockDict.keySet()) {
@@ -121,13 +125,14 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       }
 
       CheckBox blockCatCb = new CheckBox(blockCategoryTranslated);
-      TreeItem blockCatItem = new TreeItem(blockCatCb);
+      blockCatCb.setName(blockCategory);
+      TreeItem blockCatItem = createCascadeCheckboxItem(blockCatCb);
       JSONValue blockCatDictVal = blockDict.get(blockCategory);
       JSONObject blockCatDict = blockCatDictVal.isObject();
       for (String blockID:blockCatDict.keySet()) {
         CheckBox blockCb = new CheckBox(blockCatDict.get(blockID).isString().stringValue());
         blockCb.setName(blockID);
-        blockCatItem.addItem(new TreeItem(blockCb));
+        blockCatItem.addItem(createCascadeCheckboxItem(blockCb));
       }
       blockTree.addItem(blockCatItem);
     }
@@ -135,7 +140,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
     componentScroll.add(componentTree);
     componentPanel.add(componentScroll);
-    blockPanel.add(new Label(MESSAGES.blockSelectorBoxCaption()));
+    blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
     blockScroll.add(blockTree);
     blockPanel.add(blockScroll);
     treePanel.add(componentPanel);
@@ -143,8 +148,101 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     initAdditionalChoicePanel(treePanel);
   }
 
+  private void loadComponents(JSONObject jsonObj) {
+    // TODO: Review JSON format. There has to be a better way to store and retrieve this info.
+    JSONObject shownComponents = jsonObj.get("shownComponentTypes").isObject();
+    JSONObject shownComponentBlocks = jsonObj.get("shownBlockTypes").isObject().get("ComponentBlocks").isObject();
+    for (int i = 0; i < componentTree.getItemCount(); ++i) {
+      TreeItem componentCatItem = componentTree.getItem(i);
+      CheckBox componentCatCb = (CheckBox)componentCatItem.getWidget();
+      String fred = componentCatCb.getName().toUpperCase();
+      JSONArray jsonComponentCat = shownComponents.get(fred).isArray();
+      if (jsonComponentCat.size() > 0) {
+        componentCatCb.setValue(true, false);
+        HashMap<String, String> jsonComponentHash = new HashMap<String, String>();
+        for (int j = 0; j < jsonComponentCat.size(); ++j) {
+          JSONValue jsonComponentHashCat = jsonComponentCat.get(j);
+          if (jsonComponentHashCat != null) {
+            jsonComponentHash.put(jsonComponentHashCat.isObject().get("type").isString().stringValue(), "type");
+          }
+        }
+        for (int j = 0; j < componentCatItem.getChildCount(); ++j) {
+          TreeItem componentItem = componentCatItem.getChild(j);
+          CheckBox componentCb = (CheckBox)componentItem.getWidget();
+          if (jsonComponentHash.get(componentCb.getName()) != null) {
+            componentCb.setValue(true, false);
+            JSONArray jsonComponentBlockProps = shownComponentBlocks.get(componentCb.getName()).isArray();
+            HashMap<String, String> componentPropHash = new HashMap<String, String>();
+            for (int k = 0; k < jsonComponentBlockProps.size(); ++k) {
+              JSONObject jsonComponentBlockType = jsonComponentBlockProps.get(k).isObject();
+              String componentBlockType = jsonComponentBlockType.get("type").isString().stringValue();
+              if (componentBlockType == "component_set_get") {
+                componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("property_name").isString().stringValue(), "PROP");
+              } else if (componentBlockType == "component_event") {
+                JSONValue barney = jsonComponentBlockType.get("mutatorNameToValue");
+                JSONValue pebbles = barney.isObject().get("event_name");
+                componentPropHash.put(pebbles.isString().stringValue(), "EVENT");
+              } else if (componentBlockType == "component_method") {
+                componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("method_name").isString().stringValue(), "METHOD");
+              }
+            }
+            for (int k = 0; k < componentItem.getChildCount(); ++k) {
+              TreeItem componentPropItem = componentItem.getChild(k);
+              CheckBox componentPropCb = (CheckBox)componentPropItem.getWidget();
+              if (componentPropHash.get(componentPropCb.getText()) != null) {
+                componentPropCb.setValue(true, false);
+              } else {
+                componentPropCb.setValue(false, false);
+              }
+            }
+
+          } else {
+            componentCb.setValue(false, false);
+            toggleChildren(componentItem, false);
+          }
+        }
+      } else {
+        componentCatCb.setValue(false, false);
+        toggleChildren(componentCatItem, false);
+      }
+    }
+  }
+
+  private void loadGlobalBlocks(JSONObject jsonObj) {
+    JSONObject shownBlocks = jsonObj.get("shownBlockTypes").isObject();
+    for (int i = 0; i < blockTree.getItemCount(); ++i) {
+      TreeItem catTree = blockTree.getItem(i);
+      CheckBox catCb = (CheckBox)catTree.getWidget();
+      if (shownBlocks.get(catCb.getName()) != null) {
+        JSONArray jsonBlockArr = shownBlocks.get(catCb.getName()).isArray();
+        catCb.setValue(true,false);
+        HashMap<String, String> blockHash = new HashMap<String, String>();
+        for (int j = 0; j< jsonBlockArr.size(); ++j) {
+          blockHash.put(jsonBlockArr.get(j).isObject().get("type").isString().stringValue(), "type");
+        }
+        for (int j = 0; j < catTree.getChildCount(); ++j) {
+          TreeItem blockTree = catTree.getChild(j);
+          CheckBox blockCb = (CheckBox)blockTree.getWidget();
+          if (blockHash.get(blockCb.getName()) != null) {
+            blockCb.setValue(true,false);
+          } else {
+            blockCb.setValue(false,false);
+          }
+        }
+      } else {
+        catCb.setValue(false, false);
+        toggleChildren(catTree, false);
+      }
+    }
+  }
+
+
   @Override
   protected void openAdditionalChoiceDialog() {
+    JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
+    loadComponents(jsonSet);
+    loadGlobalBlocks(jsonSet);
+    popup.setTitle(MESSAGES.blockSelectorBoxCaption());
     popup.setWidth(300 + "px");
     popup.setHeight(500 + "px");
     popup.show();
@@ -152,6 +250,36 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   }
 
+  private void toggleChildren(TreeItem item, Boolean checked) {
+    for (int i = 0; i <item.getChildCount(); ++i) {
+      TreeItem childItem = item.getChild(i);
+      ((CheckBox)childItem.getWidget()).setValue(checked, false);
+      if (childItem.getChildCount() > 0) {
+        toggleChildren(childItem, checked);
+      }
+    }
+  }
+
+  private TreeItem createCascadeCheckboxItem(CheckBox cb) {
+    final TreeItem newItem = new TreeItem();
+    cb.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+        if (newItem.getChildCount() > 0) {
+          toggleChildren(newItem, valueChangeEvent.getValue());
+        }
+        if (valueChangeEvent.getValue() == true) {
+          TreeItem parentItem = newItem.getParentItem();
+          while (parentItem != null) {
+            ((CheckBox)parentItem.getWidget()).setValue(true, false);
+            parentItem = parentItem.getParentItem();
+          }
+        }
+      }
+    });
+    newItem.setWidget(cb);
+    return newItem;
+  }
 
   // AdditionalChoicePropertyEditor implementation
   @Override
@@ -195,17 +323,19 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     for (int i = 0; i < blockTree.getItemCount(); ++i){
       TreeItem blockCatItem = blockTree.getItem(i);
       CheckBox cbcat = (CheckBox)blockCatItem.getWidget();
-      JSONArray jsonBlockCat = new JSONArray();
-      for (int j = 0; j < blockCatItem.getChildCount(); ++j) {
+      if (cbcat.getValue()) {
+        JSONArray jsonBlockCat = new JSONArray();
+        for (int j = 0; j < blockCatItem.getChildCount(); ++j) {
           TreeItem blockItem = blockCatItem.getChild(j);
           CheckBox blockCb = (CheckBox) blockItem.getWidget();
-        if (blockCb.getValue()) {
-          JSONObject jsonSingleBlock = new JSONObject();
-          jsonSingleBlock.put("type", new JSONString(blockCb.getName()));
-          jsonBlockCat.set(j, jsonSingleBlock);
+          if (blockCb.getValue()) {
+            JSONObject jsonSingleBlock = new JSONObject();
+            jsonSingleBlock.put("type", new JSONString(blockCb.getName()));
+            jsonBlockCat.set(jsonBlockCat.size(), jsonSingleBlock);
+            jsonShownBlockTypes.put(cbcat.getText(), jsonBlockCat);
+          }
         }
       }
-      jsonShownBlockTypes.put(cbcat.getText(), jsonBlockCat);
     }
     jsonObj.put("shownBlockTypes", jsonShownBlockTypes);
 
