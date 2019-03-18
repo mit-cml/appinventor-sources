@@ -175,7 +175,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
   // This method is declared static, with an explicit activity input, so that other
   // components can use it
-  public static void oneButtonAlert(Activity activity,String message, String title, String buttonText) {
+  public static void oneButtonAlert(Activity activity,String message, String title, String buttonText, final Runnable callBack) {
     Log.i(LOG_TAG, "One button alert " + message);
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
@@ -185,8 +185,18 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
         buttonText, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
+        if (callBack != null) {
+          callBack.run();
+        }
       }});
     alertDialog.show();
+  }
+
+  // A version of oneButtonAlert that doesn't accept a callback. We provide this
+  // for backwards compatibility in case extensions out there are using this (older)
+  // version which didn't accept a callback
+  public static void oneButtonAlert(Activity activity,String message, String title, String buttonText) {
+    oneButtonAlert(activity, message, title, buttonText, null);
   }
 
   // converts a string that includes HTML tags to a spannable string that can
