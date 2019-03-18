@@ -705,7 +705,6 @@ public class Form extends AppInventorCompatActivity
   }
 
   public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
-    // dimChanges.add(new PercentStorageRecord(component, length, dim));
     PercentStorageRecord r = new PercentStorageRecord(component, length, dim);
     Integer key = generateHashCode(component, dim);
     dimChanges.put(key, r);
@@ -714,10 +713,7 @@ public class Form extends AppInventorCompatActivity
   public void unregisterPercentLength(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
     // iterate map, remove all entry match this
     for (Integer key : dimChanges.keySet()) {
-      Integer candidate = generateHashCode(component, dim);
-      if (key.equals(candidate)) {
-        dimChanges.remove(key);
-      }
+      dimChanges.remove(generateHashCode(component, dim));
     }
   }
 
