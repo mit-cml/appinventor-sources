@@ -863,17 +863,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(hideAll);
 
-  // Retrieve from backpack option.
-  var backpackRetrieve = {enabled: true};
-  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
-    Blockly.getMainWorkspace().getBackpack().count() + ")";
-  backpackRetrieve.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
-    }
-  };
-  menuOptions.push(backpackRetrieve);
-
   // Copy all blocks to backpack option.
   var backpackCopyAll = {enabled: true};
   backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
@@ -884,16 +873,16 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(backpackCopyAll);
 
-  // Clear backpack.
-  var backpackClear = {enabled: true};
-  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
-  backpackClear.callback = function() {
+  // Retrieve from backpack option.
+  var backpackRetrieve = {enabled: true};
+  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
+    Blockly.getMainWorkspace().getBackpack().count() + ")";
+  backpackRetrieve.callback = function() {
     if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().clear();
+      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
     }
-    backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
   };
-  menuOptions.push(backpackClear);
+  menuOptions.push(backpackRetrieve);
 
   // Enable grid
   var gridOption = {enabled: true};
@@ -1206,8 +1195,69 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
 };
 
 /**
- * Refresh the state of the backpack. Called from BlocklyPanel.java
+ * Scroll the workspace to center on the given block.
+ * @param {?string} id ID of block center on.
+ * @public
  */
+// TODO: This is code from a later version of Blockly. Remove on next Blockly update.
+Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
+  if (!this.scrollbar) {
+    console.warn('Tried to scroll a non-scrollable workspace.');
+    return;
+  }
+
+  var block = this.getBlockById(id);
+  if (!block) {
+    return;
+  }
+
+  // XY is in workspace coordinates.
+  var xy = block.getRelativeToSurfaceXY();
+  // Height/width is in workspace units.
+  var heightWidth = block.getHeightWidth();
+
+  // Find the enter of the block in workspace units.
+  var blockCenterY = xy.y + heightWidth.height / 2;
+
+  // In RTL the block's position is the top right of the block, not top left.
+  var multiplier = this.RTL ? -1 : 1;
+  var blockCenterX = xy.x + (multiplier * heightWidth.width / 2);
+
+  // Workspace scale, used to convert from workspace coordinates to pixels.
+  var scale = this.scale;
+
+  // Center in pixels.  0, 0 is at the workspace origin.  These numbers may
+  // be negative.
+  var pixelX = blockCenterX * scale;
+  var pixelY = blockCenterY * scale;
+
+  var metrics = this.getMetrics();
+
+  // Scrolling to here would put the block in the top-left corner of the
+  // visible workspace.
+  var scrollToBlockX = pixelX - metrics.contentLeft;
+  var scrollToBlockY = pixelY - metrics.contentTop;
+
+  // viewHeight and viewWidth are in pixels.
+  var halfViewWidth = metrics.viewWidth / 2;
+  var halfViewHeight = metrics.viewHeight / 2;
+
+  // Put the block in the center of the visible workspace instead.
+  var scrollToCenterX = scrollToBlockX - halfViewWidth;
+  var scrollToCenterY = scrollToBlockY - halfViewHeight;
+
+  Blockly.hideChaff();
+  var event = new AI.Events.WorkspaceMove(this.id);
+  this.scrollbar.set(scrollToCenterX, scrollToCenterY);
+  event.recordNew();
+  Blockly.Events.fire(event);
+
+};
+
+/*
+* Refresh the state of the backpack. Called from BlocklyPanel.java
+*/
+
 Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
   if (this.backpack_) {
     this.backpack_.resize();
