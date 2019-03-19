@@ -17,17 +17,15 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharacterCodingException;
 
 import java.util.Collections;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -67,8 +65,6 @@ public class WebRTCNativeMgr {
   private ReplForm form;
 
   private PeerConnection peerConnection;
-  /* We use a single threaded executor to read from the rendezvous server */
-  private volatile ExecutorService background = Executors.newSingleThreadExecutor();
   /* We need to keep track of whether or not we have processed an element */
   /* Received from the rendezvous server. */
   private TreeSet<String> seenNonces = new TreeSet();
@@ -133,6 +129,8 @@ public class WebRTCNativeMgr {
         WebRTCNativeMgr.this.dataChannel = dataChannel;
         dataChannel.registerObserver(dataObserver);
         keepPolling = false;    // Turn off talking to the rendezvous server
+        timer.cancel();
+        Log.d(LOG_TAG, "Poller() Canceled");
         seenNonces.clear();
       }
 
@@ -220,8 +218,12 @@ public class WebRTCNativeMgr {
     peerConnection = factory.createPeerConnection(Collections.singletonList(iceServer), new MediaConstraints(),
                                                                  observer);
 //    peerConnection.createOffer(sdpObserver, new MediaConstraints()); // Let's see what happens :-)
-    Poller();
-
+    timer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+          Poller();
+        }
+      }, 0, 1000);              // Start the Poller now and then every second
   }
 
   /*
@@ -230,92 +232,92 @@ public class WebRTCNativeMgr {
    * is in the sender roll.
    */
   private void Poller() {
-    background.submit(new Runnable() {
-        @Override public void run() {
-          try {
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://" + rendezvousServer + "/rendezvous2/" + rCode + "-s");
-            HttpResponse response = client.execute(request);
-            StringBuilder sb = new StringBuilder();
+    try {
+      if (!keepPolling) {
+        return;
+      }
 
-            BufferedReader rd = new BufferedReader
-              (new InputStreamReader(
-                response.getEntity().getContent()));
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-              sb.append(line);
-            }
-            if (!keepPolling) {
-              Log.d(LOG_TAG, "keepPolling is false, we're done!");
-              return;
-            }
-            Log.d(LOG_TAG, "response = " + sb.toString());
-            JSONArray jsonArray = new JSONArray(sb.toString());
-            Log.d(LOG_TAG, "jsonArray.length() = " + jsonArray.length());
-            int i = 0;
-            while (i < jsonArray.length()) {
-              Log.d(LOG_TAG, "i = " + i);
-              Log.d(LOG_TAG, "element = " + jsonArray.optString(i));
-              JSONObject element = (JSONObject) jsonArray.get(i);
-              if (!haveOffer) {
-                if (!element.has("offer")) {
-                  i++;
-                  continue;
-                }
-                JSONObject offer = (JSONObject) element.get("offer");
-                String sdp = offer.optString("sdp");
-                String type = offer.optString("type");
-                Log.d(LOG_TAG, "sdb = " + sdp);
-                Log.d(LOG_TAG, "type = " + type);
-                haveOffer = true;
-                Log.d(LOG_TAG, "About to set remote offer");
-                peerConnection.setRemoteDescription(sdpObserver,
-                  new SessionDescription(SessionDescription.Type.OFFER, sdp));
-                peerConnection.createAnswer(sdpObserver, new MediaConstraints());
-                Log.d(LOG_TAG, "createAnswer returned");
-                i = -1;
-              } else {
-                if (element.has("nonce")) {
-                  String nonce = element.optString("nonce");
-                  if (element.isNull("candidate")) {
-                    Log.d(LOG_TAG, "Received a null candidate, skipping...");
-                    i++;
-                    continue;
-                  }
-                  JSONObject candidate = (JSONObject) element.get("candidate");
-                  String sdpcandidate = candidate.optString("candidate");
-                  String sdpMid = candidate.optString("sdpMid");
-                  int sdpMLineIndex = candidate.optInt("sdpMLineIndex");
-                  Log.d(LOG_TAG, "candidate = " + sdpcandidate);
-                  if (!seenNonces.contains(nonce)) {
-                    seenNonces.add(nonce);
-                    Log.d(LOG_TAG, "new nonce, about to add candidate!");
-                    IceCandidate iceCandidate = new IceCandidate(sdpMid, sdpMLineIndex, sdpcandidate);
-                    peerConnection.addIceCandidate(iceCandidate);
-                    Log.d(LOG_TAG, "addIceCandidate returned");
-                  }
-                }
-              }
-              i++;
-            }
-            Log.d(LOG_TAG, "exited loop");
-          } catch (IOException e) {
-            Log.e(LOG_TAG, "Caught IOException: " + e.toString(), e);
-          } catch (JSONException e) {
-            Log.e(LOG_TAG, "Caught JSONException: " + e.toString(), e);
-          } catch (Exception e) {
-            Log.e(LOG_TAG, "Caught Exception: " + e.toString(), e);
+      Log.d(LOG_TAG, "Poller() Called");
+      HttpClient client = new DefaultHttpClient();
+      HttpGet request = new HttpGet("http://" + rendezvousServer + "/rendezvous2/" + rCode + "-s");
+      HttpResponse response = client.execute(request);
+      StringBuilder sb = new StringBuilder();
+
+      BufferedReader rd = new BufferedReader
+        (new InputStreamReader(
+          response.getEntity().getContent()));
+      String line = "";
+      while ((line = rd.readLine()) != null) {
+        sb.append(line);
+      }
+      if (!keepPolling) {
+        Log.d(LOG_TAG, "keepPolling is false, we're done!");
+        return;
+      }
+      Log.d(LOG_TAG, "response = " + sb.toString());
+
+      if (sb.toString().equals("")) {
+        Log.d(LOG_TAG, "Received an empty response");
+        // Empty Response
+        return;
+      }
+
+      JSONArray jsonArray = new JSONArray(sb.toString());
+      Log.d(LOG_TAG, "jsonArray.length() = " + jsonArray.length());
+      int i = 0;
+      while (i < jsonArray.length()) {
+        Log.d(LOG_TAG, "i = " + i);
+        Log.d(LOG_TAG, "element = " + jsonArray.optString(i));
+        JSONObject element = (JSONObject) jsonArray.get(i);
+        if (!haveOffer) {
+          if (!element.has("offer")) {
+            i++;
+            continue;
           }
-          if (keepPolling) {
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                  WebRTCNativeMgr.this.Poller();
-                }
-              }, 1000);
+          JSONObject offer = (JSONObject) element.get("offer");
+          String sdp = offer.optString("sdp");
+          String type = offer.optString("type");
+          Log.d(LOG_TAG, "sdb = " + sdp);
+          Log.d(LOG_TAG, "type = " + type);
+          haveOffer = true;
+          Log.d(LOG_TAG, "About to set remote offer");
+          peerConnection.setRemoteDescription(sdpObserver,
+            new SessionDescription(SessionDescription.Type.OFFER, sdp));
+          peerConnection.createAnswer(sdpObserver, new MediaConstraints());
+          Log.d(LOG_TAG, "createAnswer returned");
+          i = -1;
+        } else {
+          if (element.has("nonce")) {
+            String nonce = element.optString("nonce");
+            if (element.isNull("candidate")) {
+              Log.d(LOG_TAG, "Received a null candidate, skipping...");
+              i++;
+              continue;
+            }
+            JSONObject candidate = (JSONObject) element.get("candidate");
+            String sdpcandidate = candidate.optString("candidate");
+            String sdpMid = candidate.optString("sdpMid");
+            int sdpMLineIndex = candidate.optInt("sdpMLineIndex");
+            Log.d(LOG_TAG, "candidate = " + sdpcandidate);
+            if (!seenNonces.contains(nonce)) {
+              seenNonces.add(nonce);
+              Log.d(LOG_TAG, "new nonce, about to add candidate!");
+              IceCandidate iceCandidate = new IceCandidate(sdpMid, sdpMLineIndex, sdpcandidate);
+              peerConnection.addIceCandidate(iceCandidate);
+              Log.d(LOG_TAG, "addIceCandidate returned");
+            }
           }
         }
-      });
+        i++;
+      }
+      Log.d(LOG_TAG, "exited loop");
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "Caught IOException: " + e.toString(), e);
+    } catch (JSONException e) {
+      Log.e(LOG_TAG, "Caught JSONException: " + e.toString(), e);
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "Caught Exception: " + e.toString(), e);
+    }
   }
 
   private void sendRendezvous(JSONObject data) {
