@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.SwitchCompat;
@@ -17,6 +20,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * Toggle switch with the ability to detect initialization, focus
@@ -40,6 +44,10 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   private int trackColorActive;
   private int trackColorInactive;
 
+  private final Activity activity;
+  private final ComponentContainer container;
+
+
   /**
    * Creates a new Switch component.
    *
@@ -47,6 +55,18 @@ public final class Switch extends ToggleBase<SwitchCompat> {
    */
   public Switch(ComponentContainer container) {
     super(container);
+
+    this.container = container;
+    this.activity = container.$context();
+
+    // Using AppCompat, Switch component is only supported in API 14 and higher
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
+      showNoticeAndDie(
+              "Sorry. The Switch component is not compatible with this phone.",
+              "This application must exit.",
+              "Rats!");
+    }
+
     view = new SwitchCompat(container.$context());
     On(false);
 
@@ -55,6 +75,20 @@ public final class Switch extends ToggleBase<SwitchCompat> {
     TrackColorActive(Component.COLOR_GREEN);
     TrackColorInactive(Component.COLOR_GRAY);
     initToggle();
+  }
+
+  // show a notification and kill the app when the button is pressed
+  private void showNoticeAndDie(String message, String title, String buttonText){
+    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle(title);
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
+    alertDialog.setMessage(message);
+    alertDialog.setButton(buttonText, new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+        activity.finish();
+      }});
+    alertDialog.show();
   }
 
   private ColorStateList createSwitchColors(int active_color, int inactive_color) {
