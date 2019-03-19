@@ -51,6 +51,36 @@ Blockly.Yail['procedures_defnoreturn'] = function() {
   return code;
 };
 
+// Generator code for yail procedure
+Blockly.Yail['procedures_defanonnoreturn'] = function() {
+  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+    "create-yail-procedure",
+    Blockly.Yail.YAIL_LAMBDA
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
+      + body + Blockly.Yail.YAIL_CLOSE_COMBINATION,
+    "any", "create procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+// Generator code for yail procedure (with return)
+Blockly.Yail['procedures_defanonreturn'] = function() {
+  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+    "create-yail-procedure",
+    Blockly.Yail.YAIL_LAMBDA
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
+      + returnVal + Blockly.Yail.YAIL_CLOSE_COMBINATION,
+    "any", "create procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
 Blockly.Yail['procedure_lexical_variable_get'] = function() {
   return Blockly.Yail.lexical_variable_get.call(this);
 }
@@ -85,3 +115,76 @@ Blockly.Yail['procedures_callreturn'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
+
+// Generator code for yail procedure call with no return
+Blockly.Yail['procedures_callanonnoreturn'] = function() {
+  var argCode = [];
+  var argTypes = [];
+  argCode.push(Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+  argTypes.push("any");
+  for (var x=0; this.getInput("ARG" + x); x++) {
+    argCode.push(Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+    argTypes.push('any');
+  }
+  var code = Blockly.Yail.YailCallYialPrimitive("call-yail-procedure", argCode, argTypes, "call procedure");
+  return code;
+};
+
+// Generator code for yail procedure call with return
+Blockly.Yail['procedures_callanonreturn'] = function() {
+  var argCode = [];
+  var argTypes = [];
+  argCode.push(Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+  argTypes.push("any");
+  for (var x=0; this.getInput("ARG" + x); x++) {
+    argCode.push(Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+    argTypes.push('any');
+  }
+  var code = Blockly.Yail.YailCallYialPrimitive("call-yail-procedure", argCode, argTypes, "call procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+// Generator code for yail procedure call with no return (input list version)
+Blockly.Yail['procedures_callanonnoreturn_inputlist'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "call-yail-procedure-input-list",
+      [ Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+        Blockly.Yail.valueToCode(this, 'INPUTLIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call procedure(with input list)");
+  return code;
+};
+
+// Generator code for yail procedure call with return (input list version)
+Blockly.Yail['procedures_callanonreturn_inputlist'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "call-yail-procedure-input-list",
+      [ Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+        Blockly.Yail.valueToCode(this, 'INPUTLIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call procedure(with input list)");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+Blockly.Yail['procedures_numArgs'] = function() {
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "num-args-yail-procedure",
+      Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE,
+      "any", "get number of arguments");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}
+
+Blockly.Yail['procedures_getWithName'] = function() {
+  var procName = Blockly.Yail.valueToCode(this, 'PROCEDURENAME', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+      "create-yail-procedure-with-name", procName, "any", "get procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}
+
+Blockly.Yail['procedures_getWithDropdown'] = function() {
+  var procedure = Blockly.Yail.YAIL_GET_VARIABLE +
+      Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME') + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var code = Blockly.Yail.YailCallYialPrimitive(
+    "create-yail-procedure", procedure, "any", "get procedure");
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+}

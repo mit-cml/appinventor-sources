@@ -247,6 +247,17 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
 
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_HELPURL = '/reference/blocks/control.html#TODO:';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE = 'run in background';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE = 'procedure';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK = 'callback';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP = 'Run procedure in background, then call the callback procedure with the running result. You should not add any block that would change the content of the screen into the background procedure, instead, they should be put into the callback.';
+
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_HELPURL = '/reference/blocks/control.html#TODO:';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE = 'run after period';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_MILLIS = 'millis';
+    Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TOOLTIP = 'Run procedure after a certain period (time unit: milli-second)';
+
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate but ignore result'
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = '/reference/blocks/control.html#evaluate';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'
@@ -985,6 +996,9 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = 'to ';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure that does not return a value.';
+    
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = 'create procedure';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';
@@ -1020,6 +1034,32 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = 'call ';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Call a procedure with a return value.';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'call return';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = 'call procedure';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT = 'input';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = 'input list';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = 'Call a procedure with no return value. The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP = 'Call a procedure with a return value. The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP = 'Call a procedure with no return value (with a list of inputs). The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP = 'Call a procedure with a return value (with a list of inputs). The number of inputs must match the procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = 'number of inputs';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = 'procedure';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = 'Get the number of inputs that is expected by the procedure';
+
+    Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET = 'get procedure';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_NAME = 'name';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_TOOLTIP = 'Get a named procedure.';
+
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL = '/reference/blocks/procedures.html#TODO:';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET = 'get procedure';
+    Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP = 'Get a defined procedure.';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';

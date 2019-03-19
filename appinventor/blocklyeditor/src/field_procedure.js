@@ -52,9 +52,8 @@ Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) {
   var procNameArray = [Blockly.FieldProcedure.defaultValue];
   for(var i=0;i<topBlocks.length;i++){
     var procName = topBlocks[i].getFieldValue('NAME')
-    if(topBlocks[i].type == "procedures_defnoreturn" && !returnValue) {
-      procNameArray.push([procName,procName]);
-    } else if (topBlocks[i].type == "procedures_defreturn" && returnValue) {
+    if ((topBlocks[i].type == "procedures_defnoreturn" && (returnValue == 'all' || !returnValue)) ||
+        (topBlocks[i].type == "procedures_defreturn" && (returnValue == 'all' || returnValue))) {
       procNameArray.push([procName,procName]);
     }
   }
@@ -105,7 +104,8 @@ Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
     var blockArray = workspace.getAllBlocks();
     for(var i=0;i<blockArray.length;i++){
       var block = blockArray[i];
-      if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn") {
+      if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn" ||
+                                                  block.type == "procedures_getWithDropdown") {
         if(block.getFieldValue('PROCNAME') == name) {
           block.removeProcedureValue();
         }

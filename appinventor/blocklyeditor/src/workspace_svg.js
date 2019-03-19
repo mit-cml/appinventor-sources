@@ -599,7 +599,8 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     if (block.category === 'Component' && block.instanceName)
       return block.instanceName;
     if (block.category === 'Procedures')
-      return (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME'));
+      return (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')
+           || block.category); // for yail procedures
     return block.category;
   }
 

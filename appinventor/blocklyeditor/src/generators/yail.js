@@ -68,6 +68,7 @@ Blockly.Yail.YAIL_OR_DELAYED = "(or-delayed ";
 Blockly.Yail.YAIL_IF = "(if ";
 Blockly.Yail.YAIL_INIT_RUNTIME = "(init-runtime)";
 Blockly.Yail.YAIL_INITIALIZE_COMPONENTS = "(call-Initialize-of-components";
+Blockly.Yail.YAIL_LAMBDA = "(lambda ";
 Blockly.Yail.YAIL_LET = "(let ";
 Blockly.Yail.YAIL_LEXICAL_VALUE = "(lexical-value ";
 Blockly.Yail.YAIL_SET_LEXICAL_VALUE = "(set-lexical! ";
@@ -659,3 +660,33 @@ Blockly.Yail.blockToCode1 = function(block) {
     return this.scrub_(block, code, true);
   }
 };
+
+/**
+ * construct (call-yail-primitive procedureName (\*list-for-runtime\* argCodes) '(argTypes) diaplayName)
+ * 
+ * TODO: replace codes that referenced Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE with this.
+ * 
+ * @param procedureName
+ * @param argCodes string / array of arguments
+ * @param argTypes string / array of arg types
+ * @param displayName can be left null, and it would be equal to procedureName
+ */
+Blockly.Yail.YailCallYialPrimitive = function(procedureName, argCodes, argTypes, displayName) {
+  if (!displayName) {
+    displayName = procedureName;
+  }
+  if (typeof argCodes == "string") {
+    argCodes = [ argCodes ];
+  }
+  if (typeof argTypes == "string") {
+    argTypes = [ argTypes ];
+  }
+  return Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE
+      + procedureName + Blockly.Yail.YAIL_SPACER
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
+        + argCodes.join(' ') + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
+      + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION
+        + argTypes.join(' ') + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + displayName + Blockly.Yail.YAIL_DOUBLE_QUOTE
+    + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+}

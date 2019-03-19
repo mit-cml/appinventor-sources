@@ -908,6 +908,8 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias YailProcedure <com.google.appinventor.components.runtime.util.YailProcedure>)
+(define-alias MultiThreadUtil <com.google.appinventor.components.runtime.util.MultiThreadUtil>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
@@ -2341,6 +2343,35 @@ list, use the make-yail-list constructor with no arguments.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;Yail Procedure & Multi-thread implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (create-yail-procedure x)
+  (YailProcedure:create x))
+
+(define (create-yail-procedure-with-name x)
+  (YailProcedure:createWithName x))
+
+(define (call-yail-procedure procedure . args)
+  (YailProcedure:callProcedure procedure args))
+
+(define (call-yail-procedure-input-list procedure inputlist)
+  (YailProcedure:callProcedure procedure inputlist))
+
+(define (num-args-yail-procedure procedure)
+  (YailProcedure:numArgs procedure))
+
+(define (run-in-background procedure-to-run callback)
+  (MultiThreadUtil:runInNewThread procedure-to-run callback))
+
+(define (run-after-period millis procedure-to-run)
+  (MultiThreadUtil:runAfterPeriod millis procedure-to-run))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Yail Procedure & Multi-thread implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

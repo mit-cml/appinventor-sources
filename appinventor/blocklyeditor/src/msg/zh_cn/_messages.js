@@ -221,6 +221,11 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = '执行语句/返回结果';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = '执行并返回';
 
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE = '后台运行';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE = '运行内容';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK = '回调过程';
+    Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP = '在后台运行一段过程，再通过回调来处理结果。在后台运行的过程不被允许对手机屏幕上的任何内容做变更，这些变更应该被放到回调过程中。';
+
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = '求值但忽略结果'
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = '求值但不返回';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = '运行所连接的代码块但不返回运算值，用于调用求值过程但不需要其运算值。';
@@ -803,6 +808,8 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = '定义过程';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = '语句执行完成后，不返回结果。';
 
+    Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE = '定义过程';
+
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = '然后返回';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO = '执行语句';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_RETURN = '返回';
@@ -831,6 +838,25 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = '调用';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = '调用一个有返回值的过程。';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = '调用有返回值的过程';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON = '调用过程';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT = '输入项';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST = '输入列表';
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP = '调用一个无返回值的过程。输入项数量必须与被调用过程所需数量的相同。';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP = '调用一个有返回值的过程。输入项数量必须与被调用过程所需数量的相同。';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP = '调用一个无返回值的过程（使用输入列表传值）。输入项数量必须与被调用过程所需数量的相同。';
+
+    Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP = '调用一个有返回值的过程（使用输入列表传值）。输入项数量必须与被调用过程所需数量的相同。';
+
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET = '输入项数量';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC = '过程';
+    Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP = '返回过程所需输入项的数量';
+
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_GET = '取过程';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_NAME = '过程名';
+    Blockly.Msg.LANG_PROCEDURES_GLOBALTOANON_TOOLTIP = '取一个有被命名的过程';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = '输入项';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = '输入:';

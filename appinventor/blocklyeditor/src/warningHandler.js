@@ -295,6 +295,14 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
 Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
   var rootBlock = block.getRootBlock();
   if(rootBlock.type == "global_declaration"){
+    var surroundParent = block;
+    while (surroundParent.getSurroundParent()) {
+      surroundParent = surroundParent.getSurroundParent();
+      if ((surroundParent.type == "procedures_defanonnoreturn")
+          || (surroundParent.type == "procedures_defanonreturn")) {
+        return false;
+      }
+    }
     var errorMessage = Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION;
     block.setErrorIconText(errorMessage);
     return true;

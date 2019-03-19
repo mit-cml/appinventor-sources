@@ -521,8 +521,11 @@ public class YaVersion {
   // - List reverse block was added.
   // For BLOCKS_LANGUAGE_VERSION 25:
   // - List join with separator block was added.
+  // For BLOCKS_LANGUAGE_VERSION 26:
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 25;
+  public static final int BLOCKS_LANGUAGE_VERSION = 26;
 
   // ................................. Component Version Numbers ..................................
 
