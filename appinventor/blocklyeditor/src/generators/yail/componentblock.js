@@ -27,17 +27,28 @@ goog.provide('Blockly.Yail.componentblock');
  * @returns {Function} event code generation function with instanceName and eventName bound in
  */
 Blockly.Yail.component_event = function() {
-  var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE);
+
+  var preamble;
+  if (this.isGeneric) {
+    preamble = Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT
+      + this.typeName
+      + Blockly.Yail.YAIL_SPACER
+      + this.eventName;
+  } else {
+    preamble = Blockly.Yail.YAIL_DEFINE_EVENT
+      + this.getFieldValue("COMPONENT_SELECTOR")
+      + Blockly.Yail.YAIL_SPACER
+      + this.eventName;
+  }
+
+  var body = Blockly.Yail.statementToCode(this, 'DO');
   // TODO: handle deactivated block, null body
   if(body == ""){
     body = Blockly.Yail.YAIL_NULL;
   }
 
 
-  var code = Blockly.Yail.YAIL_DEFINE_EVENT
-    + this.getFieldValue("COMPONENT_SELECTOR")
-    + Blockly.Yail.YAIL_SPACER
-    + this.eventName
+  var code = preamble
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     // declaredNames gives us names in local language, but we want the default

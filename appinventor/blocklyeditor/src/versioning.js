@@ -1780,8 +1780,10 @@ Blockly.Versioning.AllUpgradeMaps =
     24: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 25, added Join With Separator Block
-    25: "noUpgrade"
+    25: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
+    26: "noUpgrade"
 
   }, // End Language upgraders
 
