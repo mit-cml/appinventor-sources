@@ -63,6 +63,9 @@ Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
  */
 Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 
+//Whether the workspace elements are hidden
+Blockly.WorkspaceSvg.prototype.chromeHidden = false;
+
 /**
  * Wrap the onMouseClick_ event to handle additional behaviors.
  */
@@ -568,25 +571,17 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.splice(3, 0, exportOption);
 
-  //Hide workspace SVG elements backpack, zoom, and trashcan
-  var hideWorkspace = {enabled: true};
-  hideWorkspace.text = Blockly.Msg.HIDE;
-  hideWorkspace.callback= function() {
-    self.backpack_.svgGroup_.style.display='none';
-    self.trashcan.svgGroup_.style.display='none';
-    self.zoomControls_.svgGroup_.style.display='none';
+  //Show or hide workspace SVG elements backpack, zoom, and trashcan
+  var workspaceOption = {enabled: true};
+  workspaceOption.text = this.chromeHidden ? Blockly.Msg.SHOW : Blockly.Msg.HIDE;
+  var displayStyle = this.chromeHidden ? 'block' : 'none';
+  workspaceOption.callback= function() {
+    self.backpack_.svgGroup_.style.display=displayStyle;
+    self.trashcan.svgGroup_.style.display=displayStyle;
+    self.zoomControls_.svgGroup_.style.display=displayStyle;
+    self.chromeHidden = !self.chromeHidden;
   };
-  menuOptions.push(hideWorkspace);
-
-  //Show workspace SVG elements backpack, zoom, and trashcan
-  var showWorkspace = {enabled: true};
-  showWorkspace.text = Blockly.Msg.SHOW;
-  showWorkspace.callback= function() {
-    self.backpack_.svgGroup_.style.display='block';
-    self.trashcan.svgGroup_.style.display='block';
-    self.zoomControls_.svgGroup_.style.display='block';
-  };
-  menuOptions.push(showWorkspace);
+  menuOptions.push(workspaceOption);
 
   // Arrange blocks in row order.
   var arrangeOptionH = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_HORIZONTAL)};
