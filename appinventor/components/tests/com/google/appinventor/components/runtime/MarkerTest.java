@@ -6,12 +6,15 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
+import android.view.ViewGroup;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
+import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.util.GeoPoint;
+import org.robolectric.internal.bytecode.ShadowMap;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowView;
 
@@ -271,7 +274,7 @@ public class MarkerTest extends MapTestBase {
 
   @Test
   public void testVisibleNoInvalidate() {
-    ShadowView mapView = Shadow.extract(getMap().getView());
+    ShadowMapView mapView = Shadow.extract(((ViewGroup) getMap().getView()).getChildAt(0));
     Marker marker = new Marker(getMap());
     mapView.clearWasInvalidated();
     marker.Visible(true);
@@ -281,7 +284,7 @@ public class MarkerTest extends MapTestBase {
 
   @Test
   public void testVisibleInvalidate() {
-    ShadowView mapView = Shadow.extract(getMap().getView());
+    ShadowMapView mapView = Shadow.extract(((ViewGroup) getMap().getView()).getChildAt(0));
     Marker marker = new Marker(getMap());
     mapView.clearWasInvalidated();
     marker.Visible(true);

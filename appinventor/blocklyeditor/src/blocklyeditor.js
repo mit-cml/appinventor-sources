@@ -413,6 +413,7 @@ Blockly.ai_inject = function(container, workspace) {
   //   var block = blocks[i];
   //   block.render(false);
   // }
+  workspace.getWarningHandler().determineDuplicateComponentEventHandlers();
   workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
   // center on blocks
   workspace.setScale(1);

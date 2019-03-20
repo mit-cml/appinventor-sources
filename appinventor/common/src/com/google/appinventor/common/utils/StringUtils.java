@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -129,6 +129,27 @@ public final class StringUtils {
       separator = delimiter;
     }
     return sb.toString();
+  }
+
+  /**
+   * Joins a list of strings into a single string using a delimiter, with the
+   * output being directed into a StringBuilder object.
+   *
+   * @param sb The StringBuilder to receive the resulting string
+   * @param delimiter The delimiter to use between strings
+   * @param items The items to join
+   */
+  public static void join(StringBuilder sb, String delimiter, String... items) {
+    Preconditions.checkNotNull(sb);
+    Preconditions.checkNotNull(delimiter);
+    Preconditions.checkNotNull(items);
+
+    String separator = "";
+    for (String string : items) {
+      sb.append(separator);
+      sb.append(string);
+      separator = delimiter;
+    }
   }
 
   /**

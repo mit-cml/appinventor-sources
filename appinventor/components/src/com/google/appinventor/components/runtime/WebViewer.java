@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.content.Context;
 import android.webkit.JavascriptInterface;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -22,11 +23,8 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,6 +87,9 @@ public final class WebViewer extends AndroidViewComponent {
 
   // allows passing strings to javascript
   WebViewInterface wvInterface;
+
+  // Flag to mark whether we have received permission to read external storage
+  private boolean havePermission = false;
 
   /**
    * Creates a new WebViewer component.
@@ -219,7 +220,7 @@ public final class WebViewer extends AndroidViewComponent {
     homeUrl = url;
     // clear the history, since changing Home is a kind of reset
     webview.clearHistory();
-    webview.loadUrl(homeUrl);
+    loadUrl("HomeUrl", homeUrl);
   }
 
   /**
@@ -307,7 +308,7 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Loads the home URL page.  This happens automatically when " +
           "the home URL is changed.")
   public void GoHome() {
-    webview.loadUrl(homeUrl);
+    loadUrl("GoHome", homeUrl);
   }
 
   /**
@@ -360,7 +361,7 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleFunction(
       description = "Load the page at the given URL.")
   public void GoToUrl(String url) {
-    webview.loadUrl(url);
+    loadUrl("GoToUrl", url);
   }
 
   /**
@@ -444,6 +445,26 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleEvent(description = "When the JavaScript calls AppInventor.setWebViewString this event is run.")
   public void WebViewStringChange(String value) {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
+  }
+
+  private void loadUrl(final String caller, final String url) {
+    if (!havePermission && MediaUtil.isExternalFileUrl(url)) {
+      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+          new PermissionResultHandler() {
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (granted) {
+                havePermission = true;
+                webview.loadUrl(url);
+              } else {
+                container.$form().dispatchPermissionDeniedEvent(WebViewer.this, caller,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
+              }
+            }
+          });
+      return;
+    }
+    webview.loadUrl(url);
   }
 
   /**

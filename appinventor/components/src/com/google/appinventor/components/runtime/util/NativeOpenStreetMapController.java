@@ -40,6 +40,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
 import com.google.appinventor.components.runtime.util.MapFactory.MapType;
 import com.google.appinventor.components.runtime.view.ZoomControlView;
 import org.osmdroid.api.IGeoPoint;
@@ -48,6 +49,7 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -61,6 +63,8 @@ import org.osmdroid.views.overlay.OverlayWithIW;
 import org.osmdroid.views.overlay.OverlayWithIWVisitor;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.ScaleBarOverlay;
+import org.osmdroid.views.overlay.ScaleBarOverlay.UnitsOfMeasure;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
@@ -109,6 +113,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private boolean ready = false;
   private ZoomControlView zoomControls = null;
   private float lastAzimuth = Float.NaN;
+  private ScaleBarOverlay scaleBar;
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -259,6 +264,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private final AppInventorLocationSensorAdapter locationProvider;
 
   NativeOpenStreetMapController(final Form form) {
+    OpenStreetMapTileProviderConstants.setUserAgentValue(form.getApplication().getPackageName());
     File osmdroid = new File(form.getCacheDir(), "osmdroid");
     if (osmdroid.exists() || osmdroid.mkdirs()) {
       Configuration.getInstance().setOsmdroidBasePath(osmdroid);
@@ -293,6 +299,11 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     });
     zoomControls = new ZoomControlView(view);
     userLocation = new MyLocationNewOverlay(locationProvider, view);
+    scaleBar = new ScaleBarOverlay(view);
+    scaleBar.setAlignBottom(true);
+    scaleBar.setAlignRight(true);
+    scaleBar.disableScaleBar();
+    view.getOverlayManager().add(scaleBar);
 
     containerView = new RelativeLayout(form);
     containerView.setClipChildren(true);
@@ -329,7 +340,9 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public int getZoom() {
-    return (int) view.getZoomLevel(false);
+    // We pass pending as true here so that when a user sets ZoomLevel
+    // and then reads it back it should be reflected.
+    return (int) view.getZoomLevel(true);
   }
 
   @Override
@@ -726,6 +739,14 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     MultiPolygon polygon = (MultiPolygon) featureOverlays.get(aiPolygon);
     if (polygon != null) {
       polygon.setMultiPoints(aiPolygon.getPoints());
+      view.invalidate();
+    }
+  }
+
+  @Override
+  public void updateFeatureHoles(MapPolygon aiPolygon) {
+    MultiPolygon polygon = (MultiPolygon) featureOverlays.get(aiPolygon);
+    if (polygon != null) {
       polygon.setMultiHoles(aiPolygon.getHolePoints());
       view.invalidate();
     }
@@ -1126,6 +1147,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   protected void showOverlay(OverlayWithIW overlay) {
     view.getOverlayManager().add(overlay);
+    view.invalidate();
   }
 
   @Override
@@ -1135,6 +1157,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   protected void hideOverlay(OverlayWithIW overlay) {
     view.getOverlayManager().remove(overlay);
+    view.invalidate();
   }
 
   @Override
@@ -1208,6 +1231,44 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public float getRotation() {
     return view.getMapOrientation();
+  }
+
+  @Override
+  public void setScaleVisible(boolean show) {
+    scaleBar.setEnabled(show);
+    view.invalidate();
+  }
+
+  @Override
+  public boolean isScaleVisible() {
+    return scaleBar.isEnabled();
+  }
+
+  @Override
+  public void setScaleUnits(MapScaleUnits units) {
+    switch (units) {
+      case METRIC:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.metric);
+        break;
+      case IMPERIAL:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.imperial);
+        break;
+      default:
+        throw new IllegalArgumentException("Unallowable unit system: " + units);
+    }
+    view.invalidate();
+  }
+
+  @Override
+  public MapScaleUnits getScaleUnits() {
+    switch (scaleBar.getUnitsOfMeasure()) {
+      case imperial:
+        return MapScaleUnits.IMPERIAL;
+      case metric:
+        return MapScaleUnits.METRIC;
+      default:
+        throw new IllegalStateException("Somehow we have an unallowed unit system");
+    }
   }
 
   static class MultiPolygon extends Polygon {
