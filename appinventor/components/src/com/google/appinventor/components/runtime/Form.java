@@ -2183,6 +2183,7 @@ public class Form extends AppInventorCompatActivity
     "Stop this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
+        MenuItemSelected(item.getOrder(), item.getTitle().toString());
         showExitApplicationNotification();
         return true;
       }
@@ -2195,8 +2196,8 @@ public class Form extends AppInventorCompatActivity
     "About this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
+        MenuItemSelected(item.getOrder(), item.getTitle().toString());
         showAboutApplicationNotification();
-        MenuItemSelected(item.getTitle().toString(), item.getOrder());
         return true;
       }
     });
@@ -2207,7 +2208,6 @@ public class Form extends AppInventorCompatActivity
   public boolean onOptionsItemSelected(MenuItem item) {
     for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
       if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
-        MenuItemSelected(item.getTitle().toString(), item.getOrder());
         return true;
       }
     }
@@ -2239,12 +2239,12 @@ public class Form extends AppInventorCompatActivity
   /**
    * Event to handle when the app user selects an item from the options menu.
    *
-   * @param selection The name of menu item that is selected.
    * @param selectionIndex The index of menu item that is selected.
+   * @param selection The name of menu item that is selected.
    */
   @SimpleEvent(description = "Event raised when user selects an item from the options menu.")
-  public void MenuItemSelected(String selection, int selectionIndex) {
-    EventDispatcher.dispatchEvent(this, "MenuItemSelected", selection, selectionIndex);
+  public void MenuItemSelected(int selectionIndex, String selection) {
+    EventDispatcher.dispatchEvent(this, "MenuItemSelected", selectionIndex, selection);
   }
 
   private String yandexTranslateTagline = "";
