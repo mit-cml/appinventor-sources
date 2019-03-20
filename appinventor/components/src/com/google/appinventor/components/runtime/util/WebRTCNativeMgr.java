@@ -243,26 +243,37 @@ public class WebRTCNativeMgr {
       HttpResponse response = client.execute(request);
       StringBuilder sb = new StringBuilder();
 
-      BufferedReader rd = new BufferedReader
-        (new InputStreamReader(
-          response.getEntity().getContent()));
-      String line = "";
-      while ((line = rd.readLine()) != null) {
-        sb.append(line);
+      BufferedReader rd = null;
+      try {
+        rd = new BufferedReader
+          (new InputStreamReader(
+            response.getEntity().getContent()));
+        String line = "";
+        while ((line = rd.readLine()) != null) {
+          sb.append(line);
+        }
+      } finally {
+        if (rd != null) {
+          rd.close();
+        }
       }
+
       if (!keepPolling) {
         Log.d(LOG_TAG, "keepPolling is false, we're done!");
         return;
       }
-      Log.d(LOG_TAG, "response = " + sb.toString());
 
-      if (sb.toString().equals("")) {
+      String responseText = sb.toString();
+
+      Log.d(LOG_TAG, "response = " + responseText);
+
+      if (responseText.equals("")) {
         Log.d(LOG_TAG, "Received an empty response");
         // Empty Response
         return;
       }
 
-      JSONArray jsonArray = new JSONArray(sb.toString());
+      JSONArray jsonArray = new JSONArray(responseText);
       Log.d(LOG_TAG, "jsonArray.length() = " + jsonArray.length());
       int i = 0;
       while (i < jsonArray.length()) {
@@ -286,26 +297,24 @@ public class WebRTCNativeMgr {
           peerConnection.createAnswer(sdpObserver, new MediaConstraints());
           Log.d(LOG_TAG, "createAnswer returned");
           i = -1;
-        } else {
-          if (element.has("nonce")) {
-            String nonce = element.optString("nonce");
-            if (element.isNull("candidate")) {
-              Log.d(LOG_TAG, "Received a null candidate, skipping...");
-              i++;
-              continue;
-            }
-            JSONObject candidate = (JSONObject) element.get("candidate");
-            String sdpcandidate = candidate.optString("candidate");
-            String sdpMid = candidate.optString("sdpMid");
-            int sdpMLineIndex = candidate.optInt("sdpMLineIndex");
-            Log.d(LOG_TAG, "candidate = " + sdpcandidate);
-            if (!seenNonces.contains(nonce)) {
-              seenNonces.add(nonce);
-              Log.d(LOG_TAG, "new nonce, about to add candidate!");
-              IceCandidate iceCandidate = new IceCandidate(sdpMid, sdpMLineIndex, sdpcandidate);
-              peerConnection.addIceCandidate(iceCandidate);
-              Log.d(LOG_TAG, "addIceCandidate returned");
-            }
+        } else if (element.has("nonce")) {
+          if (element.isNull("candidate")) {
+            Log.d(LOG_TAG, "Received a null candidate, skipping...");
+            i++;
+            continue;
+          }
+          String nonce = element.optString("nonce");
+          JSONObject candidate = (JSONObject) element.get("candidate");
+          String sdpcandidate = candidate.optString("candidate");
+          String sdpMid = candidate.optString("sdpMid");
+          int sdpMLineIndex = candidate.optInt("sdpMLineIndex");
+          Log.d(LOG_TAG, "candidate = " + sdpcandidate);
+          if (!seenNonces.contains(nonce)) {
+            seenNonces.add(nonce);
+            Log.d(LOG_TAG, "new nonce, about to add candidate!");
+            IceCandidate iceCandidate = new IceCandidate(sdpMid, sdpMLineIndex, sdpcandidate);
+            peerConnection.addIceCandidate(iceCandidate);
+            Log.d(LOG_TAG, "addIceCandidate returned");
           }
         }
         i++;
