@@ -712,9 +712,7 @@ public class Form extends AppInventorCompatActivity
 
   public void unregisterPercentLength(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
     // iterate map, remove all entry match this
-    for (Integer key : dimChanges.keySet()) {
-      dimChanges.remove(generateHashCode(component, dim));
-    }
+    dimChanges.remove(generateHashCode(component, dim));
   }
 
   private static int generateNewRequestCode() {
