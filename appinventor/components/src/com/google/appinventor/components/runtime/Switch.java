@@ -6,15 +6,14 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.SwitchCompat;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -31,10 +30,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     description = "Toggle switch that raises an event when the user clicks on it. " +
     "There are many properties affecting its appearance that can be set in " +
     "the Designer or Blocks Editor.",
-    category = ComponentCategory.USERINTERFACE,
-    androidMinSdk = 14)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public final class Switch extends ToggleBase<SwitchCompat> {
+public final class Switch extends ToggleBase<CompoundButton> {
 
   // Backing for thumb color
   private int thumbColorActive;
@@ -45,8 +43,7 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   private int trackColorInactive;
 
   private final Activity activity;
-  private final ComponentContainer container;
-
+  private final SwitchCompat switchView;
 
   /**
    * Creates a new Switch component.
@@ -56,18 +53,18 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   public Switch(ComponentContainer container) {
     super(container);
 
-    this.container = container;
     this.activity = container.$context();
 
     // Using AppCompat, Switch component is only supported in API 14 and higher
+    // TODO: If we bump minSDK to 14, then we can change this to only use SwitchCompat.
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
-      showNoticeAndDie(
-              "Sorry. The Switch component is not compatible with this phone.",
-              "This application must exit.",
-              "Rats!");
+      switchView = null;
+      view = new CheckBox(activity);
+    } else {
+      switchView = new SwitchCompat(activity);
+      view = switchView;
     }
 
-    view = new SwitchCompat(container.$context());
     On(false);
 
     ThumbColorActive(Component.COLOR_WHITE);
@@ -75,20 +72,6 @@ public final class Switch extends ToggleBase<SwitchCompat> {
     TrackColorActive(Component.COLOR_GREEN);
     TrackColorInactive(Component.COLOR_GRAY);
     initToggle();
-  }
-
-  // show a notification and kill the app when the button is pressed
-  private void showNoticeAndDie(String message, String title, String buttonText){
-    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-    alertDialog.setTitle(title);
-    // prevents the user from escaping the dialog by hitting the Back button
-    alertDialog.setCancelable(false);
-    alertDialog.setMessage(message);
-    alertDialog.setButton(buttonText, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        activity.finish();
-      }});
-    alertDialog.show();
   }
 
   private ColorStateList createSwitchColors(int active_color, int inactive_color) {
@@ -123,8 +106,10 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   @SimpleProperty
   public void ThumbColorActive(int argb) {
     thumbColorActive = argb;
-    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(argb, thumbColorInactive));
-    view.invalidate();
+    if (switchView != null) {
+      DrawableCompat.setTintList(switchView.getThumbDrawable(), createSwitchColors(argb, thumbColorInactive));
+      view.invalidate();
+    }
   }
 
   /**
@@ -148,8 +133,10 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   @SimpleProperty
   public void ThumbColorInactive(int argb) {
     thumbColorInactive = argb;
-    DrawableCompat.setTintList(view.getThumbDrawable(), createSwitchColors(thumbColorActive, argb));
-    view.invalidate();
+    if (switchView != null) {
+      DrawableCompat.setTintList(switchView.getThumbDrawable(), createSwitchColors(thumbColorActive, argb));
+      view.invalidate();
+    }
   }
 
   /**
@@ -176,16 +163,20 @@ public final class Switch extends ToggleBase<SwitchCompat> {
   @SimpleProperty(description = "Color of the toggle track when switched on", userVisible = true)
   public void TrackColorActive(int argb) {
     trackColorActive = argb;
-    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(argb, trackColorInactive));
-    view.invalidate();
+    if (switchView != null) {
+      DrawableCompat.setTintList(switchView.getTrackDrawable(), createSwitchColors(argb, trackColorInactive));
+      view.invalidate();
+    }
   }
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
           defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
   @SimpleProperty(description = "Color of the toggle track when switched off", userVisible = true)
   public void TrackColorInactive(int argb) {
     trackColorInactive = argb;
-    DrawableCompat.setTintList(view.getTrackDrawable(), createSwitchColors(trackColorActive, argb));
-    view.invalidate();
+    if (switchView != null) {
+      DrawableCompat.setTintList(switchView.getTrackDrawable(), createSwitchColors(trackColorActive, argb));
+      view.invalidate();
+    }
   }
 
   /**
