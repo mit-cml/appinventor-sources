@@ -40,7 +40,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     nonVisible = false,
     iconName = "images/spinner.png")
 @SimpleObject
-public final class Spinner extends AndroidViewComponent implements OnItemSelectedListener {
+public final class Spinner extends TouchComponent<android.widget.Spinner> implements OnItemSelectedListener {
 
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
