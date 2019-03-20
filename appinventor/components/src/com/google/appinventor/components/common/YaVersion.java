@@ -450,8 +450,10 @@ public class YaVersion {
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 181:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 25
+  // For YOUNG_ANDROID_VERSION 182:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 26
 
-  public static final int YOUNG_ANDROID_VERSION = 181;
+  public static final int YOUNG_ANDROID_VERSION = 182;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -521,8 +523,10 @@ public class YaVersion {
   // - List reverse block was added.
   // For BLOCKS_LANGUAGE_VERSION 25:
   // - List join with separator block was added.
+  // For BLOCKS_LANGUAGE_VERSION 26:
+  // - Generic event handlers were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 25;
+  public static final int BLOCKS_LANGUAGE_VERSION = 26;
 
   // ................................. Component Version Numbers ..................................
 

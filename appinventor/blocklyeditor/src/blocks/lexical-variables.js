@@ -340,6 +340,7 @@ Blockly.Blocks['local_declaration_statement'] = {
 
     this.rendered = savedRendered;
     if (this.rendered) {
+      this.initSvg();
       this.render();
     }
   },
@@ -487,7 +488,7 @@ Blockly.Blocks['local_declaration_statement'] = {
         for (var x = 0, block; block = blocks[x]; x++) {
           if (block.type == 'procedures_mutatorarg') {
             var oldName = block.getFieldValue('NAME');
-            var newName = substitution.appy(oldName);
+            var newName = substitution.apply(oldName);
             if (newName !== oldName) {
               block.setFieldValue(newName, 'NAME');
             }
@@ -497,6 +498,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     }
   },
   renameBound: function (boundSubstitution, freeSubstitution) {
+    var oldMutation = Blockly.Xml.domToText(this.mutationToDom());
     var localNames = this.declaredNames();
     for (var i = 0; i < localNames.length; i++) {
       // This is LET semantics, not LET* semantics, and needs to change!
@@ -506,6 +508,10 @@ Blockly.Blocks['local_declaration_statement'] = {
     this.renameVars(paramSubstitution);
     var newFreeSubstitution = freeSubstitution.remove(localNames).extend(paramSubstitution);
     Blockly.LexicalVariable.renameFree(this.getInputTargetBlock(this.bodyInputName), newFreeSubstitution);
+    var newMutation = Blockly.Xml.domToText(this.mutationToDom());
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.fire(new Blockly.Events.Change(this, 'mutation', null, oldMutation, newMutation));
+    }
     if (this.nextConnection) {
       var nextBlock = this.nextConnection.targetBlock();
       Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
@@ -549,7 +555,6 @@ Blockly.Blocks['local_declaration_statement'] = {
     }
     return result;
   },
-  //TODO (user) this has not been internationalized yet
   typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TRANSLATED_NAME }]
 };
 
@@ -583,12 +588,11 @@ Blockly.Blocks['local_declaration_expression'] = {
   saveConnections: Blockly.Blocks.local_declaration_statement.saveConnections,
   getVars: Blockly.Blocks.local_declaration_statement.getVars,
   declaredNames: Blockly.Blocks.local_declaration_statement.declaredNames,
-  renameVar: Blockly.Blocks.local_declaration_statement.renameVars,
-  renameVars: Blockly.Blocks.local_declaration_statement.renameVar,
+  renameVar: Blockly.Blocks.local_declaration_statement.renameVar,
+  renameVars: Blockly.Blocks.local_declaration_statement.renameVars,
   renameBound: Blockly.Blocks.local_declaration_statement.renameBound,
   renameFree: Blockly.Blocks.local_declaration_statement.renameFree,
   freeVariables: Blockly.Blocks.local_declaration_statement.freeVariables,
-  //TODO (user) this has not been internationalized yet
   typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TRANSLATED_NAME }]
 };
 
