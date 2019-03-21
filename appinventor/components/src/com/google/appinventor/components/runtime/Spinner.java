@@ -6,14 +6,18 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -41,25 +45,10 @@ import com.google.appinventor.components.runtime.util.*;
 @SimpleObject
 public final class Spinner extends TouchComponent<android.widget.Spinner> implements OnItemSelectedListener {
   
-  private ArrayAdapter<String> adapter;
+  private SpinnerArrayAdapter adapter;
   private YailList items = new YailList();
   private int oldAdapterCount;
   private int oldSelectionIndex;
-
-    // Backing for text alignment
-    private int textAlignment;
-
-    // Backing for font typeface
-    private int fontTypeface;
-
-    // Backing for font bold
-    private boolean bold;
-
-    // Backing for font italic
-    private boolean italic;
-
-    // Backing for text color
-    private int textColor;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -249,7 +238,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             description = "Left, center, or right.",
             userVisible = false)
     public int TextAlignment() {
-        return textAlignment;
+        return adapter.getTextAlignment();
     }
 
     /**
@@ -265,7 +254,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             defaultValue = Component.ALIGNMENT_CENTER + "")
     @SimpleProperty(userVisible = false)
     public void TextAlignment(int alignment) {
-        this.textAlignment = alignment;
+        adapter.setTextAlignment(alignment);
     }
 
     /**
@@ -279,7 +268,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             category = PropertyCategory.APPEARANCE,
             description = "If set, button text is displayed in bold.")
     public boolean FontBold() {
-        return bold;
+        return adapter.isBold();
     }
 
     /**
@@ -293,7 +282,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public void FontBold(boolean bold) {
-        this.bold = bold;
+        adapter.setBold(bold);
     }
 
     /**
@@ -307,7 +296,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             category = PropertyCategory.APPEARANCE,
             description = "If set, button text is displayed in italics.")
     public boolean FontItalic() {
-        return italic;
+        return adapter.isItalic();
     }
 
     /**
@@ -321,7 +310,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public void FontItalic(boolean italic) {
-        this.italic = italic;
+        adapter.setItalic(italic);
     }
 
     /**
@@ -333,7 +322,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             category = PropertyCategory.APPEARANCE,
             description = "Point size for button text.")
     public float FontSize() {
-        return 0;
+        return adapter.getFontSize();
     }
 
     /**
@@ -346,7 +335,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public void FontSize(float size) {
-
+        adapter.setFontSize(size);
     }
 
     /**
@@ -363,7 +352,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             description = "Font family for button text.",
             userVisible = false)
     public int FontTypeface() {
-        return fontTypeface;
+        return adapter.getFontTypeface();
     }
 
     /**
@@ -380,7 +369,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     @SimpleProperty(
             userVisible = false)
     public void FontTypeface(int typeface) {
-        fontTypeface = typeface;
+        adapter.setFontTypeface(typeface);
     }
 
     /**
@@ -393,7 +382,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             category = PropertyCategory.APPEARANCE,
             description = "Color for button text.")
     public int TextColor() {
-        return textColor;
+        return adapter.getTextColor();
     }
 
     /**
@@ -406,6 +395,90 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
     @SimpleProperty
     public void TextColor(int argb) {
-        textColor = argb;
+        adapter.setTextColor(argb);
+    }
+
+    private static class SpinnerArrayAdapter extends ArrayAdapter<String> {
+        // Backing for text alignment
+        private int textAlignment;
+
+        // Backing for font typeface
+        private int fontTypeface;
+
+        // Backing for font bold
+        private boolean bold;
+
+        // Backing for font italic
+        private boolean italic;
+
+        // Backing for text color
+        private int textColor;
+
+        // Backing for font size
+        private float fontSize;
+
+        public SpinnerArrayAdapter(final Context context, final int textViewResourceId) {
+            super(context, textViewResourceId);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getView(position, convertView, parent);
+            return view;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+            return view;
+        }
+
+        public int getTextAlignment() {
+            return textAlignment;
+        }
+
+        public void setTextAlignment(int textAlignment) {
+            this.textAlignment = textAlignment;
+        }
+
+        public int getFontTypeface() {
+            return fontTypeface;
+        }
+
+        public void setFontTypeface(int fontTypeface) {
+            this.fontTypeface = fontTypeface;
+        }
+
+        public boolean isBold() {
+            return bold;
+        }
+
+        public void setBold(boolean bold) {
+            this.bold = bold;
+        }
+
+        public boolean isItalic() {
+            return italic;
+        }
+
+        public void setItalic(boolean italic) {
+            this.italic = italic;
+        }
+
+        public int getTextColor() {
+            return textColor;
+        }
+
+        public void setTextColor(int textColor) {
+            this.textColor = textColor;
+        }
+
+        public float getFontSize() {
+            return fontSize;
+        }
+
+        public void setFontSize(float fontSize) {
+            this.fontSize = fontSize;
+        }
     }
 }
