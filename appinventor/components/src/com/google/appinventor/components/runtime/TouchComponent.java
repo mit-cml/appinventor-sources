@@ -37,6 +37,8 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   protected void initToggle() {
       // Adds the component to its designated container
       container.$add(this);
+
+      Enabled(true);
   }
 
   @Override

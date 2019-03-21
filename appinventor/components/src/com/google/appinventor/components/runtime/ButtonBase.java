@@ -144,7 +144,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     // irretrievable, except by reloading defaultButtonDrawable, defined above.
     BackgroundColor(Component.COLOR_DEFAULT);
     Image("");
-    Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
