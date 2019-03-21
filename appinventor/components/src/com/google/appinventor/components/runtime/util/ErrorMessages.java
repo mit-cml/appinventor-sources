@@ -121,6 +121,7 @@ public final class ErrorMessages {
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
   public static final int ERROR_CANVAS_HEIGHT_ERROR = 1003;
+  public static final int ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT = 1004;
   // Web errors
   public static final int ERROR_WEB_UNABLE_TO_GET = 1101;
   public static final int ERROR_WEB_UNSUPPORTED_ENCODING = 1102;
@@ -432,7 +433,7 @@ public final class ErrorMessages {
         "Unable to grant exclusive lock of audio output stream to %s.");
     errorMessages.put(ERROR_SOUND_NOT_READY, "The sound is not ready to play: %s.");
     errorMessages.put(ERROR_OUT_OF_MEMORY_LOADING_MEDIA, "Not Enough Memory to load: %s.");
-    errorMessages.put(ERROR_PLAYER_INVALID_VOLUME, "Invalid volume: %s. Volume must be set to a number between 0 and 100.");  
+    errorMessages.put(ERROR_PLAYER_INVALID_VOLUME, "Invalid volume: %s. Volume must be set to a number between 0 and 100.");
     // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
@@ -460,6 +461,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
     errorMessages.put(ERROR_CANVAS_HEIGHT_ERROR, "Canvas height cannot be set to non-positive number");
+    errorMessages.put(ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT, "Canvas cannot draw the shape with a bad point list");
     // Web errors
     errorMessages.put(ERROR_WEB_UNABLE_TO_GET,
         "Unable to get a response with the specified URL: %s");
