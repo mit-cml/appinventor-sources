@@ -333,7 +333,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             category = PropertyCategory.APPEARANCE,
             description = "Point size for button text.")
     public float FontSize() {
-        return TextViewUtil.getFontSize(view, container.$context());
+        return 0;
     }
 
     /**
