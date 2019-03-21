@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Build.VERSION;
@@ -63,7 +64,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     // set regular and dropdown layouts
-    adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_spinner_item);
+    adapter = new SpinnerArrayAdapter(container.$context(), android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
@@ -399,6 +400,9 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     private static class SpinnerArrayAdapter extends ArrayAdapter<String> {
+        // This is our handle in Android's default spinner color states;
+        private ColorStateList defaultColorStateList;
+
         // Backing for text alignment
         private int textAlignment;
 
@@ -424,13 +428,34 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             TextView view = (TextView) super.getView(position, convertView, parent);
+            decorate(view);
             return view;
         }
 
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
             TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+            decorate(view);
             return view;
+        }
+
+        private void decorate(TextView view) {
+            // This is a workaround to the save default ColorStateList of the textView.
+            // (defaultColorStateList == null) will only be true when the decorate method is called for
+            // the first time.
+            if (defaultColorStateList == null)
+                defaultColorStateList = view.getTextColors();
+
+            TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+            TextViewUtil.setFontSize(view, fontSize);
+            TextViewUtil.setAlignment(view, textAlignment, true);
+
+
+            if (textColor != Component.COLOR_DEFAULT) {
+                TextViewUtil.setTextColor(view, textColor);
+            } else {
+                TextViewUtil.setTextColors(view, defaultColorStateList);
+            }
         }
 
         public int getTextAlignment() {
