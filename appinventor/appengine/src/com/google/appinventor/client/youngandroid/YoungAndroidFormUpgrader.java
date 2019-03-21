@@ -705,6 +705,11 @@ public final class YoungAndroidFormUpgrader {
       componentProperties.put("TextAlignment", def);
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // No properties need to be modified to upgrade to version 11.
+      // DrawShape & DrawArc was added.
+      srcCompVersion = 11;
+    }
     return srcCompVersion;
   }
 
