@@ -233,7 +233,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   }
 
     /**
-     * Returns the alignment of the button's text: center, normal
+     * Returns the alignment of the spinner's text: center, normal
      * (e.g., left-justified if text is written left to right), or
      * opposite (e.g., right-justified if text is written left to right).
      *
@@ -250,7 +250,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Specifies the alignment of the button's text: center, normal
+     * Specifies the alignment of the spinner's text: center, normal
      * (e.g., left-justified if text is written left to right), or
      * opposite (e.g., right-justified if text is written left to right).
      *
@@ -266,7 +266,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Returns true if the button's text should be bold.
+     * Returns true if the spinner's text should be bold.
      * If bold has been requested, this property will return true, even if the
      * font does not support bold.
      *
@@ -274,13 +274,13 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "If set, button text is displayed in bold.")
+            description = "If set, spinner text is displayed in bold.")
     public boolean FontBold() {
         return adapter.isBold();
     }
 
     /**
-     * Specifies whether the button's text should be bold.
+     * Specifies whether the spinner's text should be bold.
      * Some fonts do not support bold.
      *
      * @param bold {@code true} indicates bold, {@code false} normal
@@ -294,7 +294,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Returns true if the button's text should be italic.
+     * Returns true if the spinner's text should be italic.
      * If italic has been requested, this property will return true, even if the
      * font does not support italic.
      *
@@ -302,13 +302,13 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "If set, button text is displayed in italics.")
+            description = "If set, spinner text is displayed in italics.")
     public boolean FontItalic() {
         return adapter.isItalic();
     }
 
     /**
-     * Specifies whether the button's text should be italic.
+     * Specifies whether the spinner's text should be italic.
      * Some fonts do not support italic.
      *
      * @param italic {@code true} indicates italic, {@code false} normal
@@ -322,19 +322,19 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Returns the button's text's font size, measured in sp(scale-independent pixels).
+     * Returns the spinner's text's font size, measured in sp(scale-independent pixels).
      *
      * @return font size in sp(scale-independent pixels).
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Point size for button text.")
+            description = "Point size for spinner text.")
     public float FontSize() {
         return adapter.getFontSize();
     }
 
     /**
-     * Specifies the button's text's font size, measured in sp(scale-independent pixels).
+     * Specifies the spinner's text's font size, measured in sp(scale-independent pixels).
      *
      * @param size font size in sp(scale-independent pixels)
      */
@@ -347,7 +347,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Returns the button's text's font face as default, serif, sans
+     * Returns the spinner's text's font face as default, serif, sans
      * serif, or monospace.
      *
      * @return one of {@link Component#TYPEFACE_DEFAULT},
@@ -357,14 +357,14 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Font family for button text.",
+            description = "Font family for spinner text.",
             userVisible = false)
     public int FontTypeface() {
         return adapter.getFontTypeface();
     }
 
     /**
-     * Specifies the button's text's font face as default, serif, sans
+     * Specifies the spinner's text's font face as default, serif, sans
      * serif, or monospace.
      *
      * @param typeface one of {@link Component#TYPEFACE_DEFAULT},
@@ -381,20 +381,20 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     }
 
     /**
-     * Returns the button's text color as an alpha-red-green-blue
+     * Returns the spinner's text color as an alpha-red-green-blue
      * integer.
      *
      * @return text RGB color with alpha
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Color for button text.")
+            description = "Color for spinner text.")
     public int TextColor() {
         return adapter.getTextColor();
     }
 
     /**
-     * Specifies the button's text color as an alpha-red-green-blue
+     * Specifies the spinner's text color as an alpha-red-green-blue
      * integer.
      *
      * @param argb text RGB color with alpha

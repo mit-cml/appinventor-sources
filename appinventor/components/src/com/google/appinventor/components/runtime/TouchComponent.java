@@ -67,8 +67,8 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
         Enabled(true);
         // BackgroundColor and Image are dangerous properties:
-        // Once either of them is set, the 3D bevel effect for the button is
-        // irretrievable, except by reloading defaultButtonDrawable, defined above.
+        // Once either of them is set, the original bevel effect (e.g. for a Button) is
+        // irretrievable, except by reloading defaultDrawable, defined above.
         BackgroundColor(Component.COLOR_DEFAULT);
         Image("");
     }
@@ -81,7 +81,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     /**
      * Indicates when a component is touch down
      */
-    @SimpleEvent(description = "Indicates that the button was pressed down.")
+    @SimpleEvent(description = "Indicates that the component was pressed down.")
     public void TouchDown() {
         EventDispatcher.dispatchEvent(this, "TouchDown");
     }
@@ -89,17 +89,17 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     /**
      * Indicates when a component touch ends
      */
-    @SimpleEvent(description = "Indicates that a button has been released.")
+    @SimpleEvent(description = "Indicates that a component has been released.")
     public void TouchUp() {
         EventDispatcher.dispatchEvent(this, "TouchUp");
     }
 
 
     /**
-     * If a custom background images is specified for the button, then it will lose the pressed
+     * If a custom background images is specified for the component, then it will lose the pressed
      * and disabled image effects; no visual feedback.
      * The approach below is to provide a visual feedback if and only if an image is assigned
-     * to the button. In this situation, we overlay a gray background when pressed and
+     * to the component. In this situation, we overlay a gray background when pressed and
      * release when not-pressed.
      */
     @Override
@@ -107,7 +107,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         //NOTE: We ALWAYS return false because we want to indicate that this listener has not
         //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
-            //button pressed, provide visual feedback AND return false
+            //component pressed, provide visual feedback AND return false
             if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
                 view.getBackground().setAlpha(70); // translucent
                 view.invalidate();
@@ -115,7 +115,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
             TouchDown();
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
                 me.getAction() == MotionEvent.ACTION_CANCEL) {
-            //button released, set button back to normal AND return false
+            //component released, set component back to normal AND return false
             if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
                 view.getBackground().setAlpha(255); // opaque
                 view.invalidate();
@@ -162,14 +162,14 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
             defaultValue = "True")
     @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
-            " for a button that as an image as background.")
+            " for a component that as an image as background.")
 
     public void ShowFeedback(boolean showFeedback) {
         this.showFeedback = showFeedback;
     }
 
     /**
-     * Returns true if the component should provide visual feedwback when it is pressed
+     * Returns true if the component should provide visual feedback when it is pressed
      * and there is an image assigned.
      *
      * @return {@code true} indicates visual feedback will be shown,
@@ -177,26 +177,26 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Returns the button's visual feedback state")
+            description = "Returns the component's visual feedback state")
     public boolean ShowFeedback() {
         return showFeedback;
     }
 
     /**
-     * Returns the button's background color as an alpha-red-green-blue
+     * Returns the component's background color as an alpha-red-green-blue
      * integer.
      *
      * @return background RGB color with alpha
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Returns the button's background color")
+            description = "Returns the component's background color")
     public int BackgroundColor() {
         return backgroundColor;
     }
 
     /**
-     * Specifies the button's background color as an alpha-red-green-blue
+     * Specifies the component's color as an alpha-red-green-blue
      * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
      * original beveling is restored.  If an Image has been set, the color
      * change will not be visible until the Image is removed.
@@ -205,7 +205,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
             defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-    @SimpleProperty(description = "Specifies the button's background color. " +
+    @SimpleProperty(description = "Specifies the component's background color. " +
             "The background color will not be visible if an Image is being displayed.")
     public void BackgroundColor(int argb) {
         backgroundColor = argb;
@@ -213,28 +213,28 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     }
 
     /**
-     * Returns the path of the button's image.
+     * Returns the path of the component's image.
      *
-     * @return the path of the button's image
+     * @return the path of the component's image
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Image to display on button.")
+            description = "Image to display on component.")
     public String Image() {
         return imagePath;
     }
 
     /**
-     * Specifies the path of the button's image.
+     * Specifies the path of the component's image.
      * <p>
      * <p/>See {@link MediaUtil#determineMediaSource} for information about what
      * a path can be.
      *
-     * @param path the path of the button's image
+     * @param path the path of the component's image
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
             defaultValue = "")
-    @SimpleProperty(description = "Specifies the path of the button's image.  " +
+    @SimpleProperty(description = "Specifies the path of the component's image.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be " +
             "visible.")
     public void Image(String path) {
