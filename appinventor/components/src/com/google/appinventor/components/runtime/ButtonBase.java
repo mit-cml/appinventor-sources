@@ -10,7 +10,6 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -20,7 +19,6 @@ import com.google.appinventor.components.runtime.util.KitkatUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-import android.view.MotionEvent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -32,7 +30,6 @@ import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 
 import java.io.IOException;
@@ -63,9 +60,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   // Backing for text alignment
   private int textAlignment;
 
-  // Backing for background color
-  private int backgroundColor;
-
   // Backing for font typeface
   private int fontTypeface;
 
@@ -81,19 +75,11 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   // Backing for button shape
   private int shape;
 
-  // Image path
-  private String imagePath = "";
-
   // This is our handle on Android's nice 3-d default button.
   private Drawable defaultButtonDrawable;
 
   // This is our handle in Android's default button color states;
   private ColorStateList defaultColorStateList;
-
-  // This is the Drawable corresponding to the Image property.
-  // If an Image has never been set or if the most recent Image
-  // could not be loaded, this is null.
-  private Drawable backgroundImageDrawable;
 
   /**
    * The minimum width of a button for the current theme.
@@ -134,11 +120,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
 
     // Default property values
     TextAlignment(Component.ALIGNMENT_CENTER);
-    // BackgroundColor and Image are dangerous properties:
-    // Once either of them is set, the 3D bevel effect for the button is
-    // irretrievable, except by reloading defaultButtonDrawable, defined above.
-    BackgroundColor(Component.COLOR_DEFAULT);
-    Image("");
     fontTypeface = Component.TYPEFACE_DEFAULT;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
@@ -213,88 +194,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
       userVisible = false)
   public void Shape(int shape) {
     this.shape = shape;
-    updateAppearance();
-  }
-
-  /**
-   * Returns the path of the button's image.
-   *
-   * @return  the path of the button's image
-   */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      description = "Image to display on button.")
-  public String Image() {
-    return imagePath;
-  }
-
-  /**
-   * Specifies the path of the button's image.
-   *
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
-   * a path can be.
-   *
-   * @param path  the path of the button's image
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
-  @SimpleProperty(description = "Specifies the path of the button's image.  " +
-      "If there is both an Image and a BackgroundColor, only the Image will be " +
-      "visible.")
-  public void Image(String path) {
-    // If it's the same as on the prior call and the prior load was successful,
-    // do nothing.
-    if (path.equals(imagePath) && backgroundImageDrawable != null) {
-      return;
-    }
-
-    imagePath = (path == null) ? "" : path;
-
-    // Clear the prior background image.
-    backgroundImageDrawable = null;
-
-    // Load image from file.
-    if (imagePath.length() > 0) {
-      try {
-        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
-      } catch (IOException ioe) {
-        // TODO(user): Maybe raise Form.ErrorOccurred.
-        Log.e(LOG_TAG, "Unable to load " + imagePath);
-        // Fall through with a value of null for backgroundImageDrawable.
-      }
-    }
-
-    // Update the appearance based on the new value of backgroundImageDrawable.
-    updateAppearance();
-  }
-
-  /**
-   * Returns the button's background color as an alpha-red-green-blue
-   * integer.
-   *
-   * @return  background RGB color with alpha
-   */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      description = "Returns the button's background color")
-  public int BackgroundColor() {
-    return backgroundColor;
-  }
-
-  /**
-   * Specifies the button's background color as an alpha-red-green-blue
-   * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
-   * original beveling is restored.  If an Image has been set, the color
-   * change will not be visible until the Image is removed.
-   *
-   * @param argb background RGB color with alpha
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-                    defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the button's background color. " +
-      "The background color will not be visible if an Image is being displayed.")
-  public void BackgroundColor(int argb) {
-    backgroundColor = argb;
     updateAppearance();
   }
 

@@ -6,11 +6,14 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import java.io.IOException;
 
@@ -25,6 +28,17 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
     // Used for determining if visual feedback should be provided for components that have images
     private boolean showFeedback = true;
+
+    // Image path
+    private String imagePath = "";
+
+    // Backing for background color
+    protected int backgroundColor;
+
+    // This is the Drawable corresponding to the Image property.
+    // If an Image has never been set or if the most recent Image
+    // could not be loaded, this is null.
+    protected Drawable backgroundImageDrawable;
 
     /**
      * Creates a new TouchComponent component.
@@ -43,6 +57,11 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         view.setOnFocusChangeListener(this);
 
         Enabled(true);
+        // BackgroundColor and Image are dangerous properties:
+        // Once either of them is set, the 3D bevel effect for the button is
+        // irretrievable, except by reloading defaultButtonDrawable, defined above.
+        BackgroundColor(Component.COLOR_DEFAULT);
+        Image("");
     }
 
     @Override
@@ -183,5 +202,87 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
             description = "Returns the button's visual feedback state")
     public boolean ShowFeedback() {
         return showFeedback;
+    }
+
+    /**
+     * Returns the button's background color as an alpha-red-green-blue
+     * integer.
+     *
+     * @return  background RGB color with alpha
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Returns the button's background color")
+    public int BackgroundColor() {
+        return backgroundColor;
+    }
+
+    /**
+     * Specifies the button's background color as an alpha-red-green-blue
+     * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
+     * original beveling is restored.  If an Image has been set, the color
+     * change will not be visible until the Image is removed.
+     *
+     * @param argb background RGB color with alpha
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+            defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+    @SimpleProperty(description = "Specifies the button's background color. " +
+            "The background color will not be visible if an Image is being displayed.")
+    public void BackgroundColor(int argb) {
+        backgroundColor = argb;
+        //updateAppearance();
+    }
+
+    /**
+     * Returns the path of the button's image.
+     *
+     * @return  the path of the button's image
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Image to display on button.")
+    public String Image() {
+        return imagePath;
+    }
+
+    /**
+     * Specifies the path of the button's image.
+     *
+     * <p/>See {@link MediaUtil#determineMediaSource} for information about what
+     * a path can be.
+     *
+     * @param path  the path of the button's image
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+            defaultValue = "")
+    @SimpleProperty(description = "Specifies the path of the button's image.  " +
+            "If there is both an Image and a BackgroundColor, only the Image will be " +
+            "visible.")
+    public void Image(String path) {
+        // If it's the same as on the prior call and the prior load was successful,
+        // do nothing.
+        if (path.equals(imagePath) && backgroundImageDrawable != null) {
+            return;
+        }
+
+        imagePath = (path == null) ? "" : path;
+
+        // Clear the prior background image.
+        backgroundImageDrawable = null;
+
+        // Load image from file.
+        if (imagePath.length() > 0) {
+            try {
+                backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+            } catch (IOException ioe) {
+                // TODO(user): Maybe raise Form.ErrorOccurred.
+                //Log.e(LOG_TAG, "Unable to load " + imagePath);
+                // Fall through with a value of null for backgroundImageDrawable.
+            }
+        }
+
+        // Update the appearance based on the new value of backgroundImageDrawable.
+        //updateAppearance();
     }
 }
