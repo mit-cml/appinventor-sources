@@ -21,7 +21,6 @@ import java.io.IOException;
  *
  */
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class TouchComponent<T extends View> extends AndroidViewComponent {
 
   protected T view;
