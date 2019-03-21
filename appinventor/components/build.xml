@@ -114,6 +114,76 @@
   </target>
 
   <!-- =====================================================================
+       CopyComponentLibraries
+       ===================================================================== -->
+  <property name="public.deps.dir" location="${public.build.dir}/deps" />
+  <target name="CopyComponentLibraries"
+          description="Copies libraries needed for components into the public build directory">
+    <property name="support.dir" location="${lib.dir}/android/support" />
+    <copy toFile="${public.deps.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
+    <copy toFile="${public.deps.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${public.deps.dir}/webrtc.jar"
+          file="${lib.dir}/webrtc/webrtc.jar" />
+    <copy toFile="${public.deps.dir}/armeabi-v7a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/armeabi-v7a/libjingle_peerconnection_so.so" />
+    <copy toFile="${public.deps.dir}/arm64-v8a/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/arm64-v8a/libjingle_peerconnection_so.so" />
+    <copy toFile="${public.deps.dir}/x86_64/libjingle_peerconnection_so.so"
+          file="${lib.dir}/webrtc/x86_64/libjingle_peerconnection_so.so" />
+    <copy toFile="${public.deps.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+    <copy toFile="${public.deps.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
+    <copy toFile="${public.deps.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
+    <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
+    <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+    <copy toFile="${public.deps.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
+    <copy toFile="${public.deps.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
+    <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
+    <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
+    <copy toFile="${public.deps.dir}/json.jar" file="${lib.dir}/json/json.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${public.deps.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+    <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
+    <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${public.deps.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
+    <!-- BEGIN Android Support Libraries -->
+    <copy toFile="${public.deps.dir}/animated-vector-drawable.aar" file="${support.dir}/animated-vector-drawable-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/animated-vector-drawable.jar" file="${support.dir}/animated-vector-drawable-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/appcompat-v7.aar" file="${support.dir}/appcompat-v7-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/appcompat-v7.jar" file="${support.dir}/appcompat-v7-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/core-common.jar" file="${support.dir}/core-common-1.0.0.jar" />
+    <copy toFile="${public.deps.dir}/lifecycle-common.jar" file="${support.dir}/lifecycle-common-1.0.0.jar" />
+    <copy toFile="${public.deps.dir}/runtime.aar" file="${support.dir}/runtime-1.0.0.aar" />
+    <copy toFile="${public.deps.dir}/runtime.jar" file="${support.dir}/runtime-1.0.0.jar" />
+    <copy toFile="${public.deps.dir}/support-annotations.jar" file="${support.dir}/support-annotations-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-compat.aar" file="${support.dir}/support-compat-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-compat.jar" file="${support.dir}/support-compat-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-core-ui.aar" file="${support.dir}/support-core-ui-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-core-ui.jar" file="${support.dir}/support-core-ui-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-core-utils.aar" file="${support.dir}/support-core-utils-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-core-utils.jar" file="${support.dir}/support-core-utils-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-fragment.aar" file="${support.dir}/support-fragment-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-fragment.jar" file="${support.dir}/support-fragment-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-media-compat.aar" file="${support.dir}/support-media-compat-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-media-compat.jar" file="${support.dir}/support-media-compat-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-v4.aar" file="${support.dir}/support-v4-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-v4.jar" file="${support.dir}/support-v4-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/support-vector-drawable.aar" file="${support.dir}/support-vector-drawable-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/support-vector-drawable.jar" file="${support.dir}/support-vector-drawable-26.1.0.jar" />
+    <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
+    <!-- END Android Support Libraries -->
+    <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
+    <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+  </target>
+
+  <!-- =====================================================================
        AndroidRuntime: library providing runtime support for components
        ===================================================================== -->
   <path id="AndroidSupportLibs.path">
@@ -127,7 +197,7 @@
   <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities,common_CommonVersion">
+          depends="CommonConstants,HtmlEntities,common_CommonVersion,CopyComponentLibraries">
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
     <ai.javac destdir="${AndroidRuntime-class.dir}">
@@ -503,7 +573,6 @@
   <target name="ExternalComponentGenerator"
           description="generate extension files"
           depends="AndroidRuntime, JsonComponentDescription, ComponentList">
-    <property  name="buildserver.files.library.dir" location="../buildserver/build/classes/BuildServer/files"/>
     <mkdir dir="${ExternalComponentGenerator-class.dir}" />
     <mkdir dir="${ExternalComponent.dir}" />
     <mkdir dir="${ExternalComponent-class.dir}" />
@@ -518,7 +587,7 @@
       <arg value="${public.build.dir}/simple_components_build_info.json" />
       <arg value="${ExternalComponent.dir}"/>
       <arg value="${AndroidRuntime-class.dir}" />
-      <arg value="${buildserver.files.library.dir}"/>
+      <arg value="${public.deps.dir}"/>
       <arg value="${ExternalComponent-class.dir}"/>
       <arg value="${extensions.packagefqcn}"/>
       <classpath>
