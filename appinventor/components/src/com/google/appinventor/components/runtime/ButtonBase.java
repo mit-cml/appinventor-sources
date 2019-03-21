@@ -44,7 +44,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class ButtonBase extends TouchComponent<android.widget.Button>
-    implements OnClickListener, OnFocusChangeListener, OnLongClickListener {
+    implements OnClickListener, OnLongClickListener {
 
   private static final String LOG_TAG = "ButtonBase";
 
@@ -127,9 +127,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     // Adds the component to its designated container
     initToggle();
 
-    // Listen to clicks and focus changes
+    // Listen to clicks
     view.setOnClickListener(this);
-    view.setOnFocusChangeListener(this);
     view.setOnLongClickListener(this);
     IceCreamSandwichUtil.setAllCaps(view, false);
 
@@ -146,26 +145,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     Text("");
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
-  }
-
-  /**
-   * Indicates the cursor moved over the button so it is now possible
-   * to click it.
-   */
-  @SimpleEvent(description = "Indicates the cursor moved over the button so " +
-      "it is now possible to click it.")
-  public void GotFocus() {
-    EventDispatcher.dispatchEvent(this, "GotFocus");
-  }
-
-  /**
-   * Indicates the cursor moved away from the button so it is now no
-   * longer possible to click it.
-   */
-  @SimpleEvent(description = "Indicates the cursor moved away from " +
-      "the button so it is now no longer possible to click it.")
-  public void LostFocus() {
-    EventDispatcher.dispatchEvent(this, "LostFocus");
   }
 
   /**
@@ -595,17 +574,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @Override
   public void onClick(View view) {
     click();
-  }
-
-  // OnFocusChangeListener implementation
-
-  @Override
-  public void onFocusChange(View previouslyFocused, boolean gainFocus) {
-    if (gainFocus) {
-      GotFocus();
-    } else {
-      LostFocus();
-    }
   }
 
   // OnLongClickListener implementation
