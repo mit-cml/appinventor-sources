@@ -42,9 +42,9 @@ public final class MockSpinner extends MockVisibleComponent {
   @Override
   protected boolean isPropertyVisible(String propertyName){
     // We don't want to allow user to change the component height; only the width
-    if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+    /*if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       return false;
-    }
+    }*/
     return super.isPropertyVisible(propertyName);
   }
 
