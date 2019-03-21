@@ -1092,6 +1092,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#ListPicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#ListPicker';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SWITCH_HELPURL = '/reference/components/userinterface.html#Switch';
+
     Blockly.Msg.LANG_COMPONENT_BLOCK_TIMEPICKER_HELPURL = '/reference/components/userinterface.html#TimePicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_DATEPICKER_HELPURL = '/reference/components/userinterface.html#DatePicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTVIEW_HELPURL = '/reference/components/userinterface.html#ListView';

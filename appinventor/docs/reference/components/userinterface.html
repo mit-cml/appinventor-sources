@@ -460,6 +460,7 @@
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
                     <li> <a href="#Spinner"> Spinner </a> </li>
+                    <li> <a href="#Switch"> Switch </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
                     <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
@@ -1150,6 +1151,47 @@ none
   <dt><code>DisplayDropdown()</code></dt>
   <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
 </dl>
+                  <h2 id="Switch"> Switch </h2>
+                  <p> Switch components can detect user taps and can change
+                    their
+                    boolean state in response. They are identical to Checkboxes except in appearance.</p>
+                  <p> Switches have an on (true) state and an off (false) state. A switch component raises an event when the user taps it to toggle between states. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for switch background. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, user can switch to change state and trigger event. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Switch height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Switch width (x-size). </dd>
+                    <dt> <code> On </code> </dt>
+                    <dd> True if the switch is in the On state, false otherwise. </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Text to display on switch. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for switch text. </dd>
+                    <dt> <code> ThumbColorActive </code> </dt>
+                    <dd> Color of the switch button when the switch is in the On state. </dd>
+                    <dt> <code> ThumbColorInactive </code> </dt>
+                    <dd> Color of the switch button when the switch is in the Off state. </dd>
+                    <dt> <code> TrackColorActive </code> </dt>
+                    <dd> Color of the switch slider when the switch is in the On state. </dd>
+                    <dt> <code> TrackColorInactive </code> </dt>
+                    <dd> Color of the switch slider when the switch is in the Off state. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If set, switch is visible. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> Changed() </code> </dt>
+                    <dd> User change the state of the switch from On to Off or back. </dd>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Check box became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Check box stopped being the focused component. </dd>
+                  </dl>
 
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />

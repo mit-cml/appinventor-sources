@@ -454,8 +454,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 26
   // For YOUNG_ANDROID_VERSION 183:
   // - CANVAS_COMPONENT_VERSION was incremented to 11
+  // For YOUNG_ANDROID_VERESION 184:
+  // - Added Switch
 
-  public static final int YOUNG_ANDROID_VERSION = 183;
+  public static final int YOUNG_ANDROID_VERSION = 184;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1050,6 +1052,10 @@ public class YaVersion {
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+
+  // For SWITCH_COMPONENT_VERSION 1
+  //  - Initial Version
+  public static final int SWITCH_COMPONENT_VERSION = 1;
 
   public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
 
