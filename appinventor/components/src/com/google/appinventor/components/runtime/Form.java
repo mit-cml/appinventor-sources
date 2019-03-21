@@ -86,6 +86,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -269,7 +270,8 @@ public class Form extends AppInventorCompatActivity
     int length;
     Dim dim;
   }
-  private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+  // private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+  private LinkedHashMap<Integer, PercentStorageRecord> dimChanges = new LinkedHashMap();
 
   private static class MultiDexInstaller extends AsyncTask<Form, Void, Boolean> {
     Form ourForm;
@@ -686,11 +688,10 @@ public class Form extends AppInventorCompatActivity
     // We first make a copy of the existing dimChanges list
     // because while we are replaying it, it is being appended to
     Log.d(LOG_TAG, "ReplayFormOrientation()");
-    ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
+    LinkedHashMap<Integer, PercentStorageRecord> temp = (LinkedHashMap<Integer, PercentStorageRecord>) dimChanges.clone();
     dimChanges.clear();         // Empties it out
-    for (int i = 0; i < temp.size(); i++) {
-      // Iterate over the list...
-      PercentStorageRecord r = temp.get(i);
+    // Iterate temp
+    for (PercentStorageRecord r : temp.values()) {
       if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
         r.component.Height(r.length);
       } else {
@@ -699,8 +700,23 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  private Integer generateHashCode(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
+    if (dim == PercentStorageRecord.Dim.HEIGHT) {
+      return component.hashCode() * 2 + 1;
+    } else {
+      return component.hashCode() * 2;
+    }
+  }
+
   public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
-    dimChanges.add(new PercentStorageRecord(component, length, dim));
+    PercentStorageRecord r = new PercentStorageRecord(component, length, dim);
+    Integer key = generateHashCode(component, dim);
+    dimChanges.put(key, r);
+  }
+
+  public void unregisterPercentLength(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
+    // iterate map, remove all entry match this
+    dimChanges.remove(generateHashCode(component, dim));
   }
 
   private static int generateNewRequestCode() {
@@ -2451,7 +2467,7 @@ public class Form extends AppInventorCompatActivity
       view = frameLayout;
     }
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
   protected void updateTitle() {

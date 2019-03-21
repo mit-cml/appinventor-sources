@@ -61,7 +61,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies whether the component should be visible on the screen.  Value is true if the 
+   * Specifies whether the component should be visible on the screen.  Value is true if the
    * component is showing and false if hidden.
    * @param  visibility desired state
    */
@@ -98,8 +98,11 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Width(int width) {
     container.setChildWidth(this, width);
     lastSetWidth = width;
-    if (width <= Component.LENGTH_PERCENT_TAG)
+    if (width <= Component.LENGTH_PERCENT_TAG) {
       container.$form().registerPercentLength(this, width, Form.PercentStorageRecord.Dim.WIDTH);
+    } else {
+      container.$form().unregisterPercentLength(this, Form.PercentStorageRecord.Dim.WIDTH);
+    }
   }
 
   /**
@@ -184,8 +187,11 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
-    if (height <= Component.LENGTH_PERCENT_TAG)
+    if (height <= Component.LENGTH_PERCENT_TAG) {
       container.$form().registerPercentLength(this, height, Form.PercentStorageRecord.Dim.HEIGHT);
+    } else {
+      container.$form().unregisterPercentLength(this, Form.PercentStorageRecord.Dim.HEIGHT);
+    }
   }
 
   /**
