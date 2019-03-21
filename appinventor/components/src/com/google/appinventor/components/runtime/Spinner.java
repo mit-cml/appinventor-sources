@@ -45,7 +45,7 @@ import com.google.appinventor.components.runtime.util.*;
     iconName = "images/spinner.png")
 @SimpleObject
 public final class Spinner extends TouchComponent<android.widget.Spinner> implements OnItemSelectedListener {
-  
+
   private SpinnerArrayAdapter adapter;
   private YailList items = new YailList();
   private int oldAdapterCount;
@@ -70,6 +70,13 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     view.setOnItemSelectedListener(this);
 
     initToggle();
+
+    TextAlignment(Component.ALIGNMENT_CENTER);
+    FontTypeface(Component.TYPEFACE_DEFAULT);
+    FontSize(Component.FONT_DEFAULT_SIZE);
+    TextColor(Component.COLOR_DEFAULT);
+    FontBold(false);
+    FontItalic(false);
 
     Prompt("");
     oldSelectionIndex = SelectionIndex();
@@ -449,7 +456,6 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
             TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
             TextViewUtil.setFontSize(view, fontSize);
             TextViewUtil.setAlignment(view, textAlignment, true);
-
 
             if (textColor != Component.COLOR_DEFAULT) {
                 TextViewUtil.setTextColor(view, textColor);
