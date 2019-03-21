@@ -63,7 +63,10 @@ Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
  */
 Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 
-//Whether the workspace elements are hidden
+/** 
+ * Whether the workspace elements are hidden
+ * @type {boolean}
+ */
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
 
 /**
@@ -579,6 +582,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     self.backpack_.svgGroup_.style.display=displayStyle;
     self.trashcan.svgGroup_.style.display=displayStyle;
     self.zoomControls_.svgGroup_.style.display=displayStyle;
+    self.warningIndicator_.svgGroup_.style.display=displayStyle;
     self.chromeHidden = !self.chromeHidden;
   };
   menuOptions.push(workspaceOption);
