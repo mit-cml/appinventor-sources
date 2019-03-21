@@ -239,9 +239,11 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   @Override
   protected void openAdditionalChoiceDialog() {
-    JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
-    loadComponents(jsonSet);
-    loadGlobalBlocks(jsonSet);
+    if (property.getValue() != "") {
+      JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
+      loadComponents(jsonSet);
+      loadGlobalBlocks(jsonSet);
+    }
     popup.setTitle(MESSAGES.blockSelectorBoxCaption());
     popup.setWidth(300 + "px");
     popup.setHeight(500 + "px");
