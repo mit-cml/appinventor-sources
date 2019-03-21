@@ -8,11 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
 import com.google.appinventor.components.runtime.util.KitkatUtil;
@@ -40,9 +36,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class ButtonBase extends TouchComponent<android.widget.Button>
-        implements OnClickListener, OnLongClickListener {
-
-    private static final String LOG_TAG = "ButtonBase";
+        implements OnClickListener, OnLongClickListener, View.OnFocusChangeListener {
 
     // Constant for shape
     // 10px is the radius of the rounded corners.
@@ -108,7 +102,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         // Initialize TouchComponent attributes
         initToggle();
 
-        // Listen to clicks
+        // Listen to clicks & focus change
+        view.setOnFocusChangeListener(this);
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);
         IceCreamSandwichUtil.setAllCaps(view, false);
@@ -431,6 +426,37 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
             TextViewUtil.setTextColor(view, argb);
         } else {
             TextViewUtil.setTextColors(view, defaultColorStateList);
+        }
+    }
+
+    /**
+     * Indicates the cursor moved over the button so it is now possible
+     * to click it.
+     */
+    @SimpleEvent(description = "Indicates the cursor moved over the button so " +
+            "it is now possible to click it.")
+    public void GotFocus() {
+        EventDispatcher.dispatchEvent(this, "GotFocus");
+    }
+
+    /**
+     * Indicates the cursor moved away from the button so it is now no
+     * longer possible to click it.
+     */
+    @SimpleEvent(description = "Indicates the cursor moved away from " +
+            "the button so it is now no longer possible to click it.")
+    public void LostFocus() {
+        EventDispatcher.dispatchEvent(this, "LostFocus");
+    }
+
+    // OnFocusChangeListener implementation
+
+    @Override
+    public void onFocusChange(View previouslyFocused, boolean gainFocus) {
+        if (gainFocus) {
+            GotFocus();
+        } else {
+            LostFocus();
         }
     }
 

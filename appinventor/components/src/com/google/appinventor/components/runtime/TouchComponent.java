@@ -25,7 +25,9 @@ import java.io.IOException;
  */
 @SimpleObject
 public abstract class TouchComponent<T extends View> extends AndroidViewComponent
-        implements View.OnTouchListener, View.OnFocusChangeListener {
+        implements View.OnTouchListener {
+
+    private static final String LOG_TAG = "TouchComponent";
 
     protected T view;
 
@@ -60,7 +62,6 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         container.$add(this);
 
         view.setOnTouchListener(this);
-        view.setOnFocusChangeListener(this);
 
         defaultDrawable = view.getBackground();
 
@@ -93,26 +94,6 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         EventDispatcher.dispatchEvent(this, "TouchUp");
     }
 
-    /**
-     * Indicates the cursor moved over the button so it is now possible
-     * to click it.
-     */
-    @SimpleEvent(description = "Indicates the cursor moved over the button so " +
-            "it is now possible to click it.")
-    public void GotFocus() {
-        EventDispatcher.dispatchEvent(this, "GotFocus");
-    }
-
-    /**
-     * Indicates the cursor moved away from the button so it is now no
-     * longer possible to click it.
-     */
-    @SimpleEvent(description = "Indicates the cursor moved away from " +
-            "the button so it is now no longer possible to click it.")
-    public void LostFocus() {
-        EventDispatcher.dispatchEvent(this, "LostFocus");
-    }
-
 
     /**
      * If a custom background images is specified for the button, then it will lose the pressed
@@ -143,17 +124,6 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         }
 
         return false;
-    }
-
-    // OnFocusChangeListener implementation
-
-    @Override
-    public void onFocusChange(View previouslyFocused, boolean gainFocus) {
-        if (gainFocus) {
-            GotFocus();
-        } else {
-            LostFocus();
-        }
     }
 
     /**
@@ -285,7 +255,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
                 backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
             } catch (IOException ioe) {
                 // TODO(user): Maybe raise Form.ErrorOccurred.
-                //Log.e(LOG_TAG, "Unable to load " + imagePath);
+                Log.e(LOG_TAG, "Unable to load " + imagePath);
                 // Fall through with a value of null for backgroundImageDrawable.
             }
         }
