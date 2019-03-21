@@ -43,4 +43,29 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   public View getView() {
     return view;
   }
+
+    /**
+   * Returns true if the component is active and interacatable.
+   *
+   * @return  {@code true} indicates enabled, {@code false} disabled
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "If set, user can tap check box to cause action.")
+  public boolean Enabled() {
+    return view.isEnabled();
+  }
+
+  /**
+   * Specifies whether the component should be active and interactable.
+   *
+   * @param enabled  {@code true} for enabled, {@code false} disabled
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void Enabled(boolean enabled) {
+    view.setEnabled(enabled);
+    view.invalidate();
+  }
 }
