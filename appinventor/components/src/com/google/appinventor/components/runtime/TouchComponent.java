@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.view.View;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 
@@ -40,6 +43,9 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     // could not be loaded, this is null.
     protected Drawable backgroundImageDrawable;
 
+    // Stores default background of the component
+    private Drawable defaultDrawable;
+
     /**
      * Creates a new TouchComponent component.
      *
@@ -55,6 +61,8 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
         view.setOnTouchListener(this);
         view.setOnFocusChangeListener(this);
+
+        defaultDrawable = view.getBackground();
 
         Enabled(true);
         // BackgroundColor and Image are dangerous properties:
@@ -208,7 +216,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
      * Returns the button's background color as an alpha-red-green-blue
      * integer.
      *
-     * @return  background RGB color with alpha
+     * @return background RGB color with alpha
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
@@ -231,13 +239,13 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
             "The background color will not be visible if an Image is being displayed.")
     public void BackgroundColor(int argb) {
         backgroundColor = argb;
-        //updateAppearance();
+        updateAppearance();
     }
 
     /**
      * Returns the path of the button's image.
      *
-     * @return  the path of the button's image
+     * @return the path of the button's image
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
@@ -248,11 +256,11 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
     /**
      * Specifies the path of the button's image.
-     *
+     * <p>
      * <p/>See {@link MediaUtil#determineMediaSource} for information about what
      * a path can be.
      *
-     * @param path  the path of the button's image
+     * @param path the path of the button's image
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
             defaultValue = "")
@@ -283,6 +291,34 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
         }
 
         // Update the appearance based on the new value of backgroundImageDrawable.
-        //updateAppearance();
+        updateAppearance();
+    }
+
+    protected void updateAppearance() {
+        // If there is no background image,
+        // the appearance depends solely on the background color and shape.
+        if (backgroundImageDrawable == null) {
+            if (backgroundColor == Component.COLOR_DEFAULT) {
+                // If there is no background image and color is default,
+                // restore original 3D bevel appearance.
+                ViewUtil.setBackgroundDrawable(view, defaultDrawable);
+            } else if (backgroundColor == Component.COLOR_NONE) {
+                // Clear the background image.
+                ViewUtil.setBackgroundDrawable(view, null);
+                //Now we set again the default drawable
+                ViewUtil.setBackgroundDrawable(view, defaultDrawable);
+                view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
+            } else {
+                // Clear the background image.
+                ViewUtil.setBackgroundDrawable(view, null);
+                //Now we set again the default drawable
+                ViewUtil.setBackgroundDrawable(view, defaultDrawable);
+                //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
+                view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
+            }
+        } else {
+            // If there is a background image
+            ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+        }
     }
 }

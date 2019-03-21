@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.PorterDuff;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -23,9 +24,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ElementsUtil;
-import com.google.appinventor.components.runtime.util.HoneycombUtil;
-import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.*;
 
 @DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION,
     description = "<p>A spinner component that displays a pop-up with a list of elements." +
@@ -212,5 +211,4 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   public void onNothingSelected(AdapterView<?> parent){
     view.setSelection(0);
   }
-
 }
