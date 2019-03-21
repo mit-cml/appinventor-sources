@@ -41,8 +41,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     iconName = "images/spinner.png")
 @SimpleObject
 public final class Spinner extends TouchComponent<android.widget.Spinner> implements OnItemSelectedListener {
-
-  private final android.widget.Spinner view;
+  
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
   private int oldAdapterCount;
