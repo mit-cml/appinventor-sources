@@ -66,15 +66,10 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
 
-    container.$add(this);
+    initToggle();
 
     Prompt("");
     oldSelectionIndex = SelectionIndex();
-  }
-
-  @Override
-  public View getView(){
-    return view;
   }
 
   /**

@@ -35,33 +35,13 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     super(container);
   }
 
+  protected void initToggle() {
+      // Adds the component to its designated container
+      container.$add(this);
+  }
+
   @Override
   public View getView() {
     return view;
-  }
-
-  /**
-   * Returns true if the component is active and interactable.
-   *
-   * @return  {@code true} indicates enabled, {@code false} disabled
-   */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      description = "If set, user can interact with the component.")
-  public boolean Enabled() {
-    return view.isEnabled();
-  }
-
-  /**
-   * Specifies whether the button should be active and interactable.
-   *
-   * @param enabled  {@code true} for enabled, {@code false} disabled
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
-  @SimpleProperty
-  public void Enabled(boolean enabled) {
-    view.setEnabled(enabled);
-    view.invalidate();
   }
 }

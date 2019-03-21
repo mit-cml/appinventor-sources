@@ -128,9 +128,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     defaultColorStateList = view.getTextColors();
     defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
     defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
-
-    // Adds the component to its designated container
-    container.$add(this);
+    
+    initToggle();
 
     // Listen to clicks and focus changes
     view.setOnClickListener(this);
@@ -185,11 +184,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
 
       return false;
     }
-
-  @Override
-  public View getView() {
-    return view;
-  }
 
   /**
    * Indicates when a button is touch down
@@ -463,6 +457,30 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     }
 
     view.invalidate();
+  }
+
+  /**
+   * Returns true if the button is active and clickable.
+   *
+   * @return  {@code true} indicates enabled, {@code false} disabled
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "If set, user can tap check box to cause action.")
+  public boolean Enabled() {
+    return TextViewUtil.isEnabled(view);
+  }
+
+  /**
+   * Specifies whether the button should be active and clickable.
+   *
+   * @param enabled  {@code true} for enabled, {@code false} disabled
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void Enabled(boolean enabled) {
+    TextViewUtil.setEnabled(view, enabled);
   }
 
   /**
