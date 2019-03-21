@@ -105,7 +105,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
         defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
 
-        // Adds the component to its designated container
+        // Initialize TouchComponent attributes
         initToggle();
 
         // Listen to clicks

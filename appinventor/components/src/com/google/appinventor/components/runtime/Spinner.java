@@ -46,6 +46,21 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   private int oldAdapterCount;
   private int oldSelectionIndex;
 
+    // Backing for text alignment
+    private int textAlignment;
+
+    // Backing for font typeface
+    private int fontTypeface;
+
+    // Backing for font bold
+    private boolean bold;
+
+    // Backing for font italic
+    private boolean italic;
+
+    // Backing for text color
+    private int textColor;
+
   public Spinner(ComponentContainer container) {
     super(container);
     // Themes made the Spinner look and feel change significantly. This allows us to be backward
@@ -191,6 +206,14 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     EventDispatcher.dispatchEvent(this, "AfterSelecting", selection);
   }
 
+    /**
+     * Indicates a user has opened the Spinner selection menu
+     */
+    @SimpleEvent(description = "Event called after the user opens the dropdown list.")
+    public void BeforeSelecting(){
+        EventDispatcher.dispatchEvent(this, "BeforeSelecting");
+    }
+
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     // special case 1:
     // onItemSelected is fired when the adapter goes from empty to non-empty AND
@@ -211,4 +234,178 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   public void onNothingSelected(AdapterView<?> parent){
     view.setSelection(0);
   }
+
+    /**
+     * Returns the alignment of the button's text: center, normal
+     * (e.g., left-justified if text is written left to right), or
+     * opposite (e.g., right-justified if text is written left to right).
+     *
+     * @return one of {@link Component#ALIGNMENT_NORMAL},
+     * {@link Component#ALIGNMENT_CENTER} or
+     * {@link Component#ALIGNMENT_OPPOSITE}
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Left, center, or right.",
+            userVisible = false)
+    public int TextAlignment() {
+        return textAlignment;
+    }
+
+    /**
+     * Specifies the alignment of the button's text: center, normal
+     * (e.g., left-justified if text is written left to right), or
+     * opposite (e.g., right-justified if text is written left to right).
+     *
+     * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
+     *                  {@link Component#ALIGNMENT_CENTER} or
+     *                  {@link Component#ALIGNMENT_OPPOSITE}
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+            defaultValue = Component.ALIGNMENT_CENTER + "")
+    @SimpleProperty(userVisible = false)
+    public void TextAlignment(int alignment) {
+        this.textAlignment = alignment;
+    }
+
+    /**
+     * Returns true if the button's text should be bold.
+     * If bold has been requested, this property will return true, even if the
+     * font does not support bold.
+     *
+     * @return {@code true} indicates bold, {@code false} normal
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "If set, button text is displayed in bold.")
+    public boolean FontBold() {
+        return bold;
+    }
+
+    /**
+     * Specifies whether the button's text should be bold.
+     * Some fonts do not support bold.
+     *
+     * @param bold {@code true} indicates bold, {@code false} normal
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+            defaultValue = "False")
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public void FontBold(boolean bold) {
+        this.bold = bold;
+    }
+
+    /**
+     * Returns true if the button's text should be italic.
+     * If italic has been requested, this property will return true, even if the
+     * font does not support italic.
+     *
+     * @return {@code true} indicates italic, {@code false} normal
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "If set, button text is displayed in italics.")
+    public boolean FontItalic() {
+        return italic;
+    }
+
+    /**
+     * Specifies whether the button's text should be italic.
+     * Some fonts do not support italic.
+     *
+     * @param italic {@code true} indicates italic, {@code false} normal
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+            defaultValue = "False")
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public void FontItalic(boolean italic) {
+        this.italic = italic;
+    }
+
+    /**
+     * Returns the button's text's font size, measured in sp(scale-independent pixels).
+     *
+     * @return font size in sp(scale-independent pixels).
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Point size for button text.")
+    public float FontSize() {
+        return TextViewUtil.getFontSize(view, container.$context());
+    }
+
+    /**
+     * Specifies the button's text's font size, measured in sp(scale-independent pixels).
+     *
+     * @param size font size in sp(scale-independent pixels)
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+            defaultValue = Component.FONT_DEFAULT_SIZE + "")
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public void FontSize(float size) {
+
+    }
+
+    /**
+     * Returns the button's text's font face as default, serif, sans
+     * serif, or monospace.
+     *
+     * @return one of {@link Component#TYPEFACE_DEFAULT},
+     * {@link Component#TYPEFACE_SERIF},
+     * {@link Component#TYPEFACE_SANSSERIF} or
+     * {@link Component#TYPEFACE_MONOSPACE}
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Font family for button text.",
+            userVisible = false)
+    public int FontTypeface() {
+        return fontTypeface;
+    }
+
+    /**
+     * Specifies the button's text's font face as default, serif, sans
+     * serif, or monospace.
+     *
+     * @param typeface one of {@link Component#TYPEFACE_DEFAULT},
+     *                 {@link Component#TYPEFACE_SERIF},
+     *                 {@link Component#TYPEFACE_SANSSERIF} or
+     *                 {@link Component#TYPEFACE_MONOSPACE}
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+            defaultValue = Component.TYPEFACE_DEFAULT + "")
+    @SimpleProperty(
+            userVisible = false)
+    public void FontTypeface(int typeface) {
+        fontTypeface = typeface;
+    }
+
+    /**
+     * Returns the button's text color as an alpha-red-green-blue
+     * integer.
+     *
+     * @return text RGB color with alpha
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Color for button text.")
+    public int TextColor() {
+        return textColor;
+    }
+
+    /**
+     * Specifies the button's text color as an alpha-red-green-blue
+     * integer.
+     *
+     * @param argb text RGB color with alpha
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+            defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+    @SimpleProperty
+    public void TextColor(int argb) {
+        textColor = argb;
+    }
 }
