@@ -13,6 +13,8 @@
         <property name="AIMergerApp.pkg" value="edu/mills/feeney/thesis/aimerger" />
         <property name="AIMergerApp-class.dir" location="${class.dir}/AIMergerApp" />
 
+        
+        
         <target name="AIMergerApp">
                 <mkdir dir="${AIMergerApp-class.dir}" />
                 <copy todir="${AIMergerApp-class.dir}/${AIMergerApp.pkg}/img">
