@@ -173,7 +173,7 @@ public class FormPropertiesAnalyzer {
             throws SAXException {
           if ("block".equals(qName)) {
             if ("true".equals(attributes.getValue("disabled"))) {
-              skipBlocksCounter = 1;
+              skipBlocksCounter++;
               return;
             } else {
               if (skipBlocksCounter > 0) {
