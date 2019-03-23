@@ -1039,7 +1039,10 @@ public class YaVersion {
   public static final int SLIDER_COMPONENT_VERSION = 2;
 
   // For SPINNER_COMPONENT_VERSION 1:
-  public static final int SPINNER_COMPONENT_VERSION = 1;
+  // - Initial version.
+  // For SPINNER_COMPONENT_VERSION 1:
+  // - Added BackgroundColor, Enabled, Image, ShowFeedback, TextSize, TextColor, TextAllignment, TextBold, TextItalic, TextTypeface properties
+  public static final int SPINNER_COMPONENT_VERSION = 2;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
