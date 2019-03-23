@@ -590,19 +590,24 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    * Function that returns a name to be used to sort blocks.
    * The general comparator is the block.category attribute.
    * In the case of Procedures the comparator is the NAME(for definitions) or PROCNAME (for calls)
-   * In the case of 'Components' the comparator is the type of the component
+   * In the case of 'Components' the comparator is the type name, instance name, then event name
    * @param {!Blockly.Block} block the block that will be compared in the sortByCategory function
    * @returns {string} text to be used in the comparison
    */
   function comparisonName(block){
+    // Add trailing numbers to represent their sequence
     if (block.category == 'Variables'){
-      return block.category;
+      return ('1,' + block.type);
     }
     if (block.category === 'Procedures'){
-      return (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME'));
+      return ('2,'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+    }
+    if (block.category == 'Component'){
+      var component = block.type + ',' + block.instanceName + ',' + block.eventName;
+      return ('3,' + component);
     }
     // Floating blocks that are not Component
-    return block["type"];
+    return ('4,' + block.type);
   }
 
   /**
@@ -612,32 +617,24 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    * @returns {number} returns 0 if the strings are equal, and -1 or 1 if they are not
    */
   function compareStrTextNum(strA,strB){
-    // Use Regular Expression to seperate text and numbers
-    var regexStrA = strA.match(/[a-z]+|[^a-z]+/gi);
-    var regexStrB = strB.match(/[a-z]+|[^a-z]+/gi);
+    // Use Regular Expression to match text and numbers
+    var regexStrA = strA.match(/(.*?)([0-9]+)$/gi);
+    var regexStrB = strB.match(/(.*?)([0-9]+)$/gi);
 
-    if (regexStrA.length == 2 && regexStrB.length == 2 && regexStrA[0] == regexStrB[0]){
-      numA = parseInt(regexStrA[1]);
-      numB = parseInt(regexStrB[1]);
+    // There are numbers in the strings, compare numbers
+    if (regexStrA != null && regexStrB != null){
+      numStrA = strA.match(/([0-9]+)$/gi);
+      numStrB = strB.match(/([0-9]+)$/gi);
+      numA = parseInt(numStrA);
+      numB = parseInt(numStrB);
       if (numA > numB) return +1;
       else if (numA < numB) return -1;
       else return 0;
     }else{
-      return compareStrings(strA, strB);
+      return strA.localeCompare(strB);
     }
   }
 
-  /**
-   * Function used to compare two text strings
-   * @param {string} a first string to be compared
-   * @param {string} b second string to be compared
-   * @returns {number} returns 0 if the strings are equal, and -1 or 1 if they are not
-   */
-  function compareStrings(strA, strB){
-    if (strA < strB) return -1;
-    else if (strA > strB) return +1;
-    else return 0;
-  }
 
   /**
    * Function used to sort blocks by Category.
@@ -646,45 +643,28 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    * @returns {number} returns 0 if the blocks are equal, and -1 or 1 if they are not
    */
   function sortByCategory(a,b) {
+    var comparatorA = comparisonName(a).toLowerCase();
+    var comparatorB = comparisonName(b).toLowerCase();
+
+    if (a.category != b.category){
+      return comparatorA.localeCompare(comparatorB);
+    }
+
     // Sort by Category First, also handles other floating blocks
     if (a.category == b.category && a.category != "Component"){
-      var comparatorA = comparisonName(a).toLowerCase();
-      var comparatorB = comparisonName(b).toLowerCase();
+      // Remove '1,'
+      comparatorA = comparatorA.substr(2);
+      comparatorB = comparatorB.substr(2);
       return compareStrTextNum(comparatorA, comparatorB);
-    }
-
-    // 1. Category Global defs first, lexicographically sorted
-    if (a.category == "Variables"){
-      return -1;
-    }
-
-    if (b.category == "Variables"){
-      return +1;
-    }
-
-    // 2. Category Procedure defs next, lexicographically sorted
-    if (a.category == "Procedures"){
-      return -1;
-    }
-
-    if (b.category == "Procedures"){
-      return +1;
     }
 
     // 3.Component event handlers, lexicographically sorted by 
     // type name, instance name, then event name
     if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName){
-      if (a.typeName == b.typeName && a.instanceName == b.instanceName &&
-          a.eventName == b.eventName){
-        return 0;
-      }
-      if (a.typeName == b.typeName && a.instanceName == b.instanceName){
-        return compareStrings(a.eventName.toLowerCase(), b.eventName.toLowerCase());
-      }
       if (a.typeName == b.typeName){
         return compareStrTextNum(a.instanceName, b.instanceName);
       }
-      return compareStrings(a.typeName.toLowerCase(), b.typeName.toLowerCase());
+      return comparatorA.localeCompare(comparatorB);
     }
 
     // 4. For Component blocks, sorted internally first by type, 
@@ -692,21 +672,32 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     // then by instance name (for specific blocks), 
     // then by method/property name.
     if (a.category == "Component" && b.category == "Component"){
-      if (a["type"] == b["type"] && a.isGeneric == b.isGeneric && a.instanceName == b.instanceName
-        && a.propertyName == b.propertyName){
-        return 0
+      var geneA = ',2';
+      if (a.isGeneric){
+        geneA = ',1';
       }
-      if(a["type"] == b["type"] && a.isGeneric == b.isGeneric && a.instanceName == b.instanceName){
-        return compareStrings(a.propertyName.toLowerCase(), b.propertyName.toLowerCase());
+
+      var geneB = ',2';
+      if (b.isGeneric){
+        geneB = ',1';
       }
-      if(a["type"] == b["type"] && a.isGeneric == b.isGeneric){
-        return compareStrTextNum(a.instanceName, b.instanceName);
+
+      var componentA = a.type + geneA;
+      var componentB = b.type + geneB;
+
+      var res = componentA.localeCompare(componentB);
+      if (res == 0){
+        // compare instance names
+        res = compareStrTextNum(a.instanceName, b.instanceName);
       }
-      if(a["type"] == b["type"]){
-        if (a.isGeneric) return -1;
-        else return +1;
+
+      if (res == 0){
+        // Compare property names
+        var prop_method_A = a.propertyName || a.methodName;
+        var prop_method_B = b.propertyName || b.methodName;
+        res = prop_method_A.toLowerCase().localeCompare(prop_method_B.toLowerCase());
       }
-      return compareStrings(a["type"].toLowerCase(), b["type"].toLowerCase());
+      return res;
     }
 
   }
@@ -726,6 +717,8 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     // If the blocks are arranged by Category, sort the array
     if (Blockly.workspace_arranged_type === Blockly.BLKS_CATEGORY){
       topblocks.sort(sortByCategory);
+      console.log("After Sort By Category");
+      console.log(topblocks);
     }
     var metrics = Blockly.mainWorkspace.getMetrics();
     var spacing = Blockly.mainWorkspace.options.gridOptions.spacing;
