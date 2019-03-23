@@ -251,6 +251,7 @@ public class Form extends AppInventorCompatActivity
   private boolean keyboardShown = false;
   
   private Menu optionsMenu;
+  private YailList optionsMenuItems;
 
   private ProgressDialog progress;
   private static boolean _initialized = false;
@@ -2172,20 +2173,23 @@ public class Form extends AppInventorCompatActivity
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
-    this.optionsMenu = menu;
     // add the menu items
     // Comment out the next line if we don't want the exit button
-    addExitButtonToMenu(menu);
-    addAboutInfoToMenu(menu);
+    List<String> menuItems = new LinkedList();
+    addExitButtonToMenu(menu, menuItems);
+    addAboutInfoToMenu(menu, menuItems);
+    optionsMenu = menu;
+    optionsMenuItems = YailList.makeList(menuItems);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
     }
     return true;
   }
 
-  public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Stop this application")
+  public void addExitButtonToMenu(Menu menu, List<String> menuItems) {
+    String title = "Stop this application";
+    menuItems.add(title);
+    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, 1, title)
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
         MenuItemSelected(item.getOrder(), item.getTitle().toString());
@@ -2196,9 +2200,10 @@ public class Form extends AppInventorCompatActivity
     stopApplicationItem.setIcon(android.R.drawable.ic_notification_clear_all);
   }
 
-  public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
-    "About this application")
+  public void addAboutInfoToMenu(Menu menu, List<String> menuItems) {
+    String title = "About this application";
+    menuItems.add(title);
+    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2, title)
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
         MenuItemSelected(item.getOrder(), item.getTitle().toString());
@@ -2218,7 +2223,7 @@ public class Form extends AppInventorCompatActivity
                 "This will signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void MenuItems(YailList itemsList) {
-    String[] items = ElementsUtil.elements(itemsList, "Menu").toStringArray();
+    optionsMenuItems = ElementsUtil.elements(itemsList, "Menu");
     optionsMenu.clear();
     for (int i = 0; i < items.length; i++) {
       optionsMenu.add(Menu.NONE, Menu.NONE, i+1, items[i])
@@ -2238,11 +2243,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList MenuItems() {
-    String[] items = new String[optionsMenu.size()];
-    for (int i = 0; i < optionsMenu.size(); i++) {
-      items[i] = optionsMenu.getItem(i).getTitle().toString();
-    }
-    return YailList.makeList(items);
+    return optionsMenuItems;
   }
 
   @Override
