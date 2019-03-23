@@ -63,6 +63,7 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
@@ -73,6 +74,7 @@ import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONException;
 
 import java.io.FileNotFoundException;
@@ -247,6 +249,8 @@ public class Form extends AppInventorCompatActivity
 
   private boolean actionBarEnabled = false;
   private boolean keyboardShown = false;
+  
+  private Menu optionsMenu;
 
   private ProgressDialog progress;
   private static boolean _initialized = false;
@@ -2168,6 +2172,7 @@ public class Form extends AppInventorCompatActivity
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
+    this.optionsMenu = menu;
     // add the menu items
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
@@ -2202,6 +2207,42 @@ public class Form extends AppInventorCompatActivity
       }
     });
     aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
+  }
+
+  /**
+   * Set a list of text elements as options menu items
+   *
+   * @param itemsList a YailList containing the strings to be added to the menu
+   */
+  @SimpleProperty(description="List of text elements to show as items in the menu.  " +
+                "This will signal an error if the elements are not text strings.",
+      category = PropertyCategory.BEHAVIOR)
+  public void MenuItems(YailList itemsList) {
+    String[] items = ElementsUtil.elements(itemsList, "Menu").toStringArray();
+    optionsMenu.clear();
+    for (int i = 0; i < items.length; i++) {
+      optionsMenu.add(Menu.NONE, Menu.NONE, i+1, items[i])
+      .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+        public boolean onMenuItemClick(MenuItem item) {
+          MenuItemSelected(item.getOrder(), item.getTitle().toString());
+          return true;
+        }
+      });
+    }
+  }
+
+  /**
+   * MenuItems property getter method
+   *
+   * @return a YailList representing names of menu items
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public YailList MenuItems() {
+    String[] items = new String[optionsMenu.size()];
+    for (int i = 0; i < optionsMenu.size(); i++) {
+      items[i] = optionsMenu.getItem(i);
+    }
+    return YailList.makeList(items);
   }
 
   @Override
