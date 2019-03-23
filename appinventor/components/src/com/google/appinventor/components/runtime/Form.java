@@ -2240,7 +2240,7 @@ public class Form extends AppInventorCompatActivity
   public YailList MenuItems() {
     String[] items = new String[optionsMenu.size()];
     for (int i = 0; i < optionsMenu.size(); i++) {
-      items[i] = optionsMenu.getItem(i);
+      items[i] = optionsMenu.getItem(i).getTitle().toString();
     }
     return YailList.makeList(items);
   }
