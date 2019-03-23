@@ -203,14 +203,6 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     EventDispatcher.dispatchEvent(this, "AfterSelecting", selection);
   }
 
-    /**
-     * Indicates a user has opened the Spinner selection menu
-     */
-    @SimpleEvent(description = "Event called after the user opens the dropdown list.")
-    public void BeforeSelecting(){
-        EventDispatcher.dispatchEvent(this, "BeforeSelecting");
-    }
-
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     // special case 1:
     // onItemSelected is fired when the adapter goes from empty to non-empty AND
