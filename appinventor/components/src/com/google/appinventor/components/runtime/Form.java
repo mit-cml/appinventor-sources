@@ -249,7 +249,7 @@ public class Form extends AppInventorCompatActivity
 
   private boolean actionBarEnabled = false;
   private boolean keyboardShown = false;
-  
+
   private Menu optionsMenu;
   private YailList optionsMenuItems;
 
@@ -2173,12 +2173,12 @@ public class Form extends AppInventorCompatActivity
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
+    optionsMenu = menu;
     // add the menu items
     // Comment out the next line if we don't want the exit button
-    List<String> menuItems = new LinkedList();
+    List<String> menuItems = new ArrayList();
     addExitButtonToMenu(menu, menuItems);
     addAboutInfoToMenu(menu, menuItems);
-    optionsMenu = menu;
     optionsMenuItems = YailList.makeList(menuItems);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
@@ -2224,6 +2224,7 @@ public class Form extends AppInventorCompatActivity
       category = PropertyCategory.BEHAVIOR)
   public void MenuItems(YailList itemsList) {
     optionsMenuItems = ElementsUtil.elements(itemsList, "Menu");
+    String[] items = optionsMenuItems.toStringArray();
     optionsMenu.clear();
     for (int i = 0; i < items.length; i++) {
       optionsMenu.add(Menu.NONE, Menu.NONE, i+1, items[i])
