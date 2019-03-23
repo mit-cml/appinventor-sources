@@ -172,15 +172,12 @@ public class FormPropertiesAnalyzer {
         public void startElement(String uri, String localName, String qName, Attributes attributes)
             throws SAXException {
           if ("block".equals(qName)) {
-            if ("true".equals(attributes.getValue("disabled"))) {
+            if ("true".equals(attributes.getValue("disabled")) || skipBlocksCounter > 0) {
               skipBlocksCounter++;
-              return;
-            } else {
-              if (skipBlocksCounter > 0) {
-                skipBlocksCounter++;
-              }
-              blockType = attributes.getValue("type");
             }
+            blockType = attributes.getValue("type");
+          } else if ("next".equals(qName) && skipBlocksCounter == 1) {
+            skipBlocksCounter = 0;
           } else if (skipBlocksCounter == 0 && "mutation".equals(qName)) {
             String blockName = null;
             if ("component_event".equals(blockType)) {
