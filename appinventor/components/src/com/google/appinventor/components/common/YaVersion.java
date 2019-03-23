@@ -1041,7 +1041,9 @@ public class YaVersion {
   // For SPINNER_COMPONENT_VERSION 1:
   // - Initial version.
   // For SPINNER_COMPONENT_VERSION 1:
-  // - Added BackgroundColor, Enabled, Image, ShowFeedback, TextSize, TextColor, TextAllignment, TextBold, TextItalic, TextTypeface properties
+  // - Added BackgroundColor, Enabled, Image, ShowFeedback properties
+  // - Added TextSize, TextColor, TextAllignment, TextBold, TextItalic, TextTypeface properties
+  // - Added TouchUp and TouchDown events 
   public static final int SPINNER_COMPONENT_VERSION = 2;
 
   // For SOUND_COMPONENT_VERSION 2:
