@@ -90,7 +90,7 @@
                 <field name="COMPONENT_SELECTOR">Web1</field>
                 <value name="ARG0">
                   <block type="lists_create_with" id="17" inline="false">
-                    <mutation items="7"></mutation>
+                    <mutation items="8"></mutation>
                     <value name="ADD0">
                       <block type="lists_create_with" id="18" inline="false">
                         <mutation items="2"></mutation>
@@ -206,6 +206,22 @@
                         </value>
                       </block>
                     </value>
+                    <value name="ADD7">
+                      <block type="lists_create_with" id="3?x|P8JB#okUP8#oa5~o">
+                        <mutation items="2"></mutation>
+                        <value name="ADD0">
+                          <block type="text" id="dh=0y=Jn`kt,SG-ksVd[">
+                            <field name="TEXT">aid</field>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="component_method" id="`g:@(vs,TD%uU%D1d+q/">
+                            <mutation component_type="PhoneStatus" method_name="InstallationId" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                            <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
                   </block>
                 </value>
               </block>
@@ -215,7 +231,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="27" x="0" y="818">
+  <block type="component_event" id="27" x="0" y="870">
     <mutation component_type="PhoneStatus" instance_name="PhoneStatus1" event_name="OnSettings"></mutation>
     <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
     <statement name="DO">
@@ -249,6 +265,19 @@
                     <field name="PROCNAME">getRendezvousServer</field>
                   </block>
                 </value>
+                <next>
+                  <block type="component_set_get" id="DCo==NX_F-`kld}S2ug5">
+                    <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="aidLabel"></mutation>
+                    <field name="COMPONENT_SELECTOR">aidLabel</field>
+                    <field name="PROP">Text</field>
+                    <value name="VALUE">
+                      <block type="component_method" id="awb}a`]zKxjK^VB@~G$}">
+                        <mutation component_type="PhoneStatus" method_name="InstallationId" is_generic="false" instance_name="PhoneStatus1"></mutation>
+                        <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+                      </block>
+                    </value>
+                  </block>
+                </next>
               </block>
             </next>
           </block>
@@ -256,7 +285,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="47" x="0" y="962">
+  <block type="component_event" id="47" x="0" y="1040">
     <mutation component_type="Button" instance_name="ConnectButton" event_name="Click"></mutation>
     <field name="COMPONENT_SELECTOR">ConnectButton</field>
     <statement name="DO">
@@ -281,7 +310,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="34" x="0" y="1105">
+  <block type="procedures_defnoreturn" id="34" x="0" y="1183">
     <field name="NAME">checkWiFi</field>
     <statement name="STACK">
       <block type="controls_if" id="35" inline="false">
@@ -344,7 +373,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="51" inline="false" x="0" y="1402">
+  <block type="procedures_defreturn" id="51" inline="false" x="0" y="1480">
     <field name="NAME">getRendezvousServer</field>
     <value name="RETURN">
       <block type="component_method" id="52" inline="false">
@@ -363,7 +392,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defreturn" id="55" inline="false" x="0" y="1542">
+  <block type="procedures_defreturn" id="55" inline="false" x="0" y="1620">
     <mutation>
       <arg name="input"></arg>
     </mutation>
@@ -394,7 +423,7 @@
       </block>
     </value>
   </block>
-  <block type="component_event" id="61" x="0" y="1668">
+  <block type="component_event" id="61" x="0" y="1746">
     <mutation component_type="Notifier" instance_name="Notifier1" event_name="AfterChoosing"></mutation>
     <field name="COMPONENT_SELECTOR">Notifier1</field>
     <statement name="DO">
@@ -426,7 +455,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="67" x="0" y="1835">
+  <block type="procedures_defnoreturn" id="67" x="0" y="1913">
     <mutation>
       <arg name="x"></arg>
     </mutation>
@@ -523,7 +552,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="S~hQs_KH8?5y90Ie^-Ok" x="0" y="2208">
+  <block type="component_event" id="S~hQs_KH8?5y90Ie^-Ok" x="0" y="2312">
     <mutation component_type="CheckBox" instance_name="CheckBox1" event_name="Changed"></mutation>
     <field name="COMPONENT_SELECTOR">CheckBox1</field>
     <statement name="DO">
@@ -545,7 +574,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" id="79" inline="false" x="0" y="2300">
+  <block type="procedures_defreturn" id="79" inline="false" x="0" y="2404">
     <mutation>
       <arg name="code"></arg>
     </mutation>
@@ -645,7 +674,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defnoreturn" id="98" x="0" y="2673">
+  <block type="procedures_defnoreturn" id="98" x="0" y="2777">
     <field name="NAME">resetRendezvousServer</field>
     <statement name="STACK">
       <block type="lexical_variable_set" id="99" inline="false">
@@ -669,7 +698,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="103" x="0" y="2816">
+  <block type="component_event" id="103" x="0" y="2920">
     <mutation component_type="Button" instance_name="ResetRendezvousServer" event_name="Click"></mutation>
     <field name="COMPONENT_SELECTOR">ResetRendezvousServer</field>
     <statement name="DO">
@@ -703,7 +732,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="109" x="0" y="2960">
+  <block type="component_event" id="109" x="0" y="3064">
     <mutation component_type="Button" instance_name="ScanButton" event_name="Click"></mutation>
     <field name="COMPONENT_SELECTOR">ScanButton</field>
     <statement name="DO">
@@ -713,7 +742,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="111" x="0" y="3052">
+  <block type="component_event" id="111" x="0" y="3156">
     <mutation component_type="Form" instance_name="Screen1" event_name="Initialize"></mutation>
     <field name="COMPONENT_SELECTOR">Screen1</field>
     <statement name="DO">
@@ -893,7 +922,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="139" x="0" y="3561">
+  <block type="procedures_defnoreturn" id="139" x="0" y="3665">
     <mutation>
       <arg name="value"></arg>
       <arg name="permanent"></arg>
@@ -937,7 +966,7 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" id="147" x="0" y="3769">
+  <block type="component_event" id="147" x="0" y="3873">
     <mutation component_type="Button" instance_name="SetRenzvousServer" event_name="Click"></mutation>
     <field name="COMPONENT_SELECTOR">SetRenzvousServer</field>
     <statement name="DO">
@@ -992,7 +1021,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="156" x="0" y="3990">
+  <block type="procedures_defnoreturn" id="156" x="0" y="4094">
     <field name="NAME">startdirectconnect</field>
     <statement name="STACK">
       <block type="local_declaration_statement" id="157" inline="false">
@@ -1040,7 +1069,7 @@
       </block>
     </statement>
   </block>
-  <block type="global_declaration" id="164" inline="false" x="0" y="4197">
+  <block type="global_declaration" id="164" inline="false" x="0" y="4327">
     <field name="NAME">rendezvousServer</field>
     <value name="VALUE">
       <block type="text" id="165">
@@ -1048,5 +1077,5 @@
       </block>
     </value>
   </block>
-  <yacodeblocks ya-version="173" language-version="22"></yacodeblocks>
+  <yacodeblocks ya-version="176" language-version="23"></yacodeblocks>
 </xml>
