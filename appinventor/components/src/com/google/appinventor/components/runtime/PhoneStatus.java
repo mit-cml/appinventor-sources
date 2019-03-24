@@ -318,6 +318,11 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     }
   }
 
+  @SimpleFunction(description = "Return the ACRA Installation ID")
+  public String InstallationId() {
+    return org.acra.util.Installation.id(Form.getActiveForm());
+  }
+
   /* Static context way to get the useWebRTC flag */
   public static boolean getUseWebRTC() {
     return useWebRTC;

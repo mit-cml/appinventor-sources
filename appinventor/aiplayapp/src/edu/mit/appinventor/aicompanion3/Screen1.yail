@@ -6,7 +6,7 @@ $Source $Yail
 (require <com.google.youngandroid.runtime>)
 
 (def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
-(def (p$callrendezvous $code)  (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (get-var g$rendezvousServer) "/rendezvous/" ) '(text text text ) "join") 'text)(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "webrtc" (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "version" (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "api" (call-component-method 'PhoneStatus1 'SdkLevel (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "installer" (call-component-method 'PhoneStatus1 'GetInstaller (*list-for-runtime*) '()) ) '(any any ) "make a list") ) '(any any any any any any any ) "make a list")) '(list))) '(text)))
+(def (p$callrendezvous $code)  (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (get-var g$rendezvousServer) "/rendezvous/" ) '(text text text ) "join") 'text)(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "webrtc" (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "version" (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "api" (call-component-method 'PhoneStatus1 'SdkLevel (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "installer" (call-component-method 'PhoneStatus1 'GetInstaller (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "aid" (call-component-method 'PhoneStatus1 'InstallationId (*list-for-runtime*) '()) ) '(any any ) "make a list") ) '(any any any any any any any any ) "make a list")) '(list))) '(text)))
 (def (p$checkWiFi )  (if (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive string-starts-at (*list-for-runtime* (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) "Error") '(text text) "starts at")) '(any any) "=") (begin   (call-component-method 'Notifier1 'ShowChooseDialog (*list-for-runtime* "Your Device does not appear to have a WiFi Connection"  "No WiFi"  "Continue without WiFi"  "Exit"  #f) '(text text text text boolean)))))
 (def (p$getRendezvousServer ) (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "rendezvousServer"  (get-var g$rendezvousServer)) '(text any)))
 (def (p$isAPK $input) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "="))
@@ -38,9 +38,9 @@ $Source $Yail
 (add-component Screen1 com.google.appinventor.components.runtime.VerticalArrangement SettingsPanel 
 (set-and-coerce-property! 'SettingsPanel 'AlignHorizontal 3 'number)
 
-(set-and-coerce-property! 'SettingsPanel 'Width -2 'number)
-
 (set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)
+
+(set-and-coerce-property! 'SettingsPanel 'Width -2 'number)
 
 )
 
@@ -97,6 +97,11 @@ $Source $Yail
 
 (define-event ResetRendezvousServer Click()(set-this-form)
     ((get-var p$resetRendezvousServer) )(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)(set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+;;; aidLabel
+
+(add-component SettingsPanel com.google.appinventor.components.runtime.Label aidLabel 
+)
+
 ;;; MainPanel
 
 (add-component Screen1 com.google.appinventor.components.runtime.VerticalArrangement MainPanel 
@@ -129,11 +134,11 @@ $Source $Yail
 (add-component MainPanel com.google.appinventor.components.runtime.Label ErrorLabel 
 (set-and-coerce-property! 'ErrorLabel 'HasMargins #f 'boolean)
 
-(set-and-coerce-property! 'ErrorLabel 'Width -2 'number)
-
 (set-and-coerce-property! 'ErrorLabel 'TextAlignment 1 'number)
 
 (set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
+
+(set-and-coerce-property! 'ErrorLabel 'Width -2 'number)
 
 )
 
@@ -225,13 +230,13 @@ $Source $Yail
 
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
 
-(set-and-coerce-property! 'CodeBox 'Width -2 'number)
-
 (set-and-coerce-property! 'CodeBox 'Hint "Six Character Code" 'text)
 
 (set-and-coerce-property! 'CodeBox 'MultiLine #t 'boolean)
 
 (set-and-coerce-property! 'CodeBox 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'CodeBox 'Width -2 'number)
 
 )
 
@@ -361,7 +366,7 @@ $Source $Yail
 )
 
 (define-event PhoneStatus1 OnSettings()(set-this-form)
-    (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text))
+    (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text)(set-and-coerce-property! 'aidLabel 'Text (call-component-method 'PhoneStatus1 'InstallationId (*list-for-runtime*) '()) 'text))
 ;;; Web1
 
 (add-component MainPanel com.google.appinventor.components.runtime.Web Web1 
