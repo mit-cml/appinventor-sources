@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import CoreLocation
@@ -17,17 +17,17 @@ public enum LocationManagerStatus: String {
  * @author Nichole Clarke
  */
 open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
-  
+
   fileprivate static let UNKNOWN_VALUE: Double = 0
   fileprivate var _listening: Bool = false
   fileprivate var _providerName: String = "iOS"
   fileprivate let _allProviders: [String] = ["iOS"]
   fileprivate var _providerLocked: Bool = true // cannot change provider on iOS
   fileprivate var _locationManager: CLLocationManager = CLLocationManager()
-  
+
   fileprivate var _timeInterval: Int = 60000 // 60 seconds
   fileprivate var _distanceInterval: Int = 5 // 5 meters
-  
+
   private var _lastLocation: CLLocation?
   private var _longitude: Double = UNKNOWN_VALUE
   private var _latitude: Double = UNKNOWN_VALUE
@@ -35,20 +35,24 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   private var _speed: Float = Float(UNKNOWN_VALUE)
   private var _hasLocationData: Bool = false // has first fix for location
   private var _hasAltitude: Bool = false
-  
+
   private let geocoder: CLGeocoder = CLGeocoder()
-  
-  private var _enabled: Bool = false
-  
+
+  private var _enabled = true
+  private var _initialized = false
+
   public override init(_ container: ComponentContainer) {
     super.init(container)
     _locationManager.delegate = self
-    // TODO: Setup Listener one listeners implemented
-//    form.registerForOnResume(self)
-//    form.registerForOnStop(self)
-    
   }
-  
+
+  @objc open func Initialize() {
+    _initialized = true
+    if _enabled {
+      startListening()
+    }
+  }
+
   // MARK: LocationSensor Properties
   @objc open var ProviderName: String {
     get {
@@ -58,7 +62,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       // iOS does not currently allow setting providers
     }
   }
-  
+
   @objc open var ProviderLocked: Bool {
     get {
       return _providerLocked
@@ -67,7 +71,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       // cannot change provider on iOS
     }
   }
-  
+
   @objc open var TimeInterval: Int32 {
     get {
       return Int32(_timeInterval)
@@ -76,15 +80,15 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       if (interval < 0 || interval > 1000000) {
         return
       }
-      
+
       _timeInterval = Int(interval)
-      
+
       if(_enabled) {
         RefreshProvider()
       }
     }
   }
-  
+
   @objc open var DistanceInterval: Int32 {
     get {
       return Int32(_distanceInterval)
@@ -93,52 +97,52 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       if (interval < 0 || interval > 1000) {
         return
       }
-      
+
       _distanceInterval = Int(interval)
-      
+
       if(_enabled) {
         RefreshProvider()
       }
-      
+
     }
   }
-  
+
   @objc open var HasLongitudeLatitude: Bool {
     get {
       return _hasLocationData && _enabled
     }
   }
-  
+
   @objc open var HasAltitude: Bool {
     get {
       return _hasAltitude && _enabled
     }
   }
-  
+
   @objc open var HasAccuracy: Bool {
     get {
       return Accuracy != LocationSensor.UNKNOWN_VALUE && _enabled
     }
   }
-  
+
   @objc open var Longitude: Double {
     get {
       return _longitude
     }
   }
-  
+
   @objc open var Latitude: Double {
     get {
       return _latitude
     }
   }
-  
+
   @objc open var Altitude: Double {
     get {
       return _altitude
     }
   }
-  
+
   @objc open var Accuracy: Double {
     get {
       if let _lastLocation = _lastLocation {
@@ -148,50 +152,42 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       }
     }
   }
-  
+
   @objc open var Enabled: Bool {
     get {
       return _enabled
     }
     set(enabled) {
+      if !_initialized {
+        _enabled = enabled
+        return
+      }
       if !_enabled && enabled {
-        PermissionHandler.RequestPermission(for: .location) {
-          authorized, _ in
-          if authorized {
-            self._enabled = true
-            self.RefreshProvider()
-          } else {
-            if self._enabled {
-              self._form.dispatchErrorOccurredEvent(self, "Enabled", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code, ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, "Enabled should not be true.")
-            }
-            self._enabled = false
-            self.stopListening()
-          }
-        }
+        startListening()
       } else if _enabled && !enabled {
         _enabled = false
         stopListening()
       }
     }
   }
-  
+
   @objc open var CurrentAddress: String {
     get {
       return getAddressFromLocation(location: _lastLocation)
     }
   }
-  
+
   @objc open var AvailableProviders: [String] {
     get {
       return _allProviders
     }
   }
-  
+
   // MARK: Events
   @objc open func LocationChanged(_ latitude: Double, _ longitude: Double, _ altitude: Double, _ speed: Float) {
     EventDispatcher.dispatchEvent(of: self, called: "LocationChanged", arguments: latitude as NSNumber, longitude as NSNumber, altitude as NSNumber, speed as NSNumber)
   }
-  
+
   @objc open func LatitudeFromAddress(_ addressStr: String) -> Double {
     var latitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
@@ -202,7 +198,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
     return latitude
   }
-  
+
   @objc open func LongitudeFromAddress(_ addressStr: String) -> Double {
     var longitude = LocationSensor.UNKNOWN_VALUE
     geocoder.geocodeAddressString(addressStr) { placemarks, error in
@@ -213,7 +209,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     }
     return longitude
   }
-  
+
   // TODO: update handling of CurrentAddress following update to Android's handling of CurrentAddress
   //       currentAddress should be a function and not a property
   fileprivate func getAddressFromLocation (location: CLLocation?) -> String {
@@ -240,13 +236,13 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     return address
   }
 
-  
+
   // MARK: LocationDelegate
   open func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
     StatusChanged(.TEMPORARILY_UNAVAILABLE)
     onStop()
   }
-  
+
   open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     switch error._code {
     case CLError.locationUnknown.rawValue:
@@ -264,7 +260,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       _form.dispatchErrorOccurredEvent(self, "didFailWithError", Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, error.localizedDescription)
     }
   }
-  
+
   open func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
     StatusChanged(LocationManagerStatus.AVAILABLE)
     onResume()
@@ -274,25 +270,25 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     guard let lastLocation = locations.last else {
       return
     }
-    
+
     var differenceInTime = Double(_timeInterval)
     if let previousTimestamp = _lastLocation?.timestamp {
       differenceInTime = lastLocation.timestamp.timeIntervalSince(previousTimestamp) * 1000 //ms conversion
     }
-    
+
     if differenceInTime >= Double(_timeInterval) && (lastLocation.coordinate.longitude != LocationSensor.UNKNOWN_VALUE || lastLocation.coordinate.latitude != LocationSensor.UNKNOWN_VALUE) {
       _lastLocation = lastLocation
       _longitude = lastLocation.coordinate.longitude
       _latitude = lastLocation.coordinate.latitude
       _speed = Float(lastLocation.speed)
       _hasLocationData = true
-      
+
       // Update altitude if exists else retain cached altitude
       if lastLocation.hasAccuracy() {
         _altitude = lastLocation.altitude
         _hasAltitude = true
       }
-      
+
       let argLatitude = _latitude
       let argLongitude = _longitude
       let argAltitude = _altitude
@@ -300,7 +296,7 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       LocationChanged(argLatitude, argLongitude, argAltitude, argSpeed)
     }
   }
-  
+
   open func StatusChanged(provider: String = "iOS", _ status: LocationManagerStatus) {
     if _enabled {
       StatusChanged(provider, status.rawValue)
@@ -311,31 +307,47 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
   @objc open func StatusChanged(_ provider: String, _ status: String) {
     EventDispatcher.dispatchEvent(of: self, called: "StatusChanged", arguments: provider as NSString, status as NSString)
   }
-  
+
   @objc open func RefreshProvider() {
     // we cannot blindly start updating and refreshing location --> enabled can be sent to true or false
     _locationManager.distanceFilter = _distanceInterval > Int(LocationSensor.UNKNOWN_VALUE) ? Double(_distanceInterval) : kCLDistanceFilterNone
     _locationManager.startUpdatingLocation()
     _listening = true
   }
-  
+
+  fileprivate func startListening() {
+    PermissionHandler.RequestPermission(for: .location) {
+      authorized, _ in
+      if authorized {
+        self._enabled = true
+        self.RefreshProvider()
+      } else {
+        if self._enabled {
+          self._form.dispatchErrorOccurredEvent(self, "Enabled", ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code, ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message, "Enabled should not be true.")
+        }
+        self._enabled = false
+        self.stopListening()
+      }
+    }
+  }
+
   fileprivate func stopListening() {
     if _listening {
       _locationManager.stopUpdatingLocation()
       _listening = false
     }
   }
-  
+
   @objc open func onResume() {
     if _enabled {
       RefreshProvider()
     }
   }
-  
+
   @objc open func onStop() {
     stopListening()
   }
-  
+
   @objc open func onDelete() {
     stopListening()
   }
