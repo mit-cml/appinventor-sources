@@ -2175,11 +2175,14 @@ public class Form extends AppInventorCompatActivity
     super.onCreateOptionsMenu(menu);
     optionsMenu = menu;
     // add the menu items
-    // Comment out the next line if we don't want the exit button
-    List<String> menuItems = new ArrayList();
-    addExitButtonToMenu(menu, menuItems);
-    addAboutInfoToMenu(menu, menuItems);
-    optionsMenuItems = YailList.makeList(menuItems);
+    if (optionsMenuItems == null) {
+      List<String> menuItems = new ArrayList();
+      addExitButtonToMenu(menu, menuItems);
+      addAboutInfoToMenu(menu, menuItems);
+      optionsMenuItems = YailList.makeList(menuItems);
+    } else {
+      MenuItems(optionsMenuItems);
+    }
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
     }
@@ -2224,6 +2227,9 @@ public class Form extends AppInventorCompatActivity
       category = PropertyCategory.BEHAVIOR)
   public void MenuItems(YailList itemsList) {
     optionsMenuItems = ElementsUtil.elements(itemsList, "Menu");
+    if (optionsMenu == null) {
+      return;   // fill menu once onCreateOptionsMenu is executed
+    }
     String[] items = optionsMenuItems.toStringArray();
     optionsMenu.clear();
     for (int i = 0; i < items.length; i++) {
@@ -2244,6 +2250,9 @@ public class Form extends AppInventorCompatActivity
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList MenuItems() {
+    if (optionsMenuItems == null) {
+      return YailList.makeEmptyList();
+    }
     return optionsMenuItems;
   }
 
