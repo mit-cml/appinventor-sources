@@ -18,6 +18,7 @@
     '../lib/blockly/msg/js/nl.js',
     '../lib/blockly/msg/js/pt-br.js',
     '../lib/blockly/msg/js/pt.js',
+    '../lib/blockly/msg/js/hu.js',
     '../lib/blockly/msg/js/en.js',
     './src/msg/ko_kr/_messages.js',
     './src/msg/es_es/_messages.js',
@@ -29,6 +30,7 @@
     './src/msg/sv/_messages.js',
     './src/msg/pt_br/_messages.js',
     './src/msg/pt/_messages.js',
+    './src/msg/hu/_messages.js',
     './src/msg/nl/_messages.js',
     './src/msg/en/_messages.js',
 

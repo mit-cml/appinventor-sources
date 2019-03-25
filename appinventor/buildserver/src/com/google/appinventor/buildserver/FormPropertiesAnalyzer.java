@@ -53,6 +53,7 @@ public class FormPropertiesAnalyzer {
    * @return the properties as a JSONObject
    */
   public static JSONObject parseSourceFile(String source) {
+    source = source.replaceAll("\r\n", "\n");
     // First, locate the beginning of the $JSON section.
     // Older files have a $Properties before the $JSON section and we need to make sure we skip
     // that.
@@ -64,7 +65,7 @@ public class FormPropertiesAnalyzer {
     }
     beginningOfJsonSection += jsonSectionPrefix.length();
 
-    // Then, locate the end of the $JSON section;
+    // Then, locate the end of the $JSON section
     String jsonSectionSuffix = FORM_PROPERTIES_SUFFIX;
     int endOfJsonSection = source.lastIndexOf(jsonSectionSuffix);
     if (endOfJsonSection == -1) {
