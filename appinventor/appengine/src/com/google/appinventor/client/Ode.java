@@ -877,7 +877,7 @@ public class Ode implements EntryPoint {
               String repo = Window.Location.getParameter("repo");
               galleryId = Window.Location.getParameter("galleryId");
               String separator = "?";
-              String uri = "/login/";
+              String uri = "/login";
               if (locale != null && !locale.equals("")) {
                 uri += separator + "locale=" + locale;
                 separator = "&";
