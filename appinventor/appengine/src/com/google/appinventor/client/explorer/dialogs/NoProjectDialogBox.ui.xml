@@ -21,7 +21,7 @@
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">Hello Purr</h4>
           <div class="ode-noDialogExampleImage">
-            <g:Image resource="{res.YRLogo}" altText="Talk to Me Logo" />
+            <g:Image resource="{res.wilson}" altText="Wilson Logo" />
           </div>
           <p class="ode-noDialogExampleAbout">
             HelloPurr is a simple app that you can build in a very short time. You create a button that has a picture of
@@ -37,7 +37,7 @@
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">Talk to Me</h4>
           <div class="ode-noDialogExampleImage">
-            <g:Image resource="{res.talkToMeLogo}" altText="YR Media Logo" />
+            <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo" />
           </div>
 
           <p class="ode-noDialogExampleAbout">

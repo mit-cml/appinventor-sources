@@ -592,16 +592,22 @@ public interface Images extends Resources {
    @Source("com/google/appinventor/images/logo.png")
    ImageResource logo();
 
-   /**
-   * Talk to Me Logo
-   */
-   @Source("com/google/appinventor/images/talkToMeLogo.png")
-   ImageResource talkToMeLogo();
+  /**
+  * Wilson Logo 
+  */
+  @Source("com/google/appinventor/images/wilson.png")
+  ImageResource wilson();
 
-   /**
-   * YR Media Logo
-   */
-   @Source("com/google/appinventor/images/YRLogo.png")
-   ImageResource YRLogo();
+  /**
+  * Talk to Me Logo
+  */
+  @Source("com/google/appinventor/images/talkToMeLogo.png")
+  ImageResource talkToMeLogo();
+
+  /**
+  * YR Media Logo
+  */
+  @Source("com/google/appinventor/images/YRLogo.png")
+  ImageResource YRLogo();
 
 }
