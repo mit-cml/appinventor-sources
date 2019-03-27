@@ -151,7 +151,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
           public void HandlePermissionResponse(String permission, boolean granted) {
             if (granted) {
               PhoneCall.this.havePermission = true;
-              PhoneCall.this.MakePhoneCall();
+              PhoneCall.this.MakePhoneCallDirect();
             } else {
               form.dispatchPermissionDeniedEvent(PhoneCall.this, "MakePhoneCall",
                   Manifest.permission.CALL_PHONE);
