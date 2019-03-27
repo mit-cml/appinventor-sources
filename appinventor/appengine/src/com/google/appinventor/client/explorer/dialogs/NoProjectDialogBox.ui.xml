@@ -1,70 +1,113 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
     xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-  <!-- <ui:with type="com.test.client.Resources" field="res"></ui:with> -->
+  <ui:with type="com.google.appinventor.client.Images" field="res"></ui:with>
 
   <g:HTMLPanel>
-      <div class="ode-noDialogDivHeader">
-        <div class="ode-noDialogDivInnerHeader">
-          <!-- <img id="ode-codiLogo" src="../../../images/logo.png" alt="Codi Logo"> -->
-          <h3 class="ode-headerTitle">Welcome to the MIT App Inventor 2!</h3>
+     <div class="ode-noDialogDivHeader">
+      <div class="ode-noDialogDivInnerHeader">
+        <div id='ode-codiLogoDiv'>
+          <g:Image resource="{res.logo}" altText="" />
         </div>
+
+        <h3 class="ode-headerTitle">Welcome to the MIT App Inventor 2!</h3>
       </div>
+    </div>
 
-      <h3 class="ode-tutorialsTitle">Get started with some tutorials</h3>
+    <h3 class="ode-tutorialsTitle">Get started with some tutorials</h3>
 
-      <div class="ode-noDialogExampleDivs">
-        <div class="ode-noDialogExampleDiv">
+    <div class="ode-noDialogExampleDivs">
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">Hello Purr</h4>
-          <div class="ode-noDialogExampleImages">
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.YRLogo}" altText="Talk to Me Logo" />
           </div>
           <p class="ode-noDialogExampleAbout">
-            HelloPurr is a simple app that you can build in a very short time. You create a button that has a picture of a
+            HelloPurr is a simple app that you can build in a very short time. You create a button that has a picture of
+            a
             cat on it, and then program the button so that when it is clicked a "meow" sound plays.
           </p>
-
-          <div class="ode-tutorialButton">Go to Tutorial</div>
         </div>
 
-        <div class="ode-noDialogExampleDiv">
+        <g:Button ui:field='goToPurr' styleName='{style.ode-tutorialButton}'>Go to Tutorial</g:Button>
+      </div>
+
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">Talk to Me</h4>
-          <div class="ode-noDialogExampleImages">
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-            <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.talkToMeLogo}" altText="YR Media Logo" />
           </div>
-          <p class="ode-noDialogExampleAbout">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi illum dolore
-            eius recusandae unde! Laboriosam
-            neque corrupti deserunt ipsa molestias quis reprehenderit enim? Eum illum, aliquam culpa a voluptatum ratione.
+
+          <p class="ode-noDialogExampleAbout">
+            Text to Speech is surprisingly fun. Find out for yourself with this
+            starter app that talks.
           </p>
-
-          <div class="ode-tutorialButton">Go to Tutorial</div>
         </div>
 
-        <div class="ode-noDialogExampleDiv">
-          <div class="ode-noDialogExampleUpperDiv">
-            <h4 class="ode-noDialogExampleTitle">YR Media</h4>
-            <div class="ode-noDialogExampleImages">
-              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-              <!-- <img class="ode-noDialogExampleImage" src="../../../images/purr.png" alt="Purr"> -->
-            </div>
-            <p class="ode-noDialogExampleAbout">fjkdsafjkdlsafjklasdfjkals;dfjkla;fjksdl
-            </p>
-          </div>
+        <g:Button ui:field='goToTalk' styleName='{style.ode-tutorialButton}'>Go to Tutorial</g:Button>
+      </div>
 
-          <div class="ode-noDialogExampleLowerDiv">
-            <div class="ode-tutorialButton">Go to Tutorial</div>
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
+          <h4 class="ode-noDialogExampleTitle">YR Media</h4>
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.YRLogo}" altText="YR Media Logo" />
           </div>
+          <p class="ode-noDialogExampleAbout">
+            MIT App Inventor and YR Media (formerly Youth Radio) have teamed
+            up to present the Youth Mobile Power series. YR teens produce
+            stories highlighting how young people use their phones in
+            surprising and powerful ways.
+          </p>
         </div>
-      </div>
 
-      <div class="ode-noDialogProjectHrefDiv">
-        <a class="ode-noDialogProjectHref" href="/">Or click here to start a new project!</a>
+        <g:Button ui:field='goToYR' styleName='{style.ode-tutorialButton}'>Go to Tutorial</g:Button>
       </div>
+    </div>
+
+    <div class="ode-noDialogProjectHrefDiv">
+      <a class="ode-noDialogProjectHref">Or click here to start a new project!</a>
+    </div>
+
+    <div class='ode-closeDialogBoxDiv'>
+      <g:Button ui:field='closeDialogBox' styleName='{style.ode-closeDialogBox}'>Close</g:Button>
+    </div>
+      
   </g:HTMLPanel>
+
+    <ui:style>
+    .ode-tutorialButton {
+      border: 1px #8fc202 solid;
+      padding: 5px 8px;
+      border-radius: 5px;
+      color: #8fc202;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    .ode-tutorialButton:hover {
+      background-color: rgba(143, 194, 2, 0.616);
+      color: white;
+      cursor: pointer;
+    }
+
+    .ode-closeDialogBox {
+      border: 1px #837d7d solid;
+      width: 25%;
+      padding: 5px 8px;
+      border-radius: 5px;
+      color: #837d7d;
+      text-transform: uppercase;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .ode-closeDialogBox:hover {
+      background-color: rgba(131, 125, 125, 0.2);
+      cursor: pointer;
+    }
+  </ui:style>
 
 </ui:UiBinder>

@@ -586,4 +586,22 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/rectangle.png")
   ImageResource rectangle();
 
+  /**
+   * Codi Logo
+   */
+   @Source("com/google/appinventor/images/logo.png")
+   ImageResource logo();
+
+   /**
+   * Talk to Me Logo
+   */
+   @Source("com/google/appinventor/images/talkToMeLogo.png")
+   ImageResource talkToMeLogo();
+
+   /**
+   * YR Media Logo
+   */
+   @Source("com/google/appinventor/images/YRLogo.png")
+   ImageResource YRLogo();
+
 }
