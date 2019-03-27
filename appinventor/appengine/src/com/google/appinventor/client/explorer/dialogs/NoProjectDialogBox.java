@@ -3,6 +3,7 @@ package com.google.appinventor.client.explorer.dialogs;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -10,6 +11,7 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -25,6 +27,13 @@ public class NoProjectDialogBox extends DialogBox {
     @UiField Button goToPurr;
     @UiField Button goToTalk;
     @UiField Button goToYR;
+    @UiField Anchor noDialogProjectHref;
+
+    private class NewTutorialProject implements NewProjectCommand {
+        public void execute(Project project) {
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+    }
 
     public NoProjectDialogBox() {
         this.setStylePrimaryName("ode-noDialogDiv");
@@ -56,6 +65,12 @@ public class NoProjectDialogBox extends DialogBox {
             }
         });
 
+        noDialogProjectHref.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                openNewProject();
+            }
+        });
+
     }
 
     void closeDialogBox() {
@@ -64,40 +79,21 @@ public class NoProjectDialogBox extends DialogBox {
 
     void goToPurrTutorial() {
         this.hide();
-
-        NewProjectCommand callbackCommand = new NewProjectCommand() {
-            @Override
-            public void execute(Project project) {
-                Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-            }
-        };
-
-        new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", callbackCommand);
+        new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject());
     }
 
     void goToTalkTutorial() {
         this.hide();
-
-        NewProjectCommand callbackCommand = new NewProjectCommand() {
-            @Override
-            public void execute(Project project) {
-                Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-            }
-        };
-
-        TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc", callbackCommand);
+        TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc", new NewTutorialProject());
     }
 
     void goToYRTutorial() {
         this.hide();
+        TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc", new NewTutorialProject());
+    };
 
-        NewProjectCommand callbackCommand = new NewProjectCommand() {
-            @Override
-            public void execute(Project project) {
-                Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-            }
-        };
-
-        TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc", callbackCommand);
+    void openNewProject() {
+        this.hide();
+        new NewYoungAndroidProjectWizard(null).show();
     };
 }

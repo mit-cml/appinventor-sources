@@ -1288,7 +1288,6 @@ path.ode-SimpleMockMapFeature-selected {
 /* would pop more with a white border around their normal green border */
 
 /* Start of NoProjectsDialogBox. */
-
 .ode-noDialogDiv {
   box-shadow: 0px 0px 10px gray;
   min-height: 60%;
@@ -1298,27 +1297,29 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-noDialogDivHeader {
-  background-color: #8fc202;
+  background-color: #e6e6e6;
   height: 10%;
   padding: 10px;
+  border-bottom: 1px #e9e9e9 solid;
 }
 
 .ode-noDialogDivInnerHeader {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  width: 75%;
+  justify-content: space-between;
+  width: 65%;
 }
 
-#ode-codiLogo {
-  width: 120px;
-  height: 60px;
+#ode-codiLogoDiv {
+  max-width: 160px;
+  max-height: 90px;
+  margin-left: 20px;
 }
 
 .ode-headerTitle {
-  color: white;
+  color: #ffffff;
   text-transform: uppercase;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .ode-tutorialsTitle {
@@ -1327,12 +1328,12 @@ path.ode-SimpleMockMapFeature-selected {
   text-align: center;
   font-size: 14px;
   margin-top: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .ode-noDialogExampleDivs {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-evenly;
 }
 
@@ -1342,21 +1343,10 @@ path.ode-SimpleMockMapFeature-selected {
   align-items: center;
   justify-content: space-between;
   width: 25%;
-  min-height: 250px;
-  box-shadow: 0 0 2px gray;
+  min-height: 300px;
+  box-shadow: 0 0 2px #808080;
   border-radius: 15px;
   padding: 15px;
-}
-
-.ode-noDialogExampleUpperDiv {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.ode-noDialogExampleLowerDiv {
-  height: 100%;
-  /* border: 2px black solid; */
 }
 
 .ode-noDialogExampleTitle {
@@ -1365,36 +1355,23 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 13px;
 }
 
-.ode-noDialogExampleImages {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  width: 100%;
-}
-
 .ode-noDialogExampleImage {
-  width: 50px;
-  height: 75px;
-  border-radius: 7px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ode-noDialogExampleAbout {
   font-size: 12px;
 }
 
-.ode-tutorialButton {
-  border: 1px #8fc202 solid;
-  padding: 5px 8px;
-  border-radius: 5px;
-  color: #8fc202;
-  text-transform: uppercase;
-  font-size: 11px;
-}
-
-.ode-tutorialButton:hover {
-  background-color: #8fc2029d;
-  color: white;
-  cursor: pointer;
+.ode-noDialogUpperDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 90%;
 }
 
 .ode-noDialogProjectHrefDiv {
@@ -1403,21 +1380,11 @@ path.ode-SimpleMockMapFeature-selected {
   margin-top: 25px; 
 }
 
-/* .ode-noDialogExampleUpperDiv {
-  border: 2px black solid;
-} */
-
-.ode-noDialogProjectHref {
-  color: rgb(170, 170, 170);
-  text-transform: uppercase;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
+.ode-closeDialogBoxDiv {
+  width: 100%;
+  display: block;
+  margin-top: 25px;
   text-align: center;
-}
-
-.ode-noDialogProjectHref:hover {
-  color: #8fc202;
 }
 
 /* End of NoProjectsDialogBox. */

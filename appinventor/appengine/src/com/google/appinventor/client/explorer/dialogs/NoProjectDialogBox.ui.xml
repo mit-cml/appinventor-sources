@@ -68,7 +68,7 @@
     </div>
 
     <div class="ode-noDialogProjectHrefDiv">
-      <a class="ode-noDialogProjectHref">Or click here to start a new project!</a>
+      <g:Anchor ui:field='noDialogProjectHref' styleName="{style.ode-noDialogProjectHref}">Or click here to start a new project!</g:Anchor>
     </div>
 
     <div class='ode-closeDialogBoxDiv'>
@@ -105,7 +105,21 @@
     }
 
     .ode-closeDialogBox:hover {
-      background-color: rgba(131, 125, 125, 0.2);
+      background-color: rgba(131, 125, 125, 0.1);
+      cursor: pointer;
+    }
+
+    .ode-noDialogProjectHref {
+      color: black;
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .ode-noDialogProjectHref:hover {
+      color: #8fc202;
       cursor: pointer;
     }
   </ui:style>
