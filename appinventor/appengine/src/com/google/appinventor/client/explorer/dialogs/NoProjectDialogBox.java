@@ -23,18 +23,27 @@ public class NoProjectDialogBox extends DialogBox {
 
     interface NoProjectDialogBoxUiBinder extends UiBinder<Widget, NoProjectDialogBox> {};
 
-    @UiField Button closeDialogBox;
-    @UiField Button goToPurr;
-    @UiField Button goToTalk;
-    @UiField Button goToYR;
-    @UiField Anchor noDialogProjectHref;
-
+    /**
+    * Class to open a new project with the tutorial's contents when the user
+    * clicks on the "Go to Tutorial" button.
+    */
     private class NewTutorialProject implements NewProjectCommand {
         public void execute(Project project) {
             Ode.getInstance().openYoungAndroidProjectInDesigner(project);
         }
     }
 
+    @UiField Button closeDialogBox;
+    @UiField Button goToPurr;
+    @UiField Button goToTalk;
+    @UiField Button goToYR;
+    @UiField Anchor noDialogProjectHref;
+
+    /**
+    * Creates a new dialog box when the user has no current projects in their
+    * projects list. This will give them an option to open a tutorial project or
+    * create their own project.
+    */
     public NoProjectDialogBox() {
         this.setStylePrimaryName("ode-noDialogDiv");
         add(uiBinder.createAndBindUi(this));
