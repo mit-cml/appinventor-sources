@@ -856,6 +856,27 @@ public class Ode implements EntryPoint {
         topPanel.showUserEmail(user.getUserEmail());
       }
 
+      private boolean isSet(String str) {
+        return str != null && !str.equals("");
+      }
+
+      private String makeUri(String base) {
+        String[] params = new String[] { "locale", "repo", "galleryId" };
+        String separator = "?";
+        StringBuilder sb = new StringBuilder(base);
+        for (String param : params) {
+          String value = Window.Location.getParameter(param);
+          if (isSet(value)) {
+            sb.append(separator);
+            sb.append(param);
+            sb.append("=");
+            sb.append(value);
+            separator = "&";
+          }
+        }
+        return sb.toString();
+      }
+
       @Override
       public void onFailure(Throwable caught) {
         if (caught instanceof StatusCodeException) {
@@ -870,26 +891,10 @@ public class Ode implements EntryPoint {
               return;
             case Response.SC_FORBIDDEN:
               // forbidden => need tos accept
-              Window.open("/" + ServerLayout.YA_TOS_FORM, "_self", null);
+              Window.open(makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
               return;
             case Response.SC_PRECONDITION_FAILED:
-              String locale = Window.Location.getParameter("locale");
-              String repo = Window.Location.getParameter("repo");
-              galleryId = Window.Location.getParameter("galleryId");
-              String separator = "?";
-              String uri = "/login/";
-              if (locale != null && !locale.equals("")) {
-                uri += separator + "locale=" + locale;
-                separator = "&";
-              }
-              if (repo != null && !repo.equals("")) {
-                uri += separator + "repo=" + repo;
-                separator = "&";
-              }
-              if (galleryId != null && !galleryId.equals("")) {
-                uri += separator + "galleryId=" + galleryId;
-              }
-              Window.Location.replace(uri);
+              Window.Location.replace(makeUri("/login/"));
               return;           // likely not reached
           }
         }
