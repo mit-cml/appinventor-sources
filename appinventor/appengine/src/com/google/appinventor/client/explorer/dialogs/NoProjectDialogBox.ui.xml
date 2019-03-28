@@ -79,6 +79,7 @@
 
     <ui:style>
     .ode-tutorialButton {
+      background-color: white;
       border: 1px #8fc202 solid;
       padding: 5px 8px;
       border-radius: 5px;
@@ -94,6 +95,7 @@
     }
 
     .ode-closeDialogBox {
+      background-color: white;
       border: 1px #837d7d solid;
       width: 25%;
       padding: 5px 8px;
