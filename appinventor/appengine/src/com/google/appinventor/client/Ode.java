@@ -1661,7 +1661,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+        if (projectManager.projectCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
         }
