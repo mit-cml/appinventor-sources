@@ -10,8 +10,6 @@ import android.net.Uri;
 
 import android.os.Environment;
 
-import android.support.v4.content.FileProvider;
-
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.Form;
@@ -96,8 +94,7 @@ public class AssetFetcher {
             try {
               Form form = Form.getActiveForm();
               Intent intent = new Intent(Intent.ACTION_VIEW);
-              String packageName = form.$context().getPackageName();
-              Uri packageuri = FileProvider.getUriForFile(form.$context(), packageName + ".provider", assetFile);
+              Uri packageuri = NougatUtil.getPackageUri(form, assetFile);
               intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
               intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
               form.startActivity(intent);
