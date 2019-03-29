@@ -461,7 +461,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
           JSONArray jsonComponentBlocks = new JSONArray();
           JSONObject jsonSingleComp = new JSONObject();
           jsonSingleComp.put("type", new JSONString(cbcomp.getName()));
-          jsonBlocks.set(j, jsonSingleComp);
+          jsonBlocks.set(jsonBlocks.size(), jsonSingleComp);
           for (int k = 0; k < compItem.getChildCount(); ++k) {
             CheckBox cbprop = (CheckBox) compItem.getChild(k).getWidget();
             int blockCount = jsonComponentBlocks.size();
