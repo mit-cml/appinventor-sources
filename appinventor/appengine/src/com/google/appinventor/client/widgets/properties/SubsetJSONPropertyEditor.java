@@ -10,24 +10,33 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -37,19 +46,79 @@ import java.util.HashMap;
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         implements ProjectChangeListener {
 
+  private static SubsetJSONPropertyEditor INSTANCE;
   Tree componentTree;
   Tree blockTree;
 
   public SubsetJSONPropertyEditor() {
     super();
-    HorizontalPanel treePanel = new HorizontalPanel();
-    VerticalPanel componentPanel = new VerticalPanel();
-    final ScrollPanel componentScroll = new ScrollPanel();
-    VerticalPanel blockPanel = new VerticalPanel();
-    ScrollPanel blockScroll = new ScrollPanel();
     componentTree = new Tree();
     blockTree = new Tree();
+    DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
+    VerticalPanel componentPanel = new VerticalPanel();
+    VerticalPanel blockPanel = new VerticalPanel();
+    HorizontalPanel loadPanel = new HorizontalPanel();
+    HorizontalPanel savePanel = new HorizontalPanel();
+    VerticalPanel saveLoadPanel = new VerticalPanel();
+    final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
+    ScrollPanel blockScroll = new ScrollPanel(blockPanel);
 
+    buildTrees();
+
+    componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
+    componentPanel.add(componentTree);
+    blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
+    blockPanel.add(blockTree);
+
+    final FileUpload file = new FileUpload();
+    Button loadButton = new Button("Load from File"); // TODO: Need to internationalize
+    loadButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        loadJSONfile(file);
+      }
+    });
+    Button saveButton = new Button(MESSAGES.saveAsButton());
+    final TextBox saveFileName = new TextBox();
+    saveButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        saveFile(saveFileName);
+      }
+    });
+    loadPanel.add(file);
+    loadPanel.add(loadButton);
+    savePanel.add(saveFileName);
+    savePanel.add(saveButton);
+    saveLoadPanel.add(loadPanel);
+    saveLoadPanel.add(savePanel);
+    treePanel.addSouth(saveLoadPanel, 15 );
+    treePanel.addSouth(saveLoadPanel, 15 );
+    treePanel.addWest(componentScroll, 50);
+    treePanel.addEast(blockScroll, 50);
+    initAdditionalChoicePanel(treePanel);
+    INSTANCE = this;
+    exportJavaMethods();
+  }
+
+  @Override
+  protected void initAdditionalChoicePanel(Panel panel) {
+    super.initAdditionalChoicePanel(panel);
+    Button clearButton = new Button(MESSAGES.clearButton());
+    Button initializeButton = new Button("Match Project"); // TODO: Internationalize
+    clearButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        clearSelections();
+      }
+    });
+    HorizontalPanel buttonPanel = (HorizontalPanel)((VerticalPanel)popup.getWidget()).getWidget(1);
+    buttonPanel.add(clearButton);
+    buttonPanel.add(initializeButton);
+
+  }
+
+  private void buildTrees() {
     // Build tree of components and their related property/event/method blocks
     SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
@@ -136,16 +205,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       }
       blockTree.addItem(blockCatItem);
     }
-
-    componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
-    componentScroll.add(componentTree);
-    componentPanel.add(componentScroll);
-    blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
-    blockScroll.add(blockTree);
-    blockPanel.add(blockScroll);
-    treePanel.add(componentPanel);
-    treePanel.add(blockPanel);
-    initAdditionalChoicePanel(treePanel);
   }
 
   private void loadComponents(JSONObject jsonObj) {
@@ -156,52 +215,55 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       TreeItem componentCatItem = componentTree.getItem(i);
       CheckBox componentCatCb = (CheckBox)componentCatItem.getWidget();
       String fred = componentCatCb.getName().toUpperCase();
-      JSONArray jsonComponentCat = shownComponents.get(fred).isArray();
-      if (jsonComponentCat.size() > 0) {
-        componentCatCb.setValue(true, false);
-        HashMap<String, String> jsonComponentHash = new HashMap<String, String>();
-        for (int j = 0; j < jsonComponentCat.size(); ++j) {
-          JSONValue jsonComponentHashCat = jsonComponentCat.get(j);
-          if (jsonComponentHashCat != null) {
-            jsonComponentHash.put(jsonComponentHashCat.isObject().get("type").isString().stringValue(), "type");
+      if (shownComponents.containsKey(fred)) {
+        JSONArray jsonComponentCat = shownComponents.get(fred).isArray();
+        if (jsonComponentCat.size() > 0) {
+          componentCatCb.setValue(true, false);
+          HashMap<String, String> jsonComponentHash = new HashMap<String, String>();
+          for (int j = 0; j < jsonComponentCat.size(); ++j) {
+            JSONValue jsonComponentHashCat = jsonComponentCat.get(j);
+            if (jsonComponentHashCat != null) {
+              jsonComponentHash.put(jsonComponentHashCat.isObject().get("type").isString().stringValue(), "type");
+            }
           }
-        }
-        for (int j = 0; j < componentCatItem.getChildCount(); ++j) {
-          TreeItem componentItem = componentCatItem.getChild(j);
-          CheckBox componentCb = (CheckBox)componentItem.getWidget();
-          if (jsonComponentHash.get(componentCb.getName()) != null) {
-            componentCb.setValue(true, false);
-            JSONArray jsonComponentBlockProps = shownComponentBlocks.get(componentCb.getName()).isArray();
-            HashMap<String, String> componentPropHash = new HashMap<String, String>();
-            for (int k = 0; k < jsonComponentBlockProps.size(); ++k) {
-              JSONObject jsonComponentBlockType = jsonComponentBlockProps.get(k).isObject();
-              String componentBlockType = jsonComponentBlockType.get("type").isString().stringValue();
-              if (componentBlockType == "component_set_get") {
-                componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("property_name").isString().stringValue(), "PROP");
-              } else if (componentBlockType == "component_event") {
-                JSONValue barney = jsonComponentBlockType.get("mutatorNameToValue");
-                JSONValue pebbles = barney.isObject().get("event_name");
-                componentPropHash.put(pebbles.isString().stringValue(), "EVENT");
-              } else if (componentBlockType == "component_method") {
-                componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("method_name").isString().stringValue(), "METHOD");
+          for (int j = 0; j < componentCatItem.getChildCount(); ++j) {
+            TreeItem componentItem = componentCatItem.getChild(j);
+            CheckBox componentCb = (CheckBox) componentItem.getWidget();
+            if (jsonComponentHash.get(componentCb.getName()) != null) {
+              componentCb.setValue(true, false);
+              JSONArray jsonComponentBlockProps = shownComponentBlocks.get(componentCb.getName()).isArray();
+              HashMap<String, String> componentPropHash = new HashMap<String, String>();
+              for (int k = 0; k < jsonComponentBlockProps.size(); ++k) {
+                JSONObject jsonComponentBlockType = jsonComponentBlockProps.get(k).isObject();
+                String componentBlockType = jsonComponentBlockType.get("type").isString().stringValue();
+                if (componentBlockType == "component_set_get") {
+                  componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("property_name").isString().stringValue(), "PROP");
+                } else if (componentBlockType == "component_event") {
+                  JSONValue barney = jsonComponentBlockType.get("mutatorNameToValue");
+                  JSONValue pebbles = barney.isObject().get("event_name");
+                  componentPropHash.put(pebbles.isString().stringValue(), "EVENT");
+                } else if (componentBlockType == "component_method") {
+                  componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("method_name").isString().stringValue(), "METHOD");
+                }
               }
-            }
-            for (int k = 0; k < componentItem.getChildCount(); ++k) {
-              TreeItem componentPropItem = componentItem.getChild(k);
-              CheckBox componentPropCb = (CheckBox)componentPropItem.getWidget();
-              if (componentPropHash.get(componentPropCb.getText()) != null) {
-                componentPropCb.setValue(true, false);
-              } else {
-                componentPropCb.setValue(false, false);
+              for (int k = 0; k < componentItem.getChildCount(); ++k) {
+                TreeItem componentPropItem = componentItem.getChild(k);
+                CheckBox componentPropCb = (CheckBox) componentPropItem.getWidget();
+                if (componentPropHash.get(componentPropCb.getText()) != null) {
+                  componentPropCb.setValue(true, false);
+                } else {
+                  componentPropCb.setValue(false, false);
+                }
               }
-            }
 
-          } else {
-            componentCb.setValue(false, false);
-            toggleChildren(componentItem, false);
+            } else {
+              componentCb.setValue(false, false);
+              toggleChildren(componentItem, false);
+            }
           }
         }
-      } else {
+      }
+      else {
         componentCatCb.setValue(false, false);
         toggleChildren(componentCatItem, false);
       }
@@ -213,20 +275,22 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     for (int i = 0; i < blockTree.getItemCount(); ++i) {
       TreeItem catTree = blockTree.getItem(i);
       CheckBox catCb = (CheckBox)catTree.getWidget();
-      if (shownBlocks.get(catCb.getName()) != null) {
+      if (shownBlocks.containsKey(catCb.getName())) {
         JSONArray jsonBlockArr = shownBlocks.get(catCb.getName()).isArray();
-        catCb.setValue(true,false);
-        HashMap<String, String> blockHash = new HashMap<String, String>();
-        for (int j = 0; j< jsonBlockArr.size(); ++j) {
-          blockHash.put(jsonBlockArr.get(j).isObject().get("type").isString().stringValue(), "type");
-        }
-        for (int j = 0; j < catTree.getChildCount(); ++j) {
-          TreeItem blockTree = catTree.getChild(j);
-          CheckBox blockCb = (CheckBox)blockTree.getWidget();
-          if (blockHash.get(blockCb.getName()) != null) {
-            blockCb.setValue(true,false);
-          } else {
-            blockCb.setValue(false,false);
+        if (jsonBlockArr.size() > 0) {
+          catCb.setValue(true, false);
+          HashMap<String, String> blockHash = new HashMap<String, String>();
+          for (int j = 0; j < jsonBlockArr.size(); ++j) {
+            blockHash.put(jsonBlockArr.get(j).isObject().get("type").isString().stringValue(), "type");
+          }
+          for (int j = 0; j < catTree.getChildCount(); ++j) {
+            TreeItem blockTree = catTree.getChild(j);
+            CheckBox blockCb = (CheckBox) blockTree.getWidget();
+            if (blockHash.get(blockCb.getName()) != null) {
+              blockCb.setValue(true, false);
+            } else {
+              blockCb.setValue(false, false);
+            }
           }
         }
       } else {
@@ -236,6 +300,97 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     }
   }
 
+  private void clearSelections() {
+    for (int i = 0; i < componentTree.getItemCount(); ++i) {
+      TreeItem checkboxItem = componentTree.getItem(i);
+      ((CheckBox)checkboxItem.getWidget()).setValue(false, false);
+      toggleChildren(checkboxItem, false);
+    }
+    for (int i = 0; i < blockTree.getItemCount(); ++i) {
+      TreeItem checkboxItem = blockTree.getItem(i);
+      ((CheckBox)checkboxItem.getWidget()).setValue(false, false);
+      toggleChildren(checkboxItem, false);
+    }
+  }
+
+  private void loadJSONfile(FileUpload filePath) {
+    String uploadFilename = filePath.getFilename();
+    if (!uploadFilename.isEmpty()) {
+      final String filename = makeValidFilename(uploadFilename);
+      if (!TextValidators.isValidCharFilename(filename)) {
+        Window.alert(MESSAGES.malformedFilename());
+      } else if (!TextValidators.isValidLengthFilename(filename)) {
+        Window.alert(MESSAGES.malformedFilename());
+      } else if (!filename.endsWith(".json")){
+        Window.alert(MESSAGES.malformedFilenameTitle());
+      } else {
+        loadJSONfileNative(filePath.getElement());
+      }
+    }
+  }
+
+  public void callLoadComponents(String jsonStr) {
+    JSONObject jsonObj = JSONParser.parseStrict(jsonStr).isObject();
+    INSTANCE.loadComponents(jsonObj);
+  }
+
+  public void callLoadGlobalBlocks(String jsonStr) {
+    JSONObject jsonObj = JSONParser.parseStrict(jsonStr).isObject();
+    INSTANCE.loadGlobalBlocks(jsonObj);
+  }
+
+  public native void exportJavaMethods() /*-{
+    var that = this;
+    $wnd.load_components = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callLoadComponents(Ljava/lang/String;));
+    $wnd.load_global_blocks = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callLoadGlobalBlocks(Ljava/lang/String;));
+  }-*/;
+
+
+
+  private native void loadJSONfileNative(Element fileElement) /*-{
+    var selectedFile = fileElement.files[0];
+    if (selectedFile.type == "application/json") {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var loadedstr = reader.result;
+        var JSONStrObj = JSON.parse(loadedstr);
+        $wnd.load_components(loadedstr);
+        $wnd.load_global_blocks(loadedstr);
+      }
+      reader.readAsText(selectedFile);
+    } else {
+      alert("Please select a JSON file");
+    }
+  }-*/;
+
+  // TODO: This is a copy of a private method in FileUploadWizard. Seems like it should be moved someplace
+  // usable outside that one class
+  private String makeValidFilename(String uploadFilename) {
+    // Strip leading path off filename.
+    // We need to support both Unix ('/') and Windows ('\\') separators.
+    String filename = uploadFilename.substring(
+            Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    // We need to strip out whitespace from the filename.
+    filename = filename.replaceAll("\\s", "");
+    return filename;
+  }
+
+  private void saveFile(TextBox saveFileName) {
+    String jsonString = createJSONString();
+    if (jsonString.length() > 0) {
+      String saveFileText = saveFileName.getText();
+      if (saveFileText.length() > 0) {
+        if (!saveFileText.endsWith(".json")) {
+          saveFileText = saveFileText + ".json";
+        }
+        saveFileNative(saveFileText, jsonString);
+      } else {
+        Window.alert("Please supply a file name.");
+      }
+    } else {
+      Window.alert("Please select components and blocks.");
+    }
+  }
 
   @Override
   protected void openAdditionalChoiceDialog() {
@@ -245,8 +400,8 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       loadGlobalBlocks(jsonSet);
     }
     popup.setTitle(MESSAGES.blockSelectorBoxCaption());
-    popup.setWidth(300 + "px");
-    popup.setHeight(500 + "px");
+    popup.setWidth(400 + "px");
+    popup.setHeight(600 + "px");
     popup.show();
     popup.center();
 
@@ -286,6 +441,11 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
   // AdditionalChoicePropertyEditor implementation
   @Override
   protected boolean okAction() {
+    property.setValue(createJSONString());
+    return true;
+  }
+
+  private String createJSONString() {
     JSONObject jsonObj = new JSONObject();
     JSONObject jsonShownComponents = new JSONObject();
     JSONObject jsonShownBlockTypes = new JSONObject();
@@ -294,30 +454,30 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       JSONArray jsonBlocks = new JSONArray();
       TreeItem catItem = componentTree.getItem(i);
       CheckBox cbcat = (CheckBox)catItem.getWidget();
-        for (int j = 0; j < catItem.getChildCount(); ++j) {
-          TreeItem compItem = catItem.getChild(j);
-          CheckBox cbcomp = (CheckBox)compItem.getWidget();
-          if (cbcomp.getValue()) {
-            JSONArray jsonComponentBlocks = new JSONArray();
-            JSONObject jsonSingleComp = new JSONObject();
-            jsonSingleComp.put("type", new JSONString(cbcomp.getName()));
-            jsonBlocks.set(j, jsonSingleComp);
-            for (int k = 0; k < compItem.getChildCount(); ++k) {
-              CheckBox cbprop = (CheckBox) compItem.getChild(k).getWidget();
-              int blockCount = jsonComponentBlocks.size();
-              if (cbprop.getValue()) {
-                JsArray<JavaScriptObject> jsonConvert = convertToJSONObjects(cbprop.getName(), cbcomp.getText(), cbprop.getText(), cbprop.getFormValue());
-                for(int l = 0; l < jsonConvert.length(); ++l) {
-                  JSONObject jsonCompBlockObj = new JSONObject(jsonConvert.get(l));
-                  jsonComponentBlocks.set(blockCount++, jsonCompBlockObj);
-                }
+      for (int j = 0; j < catItem.getChildCount(); ++j) {
+        TreeItem compItem = catItem.getChild(j);
+        CheckBox cbcomp = (CheckBox)compItem.getWidget();
+        if (cbcomp.getValue()) {
+          JSONArray jsonComponentBlocks = new JSONArray();
+          JSONObject jsonSingleComp = new JSONObject();
+          jsonSingleComp.put("type", new JSONString(cbcomp.getName()));
+          jsonBlocks.set(j, jsonSingleComp);
+          for (int k = 0; k < compItem.getChildCount(); ++k) {
+            CheckBox cbprop = (CheckBox) compItem.getChild(k).getWidget();
+            int blockCount = jsonComponentBlocks.size();
+            if (cbprop.getValue()) {
+              JsArray<JavaScriptObject> jsonConvert = convertToJSONObjects(cbprop.getName(), cbcomp.getText(), cbprop.getText(), cbprop.getFormValue());
+              for(int l = 0; l < jsonConvert.length(); ++l) {
+                JSONObject jsonCompBlockObj = new JSONObject(jsonConvert.get(l));
+                jsonComponentBlocks.set(blockCount++, jsonCompBlockObj);
               }
             }
-            jsonComponents.put(cbcomp.getText(), jsonComponentBlocks);
           }
+          jsonComponents.put(cbcomp.getText(), jsonComponentBlocks);
         }
-        jsonShownComponents.put(cbcat.getName().toUpperCase(), jsonBlocks);
-        jsonShownBlockTypes.put("ComponentBlocks", jsonComponents);
+      }
+      jsonShownComponents.put(cbcat.getName().toUpperCase(), jsonBlocks);
+      jsonShownBlockTypes.put("ComponentBlocks", jsonComponents);
     }
     jsonObj.put("shownComponentTypes", jsonShownComponents);
 
@@ -341,9 +501,22 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     }
     jsonObj.put("shownBlockTypes", jsonShownBlockTypes);
 
-    property.setValue(jsonObj.toString());
-    return true;
+    if (jsonShownBlockTypes.size() > 1 || jsonComponents.size() > 0) {
+      return jsonObj.toString();
+    } else {
+      return "" ;
+    }
   }
+
+  private native void saveFileNative(String fileName, String jsonString) /*-{
+    var blob = new Blob([jsonString], {type: "text/plain;charset=utf-8"});
+    var anchor = document.createElement('a');
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.target = '_blank';
+    anchor.download = fileName;
+    anchor.click();
+  }-*/;
+
 
   private native JavaScriptObject getBlockDict()/*-{
     var blockCatDict = {};
@@ -419,16 +592,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         break;
     }
     return jsonObjList;
-  }-*/;
-
-  private native String getJSON(Document d)/*-{
-    var jsonDiv = d.getElementById("jsonStr");
-    return jsonDiv.innerText;
-  }-*/;
-
-  private native void setJSON(Document d, String s)/*-{
-    var jsonDiv = d.getElementById("jsonStr");
-    jsonDiv.innerText = s;
   }-*/;
 
   // ProjectChangeListener implementation
