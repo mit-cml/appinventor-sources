@@ -8,12 +8,14 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
+import android.content.Intent;
+
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 
 import android.os.Build;
@@ -38,7 +40,6 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
-import com.google.appinventor.components.runtime.util.PackageInstaller;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
@@ -237,9 +238,11 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     // t.start();
   }
 
-  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package")
+  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package via the installed browser")
   public void installURL(String url) {
-    PackageInstaller.doPackageInstall(form, url);
+    Uri uri = Uri.parse(url);
+    Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
+    form.startActivity(intent);
   }
 
   @SimpleFunction(description = "Really Exit the Application")
