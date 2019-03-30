@@ -1,0 +1,28 @@
+- help_text:
+    brief: |
+      Delete a Cloud Filestore snapshot.
+    description: |
+      Delete a Cloud Filestore snapshot.
+
+      This command can fail for the following reasons:
+        * The snapshot specified does not exist.
+        * The active account does not have permission to delete the given
+          snapshot.
+    examples: |
+      The following command deletes a snapshot with the name
+      'my-snapshot' in the region us-central1:
+
+        $ {command} my-snapshot --region=us-central1
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.filestore.resources:snapshot
+      help_text: |
+        Arguments and flags that specify the Cloud Filestore instance you want
+        to delete.
+
+  async:
+    collection: file.projects.locations.operations
+
+  request:
+    collection: file.projects.locations.snapshots

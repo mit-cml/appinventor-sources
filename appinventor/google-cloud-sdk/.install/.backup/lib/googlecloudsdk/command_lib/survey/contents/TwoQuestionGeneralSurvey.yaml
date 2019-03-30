@@ -1,0 +1,19 @@
+welcome: |-
+  Thank you for taking the survey. The response is anonymous and will only be used to improve our product.
+questions:
+- question_type: MultiChoiceQuestion
+  properties:
+    question: Overall, how satisfied are you with Cloud SDK?
+    instruction: "Please answer the question by typing the number that corresponds to your answer: "
+    instruction_on_rejection: "Answer is invalid, please type a number from 1 to 5: "
+    choices:
+    - Very satisfied
+    - Somewhat satisfied
+    - Neither satisfied nor dissatisfied
+    - Somewhat dissatisfied
+    - Very dissatisfied
+- question_type: FreeTextQuestion
+  properties:
+    question: |-
+      What are the reasons for the rating you gave? [Please DO NOT enter personal info]
+    instruction: "Please type your answer: "

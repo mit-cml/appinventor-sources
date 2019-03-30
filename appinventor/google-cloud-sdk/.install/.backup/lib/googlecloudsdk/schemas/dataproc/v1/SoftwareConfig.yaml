@@ -1,0 +1,56 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1 SoftwareConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  imageVersion:
+    description: |-
+      The version of software inside the cluster. It must be one of the
+      supported Cloud Dataproc Versions, such as "1.2" (including a subminor
+      version, such as "1.2.29"), or the "preview" version. If unspecified, it
+      defaults to the latest version.
+    type: string
+  optionalComponents:
+    description: The set of optional components to activate on the cluster.
+    type: array
+    items:
+      type: string
+      enum:
+      - ANACONDA
+      - HIVE_WEBHCAT
+      - JUPYTER
+      - KERBEROS
+      - PRESTO
+      - ZEPPELIN
+      - ZOOKEEPER
+  properties:
+    description: |-
+      The properties to set on daemon config files.Property keys are specified
+      in prefix:property format, such as core:fs.defaultFS. The following are
+      supported prefixes and their
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string

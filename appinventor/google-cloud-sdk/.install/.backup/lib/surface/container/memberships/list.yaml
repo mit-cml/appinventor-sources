@@ -1,0 +1,25 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: List memberships.
+    description: List memberships in Google Kubernetes Hub.
+
+  request:
+    collection: gkehub.projects.locations.global.memberships
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.container.memberships.util:SetParentCollection
+
+  arguments:
+    resource:
+      help_text: project containing memberships you want to list.
+      spec: !REF googlecloudsdk.command_lib.container.memberships.resources:project
+
+  response:
+    id_field: name
+
+  output:
+    format: |
+      table(
+         name.basename():label=NAME,
+         description:label=DESCRIPTION
+       )

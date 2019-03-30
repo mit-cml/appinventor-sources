@@ -1,0 +1,7 @@
+project:
+  name: project
+  collection: sourcerepo.projects
+  attributes:
+  - parameter_name: projectsId
+    attribute_name: project
+    help: The project name.

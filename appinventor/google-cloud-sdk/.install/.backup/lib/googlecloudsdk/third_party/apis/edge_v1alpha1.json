@@ -1,0 +1,1516 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "edge:v1alpha1",
+  "name": "edge",
+  "canonicalName": "Cloud IoT Edge Manager",
+  "version": "v1alpha1",
+  "revision": "0",
+  "title": "Edge API",
+  "description": "Provides Cloud IoT Edge devices control APIs\n",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/iot-edge/",
+  "protocol": "rest",
+  "rootUrl": "https://edge.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://edge.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloudiot": {
+          "description": "Register and manage devices in the Google Cloud IoT service"
+        },
+        "https://www.googleapis.com/auth/devstorage.read_write": {
+          "description": "Manage your data in Google Cloud Storage"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "InitAsEdgeDeviceRequest": {
+      "id": "InitAsEdgeDeviceRequest",
+      "description": "Request for 'InitAsEdgeDevice'.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "EdgeState": {
+      "id": "EdgeState",
+      "description": "Indicates the state of edge device and edge runtime.",
+      "type": "object",
+      "properties": {
+        "mlModelStates": {
+          "description": "Indicates the states of ML models running on the edge device.",
+          "type": "array",
+          "items": {
+            "$ref": "MlModelState"
+          }
+        },
+        "functionStates": {
+          "description": "Indicates the states of edge functions running on the edge device.",
+          "type": "array",
+          "items": {
+            "$ref": "FunctionState"
+          }
+        },
+        "containerStates": {
+          "description": "Indicates the states of edge containers running on the edge device.",
+          "type": "array",
+          "items": {
+            "$ref": "ContainerState"
+          }
+        },
+        "systemState": {
+          "description": "State of the edge device.",
+          "$ref": "SystemState"
+        }
+      }
+    },
+    "MlModelState": {
+      "id": "MlModelState",
+      "description": "Indicates the state of an ML model.",
+      "type": "object",
+      "properties": {
+        "mlModel": {
+          "description": "Name of the ML model. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the ML model, For example, `RUNNING` or `ERROR`.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Job is running.",
+            "An error occurred."
+          ],
+          "type": "string",
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "RUNNING",
+            "ERROR"
+          ]
+        },
+        "modelUri": {
+          "description": "URI that points to ML model file in Google Cloud Storage. This value should\nbe matched to the model_uri field of MlModel message.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version number of deployed ML model config. This value should be matched\nto the version of MlModel of the latest deployed config.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "FunctionState": {
+      "id": "FunctionState",
+      "description": "Indicates the state of an edge function.",
+      "type": "object",
+      "properties": {
+        "function": {
+          "description": "Name of the function. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/functions\/f1`.",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the function, For example, `RUNNING` or `ERROR`.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Job is running.",
+            "An error occurred."
+          ],
+          "type": "string",
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "RUNNING",
+            "ERROR"
+          ]
+        },
+        "dockerImageUri": {
+          "description": "URI of the deployed container in Google Container Registry. This value\nshould be matched to the docker_image_uri field of Function message.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version number of deployed edge function config. This value should be\nmatched to the version of Function of the latest deployed config.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ContainerState": {
+      "id": "ContainerState",
+      "description": "Indicates the state of an edge container.",
+      "type": "object",
+      "properties": {
+        "container": {
+          "description": "Name of the container. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/containers\/c1`.",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the container, For example, `RUNNING` or `ERROR`.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Job is running.",
+            "An error occurred."
+          ],
+          "type": "string",
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "RUNNING",
+            "ERROR"
+          ]
+        },
+        "dockerImageUri": {
+          "description": "URI of the deployed container in Google Container Registry. This value\nshould be matched to the docker_image_uri field of Container message.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version number of deployed edge container config. This value should be\nmatched to the version of Container of the latest deployed config.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SystemState": {
+      "id": "SystemState",
+      "description": "Indicates the state of the edge device.",
+      "type": "object",
+      "properties": {
+        "cpuArch": {
+          "description": "CPU architecture, For example, `x86_64` or `armv7`.",
+          "type": "string"
+        },
+        "totalMemoryMb": {
+          "description": "Number of total memory of the device in MB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "tpuInterfaces": {
+          "description": "Host TPU interfaces.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "PCI.",
+            "USB."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "TPU_INTERFACE_UNSPECIFIED",
+              "PCI",
+              "USB"
+            ]
+          }
+        }
+      }
+    },
+    "Function": {
+      "id": "Function",
+      "description": "Data used to control Edge Function related things in Edge service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the edge function. It must be unique among the edge functions\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/functions\/f1`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the edge function.",
+          "type": "string"
+        },
+        "dockerImageUri": {
+          "description": "URI that points to edge function in Google Container Registry.",
+          "type": "string"
+        },
+        "environmentVariables": {
+          "description": "The environment_variables key-value pairs will be set as environment\nvariable when the docker container is started.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "availableMemoryMb": {
+          "description": "Maximum memory size assigned to the docker container, in MB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "volumeBindings": {
+          "description": "List of volume bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "VolumeBinding"
+          }
+        },
+        "deviceBindings": {
+          "description": "List of device bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceBinding"
+          }
+        },
+        "inputTopics": {
+          "description": "List of input topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "outputTopics": {
+          "description": "List of output topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "functionType": {
+          "description": "Type of the function. A function may be invoked when a message is\npublished(on demand) or be running for stream processing.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "If a function is of type ON_DEMAND, the function will be invoked only when\na message is published to one of `input_topics`.",
+            "If a function is of type STREAM_PROCESSING, the function will be started\nwhen it is deployed for stream processing."
+          ],
+          "type": "string",
+          "enum": [
+            "FUNCTION_TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "STREAM_PROCESSING"
+          ]
+        },
+        "entryPoint": {
+          "description": "Name of the entry point function. The function will be called every time a\nmessage is published to one of the input_topics.",
+          "type": "string"
+        },
+        "requestTimeout": {
+          "description": "Timeout for one request to this edge function.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "updateTime": {
+          "description": "Output only. Last updated time of this function config. This is assigned by\nEdge Manager API.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "version": {
+          "description": "Output only. Version number of this function config. This is assigned by\nEdge Manager API.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "VolumeBinding": {
+      "id": "VolumeBinding",
+      "description": "Defines the rules to bind local(edge device) storage to sandboxed\nenvironment(edge function or container).",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Absolute path to the resource of the edge device to be bound.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Absolute path where the resource is bound in the function or container.",
+          "type": "string"
+        },
+        "readOnly": {
+          "description": "If true, sandboxed environment only can read the path.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DeviceBinding": {
+      "id": "DeviceBinding",
+      "description": "Defines the rules to bind local(edge device) resources to sandboxed\nenvironment(edge function or container).",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Absolute path to the resource of the edge device to be bound.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Absolute path where the resource is bound in the function or container.",
+          "type": "string"
+        },
+        "cgroupPermissions": {
+          "description": "cgroup permissions that will be given to the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "TopicInfo": {
+      "id": "TopicInfo",
+      "description": "Defines the mapping rule between the topic names in broker and topic names\nused in edge functions or containers.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "The actual topic string.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Optional name associated with this topic.",
+          "type": "string"
+        }
+      }
+    },
+    "ListFunctionsResponse": {
+      "id": "ListFunctionsResponse",
+      "description": "Response for 'ListFunctions'.",
+      "type": "object",
+      "properties": {
+        "functions": {
+          "description": "List of functions.",
+          "type": "array",
+          "items": {
+            "$ref": "Function"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token for next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDeployableFunctionsResponse": {
+      "id": "ListDeployableFunctionsResponse",
+      "description": "Response for 'ListDeployableFunctions'.",
+      "type": "object",
+      "properties": {
+        "deployableFunctions": {
+          "description": "List of deployable functions.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployableFunction"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token for next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "DeployableFunction": {
+      "id": "DeployableFunction",
+      "description": "Indicates an edge function in Google Container Registry.",
+      "type": "object",
+      "properties": {
+        "container": {
+          "description": "Output only. Name of the container.",
+          "type": "string"
+        },
+        "dockerImageUri": {
+          "description": "Output only. URI of the container.",
+          "type": "string"
+        }
+      }
+    },
+    "Container": {
+      "id": "Container",
+      "description": "Data used to control Container related things in Edge service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of edge container. It must be unique among the edge containers running\non the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/containers\/c1`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the edge container.",
+          "type": "string"
+        },
+        "dockerImageUri": {
+          "description": "URI that points to edge container in Google Container Registry.",
+          "type": "string"
+        },
+        "environmentVariables": {
+          "description": "The environment_variables key-value pairs will be set as environment\nvariable when the docker container is started.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "availableMemoryMb": {
+          "description": "Maximum memory size assigned to the docker container, in MB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "volumeBindings": {
+          "description": "List of volume bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "VolumeBinding"
+          }
+        },
+        "deviceBindings": {
+          "description": "List of device bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceBinding"
+          }
+        },
+        "inputTopics": {
+          "description": "List of input topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "outputTopics": {
+          "description": "List of output topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "autostart": {
+          "description": "If autostart is true, this container will be started right after the edge\nconfig is deployed to device.",
+          "type": "boolean"
+        },
+        "updateTime": {
+          "description": "Output only. Last updated time of this container config. This is assigned\nby Edge Manager API.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "version": {
+          "description": "Output only. Version of this container config. This is assigned by Edge\nManager API.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListContainersResponse": {
+      "id": "ListContainersResponse",
+      "description": "Response for 'ListContainers'.",
+      "type": "object",
+      "properties": {
+        "containers": {
+          "description": "The list of container.",
+          "type": "array",
+          "items": {
+            "$ref": "Container"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token for next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "MlModel": {
+      "id": "MlModel",
+      "description": "Data used to control MlModel related things in Edge service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the ML model. It must be unique among the ML models running on the\nsame edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the edge ml model.",
+          "type": "string"
+        },
+        "modelUri": {
+          "description": "URI that points to ML model file of Google Cloud Storage.",
+          "type": "string"
+        },
+        "numTfliteThreads": {
+          "description": "Number of threads that are spawned by TF Lite.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "inputTensors": {
+          "description": "List of input tensors.",
+          "type": "array",
+          "items": {
+            "$ref": "TensorInfo"
+          }
+        },
+        "outputTensors": {
+          "description": "List of output tensors.",
+          "type": "array",
+          "items": {
+            "$ref": "TensorInfo"
+          }
+        },
+        "inputTopics": {
+          "description": "List of input topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "outputTopics": {
+          "description": "List of output topics.",
+          "type": "array",
+          "items": {
+            "$ref": "TopicInfo"
+          }
+        },
+        "acceleratorType": {
+          "description": "Type of device accelerator",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "TPU, tensor processing unit.",
+            "GPU, graphics processing unit."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "TPU",
+            "GPU"
+          ]
+        },
+        "framework": {
+          "description": "Type of framework",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "TFlite framework",
+            "Scikit-learn framework"
+          ],
+          "type": "string",
+          "enum": [
+            "FRAMEWORK_UNSPECIFIED",
+            "TFLITE",
+            "SCIKIT_LEARN"
+          ]
+        },
+        "requestTimeout": {
+          "description": "Timeout for one request to this ML model.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "version": {
+          "description": "Output only. Version of this ML model config. This is assigned by Edge\nManager API.",
+          "type": "string",
+          "format": "int64"
+        },
+        "updateTime": {
+          "description": "Output only. Last updated time of this ml model config. This is assigned\nby Edge Manager API.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TensorInfo": {
+      "id": "TensorInfo",
+      "description": "Indicates the info of input or output tensors of ML models.",
+      "type": "object",
+      "properties": {
+        "tensorName": {
+          "description": "Name of the tensor.",
+          "type": "string"
+        },
+        "dimensions": {
+          "description": "Dimension description of the tensor.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "inferenceType": {
+          "description": "Type of the tensor.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "Quantized unsigned 8bit int.",
+            "32bit float."
+          ],
+          "type": "string",
+          "enum": [
+            "ML_INFERENCE_TYPE_UNSPECIFIED",
+            "QUANTIZED_UINT_8",
+            "FLOAT_32"
+          ]
+        },
+        "index": {
+          "description": "Index of the tensor in the input or output layer.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListMlModelsResponse": {
+      "id": "ListMlModelsResponse",
+      "description": "Response for 'ListMlModels'.",
+      "type": "object",
+      "properties": {
+        "mlModels": {
+          "description": "The list of ML Models.",
+          "type": "array",
+          "items": {
+            "$ref": "MlModel"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token for next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "TopicBridgingTable": {
+      "id": "TopicBridgingTable",
+      "description": "Describes the rules to rewrite the messages. Rewriting a message means\nimporting\/exporting the messages between edge device and cloud or publishing\nthe same message with new topic name within the edge device.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the topic bridging table resource.",
+          "type": "string"
+        },
+        "rules": {
+          "description": "List of topic bridging rules.",
+          "type": "array",
+          "items": {
+            "$ref": "Rule"
+          }
+        },
+        "version": {
+          "description": "Output only. Version of this topic bridging table. This is assigned by Edge\nManager API.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "Rule": {
+      "id": "Rule",
+      "description": "Defines rules between topics.",
+      "type": "object",
+      "properties": {
+        "sourceDomain": {
+          "description": "The source of the messages to be rewritten.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "Cloud",
+            "Edge"
+          ],
+          "type": "string",
+          "enum": [
+            "DOMAIN_UNSPECIFIED",
+            "CLOUD",
+            "EDGE"
+          ]
+        },
+        "sourceFilter": {
+          "description": "Indicates the topic filter of the messages to apply this rule.",
+          "type": "string"
+        },
+        "operation": {
+          "description": "Indicates which action will be applied. If FORWARD, the messages will be\nimported from cloud to edge or exported from edge to cloud. If REWRITE,\nthe messages will be republished within the edge device with new topic\nname, that is defined in `rewrite_topic_name`.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "Forward the topic without changing the topic.",
+            "Rewrite the message to the specified destination topic."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_UNSPECIFIED",
+            "FORWARD",
+            "REWRITE"
+          ]
+        },
+        "destinationDomain": {
+          "description": "The destination of the messages to be republished.",
+          "enumDescriptions": [
+            "Default value, used when its value unspecified.",
+            "Cloud",
+            "Edge"
+          ],
+          "type": "string",
+          "enum": [
+            "DOMAIN_UNSPECIFIED",
+            "CLOUD",
+            "EDGE"
+          ]
+        },
+        "rewriteTopicName": {
+          "description": "The new topic name to be rewritten if the operation is REWRITE. Will be\nignored if operation is FORWARD.",
+          "type": "string"
+        }
+      }
+    },
+    "UpdateTopicBridgingTableRequest": {
+      "id": "UpdateTopicBridgingTableRequest",
+      "type": "object",
+      "properties": {
+        "topicBridgingTable": {
+          "description": "The topic bridging table to be updated. The `name` field must indicate the\npath of the resource, which is same as device name. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0`",
+          "$ref": "TopicBridgingTable"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "registries": {
+              "resources": {
+                "devices": {
+                  "methods": {
+                    "init": {
+                      "id": "edge.projects.locations.registries.devices.init",
+                      "path": "v1alpha1/{+name}:init",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:init",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The device resource name of Cloud IoT Device.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "InitAsEdgeDeviceRequest"
+                      },
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot",
+                        "https://www.googleapis.com/auth/devstorage.read_write"
+                      ],
+                      "description": "Initializes an existing device as an edge device."
+                    },
+                    "getState": {
+                      "id": "edge.projects.locations.registries.devices.getState",
+                      "path": "v1alpha1/{+name}/state",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/state",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The device resource name of Cloud IoT Device.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "fieldMask": {
+                          "description": "Mask to control the fields to retrieve. If empty, all fileds are retrieved.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "EdgeState"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot",
+                        "https://www.googleapis.com/auth/devstorage.read_write"
+                      ],
+                      "description": "Returns the latest user state of the device."
+                    },
+                    "getTopicBridgingTable": {
+                      "id": "edge.projects.locations.registries.devices.getTopicBridgingTable",
+                      "path": "v1alpha1/{+name}/topicBridgingTable",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/topicBridgingTable",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The topic bridging table resource name of Cloud IoT Device.\nIt should be same as device name. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "TopicBridgingTable"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot",
+                        "https://www.googleapis.com/auth/devstorage.read_write"
+                      ],
+                      "description": "Returns the entire topic bridging table of an edge device. Topic bridging\ntable is singleton per device."
+                    },
+                    "updateTopicBridgingTable": {
+                      "id": "edge.projects.locations.registries.devices.updateTopicBridgingTable",
+                      "path": "v1alpha1/{+name}/topicBridgingTable",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/topicBridgingTable",
+                      "httpMethod": "PUT",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the topic bridging table resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "TopicBridgingTable"
+                      },
+                      "response": {
+                        "$ref": "TopicBridgingTable"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot",
+                        "https://www.googleapis.com/auth/devstorage.read_write"
+                      ],
+                      "description": "Updates topic bridging table of an edge device. Partial update for topic\nbridging table is not supported."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "functions": {
+                      "methods": {
+                        "create": {
+                          "id": "edge.projects.locations.registries.devices.functions.create",
+                          "path": "v1alpha1/{+parent}/functions",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/functions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which function will be\ncreated.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "Function"
+                          },
+                          "response": {
+                            "$ref": "Function"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Creates a new edge function."
+                        },
+                        "patch": {
+                          "id": "edge.projects.locations.registries.devices.functions.patch",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/functions/{functionsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Name of the edge function. It must be unique among the edge functions\nrunning on the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/functions\/f1`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/functions\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Mask to control the fields to update. If empty, all fileds are updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Function"
+                          },
+                          "response": {
+                            "$ref": "Function"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Updates an existing function."
+                        },
+                        "delete": {
+                          "id": "edge.projects.locations.registries.devices.functions.delete",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/functions/{functionsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The function resource name of Cloud IoT Device.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/functions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Deletes a function. This method is idempotent in effect, but it will result\nin a `google.rpc.Code.NOT_FOUND` error for subsequent requests after the\nfirst successful deletion."
+                        },
+                        "list": {
+                          "id": "edge.projects.locations.registries.devices.functions.list",
+                          "path": "v1alpha1/{+parent}/functions",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/functions",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which functions will be\ndisplayed.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "fieldMask": {
+                              "description": "Mask to control the fields to retrieve. If empty, all fileds are retrieved.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Pagination token for next page of results.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListFunctionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the list of functions running on the device."
+                        },
+                        "get": {
+                          "id": "edge.projects.locations.registries.devices.functions.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/functions/{functionsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The function resource name of Cloud IoT Device.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/functions\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Function"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the detail of the specified function."
+                        }
+                      }
+                    },
+                    "containers": {
+                      "methods": {
+                        "create": {
+                          "id": "edge.projects.locations.registries.devices.containers.create",
+                          "path": "v1alpha1/{+parent}/containers",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/containers",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which container will be\ncreated.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "Container"
+                          },
+                          "response": {
+                            "$ref": "Container"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Creates a new edge container."
+                        },
+                        "patch": {
+                          "id": "edge.projects.locations.registries.devices.containers.patch",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/containers/{containersId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Name of edge container. It must be unique among the edge containers running\non the same edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/containers\/c1`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/containers\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Mask to control the fields to update. If empty, all fileds are updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Container"
+                          },
+                          "response": {
+                            "$ref": "Container"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Updates an existing new user container."
+                        },
+                        "delete": {
+                          "id": "edge.projects.locations.registries.devices.containers.delete",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/containers/{containersId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource name of Cloud IoT Device.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/containers\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Deletes a container. This method is idempotent in effect, but it will\nresult in a `google.rpc.Code.NOT_FOUND` error for subsequent requests after\nthe first successful deletion."
+                        },
+                        "list": {
+                          "id": "edge.projects.locations.registries.devices.containers.list",
+                          "path": "v1alpha1/{+parent}/containers",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/containers",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which containers will be\ndisplayed.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "fieldMask": {
+                              "description": "Mask to control the fields to retrieve. If empty, all fileds are retrieved.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Pagination token for next page of results.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListContainersResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the list of containers registered on the device."
+                        },
+                        "get": {
+                          "id": "edge.projects.locations.registries.devices.containers.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/containers/{containersId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The container resource name of Cloud IoT Device.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/containers\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Container"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the detail of the container."
+                        }
+                      }
+                    },
+                    "mlModels": {
+                      "methods": {
+                        "create": {
+                          "id": "edge.projects.locations.registries.devices.mlModels.create",
+                          "path": "v1alpha1/{+parent}/mlModels",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/mlModels",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which ML model will be\ncreated.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "MlModel"
+                          },
+                          "response": {
+                            "$ref": "MlModel"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Creates a new ML model. An ML model is a TensorFlow Lite model, that will\nbe deployed and run on edge devices."
+                        },
+                        "patch": {
+                          "id": "edge.projects.locations.registries.devices.mlModels.patch",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/mlModels/{mlModelsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Name of the ML model. It must be unique among the ML models running on the\nsame edge device. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0\/mlModels\/m1`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/mlModels\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Mask to control the fields to update. If empty, all fileds are updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "MlModel"
+                          },
+                          "response": {
+                            "$ref": "MlModel"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Updates an existing ML Model."
+                        },
+                        "delete": {
+                          "id": "edge.projects.locations.registries.devices.mlModels.delete",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/mlModels/{mlModelsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The ML model resource name of Cloud IoT Device which will be deleted.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/mlModels\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Deletes an existing ML Model. This method is idempotent in effect, but it\nwill result in a `google.rpc.Code.NOT_FOUND` error for subsequent requests\nafter the first successful deletion."
+                        },
+                        "list": {
+                          "id": "edge.projects.locations.registries.devices.mlModels.list",
+                          "path": "v1alpha1/{+parent}/mlModels",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/mlModels",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device resource name of Cloud IoT Device in which ML Models will be\ndisplayed.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "fieldMask": {
+                              "description": "Mask to control the fields to retrieve. If empty, all fileds are retrieved.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Pagination token for next page of results.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListMlModelsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the list of ML models attached to the device."
+                        },
+                        "get": {
+                          "id": "edge.projects.locations.registries.devices.mlModels.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/mlModels/{mlModelsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The container resource name of Cloud IoT Device.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+\/mlModels\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "MlModel"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot",
+                            "https://www.googleapis.com/auth/devstorage.read_write"
+                          ],
+                          "description": "Returns the detail of an ML model."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deployableFunctions": {
+          "methods": {
+            "list": {
+              "id": "edge.projects.deployableFunctions.list",
+              "path": "v1alpha1/{+parent}/deployableFunctions",
+              "flatPath": "v1alpha1/projects/{projectsId}/deployableFunctions",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project name. The list of deployable functions in given project will be\nreturned.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Pagination token for next page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListDeployableFunctionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloudiot",
+                "https://www.googleapis.com/auth/devstorage.read_write"
+              ],
+              "description": "Returns the list of edge functions in Google Container Registry."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

@@ -1,0 +1,53 @@
+load("//devtools/copybara/library/workflow", "exclude_paths", "git_to_third_party")
+
+destination_excludes = [
+    "google3/third_party/py/requests/copy.bara.sky",
+    "google3/third_party/py/requests/BUILD",
+    "google3/third_party/py/requests/OWNERS",
+    "google3/third_party/py/requests/METADATA",
+    "google3/third_party/py/requests/google/**",
+    "google3/third_party/py/requests/patches/**",
+    "google3/third_party/py/requests/cacert.pem",
+    "google3/third_party/py/requests/packages/__init__.py",
+]
+
+origin_files = glob(
+    include = [
+        "requests/**",
+        "LICENSE",
+        "README.md",
+    ],
+    exclude = [
+        "requests/packages.py",
+        "requests/cacert.pem",
+    ],
+)
+
+destination_files = glob(
+    include = ["google3/third_party/py/requests/**"],
+    exclude = destination_excludes,
+)
+
+transformations = [
+    core.move("", "google3/third_party/py/requests"),
+    core.move(
+        "google3/third_party/py/requests/requests",
+        "google3/third_party/py/requests",
+    ),
+    metadata.squash_notes(
+        prefix = "Import of requests from Github.\n\n",
+    ),
+]
+
+core.workflow(
+    authoring = authoring.pass_thru("kadircet <kadircet@google.com>"),
+    name = "default",
+    origin = git.github_origin(
+        url = "https://github.com/requests/requests",
+        ref = "6cfbe1aedd56f8c2f9ff8b968efe65b22669795b",
+    ),
+    origin_files = origin_files,
+    destination = piper.destination(),
+    destination_files = destination_files,
+    transformations = transformations,
+)

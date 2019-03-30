@@ -1,0 +1,146 @@
+<!ELEMENT appengine-web-app (application?, version?, source-language?, server?,
+                             instance-class?, automatic-scaling?,
+                             manual-scaling?, basic-scaling?, static-files?,
+                             resource-files?, system-properties?, vm-settings?,
+                             env-variables?, ssl-enabled?, sessions-enabled?,
+                             async-session-persistence?, user-permissions?,
+                             public-root?, inbound-services?, env?,
+                             precompilation-enabled?, admin-console?,
+                             static-error-handlers?, warmup-requests-enabled?,
+                             threadsafe?, servers?, code-lock?, vm?,
+                             class-loader-config?, url-stream-handler?,
+                             use-google-connector-j?, vm-health-check?)>
+<!ATTLIST appengine-web-app
+          xmlns CDATA #REQUIRED>
+<!ELEMENT application (#PCDATA)>
+<!ELEMENT version (#PCDATA)>
+<!ELEMENT source-language (#PCDATA)>
+<!ELEMENT module (#PCDATA)>
+<!ELEMENT instance-class (#PCDATA)>
+<!ELEMENT automatic-scaling (min-pending-latency?, max-pending-latency?,
+                              min-idle-instances?, max-idle-instances?,
+                              min-num-instances?, max-num-instances?,
+                              cool-down-period-sec?, cpu-utilization?,
+                              min-instances?, max-instances?,
+                              target-cpu-utilization?,
+                              target-throughput-utilization?)>
+<!ELEMENT min-pending-latency (#PCDATA)>
+<!ELEMENT max-pending-latency (#PCDATA)>
+<!ELEMENT min-idle-instances (#PCDATA)>
+<!ELEMENT max-idle-instances (#PCDATA)>
+<!ELEMENT min-instances (#PCDATA)>
+<!ELEMENT max-instances (#PCDATA)>
+<!ELEMENT target-cpu-utilization (#PCDATA)>
+<!ELEMENT target-throughput-utilization (#PCDATA)>
+<!ELEMENT min-num-instances (#PCDATA)>
+<!ELEMENT max-num-instances (#PCDATA)>
+<!ELEMENT cool-down-period-sec (#PCDATA)>
+<!ELEMENT cpu-utilization (target-utilization?, aggregation-window-length-sec?)>
+<!ELEMENT target-utilization (#PCDATA)>
+<!ELEMENT aggregation-window-length-sec (#PCDATA)>
+<!ELEMENT vm-health-check (enable-health-check?, check-interval-sec?,
+                           timeout-sec?, unhealthy-threshold?,
+                           healthy-threshold?, restart-threshold?, host?)>
+<!ELEMENT enable-health-check (#PCDATA)>
+<!ELEMENT check-interval-sec (#PCDATA)>
+<!ELEMENT timeout-sec (#PCDATA)>
+<!ELEMENT unhealthy-threshold (#PCDATA)>
+<!ELEMENT healthy-threshold (#PCDATA)>
+<!ELEMENT restart-threshold (#PCDATA)>
+<!ELEMENT host (#PCDATA)>
+<!ELEMENT manual-scaling (instances)>
+<!ELEMENT instances (#PCDATA)>
+<!ELEMENT basic-scaling (max-instances, idle-timeout?)>
+<!ELEMENT max-instances (#PCDATA)>
+<!ELEMENT idle-timeout (#PCDATA)>
+<!ELEMENT static-files (include|exclude)*>
+<!ELEMENT include (http-header)*>
+<!ATTLIST include
+          path CDATA #REQUIRED
+          expiration CDATA #OPTIONAL>
+<!ELEMENT http-header (#PCDATA)>
+<!ATTLIST http-header
+          name CDATA #REQUIRED
+          value CDATA #REQUIRED>
+<!ELEMENT exclude EMPTY>
+<!ATTLIST exclude
+          path CDATA #REQUIRED>
+<!ELEMENT resource-files (include|exclude)*>
+<!ELEMENT system-properties (property)*>
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property
+          name CDATA #REQUIRED
+          value CDATA #REQUIRED>
+<!ELEMENT vm-settings (setting)*>
+<!ELEMENT setting (#PCDATA)>
+<!ATTLIST setting
+          name CDATA #REQUIRED
+          value CDATA #REQUIRED>
+<!ELEMENT env-variables (env-var)*>
+<!ELEMENT env-var (#PCDATA)>
+<!ATTLIST env-var
+          name CDATA #REQUIRED
+          value CDATA #REQUIRED>
+<!ELEMENT ssl-enabled (#PCDATA)>
+<!ELEMENT sessions-enabled (#PCDATA)>
+<!ELEMENT async-session-persistence (#PCDATA)>
+<!ATTLIST async-session-persistence
+          enabled CDATA #REQUIRED
+          queue-name CDATA #OPTIONAL>
+<!ELEMENT precompilation-enabled (#PCDATA)>
+<!ELEMENT user-permissions (permission)*>
+<!ELEMENT permission (#PCDATA)>
+<!ATTLIST permission
+          class CDATA #REQUIRED
+          name CDATA #REQUIRED
+          actions CDATA #OPTIONAL>
+<!ELEMENT public-root (#PCDATA)>
+<!ELEMENT inbound-services (service)*>
+<!ELEMENT service (#PCDATA)>
+<!ELEMENT admin-console (page)*>
+<!ELEMENT page (#PCDATA)>
+<!ATTLIST page
+          name CDATA #REQUIRED
+          url CDATA #REQUIRED>
+<!ELEMENT static-error-handlers (handler)*>
+<!ELEMENT handler (#PCDATA)>
+<!ATTLIST handler
+          file CDATA #REQUIRED
+          error-code CDATA #OPTIONAL>
+<!ELEMENT warmup-requests-enabled (#PCDATA)>
+<!ELEMENT threadsafe (#PCDATA)>
+<!ELEMENT code-lock (#PCDATA)>
+<!ELEMENT vm (#PCDATA)>
+<!ELEMENT env (#PCDATA)>
+<!ELEMENT servers (server|backend|frontend|job|worker)*>
+<!ELEMENT server (instances|memory|resident|access|threads)*>
+<!ATTLIST server
+          name CDATA #REQUIRED>
+<!ELEMENT backend (instances|memory|resident|access|threads)*>
+<!ATTLIST backend
+          name CDATA #REQUIRED>
+<!ELEMENT frontend (instances|memory|resident|access|threads)*>
+<!ATTLIST frontend
+          name CDATA #REQUIRED>
+<!ELEMENT job (instances|memory|resident|access|threads)*>
+<!ATTLIST job
+          name CDATA #REQUIRED>
+<!ELEMENT worker (instances|memory|resident|access|threads)*>
+<!ATTLIST worker
+          name CDATA #REQUIRED>
+<!ELEMENT memory (#PCDATA)>
+<!ELEMENT resident (#PCDATA)>
+<!ELEMENT access (#PCDATA)>
+<!ELEMENT threads (#PCDATA)>
+<!ELEMENT url-blacklist (#PCDATA)>
+<!ELEMENT domain-to-rewrite (#PCDATA)>
+<!ELEMENT enabled-rewriter (#PCDATA)>
+<!ELEMENT disabled-rewriter (#PCDATA)>
+<!ELEMENT class-loader-config (priority-specifier)*>
+<!ELEMENT priority-specifier (EMPTY)*>
+<!ATTLIST priority-specifier
+          filename CDATA #REQUIRED
+          priority CDATA #OPTIONAL>
+<!ELEMENT url-stream-handler (#PCDATA)>
+<!ELEMENT use-google-connector-j (#PCDATA)>
+

@@ -1,0 +1,27 @@
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "webob"
+description: "Python HTTP request and response objects for WSGI."
+
+third_party {
+  url {
+    type: ARCHIVE
+    value: "http://pythonpaste.org/webob/"
+  }
+  version: "0.9"
+  last_upgrade_date: {
+    year: 2008
+    month: 3
+    day: 14
+  }
+
+  multiple_versions {
+    type: PERMANENT
+    approval: "See //depot/google3/third_party/apphosting/python/MULTIPLE_VERSIONS_OK"
+  }
+
+  # NOTE: The "local_modifications" field is entirely optional and may be
+  # removed if it's not useful for the package.
+  #     See go/thirdparty-metadata-local-modifications
+  local_modifications: "http://google3/third_party/apphosting/python/webob/v0_9_vendor/README.google?cl=6703943"
+}

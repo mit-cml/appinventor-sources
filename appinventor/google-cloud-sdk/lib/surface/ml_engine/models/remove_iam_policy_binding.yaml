@@ -1,0 +1,51 @@
+release_tracks: [ALPHA, BETA, GA]
+help_text:
+  brief: Remove IAM policy binding from a ML model.
+  description: |
+    Remove an IAM policy binding from a ML model.
+
+  examples: |
+    To Remove an IAM policy binding for the role of 'roles/editor' for the user 'test-user@gmail.com'
+    with model 'my_model', run:
+
+      $ {command} my_model --member='user:test-user@gmail.com' --role='roles/editor'
+
+    See https://cloud.google.com/iam/docs/managing-policies for details of
+    policy role and member types.
+
+request:
+  collection: ml.projects.models
+
+arguments:
+  resource:
+    help_text: The model for which to remove IAM policy binding from.
+    spec: !REF googlecloudsdk.command_lib.ml_engine.resources:model
+
+iam:
+  set_iam_policy_request_path: googleIamV1SetIamPolicyRequest
+  message_type_overrides:
+    policy: GoogleIamV1Policy
+    set_iam_policy_request: MlProjectsModelsSetIamPolicyRequest
+  ALPHA:
+    enable_condition: true
+
+ALPHA:
+  help_text:
+    brief: Remove IAM policy binding from a ML model.
+    description: |
+      Remove an IAM policy binding from the IAM policy of a ML model. One binding consists of a member,
+      a role, and an optional condition.
+
+    examples: |
+      To remove an IAM policy binding for the role of 'roles/editor' for the user 'test-user@gmail.com'
+      with model 'my_model', run:
+
+        $ {command} my_model --member='user:test-user@gmail.com' --role='roles/editor'
+
+      To remove an IAM policy binding which expires at the end of the year 2018 for the role of
+      'roles/ml.admin' and the user 'test-user@gmail.com' with model 'my_model', run:
+
+        $ {command} my_model --member='user:test-user@gmail.com' --role='roles/ml.admin' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
+
+      See https://cloud.google.com/iam/docs/managing-policies for details of
+      policy role and member types.

@@ -1,0 +1,17 @@
+- help_text:
+    brief: Delete a notification channel.
+    description: Delete a notification channel.
+
+  request:
+    collection: monitoring.projects.notificationChannels
+
+  arguments:
+    resource:
+      help_text: The notification channel to delete.
+      spec: !REF googlecloudsdk.command_lib.monitoring.resources:notification_channel
+    params:
+    - arg_name: force
+      api_field: force
+      action: store_true
+      help_text: If true, the notification channel will be deleted regardless of its
+        use in alerting policies (the policies will be updated to remove the channel).

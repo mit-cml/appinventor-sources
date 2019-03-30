@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client;
 
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -91,6 +92,10 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
+  private static final String WIDGET_NAME_DYSLEXIC = "Dyslexic";
+  private static final String WIDGET_NAME_DYSLEXIC_FONT = "dyslexicFont";
+  private static final String WIDGET_NAME_REGULAR = "Regular";
+  private static final String WIDGET_NAME_REGULAR_FONT = "regularFont";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_LIBRARY = "Library";
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
@@ -125,6 +130,8 @@ public class TopToolbar extends Composite {
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
   public DropDownButton adminDropDown;
+  public DropDownButton dyslexicDropDown;
+
 
   private boolean isReadOnly;
   /**
@@ -144,9 +151,9 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +--------------------------------------------------+
+     * +---------------------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ | Dyslexic ▾ |
+     * +---------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -156,6 +163,8 @@ public class TopToolbar extends Composite {
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
+    List<DropDownItem> dyslexicItems = Lists.newArrayList();
+
 
     // Should the UI be in read only mode?
     isReadOnly = Ode.getInstance().isReadOnly();
@@ -298,6 +307,15 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
+    //Dyslexic ->{Dyslexic Font}
+   dyslexicItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.dyslexicFont(),
+   new changeFontDys()));
+
+   dyslexicItems.add(new DropDownItem(WIDGET_NAME_REGULAR_FONT, MESSAGES.regularFont(),
+   new changeFontRob()));
+
+
+
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
         fileItems, false);
@@ -307,20 +325,27 @@ public class TopToolbar extends Composite {
         buildItems, false);
     helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpTabName(),
         helpItems, false);
+    dyslexicDropDown = new DropDownButton(WIDGET_NAME_DYSLEXIC, MESSAGES.dyslexicTabName(),
+        dyslexicItems, false);
+
 
     // Set the DropDown Styles
     fileDropDown.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
+    dyslexicDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
+    
+    toolbar.add(dyslexicDropDown); 
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
     toolbar.add(helpDropDown);
+
 
     //Only if logged in as an admin, add the Admin Button
     if (Ode.getInstance().getUser().getIsAdmin()) {
@@ -344,6 +369,57 @@ public class TopToolbar extends Composite {
   // -----------------------------
   // List of Commands for use in Drop-Down Menus
   // -----------------------------
+
+
+
+
+
+
+
+
+
+
+
+ private static class changeFontDys implements Command {
+    @Override
+    public void execute() {
+      RootPanel.get().addStyleName("gwt-bodyOdf");
+      RootPanel.get().removeStyleName("gwt-bodyRob");
+    // RootPanel.get().getStyle().setBackgroundColor("black"); 
+    // RootPanel.get().removeStyleName("body-Roboto");
+     //RootPanel.get().addStyleName(".gwt-body");
+      
+     
+    }
+  }
+
+private static class changeFontRob implements Command {
+    @Override
+    public void execute() {
+      RootPanel.get().addStyleName("gwt-bodyRob");
+      RootPanel.get().removeStyleName("gwt-bodyOdf");
+    // RootPanel.get().getStyle().setBackgroundColor("black"); 
+    // RootPanel.get().removeStyleName("body-Roboto");
+     //RootPanel.get().addStyleName(".gwt-body");
+      
+     
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   private static class NewAction implements Command {
     @Override
@@ -1098,3 +1174,4 @@ public class TopToolbar extends Composite {
   }
 
 }
+

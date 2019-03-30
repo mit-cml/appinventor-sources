@@ -1,0 +1,17 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Show details about the latest configuration for a device.
+    description: Show details about the latest configuration for a device.
+
+  request:
+    collection: cloudiot.projects.locations.registries.devices
+
+  response:
+    result_attribute: config
+
+  arguments:
+    resource:
+      help_text: The device you want to show the configuration for.
+      spec: !REF googlecloudsdk.command_lib.iot.resources:device
+      is_positional: false

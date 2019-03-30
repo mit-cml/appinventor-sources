@@ -14,30 +14,61 @@ they get cut off in Windows.
 
 @font-face {
   font-family: Roboto;
-  src: url('/fonts/Roboto-Regular.ttf') format("truetype");
+  src: url('/fonts/Roboto-Regular.ttf');
 }
 
 @font-face {
   font-weight: bold;
   font-family: Roboto;
-  src: url('/fonts/Roboto-Bold.ttf') format("truetype");
+  src: url('/fonts/Roboto-Bold.ttf');
+}
+
+
+@font-face {
+  font-family: OpenDyslexic;
+  src: url('/fonts/OpenDyslexic-Regular.otf');
+}
+
+@font-face {
+  font-weight: bold;
+  font-family: OpenDyslexic;
+  src: url('/fonts/OpenDyslexic-Bold.otf');
 }
 
 body, html {
   height: 100%;
 }
 
+
+
+.gwt-bodyOdf{
+  font-family: OpenDyslexic, Helvetica, Arial, sans-serif;
+}
+
+.gwt-bodyRob{
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+.gwt-bodyRob .gwt-bodyOdf{
+  font-family: OpenDyslexic, Helvetica, Arial, sans-serif;
+}
+
 body {
   background-color: lightgrey;
   /* TODO(opensource): Change to commented version below once we're ready */
   background: url(images/squairy_light.png);
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  
 }
 
-table td,
-select {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-}
+
+
+
+
+
+
+
+
 /* For the TOS Form*/
 .floatingBox {
   width: 300px;
@@ -344,7 +375,7 @@ select {
 .ode-TopPanelLinks .gwt-TitleLabel {
   cursor: pointer;
   color: rgb(100, 100, 100);
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  
   font-weight: 300;
   font-size: 12px;
   margin-right: 16px;
@@ -363,7 +394,7 @@ select {
 
 .ode-TopPanelLabel {
   color: #888;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  
   font-size: 15px;
 }
 
@@ -1030,7 +1061,7 @@ select.ode-PropertyEditor[disabled] {
   position: absolute;
   border: 0;
   background-color: transparent;
-  font: 20px Roboto bold;
+ 
   color: white;
   display: none;
 }
@@ -1717,7 +1748,6 @@ textarea::-webkit-input-placeholder {
 .ode-UserProfileWrapper .gallery-card {
   height: 160px;
 }
-
 .ode-UserProfileWrapper .app-image {
   margin-top: 15px;
   margin-left: 15px;
@@ -1795,7 +1825,7 @@ textarea::-webkit-input-placeholder {
 .gallery .gwt-TabBar .gwt-TabBarItem,
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
   font-size: 28px;
-  font-family: "Roboto",Arial,sans-serif;
+  
   text-transform: uppercase;
   padding: 5px;
   margin: 0;
@@ -2074,7 +2104,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
   margin: 0 15px;
   font-size: 18px;
-  font-family: "Roboto", Arial, sans-serif;
+
   font-weight: 300;
   padding: 0;
 }
@@ -2084,7 +2114,7 @@ textarea::-webkit-input-placeholder {
   padding: 0;
   width: 230px;
   font-size: 14px;
-  font-family: "Roboto", Arial, sans-serif;
+  
   font-weight: 300;
   color: #666;
 }
@@ -2153,7 +2183,7 @@ textarea::-webkit-input-placeholder {
 .app-title,
 .gallery-app-details .app-comments-header {
   font-size: 28px;
-  font-family: "Roboto", Arial, sans-serif;
+  
   font-weight: 300;
   margin-bottom: 5px;
 }
@@ -2510,7 +2540,6 @@ textarea::-webkit-input-placeholder {
 }
 
 .ac-renderer {
-  font: normal 13px Arial, sans-serif;
   position: absolute;
   background: #fff;
   border: 1px solid #666;

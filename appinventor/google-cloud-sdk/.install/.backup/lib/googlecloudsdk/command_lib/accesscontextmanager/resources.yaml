@@ -1,0 +1,34 @@
+policy:
+  name: policy
+  collection: accesscontextmanager.accessPolicies
+  attributes:
+  - &policy
+    parameter_name: accessPoliciesId
+    attribute_name: policy
+    help: |
+      The ID of the access policy.
+    property: access_context_manager/policy
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.accesscontextmanager.policies:GetDefaultPolicy
+      hint: automatically, if the current account belongs to an organization with
+        exactly one access policy.
+level:
+  name: level
+  request_id_field: accessLevel.name
+  collection: accesscontextmanager.accessPolicies.accessLevels
+  attributes:
+  - *policy
+  - parameter_name: accessLevelsId
+    attribute_name: level
+    help: |
+      The ID of the access level.
+perimeter:
+  name: perimeter
+  request_id_field: servicePerimeter.name
+  collection: accesscontextmanager.accessPolicies.servicePerimeters
+  attributes:
+  - *policy
+  - parameter_name: servicePerimetersId
+    attribute_name: perimeter
+    help: |
+      The ID of the service perimeter.

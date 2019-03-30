@@ -1,0 +1,16 @@
+- help_text:
+    brief: Add an IAM policy binding to a Cloud Healthcare API annotation store.
+    description: |
+      Add an IAM policy binding to a Cloud Healthcare API annotation store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.annotationStores
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API annotation store to add an IAM policy binding to.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:annotation_store
+
+  iam:
+    enable_condition: true
