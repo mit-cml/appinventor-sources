@@ -169,16 +169,22 @@ public abstract class ButtonBase extends AndroidViewComponent
       if (me.getAction() == MotionEvent.ACTION_DOWN) {
         //button pressed, provide visual feedback AND return false
         if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-          view.getBackground().setAlpha(70); // translucent
-          view.invalidate();
+          if (backgroundImageDrawable != null || imagePath != "") {
+            view.getBackground().setAlpha(70); // translucent
+          } else {
+            view.invalidate();
+          }
         }
         TouchDown();
       } else if (me.getAction() == MotionEvent.ACTION_UP ||
               me.getAction() == MotionEvent.ACTION_CANCEL) {
         //button released, set button back to normal AND return false
         if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-          view.getBackground().setAlpha(255); // opaque
-          view.invalidate();
+          if (backgroundImageDrawable != null || imagePath != "") {
+            view.getBackground().setAlpha(255); // opaque
+          } else {
+            view.invalidate();
+          }
         }
         TouchUp();
       }
