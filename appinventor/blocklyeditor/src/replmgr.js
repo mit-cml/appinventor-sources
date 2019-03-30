@@ -1407,6 +1407,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                                                              } else {
                                                                  top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                                                                  top.BlocklyPanel_indicateDisconnect();
+                                                                 top.ConnectProgressBar_hide();
                                                              }
                                                          });
 
