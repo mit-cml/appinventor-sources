@@ -974,7 +974,7 @@ public final class YoungAndroidFormUpgrader {
     }
 
     if (srcCompVersion < 25) {
-      // Sizing default value changed to Responsive
+      // Sizing default value changed from Fixed to Responsive
       if (componentProperties.containsKey("Sizing")) {
         String value = ((ClientJsonString)componentProperties.get("Sizing")).getString();
         if (value.equals("Responsive")) {

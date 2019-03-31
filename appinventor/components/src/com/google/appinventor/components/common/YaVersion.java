@@ -793,7 +793,9 @@ public class YaVersion {
   // - Added the AskForPermission method
   // - Added the PermissionDenied event
   // - Added the PermissionGranted event
-  public static final int FORM_COMPONENT_VERSION = 24;
+  // For FORM_COMOPONENT_VERSION 25:
+  // - Sizing default value changed from Fixed to Responsive
+  public static final int FORM_COMPONENT_VERSION = 25;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
