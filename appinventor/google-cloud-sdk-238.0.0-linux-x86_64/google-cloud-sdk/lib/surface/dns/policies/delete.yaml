@@ -1,0 +1,15 @@
+- help_text:
+    brief: Deletes a Cloud DNS policy.
+    description: |
+      Deletes a Cloud DNS policy.
+
+  request:
+    collection: dns.policies
+    method: delete
+    api_version: v1beta2
+
+  arguments:
+    resource:
+      help_text: The name of the policy you want to delete.
+      is_positional: true
+      spec: !REF googlecloudsdk.command_lib.dns.resources:policy

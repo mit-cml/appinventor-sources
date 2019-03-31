@@ -1,0 +1,7 @@
+operation:
+  name: operation
+  collection: speech.operations
+  attributes:
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: The ID of the operation

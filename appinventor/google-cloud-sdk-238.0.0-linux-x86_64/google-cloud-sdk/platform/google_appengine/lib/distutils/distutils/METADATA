@@ -1,0 +1,19 @@
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "distutils"
+description:
+  "Distutils provides utilities for packaging and installing python "
+  "packages. Generally distributed as part of python, but removed from borg "
+  "to cut down the size of the borg python distribution."
+
+third_party {
+  url {
+    type: PIPER
+    value: "http://depot/google_vendor_src_branch/python/Python-2.7.6/Lib/distutils"
+  }
+
+  # NOTE: The "local_modifications" field is entirely optional and may be
+  # removed if it's not useful for the package.
+  #     See go/thirdparty-metadata-local-modifications
+  local_modifications: "http://google3/third_party/py/distutils/README.google?cl=72403499"
+}

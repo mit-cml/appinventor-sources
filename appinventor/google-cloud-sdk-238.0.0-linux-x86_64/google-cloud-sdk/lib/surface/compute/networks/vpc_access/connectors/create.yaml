@@ -1,0 +1,59 @@
+- help_text:
+    brief: |
+      Create a VPC Access connector.
+    description: |
+      Create a new VPC Access connector with the given name.
+
+      This command can fail for the following reasons:
+        * An instance with the same name already exists.
+        * The active account does not have permission to create instances.
+    examples: |
+      The following command creates a VPC Access connector of type `extended` with
+      name `my-vpc-connector` in region `us-central1` in network `my-network`
+      with IP CIDR range of `10.132.0.0/28`.
+
+        $ {command} my-vpc-connector --region=us-central1 --network=my-network
+          --range=10.132.0.0/28
+
+  async:
+    collection: vpcaccess.projects.locations.operations
+
+  request:
+    collection: vpcaccess.projects.locations.connectors
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.compute.networks.vpc_access.resources:connector
+      help_text: |
+        Arguments and flags that specify the VPC Access connector you want
+        to create.
+    params:
+    - arg_name: type
+      api_field: connector.type
+      required: false
+      help_text: |
+        The type of the connector: `extended` or `basic`. Extended is the
+        default and provides internal load balancer support.
+      choices:
+      - enum_value: EXTENDED
+        arg_value: extended
+        help_text: Extended with support for internal load balancer
+      - enum_value: BASIC
+        arg_value: basic
+        help_text: Basic support for single VM connectivity
+      default: extended
+    - arg_name: network
+      api_field: connector.network
+      required: false
+      help_text: |
+        The name of the Google Compute Engine network to which the connector
+        will be connected. If left unspecified, the default network will be
+        used.
+      default: default
+    - arg_name: range
+      api_field: connector.ipCidrRange
+      required: false
+      help_text: |
+        The CIDR range of internal addresses that are reserved for this
+        connector. For example, 10.132.0.0/28. Range must be unique and
+        non-overlapping with existing ranges in the network.

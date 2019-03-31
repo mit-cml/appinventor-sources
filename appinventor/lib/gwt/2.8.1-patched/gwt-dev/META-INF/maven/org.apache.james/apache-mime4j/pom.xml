@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+  
+      http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.    
+  -->
+  <parent>
+    <artifactId>james-project</artifactId>
+    <groupId>org.apache.james</groupId>
+    <version>1.2</version>
+    <!-- Either this really points to the james-project/pom.xml or you
+         will have to tune the local repository, later, in this file -->
+    <relativePath>../james-project/project/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.james</groupId>
+  <artifactId>apache-mime4j</artifactId>
+  <name>Apache JAMES Mime4j</name>
+  <version>0.6</version>
+  <description>Java stream based MIME message parser</description>
+  <url>http://james.apache.org/mime4j</url>
+  <issueManagement>
+    <url>http://issues.apache.org/jira/browse/MIME4J</url>
+  </issueManagement>
+  <inceptionYear>2004</inceptionYear>
+  <distributionManagement>
+    <site>
+      <id>mime4j-website</id>
+      <url>scp://minotaur.apache.org/www/james.apache.org/mime4j/</url>
+    </site>
+  </distributionManagement>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/james/mime4j/tags/apache-mime4j-0.6</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/mime4j/tags/apache-mime4j-0.6</developerConnection>
+    <url>http://svn.apache.org/viewvc/james/mime4j/tags/apache-mime4j-0.6</url>
+  </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rat-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.4.1</version>
+        <executions>
+          <execution>
+            <id>generate-jjtree</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>jjtree-javacc</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>generate-javacc</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>javacc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>${compileSource}</source>
+          <target>${compileSource}</target>
+          <encoding>iso8859-1</encoding>
+        </configuration>
+      </plugin>      
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <archive>
+          <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestEntries>
+              <Specification-Title>Apache Mime4j</Specification-Title>
+              <Specification-Version>${pom.version}</Specification-Version>
+              <Specification-Vendor>The Apache Software Foundation</Specification-Vendor>
+              <Implementation-Title>Apache Mime4j</Implementation-Title>
+              <Implementation-Version>${pom.version}</Implementation-Version>
+              <Implementation-Vendor>The Apache Software Foundation</Implementation-Vendor>
+              <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+              <url>${pom.url}</url>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>create-javadocs</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- append to the packaging phase. -->
+            <goals>
+              <goal>javadoc</goal> <!-- goals == mojos -->
+              <goal>jar</goal> <!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludePackageNames>org.apache.james.mime4j.field.address.parser:org.apache.james.mime4j.field.contentdisposition.parser:org.apache.james.mime4j.field.contenttype.parser:org.apache.james.mime4j.field.datetime.parser:org.apache.james.mime4j.field.language.parser:org.apache.james.mime4j.field.mimeversion.parser:org.apache.james.mime4j.field.structured.parser</excludePackageNames>
+        </configuration>
+      </plugin>
+      <!-- Add NOTICE and LICENSE to generated JAR -->
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+              </resourceBundles>
+              <properties>
+	              <addLicense>true</addLicense>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-source-plugin</artifactId>
+      	<version>2.0.4</version>
+      	<executions>
+      		<execution>
+      			<id>attach-sources</id>
+      			<goals>
+      				<goal>jar</goal>
+      			</goals>
+      		</execution>
+      	</executions>
+      </plugin>
+
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      -->
+      <plugin>
+      	<groupId>org.apache.felix</groupId>
+      	<artifactId>maven-bundle-plugin</artifactId>
+      	<version>1.4.3</version>
+      	<executions>
+      		<execution>
+      			<id>bundle-manifest</id>
+      			<phase>process-classes</phase>
+      			<goals>
+      				<goal>manifest</goal>
+      			</goals>
+      		</execution>
+      	</executions>
+      	<extensions>true</extensions>
+      	<configuration>
+      		<instructions>
+      			<Export-Package>org.apache.james.mime4j.*</Export-Package>
+      			<Embed-Dependency>*;scope=runtime</Embed-Dependency>
+      		</instructions>
+      	</configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-2</version>
+        <configuration>
+          <descriptorSourceDirectory>${basedir}/src/assemble/</descriptorSourceDirectory>
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- append to the packaging phase. -->
+            <goals>
+              <goal>attached</goal> <!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>local-mime4j-stage-repository</id>
+      <name>Local mime4j stage repository</name>
+      <!-- Please note that due to http://jira.codehaus.org/browse/MNG-2896 -->
+      <!-- If you don't have james-project checked out in ../james-project -->
+      <!-- you will have to place your absolute path to the project instead -->
+      <!-- of ${basedir}, or, otherwise, manually install the parent poms -->
+      <!--
+           mvn -fignorepom.xml install:install-file 
+              -Dfile=stage\org.apache.james\poms\james-parent-1.1.pom 
+              -Dpackaging=pom 
+              -DgroupId=org.apache.james 
+              -DartifactId=james-parent 
+              -Dversion=1.1
+           mvn -fignorepom.xml install:install-file 
+              -Dfile=stage\org.apache.james\poms\james-project-1.2.pom 
+              -Dpackaging=pom 
+              -DgroupId=org.apache.james 
+              -DartifactId=james-project 
+              -Dversion=1.2
+       -->
+      <url>file://${basedir}/stage</url>
+      <layout>legacy</layout>
+      <snapshots>
+        <enabled>true</enabled>
+        <checksumPolicy>ignore</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <type>jar</type>
+      <!--  Removed as a workaround for an unidentified M2 bug -->
+      <scope>test</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.2</version>
+      <scope>test</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <configuration>
+            <onlyCurrentVersion>true</onlyCurrentVersion>
+            <resolutionIds>Closed</resolutionIds>
+        </configuration>
+        <reportSets>
+            <reportSet>
+                <reports>
+                    <report>jira-report</report>
+                </reports>
+            </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.4.3</version>
+      </plugin> 
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <targetJdk>${compileSource}</targetJdk>
+          <rulesets>
+            <ruleset>/rulesets/basic.xml</ruleset>
+            <ruleset>/rulesets/controversial.xml</ruleset>
+          </rulesets>
+          <format>xml</format>
+          <linkXref>true</linkXref>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.0-beta-7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rat-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <configuration>
+          <excludes>
+            <!-- test resources created by JAMES committers / we can't include ALv2 headers there -->
+            <exclude>src/test/resources/testmsgs/*</exclude>
+            <exclude>benchmarks/resources/*.msg</exclude>
+            <!-- 3rd party descriptors distributed via maven repositories
+                 and included "as is" -->
+            <exclude>stage/commons-io/poms/commons-io-1.2.pom</exclude>
+            <exclude>stage/commons-logging/poms/commons-logging-1.1.pom</exclude>
+            <exclude>stage/org.apache.james/xmls/james-parent-1.1-site.xml</exclude>
+            <exclude>stage/org.apache.james/xmls/james-parent-1.1-site_en.xml</exclude>
+            <exclude>stage/org.apache.james/xmls/james-project-1.2-site.xml</exclude>
+            <exclude>stage/org.apache.james/xmls/james-project-1.2-site_en.xml</exclude>
+            <exclude>release.properties</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.4.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <mailingLists>
+    <mailingList>
+            <name>Apache Mime4j Lists</name>
+            <subscribe>mime4j-dev-subscribe@james.apache.org</subscribe>
+            <unsubscribe>mime4j-dev-unsubscribe@james.apache.org</unsubscribe>
+            <post>mime4j-dev@james.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/james-mime4j-dev/</archive>
+    </mailingList>
+  </mailingLists>
+  
+  <properties>
+    <compileSource>1.5</compileSource>
+  </properties>
+</project>

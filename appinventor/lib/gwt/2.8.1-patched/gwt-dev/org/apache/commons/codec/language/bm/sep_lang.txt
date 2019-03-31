@@ -1,0 +1,105 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// SEPHARDIC
+
+// 1. following are rules to accept the language
+// 1.1 Special letter combinations
+eau french true
+ou french true
+gni italian+french true
+tx spanish true
+tj spanish true
+gy french true
+guy french true
+
+sh spanish+portuguese true // English, but no sign for /sh/ in these languages
+
+lh portuguese true
+nh portuguese true
+ny spanish true
+
+gue spanish+french true
+gui spanish+french true
+gia italian true
+gie italian true
+gio italian true
+giu italian true
+            
+// 1.2 special characters    
+ñ spanish true
+â portuguese+french true
+á portuguese+spanish true
+à portuguese true
+ã portuguese true
+ê french+portuguese true
+í portuguese+spanish true
+î french true
+ô french+portuguese true
+õ portuguese true
+ò italian+spanish true
+ú portuguese+spanish true
+ù french true
+ü portuguese+spanish true
+      
+// Hebrew 
+א hebrew true
+ב hebrew true
+ג hebrew true
+ד hebrew true
+ה hebrew true
+ו hebrew true
+ז hebrew true
+ח hebrew true
+ט hebrew true
+י hebrew true
+כ hebrew true
+ל hebrew true
+מ hebrew true
+נ hebrew true
+ס hebrew true
+ע hebrew true
+פ hebrew true
+צ hebrew true 
+ק hebrew true
+ר hebrew true
+ש hebrew true
+ת hebrew true
+        
+// 2. following are rules to reject the language
+    
+// Every Latin character word has at least one Latin vowel  
+a hebrew false 
+o hebrew false 
+e hebrew false 
+i hebrew false 
+y hebrew false 
+u hebrew false 
+      
+kh spanish false
+gua italian false
+guo italian false
+ç italian false
+cha italian false
+cho italian false
+chu italian false
+j italian false
+dj spanish false
+sce french false
+sci french false
+ó french false
+è portuguese false

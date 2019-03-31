@@ -1,0 +1,25 @@
+location:
+  name: location
+  collection: cloudscheduler.projects.locations
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location of the job. See `gcloud alpha scheduler locations list`
+      for options.
+
+      By default, uses the location of the current project's App Engine App.
+    fallthroughs:
+    - hook: "googlecloudsdk.command_lib.scheduler.util:AppLocationResolver:"
+      hint: as the location of the current project's App Engine App
+
+job:
+  name: job
+  collection: cloudscheduler.projects.locations.jobs
+  request_id_field: job.name
+  attributes:
+  - *location
+  - parameter_name: jobsId
+    attribute_name: job
+    help: The ID of the job.

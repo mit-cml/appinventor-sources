@@ -1,0 +1,13 @@
+- release_tracks: [ALPHA]
+  help_text:
+    brief:  Delete a Cloud Healthcare API dataset.
+    description: Deletes a Cloud Healthcare API dataset.
+
+  request:
+    collection: healthcare.projects.locations.datasets
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API dataset to delete.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dataset

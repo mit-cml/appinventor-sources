@@ -1,0 +1,70 @@
+# Copyright 2018 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+query_scope:
+  api_field: googleFirestoreAdminV1beta2Index.queryScope
+  arg_name: query-scope
+  help_text: Query scope the index applies to.
+  default: collection
+  choices:
+  - arg_value: collection
+    enum_value: COLLECTION
+
+field_config:
+  api_field: googleFirestoreAdminV1beta2Index.fields
+  arg_name: field-config
+  help_text: |
+    Configuration for a field.
+
+    This flag must be repeated to provide the ordered list of field configurations comprising
+    the composite index. For example:
+
+      $ {command} \
+          --collection-group=Events \
+          --field-config field-path=tags,array-config=contains \
+          --field-config field-path=user_id,order=descending \
+          --field-config field-path=timestamp,order=descending
+
+    The following keys are allowed:
+
+    *field-path*::: Specifies the field path (e.g. 'address.city'). This is required.
+
+    *order*::: Specifies the order. Valid options are: 'ascending', 'descending'. Exactly one of
+    order or array-config must be specified.
+
+    *array-config*::: Specifies the configuration for an array field. The only valid option is
+    'contains'. Exactly one of 'order' or 'array-config' must be specified.
+
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: fieldPath
+        arg_name: field-path
+      - api_field: arrayConfig
+        arg_name: array-config
+        type: str
+        required: false
+        choices:
+        - arg_value: contains
+          enum_value: CONTAINS
+      - api_field: order
+        arg_name: order
+        type: str
+        required: false
+        choices:
+        - arg_value: ascending
+          enum_value: ASCENDING
+        - arg_value: descending
+          enum_value: DESCENDING

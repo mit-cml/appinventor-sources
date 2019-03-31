@@ -1,0 +1,121 @@
+args_v1:
+- api_field: audio
+  arg_name: audio
+  help_text: |
+    The location of the audio file to transcribe. Must be a local path or a
+    Google Cloud Storage URL (in the format gs://bucket/object).
+  is_positional: true
+  processor: googlecloudsdk.command_lib.ml.speech.util:GetAudioHook:version=v1
+
+args_v1p1beta1:
+- api_field: audio
+  arg_name: audio
+  help_text: |
+    The location of the audio file to transcribe. Must be a local path or a
+    Google Cloud Storage URL (in the format gs://bucket/object).
+  is_positional: true
+  processor: googlecloudsdk.command_lib.ml.speech.util:GetAudioHook:version=v1p1beta1
+
+- api_field: config.enableWordConfidence
+  arg_name: include-word-confidence
+  help_text: |
+    Include a list of words and the confidence for those words in the top
+    result.
+- group:
+    params:
+    - api_field: config.diarizationSpeakerCount
+      arg_name: diarization-speaker-count
+      type: int
+      help_text: |
+        Estimated number of speakers in the conversation being recognized.
+    - api_field: config.enableSpeakerDiarization
+      arg_name: enable-speaker-diarization
+      help_text: |
+        Enable speaker detection for each recognized word in the top
+        alternative of the recognition result using an integer speaker_tag
+        provided in the WordInfo.
+      type: bool
+      required: true
+
+- api_field: config.alternativeLanguageCodes
+  arg_name: additional-language-codes
+  metavar: language_code
+  repeated: true
+  help_text: |
+    The BCP-47 language tags of other languages that the speech may be
+    in. Up to 3 can be provided.
+
+    If alternative languages are listed, recognition result will contain
+    recognition in the most likely language detected including the main
+    language-code.
+
+args:
+- group:
+    mutex: true
+    required: true
+    params:
+    - api_field: config.languageCode
+      arg_name: language-code
+      help_text: |
+        The language of the supplied audio as a BCP-47
+        (https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag. Example:
+        "en-US". See https://cloud.google.com/speech/docs/languages for a list
+        of the currently supported language codes.
+    - api_field: config.languageCode
+      arg_name: language
+      hidden: true
+      action:
+        deprecated:
+          warn: Flag {flag_name} is deprecated. Use --language-code instead.
+      help_text: |
+        The language of the supplied audio as a BCP-47
+        (https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag. Example:
+        "en-US". See https://cloud.google.com/speech/docs/languages for a list
+        of the currently supported language codes.
+
+- api_field: config.speechContexts.phrases
+  arg_name: hints
+  default: []
+  help_text: |
+    A list of strings containing word and phrase "hints" so that the speech
+    recognition is more likely to recognize them. This can be used to
+    improve the accuracy for specific words and phrases, for example, if
+    specific commands are typically spoken by the user. This can also be
+    used to add additional words to the vocabulary of the recognizer. See
+    https://cloud.google.com/speech/limits#content.
+
+- api_field: config.maxAlternatives
+  arg_name: max-alternatives
+  default: 1
+  help_text: |
+    Maximum number of recognition hypotheses to be returned. The server
+    may return fewer than max_alternatives. Valid values are 0-30. A value
+    of 0 or 1 will return a maximum of one.
+
+- api_field: config.profanityFilter
+  arg_name: filter-profanity
+  help_text: |
+    If True, the server will attempt to filter out profanities, replacing
+    all but the initial character in each filtered word with asterisks,
+    e.g. \"f***\".
+
+- api_field: config.encoding
+  arg_name: encoding
+  default: encoding-unspecified
+  help_text: |
+    The type of encoding of the file. Required if the file format is not
+    WAV or FLAC.
+
+- api_field: config.sampleRateHertz
+  arg_name: sample-rate
+  help_text: |
+    The sample rate in Hertz. For best results, set the sampling rate of
+    the audio source to 16000 Hz. If that's not possible, use the native
+    sample rate of the audio source (instead of re-sampling).
+
+- api_field: config.enableWordTimeOffsets
+  arg_name: include-word-time-offsets
+  help_text: |
+    If True, the top result includes a list of words with the start and
+    end time offsets (timestamps) for those words. If False, no word-level
+    time offset information is returned.

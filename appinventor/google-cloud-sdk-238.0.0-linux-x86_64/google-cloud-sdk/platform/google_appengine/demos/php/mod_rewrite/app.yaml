@@ -1,0 +1,15 @@
+application: mod-rewrite-simulator
+version: 1
+runtime: php55
+api_version: 1
+
+handlers:
+# Example of handler which should be placed above the catch-all handler.
+- url: /downloads
+  static_dir: downloads
+
+# Catch all unhandled requests and pass to mod_rewrite.php which will simulate
+# mod_rewrite by forwarding the requests to index.php?q=... (or other root-level
+# PHP file if specified in incoming URL.
+- url: /.*
+  script: mod_rewrite.php

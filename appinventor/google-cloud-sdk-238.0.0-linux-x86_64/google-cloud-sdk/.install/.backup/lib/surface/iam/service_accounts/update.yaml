@@ -1,0 +1,22 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Update an IAM service account.
+    description: Update an IAM service account.
+
+  arguments:
+    resource:
+      help_text: The IAM service account to update.
+      spec: !REF googlecloudsdk.command_lib.iam.resources:service_account
+    params:
+      - arg_name: display-name
+        api_field: displayName
+        help_text: |
+          The new textual name to display for the account.
+
+  request:
+    collection: iam.projects.serviceAccounts
+    method: update
+
+  update:
+    read_modify_update: true

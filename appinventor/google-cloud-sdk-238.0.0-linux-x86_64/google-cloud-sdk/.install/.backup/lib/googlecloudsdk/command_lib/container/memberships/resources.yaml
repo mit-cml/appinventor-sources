@@ -1,0 +1,30 @@
+project:
+  name: project
+  collection: gkehub.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+    property: core/project
+
+membership:
+  name: membership
+  collection: gkehub.projects.locations.global.memberships
+  attributes:
+  - *project
+  - &membership
+    parameter_name: membershipsId
+    attribute_name: membership
+    help: The membership ID.
+  request_id_field: membershipId
+
+operation:
+  name: operation
+  collection: gkehub.projects.locations.operations
+  attributes:
+  - *project
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: the ID of the Google Kubernetes Hub membership operation

@@ -1,0 +1,15 @@
+# TODO(b/127817989): improve the return message when success.
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Enable an IAM service account.
+    description: Enable an IAM service account.
+
+  arguments:
+    resource:
+      help_text: The IAM service account to enable.
+      spec: !REF googlecloudsdk.command_lib.iam.resources:service_account
+
+  request:
+    collection: iam.projects.serviceAccounts
+    method: enable

@@ -112,11 +112,13 @@ public class DesignToolbar extends Toolbar {
   }
 
   private static final String WIDGET_NAME_TUTORIAL_TOGGLE = "TutorialToggle";
+  private static final String WIDGET_NAME_HELP_TOGGLE = "HelpToggle";
   private static final String WIDGET_NAME_ADDFORM = "AddForm";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
+  private static final String helpURL ="http://localhost:8888/reference/components/userinterface.html";
 
   // Switch language
   private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
@@ -167,6 +169,10 @@ public class DesignToolbar extends Toolbar {
 
     // width of palette minus cellspacing/border of buttons
     toolbar.setCellWidth(projectNameLabel, "222px");
+    
+    // Help button
+    addButton(new ToolbarItem(WIDGET_NAME_HELP_TOGGLE,
+        MESSAGES.toggleHelpButton(), new ToogleHelpAction()));
 
     addButton(new ToolbarItem(WIDGET_NAME_TUTORIAL_TOGGLE,
         MESSAGES.toggleTutorialButton(), new ToogleTutorialAction()));
@@ -205,6 +211,20 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+ private class ToogleHelpAction implements Command {
+    @Override
+    public void execute() {
+      Ode ode = Ode.getInstance();
+      boolean visible = ode.isHelpVisible();
+      if (visible) {
+        ode.setHelpVisible(false);
+      } else {
+        ode.setHelpURL(helpURL);
+        ode.setHelpVisible(true);
+      }
+    }
+  }
+
   private class AddFormAction implements Command {
     @Override
     public void execute() {
@@ -230,6 +250,7 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
+
 
   private class RemoveFormAction implements Command {
     @Override
@@ -544,5 +565,6 @@ public class DesignToolbar extends Toolbar {
       setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, false);
     }
   }
+
 
 }

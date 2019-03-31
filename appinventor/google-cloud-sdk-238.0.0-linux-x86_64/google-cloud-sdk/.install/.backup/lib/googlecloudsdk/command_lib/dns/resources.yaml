@@ -1,0 +1,21 @@
+project:
+  name: project
+  collection: dns.projects
+  api_version: v1beta2
+  request_id_field: project.name
+  attributes:
+  - &project
+    parameter_name: project
+    attribute_name: project
+    help: The project name.
+
+policy:
+  name: policy
+  collection: dns.policies
+  api_version: v1beta2
+  request_id_field: policy.name
+  attributes:
+  - &policy
+    parameter_name: policy
+    attribute_name: policy
+    help: The policy name.

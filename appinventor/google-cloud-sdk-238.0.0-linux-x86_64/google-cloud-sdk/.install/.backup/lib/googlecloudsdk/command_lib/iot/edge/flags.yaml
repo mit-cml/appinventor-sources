@@ -1,0 +1,83 @@
+env_vars:
+  arg_name: env-vars
+  metavar: '[KEY=VALUE,...]'
+  help_text: |
+    List of key-value pairs to set as environment variables.
+  type:
+    arg_dict:
+      flatten: true
+      spec:
+      - api_field: key
+        type: googlecloudsdk.command_lib.iot.edge.flags:EnvVarKeyType
+      - api_field: value
+
+env_vars_file:
+  arg_name: env-vars-file
+  help_text: |
+    Path to YAML file with definitions for all environment variables.
+  processor: googlecloudsdk.command_lib.iot.edge.flags:EnvVarsFile
+
+remove_env_vars:
+  arg_name: remove-env-vars
+  help_text: |
+    List of environment variables to be removed.
+  type: 'googlecloudsdk.calliope.arg_parsers:ArgList:'
+
+update_env_vars:
+  arg_name: update-env-vars
+  help_text: |
+    List of key-value pairs to update environment variables.
+  metavar: KEY=VALUE
+  type: 'googlecloudsdk.calliope.arg_parsers:ArgDict:'
+
+clear_env_vars:
+  arg_name: clear-env-vars
+  help_text: |
+    Remove all environment variables.
+  action: store_true
+
+device_binding:
+  arg_name: device-binding
+  help_text: |
+    Device to expose, provided in SOURCE[:DESTINATION][:CGROUP_PERMS] format.
+    (Same as 'docker run' command's --device options.)
+    When DESTINATION is not provided, SOURCE path will also be used for it.
+    Default value for cgroups permission is 'rwm'.
+  type: googlecloudsdk.command_lib.iot.edge.flags:DeviceBindingType
+
+volume_binding:
+  arg_name: volume-binding
+  help_text: |
+    Volume mounts, provided in [SOURCE:]DESTINATION[:(rw|ro)] format. (Same
+    as 'docker run' command's -v/--volume options.) When SOURCE is not
+    provided, DESTINATION path will also be used for it. Default value for
+    third part is rw, which makes the volume writable. Use ro to mount
+    volume in read-only mode.
+  type: googlecloudsdk.command_lib.iot.edge.flags:VolumeBindingType
+
+memory:
+  arg_name: memory
+  help_text: |
+    Limit on the amount of memory the Edge function or container can use.
+    When deploying an update to an existing function or container, it will
+    keep its old memory limit unless you specify this flag.
+  type: googlecloudsdk.command_lib.iot.edge.flags:BinarySize
+  processor: googlecloudsdk.command_lib.iot.edge.util:MemoryBytesToMb
+
+input_topic:
+  arg_name: input-topic
+  help_text: |
+    Input topic(s) for this component. Multiple topics can be specified by
+    using a comma-separated list of topics. Each topic can be specified in
+    [NAME:]TOPIC format, which means that an abstract name can optionally
+    be given to a topic. The NAME and TOPIC part must not contain any colons.
+  type: googlecloudsdk.command_lib.iot.edge.flags:TopicType
+
+output_topic:
+  arg_name: output-topic
+  help_text: |
+    Output topic(s) for this component. Multiple topics can be specified by
+    using a comma-separated list of topics. Each topic can be specified in
+    [NAME:]TOPIC format, which means that an abstract name can optionally
+    be given to a topic. The NAME and TOPIC part must not contain any colons.
+  type: googlecloudsdk.command_lib.iot.edge.flags:TopicType

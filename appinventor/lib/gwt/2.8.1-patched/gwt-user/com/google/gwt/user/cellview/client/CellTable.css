@@ -1,0 +1,137 @@
+/*
+ * Copyright 2010 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+@def selectionBorderWidth 2px;
+.cellTableWidget {
+  
+}
+
+.cellTableFirstColumn {
+  
+}
+
+.cellTableLastColumn {
+  
+}
+
+.cellTableFooter {
+  border-top: 2px solid #6f7277;
+  padding: 3px 15px;
+  text-align: left;
+  color: #4b4a4a;
+  text-shadow: #ddf 1px 1px 0;
+  overflow: hidden;
+}
+
+.cellTableHeader {
+  border-bottom: 2px solid #6f7277;
+  padding: 3px 15px;
+  text-align: left;
+  color: #4b4a4a;
+  text-shadow: #ddf 1px 1px 0;
+  overflow: hidden;
+}
+
+.cellTableCell {
+  padding: 2px 15px;
+  overflow: hidden;
+}
+
+.cellTableFirstColumnFooter {
+  
+}
+
+.cellTableFirstColumnHeader {
+  
+}
+
+.cellTableLastColumnFooter {
+  
+}
+
+.cellTableLastColumnHeader {
+  
+}
+
+.cellTableSortableHeader {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.cellTableSortableHeader:hover {
+  color: #6c6b6b;
+}
+
+.cellTableSortedHeaderAscending {
+
+}
+
+.cellTableSortedHeaderDescending {
+
+}
+
+.cellTableEvenRow {
+  background: #ffffff;
+}
+
+.cellTableEvenRowCell {
+  border: selectionBorderWidth solid #ffffff;
+}
+
+.cellTableOddRow {
+  background: #f3f7fb;
+}
+
+.cellTableOddRowCell {
+  border: selectionBorderWidth solid #f3f7fb;
+}
+
+.cellTableHoveredRow {
+  background: #eee;
+}
+
+.cellTableHoveredRowCell {
+  border: selectionBorderWidth solid #eee;
+}
+
+.cellTableKeyboardSelectedRow {
+  background: #ffc;
+}
+
+.cellTableKeyboardSelectedRowCell {
+  border: selectionBorderWidth solid #ffc;
+}
+
+.cellTableSelectedRow {
+  background: #628cd5;
+  color: white;
+  height: auto;
+  overflow: auto;
+}
+
+.cellTableSelectedRowCell {
+  border: selectionBorderWidth solid #628cd5;
+}
+
+/**
+ * The keyboard selected cell is visible over selection.
+ */
+.cellTableKeyboardSelectedCell {
+  border: selectionBorderWidth solid #d7dde8;
+}
+
+.cellTableLoading {
+  margin: 30px;
+}

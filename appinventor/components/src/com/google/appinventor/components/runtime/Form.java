@@ -250,7 +250,7 @@ public class Form extends AppInventorCompatActivity
 
   private ProgressDialog progress;
   private static boolean _initialized = false;
-
+  
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };

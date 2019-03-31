@@ -7,6 +7,9 @@
 package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.gwt.user.client.Command;
+import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.widgets.Toolbar.ToolbarItem;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
@@ -26,7 +29,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * creates a popup with information about a component when it is clicked on.
  *
  */
-public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
+public final class ComponentHelpWidget extends AbstractPaletteItemWidget  {
   private static final ImageResource imageResource = Ode.getImageBundle().help();
 
   // Keep track of the last time (in milliseconds) of the last closure
@@ -35,7 +38,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   // don't want the question-mark click to reopen it.
   private long lastClosureTime = 0;
 
-  private class ComponentHelpPopup extends PopupPanel {
+  private class ComponentHelpPopup extends PopupPanel{
 
     private ComponentHelpPopup() {
       // Create popup panel.
@@ -107,7 +110,9 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");
         inner.add(link);
-      }
+        Ode.getInstance().setHelpURL(url);
+        Ode.getInstance().setHelpVisible(true);
+    }
 
       setWidget(inner);
 
@@ -144,7 +149,9 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
         }
       });
     }
-  }
+   }
+
+
 
   public ComponentHelpWidget(final SimpleComponentDescriptor scd) {
     super(scd, imageResource);
