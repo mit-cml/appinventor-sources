@@ -43,6 +43,8 @@ import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 
 import java.util.Formatter;
@@ -240,9 +242,17 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
   @SimpleFunction(description = "Downloads the URL and installs it as an Android Package via the installed browser")
   public void installURL(String url) {
-    Uri uri = Uri.parse(url);
-    Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
-    form.startActivity(intent);
+    try {
+      Class<?> clazz = Class.forName("edu.mit.appinventor.companionextras.CompanionExtras");
+      Object o = clazz.getConstructor(Form.class).newInstance(form);
+      Method m = clazz.getMethod("Extra1", String.class);
+      m.invoke(o, url);
+    } catch (Exception e) {
+      // Fall back to using the browser
+      Uri uri = Uri.parse(url);
+      Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
+      form.startActivity(intent);
+    }
   }
 
   @SimpleFunction(description = "Really Exit the Application")

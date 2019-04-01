@@ -19,6 +19,8 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="Emulator"/>
   </target>
 
   <target name="MakeAuthKey">
@@ -59,6 +61,14 @@
 
   <target name="PlayApp">
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
+  <target name="PlayAppExtras">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
+  </target>
+
+  <target name="Emulator">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="Emulator"/>
   </target>
 
   <target name="AIMergerApp">
