@@ -520,24 +520,27 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     form.select();
 
     //Lynda: TODO
-    OdeLog.log(form.getPropertyValue("SubsetJSON"));
-    // Map<String, JSONValue> properties = propertiesObject.getProperties();
-    // JSONObject screenprops = propertiesObject.get("Properties").asObject();
-    // JSONValue subset = screenprops.getProperties().get("SubsetJSON");
-    // OdeLog.log("loading subsetJson");
-    // OdeLog.log(subset.toJson());
-    try {
-      //String subsetjson = subset.toJson();
-      String subsetjson = form.getPropertyValue("SubsetJSON");
-      String shownComponentsStr = getShownComponents(subsetjson);
-      //OdeLog.log(shownComponentsStr);
-      String[] shownComponents = shownComponentsStr.split(",");
-      palettePanel.clearComponents();
-      for (String component : shownComponents) {
-        palettePanel.addComponent(component);
+    String subsetjson = form.getPropertyValue("SubsetJSON");
+    OdeLog.log(subsetjson);
+    if (subsetjson.length() > 0) {
+      // Map<String, JSONValue> properties = propertiesObject.getProperties();
+      // JSONObject screenprops = propertiesObject.get("Properties").asObject();
+      // JSONValue subset = screenprops.getProperties().get("SubsetJSON");
+      // OdeLog.log("loading subsetJson");
+      // OdeLog.log(subset.toJson());
+      try {
+        //String subsetjson = subset.toJson();
+        String shownComponentsStr = getShownComponents(subsetjson);
+        //OdeLog.log(shownComponentsStr);
+        String[] shownComponents = shownComponentsStr.split(",");
+        palettePanel.clearComponents();
+        for (String component : shownComponents) {
+          palettePanel.addComponent(component);
+        }
+
+      } catch (Exception e) {
+        OdeLog.log("invalid subset string");
       }
-    } catch (Exception e) {
-      OdeLog.log("invalid subset string");
     }
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.

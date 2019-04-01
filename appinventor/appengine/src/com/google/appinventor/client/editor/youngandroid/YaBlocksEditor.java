@@ -38,6 +38,10 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 import java.util.HashSet;
 import java.util.List;
@@ -334,6 +338,18 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public String getRawFileContent() {
     return blocksArea.getBlocksContent();
+  }
+
+  public Set<String> getBlockTypeSet() {
+    Set<String> blockTypes = new HashSet<String>();
+    String xmlString = blocksArea.getBlocksContent();
+    Document blockDoc = XMLParser.parse(xmlString);
+    NodeList blockElements = blockDoc.getElementsByTagName("block");
+    for (int i = 0; i < blockElements.getLength(); ++i) {
+      Element blockElem = (Element) blockElements.item(i);
+      blockTypes.add(blockElem.getAttribute("type"));
+    }
+    return blockTypes;
   }
 
   public FileDescriptorWithContent getYail() throws YailGenerationException {
@@ -653,4 +669,5 @@ public final class YaBlocksEditor extends FileEditor
       Blockly.ReplMgr.loadExtensions();
     }
   }-*/;
+
 }

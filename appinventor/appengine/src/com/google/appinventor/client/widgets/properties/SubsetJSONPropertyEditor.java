@@ -5,9 +5,11 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -42,6 +44,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         implements ProjectChangeListener {
@@ -110,6 +114,12 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       @Override
       public void onClick(ClickEvent event) {
         clearSelections();
+      }
+    });
+    initializeButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        matchProject();
       }
     });
     HorizontalPanel buttonPanel = (HorizontalPanel)((VerticalPanel)popup.getWidget()).getWidget(1);
@@ -310,6 +320,43 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       TreeItem checkboxItem = blockTree.getItem(i);
       ((CheckBox)checkboxItem.getWidget()).setValue(false, false);
       toggleChildren(checkboxItem, false);
+    }
+  }
+
+  private void matchProject() {
+    long projID = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    YaProjectEditor projEditor = (YaProjectEditor)Ode.getInstance().getEditorManager().getOpenProjectEditor(projID);
+    Set<String> componentTypes = projEditor.getUniqueComponentTypes();
+    for (int i = 0; i < componentTree.getItemCount(); ++i) {
+      TreeItem catItem = componentTree.getItem(i);
+      CheckBox catCb = (CheckBox)catItem.getWidget();
+      catCb.setValue(false,false);
+      for (int j = 0; j < catItem.getChildCount(); ++j) {
+        TreeItem compItem = catItem.getChild(j);
+        CheckBox compCb = (CheckBox)compItem.getWidget();
+        if (componentTypes.contains(compCb.getName())) {
+          compCb.setValue(true,true);
+          catCb.setValue(true, false);
+        } else {
+          compCb.setValue(false, true);
+        }
+      }
+    }
+    Set<String> blockTypes = projEditor.getUniqueBuiltInBlockTypes();
+    for (int i = 0; i < blockTree.getItemCount(); ++i) {
+      TreeItem catItem = blockTree.getItem(i);
+      CheckBox catCb = (CheckBox)catItem.getWidget();
+      catCb.setValue(false,false);
+      for (int j = 0; j < catItem.getChildCount(); ++j) {
+        TreeItem compItem = catItem.getChild(j);
+        CheckBox compCb = (CheckBox)compItem.getWidget();
+        if (blockTypes.contains(compCb.getName())) {
+          compCb.setValue(true, true);
+          catCb.setValue(true,false);
+        } else {
+          compCb.setValue(false, false);
+        }
+      }
     }
   }
 
