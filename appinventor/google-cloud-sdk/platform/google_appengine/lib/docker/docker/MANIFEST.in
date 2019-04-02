@@ -1,5 +1,0 @@
-include test-requirements.txt
-include requirements.txt
-include README.md
-include LICENSE
-recursive-include tests *.py
