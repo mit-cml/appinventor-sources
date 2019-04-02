@@ -1,0 +1,15 @@
+Index: requests/certs.py
+===================================================================
+--- requests.orig/certs.py
++++ requests/certs.py
+@@ -16,9 +16,26 @@
+ try:
+     from certifi import where
+ except ImportError:
++
+     def where():
+         """Return the preferred certificate bundle."""
++
+         return os.path.join(os.path.dirname(__file__), 'cacert.pem')
+ 
+ if __name__ == '__main__':

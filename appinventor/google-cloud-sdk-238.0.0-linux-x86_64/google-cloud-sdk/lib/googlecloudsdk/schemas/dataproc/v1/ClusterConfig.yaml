@@ -1,0 +1,72 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1 ClusterConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  configBucket:
+    description: |-
+      A Cloud Storage staging bucket used for sharing generated SSH keys and
+      config. If you do not specify a staging bucket, Cloud Dataproc will
+      determine an appropriate Cloud Storage location (US, ASIA, or EU) for your
+      cluster's staging bucket according to the Google Compute Engine zone where
+      your cluster is deployed, and then it will create and manage this project-
+      level, per-location bucket for you.
+    type: string
+  encryptionConfig:
+    description: Encryption settings for the cluster.
+    $ref: EncryptionConfig.yaml
+  gceClusterConfig:
+    description: |-
+      The shared Compute Engine config settings for all instances in a cluster.
+    $ref: GceClusterConfig.yaml
+  initializationActions:
+    description: |-
+      Commands to execute on each node after config is completed. By default,
+      executables are run on master and all worker nodes. You can test a node's
+      role metadata to run an executable on a master or worker node, as shown
+      below using curl (you can also use wget): ROLE=$(curl -H Metadata-
+      Flavor:Google http://metadata/computeMetadata/v1/instance/attributes
+      /dataproc-role) if [[ "${ROLE}" == 'Master' ]]; then   ... master specific
+      actions ... else ... worker specific actions ... fi
+    type: array
+    items:
+      $ref: NodeInitializationAction.yaml
+  masterConfig:
+    description: |-
+      The Compute Engine config settings for the master instance in a
+      cluster.
+    $ref: InstanceGroupConfig.yaml
+  secondaryWorkerConfig:
+    description: |-
+      The Compute Engine config settings for additional worker instances in
+      a cluster.
+    $ref: InstanceGroupConfig.yaml
+  softwareConfig:
+    description: The config settings for software inside the cluster.
+    $ref: SoftwareConfig.yaml
+  workerConfig:
+    description: |-
+      The Compute Engine config settings for worker instances in a cluster.
+    $ref: InstanceGroupConfig.yaml

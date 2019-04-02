@@ -1,0 +1,43 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 LifecycleConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  autoDeleteTime:
+    description: The time when cluster will be auto-deleted.
+    type: string
+  autoDeleteTtl:
+    description: |-
+      The lifetime duration of cluster. The cluster will be auto-deleted at the
+      end of this period. Valid range: 10m, 14d.Example: "1d", to delete the
+      cluster 1 day after its creation..
+    type: string
+  idleDeleteTtl:
+    description: |-
+      The duration to keep the cluster alive while idling. Passing this
+      threshold will cause the cluster to be deleted. Valid range: 10m,
+      14d.Example: "10m", the minimum value, to delete the cluster when it has
+      had no jobs running for 10 minutes.
+    type: string

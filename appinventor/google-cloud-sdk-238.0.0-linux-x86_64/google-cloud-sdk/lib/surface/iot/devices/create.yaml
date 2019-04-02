@@ -1,0 +1,41 @@
+- release_tracks: [ALPHA, BETA, GA]
+
+  help_text:
+    brief: Create a new device.
+    description: Create a new device.
+
+  request:
+    collection: cloudiot.projects.locations.registries.devices
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.iot.util:AddBlockedToRequest
+    - googlecloudsdk.command_lib.iot.util:AddCredentialsToRequest
+    - googlecloudsdk.command_lib.iot.util:AddMetadataToRequest
+    - googlecloudsdk.command_lib.iot.util:AddCreateGatewayArgsToRequest
+  arguments:
+    additional_arguments_hook: googlecloudsdk.command_lib.iot.flags:_GetCreateFlagsForGateways
+    resource:
+      help_text: The device you want to create.
+      spec: !REF googlecloudsdk.command_lib.iot.resources:device
+
+    params:
+    - api_field: device.logLevel
+      arg_name: log-level
+      help_text: |
+        The default logging verbosity for activity from devices in this
+        registry. The verbosity level can be overridden by setting a specific
+        device's log level.
+      choices:
+      - arg_value: none
+        help_text: Disables logging.
+        enum_value: NONE
+      - arg_value: info
+        help_text:
+          Informational events will be logged, such as connections and
+          disconnections. Also includes error events.
+        enum_value: INFO
+      - arg_value: error
+        enum_value: ERROR
+        help_text: Error events will be logged.
+      - arg_value: debug
+        enum_value: DEBUG
+        help_text: All events will be logged.

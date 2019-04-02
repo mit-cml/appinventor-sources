@@ -1,0 +1,24 @@
+- help_text:
+    brief: List Cloud Healthcare API DICOM stores.
+    description: List Cloud Healthcare API DICOM stores.
+
+  request:
+    collection: healthcare.projects.locations.datasets.dicomStores
+    api_version: v1alpha2
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: |
+        Parent Cloud Healthcare API dataset to list all contained Cloud Healthcare API DICOM stores.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dataset
+
+  output:
+    format: |
+      table(
+          name.scope("dicomStores"):label=ID,
+          name.scope("locations").segment(0):label=LOCATION,
+          notificationConfig.pubsubTopic:label=TOPIC
+      )

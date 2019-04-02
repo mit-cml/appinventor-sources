@@ -1,0 +1,12 @@
+- help_text:
+    brief: Remove the association between a device and a gateway.
+    description: Remove the association between a device and a gateway.
+
+  request:
+    collection: cloudiot.projects.locations.registries
+    method: unbindDeviceFromGateway
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.iot.util:AddUnBindArgsToRequest
+
+  arguments:
+    additional_arguments_hook: googlecloudsdk.command_lib.iot.resource_args:UnBindAdditionalArgsHook

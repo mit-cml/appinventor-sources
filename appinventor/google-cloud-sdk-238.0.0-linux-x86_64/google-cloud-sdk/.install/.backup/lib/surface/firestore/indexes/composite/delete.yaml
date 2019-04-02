@@ -1,0 +1,19 @@
+- release_tracks: [ALPHA, BETA]
+  help_text:
+    brief: Delete the given composite index.
+    description: Delete the given composite index.
+    examples: |
+      The following command deletes the composite index with ID `3421ef`:
+
+        $ {command} 3421ef
+
+  request:
+    collection: firestore.projects.databases.collectionGroups.indexes
+
+  arguments:
+    resource:
+      help_text: Index to delete.
+      spec: !REF googlecloudsdk.command_lib.firestore.resources:index
+      removed_flags:
+      - database
+      - collection-group

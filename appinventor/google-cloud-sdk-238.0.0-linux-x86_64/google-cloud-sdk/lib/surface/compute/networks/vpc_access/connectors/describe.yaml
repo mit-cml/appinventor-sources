@@ -1,0 +1,27 @@
+- help_text:
+    brief: |
+      Show metadata for a VPC Access connector.
+    description: |
+      Display all metadata associated with a VPC Access connector
+      given a valid connector name.
+
+      This command can fail for the following reasons:
+      * The connector specified does not exist.
+      * The active account does not have permission to access the given
+        operation.
+    examples: |
+      The following command prints metadata for a connector with name
+      `my-vpcaccesss-connector` in region `us-central1`:
+
+        $ {command} my-vpcaccess-connector --region=us-central
+
+  request:
+    collection: vpcaccess.projects.locations.connectors
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: The connector to describe.
+      spec: !REF googlecloudsdk.command_lib.compute.networks.vpc_access.resources:connector

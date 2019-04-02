@@ -1,0 +1,34 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1 JobScheduling export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  maxFailuresPerHour:
+    description: |-
+      Maximum number of times per hour a driver may be restarted as a result of
+      driver terminating with non-zero code before job is reported failed.A job
+      may be reported as thrashing if driver exits with non-zero code 4 times
+      within 10 minute window.Maximum value is 10.
+    type: integer

@@ -1,0 +1,12 @@
+- help_text:
+    brief:  Describe a Cloud Healthcare API DICOM store.
+    description: Describe a Cloud Healthcare API DICOM store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.dicomStores
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API DICOM store to describe.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dicom_store

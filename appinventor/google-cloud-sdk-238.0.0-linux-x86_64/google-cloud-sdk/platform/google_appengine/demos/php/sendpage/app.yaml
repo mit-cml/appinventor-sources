@@ -1,0 +1,13 @@
+application: sendpage
+version: 1
+runtime: php55
+api_version: 1
+
+handlers:
+- url: /sendpage
+  script: sendpage.php
+  login: admin
+
+- url: /.*
+  script: index.php
+  login: admin

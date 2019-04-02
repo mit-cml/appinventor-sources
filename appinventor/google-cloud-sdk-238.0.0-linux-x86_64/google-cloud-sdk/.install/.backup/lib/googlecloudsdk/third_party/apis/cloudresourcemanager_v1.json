@@ -1,0 +1,2008 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "cloudresourcemanager:v1",
+  "name": "cloudresourcemanager",
+  "canonicalName": "Cloud Resource Manager",
+  "version": "v1",
+  "revision": "0",
+  "title": "Cloud Resource Manager API",
+  "description": "Creates, reads, and updates metadata for Google Cloud Platform resource containers.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/resource-manager",
+  "protocol": "rest",
+  "rootUrl": "https://cloudresourcemanager.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://cloudresourcemanager.googleapis.com/",
+  "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListLiensResponse": {
+      "id": "ListLiensResponse",
+      "description": "The response message for Liens.ListLiens.",
+      "type": "object",
+      "properties": {
+        "liens": {
+          "description": "A list of Liens.",
+          "type": "array",
+          "items": {
+            "$ref": "Lien"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Lien": {
+      "id": "Lien",
+      "description": "A Lien represents an encumbrance on the actions that can be performed on a\nresource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A system-generated unique identifier for this Lien.\n\nExample: `liens\/1234abcd`",
+          "type": "string"
+        },
+        "parent": {
+          "description": "A reference to the resource this Lien is attached to. The server will\nvalidate the parent against those for which Liens are supported.\n\nExample: `projects\/1234`",
+          "type": "string"
+        },
+        "restrictions": {
+          "description": "The types of operations which should be blocked as a result of this Lien.\nEach value should correspond to an IAM permission. The server will\nvalidate the permissions against those for which Liens are supported.\n\nAn empty list is meaningless and will be rejected.\n\nExample: ['resourcemanager.projects.delete']",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "description": "Concise user-visible strings indicating why an action cannot be performed\non a resource. Maximum length of 200 characters.\n\nExample: 'Holds production API key'",
+          "type": "string"
+        },
+        "origin": {
+          "description": "A stable, user-visible\/meaningful string identifying the origin of the\nLien, intended to be inspected programmatically. Maximum length of 200\ncharacters.\n\nExample: 'compute.googleapis.com'",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The creation time of this Lien.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListAvailableOrgPolicyConstraintsRequest": {
+      "id": "ListAvailableOrgPolicyConstraintsRequest",
+      "description": "The request sent to the [ListAvailableOrgPolicyConstraints]\ngoogle.cloud.OrgPolicy.v1.ListAvailableOrgPolicyConstraints] method.",
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "description": "Size of the pages to be returned. This is currently unsupported and will\nbe ignored. The server may at any point start using this field to limit\npage size.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Page token used to retrieve the next page. This is currently unsupported\nand will be ignored. The server may at any point start using this field.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAvailableOrgPolicyConstraintsResponse": {
+      "id": "ListAvailableOrgPolicyConstraintsResponse",
+      "description": "The response returned from the ListAvailableOrgPolicyConstraints method.\nReturns all `Constraints` that could be set at this level of the hierarchy\n(contrast with the response from `ListPolicies`, which returns all policies\nwhich are set).",
+      "type": "object",
+      "properties": {
+        "constraints": {
+          "description": "The collection of constraints that are settable on the request resource.",
+          "type": "array",
+          "items": {
+            "$ref": "Constraint"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token used to retrieve the next page. This is currently not used.",
+          "type": "string"
+        }
+      }
+    },
+    "Constraint": {
+      "id": "Constraint",
+      "description": "A `Constraint` describes a way in which a resource's configuration can be\nrestricted. For example, it controls which cloud services can be activated\nacross an organization, or whether a Compute Engine instance can have\nserial port connections established. `Constraints` can be configured by the\norganization's policy adminstrator to fit the needs of the organzation by\nsetting Policies for `Constraints` at different locations in the\norganization's resource hierarchy. Policies are inherited down the resource\nhierarchy from higher levels, but can also be overridden. For details about\nthe inheritance rules please read about\nPolicies.\n\n`Constraints` have a default behavior determined by the `constraint_default`\nfield, which is the enforcement behavior that is used in the absence of a\n`Policy` being defined or inherited for the resource in question.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the `Constraint`. Default version is 0;",
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "description": "Immutable value, required to globally be unique. For example,\n`constraints\/serviceuser.services`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The human readable name.\n\nMutable.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Detailed description of what this `Constraint` controls as well as how and\nwhere it is enforced.\n\nMutable.",
+          "type": "string"
+        },
+        "constraintDefault": {
+          "description": "The evaluation behavior of this constraint in the absense of 'Policy'.",
+          "enumDescriptions": [
+            "This is only used for distinguishing unset values and should never be\nused.",
+            "Indicate that all values are allowed for list constraints.\nIndicate that enforcement is off for boolean constraints.",
+            "Indicate that all values are denied for list constraints.\nIndicate that enforcement is on for boolean constraints."
+          ],
+          "type": "string",
+          "enum": [
+            "CONSTRAINT_DEFAULT_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "listConstraint": {
+          "description": "Defines this constraint as being a ListConstraint.",
+          "$ref": "ListConstraint"
+        },
+        "booleanConstraint": {
+          "description": "Defines this constraint as being a BooleanConstraint.",
+          "$ref": "BooleanConstraint"
+        }
+      }
+    },
+    "ListConstraint": {
+      "id": "ListConstraint",
+      "description": "A `Constraint` that allows or disallows a list of string values, which are\nconfigured by an Organization's policy administrator with a `Policy`.",
+      "type": "object",
+      "properties": {
+        "suggestedValue": {
+          "description": "Optional. The Google Cloud Console will try to default to a configuration\nthat matches the value specified in this `Constraint`.",
+          "type": "string"
+        },
+        "supportsUnder": {
+          "description": "Indicates whether subtrees of Cloud Resource Manager resource hierarchy\ncan be used in `Policy.allowed_values` and `Policy.denied_values`. For\nexample, `\"under:folders\/123\"` would match any resource under the\n'folders\/123' folder.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BooleanConstraint": {
+      "id": "BooleanConstraint",
+      "description": "A `Constraint` that is either enforced or not.\n\nFor example a constraint `constraints\/compute.disableSerialPortAccess`.\nIf it is enforced on a VM instance, serial port connections will not be\nopened to that instance.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListOrgPoliciesRequest": {
+      "id": "ListOrgPoliciesRequest",
+      "description": "The request sent to the ListOrgPolicies method.",
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "description": "Size of the pages to be returned. This is currently unsupported and will\nbe ignored. The server may at any point start using this field to limit\npage size.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Page token used to retrieve the next page. This is currently unsupported\nand will be ignored. The server may at any point start using this field.",
+          "type": "string"
+        }
+      }
+    },
+    "ListOrgPoliciesResponse": {
+      "id": "ListOrgPoliciesResponse",
+      "description": "The response returned from the ListOrgPolicies method. It will be empty\nif no `Policies` are set on the resource.",
+      "type": "object",
+      "properties": {
+        "policies": {
+          "description": "The `Policies` that are set on the resource. It will be empty if no\n`Policies` are set.",
+          "type": "array",
+          "items": {
+            "$ref": "OrgPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token used to retrieve the next page. This is currently not used, but\nthe server may at any point start supplying a valid token.",
+          "type": "string"
+        }
+      }
+    },
+    "OrgPolicy": {
+      "id": "OrgPolicy",
+      "description": "Defines a Cloud Organization `Policy` which is used to specify `Constraints`\nfor configurations of Cloud Platform resources.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the `Policy`. Default version is 0;",
+          "type": "integer",
+          "format": "int32"
+        },
+        "constraint": {
+          "description": "The name of the `Constraint` the `Policy` is configuring, for example,\n`constraints\/serviceuser.services`.\n\nImmutable after creation.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "An opaque tag indicating the current version of the `Policy`, used for\nconcurrency control.\n\nWhen the `Policy` is returned from either a `GetPolicy` or a\n`ListOrgPolicy` request, this `etag` indicates the version of the current\n`Policy` to use when executing a read-modify-write loop.\n\nWhen the `Policy` is returned from a `GetEffectivePolicy` request, the\n`etag` will be unset.\n\nWhen the `Policy` is used in a `SetOrgPolicy` method, use the `etag` value\nthat was returned from a `GetOrgPolicy` request as part of a\nread-modify-write loop for concurrency control. Not setting the `etag`in a\n`SetOrgPolicy` request will result in an unconditional write of the\n`Policy`.",
+          "type": "string",
+          "format": "byte"
+        },
+        "updateTime": {
+          "description": "The time stamp the `Policy` was previously updated. This is set by the\nserver, not specified by the caller, and represents the last time a call to\n`SetOrgPolicy` was made for that `Policy`. Any value set by the client will\nbe ignored.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "listPolicy": {
+          "description": "List of values either allowed or disallowed.",
+          "$ref": "ListPolicy"
+        },
+        "booleanPolicy": {
+          "description": "For boolean `Constraints`, whether to enforce the `Constraint` or not.",
+          "$ref": "BooleanPolicy"
+        },
+        "restoreDefault": {
+          "description": "Restores the default behavior of the constraint; independent of\n`Constraint` type.",
+          "$ref": "RestoreDefault"
+        }
+      }
+    },
+    "ListPolicy": {
+      "id": "ListPolicy",
+      "description": "Used in `policy_type` to specify how `list_policy` behaves at this\nresource.\n\n`ListPolicy` can define specific values and subtrees of Cloud Resource\nManager resource hierarchy (`Organizations`, `Folders`, `Projects`) that\nare allowed or denied by setting the `allowed_values` and `denied_values`\nfields. This is achieved by using the `under:` and optional `is:` prefixes.\nThe `under:` prefix is used to denote resource subtree values.\nThe `is:` prefix is used to denote specific values, and is required only\nif the value contains a \":\". Values prefixed with \"is:\" are treated the\nsame as values with no prefix.\nAncestry subtrees must be in one of the following formats:\n    - \u201Cprojects\/<project-id>\u201D, e.g. \u201Cprojects\/tokyo-rain-123\u201D\n    - \u201Cfolders\/<folder-id>\u201D, e.g. \u201Cfolders\/1234\u201D\n    - \u201Corganizations\/<organization-id>\u201D, e.g. \u201Corganizations\/1234\u201D\nThe `supports_under` field of the associated `Constraint`  defines whether\nancestry prefixes can be used. You can set `allowed_values` and\n`denied_values` in the same `Policy` if `all_values` is\n`ALL_VALUES_UNSPECIFIED`. `ALLOW` or `DENY` are used to allow or deny all\nvalues. If `all_values` is set to either `ALLOW` or `DENY`,\n`allowed_values` and `denied_values` must be unset.",
+      "type": "object",
+      "properties": {
+        "allowedValues": {
+          "description": "List of values allowed  at this resource. Can only be set if `all_values`\nis set to `ALL_VALUES_UNSPECIFIED`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deniedValues": {
+          "description": "List of values denied at this resource. Can only be set if `all_values`\nis set to `ALL_VALUES_UNSPECIFIED`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allValues": {
+          "description": "The policy all_values state.",
+          "enumDescriptions": [
+            "Indicates that allowed_values or denied_values must be set.",
+            "A policy with this set allows all values.",
+            "A policy with this set denies all values."
+          ],
+          "type": "string",
+          "enum": [
+            "ALL_VALUES_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "suggestedValue": {
+          "description": "Optional. The Google Cloud Console will try to default to a configuration\nthat matches the value specified in this `Policy`. If `suggested_value`\nis not set, it will inherit the value specified higher in the hierarchy,\nunless `inherit_from_parent` is `false`.",
+          "type": "string"
+        },
+        "inheritFromParent": {
+          "description": "Determines the inheritance behavior for this `Policy`.\n\nBy default, a `ListPolicy` set at a resource supercedes any `Policy` set\nanywhere up the resource hierarchy. However, if `inherit_from_parent` is\nset to `true`, then the values from the effective `Policy` of the parent\nresource are inherited, meaning the values set in this `Policy` are\nadded to the values inherited up the hierarchy.\n\nSetting `Policy` hierarchies that inherit both allowed values and denied\nvalues isn't recommended in most circumstances to keep the configuration\nsimple and understandable. However, it is possible to set a `Policy` with\n`allowed_values` set that inherits a `Policy` with `denied_values` set.\nIn this case, the values that are allowed must be in `allowed_values` and\nnot present in `denied_values`.\n\nFor example, suppose you have a `Constraint`\n`constraints\/serviceuser.services`, which has a `constraint_type` of\n`list_constraint`, and with `constraint_default` set to `ALLOW`.\nSuppose that at the Organization level, a `Policy` is applied that\nrestricts the allowed API activations to {`E1`, `E2`}. Then, if a\n`Policy` is applied to a project below the Organization that has\n`inherit_from_parent` set to `false` and field all_values set to DENY,\nthen an attempt to activate any API will be denied.\n\nThe following examples demonstrate different possible layerings for\n`projects\/bar` parented by `organizations\/foo`:\n\nExample 1 (no inherited values):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \u201CE1\u201D allowed_values:\u201DE2\u201D}\n  `projects\/bar` has `inherit_from_parent` `false` and values:\n    {allowed_values: \"E3\" allowed_values: \"E4\"}\nThe accepted values at `organizations\/foo` are `E1`, `E2`.\nThe accepted values at `projects\/bar` are `E3`, and `E4`.\n\nExample 2 (inherited values):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \u201CE1\u201D allowed_values:\u201DE2\u201D}\n  `projects\/bar` has a `Policy` with values:\n    {value: \u201CE3\u201D value: \u201DE4\u201D inherit_from_parent: true}\nThe accepted values at `organizations\/foo` are `E1`, `E2`.\nThe accepted values at `projects\/bar` are `E1`, `E2`, `E3`, and `E4`.\n\nExample 3 (inheriting both allowed and denied values):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \"E1\" allowed_values: \"E2\"}\n  `projects\/bar` has a `Policy` with:\n    {denied_values: \"E1\"}\nThe accepted values at `organizations\/foo` are `E1`, `E2`.\nThe value accepted at `projects\/bar` is `E2`.\n\nExample 4 (RestoreDefault):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \u201CE1\u201D allowed_values:\u201DE2\u201D}\n  `projects\/bar` has a `Policy` with values:\n    {RestoreDefault: {}}\nThe accepted values at `organizations\/foo` are `E1`, `E2`.\nThe accepted values at `projects\/bar` are either all or none depending on\nthe value of `constraint_default` (if `ALLOW`, all; if\n`DENY`, none).\n\nExample 5 (no policy inherits parent policy):\n  `organizations\/foo` has no `Policy` set.\n  `projects\/bar` has no `Policy` set.\nThe accepted values at both levels are either all or none depending on\nthe value of `constraint_default` (if `ALLOW`, all; if\n`DENY`, none).\n\nExample 6 (ListConstraint allowing all):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \u201CE1\u201D allowed_values: \u201DE2\u201D}\n  `projects\/bar` has a `Policy` with:\n    {all: ALLOW}\nThe accepted values at `organizations\/foo` are `E1`, E2`.\nAny value is accepted at `projects\/bar`.\n\nExample 7 (ListConstraint allowing none):\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \u201CE1\u201D allowed_values: \u201DE2\u201D}\n  `projects\/bar` has a `Policy` with:\n    {all: DENY}\nThe accepted values at `organizations\/foo` are `E1`, E2`.\nNo value is accepted at `projects\/bar`.\n\nExample 10 (allowed and denied subtrees of Resource Manager hierarchy):\nGiven the following resource hierarchy\n  O1->{F1, F2}; F1->{P1}; F2->{P2, P3},\n  `organizations\/foo` has a `Policy` with values:\n    {allowed_values: \"under:organizations\/O1\"}\n  `projects\/bar` has a `Policy` with:\n    {allowed_values: \"under:projects\/P3\"}\n    {denied_values: \"under:folders\/F2\"}\nThe accepted values at `organizations\/foo` are `organizations\/O1`,\n  `folders\/F1`, `folders\/F2`, `projects\/P1`, `projects\/P2`,\n  `projects\/P3`.\nThe accepted values at `projects\/bar` are `organizations\/O1`,\n  `folders\/F1`, `projects\/P1`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BooleanPolicy": {
+      "id": "BooleanPolicy",
+      "description": "Used in `policy_type` to specify how `boolean_policy` will behave at this\nresource.",
+      "type": "object",
+      "properties": {
+        "enforced": {
+          "description": "If `true`, then the `Policy` is enforced. If `false`, then any\nconfiguration is acceptable.\n\nSuppose you have a `Constraint`\n`constraints\/compute.disableSerialPortAccess` with `constraint_default`\nset to `ALLOW`. A `Policy` for that `Constraint` exhibits the following\nbehavior:\n  - If the `Policy` at this resource has enforced set to `false`, serial\n    port connection attempts will be allowed.\n  - If the `Policy` at this resource has enforced set to `true`, serial\n    port connection attempts will be refused.\n  - If the `Policy` at this resource is `RestoreDefault`, serial port\n    connection attempts will be allowed.\n  - If no `Policy` is set at this resource or anywhere higher in the\n    resource hierarchy, serial port connection attempts will be allowed.\n  - If no `Policy` is set at this resource, but one exists higher in the\n    resource hierarchy, the behavior is as if the`Policy` were set at\n    this resource.\n\nThe following examples demonstrate the different possible layerings:\n\nExample 1 (nearest `Constraint` wins):\n  `organizations\/foo` has a `Policy` with:\n    {enforced: false}\n  `projects\/bar` has no `Policy` set.\nThe constraint at `projects\/bar` and `organizations\/foo` will not be\nenforced.\n\nExample 2 (enforcement gets replaced):\n  `organizations\/foo` has a `Policy` with:\n    {enforced: false}\n  `projects\/bar` has a `Policy` with:\n    {enforced: true}\nThe constraint at `organizations\/foo` is not enforced.\nThe constraint at `projects\/bar` is enforced.\n\nExample 3 (RestoreDefault):\n  `organizations\/foo` has a `Policy` with:\n    {enforced: true}\n  `projects\/bar` has a `Policy` with:\n    {RestoreDefault: {}}\nThe constraint at `organizations\/foo` is enforced.\nThe constraint at `projects\/bar` is not enforced, because\n`constraint_default` for the `Constraint` is `ALLOW`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "RestoreDefault": {
+      "id": "RestoreDefault",
+      "description": "Ignores policies set above this resource and restores the\n`constraint_default` enforcement behavior of the specific `Constraint` at\nthis resource.\n\nSuppose that `constraint_default` is set to `ALLOW` for the\n`Constraint` `constraints\/serviceuser.services`. Suppose that organization\nfoo.com sets a `Policy` at their Organization resource node that restricts\nthe allowed service activations to deny all service activations. They\ncould then set a `Policy` with the `policy_type` `restore_default` on\nseveral experimental projects, restoring the `constraint_default`\nenforcement of the `Constraint` for only those projects, allowing those\nprojects to have all services activated.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetOrgPolicyRequest": {
+      "id": "GetOrgPolicyRequest",
+      "description": "The request sent to the GetOrgPolicy method.",
+      "type": "object",
+      "properties": {
+        "constraint": {
+          "description": "Name of the `Constraint` to get the `Policy`.",
+          "type": "string"
+        }
+      }
+    },
+    "GetEffectiveOrgPolicyRequest": {
+      "id": "GetEffectiveOrgPolicyRequest",
+      "description": "The request sent to the GetEffectiveOrgPolicy method.",
+      "type": "object",
+      "properties": {
+        "constraint": {
+          "description": "The name of the `Constraint` to compute the effective `Policy`.",
+          "type": "string"
+        }
+      }
+    },
+    "SetOrgPolicyRequest": {
+      "id": "SetOrgPolicyRequest",
+      "description": "The request sent to the SetOrgPolicyRequest method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "`Policy` to set on the resource.",
+          "$ref": "OrgPolicy"
+        }
+      }
+    },
+    "ClearOrgPolicyRequest": {
+      "id": "ClearOrgPolicyRequest",
+      "description": "The request sent to the ClearOrgPolicy method.",
+      "type": "object",
+      "properties": {
+        "constraint": {
+          "description": "Name of the `Constraint` of the `Policy` to clear.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "The current version, for concurrency control. Not sending an `etag`\nwill cause the `Policy` to be cleared blindly.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "SearchOrganizationsRequest": {
+      "id": "SearchOrganizationsRequest",
+      "description": "The request sent to the `SearchOrganizations` method.",
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "description": "The maximum number of Organizations to return in the response.\nThis field is optional.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "A pagination token returned from a previous call to `SearchOrganizations`\nthat indicates from where listing should continue.\nThis field is optional.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "An optional query string used to filter the Organizations to return in\nthe response. Filter rules are case-insensitive.\n\n\nOrganizations may be filtered by `owner.directoryCustomerId` or by\n`domain`, where the domain is a G Suite domain, for example:\n\n|Filter|Description|\n|------|-----------|\n|owner.directorycustomerid:123456789|Organizations with\n`owner.directory_customer_id` equal to `123456789`.|\n|domain:google.com|Organizations corresponding to the domain `google.com`.|\n\nThis field is optional.",
+          "type": "string"
+        }
+      }
+    },
+    "SearchOrganizationsResponse": {
+      "id": "SearchOrganizationsResponse",
+      "description": "The response returned from the `SearchOrganizations` method.",
+      "type": "object",
+      "properties": {
+        "organizations": {
+          "description": "The list of Organizations that matched the search query, possibly\npaginated.",
+          "type": "array",
+          "items": {
+            "$ref": "Organization"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token to be used to retrieve the next page of results. If the\nresult is too large to fit within the page size specified in the request,\nthis field will be set with a token that can be used to fetch the next page\nof results. If this field is empty, it indicates that this response\ncontains the last page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "Organization": {
+      "id": "Organization",
+      "description": "The root node in the resource hierarchy to which a particular entity's\n(e.g., company) resources belong.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output Only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "A human-readable string that refers to the Organization in the\nGCP Console UI. This string is set by the server and cannot be\nchanged. The string will be set to the primary domain (for example,\n\"google.com\") of the G Suite customer that owns the organization.\n@OutputOnly",
+          "type": "string"
+        },
+        "owner": {
+          "description": "The owner of this Organization. The owner should be specified on\ncreation. Once set, it cannot be changed.\nThis field is required.",
+          "$ref": "OrganizationOwner"
+        },
+        "creationTime": {
+          "description": "Timestamp when the Organization was created. Assigned by the server.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lifecycleState": {
+          "description": "The organization's current lifecycle state. Assigned by the server.\n@OutputOnly",
+          "enumDescriptions": [
+            "Unspecified state.  This is only useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The organization has been marked for deletion by the user."
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ]
+        }
+      }
+    },
+    "OrganizationOwner": {
+      "id": "OrganizationOwner",
+      "description": "The entity that owns an Organization. The lifetime of the Organization and\nall of its descendants are bound to the `OrganizationOwner`. If the\n`OrganizationOwner` is deleted, the Organization and all its descendants will\nbe deleted.",
+      "type": "object",
+      "properties": {
+        "directoryCustomerId": {
+          "description": "The G Suite customer id used in the Directory API.",
+          "type": "string"
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-other-app@appspot.gserviceaccount.com\n      role: roles\/owner\n    - members:\n      - user:sean@example.com\n      role: roles\/viewer\n\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Deprecated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`.\n`bindings` with no members will result in an error.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditConfig"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetIamPolicyRequest": {
+      "id": "GetIamPolicyRequest",
+      "description": "Request message for `GetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Project": {
+      "id": "Project",
+      "description": "A Project is a high-level Google Cloud Platform entity.  It is a\ncontainer for ACLs, APIs, App Engine Apps, VMs, and other\nGoogle Cloud Platform resources.",
+      "type": "object",
+      "properties": {
+        "projectNumber": {
+          "description": "The number uniquely identifying the project.\n\nExample: <code>415104041262<\/code>\nRead-only.",
+          "type": "string",
+          "format": "int64"
+        },
+        "projectId": {
+          "description": "The unique, user-assigned ID of the Project.\nIt must be 6 to 30 lowercase letters, digits, or hyphens.\nIt must start with a letter.\nTrailing hyphens are prohibited.\n\nExample: <code>tokyo-rain-123<\/code>\nRead-only after creation.",
+          "type": "string"
+        },
+        "lifecycleState": {
+          "description": "The Project lifecycle state.\n\nRead-only.",
+          "enumDescriptions": [
+            "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
+            "The normal and active state.",
+            "The project has been marked for deletion by the user\n(by invoking\nDeleteProject)\nor by the system (Google Cloud Platform).\nThis can generally be reversed by invoking UndeleteProject.",
+            "This lifecycle state is no longer used and not returned by the API."
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED",
+            "DELETE_IN_PROGRESS"
+          ]
+        },
+        "name": {
+          "description": "The optional user-assigned display name of the Project.\nWhen present it must be between 4 to 30 characters.\nAllowed characters are: lowercase and uppercase letters, numbers,\nhyphen, single-quote, double-quote, space, and exclamation point.\n\nExample: <code>My Project<\/code>\nRead-write.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Creation time.\n\nRead-only.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels associated with this Project.\n\nLabel keys must be between 1 and 63 characters long and must conform\nto the following regular expression: \\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?.\n\nLabel values must be between 0 and 63 characters long and must conform\nto the regular expression (\\[a-z\\](\\[-a-z0-9\\]*\\[a-z0-9\\])?)?. A label\nvalue can be empty.\n\nNo more than 256 labels can be associated with a given resource.\n\nClients should store labels in a representation such as JSON that does not\ndepend on specific characters being disallowed.\n\nExample: <code>\"environment\" : \"dev\"<\/code>\nRead-write.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "parent": {
+          "description": "An optional reference to a parent Resource.\n\nSupported parent types include \"organization\" and \"folder\". Once set, the\nparent cannot be cleared. The `parent` can be set on creation or using the\n`UpdateProject` method; the end user must have the\n`resourcemanager.projects.create` permission on the parent.\n\nRead-write.",
+          "$ref": "ResourceId"
+        }
+      }
+    },
+    "ResourceId": {
+      "id": "ResourceId",
+      "description": "A container to reference an id for any resource type. A `resource` in Google\nCloud Platform is a generic term for something you (a developer) may want to\ninteract with through one of our API's. Some examples are an App Engine app,\na Compute Engine instance, a Cloud SQL database, and so on.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required field representing the resource type this id is for.\nAt present, the valid types are: \"organization\" and \"folder\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "Required field for the type-specific id. This should correspond to the id\nused in the type-specific API's.",
+          "type": "string"
+        }
+      }
+    },
+    "ListProjectsResponse": {
+      "id": "ListProjectsResponse",
+      "description": "A page of the response received from the\nListProjects\nmethod.\n\nA paginated response where more pages are available has\n`next_page_token` set. This token can be used in a subsequent request to\nretrieve the next request page.",
+      "type": "object",
+      "properties": {
+        "projects": {
+          "description": "The list of Projects that matched the list filter. This list can\nbe paginated.",
+          "type": "array",
+          "items": {
+            "$ref": "Project"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token.\n\nIf the result set is too large to fit in a single response, this token\nis returned. It encodes the position of the current result cursor.\nFeeding this value into a new list request with the `page_token` parameter\ngives the next page of the results.\n\nWhen `next_page_token` is not filled in, there is no next page and\nthe list returned is the last page in the result set.\n\nPagination tokens have a limited lifetime.",
+          "type": "string"
+        }
+      }
+    },
+    "UndeleteProjectRequest": {
+      "id": "UndeleteProjectRequest",
+      "description": "The request sent to the UndeleteProject\nmethod.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetAncestryRequest": {
+      "id": "GetAncestryRequest",
+      "description": "The request sent to the\nGetAncestry\nmethod.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetAncestryResponse": {
+      "id": "GetAncestryResponse",
+      "description": "Response from the GetAncestry method.",
+      "type": "object",
+      "properties": {
+        "ancestor": {
+          "description": "Ancestors are ordered from bottom to top of the resource hierarchy. The\nfirst ancestor is the project itself, followed by the project's parent,\netc..",
+          "type": "array",
+          "items": {
+            "$ref": "Ancestor"
+          }
+        }
+      }
+    },
+    "Ancestor": {
+      "id": "Ancestor",
+      "description": "Identifying information for a single ancestor of a project.",
+      "type": "object",
+      "properties": {
+        "resourceId": {
+          "description": "Resource id of the ancestor.",
+          "$ref": "ResourceId"
+        }
+      }
+    },
+    "ProjectCreationStatus": {
+      "id": "ProjectCreationStatus",
+      "description": "A status object which is used as the `metadata` field for the Operation\nreturned by CreateProject. It provides insight for when significant phases of\nProject creation have completed.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Creation time of the project creation workflow.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "gettable": {
+          "description": "True if the project can be retrieved using GetProject. No other operations\non the project are guaranteed to work until the project creation is\ncomplete.",
+          "type": "boolean"
+        },
+        "ready": {
+          "description": "True if the project creation process is complete.",
+          "type": "boolean"
+        }
+      }
+    },
+    "FolderOperation": {
+      "id": "FolderOperation",
+      "description": "Metadata describing a long running folder operation",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "The display name of the folder.",
+          "type": "string"
+        },
+        "operationType": {
+          "description": "The type of this operation.",
+          "enumDescriptions": [
+            "Operation type not specified.",
+            "A create folder operation.",
+            "A move folder operation."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "CREATE",
+            "MOVE"
+          ]
+        },
+        "sourceParent": {
+          "description": "The resource name of the folder's parent.\nOnly applicable when the operation_type is MOVE.",
+          "type": "string"
+        },
+        "destinationParent": {
+          "description": "The resource name of the folder or organization we are either creating\nthe folder under or moving the folder to.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "liens": {
+      "methods": {
+        "list": {
+          "id": "cloudresourcemanager.liens.list",
+          "path": "v1/liens",
+          "flatPath": "v1/liens",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "The name of the resource to list all attached Liens.\nFor example, `projects\/1234`.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return. This is a suggestion for the server.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The `next_page_token` value returned from a previous List request, if any.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListLiensResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "List all Liens applied to the `parent` resource.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, a Lien with a `parent` of `projects\/1234` requires permission\n`resourcemanager.projects.get`."
+        },
+        "get": {
+          "id": "cloudresourcemanager.liens.get",
+          "path": "v1/liens/{liensId}",
+          "flatPath": "v1/liens/{liensId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "liensId": {
+              "description": "Part of `name`. The name\/identifier of the Lien.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "liensId"
+          ],
+          "response": {
+            "$ref": "Lien"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Retrieve a Lien by `name`.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, a Lien with a `parent` of `projects\/1234` requires permission\nrequires permission `resourcemanager.projects.get` or\n`resourcemanager.projects.updateLiens`."
+        },
+        "create": {
+          "id": "cloudresourcemanager.liens.create",
+          "path": "v1/liens",
+          "flatPath": "v1/liens",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "Lien"
+          },
+          "response": {
+            "$ref": "Lien"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Create a Lien which applies to the resource denoted by the `parent` field.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, applying to `projects\/1234` requires permission\n`resourcemanager.projects.updateLiens`.\n\nNOTE: Some resources may limit the number of Liens which may be applied."
+        },
+        "delete": {
+          "id": "cloudresourcemanager.liens.delete",
+          "path": "v1/liens/{liensId}",
+          "flatPath": "v1/liens/{liensId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "liensId": {
+              "description": "Part of `name`. The name\/identifier of the Lien to delete.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "liensId"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Delete a Lien by `name`.\n\nCallers of this method will require permission on the `parent` resource.\nFor example, a Lien with a `parent` of `projects\/1234` requires permission\n`resourcemanager.projects.updateLiens`."
+        }
+      }
+    },
+    "projects": {
+      "methods": {
+        "listAvailableOrgPolicyConstraints": {
+          "id": "cloudresourcemanager.projects.listAvailableOrgPolicyConstraints",
+          "path": "v1/projects/{projectsId}:listAvailableOrgPolicyConstraints",
+          "flatPath": "v1/projects/{projectsId}:listAvailableOrgPolicyConstraints",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. Name of the resource to list `Constraints` for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "ListAvailableOrgPolicyConstraintsRequest"
+          },
+          "response": {
+            "$ref": "ListAvailableOrgPolicyConstraintsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists `Constraints` that could be applied on the specified resource."
+        },
+        "listOrgPolicies": {
+          "id": "cloudresourcemanager.projects.listOrgPolicies",
+          "path": "v1/projects/{projectsId}:listOrgPolicies",
+          "flatPath": "v1/projects/{projectsId}:listOrgPolicies",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. Name of the resource to list Policies for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "ListOrgPoliciesRequest"
+          },
+          "response": {
+            "$ref": "ListOrgPoliciesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists all the `Policies` set for a particular resource."
+        },
+        "getOrgPolicy": {
+          "id": "cloudresourcemanager.projects.getOrgPolicy",
+          "path": "v1/projects/{projectsId}:getOrgPolicy",
+          "flatPath": "v1/projects/{projectsId}:getOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. Name of the resource the `Policy` is set on.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "GetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets a `Policy` on a resource.\n\nIf no `Policy` is set on the resource, a `Policy` is returned with default\nvalues including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The\n`etag` value can be used with `SetOrgPolicy()` to create or update a\n`Policy` during read-modify-write."
+        },
+        "getEffectiveOrgPolicy": {
+          "id": "cloudresourcemanager.projects.getEffectiveOrgPolicy",
+          "path": "v1/projects/{projectsId}:getEffectiveOrgPolicy",
+          "flatPath": "v1/projects/{projectsId}:getEffectiveOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. The name of the resource to start computing the effective `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "GetEffectiveOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets the effective `Policy` on a resource. This is the result of merging\n`Policies` in the resource hierarchy. The returned `Policy` will not have\nan `etag`set because it is a computed `Policy` across multiple resources.\nSubtrees of Resource Manager resource hierarchy with 'under:' prefix will\nnot be expanded."
+        },
+        "setOrgPolicy": {
+          "id": "cloudresourcemanager.projects.setOrgPolicy",
+          "path": "v1/projects/{projectsId}:setOrgPolicy",
+          "flatPath": "v1/projects/{projectsId}:setOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. Resource name of the resource to attach the `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "SetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates the specified `Policy` on the resource. Creates a new `Policy` for\nthat `Constraint` on the resource if one does not exist.\n\nNot supplying an `etag` on the request `Policy` results in an unconditional\nwrite of the `Policy`."
+        },
+        "clearOrgPolicy": {
+          "id": "cloudresourcemanager.projects.clearOrgPolicy",
+          "path": "v1/projects/{projectsId}:clearOrgPolicy",
+          "flatPath": "v1/projects/{projectsId}:clearOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectsId": {
+              "description": "Part of `resource`. Name of the resource for the `Policy` to clear.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectsId"
+          ],
+          "request": {
+            "$ref": "ClearOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Clears a `Policy` from a resource."
+        },
+        "get": {
+          "id": "cloudresourcemanager.projects.get",
+          "path": "v1/projects/{projectId}",
+          "flatPath": "v1/projects/{projectId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "projectId": {
+              "description": "The Project ID (for example, `my-project-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "response": {
+            "$ref": "Project"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Retrieves the Project identified by the specified\n`project_id` (for example, `my-project-123`).\n\nThe caller must have read permissions for this Project."
+        },
+        "list": {
+          "id": "cloudresourcemanager.projects.list",
+          "path": "v1/projects",
+          "flatPath": "v1/projects",
+          "httpMethod": "GET",
+          "parameters": {
+            "pageToken": {
+              "description": "A pagination token returned from a previous call to ListProjects\nthat indicates from where listing should continue.\n\nOptional.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of Projects to return in the response.\nThe server can return fewer Projects than requested.\nIf unspecified, server picks an appropriate default.\n\nOptional.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "filter": {
+              "description": "An expression for filtering the results of the request.  Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n+ `name`\n+ `id`\n+ <code>labels.<em>key<\/em><\/code> where *key* is the name of a label\n\nSome examples of using labels as filters:\n\n|Filter|Description|\n|------|-----------|\n|name:how*|The project's name starts with \"how\".|\n|name:Howl|The project's name is `Howl` or `howl`.|\n|name:HOWL|Equivalent to above.|\n|NAME:howl|Equivalent to above.|\n|labels.color:*|The project has the label `color`.|\n|labels.color:red|The project's label `color` has the value `red`.|\n|labels.color:red&nbsp;labels.size:big|The project's label `color` has the value `red` and its label `size` has the value `big`.\n\nIf you specify a filter that has both `parent.type` and `parent.id`, then\nthe `resourcemanager.projects.list` permission is checked on the parent.\nIf the user has this permission, all projects under the parent will be\nreturned after remaining filters have been applied. If the user lacks this\npermission, then all projects for which the user has the\n`resourcemanager.projects.get` permission will be returned after remaining\nfilters have been applied. If no filter is specified, the call will return\nprojects for which the user has `resourcemanager.projects.get` permissions.\n\nOptional.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListProjectsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists Projects that are visible to the user and satisfy the\nspecified filter. This method returns Projects in an unspecified order.\nThis method is eventually consistent with project mutations; this means\nthat a newly created project may not appear in the results or recent\nupdates to an existing project may not be reflected in the results. To\nretrieve the latest state of a project, use the\nGetProject method."
+        },
+        "create": {
+          "id": "cloudresourcemanager.projects.create",
+          "path": "v1/projects",
+          "flatPath": "v1/projects",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "Project"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Request that a new Project be created. The result is an Operation which\ncan be used to track the creation process. It is automatically deleted\nafter a few hours, so there is no need to call DeleteOperation.\n\nOur SLO permits Project creation to take up to 30 seconds at the 90th\npercentile. As of 2016-08-29, we are observing 6 seconds 50th percentile\nlatency. 95th percentile latency is around 11 seconds. We recommend\npolling at the 5th second with an exponential backoff.\n\nAuthorization requires the Google IAM permission\n`resourcemanager.projects.create` on the specified parent for the new\nproject. The parent is identified by a specified ResourceId,\nwhich must include both an ID and a type, such as organization.\n\nThis method does not associate the new project with a billing account.\nYou can set or update the billing account associated with a project using\nthe [`projects.updateBillingInfo`]\n(\/billing\/reference\/rest\/v1\/projects\/updateBillingInfo) method."
+        },
+        "update": {
+          "id": "cloudresourcemanager.projects.update",
+          "path": "v1/projects/{projectId}",
+          "flatPath": "v1/projects/{projectId}",
+          "httpMethod": "PUT",
+          "parameters": {
+            "projectId": {
+              "description": "The project ID (for example, `my-project-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "Project"
+          },
+          "response": {
+            "$ref": "Project"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates the attributes of the Project identified by the specified\n`project_id` (for example, `my-project-123`).\n\nThe caller must have modify permissions for this Project."
+        },
+        "delete": {
+          "id": "cloudresourcemanager.projects.delete",
+          "path": "v1/projects/{projectId}",
+          "flatPath": "v1/projects/{projectId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "projectId": {
+              "description": "The Project ID (for example, `foo-bar-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Marks the Project identified by the specified\n`project_id` (for example, `my-project-123`) for deletion.\nThis method will only affect the Project if it has a lifecycle state of\nACTIVE.\n\nThis method changes the Project's lifecycle state from\nACTIVE\nto DELETE_REQUESTED.\nThe deletion starts at an unspecified time,\nat which point the Project is no longer accessible.\n\nUntil the deletion completes, you can check the lifecycle state\nchecked by retrieving the Project with GetProject,\nand the Project remains visible to ListProjects.\nHowever, you cannot update the project.\n\nAfter the deletion completes, the Project is not retrievable by\nthe  GetProject and\nListProjects methods.\n\nThe caller must have modify permissions for this Project."
+        },
+        "undelete": {
+          "id": "cloudresourcemanager.projects.undelete",
+          "path": "v1/projects/{projectId}:undelete",
+          "flatPath": "v1/projects/{projectId}:undelete",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectId": {
+              "description": "The project ID (for example, `foo-bar-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "UndeleteProjectRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Restores the Project identified by the specified\n`project_id` (for example, `my-project-123`).\nYou can only use this method for a Project that has a lifecycle state of\nDELETE_REQUESTED.\nAfter deletion starts, the Project cannot be restored.\n\nThe caller must have modify permissions for this Project."
+        },
+        "getAncestry": {
+          "id": "cloudresourcemanager.projects.getAncestry",
+          "path": "v1/projects/{projectId}:getAncestry",
+          "flatPath": "v1/projects/{projectId}:getAncestry",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectId": {
+              "description": "The Project ID (for example, `my-project-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "GetAncestryRequest"
+          },
+          "response": {
+            "$ref": "GetAncestryResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets a list of ancestors in the resource hierarchy for the Project\nidentified by the specified `project_id` (for example, `my-project-123`).\n\nThe caller must have read permissions for this Project."
+        },
+        "getIamPolicy": {
+          "id": "cloudresourcemanager.projects.getIamPolicy",
+          "path": "v1/projects/{resource}:getIamPolicy",
+          "flatPath": "v1/projects/{resource}:getIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "GetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Returns the IAM access control policy for the specified Project.\nPermission is denied if the policy or the resource does not exist.\n\nAuthorization requires the Google IAM permission\n`resourcemanager.projects.getIamPolicy` on the project.\n\nFor additional information about resource structure and identification,\nsee [Resource Names](\/apis\/design\/resource_names)."
+        },
+        "setIamPolicy": {
+          "id": "cloudresourcemanager.projects.setIamPolicy",
+          "path": "v1/projects/{resource}:setIamPolicy",
+          "flatPath": "v1/projects/{resource}:setIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "SetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Sets the IAM access control policy for the specified Project. Overwrites\nany existing policy.\n\nThe following constraints apply when using `setIamPolicy()`:\n\n+ Project does not support `allUsers` and `allAuthenticatedUsers` as\n`members` in a `Binding` of a `Policy`.\n\n+ The owner role can be granted only to `user` and `serviceAccount`.\n\n+ Service accounts can be made owners of a project directly\nwithout any restrictions. However, to be added as an owner, a user must be\ninvited via Cloud Platform console and must accept the invitation.\n\n+ A user cannot be granted the owner role using `setIamPolicy()`. The user\nmust be granted the owner role using the Cloud Platform Console and must\nexplicitly accept the invitation.\n\n+ You can only grant ownership of a project to a member by using the\nGCP Console. Inviting a member will deliver an invitation email that\nthey must accept. An invitation email is not generated if you are\ngranting a role other than owner, or if both the member you are inviting\nand the project are part of your organization.\n\n+ Membership changes that leave the project without any owners that have\naccepted the Terms of Service (ToS) will be rejected.\n\n+ If the project is not part of an organization, there must be at least\none owner who has accepted the Terms of Service (ToS) agreement in the\npolicy. Calling `setIamPolicy()` to remove the last ToS-accepted owner\nfrom the policy will fail. This restriction also applies to legacy\nprojects that no longer have owners who have accepted the ToS. Edits to\nIAM policies will be rejected until the lack of a ToS-accepting owner is\nrectified.\n\n+ This method will replace the existing policy, and cannot be used to\nappend additional IAM settings.\n\nNote: Removing service accounts from policies or changing their roles\ncan render services completely inoperable. It is important to understand\nhow the service account is being used before removing or updating its\nroles.\n\nAuthorization requires the Google IAM permission\n`resourcemanager.projects.setIamPolicy` on the project"
+        },
+        "testIamPermissions": {
+          "id": "cloudresourcemanager.projects.testIamPermissions",
+          "path": "v1/projects/{resource}:testIamPermissions",
+          "flatPath": "v1/projects/{resource}:testIamPermissions",
+          "httpMethod": "POST",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "TestIamPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestIamPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call."
+        }
+      }
+    },
+    "folders": {
+      "methods": {
+        "listAvailableOrgPolicyConstraints": {
+          "id": "cloudresourcemanager.folders.listAvailableOrgPolicyConstraints",
+          "path": "v1/folders/{foldersId}:listAvailableOrgPolicyConstraints",
+          "flatPath": "v1/folders/{foldersId}:listAvailableOrgPolicyConstraints",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. Name of the resource to list `Constraints` for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "ListAvailableOrgPolicyConstraintsRequest"
+          },
+          "response": {
+            "$ref": "ListAvailableOrgPolicyConstraintsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists `Constraints` that could be applied on the specified resource."
+        },
+        "listOrgPolicies": {
+          "id": "cloudresourcemanager.folders.listOrgPolicies",
+          "path": "v1/folders/{foldersId}:listOrgPolicies",
+          "flatPath": "v1/folders/{foldersId}:listOrgPolicies",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. Name of the resource to list Policies for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "ListOrgPoliciesRequest"
+          },
+          "response": {
+            "$ref": "ListOrgPoliciesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists all the `Policies` set for a particular resource."
+        },
+        "getOrgPolicy": {
+          "id": "cloudresourcemanager.folders.getOrgPolicy",
+          "path": "v1/folders/{foldersId}:getOrgPolicy",
+          "flatPath": "v1/folders/{foldersId}:getOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. Name of the resource the `Policy` is set on.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "GetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets a `Policy` on a resource.\n\nIf no `Policy` is set on the resource, a `Policy` is returned with default\nvalues including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The\n`etag` value can be used with `SetOrgPolicy()` to create or update a\n`Policy` during read-modify-write."
+        },
+        "getEffectiveOrgPolicy": {
+          "id": "cloudresourcemanager.folders.getEffectiveOrgPolicy",
+          "path": "v1/folders/{foldersId}:getEffectiveOrgPolicy",
+          "flatPath": "v1/folders/{foldersId}:getEffectiveOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. The name of the resource to start computing the effective `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "GetEffectiveOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets the effective `Policy` on a resource. This is the result of merging\n`Policies` in the resource hierarchy. The returned `Policy` will not have\nan `etag`set because it is a computed `Policy` across multiple resources.\nSubtrees of Resource Manager resource hierarchy with 'under:' prefix will\nnot be expanded."
+        },
+        "setOrgPolicy": {
+          "id": "cloudresourcemanager.folders.setOrgPolicy",
+          "path": "v1/folders/{foldersId}:setOrgPolicy",
+          "flatPath": "v1/folders/{foldersId}:setOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. Resource name of the resource to attach the `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "SetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates the specified `Policy` on the resource. Creates a new `Policy` for\nthat `Constraint` on the resource if one does not exist.\n\nNot supplying an `etag` on the request `Policy` results in an unconditional\nwrite of the `Policy`."
+        },
+        "clearOrgPolicy": {
+          "id": "cloudresourcemanager.folders.clearOrgPolicy",
+          "path": "v1/folders/{foldersId}:clearOrgPolicy",
+          "flatPath": "v1/folders/{foldersId}:clearOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "foldersId": {
+              "description": "Part of `resource`. Name of the resource for the `Policy` to clear.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "foldersId"
+          ],
+          "request": {
+            "$ref": "ClearOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Clears a `Policy` from a resource."
+        }
+      }
+    },
+    "organizations": {
+      "methods": {
+        "listAvailableOrgPolicyConstraints": {
+          "id": "cloudresourcemanager.organizations.listAvailableOrgPolicyConstraints",
+          "path": "v1/organizations/{organizationsId}:listAvailableOrgPolicyConstraints",
+          "flatPath": "v1/organizations/{organizationsId}:listAvailableOrgPolicyConstraints",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. Name of the resource to list `Constraints` for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "ListAvailableOrgPolicyConstraintsRequest"
+          },
+          "response": {
+            "$ref": "ListAvailableOrgPolicyConstraintsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists `Constraints` that could be applied on the specified resource."
+        },
+        "listOrgPolicies": {
+          "id": "cloudresourcemanager.organizations.listOrgPolicies",
+          "path": "v1/organizations/{organizationsId}:listOrgPolicies",
+          "flatPath": "v1/organizations/{organizationsId}:listOrgPolicies",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. Name of the resource to list Policies for.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "ListOrgPoliciesRequest"
+          },
+          "response": {
+            "$ref": "ListOrgPoliciesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists all the `Policies` set for a particular resource."
+        },
+        "getOrgPolicy": {
+          "id": "cloudresourcemanager.organizations.getOrgPolicy",
+          "path": "v1/organizations/{organizationsId}:getOrgPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:getOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. Name of the resource the `Policy` is set on.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "GetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets a `Policy` on a resource.\n\nIf no `Policy` is set on the resource, a `Policy` is returned with default\nvalues including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The\n`etag` value can be used with `SetOrgPolicy()` to create or update a\n`Policy` during read-modify-write."
+        },
+        "getEffectiveOrgPolicy": {
+          "id": "cloudresourcemanager.organizations.getEffectiveOrgPolicy",
+          "path": "v1/organizations/{organizationsId}:getEffectiveOrgPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:getEffectiveOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. The name of the resource to start computing the effective `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "GetEffectiveOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets the effective `Policy` on a resource. This is the result of merging\n`Policies` in the resource hierarchy. The returned `Policy` will not have\nan `etag`set because it is a computed `Policy` across multiple resources.\nSubtrees of Resource Manager resource hierarchy with 'under:' prefix will\nnot be expanded."
+        },
+        "setOrgPolicy": {
+          "id": "cloudresourcemanager.organizations.setOrgPolicy",
+          "path": "v1/organizations/{organizationsId}:setOrgPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:setOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. Resource name of the resource to attach the `Policy`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "SetOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "OrgPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates the specified `Policy` on the resource. Creates a new `Policy` for\nthat `Constraint` on the resource if one does not exist.\n\nNot supplying an `etag` on the request `Policy` results in an unconditional\nwrite of the `Policy`."
+        },
+        "clearOrgPolicy": {
+          "id": "cloudresourcemanager.organizations.clearOrgPolicy",
+          "path": "v1/organizations/{organizationsId}:clearOrgPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:clearOrgPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. Name of the resource for the `Policy` to clear.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "ClearOrgPolicyRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Clears a `Policy` from a resource."
+        },
+        "search": {
+          "id": "cloudresourcemanager.organizations.search",
+          "path": "v1/organizations:search",
+          "flatPath": "v1/organizations:search",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "SearchOrganizationsRequest"
+          },
+          "response": {
+            "$ref": "SearchOrganizationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Searches Organization resources that are visible to the user and satisfy\nthe specified filter. This method returns Organizations in an unspecified\norder. New Organizations do not necessarily appear at the end of the\nresults.\n\nSearch will only return organizations on which the user has the permission\n`resourcemanager.organizations.get`"
+        },
+        "get": {
+          "id": "cloudresourcemanager.organizations.get",
+          "path": "v1/organizations/{organizationsId}",
+          "flatPath": "v1/organizations/{organizationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `name`. The resource name of the Organization to fetch. This is the organization's\nrelative path in the API, formatted as \"organizations\/[organizationId]\".\nFor example, \"organizations\/1234\".",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "response": {
+            "$ref": "Organization"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Fetches an Organization resource identified by the specified resource name."
+        },
+        "setIamPolicy": {
+          "id": "cloudresourcemanager.organizations.setIamPolicy",
+          "path": "v1/organizations/{organizationsId}:setIamPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:setIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "SetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Sets the access control policy on an Organization resource. Replaces any\nexisting policy. The `resource` field should be the organization's resource\nname, e.g. \"organizations\/123\".\n\nAuthorization requires the Google IAM permission\n`resourcemanager.organizations.setIamPolicy` on the specified organization"
+        },
+        "getIamPolicy": {
+          "id": "cloudresourcemanager.organizations.getIamPolicy",
+          "path": "v1/organizations/{organizationsId}:getIamPolicy",
+          "flatPath": "v1/organizations/{organizationsId}:getIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "GetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets the access control policy for an Organization resource. May be empty\nif no such policy or resource exists. The `resource` field should be the\norganization's resource name, e.g. \"organizations\/123\".\n\nAuthorization requires the Google IAM permission\n`resourcemanager.organizations.getIamPolicy` on the specified organization"
+        },
+        "testIamPermissions": {
+          "id": "cloudresourcemanager.organizations.testIamPermissions",
+          "path": "v1/organizations/{organizationsId}:testIamPermissions",
+          "flatPath": "v1/organizations/{organizationsId}:testIamPermissions",
+          "httpMethod": "POST",
+          "parameters": {
+            "organizationsId": {
+              "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "organizationsId"
+          ],
+          "request": {
+            "$ref": "TestIamPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestIamPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Returns permissions that a caller has on the specified Organization.\nThe `resource` field should be the organization's resource name,\ne.g. \"organizations\/123\".\n\nThere are no permissions required for making this API call."
+        }
+      }
+    },
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "cloudresourcemanager.operations.get",
+          "path": "v1/operations/{operationsId}",
+          "flatPath": "v1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "operationsId": {
+              "description": "Part of `name`. The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "operationsId"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

@@ -1,0 +1,19 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: List Edge Containers in the device.
+    description: List Edge Containers in a device.
+
+  request:
+    collection: edge.projects.locations.registries.devices.containers
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: The Edge device in which to list the Edge Containers for.
+      spec: !REF googlecloudsdk.command_lib.iot.edge.resources:device
+
+  output:
+    format: table(name, dockerImageUri, updateTime)

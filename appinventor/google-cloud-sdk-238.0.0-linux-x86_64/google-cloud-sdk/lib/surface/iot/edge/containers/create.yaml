@@ -1,0 +1,38 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Create an Edge Container.
+    description: Create an Edge Container.
+
+  request:
+    collection: edge.projects.locations.registries.devices.containers
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.iot.edge.util:ContainerNameAnnotateHook
+    - googlecloudsdk.command_lib.iot.edge.util:ContainerAddDefaultTopicHook
+
+  arguments:
+    resource:
+      help_text: The Edge Container you want to create.
+      spec: !REF googlecloudsdk.command_lib.iot.edge.resources:container
+
+    params:
+    - _REF_: googlecloudsdk.command_lib.iot.edge.containers.flags:docker_image
+    - _REF_: googlecloudsdk.command_lib.iot.edge.containers.flags:autostart
+    - _REF_: googlecloudsdk.command_lib.iot.edge.containers.flags:description
+    - _REF_: googlecloudsdk.command_lib.iot.edge.flags:memory
+      api_field: container.availableMemoryMb
+    - _REF_: googlecloudsdk.command_lib.iot.edge.flags:input_topic
+      api_field: container.inputTopics
+    - _REF_: googlecloudsdk.command_lib.iot.edge.flags:output_topic
+      api_field: container.outputTopics
+    - _REF_: googlecloudsdk.command_lib.iot.edge.flags:volume_binding
+      api_field: container.volumeBindings
+    - _REF_: googlecloudsdk.command_lib.iot.edge.flags:device_binding
+      api_field: container.deviceBindings
+    - group:
+        mutex: true
+        params:
+        - _REF_: googlecloudsdk.command_lib.iot.edge.flags:env_vars
+          api_field: container.environmentVariables.additionalProperties
+        - _REF_: googlecloudsdk.command_lib.iot.edge.flags:env_vars_file
+          api_field: container.environmentVariables.additionalProperties

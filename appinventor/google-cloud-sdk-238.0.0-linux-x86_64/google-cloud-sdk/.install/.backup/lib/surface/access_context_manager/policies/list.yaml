@@ -1,0 +1,28 @@
+- release_tracks: [ALPHA, BETA, GA]
+
+  help_text:
+    brief: List access policies.
+    description: List access policies.
+
+  request:
+    collection: accesscontextmanager.accessPolicies
+    api_version: v1
+    BETA:
+      api_version: v1beta
+    ALPHA:
+      api_version: v1beta
+    resource_method_params:
+      parent: ''
+
+  arguments:
+    resource:
+      help_text: The parent organization of the policies you want to list.
+      spec: !REF googlecloudsdk.command_lib.organizations.resources:organization
+
+  output:
+    format: |
+      table(
+          name.basename(),
+          parent.basename():label=ORGANIZATION,
+          title
+      )

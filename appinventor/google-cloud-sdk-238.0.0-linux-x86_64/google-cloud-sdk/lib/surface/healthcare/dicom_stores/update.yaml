@@ -1,0 +1,18 @@
+- help_text:
+    brief:  Update a Cloud Healthcare API DICOM store.
+    description: Update a Cloud Healthcare API DICOM store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.dicomStores
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API DICOM to update.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dicom_store
+
+    params:
+    - api_field: dicomStore.notificationConfig.pubsubTopic
+      arg_name: pubsub-topic
+      help_text: |
+        Google Cloud Pub/Sub topic to send updates to.

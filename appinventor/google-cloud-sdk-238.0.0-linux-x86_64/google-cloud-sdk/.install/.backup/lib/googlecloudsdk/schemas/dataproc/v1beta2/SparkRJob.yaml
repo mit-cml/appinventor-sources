@@ -1,0 +1,68 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 SparkRJob export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- mainRFileUri
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  archiveUris:
+    description: |-
+      HCFS URIs of archives to be extracted in the working directory of Spark
+      drivers and tasks. Supported file types: .jar, .tar, .tar.gz, .tgz, and
+      .zip.
+    type: array
+    items:
+      type: string
+  args:
+    description: |-
+      The arguments to pass to the driver. Do not include arguments, such as
+      --conf, that can be set as job properties, since a collision may occur
+      that causes an incorrect job submission.
+    type: array
+    items:
+      type: string
+  fileUris:
+    description: |-
+      HCFS URIs of files to be copied to the working directory of R
+      drivers and distributed tasks. Useful for naively parallel tasks.
+    type: array
+    items:
+      type: string
+  loggingConfig: {$ref: "LoggingConfig.yaml"}
+  mainRFileUri:
+    description: |-
+      The HCFS URI of the main R file to use as the driver. Must be
+      a .R file.
+    type: string
+  properties:
+    description: |-
+      A mapping of property names to values, used to configure
+      SparkR. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/spark/conf/spark-defaults.conf and classes in user code.
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string

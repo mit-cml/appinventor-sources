@@ -1,3 +1,0 @@
-jarprocessor.exclude.sign=true
-jarprocessor.exclude.children=true
-jarprocessor.exclude.pack=true
