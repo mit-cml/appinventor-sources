@@ -1,0 +1,37 @@
+<!--
+  Copyright 2011 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License. You may obtain a copy of
+  the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  License for the specific language governing permissions and limitations under
+  the License.
+-->
+
+<!-- SafeCss - facilities for avoiding XSS attacks                         -->
+<!--                                                                       -->
+<module>
+  <inherits name="com.google.gwt.core.Core"/>
+  <inherits name="com.google.gwt.dom.DOM" />
+  <inherits name="com.google.gwt.useragent.UserAgent"/>
+
+  <replace-with class="com.google.gwt.safecss.shared.SafeStylesUtils.ImplIE8">
+    <when-type-is class="com.google.gwt.safecss.shared.SafeStylesUtils.Impl" />
+    <when-property-is name="user.agent" value="ie8" />
+  </replace-with>
+
+  <!-- Override IE9 fallback. -->
+  <replace-with class="com.google.gwt.safecss.shared.SafeStylesUtils.Impl">
+    <when-type-is class="com.google.gwt.safecss.shared.SafeStylesUtils.Impl" />
+    <when-property-is name="user.agent" value="ie9" />
+  </replace-with>
+
+  <source path="shared"/>
+  <super-source path="super"/>
+</module>

@@ -1,0 +1,138 @@
+<!--                                                                        -->
+<!-- Copyright 2009 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Compiler parameters that can be overridden .    -->
+<!--                                                                        -->
+<module>
+  <!--
+    A user-specified initial load sequence for the runAsync calls. Each entry should specify the
+    surrounding method immediately enclosing the call, using a full JSNI reference.
+  -->
+  <define-configuration-property name='compiler.splitpoint.initial.sequence'
+    is-multi-valued='true' />
+
+  <!--
+   A user-specified limit in bytes where fragments smaller than the limit are
+   rolled into the leftovers fragment.
+   -->
+  <define-configuration-property name='compiler.splitpoint.leftovermerge.size'
+                                   is-multi-valued='false' />
+
+  <!--
+    Whether or not the compiler should predeclare variables that are defined
+    outside the initial download and are referenced from a different code
+    fragment than the one defining them. This is usually determined by which
+    linker is used and is not directly meaningful to users.
+  -->
+  <define-property name="compiler.predeclare.cross.fragment.references"
+    values="true,false" />
+  <set-property name="compiler.predeclare.cross.fragment.references"
+    value="false" />
+
+  <!--
+    Whether or not the compiler should alter Enum.name() to return
+    ordinal() as a way of obfuscating Enum field identifiers. 
+    A value of 'true' returns the ordinal.
+  -->
+   <define-configuration-property name="compiler.enum.obfuscate.names"
+      is-multi-valued='false' />
+   <set-configuration-property name="compiler.enum.obfuscate.names"
+      value="false" />
+
+  <!--
+    A list of fully qualified Enum class names to exclude from Enum.name() obfuscate.
+  -->
+   <define-configuration-property name="compiler.enum.obfuscate.names.blacklist"
+      is-multi-valued="true" />
+    
+  <!-- From here down, the properties are unsupported and are only available for test cases -->
+
+  <!--
+    This is the maximum number of variables in any var statement GWT
+    will emit. This avoids a bug in some browsers including
+    the initial beta of Safari 4. See Issue 3455. If it is set to -1,
+    then there is no limit.
+  -->
+  <define-configuration-property name='compiler.max.vars.per.var'
+    is-multi-valued='false' />
+  <set-configuration-property name='compiler.max.vars.per.var' value='2400' />
+
+  <!--
+    The iframe linker chunks its output into multiple <script> tags. The default size is fine for
+    production use; it is overridable mainly for test cases. This size must be small enough that
+    block-size restrictions in IE are satisfied, because the script tag chunking undoes
+    JsIEBlockSizeVisitor.  If it's set to -1, then no chunking is performed and
+    JsIEBlockSizeVisitor has its usual effect.
+  -->
+  <define-configuration-property name="iframe.linker.script.chunk.size"
+    is-multi-valued="false" />
+  <set-configuration-property name="iframe.linker.script.chunk.size"
+    value="30000" />
+
+  <!--
+    The compiler emits deferred code into a deferredjs subdirectory of the
+    output. This property allows test cases to have the iframe linker
+    load the deferred code from a different subdirectory.
+  -->
+  <define-configuration-property name="iframe.linker.deferredjs.subdir"
+    is-multi-valued="false" />
+  <set-configuration-property name="iframe.linker.deferredjs.subdir"
+    value="deferredjs" />
+
+  <!--
+     Specifies whether a given permutation has source map support enabled.
+  -->
+  <define-property name="compiler.useSourceMaps" values="true,false"/>
+  <set-property name="compiler.useSourceMaps" value="false"/>
+
+  <!--
+     Specifies whether a given permutation has symbol map support enabled.
+  -->
+  <define-property name="compiler.useSymbolMaps" values="true,false"/>
+  <set-property name="compiler.useSymbolMaps" value="false"/>
+
+  <!--
+    Specifies an additional list of Javascript identifiers which are disallowed
+    as symbols in the module output.
+  -->
+  <define-configuration-property name="js.identifier.blacklist"
+                                 is-multi-valued="true"/>
+
+  <!--
+    Specifies an additional list of Javascript identifiers which are disallowed
+    as symbols in the module output if they end with one of the given
+    case insensitive suffixes.
+   -->
+  <define-configuration-property name="js.identifier.blacklist.suffixes"
+                                   is-multi-valued="true"/>
+
+  <!--
+    Specifies that @JsExport assignments are fully qualified expressions. This increases code
+    size, but allows closure compiler integration to work better by letting closure rename the
+    namespaces of exports to top level global variables.
+  -->
+  <define-configuration-property name="js.export.closurestyle.fullyqualified"
+                                   is-multi-valued="false"/>
+  <set-configuration-property name="js.export.closurestyle.fullyqualified"
+                                value="false" />
+
+  <!--
+    Specifies that a binding property should be included in the $gwt.permProps variable
+    in the generated JavaScript. This will allow Super Dev Mode to pick it up
+    regardless of how many permutations are generated.
+  -->
+  <define-configuration-property name="js.embedded.properties" is-multi-valued="true"/>
+  <extend-configuration-property name="js.embedded.properties" value="locale"/>
+  <extend-configuration-property name="js.embedded.properties" value="user.agent"/>
+</module>

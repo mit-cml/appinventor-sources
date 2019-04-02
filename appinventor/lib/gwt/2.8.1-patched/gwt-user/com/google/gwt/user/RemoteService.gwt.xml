@@ -1,0 +1,102 @@
+<!--                                                                        -->
+<!-- Copyright 2008 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Remote Procedure Call support.                                         -->
+<module>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.user.AsyncCallback" />
+  <inherits name="com.google.gwt.user.RemoteServiceDTO" />
+  <source path="client" includes="rpc/">
+    <skip name="rpc/AsyncCallback.java" />
+    <skip name="rpc/CustomFieldSerializer.java" />
+    <skip name="rpc/GwtTransient.java" />
+    <skip name="rpc/IsSerializable.java" />
+    <skip name="rpc/SerializationException.java" />
+    <skip name="rpc/SerializationStreamReader.java" />
+    <skip name="rpc/SerializationStreamWriter.java" />
+  </source>
+  <super-source path="translatable" includes="com/google/gwt/user/client/rpc/**" />
+
+  <!--
+    Declare a property to determine whether warnings for final instance
+    fields should be suppressed.
+  -->
+  <define-property name="gwt.suppressNonStaticFinalFieldWarnings" values="true,false" />
+
+  <!--
+      Default warning for non-static, final fields enabled
+  -->
+  <set-property name="gwt.suppressNonStaticFinalFieldWarnings" value="false" />
+
+  <!--
+      If this is ever turned on by default, fix up RPCSuiteWithElision
+  -->
+  <define-configuration-property name="gwt.elideTypeNamesFromRPC" is-multi-valued="false" />
+  <set-configuration-property name="gwt.elideTypeNamesFromRPC" value="false" />
+
+  <!--
+      Declare a property to determine whether final fields should be serialized.
+
+      ATTENTION:
+      This property is experimental and can change/disappear any time in the future.
+      It is not well-tested and provided as an option so that we can get feedback
+      from developers.
+      At this moment, we don't recommend any downstream libraries to rely on existence
+      of this option. Instead we encourage them to keep their custom serializers and
+      run their tests without enabling the option.
+
+      One of the potential implications of enabling this option is the code size. This
+      is because it forces us to traverse the final fields which weren't traversed earlier
+      and those fields might have a too broad definition like java.lang.Object. This can
+      result in pulling in a lot of new types for serialization. So we recommend you to
+      check the size of the generated JavaScript after the flag is enabled.
+      If you encounter such issue, one way to solve is marking the field as transient
+      (via transient keyword or @GwtTransient annotation), or use rpc.blacklist property
+      to block the new types.
+  -->
+  <define-property name="rpc.XserializeFinalFields" values="false,true" />
+
+  <!--
+      Default value for rpc serialization on final fields.
+  -->
+  <set-property name="rpc.XserializeFinalFields" value="false" />
+
+  <!--
+      Contains regular expressions, optionally prefixed with '+' or '-'.
+      Each type being considered for serialization is tested against the
+      list of expressions in order, and if there is a match it is added to the
+      blacklist (if the prefix is '-' or no prefix is present), or removed (if
+      the prefix is '+').  If multiple entries in the list match a supplied
+      class, then the last one 'wins.'  For generic types, the regular
+      expression is applied to just the base class's fully qualified name.
+  -->
+  <define-configuration-property name="rpc.blacklist" is-multi-valued="true" />
+
+  <!--
+      Contains a list of fully-qualified class names indicating classes that
+      should be treated as being enhanced on the server with additional fields.
+      These classes will be treated specially by RPC.
+  -->
+  <define-configuration-property name="rpc.enhancedClasses" is-multi-valued="true"/>
+
+  <generate-with class="com.google.gwt.user.rebind.rpc.ServiceInterfaceProxyGenerator">
+    <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService"/>
+  </generate-with>
+
+  <define-linker name="rpcLog" class="com.google.gwt.user.linker.rpc.RpcLogLinker" />
+  <add-linker name="rpcLog" />
+
+  <define-linker name="rpcPolicyManifest" class="com.google.gwt.user.linker.rpc.RpcPolicyManifestLinker" />
+  <add-linker name="rpcPolicyManifest" />
+</module>

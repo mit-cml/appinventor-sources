@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                                                                        -->
+<!-- Copyright 2009 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Defines support stack traces -->
+<module>
+
+  <!-- Legacy property. Do NOT use. See 'compiler.stackMode' instead. -->
+  <define-property name="compiler.emulatedStack" values="true,false" />
+  <set-property name="compiler.emulatedStack" value="false" />
+
+  <!-- If set to true, this will add line number data to the stack trace data -->
+  <define-configuration-property name="compiler.emulatedStack.recordLineNumbers"
+    is-multi-valued="false" />
+
+  <!-- Implies recordLineNumbers and adds source file name data to emitted JS -->
+  <define-configuration-property name="compiler.emulatedStack.recordFileNames"
+    is-multi-valued="false" />
+ 
+  <!-- if set to 'strip', stack information can be removed or corrupted -->
+  <define-property name="compiler.stackMode" values="strip,native,emulated" />
+  <set-property name="compiler.stackMode" value="native" />
+  <set-property name="compiler.stackMode" value="emulated" >
+    <when-property-is name="compiler.emulatedStack" value="true" />
+  </set-property>  
+
+  <replace-with class="com.google.gwt.core.client.impl.StackTraceCreator.CollectorEmulated">
+    <when-type-is class="com.google.gwt.core.client.impl.StackTraceCreator.Collector" />
+    <when-property-is name="compiler.stackMode" value="emulated" />
+  </replace-with>
+
+  <replace-with class="com.google.gwt.core.client.impl.StackTraceCreator.CollectorModernNoSourceMap">
+    <when-type-is class="com.google.gwt.core.client.impl.StackTraceCreator.Collector" />
+    <when-property-is name="compiler.stackMode" value="native" />
+  </replace-with>
+
+
+  <replace-with class="com.google.gwt.core.client.impl.StackTraceCreator.CollectorNull">
+    <when-type-is class="com.google.gwt.core.client.impl.StackTraceCreator.Collector" />
+    <when-property-is name="compiler.stackMode" value="strip" />
+  </replace-with>
+</module>

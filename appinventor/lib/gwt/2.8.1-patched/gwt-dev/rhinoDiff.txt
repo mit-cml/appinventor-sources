@@ -1,0 +1,1476 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..ed66187
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,4 @@
++/lib
++/build
++.project
++.classpath
+diff --git a/src/org/mozilla/javascript/Arguments.java b/src/org/mozilla/javascript/Arguments.java
+index f7027bc..6bd55cf 100644
+--- a/src/org/mozilla/javascript/Arguments.java
++++ b/src/org/mozilla/javascript/Arguments.java
+@@ -14,7 +14,7 @@ package org.mozilla.javascript;
+  * @see org.mozilla.javascript.NativeCall
+  * @author Norris Boyd
+  */
+-final class Arguments extends IdScriptableObject
++class Arguments extends IdScriptableObject
+ {
+     static final long serialVersionUID = 4275508002492040609L;
+ 
+@@ -47,9 +47,27 @@ final class Arguments extends IdScriptableObject
+         }
+     }
+ 
++    public Arguments(final Arguments original) {
++        this.activation = original.activation;
++
++        setParentScope(original.getParentScope());
++        setPrototype(original.getPrototype());
++
++        args = original.args;
++        lengthObj = original.lengthObj;
++        calleeObj = original.calleeObj;
++
++        constructor = original.constructor;
++        callerObj = original.callerObj;
++    }
++    
++    
+     @Override
+     public String getClassName()
+     {
++        if (Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_ARGUMENTS_IS_OBJECT)) {
++            return "Object";
++        }
+         return FTAG;
+     }
+ 
+@@ -75,7 +93,7 @@ final class Arguments extends IdScriptableObject
+         putIntoActivation(index, value);
+       }
+       synchronized (this) {
+-        if (args == activation.originalArgs) {
++        if (activation != null && args == activation.originalArgs) {
+           args = args.clone();
+         }
+         args[index] = value;
+@@ -356,6 +374,11 @@ final class Arguments extends IdScriptableObject
+       }
+     }
+ 
++    @Override
++    public Object getDefaultValue(Class<?> typeHint) {
++        return "[object " + getClassName() + "]";
++    }
++
+ // Fields to hold caller, callee and length properties,
+ // where NOT_FOUND value tags deleted properties.
+ // In addition if callerObj == NULL_VALUE, it tags null for scripts, as
+diff --git a/src/org/mozilla/javascript/BaseFunction.java b/src/org/mozilla/javascript/BaseFunction.java
+index cfc56b9..945c285 100644
+--- a/src/org/mozilla/javascript/BaseFunction.java
++++ b/src/org/mozilla/javascript/BaseFunction.java
+@@ -293,9 +293,6 @@ public class BaseFunction extends IdScriptableObject implements Function
+     private BaseFunction realFunction(Scriptable thisObj, IdFunctionObject f)
+     {
+         Object x = thisObj.getDefaultValue(ScriptRuntime.FunctionClass);
+-        if (x instanceof Delegator) {
+-            x = ((Delegator)x).getDelegee();
+-        }
+         if (x instanceof BaseFunction) {
+             return (BaseFunction)x;
+         }
+diff --git a/src/org/mozilla/javascript/ClassCache.java b/src/org/mozilla/javascript/ClassCache.java
+index 09a7ec3..493ab2c 100644
+--- a/src/org/mozilla/javascript/ClassCache.java
++++ b/src/org/mozilla/javascript/ClassCache.java
+@@ -7,7 +7,7 @@
+ package org.mozilla.javascript;
+ 
+ import java.util.Map;
+-import java.util.concurrent.ConcurrentHashMap;
++import java.util.HashMap;
+ import java.io.Serializable;
+ 
+ /**
+@@ -23,9 +23,9 @@ public class ClassCache implements Serializable
+     private static final long serialVersionUID = -8866246036237312215L;
+     private static final Object AKEY = "ClassCache";
+     private volatile boolean cachingIsEnabled = true;
+-    private transient Map<Class<?>,JavaMembers> classTable;
+-    private transient Map<JavaAdapter.JavaAdapterSignature,Class<?>> classAdapterCache;
+-    private transient Map<Class<?>,Object> interfaceAdapterCache;
++    private transient HashMap<Class<?>,JavaMembers> classTable;
++    private transient HashMap<JavaAdapter.JavaAdapterSignature,Class<?>> classAdapterCache;
++    private transient HashMap<Class<?>,Object> interfaceAdapterCache;
+     private int generatedClassSerial;
+     private Scriptable associatedScope;
+ 
+@@ -128,9 +128,7 @@ public class ClassCache implements Serializable
+      */
+     Map<Class<?>,JavaMembers> getClassCacheMap() {
+         if (classTable == null) {
+-            // Use 1 as concurrency level here and for other concurrent hash maps
+-            // as we don't expect high levels of sustained concurrent writes.
+-            classTable = new ConcurrentHashMap<Class<?>,JavaMembers>(16, 0.75f, 1);
++            classTable = new HashMap<Class<?>,JavaMembers>();
+         }
+         return classTable;
+     }
+@@ -138,7 +136,7 @@ public class ClassCache implements Serializable
+     Map<JavaAdapter.JavaAdapterSignature,Class<?>> getInterfaceAdapterCacheMap()
+     {
+         if (classAdapterCache == null) {
+-            classAdapterCache = new ConcurrentHashMap<JavaAdapter.JavaAdapterSignature,Class<?>>(16, 0.75f, 1);
++            classAdapterCache = new HashMap<JavaAdapter.JavaAdapterSignature,Class<?>>();
+         }
+         return classAdapterCache;
+     }
+@@ -186,7 +184,7 @@ public class ClassCache implements Serializable
+     {
+         if (cachingIsEnabled) {
+             if (interfaceAdapterCache == null) {
+-                interfaceAdapterCache = new ConcurrentHashMap<Class<?>,Object>(16, 0.75f, 1);
++                interfaceAdapterCache = new HashMap<Class<?>,Object>();
+             }
+             interfaceAdapterCache.put(cl, iadapter);
+         }
+diff --git a/src/org/mozilla/javascript/CodeGenerator.java b/src/org/mozilla/javascript/CodeGenerator.java
+index abc2113..55b0f3c 100644
+--- a/src/org/mozilla/javascript/CodeGenerator.java
++++ b/src/org/mozilla/javascript/CodeGenerator.java
+@@ -10,6 +10,7 @@ import org.mozilla.javascript.ast.AstRoot;
+ import org.mozilla.javascript.ast.ScriptNode;
+ import org.mozilla.javascript.ast.Jump;
+ import org.mozilla.javascript.ast.FunctionNode;
++import org.mozilla.javascript.ast.VariableInitializer;
+ 
+ /**
+  * Generates bytecode for the Interpreter.
+@@ -100,6 +101,7 @@ class CodeGenerator extends Icode {
+           addIcode(Icode_GENERATOR);
+           addUint16(theFunction.getBaseLineno() & 0xFFFF);
+         }
++        itsData.declaredAsVar = (theFunction.getParent() instanceof VariableInitializer);
+ 
+         generateICodeFromTree(theFunction.getLastChild());
+     }
+diff --git a/src/org/mozilla/javascript/Context.java b/src/org/mozilla/javascript/Context.java
+index df4c4c0..850f68f 100644
+--- a/src/org/mozilla/javascript/Context.java
++++ b/src/org/mozilla/javascript/Context.java
+@@ -283,6 +283,123 @@ public class Context
+      */
+     public static final int FEATURE_ENHANCED_JAVA_ACCESS = 13;
+ 
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * The same web browser (e.g. FF) may allow setting read-only property, 
++     * ignores setting the read-only property, or even throw an exception.
++     *
++     * So, by having this feature, ScriptableObject itself is asked throw
++     * {@link ScriptableObject#isReadOnlySettable} whether to allow, ignore or throw an exception.
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_ASK_OBJECT_TO_WRITE_READONLY = 14;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     * Indicates if a JavaScript catch statement can catch Java exceptions
++     * (exceptions occurring in host objects).
++     * By default {@link #hasFeature(int)} returns true.
++     */
++    public static final int FEATURE_HTMLUNIT_JS_CATCH_JAVA_EXCEPTION = 15;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Is the default value of {@link Arguments} "Object" or "Arguments"
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_ARGUMENTS_IS_OBJECT = 16;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * When setting the function name to call, call thisObject.setter.
++     *
++     * This is needed for something like "function onclick() {onclick = null}"
++     *
++     * Implemented by transforming it into "function onclick() {<b>this.</b>onclick = null}"
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_FUNCTION_NULL_SETTER = 17;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Whether the "someFunc.arguments" is a read-only view of the function argument
++     * or the real arguments.
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_FN_ARGUMENTS_IS_RO_VIEW = 18;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that 'eval' function should have access to the local function scope.
++     *
++     * By default {@link #hasFeature(int)} returns true.
++     */
++    public static final int FEATURE_HTMLUNIT_EVAL_LOCAL_SCOPE = 19;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that 'exception' (technically NativeError) exposes "stack" property.
++     *
++     * By default {@link #hasFeature(int)} returns true.
++     */
++    public static final int FEATURE_HTMLUNIT_ERROR_STACK = 20;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that ".constructor" property is defined for all {@link ScriptableObject}s.
++     *
++     * By default {@link #hasFeature(int)} returns true.
++     */
++    public static final int FEATURE_HTMLUNIT_CONSTRUCTOR = 21;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that function can be defined as
++     * <code>function object.property() {}</code> instead of <code>object.property = function() {}</code>.
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_FUNCTION_OBJECT_METHOD = 22;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that function is defined even before its declaration, inside a block.
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_FUNCTION_DECLARED_FORWARD_IN_BLOCK = 23;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that parseInt() should have radix 10 by default.
++     *
++     * By default {@link #hasFeature(int)} returns true.
++     */
++    public static final int FEATURE_HTMLUNIT_PARSE_INT_RADIX_10 = 24;
++
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Indicates that for(x in []) should enumerate the numbers first.
++     *
++     * By default {@link #hasFeature(int)} returns false.
++     */
++    public static final int FEATURE_HTMLUNIT_ENUM_NUMBERS_FIRST = 25;
++
+     public static final String languageVersionProperty = "language version";
+     public static final String errorReporterProperty   = "error reporter";
+ 
+@@ -1325,7 +1442,7 @@ public class Context
+                              securityDomain);
+     }
+ 
+-    final Script compileString(String source,
++    protected Script compileString(String source,
+                                Evaluator compiler,
+                                ErrorReporter compilationErrorReporter,
+                                String sourceName, int lineno,
+@@ -1366,7 +1483,7 @@ public class Context
+                                securityDomain);
+     }
+ 
+-    final Function compileFunction(Scriptable scope, String source,
++    protected Function compileFunction(Scriptable scope, String source,
+                                    Evaluator compiler,
+                                    ErrorReporter compilationErrorReporter,
+                                    String sourceName, int lineno,
+diff --git a/src/org/mozilla/javascript/ContextFactory.java b/src/org/mozilla/javascript/ContextFactory.java
+index 642a3b3..b40d787 100644
+--- a/src/org/mozilla/javascript/ContextFactory.java
++++ b/src/org/mozilla/javascript/ContextFactory.java
+@@ -279,6 +279,42 @@ public class ContextFactory
+ 
+           case Context.FEATURE_ENHANCED_JAVA_ACCESS:
+             return false;
++
++          case Context.FEATURE_HTMLUNIT_ASK_OBJECT_TO_WRITE_READONLY:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_JS_CATCH_JAVA_EXCEPTION:
++            return true;
++
++          case Context.FEATURE_HTMLUNIT_ARGUMENTS_IS_OBJECT:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_FUNCTION_NULL_SETTER:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_FN_ARGUMENTS_IS_RO_VIEW:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_EVAL_LOCAL_SCOPE:
++            return true;
++
++          case Context.FEATURE_HTMLUNIT_ERROR_STACK:
++            return true;
++
++          case Context.FEATURE_HTMLUNIT_CONSTRUCTOR:
++            return true;
++
++          case Context.FEATURE_HTMLUNIT_FUNCTION_OBJECT_METHOD:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_FUNCTION_DECLARED_FORWARD_IN_BLOCK:
++            return false;
++
++          case Context.FEATURE_HTMLUNIT_PARSE_INT_RADIX_10:
++            return true;
++
++          case Context.FEATURE_HTMLUNIT_ENUM_NUMBERS_FIRST:
++              return false;
+         }
+         // It is a bug to call the method with unknown featureIndex
+         throw new IllegalArgumentException(String.valueOf(featureIndex));
+diff --git a/src/org/mozilla/javascript/Delegator.java b/src/org/mozilla/javascript/Delegator.java
+index 8e8bac4..e273d0f 100644
+--- a/src/org/mozilla/javascript/Delegator.java
++++ b/src/org/mozilla/javascript/Delegator.java
+@@ -85,85 +85,85 @@ public class Delegator implements Function {
+      * @see org.mozilla.javascript.Scriptable#getClassName
+      */
+     public String getClassName() {
+-        return obj.getClassName();
++        return getDelegee().getClassName();
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#get(String, Scriptable)
+      */
+     public Object get(String name, Scriptable start) {
+-        return obj.get(name,start);
++        return getDelegee().get(name,start);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#get(int, Scriptable)
+      */
+     public Object get(int index, Scriptable start) {
+-        return obj.get(index,start);
++        return getDelegee().get(index,start);
+         }
+     /**
+      * @see org.mozilla.javascript.Scriptable#has(String, Scriptable)
+      */
+     public boolean has(String name, Scriptable start) {
+-        return obj.has(name,start);
++        return getDelegee().has(name,start);
+         }
+     /**
+      * @see org.mozilla.javascript.Scriptable#has(int, Scriptable)
+      */
+     public boolean has(int index, Scriptable start) {
+-        return obj.has(index,start);
++        return getDelegee().has(index,start);
+         }
+     /**
+      * @see org.mozilla.javascript.Scriptable#put(String, Scriptable, Object)
+      */
+     public void put(String name, Scriptable start, Object value) {
+-        obj.put(name,start,value);
++        getDelegee().put(name,start,value);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#put(int, Scriptable, Object)
+      */
+     public void put(int index, Scriptable start, Object value) {
+-        obj.put(index,start,value);
++        getDelegee().put(index,start,value);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#delete(String)
+      */
+     public void delete(String name) {
+-        obj.delete(name);
++        getDelegee().delete(name);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#delete(int)
+      */
+     public void delete(int index) {
+-        obj.delete(index);
++        getDelegee().delete(index);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#getPrototype
+      */
+     public Scriptable getPrototype() {
+-        return obj.getPrototype();
++        return getDelegee().getPrototype();
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#setPrototype
+      */
+     public void setPrototype(Scriptable prototype) {
+-        obj.setPrototype(prototype);
++        getDelegee().setPrototype(prototype);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#getParentScope
+      */
+     public Scriptable getParentScope() {
+-        return obj.getParentScope();
++        return getDelegee().getParentScope();
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#setParentScope
+      */
+     public void setParentScope(Scriptable parent) {
+-        obj.setParentScope(parent);
++        getDelegee().setParentScope(parent);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#getIds
+      */
+     public Object[] getIds() {
+-        return obj.getIds();
++        return getDelegee().getIds();
+     }
+     /**
+      * Note that this method does not get forwarded to the delegee if
+@@ -181,13 +181,13 @@ public class Delegator implements Function {
+         return (hint == null ||
+                 hint == ScriptRuntime.ScriptableClass ||
+                 hint == ScriptRuntime.FunctionClass) ?
+-            this : obj.getDefaultValue(hint);
++            this : getDelegee().getDefaultValue(hint);
+     }
+     /**
+      * @see org.mozilla.javascript.Scriptable#hasInstance
+      */
+     public boolean hasInstance(Scriptable instance) {
+-        return obj.hasInstance(instance);
++        return getDelegee().hasInstance(instance);
+     }
+     /**
+      * @see org.mozilla.javascript.Function#call
+@@ -195,7 +195,7 @@ public class Delegator implements Function {
+     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                        Object[] args)
+     {
+-        return ((Function)obj).call(cx,scope,thisObj,args);
++        return ((Function)getDelegee()).call(cx,scope,thisObj,args);
+     }
+ 
+     /**
+@@ -215,7 +215,7 @@ public class Delegator implements Function {
+      */
+     public Scriptable construct(Context cx, Scriptable scope, Object[] args)
+     {
+-        if (obj == null) {
++        if (getDelegee() == null) {
+             //this little trick allows us to declare prototype objects for
+             //Delegators
+             Delegator n = newInstance();
+@@ -229,7 +229,7 @@ public class Delegator implements Function {
+             return n;
+         }
+         else {
+-            return ((Function)obj).construct(cx,scope,args);
++            return ((Function)getDelegee()).construct(cx,scope,args);
+         }
+     }
+ }
+diff --git a/src/org/mozilla/javascript/FunctionObject.java b/src/org/mozilla/javascript/FunctionObject.java
+index 376ef0c..600fa98 100644
+--- a/src/org/mozilla/javascript/FunctionObject.java
++++ b/src/org/mozilla/javascript/FunctionObject.java
+@@ -397,6 +397,9 @@ public class FunctionObject extends BaseFunction
+         } else {
+             if (!isStatic) {
+                 Class<?> clazz = member.getDeclaringClass();
++                if (thisObj instanceof Delegator) {
++                    thisObj = ((Delegator) thisObj).getDelegee();
++                }
+                 if (!clazz.isInstance(thisObj)) {
+                     boolean compatible = false;
+                     if (thisObj == scope) {
+diff --git a/src/org/mozilla/javascript/IRFactory.java b/src/org/mozilla/javascript/IRFactory.java
+index 81fb8db..ad24816 100644
+--- a/src/org/mozilla/javascript/IRFactory.java
++++ b/src/org/mozilla/javascript/IRFactory.java
+@@ -356,6 +356,7 @@ public final class IRFactory extends Parser
+ 
+     private Node transformAssignment(Assignment node) {
+         AstNode left = removeParens(node.getLeft());
++        left = transformAssignmentLeft(node, left);
+         Node target = null;
+         if (isDestructuring(left)) {
+             decompile(left);
+@@ -369,6 +370,32 @@ public final class IRFactory extends Parser
+                                 transform(node.getRight()));
+     }
+ 
++    private AstNode transformAssignmentLeft(Assignment node, AstNode left) {
++        AstNode right = node.getRight();
++
++        if (right.getType() == Token.NULL && node.getType() == Token.ASSIGN
++                && left instanceof Name && right instanceof KeywordLiteral
++                && Context.getCurrentContext().hasFeature(Context.FEATURE_HTMLUNIT_FUNCTION_NULL_SETTER)) {
++
++            final String identifier = ((Name) left).getIdentifier();
++            for (AstNode p = node.getParent(); p != null; p = p.getParent()) {
++                if (p instanceof FunctionNode) {
++                    final Name functionName = ((FunctionNode) p).getFunctionName();
++                    if (functionName != null && functionName.getIdentifier().equals(identifier)) {
++                        final PropertyGet propertyGet = new PropertyGet();
++                        final KeywordLiteral thisKeyword = new KeywordLiteral();
++                        thisKeyword.setType(Token.THIS);
++                        propertyGet.setLeft(thisKeyword);
++                        propertyGet.setRight(left);
++                        node.setLeft(propertyGet);
++                        return propertyGet;
++                    }
++                }
++            }
++        }
++        return left;
++    }
++
+     private Node transformBlock(AstNode node) {
+         if (node instanceof Scope) {
+             pushScope((Scope)node);
+@@ -438,6 +465,16 @@ public final class IRFactory extends Parser
+     }
+ 
+     private Node transformElementGet(ElementGet node) {
++        //Ensure "function['eval']" is transformed into "function.eval"
++        if (node.getElement().type == Token.STRING
++                && "eval".equals(((StringLiteral) node.getElement()).getValue())) {
++            final PropertyGet propertyGet = new PropertyGet();
++            propertyGet.setLeft(node.getTarget());
++            final Name name = new Name();
++            name.setIdentifier("eval");
++            propertyGet.setRight(name);
++            return transform(propertyGet);
++        }
+         // OPT: could optimize to createPropertyGet
+         // iff elem is string that can not be number
+         Node target = transform(node.getTarget());
+diff --git a/src/org/mozilla/javascript/InterpretedFunction.java b/src/org/mozilla/javascript/InterpretedFunction.java
+index 92fb16a..1b161ab 100644
+--- a/src/org/mozilla/javascript/InterpretedFunction.java
++++ b/src/org/mozilla/javascript/InterpretedFunction.java
+@@ -16,6 +16,8 @@ final class InterpretedFunction extends NativeFunction implements Script
+     SecurityController securityController;
+     Object securityDomain;
+ 
++	private Arguments arguments;
++
+     private InterpretedFunction(InterpreterData idata,
+                                 Object staticSecurityDomain)
+     {
+@@ -176,5 +178,57 @@ final class InterpretedFunction extends NativeFunction implements Script
+     {
+         return idata.argIsConst[index];
+     }
++
++    /**
++     * Provides the decompiled source of the function what is helpful
++     * while debugging.
++     */
++    @Override
++    public String toString() {
++    	return decompile(2, 0);
++    }
++
++	void setArguments(final Arguments arguments) {
++		if (arguments == null) {
++			this.arguments = null;
++			return;
++		}
++
++		final Context currentContext = Context.getCurrentContext();
++		if (currentContext.hasFeature(Context.FEATURE_HTMLUNIT_FN_ARGUMENTS_IS_RO_VIEW)) {
++			this.arguments = new Arguments(arguments) {
++				@Override
++				public void put(int index, Scriptable start, Object value) {
++					// ignore
++				}
++				
++				@Override
++				public void put(String name, Scriptable start, Object value) {
++					// ignore
++				}
++
++				@Override
++				public void delete(int index) {
++					// ignore
++				}
++				
++				@Override
++				public void delete(String name) {
++					// ignore
++				}
++			};
++        }
++		else {
++			this.arguments = arguments;
++		}
++	}
++	
++	@Override
++	public Object get(final String name, final Scriptable start) {
++		if (start == this && "arguments".equals(name)) {
++			return this.arguments;
++		}
++		return super.get(name, start);
++	}
+ }
+ 
+diff --git a/src/org/mozilla/javascript/Interpreter.java b/src/org/mozilla/javascript/Interpreter.java
+index 485ae7c..4a9aa37 100644
+--- a/src/org/mozilla/javascript/Interpreter.java
++++ b/src/org/mozilla/javascript/Interpreter.java
+@@ -2844,6 +2844,17 @@ switch (op) {
+     private static void enterFrame(Context cx, CallFrame frame, Object[] args,
+                                    boolean continuationRestart)
+     {
++       if (frame.parentFrame != null && !frame.parentFrame.fnOrScript.isScript()) {
++           frame.fnOrScript.defaultPut("caller", frame.parentFrame.fnOrScript);
++           frame.fnOrScript.setAttributes("caller", ScriptableObject.DONTENUM);
++       }
++       if (frame.scope instanceof NativeCall) {
++           Object arguments = ScriptableObject.getProperty(frame.scope, "arguments");
++           if (arguments instanceof Arguments) {
++               frame.fnOrScript.setArguments((Arguments) arguments);
++           }
++       }
++
+         boolean usesActivation = frame.idata.itsNeedsActivation;
+         boolean isDebugged = frame.debuggerFrame != null;
+         if(usesActivation || isDebugged) {
+@@ -2893,6 +2904,9 @@ switch (op) {
+     private static void exitFrame(Context cx, CallFrame frame,
+                                   Object throwable)
+     {
++        frame.fnOrScript.defaultPut("caller", null);
++        frame.fnOrScript.setArguments(null);
++
+         if (frame.idata.itsNeedsActivation) {
+             ScriptRuntime.exitActivationFunction(cx);
+         }
+diff --git a/src/org/mozilla/javascript/InterpreterData.java b/src/org/mozilla/javascript/InterpreterData.java
+index 657bff4..7c9b5a0 100644
+--- a/src/org/mozilla/javascript/InterpreterData.java
++++ b/src/org/mozilla/javascript/InterpreterData.java
+@@ -89,6 +89,8 @@ final class InterpreterData implements Serializable, DebuggableScript
+ 
+     boolean evalScriptFlag; // true if script corresponds to eval() code
+ 
++	boolean declaredAsVar; // true if the function has been declared like "var foo = function() {...}"
++
+     public boolean isTopLevel()
+     {
+         return topLevel;
+diff --git a/src/org/mozilla/javascript/MemberBox.java b/src/org/mozilla/javascript/MemberBox.java
+index cc1a8cd..dc6a408 100644
+--- a/src/org/mozilla/javascript/MemberBox.java
++++ b/src/org/mozilla/javascript/MemberBox.java
+@@ -121,6 +121,17 @@ final class MemberBox implements Serializable
+     Object invoke(Object target, Object[] args)
+     {
+         Method method = method();
++        
++        // handle delegators
++        if (target instanceof Delegator) {
++        	target = ((Delegator) target).getDelegee();
++        }
++        for (int i=0; i<args.length; ++i) {
++        	if (args[i] instanceof Delegator) {
++        		args[i] = ((Delegator) args[i]).getDelegee();
++        	}
++        }
++        
+         try {
+             try {
+                 return method.invoke(target, args);
+@@ -145,7 +156,22 @@ final class MemberBox implements Serializable
+             } while ((e instanceof InvocationTargetException));
+             if (e instanceof ContinuationPending)
+                 throw (ContinuationPending) e;
+-            throw Context.throwAsScriptRuntimeEx(e);
++
++            if (e instanceof RhinoException || Context.getCurrentContext().hasFeature(Context.FEATURE_HTMLUNIT_JS_CATCH_JAVA_EXCEPTION))
++                throw Context.throwAsScriptRuntimeEx(e);            
++            else
++            	throw new RuntimeException("Exception invoking " + method.getName(), e);
++        } catch (IllegalArgumentException iae) {
++            StringBuilder builder = new StringBuilder();
++            for (Object arg : args) {
++                String type = arg == null ? "null" : arg.getClass().getSimpleName();
++                if (builder.length() != 0) {
++                    builder.append(", ");
++                }
++                builder.append(type);
++            }
++            throw new IllegalArgumentException("Exception invoking " + method.getDeclaringClass().getSimpleName()
++                    + '.' +  method.getName() + "() with arguments [" + builder + "]", iae);
+         } catch (Exception ex) {
+             throw Context.throwAsScriptRuntimeEx(ex);
+         }
+diff --git a/src/org/mozilla/javascript/NativeArray.java b/src/org/mozilla/javascript/NativeArray.java
+index 3431b34..1dd31ee 100644
+--- a/src/org/mozilla/javascript/NativeArray.java
++++ b/src/org/mozilla/javascript/NativeArray.java
+@@ -6,6 +6,8 @@
+ 
+ package org.mozilla.javascript;
+ 
++import java.lang.reflect.Field;
++import java.lang.reflect.Modifier;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Comparator;
+@@ -23,6 +25,24 @@ import java.util.Set;
+  */
+ public class NativeArray extends IdScriptableObject implements List
+ {
++    static {
++        try {
++            // A workaround to change the default sort logic, to allow non-conformant comparison method
++            // this starts to be observed since Java 7
++            Class<?> klass = Class.forName("java.util.Arrays$LegacyMergeSort");
++            Field field = klass.getDeclaredField("userRequested");
++            field.setAccessible(true);
++
++            Field modifiersField = Field.class.getDeclaredField("modifiers");
++            modifiersField.setAccessible(true);
++            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
++
++            field.setBoolean(null, true);
++        }
++        catch (final Exception e) {
++            // RIP
++        }
++    }
+     static final long serialVersionUID = 7331366857676127338L;
+ 
+     /*
+@@ -1690,7 +1710,6 @@ public class NativeArray extends IdScriptableObject implements List
+         return true;
+     }
+ 
+-    @Override
+     public int size() {
+         long longLen = length;
+         if (longLen > Integer.MAX_VALUE) {
+@@ -1699,11 +1718,6 @@ public class NativeArray extends IdScriptableObject implements List
+         return (int) longLen;
+     }
+ 
+-    @Override
+-    public boolean isEmpty() {
+-        return length == 0;
+-    }
+-
+     public Object get(long index) {
+         if (index < 0 || index >= length) {
+             throw new IndexOutOfBoundsException();
+diff --git a/src/org/mozilla/javascript/NativeCall.java b/src/org/mozilla/javascript/NativeCall.java
+index 6094af6..1f18df5 100644
+--- a/src/org/mozilla/javascript/NativeCall.java
++++ b/src/org/mozilla/javascript/NativeCall.java
+@@ -6,6 +6,8 @@
+ 
+ package org.mozilla.javascript;
+ 
++import org.mozilla.javascript.debug.DebuggableScript;
++
+ /**
+  * This class implements the activation object.
+  *
+@@ -61,8 +63,22 @@ public final class NativeCall extends IdScriptableObject
+                 if (!super.has(name, this)) {
+                     if (function.getParamOrVarConst(i))
+                         defineProperty(name, Undefined.instance, CONST);
+-                    else
+-                        defineProperty(name, Undefined.instance, PERMANENT);
++                    else {
++                        boolean define = true;
++                        if (function instanceof InterpretedFunction) {
++                            InterpreterData idata = ((InterpretedFunction) function).idata;
++                            for (int f = 0; f < idata.getFunctionCount(); f++) {
++                                final InterpreterData functionData = (InterpreterData) idata.getFunction(f);
++								if (name.equals(functionData.getFunctionName())) {
++                                    define = functionData.declaredAsVar; // define local property only for inner functions declared with var
++                                    break;
++                                }
++                            }
++                        }
++                        if (define) {
++                            defineProperty(name, Undefined.instance, PERMANENT);
++                        }
++                    }
+                 }
+             }
+         }
+diff --git a/src/org/mozilla/javascript/NativeError.java b/src/org/mozilla/javascript/NativeError.java
+index 5053c5d..e48072c 100644
+--- a/src/org/mozilla/javascript/NativeError.java
++++ b/src/org/mozilla/javascript/NativeError.java
+@@ -110,7 +110,7 @@ final class NativeError extends IdScriptableObject
+         // generated on demand, is cached after the first access, and is
+         // overwritable like an ordinary property. Hence this setup with
+         // the getter and setter below.
+-        if (stackProvider == null) {
++        if (stackProvider == null && Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_ERROR_STACK)) {
+             stackProvider = re;
+             try {
+                 defineProperty("stack", null,
+@@ -124,8 +124,10 @@ final class NativeError extends IdScriptableObject
+     }
+ 
+     public Object getStack() {
++    	RhinoException.useMozillaStackStyle(true);
+         Object value =  stackProvider == null ?
+                 NOT_FOUND : stackProvider.getScriptStackTrace();
++    	RhinoException.useMozillaStackStyle(false);
+         // We store the stack as local property both to cache it
+         // and to make the property writable
+         setStack(value);
+diff --git a/src/org/mozilla/javascript/NativeGlobal.java b/src/org/mozilla/javascript/NativeGlobal.java
+index d21004a..274141e 100644
+--- a/src/org/mozilla/javascript/NativeGlobal.java
++++ b/src/org/mozilla/javascript/NativeGlobal.java
+@@ -9,6 +9,7 @@ package org.mozilla.javascript;
+ import java.io.Serializable;
+ 
+ import org.mozilla.javascript.xml.XMLLib;
++
+ import static org.mozilla.javascript.ScriptableObject.DONTENUM;
+ import static org.mozilla.javascript.ScriptableObject.READONLY;
+ import static org.mozilla.javascript.ScriptableObject.PERMANENT;
+@@ -256,8 +257,9 @@ public class NativeGlobal implements Serializable, IdFunctionCall
+                     radix = 16;
+                     start += 2;
+                 } else if ('0' <= c && c <= '9') {
+-                    radix = 8;
+-                    start++;
++                    if (!Context.getCurrentContext().hasFeature(Context.FEATURE_HTMLUNIT_PARSE_INT_RADIX_10)) {
++                        radix = 8;
++                    }
+                 }
+             }
+         }
+diff --git a/src/org/mozilla/javascript/NativeJavaMethod.java b/src/org/mozilla/javascript/NativeJavaMethod.java
+index c8808c3..6b1296b 100644
+--- a/src/org/mozilla/javascript/NativeJavaMethod.java
++++ b/src/org/mozilla/javascript/NativeJavaMethod.java
+@@ -8,7 +8,7 @@ package org.mozilla.javascript;
+ 
+ import java.lang.reflect.*;
+ import java.util.Arrays;
+-import java.util.concurrent.CopyOnWriteArrayList;
++import java.util.LinkedList;
+ 
+ /**
+  * This class reflects Java methods into the JavaScript environment and
+@@ -257,7 +257,7 @@ public class NativeJavaMethod extends BaseFunction
+                     }
+                 }
+             } else {
+-                overloadCache = new CopyOnWriteArrayList<ResolvedOverload>();
++                overloadCache = new LinkedList<ResolvedOverload>();
+             }
+             int index = findFunction(cx, methods, args);
+             // As a sanity measure, don't let the lookup cache grow longer
+@@ -266,7 +266,7 @@ public class NativeJavaMethod extends BaseFunction
+                 synchronized (overloadCache) {
+                     ResolvedOverload ovl = new ResolvedOverload(args, index);
+                     if (!overloadCache.contains(ovl)) {
+-                        overloadCache.add(0, ovl);
++                        overloadCache.addFirst(ovl);
+                     }
+                 }
+             }
+@@ -557,7 +557,7 @@ public class NativeJavaMethod extends BaseFunction
+ 
+     MemberBox[] methods;
+     private String functionName;
+-    private transient CopyOnWriteArrayList<ResolvedOverload> overloadCache;
++    private transient LinkedList<ResolvedOverload> overloadCache;
+ }
+ 
+ class ResolvedOverload {
+diff --git a/src/org/mozilla/javascript/NodeTransformer.java b/src/org/mozilla/javascript/NodeTransformer.java
+index 6e0a5cd..28064c5 100644
+--- a/src/org/mozilla/javascript/NodeTransformer.java
++++ b/src/org/mozilla/javascript/NodeTransformer.java
+@@ -6,15 +6,16 @@
+ 
+ package org.mozilla.javascript;
+ 
++import java.util.ArrayList;
++import java.util.List;
++
+ import org.mozilla.javascript.ast.AstRoot;
+ import org.mozilla.javascript.ast.FunctionNode;
+ import org.mozilla.javascript.ast.Jump;
++import org.mozilla.javascript.ast.Name;
+ import org.mozilla.javascript.ast.Scope;
+ import org.mozilla.javascript.ast.ScriptNode;
+ 
+-import java.util.ArrayList;
+-import java.util.List;
+-
+ /**
+  * This class transforms a tree to a lower-level representation for codegen.
+  *
+@@ -65,6 +66,34 @@ public class NodeTransformer
+                                             boolean createScopeObjects,
+                                             boolean inStrictMode)
+     {
++        if (parent instanceof Scope
++                && Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_FUNCTION_DECLARED_FORWARD_IN_BLOCK)) {
++            // Make sure that all "Name" children are at the start of all siblings
++            Node lastInitialName = null;
++            boolean initial = true;
++            Node node = parent.getFirstChild();
++            while (node != null) {
++                if (node instanceof Name) {
++                    if (initial) {
++                        lastInitialName =  node;
++                    }
++                    else {
++                        parent.removeChild(node);
++                        if (lastInitialName == null)  {
++                            parent.addChildToFront(node);
++                        }
++                        else {
++                            parent.addChildAfter(node, lastInitialName);
++                        }
++                        lastInitialName = node;
++                    }
++                }
++                else {
++                    initial = false;
++                }
++                node = node.getNext();
++            }
++        }
+         Node node = null;
+       siblingLoop:
+         for (;;) {
+diff --git a/src/org/mozilla/javascript/Parser.java b/src/org/mozilla/javascript/Parser.java
+index 7762d30..d5de488 100644
+--- a/src/org/mozilla/javascript/Parser.java
++++ b/src/org/mozilla/javascript/Parser.java
+@@ -533,6 +533,17 @@ public class Parser
+                         n = function(calledByCompileFunction
+                                      ? FunctionNode.FUNCTION_EXPRESSION
+                                      : FunctionNode.FUNCTION_STATEMENT);
++                        FunctionNode functionNode = (FunctionNode) n;
++                        if (functionNode.getName().indexOf('.') != -1) {
++                            String functionName = functionNode.getName();
++                            String left = functionName.substring(0,  functionName.indexOf('.'));
++                            String right = functionName.substring(functionName.indexOf('.') + 1);
++                            PropertyGet propertyGet = new PropertyGet(new Name(0, left), new Name(0, right));
++                            Assignment assignment = new Assignment(Token.ASSIGN, propertyGet, functionNode, -1);
++                            functionNode.setFunctionName(null);
++                            functionNode.setFunctionType(FunctionNode.FUNCTION_EXPRESSION);
++                            n = new ExpressionStatement(assignment, !insideFunction());
++                        }
+                     } catch (ParserException e) {
+                         break;
+                     }
+@@ -752,12 +763,19 @@ public class Parser
+                 }
+             }
+             if (!matchToken(Token.LP)) {
+-                if (compilerEnv.isAllowMemberExprAsFunctionName()) {
+-                    AstNode memberExprHead = name;
+-                    name = null;
+-                    memberExprNode = memberExprTail(false, memberExprHead);
++                if (Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_FUNCTION_OBJECT_METHOD)
++                        && matchToken(Token.DOT) && matchToken(Token.NAME)) {
++                    name.setIdentifier(name.getIdentifier() + '.' + createNameNode(true, Token.NAME).getIdentifier());
++                    mustMatchToken(Token.LP, "msg.no.paren.parms");
++                }
++                else {
++                    if (compilerEnv.isAllowMemberExprAsFunctionName()) {
++                        AstNode memberExprHead = name;
++                        name = null;
++                        memberExprNode = memberExprTail(false, memberExprHead);
++                    }
++                    mustMatchToken(Token.LP, "msg.no.paren.parms");
+                 }
+-                mustMatchToken(Token.LP, "msg.no.paren.parms");
+             }
+         } else if (matchToken(Token.LP)) {
+             // Anonymous function:  leave name as null
+diff --git a/src/org/mozilla/javascript/ScriptRuntime.java b/src/org/mozilla/javascript/ScriptRuntime.java
+index e380adc..33b2748 100644
+--- a/src/org/mozilla/javascript/ScriptRuntime.java
++++ b/src/org/mozilla/javascript/ScriptRuntime.java
+@@ -7,15 +7,20 @@
+ package org.mozilla.javascript;
+ 
+ import java.io.Serializable;
+-import java.lang.reflect.*;
++import java.lang.reflect.Constructor;
++import java.lang.reflect.Method;
+ import java.text.MessageFormat;
++import java.util.ArrayList;
++import java.util.List;
+ import java.util.Locale;
+ import java.util.ResourceBundle;
++import java.util.Set;
++import java.util.TreeSet;
+ 
+ import org.mozilla.javascript.ast.FunctionNode;
+ import org.mozilla.javascript.v8dtoa.FastDtoa;
+-import org.mozilla.javascript.xml.XMLObject;
+ import org.mozilla.javascript.xml.XMLLib;
++import org.mozilla.javascript.xml.XMLObject;
+ 
+ /**
+  * This is the class that implements the runtime.
+@@ -955,7 +960,10 @@ public class ScriptRuntime {
+     public static Scriptable toObjectOrNull(Context cx, Object obj,
+                                             final Scriptable scope)
+     {
+-        if (obj instanceof Scriptable) {
++    	if (obj instanceof Delegator) {
++    		return ((Delegator) obj).getDelegee();
++    	}
++    	else if (obj instanceof Scriptable) {
+             return (Scriptable)obj;
+         } else if (obj != null && obj != Undefined.instance) {
+             return toObject(cx, scope, obj);
+@@ -2152,6 +2160,24 @@ public class ScriptRuntime {
+                 x.used.intern(previous[i]);
+             }
+         }
++        if (ids != null && Context.getCurrentContext().hasFeature(Context.FEATURE_HTMLUNIT_ENUM_NUMBERS_FIRST)) {
++            Set<Integer> integers = new TreeSet<Integer>();
++            List<Object> others = new ArrayList<Object>();
++            for (Object o : ids) {
++                if (o instanceof Integer) {
++                    integers.add((Integer) o);
++                }
++                else {
++                    others.add(o);
++                }
++            }
++            if (!integers.isEmpty()) {
++                Object[] newIds = new Object[ids.length];
++                System.arraycopy(integers.toArray(), 0, newIds, 0, integers.size());
++                System.arraycopy(others.toArray(), 0, newIds, integers.size(), others.size());
++                ids = newIds;
++            }
++        }
+         x.ids = ids;
+         x.index = 0;
+     }
+@@ -2167,6 +2193,9 @@ public class ScriptRuntime {
+                                                   Context cx,
+                                                   Scriptable scope)
+     {
++        if ("eval".equals(name)) {
++            lastEvalTopCalled_ = true;
++        }
+         Scriptable parent = scope.getParentScope();
+         if (parent == null) {
+             Object result = topScopeName(cx, scope, name);
+@@ -2246,6 +2275,9 @@ public class ScriptRuntime {
+                                                   String property,
+                                                   Context cx, final Scriptable scope)
+     {
++        if ("eval".equals(property)) {
++            lastEvalTopCalled_ = false;
++        }
+         Scriptable thisObj = toObjectOrNull(cx, obj, scope);
+         return getPropFunctionAndThisHelper(obj, property, cx, thisObj);
+     }
+@@ -2348,6 +2380,18 @@ public class ScriptRuntime {
+         return function.construct(cx, scope, args);
+     }
+ 
++    /**
++     * This indicates whether last call of "eval" was at the top scope (i.e. "eval()")
++     * or not (i.e. "scope.eval()"), as each one has different behavior.
++     *
++     * Ideally, we should have "eval" at top scope and we use Context.FEATURE_DYNAMIC_SCOPE,
++     * but it will complex the code.
++     *
++     * The current implementation sets this value to true when "eval" is called, and
++     * false on "something.eval()"
++     */
++    private static boolean lastEvalTopCalled_;
++    
+     public static Object callSpecial(Context cx, Callable fun,
+                                      Scriptable thisObj,
+                                      Object[] args, Scriptable scope,
+@@ -2356,6 +2400,12 @@ public class ScriptRuntime {
+     {
+         if (callType == Node.SPECIALCALL_EVAL) {
+             if (thisObj.getParentScope() == null && NativeGlobal.isEvalFunction(fun)) {
++                final boolean isNative = scope instanceof NativeCall;
++                final boolean hasFeature = cx.hasFeature(Context.FEATURE_HTMLUNIT_EVAL_LOCAL_SCOPE);
++
++                if (!lastEvalTopCalled_ && (!hasFeature || !isNative)) {
++                    scope = thisObj;
++                }
+                 return evalSpecial(cx, scope, callerThis, args,
+                                    filename, lineNumber);
+             }
+@@ -2518,6 +2568,8 @@ public class ScriptRuntime {
+             return "undefined";
+         if (value instanceof ScriptableObject)
+         	return ((ScriptableObject) value).getTypeOf();
++        if (value instanceof Delegator)
++            return typeof(((Delegator) value).getDelegee());
+         if (value instanceof Scriptable)
+             return (value instanceof Callable) ? "function" : "object";
+         if (value instanceof CharSequence)
+@@ -2526,6 +2578,10 @@ public class ScriptRuntime {
+             return "number";
+         if (value instanceof Boolean)
+             return "boolean";
++        if (value instanceof MemberBox)
++            return typeof(((MemberBox) value).member());
++        if (value instanceof Method)
++            return "function";
+         throw errorWithClassName("msg.invalid.type", value);
+     }
+ 
+@@ -2931,6 +2987,15 @@ public class ScriptRuntime {
+             if (x instanceof Wrapper && y instanceof Wrapper) {
+                 return ((Wrapper)x).unwrap() == ((Wrapper)y).unwrap();
+             }
++            if (x instanceof Delegator && y instanceof Delegator) {
++                return shallowEq(((Delegator)x).getDelegee(), ((Delegator)y).getDelegee());
++            }
++            if (x instanceof Delegator && ((Delegator)x).getDelegee() == y) {
++                return true;
++            }
++            if (y instanceof Delegator && ((Delegator)y).getDelegee() == x) {
++                return true;
++            }
+         } else {
+             warnAboutNonJSObject(x);
+             return x == y;
+@@ -3160,13 +3225,27 @@ public class ScriptRuntime {
+                 // Don't overwrite existing def if already defined in object
+                 // or prototypes of object.
+                 if (!ScriptableObject.hasProperty(scope, name)) {
+-                    if (isConst) {
+-                        ScriptableObject.defineConstProperty(varScope, name);
+-                    } else if (!evalScript) {
++                    if (!evalScript) {
+                         // Global var definitions are supposed to be DONTDELETE
+-                        ScriptableObject.defineProperty(
+-                            varScope, name, Undefined.instance,
+-                            ScriptableObject.PERMANENT);
++                        if (isConst)
++                            ScriptableObject.defineConstProperty(varScope, name);
++                        else {
++                            boolean define = true;
++                            if (funObj instanceof InterpretedFunction) {
++                                InterpreterData idata = ((InterpretedFunction) funObj).idata;
++                                for (int f = 0; f < idata.getFunctionCount(); f++) {
++                                    if (name.equals(idata.getFunction(f).getFunctionName())) {
++                                        define = false;
++                                        break;
++                                    }
++                                }
++                            }
++                            if (define) {
++                                ScriptableObject.defineProperty(
++                                        varScope, name, Undefined.instance,
++                                        ScriptableObject.PERMANENT);
++                            }
++                        }
+                     } else {
+                         varScope.put(name, varScope, Undefined.instance);
+                     }
+diff --git a/src/org/mozilla/javascript/ScriptableObject.java b/src/org/mozilla/javascript/ScriptableObject.java
+index 0ab2a98..bc4ed38 100644
+--- a/src/org/mozilla/javascript/ScriptableObject.java
++++ b/src/org/mozilla/javascript/ScriptableObject.java
+@@ -241,11 +241,28 @@ public abstract class ScriptableObject implements Scriptable, Serializable,
+                     if (Context.getContext().hasFeature(Context.FEATURE_STRICT_MODE)) {
+                         // Based on TC39 ES3.1 Draft of 9-Feb-2009, 8.12.4, step 2,
+                         // we should throw a TypeError in this case.
+-                        throw ScriptRuntime.typeError1("msg.set.prop.no.setter", name);
++                        throw ScriptRuntime.typeError3("msg.set.prop.no.setter", name, start.getClassName(), Context.toString(value));
++                    }
++                    if (Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_ASK_OBJECT_TO_WRITE_READONLY)) {
++                        Scriptable scriptable = start;
++
++                        if (scriptable instanceof Delegator) {
++                            scriptable = ((Delegator) scriptable).getDelegee();
++                        }
++
++                        if (scriptable instanceof ScriptableObject) {
++                            boolean allowSetting = ((ScriptableObject) scriptable).isReadOnlySettable(name, value);
++                            if (!allowSetting) {
++                                return true;
++                            }
++                        }
++                        getter = null;
++                    }
++                    else {
++                        // Based on TC39 ES3.1 Draft of 9-Feb-2009, 8.12.4, step 2,
++                        // we should throw a TypeError in this case.
++                        throw ScriptRuntime.typeError3("msg.set.prop.no.setter", name, start.getClassName(), Context.toString(value));
+                     }
+-                    // Assignment to a property with only a getter defined. The
+-                    // assignment is ignored. See bug 478047.
+-                    return true;
+                 }
+             } else {
+                 Context cx = Context.getContext();
+@@ -2178,6 +2195,10 @@ public abstract class ScriptableObject implements Scriptable, Serializable,
+      */
+     public static Object getProperty(Scriptable obj, String name)
+     {
++        if ("constructor".equals(name) && !(obj instanceof IdScriptableObject)
++                && !Context.getContext().hasFeature(Context.FEATURE_HTMLUNIT_CONSTRUCTOR)) {
++            return NOT_FOUND;
++        }
+         Scriptable start = obj;
+         Object result;
+         do {
+@@ -3104,4 +3125,20 @@ public abstract class ScriptableObject implements Scriptable, Serializable,
+         }
+     }
+ 
++    /**
++     * Special to HtmlUnit's Rhino fork.
++     *
++     * Decides what to do when setting a ReadOnly property.
++     * The SimpleScriptable can return <tt>true<tt> for allowing to value to be set, <tt>false<tt> for not allowing (ignoring),
++     * or can simply throw {@link ScriptRuntime#typeError3(String, String, String, String)} with
++     * "msg.set.prop.no.setter", name, this.getClassName() and Context.toString(value).
++     *
++     * By default, this method returns <tt>true</tt>
++     * @param name the property name
++     * @param value the value
++     * @return <tt>true<tt> for allowing setting the value, <tt>false</tt> for ignoring the setting, or we can throw an exception
++     */
++    protected boolean isReadOnlySettable(final String name, final Object value) {
++        return true;
++    }
+ }
+diff --git a/src/org/mozilla/javascript/ast/FunctionNode.java b/src/org/mozilla/javascript/ast/FunctionNode.java
+index 9589259..58b7875 100644
+--- a/src/org/mozilla/javascript/ast/FunctionNode.java
++++ b/src/org/mozilla/javascript/ast/FunctionNode.java
+@@ -270,7 +270,7 @@ public class FunctionNode extends ScriptNode {
+      * if there is a lexical closure, or in a number of other situations.
+      */
+     public boolean requiresActivation() {
+-        return needsActivation;
++    	return true;
+     }
+ 
+     public void setRequiresActivation() {
+diff --git a/src/org/mozilla/javascript/regexp/NativeRegExp.java b/src/org/mozilla/javascript/regexp/NativeRegExp.java
+index 0122541..bcd438c 100644
+--- a/src/org/mozilla/javascript/regexp/NativeRegExp.java
++++ b/src/org/mozilla/javascript/regexp/NativeRegExp.java
+@@ -183,7 +183,7 @@ public class NativeRegExp extends IdScriptableObject implements Function
+             this.lastIndex = thatObj.lastIndex;
+             return this;
+         }
+-        String s = args.length == 0 ? "" : escapeRegExp(args[0]);
++        String s = args.length == 0 || args[0] instanceof Undefined ? "" : escapeRegExp(args[0]);
+         String global = args.length > 1 && args[1] != Undefined.instance
+             ? ScriptRuntime.toString(args[1])
+             : null;
+diff --git a/src/org/mozilla/javascript/resources/Messages.properties b/src/org/mozilla/javascript/resources/Messages.properties
+index 35e4e52..c03915c 100644
+--- a/src/org/mozilla/javascript/resources/Messages.properties
++++ b/src/org/mozilla/javascript/resources/Messages.properties
+@@ -536,7 +536,7 @@ msg.prop.not.found =\
+     Property {0} not found.
+ 
+ msg.set.prop.no.setter =\
+-    Cannot set property {0} that has only a getter.
++    Cannot set property [{1}].{0} that has only a getter to {2}.
+ 
+ msg.invalid.type =\
+     Invalid JavaScript value of type {0}
+diff --git a/toolsrc/org/mozilla/javascript/tools/debugger/SwingGui.java b/toolsrc/org/mozilla/javascript/tools/debugger/SwingGui.java
+index 7ed9f2d..f71e664 100644
+--- a/toolsrc/org/mozilla/javascript/tools/debugger/SwingGui.java
++++ b/toolsrc/org/mozilla/javascript/tools/debugger/SwingGui.java
+@@ -42,6 +42,7 @@ import java.util.EventObject;
+ import java.util.Map;
+ import java.util.HashMap;
+ import java.util.Properties;
++import java.util.TreeMap;
+ import java.io.*;
+ import javax.swing.tree.DefaultTreeCellRenderer;
+ import javax.swing.tree.TreePath;
+@@ -123,7 +124,7 @@ public class SwingGui extends JFrame implements GuiCallback {
+      * Hash table of script URLs to their internal frames.
+      */
+     private final Map<String,FileWindow> fileWindows =
+-        Collections.synchronizedMap(new HashMap<String,FileWindow>());
++        Collections.synchronizedMap(new TreeMap<String,FileWindow>());
+ 
+ 
+     /**
+@@ -450,7 +451,19 @@ public class SwingGui extends JFrame implements GuiCallback {
+      * @param lineNumber the line number to select, or -1
+      */
+     protected void showFileWindow(String sourceUrl, int lineNumber) {
+-        FileWindow w = getFileWindow(sourceUrl);
++        FileWindow w;
++        if (sourceUrl != null) {
++        	w = getFileWindow(sourceUrl);
++        }
++        else {
++            JInternalFrame f = getSelectedFrame();
++            if (f != null && f instanceof FileWindow) {
++            	w = (FileWindow) f;
++            }
++            else {
++            	w = currentWindow;
++            }
++        }
+         if (w == null) {
+             Dim.SourceInfo si = dim.sourceInfo(sourceUrl);
+             createFileWindow(si, -1);
+@@ -459,6 +472,9 @@ public class SwingGui extends JFrame implements GuiCallback {
+         if (lineNumber > -1) {
+             int start = w.getPosition(lineNumber-1);
+             int end = w.getPosition(lineNumber)-1;
++            if (start <= 0) {
++            	return;
++            }
+             w.textArea.select(start);
+             w.textArea.setCaretPosition(start);
+             w.textArea.moveCaretPosition(end);
+@@ -861,6 +877,26 @@ public class SwingGui extends JFrame implements GuiCallback {
+             FindFunction dlg = new FindFunction(this, "Go to function",
+                                                 "Function");
+             dlg.showDialog(this);
++        } else if (cmd.equals("Go to line...")) {
++        	final String s = (String) JOptionPane.showInputDialog(
++                    this,
++                    "Line number",
++                    "Go to line...",
++                    JOptionPane.QUESTION_MESSAGE,
++                    null,
++                    null,
++                    null);
++        	if (s == null) {
++        		return;
++        	}
++        	try {
++        		final int line = Integer.parseInt(s);
++                showFileWindow(null, line);
++        	}
++        	catch (final NumberFormatException nfe) {
++        		// ignore
++        	}
++        	
+         } else if (cmd.equals("Tile")) {
+             JInternalFrame[] frames = desk.getAllFrames();
+             int count = frames.length;
+@@ -3220,8 +3256,9 @@ class Menubar extends JMenuBar implements ActionListener {
+                                   KeyEvent.VK_N,
+                                   0,
+                                   KeyEvent.VK_Q};
+-        String[] editItems = {"Cut", "Copy", "Paste", "Go to function..."};
+-        char[] editShortCuts = {'T', 'C', 'P', 'F'};
++        String[] editItems = {"Cut", "Copy", "Paste", "Go to function...", "Go to line..."};
++        char[] editShortCuts = {'T', 'C', 'P', 'F', 'L'};
++        int[] editAccelerators = {0, 0, 0, 0, KeyEvent.VK_L };
+         String[] debugItems = {"Break", "Go", "Step Into", "Step Over", "Step Out"};
+         char[] debugShortCuts = {'B', 'G', 'I', 'O', 'T'};
+         String[] plafItems = {"Metal", "Windows", "Motif"};
+@@ -3263,6 +3300,10 @@ class Menubar extends JMenuBar implements ActionListener {
+                                            editShortCuts[i]);
+             item.addActionListener(this);
+             editMenu.add(item);
++            if (editAccelerators[i] != 0) {
++                KeyStroke k = KeyStroke.getKeyStroke(editAccelerators[i], Event.CTRL_MASK);
++                item.setAccelerator(k);
++            }
+         }
+         for (int i = 0; i < plafItems.length; ++i) {
+             JMenuItem item = new JMenuItem(plafItems[i],
+warning: refname 'HEAD' is ambiguous.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/Arguments.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/BaseFunction.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/ClassCache.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/CodeGenerator.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/Context.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/ContextFactory.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/Delegator.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/FunctionObject.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/IRFactory.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/InterpretedFunction.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/Interpreter.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/InterpreterData.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/MemberBox.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NativeArray.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NativeCall.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NativeError.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NativeGlobal.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NativeJavaMethod.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/NodeTransformer.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/Parser.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/ScriptRuntime.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/ScriptableObject.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/ast/FunctionNode.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in src/org/mozilla/javascript/resources/Messages.properties.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in toolsrc/org/mozilla/javascript/tools/debugger/SwingGui.java.
+The file will have its original line endings in your working directory.
