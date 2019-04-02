@@ -1,0 +1,36 @@
+<!--                                                                        -->
+<!-- Copyright 2014 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Defines configurable preconditions -->
+<module type="fileset">
+
+  <define-property name="jre.checks.bounds" values="AUTO,ENABLED,DISABLED" />
+  <define-property name="jre.checks.api" values="AUTO,ENABLED,DISABLED" />
+  <define-property name="jre.checks.numeric" values="AUTO,ENABLED,DISABLED" />
+  <define-property name="jre.checks.type" values="AUTO,ENABLED,DISABLED" />
+  <set-property name="jre.checks.bounds" value="AUTO" />
+  <set-property name="jre.checks.api" value="AUTO" />
+  <set-property name="jre.checks.numeric" value="AUTO" />
+  <set-property name="jre.checks.type" value="AUTO" />
+
+  <define-property name="jre.checks.checkLevel" values="NORMAL,OPTIMIZED,MINIMAL" />
+  <set-property name="jre.checks.checkLevel" value="NORMAL" />
+
+  <define-property name="jre.checkedMode" values="ENABLED,DISABLED" />
+  <set-property name="jre.checkedMode" value="DISABLED" />
+  <set-property name="jre.checkedMode" value="ENABLED">
+    <when-property-is name="jre.debugMode" value="ENABLED" />
+  </set-property>
+
+</module>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="@moduleShortName" default="build" basedir=".">
+  <!-- Arguments to gwtc and devmode targets -->
+  <property name="gwt.args" value="" />
+
+  <!-- Configure path to GWT SDK -->
+  <property name="gwt.sdk" location="@gwtSdk" />
+
+  <path id="project.class.path">
+    <pathelement location="@warFolder/WEB-INF/classes"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+    <fileset dir="@warFolder/WEB-INF/lib" includes="**/*.jar"/>
+    <!-- Add any additional non-server libs (such as JUnit) here -->
+  </path>
+
+  <target name="libs" description="Copy libs to WEB-INF/lib">
+    <mkdir dir="@warFolder/WEB-INF/lib" />
+    <copy todir="@warFolder/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+    @copyServletDeps
+    <!-- Add any additional server libs that need to be copied -->
+  </target>
+
+  <target name="javac" depends="libs" description="Compile java source to bytecode">
+    <mkdir dir="@warFolder/WEB-INF/classes"/>
+    <javac srcdir="@srcFolder" includes="**" encoding="utf-8"
+        destdir="@warFolder/WEB-INF/classes"
+        source="1.7" target="1.7" nowarn="true"
+        debug="true" debuglevel="lines,vars,source">
+      <classpath refid="project.class.path"/>
+    </javac>
+    <copy todir="@warFolder/WEB-INF/classes">
+      <fileset dir="@srcFolder" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="gwtc" depends="javac" description="GWT compile to JavaScript (production mode)">
+    <java failonerror="true" fork="true" classname="@compileClass" maxmemory="512m">
+      <classpath>
+        <pathelement location="@srcFolder"/>
+        <path refid="project.class.path"/>
+      </classpath>
+      <arg line="-war"/>
+      <arg value="@warFolder"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg line="${gwt.args}"/>
+      <arg value="@moduleName"/>
+    </java>
+  </target>
+
+  <target name="devmode" depends="javac" description="Run development mode (pass -Dgwt.args=-nosuperDevMode to fallback to classic DevMode)">
+    <java failonerror="true" fork="true" classname="@shellClass" maxmemory="1g">
+      <classpath>
+        <pathelement location="@srcFolder"/>
+        <path refid="project.class.path"/>
+        <pathelement location="${gwt.sdk}/gwt-codeserver.jar"/>
+      </classpath>
+      <arg value="-startupUrl"/>
+      <arg value="@startupUrl"/>
+      <arg line="-war"/>
+      <arg value="@warFolder"/>
+      <!-- Additional arguments like -style PRETTY, -logLevel DEBUG or -nosuperDevMode -->
+      <arg line="${gwt.args}"/>
+      <arg value="@moduleName"/>
+      <arg value="@moduleName"/>
+    </java>
+  </target>@antEclipseRule
+@testTargetsBegin
+  <target name="javac.tests" depends="javac" description="Compiles test code">
+    <javac srcdir="@testFolder" includes="**" encoding="utf-8"
+      source="1.7" target="1.7" nowarn="true"
+      destdir="@warFolder/WEB-INF/classes"
+      debug="true" debuglevel="lines,vars,source">
+      <classpath location="@junitJar"/>
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+  
+  <target name="test.dev" depends="javac.tests" description="Run development mode tests">
+    <mkdir dir="reports/htmlunit.dev" />
+    <junit fork="yes" printsummary="yes" haltonfailure="yes" maxmemory="256m">
+      <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war www-test" />
+      <sysproperty key="java.awt.headless" value="true" />
+      <classpath>
+        <pathelement location="@srcFolder" />
+        <pathelement location="@testFolder" />
+        <path refid="project.class.path" />
+        <pathelement location="@gwtValidationPath" />
+        <pathelement location="@gwtValidationSourcesPath" />
+        <pathelement location="@junitJar" />
+      </classpath>
+      <batchtest todir="reports/htmlunit.dev" >
+        <fileset dir="@testFolder" >
+          <include name="**/*Suite.java" />
+        </fileset>
+      </batchtest>
+      <formatter type="plain" />
+      <formatter type="xml" />
+    </junit>
+  </target>
+
+  <target name="test.prod" depends="javac.tests" description="Run production mode tests">
+    <mkdir dir="reports/htmlunit.prod" />
+    <junit fork="yes" printsummary="yes" haltonfailure="yes" maxmemory="256m">
+      <sysproperty key="gwt.args" value="-logLevel WARN -war www-test" />
+      <sysproperty key="java.awt.headless" value="true" />
+      <classpath>
+        <pathelement location="@srcFolder" />
+        <pathelement location="@testFolder" />
+        <path refid="project.class.path" />
+        <pathelement location="@gwtValidationPath" />
+        <pathelement location="@gwtValidationSourcesPath" />
+        <pathelement location="@junitJar" />
+      </classpath>
+      <batchtest todir="reports/htmlunit.prod" >
+        <fileset dir="@testFolder" >
+          <include name="**/*Suite.java" />
+        </fileset>
+      </batchtest>
+      <formatter type="plain" />
+      <formatter type="xml" />
+    </junit>
+  </target>
+
+  <target name="@testFolder" description="Run development and production mode tests">
+    <antcall target="test.dev" />
+    <antcall target="test.prod" />
+  </target>
+@testTargetsEnd
+  <target name="build" depends="gwtc" description="Build this project" />
+
+  <target name="war" depends="build" description="Create a war file">
+    <zip destfile="@moduleShortName.war" basedir="@warFolder"/>
+  </target>
+
+  <target name="clean" description="Cleans this project">
+    <delete dir="@warFolder/WEB-INF/classes" failonerror="false" />
+    <delete dir="@warFolder/@renameTo" failonerror="false" />
+  </target>
+
+</project>

@@ -1,0 +1,57 @@
+<!--
+  Copyright 2011 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License. You may obtain a copy of
+  the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  License for the specific language governing permissions and limitations under
+  the License.
+-->
+<module>
+  <inherits name="com.google.gwt.user.UI"/>
+  <public path="public" />
+
+  <!-- Define the support property for Video and Audio-->
+  <define-property name="videoElementSupport" values="maybe,no" />
+  <define-property name="audioElementSupport" values="maybe,no" />
+
+  <!-- Give default support value of maybe -->
+  <set-property name="videoElementSupport" value="maybe" />
+  <set-property name="audioElementSupport" value="maybe" />
+
+  <set-property name="videoElementSupport" value="no">
+    <when-property-is name="user.agent" value="ie8" />
+  </set-property>
+  
+  <set-property name="audioElementSupport" value="no">
+    <when-property-is name="user.agent" value="ie8" />
+  </set-property>
+
+  <replace-with class="com.google.gwt.media.client.Video.VideoElementSupportDetectedMaybe">
+    <when-type-is class="com.google.gwt.media.client.Video.VideoElementSupportDetector" />
+    <when-property-is name="videoElementSupport" value="maybe" />
+  </replace-with>
+
+  <replace-with class="com.google.gwt.media.client.Video.VideoElementSupportDetectedNo">
+    <when-type-is class="com.google.gwt.media.client.Video.VideoElementSupportDetector" />
+    <when-property-is name="videoElementSupport" value="no" />
+  </replace-with>
+  
+  <replace-with class="com.google.gwt.media.client.Audio.AudioElementSupportDetectedMaybe">
+    <when-type-is class="com.google.gwt.media.client.Audio.AudioElementSupportDetector" />
+    <when-property-is name="audioElementSupport" value="maybe" />
+  </replace-with>
+
+  <replace-with class="com.google.gwt.media.client.Audio.AudioElementSupportDetectedNo">
+    <when-type-is class="com.google.gwt.media.client.Audio.AudioElementSupportDetector" />
+    <when-property-is name="audioElementSupport" value="no" />
+  </replace-with>
+
+  <source path="client"/>
+</module>

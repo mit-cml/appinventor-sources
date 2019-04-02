@@ -1,0 +1,103 @@
+<!--                                                                        -->
+<!-- Copyright 2008 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- ClientBundle supports renaming files with strong names at compile time  -->
+<module>
+  <!-- Pull in the necessary base support -->
+  <inherits name="com.google.gwt.core.Core" />
+  <!-- Pull in SafeUri and SafeUriUtils -->
+  <inherits name="com.google.gwt.safehtml.SafeHtml" />
+  <!-- Pull in StyleInjector for CssResource -->
+  <inherits name="com.google.gwt.dom.DOM" />
+  <!-- Used by ExternalTextResource -->
+  <inherits name="com.google.gwt.http.HTTP" />
+  <inherits name="com.google.gwt.jsonp.Jsonp" />
+  <source path="client" />
+  <public path="public" />
+
+  <!--  This acts as a switch to disable the use of data: URLs -->
+  <define-property name="ClientBundle.enableInlining" values="true,false" />
+  <set-property name="ClientBundle.enableInlining" value="true" />
+
+  <!-- Specify the default behavior which should work on all browsers -->
+  <generate-with
+    class="com.google.gwt.resources.rebind.context.StaticClientBundleGenerator">
+
+    <!-- We have to specify on which types to execute the Generator -->
+    <when-type-assignable
+      class="com.google.gwt.resources.client.ClientBundle" />
+  </generate-with>
+
+  <!-- Last-matches wins, so this will selectively override the previous rule -->
+  <generate-with
+    class="com.google.gwt.resources.rebind.context.InlineClientBundleGenerator">
+    <!-- Is inlining enabled? -->
+    <when-property-is name="ClientBundle.enableInlining" value="true" />
+
+    <!-- Again, it's necessary to specify which types the generator runs on -->
+    <when-type-assignable
+      class="com.google.gwt.resources.client.ClientBundle" />
+  </generate-with>
+
+  <!-- This can be used to disable the use of strongly-named files -->
+  <define-configuration-property name="ClientBundle.enableRenaming" is-multi-valued="false" />
+  <set-configuration-property name="ClientBundle.enableRenaming" value="true" />
+
+  <!-- This allows merging of CSS rules to be disabled. -->
+  <define-configuration-property name="CssResource.mergeEnabled" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.mergeEnabled" value="true" />
+
+  <!-- This allows the developer to use shorter obfuscated class names. -->
+  <!-- Is is valid to extend this property to use a custom name. -->
+  <define-configuration-property name="CssResource.obfuscationPrefix" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.obfuscationPrefix" value="default" />
+
+  <!-- A multi-valued configuration property that defines class name prefixes -->
+  <!-- the CssResource obfuscator should not use. -->
+  <define-configuration-property name="CssResource.reservedClassPrefixes" is-multi-valued="true" />
+  <extend-configuration-property name="CssResource.reservedClassPrefixes" value="gwt-" />
+
+  <!-- This can be used to make CssResource produce human-readable CSS -->
+  <define-configuration-property name="CssResource.style" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.style" value="obf" />
+
+  <!-- This can be used to make ExternalTextResource use JSONP rather than XHR -->
+  <!-- by setting the value to true. -->
+  <define-configuration-property name="ExternalTextResource.useJsonp" is-multi-valued="false" />
+  <set-configuration-property name="ExternalTextResource.useJsonp" value="false" />
+
+  <!-- Enable GSS with CssResource -->
+  <define-configuration-property name="CssResource.enableGss" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.enableGss" value="false" />
+
+  <!-- A multi-valued configuration property that defines the list of allowed non standard -->
+  <!-- at-rules in the css files -->
+  <define-configuration-property name="CssResource.allowedAtRules" is-multi-valued="true" />
+  <extend-configuration-property name="CssResource.allowedAtRules" value="-moz-document" />
+  <extend-configuration-property name="CssResource.allowedAtRules" value="supports" />
+
+  <!-- A multi-valued configuration property that defines the list of allowed non standard -->
+  <!-- functions in the css files -->
+  <define-configuration-property name="CssResource.allowedFunctions" is-multi-valued="true" />
+  <extend-configuration-property name="CssResource.allowedFunctions" value="" />
+
+  <!-- Enable the in-memory conversion of css files with .css extension to GSS -->
+  <!-- Can be set to: strict | lenient | off -->
+  <define-configuration-property name="CssResource.conversionMode" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.conversionMode" value="off" />
+
+  <!-- The default for GSS in UiBinder -->
+  <define-configuration-property name="CssResource.gssDefaultInUiBinder" is-multi-valued="false" />
+  <set-configuration-property name="CssResource.gssDefaultInUiBinder" value="false" />
+</module>

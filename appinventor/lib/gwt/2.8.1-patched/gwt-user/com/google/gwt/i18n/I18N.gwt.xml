@@ -1,0 +1,125 @@
+<!--                                                                        -->
+<!-- Copyright 2008 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Internationalization support.                                          -->
+<module>
+  <inherits name="com.google.gwt.core.Core" />
+  <inherits name="com.google.gwt.event.Event" />
+  <inherits name="com.google.gwt.regexp.RegExp"/>
+  <inherits name="com.google.gwt.safehtml.SafeHtml"/>
+  <source path="" includes="client/,shared/" />
+  <public path="public" />
+
+  <!-- Browser-sensitive code should use the 'locale' client property. -->
+  <!-- 'default' is always defined.                                    -->
+  <define-property name="locale" values="default" />
+
+  <!--
+   - Configuration property defining the query parameter to use for the locale.
+   - Valid values are any legal URL query parameter name. 
+   -->
+  <define-configuration-property name="locale.queryparam"
+      is-multi-valued="false"/>
+  <set-configuration-property name="locale.queryparam" value="locale"/>
+
+  <!--
+   - Configuration property defining the cookie to use for the locale.
+   - Valid values are any legal cookie name. 
+   -->
+  <define-configuration-property name="locale.cookie" is-multi-valued="false"/>
+  <set-configuration-property name="locale.cookie" value=""/>
+
+  <!--
+   - Configuration property controlling whether to use user agent info for
+   - the user's locale.
+   - Valid values are (case insensitive): y/yes/n/no/true/false/on/off (others
+   - are treated as no).
+   -->
+  <define-configuration-property name="locale.useragent"
+      is-multi-valued="false"/>
+  <set-configuration-property name="locale.useragent" value="N"/>
+
+  <!--
+   - Configuration controlling whether to look for locale information in meta
+   - tags embedded by the server.
+   - Valid values are (case insensitive): y/yes/n/no/true/false/on/off (others
+   - are treated as no).
+   -->
+  <define-configuration-property name="locale.usemeta"
+      is-multi-valued="false"/>
+  <set-configuration-property name="locale.usemeta" value="Y"/>
+
+  <!--
+   - Configuration property defining the order to search for a locale.
+   - Valid values are comma-separated lists of the following values:
+   -   * queryparam
+   -   * meta
+   -   * cookie
+   -   * useragent
+   -->
+  <define-configuration-property name="locale.searchorder"
+      is-multi-valued="false"/>
+  <set-configuration-property name="locale.searchorder"
+      value="queryparam,cookie,meta,useragent"/>
+
+  <property-provider name="locale"
+      generator="com.google.gwt.i18n.linker.LocalePropertyProviderGenerator"/>
+
+  <generate-with class="com.google.gwt.i18n.rebind.LocalizableGenerator">
+    <when-type-assignable class="com.google.gwt.i18n.shared.Localizable" />
+  </generate-with>
+  <generate-with class="com.google.gwt.i18n.rebind.LocaleInfoGenerator">
+    <when-type-is class="com.google.gwt.i18n.client.impl.LocaleInfoImpl" />
+  </generate-with>
+  <generate-with class="com.google.gwt.i18n.rebind.CurrencyListGenerator">
+    <when-type-is class="com.google.gwt.i18n.client.CurrencyList" />
+  </generate-with>
+  <generate-with class="com.google.gwt.i18n.rebind.CustomDateTimeFormatGenerator">
+    <when-type-assignable class="com.google.gwt.i18n.shared.CustomDateTimeFormat" />
+  </generate-with>
+  
+  <!--
+      Set of locales to be selectable at runtime.  Only those which extend
+      the locale of the current permutation will actually be included.  Note
+      that currently only number/date format constants, locale names, and
+      currency data will support runtime locales - everything else will just
+      reference the compile-time locale set in the "locale" property.
+   -->
+  <define-configuration-property name="runtime.locales" is-multi-valued="true"/>
+
+  <!--
+      A "real" locale to be served by default (i.e. if the browser either
+      doesn't have a requested locale, or it cannot be satisfied with any
+      of the available locales).  The non-internationalized value "default"
+      is actually deficient for any actual locale, so users should set this
+      when then either <extend-property> or <define-property> user.agents for
+      their available translations.  You should still have a locale named
+      "default" (because various tools expect that to be valid), but it will
+      be generated as the locale specified here.
+  -->
+  <set-property-fallback name="locale" value="default"/>
+
+  <!-- Force BiDi policy to be enabled -->
+  <define-property name="gwt.forceBidi" values="true, false"/>
+
+  <!-- Default to not forced -->
+  <set-property name="gwt.forceBidi" value="false"/>
+
+  <!-- Replace the BidiPolicyImpl -->
+  <replace-with class="com.google.gwt.i18n.client.BidiPolicy.BidiPolicyImplOn">
+    <when-type-is class="com.google.gwt.i18n.client.BidiPolicy.BidiPolicyImpl"/>
+    <when-property-is name="gwt.forceBidi" value="true"/>
+  </replace-with>
+</module>
+

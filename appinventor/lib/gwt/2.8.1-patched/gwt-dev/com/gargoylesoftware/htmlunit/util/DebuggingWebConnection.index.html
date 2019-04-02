@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>Summary for myTest</title>
+<script src='hu.js' type='text/javascript'></script>
+<style>
+.details-wrapper {
+	margin-left: 20pt;
+	margin-bottom: 10pt
+}
+.tab-wrapper {
+	margin-top: 5pt
+}
+.tab {
+	border: 1px solid;
+	font-weight: bold;
+	background-color: #CCCCCC;
+}
+.headers {
+	border: 1px solid;
+	margin-bottom: 5pt
+}
+.header-name {
+	font-weight: bold;
+}
+.method {
+	cursor: pointer;
+}
+.hideBody > div {
+	display: none;
+}
+</style>
+<script>
+function toKB(bytes)
+{
+  return Math.round(100 * bytes / 1024) / 100;
+}
+function showHide(node)
+{
+	var oClass = node.getAttribute("class");
+	if (node.oldClass)
+	{
+		node.setAttribute("class", node.oldClass);
+		delete node.oldClass;
+	}
+	else
+	{
+		node.oldClass = node.getAttribute("class");
+		node.setAttribute("class", "")
+	}
+}
+
+function listDetails(map, className)
+{
+	var s = "";
+	for (var h in map) {
+		s += "<span class='header-name'>" + h + "</span>: " + map[h] + '<br/>';
+	}
+	return s;
+}
+function doWork()
+{
+  var totalDownloaded = 0;
+  var totalLoadTime = 0;
+  var list = document.getElementById('list');
+  for (var i=0; i<tab.length; i++) 
+  {
+    var curRes = tab[i];
+	if (!curRes.method)
+	{
+		list.innerHTML += "<hr/>" + curRes;
+		continue;
+	}
+	var s = '<li class="hideBody">'
+	+ '<span class="method"  onclick="showHide(this.parentNode)" title="Show/hide details">' + curRes.method + '</span> '
+	+ '<a href="' + curRes.fileName + '" target=_blank>' + curRes.url 
+		+ '</a>  ' + curRes.code +  ' (' + curRes.contentType + ') ' + toKB(curRes.responseSize) + ' Kib, '
+		+ curRes.loadTime + 'ms';
+	s += "<div class='details-wrapper'>"
+	if (curRes.postParameters) {
+	s += "<div class='tab-wrapper'><span class='tab'>Post body</span></div>"
+		s += "<div class='headers'>" + listDetails(curRes.postParameters, "header-name") + "</div>"
+	}
+	s += "<div class='tab-wrapper'><span class='tab'>Response headers</span></div>"
+	s += "<div class='headers'>" + listDetails(curRes.responseHeaders, "header-name") + "</div>"
+
+	s += '</div></li>';
+	
+    list.innerHTML += s;
+    totalDownloaded += curRes.responseSize;
+	totalLoadTime += curRes.loadTime
+  }
+  document.getElementById('totalDownload').innerHTML = toKB(totalDownloaded);
+  document.getElementById('totalLoadTime').innerHTML = totalLoadTime + "ms";
+}
+</script>
+</head>
+<body onload='doWork()'>
+<h1>Received responses</h1>
+<ol id='list'>
+</ol>
+
+Total download: <span id='totalDownload'>0</span> Kib,
+total load time: <span id='totalLoadTime'>0</span>
+
+</body>
+</html>

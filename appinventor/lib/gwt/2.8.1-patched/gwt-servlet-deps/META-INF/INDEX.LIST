@@ -1,0 +1,20 @@
+JarIndex-Version: 1.0
+
+gwt-servlet-deps.jar
+com
+com/google
+com/google/gson
+com/google/gson/annotations
+com/google/gson/internal
+com/google/gson/internal/bind
+com/google/gson/internal/bind/util
+com/google/gson/reflect
+com/google/gson/stream
+javax
+javax/validation
+javax/validation/bootstrap
+javax/validation/constraints
+javax/validation/groups
+javax/validation/metadata
+javax/validation/spi
+

@@ -1,0 +1,292 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.sourceforge.cssparser</groupId>
+    <artifactId>cssparser</artifactId>
+    <version>0.9.18</version>
+    <name>CSS Parser</name>
+    <url>http://cssparser.sourceforge.net/</url>
+    <description>A CSS parser which implements SAC (the Simple API for CSS).</description>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+        </license>
+    </licenses>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <properties>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
+    <scm>
+        <connection>scm:svn:svn://svn.code.sf.net/p/cssparser/code/trunk/cssparser</connection>
+        <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/cssparser/code/trunk/cssparser</developerConnection>
+        <url>http://svn.code.sf.net/p/cssparser/code/trunk/cssparser</url>
+    </scm>
+    <build>
+        <plugins>
+            <plugin>
+                <!-- set Java 5 as the minimum requirement -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- generate parsers and lexers before compiling -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>javacc</id>
+                        <goals>
+                            <goal>javacc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSSmobileOKBasic1.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSSmobileOKBasic1TokenManager.java</include>
+
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS1.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS1TokenManager.java</include>
+
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS2.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS2TokenManager.java</include>
+
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS21.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS21TokenManager.java</include>
+
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS3.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/SACParserCSS3TokenManager.java</include>
+
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/Token.java</include>
+                        <include>target/generated-sources/javacc/com/steadystate/css/parser/TokenMgrError.java</include>
+                    </includes>
+                    <regex>true</regex>
+                    <regexFlags>
+                        <regexFlag>MULTILINE</regexFlag>
+                    </regexFlags>
+                    <replacements>
+                        <replacement>
+                            <token>^public class</token>
+                            <value>@SuppressWarnings("all") public class</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <suppressionsLocation>checkstyle_suppressions.xml</suppressionsLocation>
+                    <headerLocation>${project.build.directory}/../LICENSE.txt</headerLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>6.5</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Url>${project.url}</Url>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- always generate a source JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.4</version>
+                <configuration>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                    <additionalBuildcommands>
+                        <buildcommand>net.sf.eclipsecs.core.CheckstyleBuilder</buildcommand>
+                    </additionalBuildcommands>
+                    <additionalProjectnatures>
+                        <projectnature>net.sf.eclipsecs.core.CheckstyleNature</projectnature>
+                    </additionalProjectnatures>
+                    <additionalConfig>
+                        <file>
+                            <name>.checkstyle</name>
+                            <content>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
+  <local-check-config name="CSS Parser" location="checkstyle.xml" type="project" description="">
+    <property name="checkstyle.suppressions.file" value="$${project_loc}/checkstyle_suppressions.xml" />
+    <property name="checkstyle.header.file" value="$${project_loc}/LICENSE.txt" />
+    <additional-data name="protect-config-file" value="false" />
+  </local-check-config>
+  <fileset name="all" enabled="true" check-config-name="CSS Parser" local="true">
+    <file-match-pattern match-pattern="^src/.*\.java" include-pattern="true" />
+  </fileset>
+  <filter name="NonSrcDirs" enabled="true" />
+</fileset-config>
+]]>
+                            </content>
+                        </file>
+                    </additionalConfig>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <version>2.11</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+                <configuration>
+                    <issueLinkTemplatePerSystem>
+                        <features>http://sourceforge.net/p/htmlunit/feature-requests/%ISSUE%</features>
+                    </issueLinkTemplatePerSystem>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.2</version>
+                <configuration>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                        <link>http://www.w3.org/Style/CSS/SAC/doc/</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+    <issueManagement>
+        <system>SourceForge2</system>
+        <url>http://sourceforge.net/p/cssparser/bugs/</url>
+    </issueManagement>
+    <mailingLists>
+        <mailingList>
+            <name>CSSParser Developers</name>
+            <subscribe>https://lists.sourceforge.net/lists/listinfo/cssparser-developers</subscribe>
+            <unsubscribe>https://lists.sourceforge.net/lists/listinfo/cssparser-developers</unsubscribe>
+            <archive>http://sourceforge.net/p/cssparser/mailman/cssparser-developers</archive>
+            <post>cssparser-develops@lists.sourceforge.net</post>
+        </mailingList>
+    </mailingLists>
+    <developers>
+        <developer>
+            <name>David Schweinsberg</name>
+            <id>davidsch</id>
+            <email>davidsch@users.sourceforge.net</email>
+        </developer>
+        <developer>
+            <name>Alan Krueger</name>
+            <id>alankrueger</id>
+        </developer>
+        <developer>
+            <name>Daniel Gredler</name>
+            <id>sdanig</id>
+            <email>sdanig@users.sourceforge.net</email>
+            <url>http://daniel.gredler.net/</url>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <name>Johannes Koch</name>
+            <id>waldbaer</id>
+            <email>waldbaer@users.sourceforge.net</email>
+        </developer>
+        <developer>
+            <name>Ronald Brill</name>
+            <id>rbri</id>
+            <email>rbri@rbri.de</email>
+            <url>http://www.wetator.org/</url>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Ahmed Ashour</name>
+        </contributor>
+    </contributors>
+    <dependencies>
+        <dependency>
+            <groupId>org.w3c.css</groupId>
+            <artifactId>sac</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

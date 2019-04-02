@@ -1,0 +1,57 @@
+<!--                                                                        -->
+<!-- Copyright 2007 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Defines the user.agent property and its provider function.             -->
+<module>
+  <source path="client" />
+  <public path="public" />
+
+  <!-- Browser-sensitive code should use the 'user.agent' property -->
+  <define-property name="user.agent" values="ie8" />
+  <extend-property name="user.agent" values="gecko1_8" />
+  <extend-property name="user.agent" values="safari" />
+  <extend-property name="user.agent" values="ie9" fallback-value="ie8" />
+  <extend-property name="user.agent" values="ie10" />
+  <property-provider name="user.agent" generator="com.google.gwt.useragent.rebind.UserAgentPropertyGenerator"/>
+
+  <!-- Set to false to avoid runtime warnings for mismatched runtime and -->
+  <!-- compile time user.agent values -->
+  <define-configuration-property name="user.agent.runtimeWarning"
+    is-multi-valued="false" />
+  <set-configuration-property name="user.agent.runtimeWarning" value="true"/>
+
+  <!--
+    If set to "modern", GWT widgets will sometimes attempt to use new web API's that
+    aren't yet standardized (such as prefixed API's). The "stable" setting turns this off.
+    If recompiling and redeploying your GWT app when someone reports a browser bug would be
+    a problem, you should choose "stable".
+  -->
+  <define-property name="webApiUsage" values="stable,modern"/>
+  <set-property name="webApiUsage" value="modern"/>
+
+  <!-- Asserts that the compile time user.agent value matches the runtime -->
+  <!-- user.agent value if user.agent.runtimeWarning is true -->
+  <entry-point class="com.google.gwt.useragent.client.UserAgentAsserter" />
+
+  <generate-with class="com.google.gwt.useragent.rebind.UserAgentAsserterGenerator">
+    <when-type-is class="com.google.gwt.useragent.client.UserAgentAsserter" />
+  </generate-with>
+
+  <generate-with class="com.google.gwt.useragent.rebind.UserAgentGenerator">
+    <when-type-assignable class="com.google.gwt.useragent.client.UserAgent" />
+  </generate-with>
+
+  <!-- Deferred binding to optimize Core based on user agent. -->
+  <inherits name="com.google.gwt.core.CoreWithUserAgent"/>
+</module>

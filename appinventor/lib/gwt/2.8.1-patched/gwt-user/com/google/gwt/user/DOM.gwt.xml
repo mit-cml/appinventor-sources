@@ -1,0 +1,66 @@
+<!--                                                                        -->
+<!-- Copyright 2007 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Deferred binding rules for browser selection.                          -->
+<!--                                                                        -->
+<!-- This module is typically inherited via com.google.gwt.user.User        -->
+<!--                                                                        -->
+<module>
+  <inherits name="com.google.gwt.core.Core"/>
+  <inherits name="com.google.gwt.dom.DOM"/>
+  <inherits name="com.google.gwt.event.Event"/>
+  <inherits name="com.google.gwt.user.History"/>
+  <!-- Following needed for WindowImplIE -->
+  <inherits name="com.google.gwt.resources.Resources"/>
+  <inherits name="com.google.gwt.useragent.UserAgent"/>
+
+  <source path="client">
+    <include name="BaseListenerWrapper.java" />
+    <include name="Cookies.java" />
+    <include name="Element.java" />
+    <include name="Event.java" />
+    <include name="EventListener.java" />
+    <include name="EventPreview.java" />
+    <include name="History*.java" />
+    <include name="impl/History*.java" />
+    <include name="DOM.java" />
+    <include name="impl/DOM*.java" />
+    <include name="impl/EventMap.java" />
+    <include name="Window*.java" />
+    <include name="impl/Window*.java" />
+  </source>
+
+  <replace-with class="com.google.gwt.user.client.impl.DOMImplWebkit">
+    <when-type-is class="com.google.gwt.user.client.impl.DOMImpl"/>
+    <when-property-is name="user.agent" value="safari"/>
+  </replace-with>
+
+  <replace-with class="com.google.gwt.user.client.impl.DOMImplIE9">
+    <when-type-is class="com.google.gwt.user.client.impl.DOMImpl"/>
+    <any>
+      <when-property-is name="user.agent" value="ie9"/>
+      <when-property-is name="user.agent" value="ie10"/>
+    </any>
+  </replace-with>
+
+  <replace-with class="com.google.gwt.user.client.impl.DOMImplIE8">
+    <when-type-is class="com.google.gwt.user.client.impl.DOMImpl"/>
+    <when-property-is name="user.agent" value="ie8"/>
+  </replace-with>
+
+  <replace-with class="com.google.gwt.user.client.impl.DOMImplMozilla">
+    <when-type-is class="com.google.gwt.user.client.impl.DOMImpl"/>
+    <when-property-is name="user.agent" value="gecko1_8"/>
+  </replace-with>
+</module>

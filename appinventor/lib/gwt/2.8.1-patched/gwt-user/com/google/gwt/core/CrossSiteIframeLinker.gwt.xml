@@ -1,0 +1,57 @@
+<!--                                                                        -->
+<!-- Copyright 2010 Google Inc.                                             -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); you    -->
+<!-- may not use this file except in compliance with the License. You may   -->
+<!-- may obtain a copy of the License at                                    -->
+<!--                                                                        -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0                             -->
+<!--                                                                        -->
+<!-- Unless required by applicable law or agreed to in writing, software    -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS,      -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or        -->
+<!-- implied. License for the specific language governing permissions and   -->
+<!-- limitations under the License.                                         -->
+
+<!-- Defines the cross-site iframe linker and it's subclasses  -->
+<module>
+  <define-linker name="xsiframe" class="com.google.gwt.core.linker.CrossSiteIframeLinker" />
+  <define-linker name="direct_install" class="com.google.gwt.core.linker.DirectInstallLinker" />
+  <define-configuration-property name="xsiframe.failIfScriptTag" is-multi-valued="FALSE"/>
+
+  <!-- Properties controlling behavior of the linker (overridden by Super Dev Mode) -->
+  <define-configuration-property name="devModeRedirectEnabled" is-multi-valued="false"/>
+  <define-configuration-property name="devModeUrlWhitelistRegexp" is-multi-valued="false"/>
+  <define-configuration-property name="installScriptJs" is-multi-valued="false" />
+  <define-configuration-property name="installCode" is-multi-valued="false" />
+  <define-configuration-property name="computeScriptBaseJs" is-multi-valued="false" />
+  <!--
+     - Determines whether the GWT compiler generates cache.js files
+     - that end with a comment pointing to a sourcemap file, to support source-level
+     - debugging in browsers.
+     - Specification: http://goo.gl/ZQ3V3
+     - Takes on the following values:
+     - if "false":
+     -   no sourcemap URL declarations are included at the end of the primary fragment script
+     - if "true":
+     -    a relative URL to the standard sourcemap for the primary fragment is included.
+     - Otherwise:
+     -   The value is assumed to be a custom URL. The following tokens will be substituted:
+     -   __MODULE__ is replaced with the module name
+     -   __FRAGMENT__ is replaced with the fragment id, which will be 0 for the initial fragment.
+     -   __HASH__ is replaced with the strong name of the fragment.
+   -->
+  <define-configuration-property name="includeSourceMapUrl" is-multi-valued="false"/>
+  <set-configuration-property name="includeSourceMapUrl" value="false"/>
+  <set-configuration-property name="xsiframe.failIfScriptTag" value="TRUE"/> 
+
+  <replace-with class="com.google.gwt.core.client.impl.ScriptTagLoadingStrategy">
+    <when-type-is
+      class="com.google.gwt.core.client.impl.AsyncFragmentLoader.LoadingStrategy" />
+    <any>
+      <when-linker-added name="xsiframe" />
+      <when-linker-added name="direct_install" />
+    </any>
+  </replace-with>
+
+
+</module>
