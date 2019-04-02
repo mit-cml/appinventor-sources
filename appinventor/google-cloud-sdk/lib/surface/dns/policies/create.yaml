@@ -1,0 +1,37 @@
+- help_text:
+    brief: Creates a new Cloud DNS policy.
+    description: |
+      Creates a new Cloud DNS policy.
+      ## EXAMPLES
+
+      To create a new policy with minimal arguments, run:
+
+        $ {command} mypolicy \
+        --description 'My new policy test policy 5' \
+        --networks=''
+
+      To create a new policy with all optional arguments, run:
+
+        $ {command} mypolicy \
+        --description 'My new policy test policy 5' \
+        --networks network1,network2 \
+        --alternative-name-servers 192.168.1.1,192.168.1.2
+        --enable-inbound-forwarding
+
+  request:
+    _COMMON_: request
+    method: create
+
+  arguments:
+    resource:
+      help_text: The name of the policy you want to create.
+      is_positional: true
+      spec: !REF googlecloudsdk.command_lib.dns.resources:policy
+    params:
+    - _COMMON_: args.description
+    - _COMMON_: args.networks
+    - _COMMON_: args.forwarding
+    - _COMMON_: args.altnameservers
+
+  output:
+    format: json

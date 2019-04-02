@@ -1,0 +1,219 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "cloudresourcesearch:v1",
+  "name": "cloudresourcesearch",
+  "canonicalName": "Cloud Resource Search",
+  "version": "v1",
+  "revision": "0",
+  "title": "Cloud Resource Search",
+  "description": "An API for searching over Google Cloud Platform Resources.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://groups.google.com/forum/#!forum/resource-search-api-alpha",
+  "protocol": "rest",
+  "rootUrl": "https://cloudresourcesearch.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://cloudresourcesearch.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "SearchResponse": {
+      "id": "SearchResponse",
+      "description": "Response message for `resources.search`.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "A list of resources that match the search query.",
+          "type": "array",
+          "items": {
+            "$ref": "SearchResult"
+          }
+        },
+        "matchedCount": {
+          "description": "The approximate total number of resources that match the query.  It will\nnever be less than the number of resources returned so far, but it can\nchange as additional pages of results are returned.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nextPageToken": {
+          "description": "If there are more results than those appearing in this response, then\n`next_page_token` is included.  To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "SearchResult": {
+      "id": "SearchResult",
+      "description": "A single Google Cloud Platform resource.",
+      "type": "object",
+      "properties": {
+        "discoveryUrl": {
+          "description": "The URL of the discovery document containing the resource's JSON schema.\nExample: `https:\/\/cloudresourcemanager.googleapis.com\/$discovery\/rest`.",
+          "type": "string"
+        },
+        "discoveryType": {
+          "description": "The JSON schema name listed in the discovery document.\nExample: `Project`.",
+          "type": "string"
+        },
+        "resourceUrl": {
+          "description": "The REST URL for accessing the resource. An HTTP GET operation using this\nURL returns an object equivalent to the value in the `resource` field.\nExample:\n`https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123`.",
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "The RPC resource name: a scheme-less URI that includes the DNS-compatible\nAPI service name. The URI does not include an API version and does not\nsupport %-encoding.\nExample: `\/\/cloudresourcemanager.googleapis.com\/projects\/my-project-123`.",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "A domain-scoped name that describes the protocol buffer message type.\nExample: `type.googleapis.com\/google.cloud.resourcemanager.v1.Project`.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The matched resource, expressed as a JSON object.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    }
+  },
+  "resources": {
+    "resources": {
+      "methods": {
+        "search": {
+          "id": "cloudresourcesearch.resources.search",
+          "path": "v1/resources:search",
+          "flatPath": "v1/resources:search",
+          "httpMethod": "GET",
+          "parameters": {
+            "query": {
+              "description": "Optional. The query string. If the query is missing or empty,\nall accessible resources are returned.\n\nAny field in a supported resource type's schema may be specified in\nthe query. Additionally, every resource has a `@type` field whose value is\nthe resource's type URL. See `SearchResult.resource_type` for more\ninformation.\n\nExample: The following query searches for accessible Compute Engine VM\ninstances (`@type:Instance`) that have an `env` label value of `prod` and\nthat have a machine type that starts with `\"n1-stand\"`:\n\n    @type:Instance labels.env:prod machineType:n1-stand*\n\nFor more information, see [Search Queries](\/resource-search\/docs\/search-queries)\nand [Resource Types](\/resource-search\/docs\/reference\/Resource.Types).",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of resources to return from this request.  The\npresence of `next_page_token` in the response indicates that more resources\nare available.  The default value of `page_size` is 20 and the maximum\nvalue is 1000.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `page_token` must be the value of\n`next_page_token` from the previous response.  The values of other method\nparameters, including the query and sort order, must be identical to those\nin the previous call.",
+              "location": "query",
+              "type": "string"
+            },
+            "orderBy": {
+              "description": "Optional. A comma-separated list of string-valued fields for sorting the\nresults.  If this field is omitted, then the order of results is not\ndefined. You can use fields from the resource schemas as well as the\nbuilt-in fields `resourceName` and `resourceType`. Field values are ordered\nby their UTF-8 encodings.\n\nFields are sorted in ascending order by default. To sort a field in descending\norder, append `\" desc\"` to the field name. For example, the `order_by`\nvalue `\"resource_type desc,resource_name\"` sorts results by resource type\nin descending order; resources with the same type are returned in ascending\norder of their names.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "SearchResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Lists accessible Google Cloud Platform resources that match a query. A\nresource is accessible to the caller if the caller has permission\nto perform a GET operation on the resource."
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

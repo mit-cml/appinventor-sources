@@ -1,0 +1,37 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 BasicAutoscalingAlgorithm export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- yarnConfig
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  cooldownPeriod:
+    description: |-
+      Cooldown period in between scaling. Note that a cooldown period begins
+      after a scaling operation has completed.Default: 120s.
+    type: string
+  yarnConfig:
+    description: YARN autoscaling configuration.
+    $ref: BasicYarnAutoscalingConfig.yaml

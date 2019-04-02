@@ -1,0 +1,32 @@
+project:
+  name: project
+  collection: serverless.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name
+    property: core/project
+
+region:
+  name: region
+  collection: run.projects.locations
+  attributes:
+  - *project
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: The Cloud Run region
+    property: run/region
+
+service:
+  name: service
+  collection: run.projects.locations.services
+  attributes:
+  - *project
+  - *region
+  - &service
+    parameter_name: servicesId
+    attribute_name: service
+    help: The name of the Cloud Run service.

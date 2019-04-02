@@ -1,0 +1,1260 @@
+{
+ "kind": "discovery#restDescription",
+ "discoveryVersion": "v1",
+ "id": "dns:v1",
+ "name": "dns",
+ "version": "v1",
+ "revision": "20190208",
+ "title": "Google Cloud DNS API",
+ "description": "Configures and serves authoritative DNS records.",
+ "ownerDomain": "google.com",
+ "ownerName": "Google",
+ "icons": {
+  "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+  "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+ },
+ "documentationLink": "https://developers.google.com/cloud-dns",
+ "protocol": "rest",
+ "baseUrl": "https://www.googleapis.com/dns/v1/projects/",
+ "basePath": "/dns/v1/projects/",
+ "rootUrl": "https://www.googleapis.com/",
+ "servicePath": "dns/v1/projects/",
+ "batchPath": "batch/dns/v1",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "Deprecated. Please use quotaUser instead.",
+   "location": "query"
+  }
+ },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/cloud-platform": {
+     "description": "View and manage your data across Google Cloud Platform services"
+    },
+    "https://www.googleapis.com/auth/cloud-platform.read-only": {
+     "description": "View your data across Google Cloud Platform services"
+    },
+    "https://www.googleapis.com/auth/ndev.clouddns.readonly": {
+     "description": "View your DNS records hosted by Google Cloud DNS"
+    },
+    "https://www.googleapis.com/auth/ndev.clouddns.readwrite": {
+     "description": "View and manage your DNS records hosted by Google Cloud DNS"
+    }
+   }
+  }
+ },
+ "schemas": {
+  "Change": {
+   "id": "Change",
+   "type": "object",
+   "properties": {
+    "additions": {
+     "type": "array",
+     "items": {
+      "$ref": "ResourceRecordSet"
+     }
+    },
+    "deletions": {
+     "type": "array",
+     "items": {
+      "$ref": "ResourceRecordSet"
+     }
+    },
+    "id": {
+     "type": "string"
+    },
+    "isServing": {
+     "type": "boolean"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#change\".",
+     "default": "dns#change"
+    },
+    "startTime": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string",
+     "enum": [
+      "done",
+      "pending"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "ChangesListResponse": {
+   "id": "ChangesListResponse",
+   "type": "object",
+   "properties": {
+    "changes": {
+     "type": "array",
+     "items": {
+      "$ref": "Change"
+     }
+    },
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#changesListResponse"
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "DnsKey": {
+   "id": "DnsKey",
+   "type": "object",
+   "properties": {
+    "algorithm": {
+     "type": "string",
+     "enum": [
+      "ecdsap256sha256",
+      "ecdsap384sha384",
+      "rsasha1",
+      "rsasha256",
+      "rsasha512"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "creationTime": {
+     "type": "string"
+    },
+    "description": {
+     "type": "string"
+    },
+    "digests": {
+     "type": "array",
+     "items": {
+      "$ref": "DnsKeyDigest"
+     }
+    },
+    "id": {
+     "type": "string"
+    },
+    "isActive": {
+     "type": "boolean"
+    },
+    "keyLength": {
+     "type": "integer",
+     "format": "uint32"
+    },
+    "keyTag": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#dnsKey\".",
+     "default": "dns#dnsKey"
+    },
+    "publicKey": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "keySigning",
+      "zoneSigning"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "DnsKeyDigest": {
+   "id": "DnsKeyDigest",
+   "type": "object",
+   "properties": {
+    "digest": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "sha1",
+      "sha256",
+      "sha384"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "DnsKeySpec": {
+   "id": "DnsKeySpec",
+   "type": "object",
+   "properties": {
+    "algorithm": {
+     "type": "string",
+     "enum": [
+      "ecdsap256sha256",
+      "ecdsap384sha384",
+      "rsasha1",
+      "rsasha256",
+      "rsasha512"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "keyLength": {
+     "type": "integer",
+     "format": "uint32"
+    },
+    "keyType": {
+     "type": "string",
+     "enum": [
+      "keySigning",
+      "zoneSigning"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#dnsKeySpec\".",
+     "default": "dns#dnsKeySpec"
+    }
+   }
+  },
+  "DnsKeysListResponse": {
+   "id": "DnsKeysListResponse",
+   "type": "object",
+   "properties": {
+    "dnsKeys": {
+     "type": "array",
+     "items": {
+      "$ref": "DnsKey"
+     }
+    },
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#dnsKeysListResponse"
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "ManagedZone": {
+   "id": "ManagedZone",
+   "type": "object",
+   "properties": {
+    "creationTime": {
+     "type": "string"
+    },
+    "description": {
+     "type": "string"
+    },
+    "dnsName": {
+     "type": "string"
+    },
+    "dnssecConfig": {
+     "$ref": "ManagedZoneDnsSecConfig"
+    },
+    "id": {
+     "type": "string",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZone\".",
+     "default": "dns#managedZone"
+    },
+    "labels": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "name": {
+     "type": "string"
+    },
+    "nameServerSet": {
+     "type": "string"
+    },
+    "nameServers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "ManagedZoneDnsSecConfig": {
+   "id": "ManagedZoneDnsSecConfig",
+   "type": "object",
+   "properties": {
+    "defaultKeySpecs": {
+     "type": "array",
+     "items": {
+      "$ref": "DnsKeySpec"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneDnsSecConfig\".",
+     "default": "dns#managedZoneDnsSecConfig"
+    },
+    "nonExistence": {
+     "type": "string",
+     "enum": [
+      "nsec",
+      "nsec3"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "state": {
+     "type": "string",
+     "enum": [
+      "off",
+      "on",
+      "transfer"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "ManagedZoneOperationsListResponse": {
+   "id": "ManagedZoneOperationsListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#managedZoneOperationsListResponse"
+    },
+    "nextPageToken": {
+     "type": "string"
+    },
+    "operations": {
+     "type": "array",
+     "items": {
+      "$ref": "Operation"
+     }
+    }
+   }
+  },
+  "ManagedZonesListResponse": {
+   "id": "ManagedZonesListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#managedZonesListResponse"
+    },
+    "managedZones": {
+     "type": "array",
+     "items": {
+      "$ref": "ManagedZone"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "Operation": {
+   "id": "Operation",
+   "type": "object",
+   "properties": {
+    "dnsKeyContext": {
+     "$ref": "OperationDnsKeyContext"
+    },
+    "id": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#operation\".",
+     "default": "dns#operation"
+    },
+    "startTime": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string",
+     "enum": [
+      "done",
+      "pending"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "type": {
+     "type": "string"
+    },
+    "user": {
+     "type": "string"
+    },
+    "zoneContext": {
+     "$ref": "OperationManagedZoneContext"
+    }
+   }
+  },
+  "OperationDnsKeyContext": {
+   "id": "OperationDnsKeyContext",
+   "type": "object",
+   "properties": {
+    "newValue": {
+     "$ref": "DnsKey"
+    },
+    "oldValue": {
+     "$ref": "DnsKey"
+    }
+   }
+  },
+  "OperationManagedZoneContext": {
+   "id": "OperationManagedZoneContext",
+   "type": "object",
+   "properties": {
+    "newValue": {
+     "$ref": "ManagedZone"
+    },
+    "oldValue": {
+     "$ref": "ManagedZone"
+    }
+   }
+  },
+  "Project": {
+   "id": "Project",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#project\".",
+     "default": "dns#project"
+    },
+    "number": {
+     "type": "string",
+     "format": "uint64"
+    },
+    "quota": {
+     "$ref": "Quota"
+    }
+   }
+  },
+  "Quota": {
+   "id": "Quota",
+   "type": "object",
+   "properties": {
+    "dnsKeysPerManagedZone": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#quota\".",
+     "default": "dns#quota"
+    },
+    "managedZones": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "resourceRecordsPerRrset": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "rrsetAdditionsPerChange": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "rrsetDeletionsPerChange": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "rrsetsPerManagedZone": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "totalRrdataSizePerChange": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "whitelistedKeySpecs": {
+     "type": "array",
+     "items": {
+      "$ref": "DnsKeySpec"
+     }
+    }
+   }
+  },
+  "ResourceRecordSet": {
+   "id": "ResourceRecordSet",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#resourceRecordSet\".",
+     "default": "dns#resourceRecordSet"
+    },
+    "name": {
+     "type": "string"
+    },
+    "rrdatas": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "signatureRrdatas": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "ttl": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "type": {
+     "type": "string"
+    }
+   }
+  },
+  "ResourceRecordSetsListResponse": {
+   "id": "ResourceRecordSetsListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#resourceRecordSetsListResponse"
+    },
+    "nextPageToken": {
+     "type": "string"
+    },
+    "rrsets": {
+     "type": "array",
+     "items": {
+      "$ref": "ResourceRecordSet"
+     }
+    }
+   }
+  },
+  "ResponseHeader": {
+   "id": "ResponseHeader",
+   "type": "object",
+   "properties": {
+    "operationId": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "resources": {
+  "changes": {
+   "methods": {
+    "create": {
+     "id": "dns.changes.create",
+     "path": "{project}/managedZones/{managedZone}/changes",
+     "httpMethod": "POST",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "request": {
+      "$ref": "Change"
+     },
+     "response": {
+      "$ref": "Change"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.changes.get",
+     "path": "{project}/managedZones/{managedZone}/changes/{changeId}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "changeId": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "changeId"
+     ],
+     "response": {
+      "$ref": "Change"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.changes.list",
+     "path": "{project}/managedZones/{managedZone}/changes",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "sortBy": {
+       "type": "string",
+       "default": "changeSequence",
+       "enum": [
+        "changeSequence"
+       ],
+       "enumDescriptions": [
+        ""
+       ],
+       "location": "query"
+      },
+      "sortOrder": {
+       "type": "string",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "response": {
+      "$ref": "ChangesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "dnsKeys": {
+   "methods": {
+    "get": {
+     "id": "dns.dnsKeys.get",
+     "path": "{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "digestType": {
+       "type": "string",
+       "location": "query"
+      },
+      "dnsKeyId": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "dnsKeyId"
+     ],
+     "response": {
+      "$ref": "DnsKey"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.dnsKeys.list",
+     "path": "{project}/managedZones/{managedZone}/dnsKeys",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "digestType": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "response": {
+      "$ref": "DnsKeysListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "managedZoneOperations": {
+   "methods": {
+    "get": {
+     "id": "dns.managedZoneOperations.get",
+     "path": "{project}/managedZones/{managedZone}/operations/{operation}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "operation": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.managedZoneOperations.list",
+     "path": "{project}/managedZones/{managedZone}/operations",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "sortBy": {
+       "type": "string",
+       "default": "startTime",
+       "enum": [
+        "id",
+        "startTime"
+       ],
+       "enumDescriptions": [
+        "",
+        ""
+       ],
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "response": {
+      "$ref": "ManagedZoneOperationsListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "managedZones": {
+   "methods": {
+    "create": {
+     "id": "dns.managedZones.create",
+     "path": "{project}/managedZones",
+     "httpMethod": "POST",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ManagedZone"
+     },
+     "response": {
+      "$ref": "ManagedZone"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "delete": {
+     "id": "dns.managedZones.delete",
+     "path": "{project}/managedZones/{managedZone}",
+     "httpMethod": "DELETE",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.managedZones.get",
+     "path": "{project}/managedZones/{managedZone}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "response": {
+      "$ref": "ManagedZone"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.managedZones.list",
+     "path": "{project}/managedZones",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "dnsName": {
+       "type": "string",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "ManagedZonesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "patch": {
+     "id": "dns.managedZones.patch",
+     "path": "{project}/managedZones/{managedZone}",
+     "httpMethod": "PATCH",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "request": {
+      "$ref": "ManagedZone"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "update": {
+     "id": "dns.managedZones.update",
+     "path": "{project}/managedZones/{managedZone}",
+     "httpMethod": "PUT",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "request": {
+      "$ref": "ManagedZone"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "projects": {
+   "methods": {
+    "get": {
+     "id": "dns.projects.get",
+     "path": "{project}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Project"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "resourceRecordSets": {
+   "methods": {
+    "list": {
+     "id": "dns.resourceRecordSets.list",
+     "path": "{project}/managedZones/{managedZone}/rrsets",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "name": {
+       "type": "string",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "type": {
+       "type": "string",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "response": {
+      "$ref": "ResourceRecordSetsListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  }
+ }
+}

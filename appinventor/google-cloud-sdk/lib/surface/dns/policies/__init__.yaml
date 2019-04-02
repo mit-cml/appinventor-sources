@@ -1,0 +1,39 @@
+args:
+  description:
+    api_field: policy.description
+    arg_name: description
+    required: true
+    help_text: A description of the policy.
+
+  networks:
+    api_field: policy.networks
+    arg_name: networks
+    required: true
+    metavar: URL
+    type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=compute.networks
+    processor: googlecloudsdk.command_lib.dns.util:PolicyNetworkProcessor
+    help_text: |
+        The comma separated list of network names to associate with the policy.
+
+  forwarding:
+    api_field: policy.enableInboundForwarding
+    arg_name: enable-inbound-forwarding
+    action: store_true
+    default: false
+    help_text: |
+        Specifies whether to allow networks bound to this policy to
+        receive DNS queries sent by VMs or applications over VPN
+        connections. Defaults to False.
+
+  altnameservers:
+    api_field: policy.alternativeNameServerConfig.targetNameServers
+    arg_name: alternative-name-servers
+    metavar: IP_ADDRESS
+    type:  googlecloudsdk.command_lib.dns.util:TargetNameServerType
+    help_text: |
+        List of alternative name servers to forward to. Must be a comma
+        separated list of IPv4 addresses.
+
+request:
+  collection: dns.policies
+  api_version: v1beta2

@@ -1,0 +1,26 @@
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: Create a new access policy.
+    description: Create a new access policy.
+
+  request:
+    collection: accesscontextmanager.accessPolicies
+
+  async:
+    collection: accesscontextmanager.operations
+    result_attribute: response
+    extract_resource_result: false
+
+  arguments:
+    params:
+    - api_field: title
+      arg_name: title
+      required: true
+      help_text: Short human-readable title of the access level.
+    - api_field: parent
+      arg_name: organization
+      required: true
+      type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=cloudresourcemanager.organizations
+      processor: googlecloudsdk.command_lib.util.hooks.processors:RelativeName
+      help_text: The parent organization for the access policies.

@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client;
 
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -55,6 +54,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -130,7 +130,7 @@ public class TopToolbar extends Composite {
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
   public DropDownButton adminDropDown;
-  public DropDownButton dyslexicDropDown;
+  public DropDownButton settingsDropDown;
 
 
   private boolean isReadOnly;
@@ -152,7 +152,7 @@ public class TopToolbar extends Composite {
     /*
      * Layout is as follows:
      * +---------------------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ | Dyslexic ▾ |
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ | Settings ▾ |
      * +---------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
@@ -163,7 +163,7 @@ public class TopToolbar extends Composite {
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
-    List<DropDownItem> dyslexicItems = Lists.newArrayList();
+    List<DropDownItem> settingsItems = Lists.newArrayList();
 
 
     // Should the UI be in read only mode?
@@ -307,11 +307,11 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
-    //Dyslexic ->{Dyslexic Font}
-   dyslexicItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.dyslexicFont(),
+    //Settings ->{Dyslexic Font, Regular Font}
+   settingsItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.dyslexicFont(),
    new changeFontDys()));
 
-   dyslexicItems.add(new DropDownItem(WIDGET_NAME_REGULAR_FONT, MESSAGES.regularFont(),
+   settingsItems.add(new DropDownItem(WIDGET_NAME_REGULAR_FONT, MESSAGES.regularFont(),
    new changeFontRob()));
 
 
@@ -325,8 +325,8 @@ public class TopToolbar extends Composite {
         buildItems, false);
     helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpTabName(),
         helpItems, false);
-    dyslexicDropDown = new DropDownButton(WIDGET_NAME_DYSLEXIC, MESSAGES.dyslexicTabName(),
-        dyslexicItems, false);
+    settingsDropDown = new DropDownButton(WIDGET_NAME_DYSLEXIC, MESSAGES.dyslexicTabName(),
+        settingsItems, false);
 
 
     // Set the DropDown Styles
@@ -334,14 +334,13 @@ public class TopToolbar extends Composite {
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
-    dyslexicDropDown.setStyleName("ode-TopPanelButton");
+    settingsDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
-    
-    toolbar.add(dyslexicDropDown); 
+    toolbar.add(settingsDropDown); 
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
     toolbar.add(helpDropDown);
@@ -371,25 +370,11 @@ public class TopToolbar extends Composite {
   // -----------------------------
 
 
-
-
-
-
-
-
-
-
-
  private static class changeFontDys implements Command {
     @Override
     public void execute() {
       RootPanel.get().addStyleName("gwt-bodyOdf");
-      RootPanel.get().removeStyleName("gwt-bodyRob");
-    // RootPanel.get().getStyle().setBackgroundColor("black"); 
-    // RootPanel.get().removeStyleName("body-Roboto");
-     //RootPanel.get().addStyleName(".gwt-body");
-      
-     
+      RootPanel.get().removeStyleName("gwt-bodyRob");     
     }
   }
 
@@ -397,29 +382,9 @@ private static class changeFontRob implements Command {
     @Override
     public void execute() {
       RootPanel.get().addStyleName("gwt-bodyRob");
-      RootPanel.get().removeStyleName("gwt-bodyOdf");
-    // RootPanel.get().getStyle().setBackgroundColor("black"); 
-    // RootPanel.get().removeStyleName("body-Roboto");
-     //RootPanel.get().addStyleName(".gwt-body");
-      
-     
+      RootPanel.get().removeStyleName("gwt-bodyOdf");     
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   private static class NewAction implements Command {
     @Override

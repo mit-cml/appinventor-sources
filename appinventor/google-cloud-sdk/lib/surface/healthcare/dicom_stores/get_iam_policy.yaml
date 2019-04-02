@@ -1,0 +1,14 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Retrieve the IAM policy for a Cloud Healthcare API DICOM store.
+    description: Retrieve the IAM policy for a Cloud Healthcare API DICOM store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.dicomStores
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API DICOM store whose IAM policy to fetch.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dicom_store

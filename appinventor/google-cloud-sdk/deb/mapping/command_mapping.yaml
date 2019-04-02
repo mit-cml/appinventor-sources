@@ -1,0 +1,4 @@
+install: sudo apt-get install {package}
+update: sudo apt-get install {package}
+remove: sudo apt-get remove {package}
+update-all: sudo apt-get update && sudo apt-get --only-upgrade install {package}

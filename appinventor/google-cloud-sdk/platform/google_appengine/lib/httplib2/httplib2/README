@@ -1,0 +1,12 @@
+The httplib2 code in this directory was integrated from the httplib2 code in
+//third_party/py/httplib2.
+
+Local modifications from the original //third_party/py/httplib2 code that have
+been maintained:
+1. Added httplib2_test.py for minimal validation.
+2. Use only the python2/httplib2 subdirectory from github.
+
+Local modifications on top of the //third_party/py/httplib2 code:
+1. socks.py from the original commit is included. Comparatively,
+//third_party/py/httplib2 uses //third_party/py/socks.
+2. Passing the HTTPS host into the _ssl_wrap_socket method (as in cl/152201465).

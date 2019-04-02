@@ -341,13 +341,6 @@ body {
   filter:         drop-shadow(0px 0px 1px #222); */
 }
 
-/*
-.ode-Logo:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
-}
-*/
-
 .ode-LogoText {
   font-size: 16px;
   color: grey;
@@ -2549,16 +2542,20 @@ textarea::-webkit-input-placeholder {
   height: 294px;
   overflow: auto;
 }
+
 .ac-row {
   cursor: pointer;
   padding: .4em;
 }
+
 .ac-highlighted {
   font-weight: bold;
 }
+
 .ac-active {
   background-color: #b2b4bf;
 }
+
 .ai_type_block {
   position: absolute;
   z-index: 2000;

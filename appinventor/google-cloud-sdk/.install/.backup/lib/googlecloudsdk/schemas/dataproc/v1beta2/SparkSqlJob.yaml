@@ -1,0 +1,71 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 SparkSqlJob export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  jarFileUris:
+    description: HCFS URIs of jar files to be added to the Spark CLASSPATH.
+    type: array
+    items:
+      type: string
+  loggingConfig: {$ref: "LoggingConfig.yaml"}
+  properties:
+    description: |-
+      A mapping of property names to values, used to configure Spark SQL's
+      SparkConf. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten.
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string
+  queryFileUri:
+    description: The HCFS URI of the script that contains SQL queries.
+    type: string
+  queryList:
+    description: A list of queries.
+    type: object
+    required:
+    - queries
+    additionalProperties: false
+    properties:
+      queries:
+        description: |-
+          The queries to execute. You do not need to terminate a query with
+          a semicolon. Multiple queries can be specified in one string by
+          separating each with a semicolon. Here is an example of an Cloud
+          Dataproc API snippet that uses a QueryList to specify a HiveJob:
+          "hiveJob": {   "queryList": {     "queries": [       "query1",
+          "query2",       "query3;query4",     ]   } }
+        type: array
+        items:
+          type: string
+  scriptVariables:
+    description: |-
+      Mapping of query variable names to values (equivalent to the Spark SQL
+      command: SET name="value";).
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string

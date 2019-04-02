@@ -1,0 +1,20 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 AutoscalingPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- secondaryWorkerConfig
+- workerConfig
+additionalProperties: false
+properties:
+  basicAlgorithm:
+    description: A BasicAutoscalingAlgorithm attribute.
+    $ref: BasicAutoscalingAlgorithm.yaml
+  secondaryWorkerConfig:
+    description: |-
+      Describes how the autoscaler will operate for secondary workers.
+    $ref: InstanceGroupAutoscalingPolicyConfig.yaml
+  workerConfig:
+    description: Describes how the autoscaler will operate for primary workers.
+    $ref: InstanceGroupAutoscalingPolicyConfig.yaml

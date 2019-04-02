@@ -1,0 +1,20 @@
+- release_tracks: []
+
+  help_text:
+    brief: Get description of a long-running video analysis operation.
+    description: |
+      Get information about a long-running video analysis operation.
+
+  request:
+    collection: videointelligence.operations
+    api_version: v1
+    resource_method_params:
+      name: operationsId
+
+  arguments:
+    resource:
+      help_text: The ID of the operation to describe.
+      spec: !REF googlecloudsdk.command_lib.ml.video.resources:operation
+
+  output:
+    format: json

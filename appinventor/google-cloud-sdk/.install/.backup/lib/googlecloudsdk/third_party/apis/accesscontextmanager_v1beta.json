@@ -1,0 +1,1022 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "accesscontextmanager:v1beta",
+  "name": "accesscontextmanager",
+  "canonicalName": "Access Context Manager",
+  "version": "v1beta",
+  "revision": "0",
+  "title": "Access Context Manager API",
+  "description": "An API for setting attribute based access control to requests to GCP services.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/access-context-manager/docs/reference/rest/",
+  "protocol": "rest",
+  "rootUrl": "https://accesscontextmanager.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://accesscontextmanager.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "ListAccessPoliciesResponse": {
+      "id": "ListAccessPoliciesResponse",
+      "description": "A response to `ListAccessPoliciesRequest`.",
+      "type": "object",
+      "properties": {
+        "accessPolicies": {
+          "description": "List of the AccessPolicy instances.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of results. If the value is\nempty, no further results remain.",
+          "type": "string"
+        }
+      }
+    },
+    "AccessPolicy": {
+      "id": "AccessPolicy",
+      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `ServicePerimeters` (which define regions\nof services able to freely pass data within a perimeter). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The parent of this `AccessPolicy` in the Cloud Resource\nHierarchy. Currently immutable once created. Format:\n`organizations\/{organization_id}`",
+          "type": "string"
+        },
+        "title": {
+          "description": "Required. Human readable title. Does not affect behavior.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the `AccessPolicy` was created in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListAccessLevelsResponse": {
+      "id": "ListAccessLevelsResponse",
+      "description": "A response to `ListAccessLevelsRequest`.",
+      "type": "object",
+      "properties": {
+        "accessLevels": {
+          "description": "List of the Access Level instances.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessLevel"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of results. If the value is\nempty, no further results remain.",
+          "type": "string"
+        }
+      }
+    },
+    "AccessLevel": {
+      "id": "AccessLevel",
+      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human readable title. Must be unique within the Policy.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the `AccessLevel` and its use. Does not affect behavior.",
+          "type": "string"
+        },
+        "basic": {
+          "description": "A `BasicLevel` composed of `Conditions`.",
+          "$ref": "BasicLevel"
+        },
+        "createTime": {
+          "description": "Output only. Time the `AccessLevel` was created in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the `AccessLevel` was updated in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BasicLevel": {
+      "id": "BasicLevel",
+      "description": "`BasicLevel` is an `AccessLevel` using a set of recommended features.",
+      "type": "object",
+      "properties": {
+        "conditions": {
+          "description": "Required. A list of requirements for the `AccessLevel` to be granted.",
+          "type": "array",
+          "items": {
+            "$ref": "Condition"
+          }
+        },
+        "combiningFunction": {
+          "description": "How the `conditions` list should be combined to determine if a request is\ngranted this `AccessLevel`. If AND is used, each `Condition` in\n`conditions` must be satisfied for the `AccessLevel` to be applied. If OR\nis used, at least one `Condition` in `conditions` must be satisfied for the\n`AccessLevel` to be applied. Default behavior is AND.",
+          "enumDescriptions": [
+            "All `Conditions` must be true for the `BasicLevel` to be true.",
+            "If at least one `Condition` is true, then the `BasicLevel` is true."
+          ],
+          "type": "string",
+          "enum": [
+            "AND",
+            "OR"
+          ]
+        }
+      }
+    },
+    "Condition": {
+      "id": "Condition",
+      "description": "A condition necessary for an `AccessLevel` to be granted. The Condition is an\nAND over its fields. So a Condition is true if: 1) the request IP is from one\nof the listed subnetworks AND 2) the originating device complies with the\nlisted device policy AND 3) all listed access levels are granted AND 4) the\nrequest was sent at a time allowed by the DateTimeRestriction.",
+      "type": "object",
+      "properties": {
+        "ipSubnetworks": {
+          "description": "CIDR block IP subnetwork specification. May be IPv4 or IPv6. Note that for\na CIDR IP address block, the specified IP address portion must be properly\ntruncated (i.e. all the host bits must be zero) or the input is considered\nmalformed. For example, \"192.0.2.0\/24\" is accepted but \"192.0.2.1\/24\" is\nnot. Similarly, for IPv6, \"2001:db8::\/32\" is accepted whereas\n\"2001:db8::1\/32\" is not. The originating IP of a request must be in one of\nthe listed subnets in order for this Condition to be true. If empty, all IP\naddresses are allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "devicePolicy": {
+          "description": "Device specific restrictions, all restrictions must hold for the\nCondition to be true. If not specified, all devices are allowed.",
+          "$ref": "DevicePolicy"
+        },
+        "requiredAccessLevels": {
+          "description": "A list of other access levels defined in the same `Policy`, referenced by\nresource name. Referencing an `AccessLevel` which does not exist is an\nerror. All access levels listed must be granted for the Condition\nto be true. Example:\n\"`accessPolicies\/MY_POLICY\/accessLevels\/LEVEL_NAME\"`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "negate": {
+          "description": "Whether to negate the Condition. If true, the Condition becomes a NAND over\nits non-empty fields, each field must be false for the Condition overall to\nbe satisfied. Defaults to false.",
+          "type": "boolean"
+        },
+        "members": {
+          "description": "The request must be made by one of the provided user or service\naccounts. Groups are not supported.\nSyntax:\n`user:{emailid}`\n`serviceAccount:{emailid}`\nIf not specified, a request may come from any user.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DevicePolicy": {
+      "id": "DevicePolicy",
+      "description": "`DevicePolicy` specifies device specific restrictions necessary to acquire a\ngiven access level. A `DevicePolicy` specifies requirements for requests from\ndevices to be granted access levels, it does not do any enforcement on the\ndevice. `DevicePolicy` acts as an AND over all specified fields, and each\nrepeated field is an OR over its elements. Any unset fields are ignored. For\nexample, if the proto is { os_type : DESKTOP_WINDOWS, os_type :\nDESKTOP_LINUX, encryption_status: ENCRYPTED}, then the DevicePolicy will be\ntrue for requests originating from encrypted Linux desktops and encrypted\nWindows desktops.",
+      "type": "object",
+      "properties": {
+        "requireScreenlock": {
+          "description": "Whether or not screenlock is required for the DevicePolicy to be true.\nDefaults to `false`.",
+          "type": "boolean"
+        },
+        "allowedEncryptionStatuses": {
+          "description": "Allowed encryptions statuses, an empty list allows all statuses.",
+          "enumDescriptions": [
+            "The encryption status of the device is not specified or not known.",
+            "The device does not support encryption.",
+            "The device supports encryption, but is currently unencrypted.",
+            "The device is encrypted."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ENCRYPTION_UNSPECIFIED",
+              "ENCRYPTION_UNSUPPORTED",
+              "UNENCRYPTED",
+              "ENCRYPTED"
+            ]
+          }
+        },
+        "osConstraints": {
+          "description": "Allowed OS versions, an empty list allows all types and all versions.",
+          "type": "array",
+          "items": {
+            "$ref": "OsConstraint"
+          }
+        },
+        "allowedDeviceManagementLevels": {
+          "description": "Allowed device management levels, an empty list allows all management\nlevels.",
+          "enumDescriptions": [
+            "The device's management level is not specified or not known.",
+            "The device is not managed.",
+            "Basic management is enabled, which is generally limited to monitoring and\nwiping the corporate account.",
+            "Complete device management. This includes more thorough monitoring and the\nability to directly manage the device (such as remote wiping). This can be\nenabled through the Android Enterprise Platform."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "MANAGEMENT_UNSPECIFIED",
+              "NONE",
+              "BASIC",
+              "COMPLETE"
+            ]
+          }
+        }
+      }
+    },
+    "OsConstraint": {
+      "id": "OsConstraint",
+      "description": "A restriction on the OS type and version of devices making requests.",
+      "type": "object",
+      "properties": {
+        "osType": {
+          "description": "Required. The allowed OS type.",
+          "enumDescriptions": [
+            "The operating system of the device is not specified or not known.",
+            "A desktop Mac operating system.",
+            "A desktop Windows operating system.",
+            "A desktop Linux operating system.",
+            "A desktop ChromeOS operating system.",
+            "An Android operating system.",
+            "An iOS operating system."
+          ],
+          "type": "string",
+          "enum": [
+            "OS_UNSPECIFIED",
+            "DESKTOP_MAC",
+            "DESKTOP_WINDOWS",
+            "DESKTOP_LINUX",
+            "DESKTOP_CHROME_OS",
+            "ANDROID",
+            "IOS"
+          ]
+        },
+        "minimumVersion": {
+          "description": "The minimum allowed OS version. If not set, any version of this OS\nsatisfies the constraint. Format: `\"major.minor.patch\"`.\nExamples: `\"10.5.301\"`, `\"9.2.1\"`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListServicePerimetersResponse": {
+      "id": "ListServicePerimetersResponse",
+      "description": "A response to `ListServicePerimetersRequest`.",
+      "type": "object",
+      "properties": {
+        "servicePerimeters": {
+          "description": "List of the Service Perimeter instances.",
+          "type": "array",
+          "items": {
+            "$ref": "ServicePerimeter"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of results. If the value is\nempty, no further results remain.",
+          "type": "string"
+        }
+      }
+    },
+    "ServicePerimeter": {
+      "id": "ServicePerimeter",
+      "description": "`ServicePerimeter` describes a set of GCP resources which can freely import\nand export data amongst themselves, but not export outside of the\n`ServicePerimeter`. If a request with a source within this `ServicePerimeter`\nhas a target outside of the `ServicePerimeter`, the request will be blocked.\nOtherwise the request is allowed. There are two types of Service Perimeter -\nRegular and Bridge. Regular Service Perimeters cannot overlap, a single GCP\nproject can only belong to a single regular Service Perimeter. Service\nPerimeter Bridges can contain only GCP projects as members, a single GCP\nproject may belong to multiple Service Perimeter Bridges.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Resource name for the ServicePerimeter.  The `short_name`\ncomponent must begin with a letter and only include alphanumeric and '_'.\nFormat: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human readable title. Must be unique within the Policy.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the `ServicePerimeter` and its use. Does not affect\nbehavior.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the `ServicePerimeter` was created in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the `ServicePerimeter` was updated in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "perimeterType": {
+          "description": "Perimeter type indicator. A single project is\nallowed to be a member of single regular perimeter, but multiple service\nperimeter bridges. A project cannot be a included in a perimeter bridge\nwithout being included in regular perimeter. For perimeter bridges,\nrestricted\/unrestricted service lists as well as access lists must be\nempty.",
+          "enumDescriptions": [
+            "Regular Perimeter.",
+            "Perimeter Bridge."
+          ],
+          "type": "string",
+          "enum": [
+            "PERIMETER_TYPE_REGULAR",
+            "PERIMETER_TYPE_BRIDGE"
+          ]
+        },
+        "status": {
+          "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted\/unrestricted services and access levels that determine perimeter\ncontent and boundaries.",
+          "$ref": "ServicePerimeterConfig"
+        }
+      }
+    },
+    "ServicePerimeterConfig": {
+      "id": "ServicePerimeterConfig",
+      "description": "`ServicePerimeterConfig` specifies a set of GCP resources that describe\nspecific Service Perimeter configuration.",
+      "type": "object",
+      "properties": {
+        "resources": {
+          "description": "A list of GCP resources that are inside of the service perimeter.\nCurrently only projects are allowed. Format: `projects\/{project_number}`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessLevels": {
+          "description": "A list of `AccessLevel` resource names that allow resources within the\n`ServicePerimeter` to be accessed from the internet. `AccessLevels` listed\nmust be in the same policy as this `ServicePerimeter`. Referencing a\nnonexistent `AccessLevel` is a syntax error. If no `AccessLevel` names are\nlisted, resources within the perimeter can only be accessed via GCP calls\nwith request origins within the perimeter. Example:\n`\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nFor Service Perimeter Bridge, must be empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unrestrictedServices": {
+          "description": "GCP services that are not subject to the Service Perimeter restrictions.\nMay contain a list of services or a single wildcard \"*\". For example, if\n`logging.googleapis.com` is unrestricted, users can access logs inside the\nperimeter as if the perimeter doesn't exist, and it also means VMs inside\nthe perimeter can access logs outside the perimeter.\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted. One of\nthe fields \"restricted_services\", \"unrestricted_services\" must contain a\nwildcard \"*\", otherwise the Service Perimeter specification is invalid. It\nalso means that both field being empty is invalid as well.\n\"unrestricted_services\" can be empty if and only if \"restricted_services\"\nlist contains a \"*\" wildcard.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "restrictedServices": {
+          "description": "GCP services that are subject to the Service Perimeter restrictions. May\ncontain a list of services or a single wildcard \"*\". For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.\n\nWildcard means that unless explicitly specified by \"unrestricted_services\"\nlist, any service is treated as restricted. One of the fields\n\"restricted_services\", \"unrestricted_services\" must contain a wildcard \"*\",\notherwise the Service Perimeter specification is invalid. It also means\nthat both field being empty is invalid as well. \"restricted_services\" can\nbe empty if and only if \"unrestricted_services\" list contains a \"*\"\nwildcard.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "resources": {
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "accesscontextmanager.operations.get",
+          "path": "v1beta/{+name}",
+          "flatPath": "v1beta/operations/{operationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+        }
+      }
+    },
+    "accessPolicies": {
+      "methods": {
+        "list": {
+          "id": "accesscontextmanager.accessPolicies.list",
+          "path": "v1beta/accessPolicies",
+          "flatPath": "v1beta/accessPolicies",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "Required. Resource name for the container to list AccessPolicy instances\nfrom.\n\nFormat:\n`organizations\/{org_id}`",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Number of AccessPolicy instances to include in the list. Default 100.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Next page token for the next batch of AccessPolicy instances. Defaults to\nthe first page of results.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListAccessPoliciesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "List all AccessPolicies under a\ncontainer."
+        },
+        "get": {
+          "id": "accesscontextmanager.accessPolicies.get",
+          "path": "v1beta/{+name}",
+          "flatPath": "v1beta/accessPolicies/{accessPoliciesId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. Resource name for the access policy to get.\n\nFormat `accessPolicies\/{policy_id}`",
+              "location": "path",
+              "required": true,
+              "pattern": "^accessPolicies\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "AccessPolicy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get an AccessPolicy by name."
+        },
+        "create": {
+          "id": "accesscontextmanager.accessPolicies.create",
+          "path": "v1beta/accessPolicies",
+          "flatPath": "v1beta/accessPolicies",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AccessPolicy"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Create an `AccessPolicy`. Fails if this organization already has a\n`AccessPolicy`. The longrunning Operation will have a successful status\nonce the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
+        },
+        "patch": {
+          "id": "accesscontextmanager.accessPolicies.patch",
+          "path": "v1beta/{+name}",
+          "flatPath": "v1beta/accessPolicies/{accessPoliciesId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
+              "location": "path",
+              "required": true,
+              "pattern": "^accessPolicies\/[^\/]+$",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. Mask to control which fields get updated. Must be non-empty.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "AccessPolicy"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
+        },
+        "delete": {
+          "id": "accesscontextmanager.accessPolicies.delete",
+          "path": "v1beta/{+name}",
+          "flatPath": "v1beta/accessPolicies/{accessPoliciesId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "Required. Resource name for the access policy to delete.\n\nFormat `accessPolicies\/{policy_id}`",
+              "location": "path",
+              "required": true,
+              "pattern": "^accessPolicies\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
+        }
+      }
+      ,
+      "resources": {
+        "accessLevels": {
+          "methods": {
+            "list": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.list",
+              "path": "v1beta/{+parent}/accessLevels",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/accessLevels",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy to list Access Levels from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Number of Access Levels to include in\nthe list. Default 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Next page token for the next batch of Access Level instances.\nDefaults to the first page of results.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "accessLevelFormat": {
+                  "description": "Whether to return `BasicLevels` in the Cloud Common Expression language, as\n`CustomLevels`, rather than as `BasicLevels`. Defaults to returning\n`AccessLevels` in the format they were defined.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "LEVEL_FORMAT_UNSPECIFIED",
+                    "AS_DEFINED",
+                    "CEL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListAccessLevelsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "List all Access Levels for an access\npolicy."
+            },
+            "get": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Access Level.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
+                  "type": "string"
+                },
+                "accessLevelFormat": {
+                  "description": "Whether to return `BasicLevels` in the Cloud Common Expression\nLanguage rather than as `BasicLevels`. Defaults to AS_DEFINED, where\nAccess Levels\nare returned as `BasicLevels` or `CustomLevels` based on how they were\ncreated. If set to CEL, all Access Levels are returned as\n`CustomLevels`. In the CEL case, `BasicLevels` are translated to equivalent\n`CustomLevels`.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "LEVEL_FORMAT_UNSPECIFIED",
+                    "AS_DEFINED",
+                    "CEL"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "AccessLevel"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get an Access Level by resource\nname."
+            },
+            "create": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.create",
+              "path": "v1beta/{+parent}/accessLevels",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/accessLevels",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy which owns this Access\nLevel.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "AccessLevel"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+            },
+            "patch": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.patch",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required.  Mask to control which fields get updated. Must be non-empty.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "AccessLevel"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
+            },
+            "delete": {
+              "id": "accesscontextmanager.accessPolicies.accessLevels.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Access Level.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
+            }
+          }
+        },
+        "servicePerimeters": {
+          "methods": {
+            "list": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.list",
+              "path": "v1beta/{+parent}/servicePerimeters",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy to list Service Perimeters from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Number of Service Perimeters to include\nin the list. Default 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Next page token for the next batch of Service Perimeter instances.\nDefaults to the first page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListServicePerimetersResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "List all Service Perimeters for an\naccess policy."
+            },
+            "get": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Service Perimeter.\n\nFormat:\n`accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeters_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ServicePerimeter"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get an Service Perimeter by resource\nname."
+            },
+            "create": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.create",
+              "path": "v1beta/{+parent}/servicePerimeters",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy which owns this Service\nPerimeter.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ServicePerimeter"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nService Perimeter has\npropagated to long-lasting storage. Service Perimeters containing\nerrors will result in an error response for the first error encountered."
+            },
+            "patch": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.patch",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the ServicePerimeter.  The `short_name`\ncomponent must begin with a letter and only include alphanumeric and '_'.\nFormat: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Mask to control which fields get updated. Must be non-empty.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ServicePerimeter"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an Service Perimeter. The\nlongrunning operation from this RPC will have a successful status once the\nchanges to the Service Perimeter have\npropagated to long-lasting storage. Service Perimeter containing\nerrors will result in an error response for the first error encountered."
+            },
+            "delete": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Service Perimeter.\n\nFormat:\n`accessPolicies\/{policy_id}\/servicePerimeters\/{service_perimeter_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an Service Perimeter by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Service Perimeter has been\nremoved from long-lasting storage."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

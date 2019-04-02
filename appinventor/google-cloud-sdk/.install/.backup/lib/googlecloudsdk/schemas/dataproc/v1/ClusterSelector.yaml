@@ -1,0 +1,41 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1 ClusterSelector export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- clusterLabels
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  clusterLabels:
+    description: The cluster labels. Cluster must have all labels to match.
+    type: object
+    additionalProperties:
+      description: Additional properties of type string
+      type: string
+  zone:
+    description: |-
+      The zone where workflow process executes. This parameter does not affect
+      the selection of the cluster.If unspecified, the zone of the first cluster
+      matching the selector is used.
+    type: string

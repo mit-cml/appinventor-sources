@@ -1,0 +1,16 @@
+- release_tracks: []
+
+  help_text:
+    brief: Delete a Compute Engine reservation.
+    description: Delete a Compute Engine reservation.
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.compute.resources:reservation
+      help_text: The name of the reservation to delete.
+
+  request:
+    collection: compute.allocations
+    api_version: alpha
+
+# Need to add operation handling here. TODO(b/124401797)

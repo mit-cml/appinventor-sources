@@ -1,0 +1,14 @@
+- release_tracks: []
+
+  help_text:
+    brief: Show details about a Compute Engine reservation.
+    description: Show details about a Compute Engine reservation.
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.compute.resources:reservation
+      help_text: The name of the reservation to describe.
+
+  request:
+    collection: compute.allocations
+    api_version: alpha

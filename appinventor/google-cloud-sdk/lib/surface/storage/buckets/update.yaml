@@ -1,0 +1,28 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Update a Cloud Storage bucket.
+    description: Update a Cloud Storage bucket.
+
+  request:
+    collection: storage.buckets
+
+  arguments:
+
+    resource:
+      help_text: The bucket you want to update.
+      spec: !REF googlecloudsdk.command_lib.storage.resources:bucket
+
+    params:
+
+    - arg_name: requester-pays
+      api_field: bucketResource.billing.requesterPays
+      type: bool
+      help_text: |-
+        True to make requests for objects in this bucket pay the egress costs.
+
+    - arg_name: versioning
+      api_field: bucketResource.versioning.enabled
+      type: bool
+      help_text: |-
+        Enable object versioning in this bucket.

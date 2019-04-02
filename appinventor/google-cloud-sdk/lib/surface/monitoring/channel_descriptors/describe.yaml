@@ -1,0 +1,11 @@
+- help_text:
+    brief: Describe a notification channel descriptor.
+    description: Describe a notification channel descriptor.
+
+  request:
+    collection: monitoring.projects.notificationChannelDescriptors
+
+  arguments:
+    resource:
+      help_text: The notification channel descriptor to describe.
+      spec: !REF googlecloudsdk.command_lib.monitoring.resources:notification_channel_descriptor

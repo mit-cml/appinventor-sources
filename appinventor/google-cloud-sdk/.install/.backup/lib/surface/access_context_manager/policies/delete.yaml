@@ -1,0 +1,13 @@
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: Delete an access policy.
+    description: Delete a given access policy.
+
+  request:
+    collection: accesscontextmanager.accessPolicies
+
+  arguments:
+    resource:
+      help_text: The access level you want to delete.
+      spec: !REF googlecloudsdk.command_lib.accesscontextmanager.resources:policy

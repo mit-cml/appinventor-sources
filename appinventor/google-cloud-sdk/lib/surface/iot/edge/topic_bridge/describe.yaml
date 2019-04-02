@@ -1,0 +1,20 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: List current topic bridging rules of an Edge device.
+    description: List current topic bridging rules of an Edge device.
+    examples: |
+      The following command lists current topic bridging rules in the Edge device:
+
+      $ {command} my-device
+      --region asia-east1 --registry my-registry
+
+  request:
+    collection: edge.projects.locations.registries.devices
+    method: getTopicBridgingTable
+
+
+  arguments:
+    resource:
+      help_text: The device to inspect topic bridging table for.
+      spec: !REF googlecloudsdk.command_lib.iot.edge.resources:device

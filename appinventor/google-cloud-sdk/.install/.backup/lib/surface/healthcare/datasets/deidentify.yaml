@@ -1,0 +1,48 @@
+- help_text:
+    brief: |
+      Create a new Cloud Healthcare API dataset containing de-identified data from the source dataset.
+    description: |
+      Create a new Cloud Healthcare API dataset containing de-identified data from the source dataset.
+  request:
+    collection: healthcare.projects.locations.datasets
+    api_version: v1alpha2
+    method: deidentify
+
+  arguments:
+    resource:
+      help_text: Source Cloud Healthcare API dataset to deidentify.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dataset
+
+    params:
+    - arg_name: destination-dataset
+      api_field: deidentifyDatasetRequest.destinationDataset
+      required: true
+      help_text: |
+        The name of the dataset resource to which the redacted data should be written
+        (e.g., projects/{projectId}/locations/{locationId}/datasets/{datasetId}).
+        The new dataset must not exist, or the request will fail.
+    - arg_name: dicom-filter-tags
+      api_field: deidentifyDatasetRequest.config.dicom.keepList.tags
+      help_text: |
+        Tags to be filtered. Tags must be DICOM Data Elements, File Meta Elements, or
+        Directory Structuring Elements, as defined at:
+        http://dicom.nema.org/medical/dicom/current/output/html/part06.html#table_6-1,.
+        They may be provided by "Keyword" or "Tag". For example "PatientID", "0010,0010".
+    - arg_name: text-redaction-mode
+      api_field: deidentifyDatasetRequest.config.image.textRedactionMode
+      choices:
+      - arg_value: all
+        enum_value: REDACT_ALL_TEXT
+        help_text: |
+          Redact all text.
+      help_text: |
+        Determines how to redact text from image.
+    - arg_name: default-fhir-config
+      type: bool
+      processor: googlecloudsdk.command_lib.healthcare.util:InsertEmptyFhirConfig
+      api_field: deidentifyDatasetRequest.config.fhir
+      help_text: |
+        Deidentify FHIR data with default configurations.
+
+  async:
+    collection: healthcare.projects.locations.datasets.operations

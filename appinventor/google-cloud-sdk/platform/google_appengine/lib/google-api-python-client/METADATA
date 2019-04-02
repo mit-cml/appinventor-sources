@@ -1,0 +1,22 @@
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "google_api_python_client"
+description: "Google API Client for Python."
+
+third_party {
+  url {
+    type: ARCHIVE
+    value: "http://code.google.com/p/google-api-python-client"
+  }
+  version: "9f44d44c9a6e"
+  last_upgrade_date: {
+    year: 2012
+    month: 2
+    day: 6
+  }
+
+  # NOTE: The "local_modifications" field is entirely optional and may be
+  # removed if it's not useful for the package.
+  #     See go/thirdparty-metadata-local-modifications
+  local_modifications: "http://google3/third_party/apphosting/python/google_api_python_client/README.google?cl=27341192"
+}

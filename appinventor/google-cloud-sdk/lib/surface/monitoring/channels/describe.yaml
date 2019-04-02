@@ -1,0 +1,11 @@
+- help_text:
+    brief: Describe a notification channel.
+    description: Describe a notification channel.
+
+  request:
+    collection: monitoring.projects.notificationChannels
+
+  arguments:
+    resource:
+      help_text: The notification channel to describe.
+      spec: !REF googlecloudsdk.command_lib.monitoring.resources:notification_channel
