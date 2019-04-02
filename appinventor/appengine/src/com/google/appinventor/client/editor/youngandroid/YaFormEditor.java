@@ -55,9 +55,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -519,32 +522,34 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     visibleComponentsPanel.setForm(form);
     form.select();
 
-    //Lynda: TODO
     String subsetjson = form.getPropertyValue("SubsetJSON");
-    OdeLog.log(subsetjson);
     if (subsetjson.length() > 0) {
-      // Map<String, JSONValue> properties = propertiesObject.getProperties();
-      // JSONObject screenprops = propertiesObject.get("Properties").asObject();
-      // JSONValue subset = screenprops.getProperties().get("SubsetJSON");
-      // OdeLog.log("loading subsetJson");
-      // OdeLog.log(subset.toJson());
-      try {
-        //String subsetjson = subset.toJson();
-        String shownComponentsStr = getShownComponents(subsetjson);
-        //OdeLog.log(shownComponentsStr);
-        String[] shownComponents = shownComponentsStr.split(",");
-        palettePanel.clearComponents();
-        for (String component : shownComponents) {
-          palettePanel.addComponent(component);
-        }
-
-      } catch (Exception e) {
-        OdeLog.log("invalid subset string");
-      }
+      reloadComponentPalette(subsetjson);
     }
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
     loadComplete = true;
+  }
+
+  public void reloadComponentPalette(String subsetjson) {
+    OdeLog.log(subsetjson);
+    Set<String> shownComponents = COMPONENT_DATABASE.getComponentNames();
+    if (subsetjson.length() > 0) {
+      try {
+        String shownComponentsStr = getShownComponents(subsetjson);
+        shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        palettePanel.clearComponents();
+        for (String component : shownComponents) {
+          palettePanel.addComponent(component);
+        }
+      } catch (Exception e) {
+        OdeLog.log("invalid subset string");
+      }
+    }
+    palettePanel.clearComponents();
+    for (String component : shownComponents) {
+      palettePanel.addComponent(component);
+    }
   }
 
   private native String getShownComponents(String subsetString)/*-{

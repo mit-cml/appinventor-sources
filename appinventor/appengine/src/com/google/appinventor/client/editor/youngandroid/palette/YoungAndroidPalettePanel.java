@@ -242,6 +242,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       VerticalPanel panel = categoryPanels.get(category);
       panel.clear();
     }
+    for (PaletteHelper pal : paletteHelpers.values()) {
+      pal.clear();
+    }
   }
 
   @Override

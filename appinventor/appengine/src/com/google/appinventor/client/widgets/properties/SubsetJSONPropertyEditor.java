@@ -133,15 +133,15 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
     for (ComponentCategory cat : ComponentCategory.values()) {
-      CheckBox cb = new CheckBox(ComponentsTranslation.getCategoryName(cat.getName()));
-      cb.setName(cat.getDocName());
-      categoryItems.put(cat.getDocName(), createCascadeCheckboxItem(cb));
+      if (cat != ComponentCategory.INTERNAL && cat != ComponentCategory.UNINITIALIZED) {
+        CheckBox cb = new CheckBox(ComponentsTranslation.getCategoryName(cat.getName()));
+        cb.setName(cat.getDocName());
+        categoryItems.put(cat.getDocName(), createCascadeCheckboxItem(cb));
+      }
     }
     for (String cname : db.getComponentNames()) {
-
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
-      if (cd.getCategoryDocUrlString() != "internal" && cd.getCategoryDocUrlString() != "") {
-
+      if (categoryItems.containsKey(cd.getCategoryDocUrlString())) {
         final CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
         final TreeItem subTree = createCascadeCheckboxItem(subcb);
         subcb.setName(cname);
@@ -169,10 +169,10 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         t.addItem(subTree);
       }
     }
-    for (ComponentCategory cat : ComponentCategory.values()) {
-      TreeItem t = categoryItems.get(cat.getDocName());
-      if (t.getChildCount() > 0)
+    for (TreeItem t : categoryItems.values()) {
+      if (t.getChildCount() > 0) {
         componentTree.addItem(t);
+      }
     }
 
     // Build tree of global blocks by category

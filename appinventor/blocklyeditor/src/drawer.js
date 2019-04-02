@@ -108,10 +108,13 @@ Blockly.Drawer.createSubsetBlockInfoArray_ = function() {
     var drawerTypes = ["Logic", "Control", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"];
     var fullBlockArray = Blockly.Drawer.createBlockInfoArray_();
     var blockArray = {};
-    drawerTypes.forEach(function(type) {
-      var typeName = "cat_" + type;
-      blockArray[typeName] = subsetBlockArray[type];
-    });
+//    drawerTypes.forEach(function(type) {
+    for (var key in subsetBlockArray) {
+      if (key != 'ComponentBlocks') {
+        var typeName = "cat_" + key;
+        blockArray[typeName] = subsetBlockArray[key];
+      }
+    }
     console.log(blockArray);
     return blockArray;
   } catch (err) {
@@ -311,34 +314,31 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   //   blockSet = newBlockSet;
   // }
 
-  // var blockInfoArray = this.options.blockInfoArray;
-  var blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
+  var blockInfoArray = this.options.blockInfoArray;
+  // var blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
   var drawerArray = blockInfoArray[drawerName];
 
   // if (!blockSet) {
   //   throw "no such drawer: " + drawerName;
   // }
 
-  if (!drawerArray) {
-    throw "no such drawer: " + drawerName;
-  }
+  if (drawerArray) {
+    //var xmlList = this.blockListToXMLArray(blockSet);
+    var xmlList = [];
 
-  //var xmlList = this.blockListToXMLArray(blockSet);
-  var xmlList = [];
-
-  for(var i = 0; i < drawerArray.length; i++) {
-    if (drawerArray[i].list == "procedures_callnoreturn" || drawerArray[i].list == "procedures_callreturn") {
-      var returnBool = (drawerArray[i].list == "procedures_callreturn");
-      var callerArray = Blockly.Drawer.procedureCallersBlockArray(returnBool);
-      for (var k = 0; k < callerArray.length; k++) {
-        xmlList.push(Blockly.Drawer.blockInfoToXML(callerArray[k]));
+    for (var i = 0; i < drawerArray.length; i++) {
+      if (drawerArray[i].list == "procedures_callnoreturn" || drawerArray[i].list == "procedures_callreturn") {
+        var returnBool = (drawerArray[i].list == "procedures_callreturn");
+        var callerArray = Blockly.Drawer.procedureCallersBlockArray(returnBool);
+        for (var k = 0; k < callerArray.length; k++) {
+          xmlList.push(Blockly.Drawer.blockInfoToXML(callerArray[k]));
+        }
+      } else {
+        xmlList.push(Blockly.Drawer.blockInfoToXML(drawerArray[i]));
       }
-    } 
-    else {
-      xmlList.push(Blockly.Drawer.blockInfoToXML(drawerArray[i]));
     }
+    this.flyout_.show(xmlList);
   }
-  this.flyout_.show(xmlList);
 };
 
 /**
