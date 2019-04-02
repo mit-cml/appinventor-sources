@@ -1,0 +1,24 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Update a Cloud Spanner instance.
+    description: Update a Cloud Spanner instance.
+
+  arguments:
+    resource:
+      help_text: The Cloud Spanner instance to update.
+      spec: !REF googlecloudsdk.command_lib.spanner.resources:instance
+    params:
+    - arg_name: description
+      api_field: updateInstanceRequest.instance.displayName
+      help_text: The descriptive name for this instance as it appears in UIs. Must
+        be unique per project and between 4 and 30 characters in length.
+    - arg_name: nodes
+      api_field: updateInstanceRequest.instance.nodeCount
+      help_text: The number of nodes allocated to this instance to update.
+
+  request:
+    collection: spanner.projects.instances
+
+  async:
+    collection: spanner.projects.instances.operations

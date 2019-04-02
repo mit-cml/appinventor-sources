@@ -1,0 +1,14 @@
+release: "1.9.84"
+timestamp: 1550217677
+api_versions: ['1']
+supported_api_versions:
+  python:
+    api_versions: ['1']
+  python27:
+    api_versions: ['1']
+  go:
+    api_versions: ['go1', 'go1.9']
+  java7:
+    api_versions: ['1.0']
+  go111:
+    api_versions: [null]

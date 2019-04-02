@@ -1,0 +1,12 @@
+- help_text:
+    brief:  Describe a Cloud Healthcare API dataset.
+    description: Describe a Cloud Healthcare API dataset.
+
+  request:
+    collection: healthcare.projects.locations.datasets
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API dataset to describe.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dataset

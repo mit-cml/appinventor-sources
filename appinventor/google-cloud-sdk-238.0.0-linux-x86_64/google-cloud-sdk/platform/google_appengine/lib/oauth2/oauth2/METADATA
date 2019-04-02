@@ -1,0 +1,18 @@
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "oauth2"
+description: "This library provides an implementation of oauth."
+
+third_party {
+  url {
+    type: GIT
+    value: "http://github.com/simplegeo/python-oauth2"
+  }
+  version: "1.5.170"
+  last_upgrade_date { year: 2011 month: 6 day: 23 }
+
+  # NOTE: The "local_modifications" field is entirely optional and may be
+  # removed if it's not useful for the package.
+  #     See go/thirdparty-metadata-local-modifications
+  local_modifications: "http://google3/third_party/py/oauth2/README.google?cl=22089979"
+}

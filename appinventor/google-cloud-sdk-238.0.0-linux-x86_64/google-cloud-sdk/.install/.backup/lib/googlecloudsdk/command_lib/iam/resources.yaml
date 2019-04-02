@@ -1,0 +1,21 @@
+project:
+  name: project
+  collection: iam.projects
+  attributes:
+    - &project
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project name.
+      property: core/project
+
+service_account:
+  name: serviceAccount
+  collection: iam.projects.serviceAccounts
+  attributes:
+    - *project
+    - &service_account
+      parameter_name: serviceAccountsId
+      attribute_name: service_account
+      help: |
+        The name of the IAM ServiceAccount.
+  disable_auto_completers: false

@@ -1,0 +1,45 @@
+- release_tracks: [BETA, GA]
+  help_text:
+    brief: Get transcripts of short (less than 60 seconds) audio from an audio file.
+    description: |
+      Get a transcript of an audio file that is less than 60 seconds. You can use
+      an audio file that is on your local drive or a Google Cloud Storage URL.
+
+      If the audio is longer than 60 seconds, you will get an error. Please use
+      `{parent_command} recognize-long-running` instead.
+
+  request:
+    collection: speech.speech
+    method: recognize
+    api_version: v1
+
+  arguments:
+    params:
+    - _COMMON_args
+    - _COMMON_args_v1
+
+  output:
+    format: json
+
+- release_tracks: [ALPHA]
+  help_text:
+    brief: Get transcripts of short (less than 60 seconds) audio from an audio file.
+    description: |
+      Get a transcript of an audio file that is less than 60 seconds. You can use
+      an audio file that is on your local drive or a Google Cloud Storage URL.
+
+      If the audio is longer than 60 seconds, you will get an error. Please use
+      `{parent_command} recognize-long-running` instead.
+
+  request:
+    collection: speech.speech
+    method: recognize
+    api_version: v1p1beta1
+
+  arguments:
+    params:
+    - _COMMON_args
+    - _COMMON_args_v1p1beta1
+
+  output:
+    format: json

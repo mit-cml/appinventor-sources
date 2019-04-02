@@ -1,0 +1,80 @@
+region:
+  name: region
+  collection: cloudiot.projects.locations
+  attributes:
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: The name of the Cloud IoT region.
+  disable_auto_completers: false
+
+registry:
+  name: registry
+  collection: cloudiot.projects.locations.registries
+  request_id_field: deviceRegistry.id
+  attributes:
+  - *region
+  - &registry
+    parameter_name: registriesId
+    attribute_name: registry
+    help: The name of the Cloud IoT registry.
+  disable_auto_completers: false
+
+device:
+  name: device
+  collection: edge.projects.locations.registries.devices
+  request_id_field: device.id
+  attributes:
+  - *region
+  - *registry
+  - &device
+    parameter_name: devicesId
+    attribute_name: device
+    help: The name of the Cloud IoT Edge device.
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+    completion_id_field: id
+  disable_auto_completers: false
+
+function:
+  name: function
+  collection: edge.projects.locations.registries.devices.functions
+  request_id_field: function.name
+  attributes:
+  - *region
+  - *registry
+  - *device
+  - &function
+    parameter_name: functionsId
+    attribute_name: function
+    help: The name of the Edge function.
+  disable_auto_completers: false
+
+container:
+  name: container
+  collection: edge.projects.locations.registries.devices.containers
+  request_id_field: container.name
+  attributes:
+  - *region
+  - *registry
+  - *device
+  - &container
+    parameter_name: containersId
+    attribute_name: container
+    help: The name of the Edge container.
+  disable_auto_completers: false
+
+mlModel:
+  name: ML Model
+  collection: edge.projects.locations.registries.devices.mlModels
+  request_id_field: mlModel.name
+  attributes:
+  - *region
+  - *registry
+  - *device
+  - &mlModel
+    parameter_name: mlModelsId
+    attribute_name: mlmodel
+    help: The name of the Edge ML Model.
+  disable_auto_completers: false

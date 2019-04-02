@@ -1,0 +1,24 @@
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "markupsafe"
+description:
+  "Implements a XML/HTML/XHTML Markup safe string for Python. Used by "
+  "jinja2."
+
+third_party {
+  url {
+    type: ARCHIVE
+    value: "http://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-0.15.tar.gz"
+  }
+  version: "0.15"
+  last_upgrade_date: { year: 2011 month: 8 day: 8 }
+  multiple_versions {
+    type: PERMANENT
+    approval: "cl/22169881"
+  }
+
+  # NOTE: The "local_modifications" field is entirely optional and may be
+  # removed if it's not useful for the package.
+  #     See go/thirdparty-metadata-local-modifications
+  local_modifications: "http://google3/third_party/apphosting/python/markupsafe/v0_1_5/README.google?cl=23066268"
+}

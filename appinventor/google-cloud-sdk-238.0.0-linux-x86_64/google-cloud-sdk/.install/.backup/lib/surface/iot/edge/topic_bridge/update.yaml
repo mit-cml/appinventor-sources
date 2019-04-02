@@ -1,0 +1,28 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Update topic bridging table of an Edge device.
+    description: Update topic bridging table of an Edge device.
+    examples: |
+      The following command updates topic bridging rules in the Edge device:
+
+      $ {command} my-device
+      --region asia-east1 --registry my-registry --rule-file rules.yaml
+
+  request:
+    collection: edge.projects.locations.registries.devices
+    method: updateTopicBridgingTable
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.iot.edge.topic_bridge.util:ParseTopicBridgingTable
+
+  arguments:
+    resource:
+      help_text: The device to update topic bridging table for.
+      spec: !REF googlecloudsdk.command_lib.iot.edge.resources:device
+    params:
+    - arg_name: rule-file
+      required: true
+      help_text: Path to YAML/JSON file that contains topic bridging rules.
+
+  output:
+    format: table(name.basename(),version,rules:format='table[box,title=RULES](sourceDomain,operation,sourceFilter,destinationDomain,rewriteTopicName)')

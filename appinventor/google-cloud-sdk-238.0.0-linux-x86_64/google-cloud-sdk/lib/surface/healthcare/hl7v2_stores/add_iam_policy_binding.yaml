@@ -1,0 +1,16 @@
+- help_text:
+    brief: Add an IAM policy binding to a Cloud Healthcare API HL7v2 store.
+    description: |
+      Add an IAM policy binding to a Cloud Healthcare API HL7v2 store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.hl7V2Stores
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API HL7v2 store to add an IAM policy binding to.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:hl7v2_store
+
+  iam:
+    enable_condition: true

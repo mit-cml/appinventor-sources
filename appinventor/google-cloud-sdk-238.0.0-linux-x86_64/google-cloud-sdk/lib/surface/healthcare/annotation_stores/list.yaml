@@ -1,0 +1,23 @@
+- help_text:
+    brief: List Cloud Healthcare API annotation stores.
+    description: List Cloud Healthcare API annotation stores.
+
+  request:
+    collection: healthcare.projects.locations.datasets.annotationStores
+    api_version: v1alpha
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: The dataset to list the annotation stores for.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dataset
+
+  output:
+    format: |
+      table(
+          name.scope("annotationStores"):label=ID,
+          name.scope("locations").segment(0):label=LOCATION,
+          notificationConfig.pubsubTopic:label=TOPIC
+      )

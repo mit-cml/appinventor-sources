@@ -1,0 +1,57 @@
+- help_text:
+    brief:  Export a Cloud Healthcare API API DICOM store.
+    description: Export a Cloud Healthcare API API DICOM store.
+
+  request:
+    collection: healthcare.projects.locations.datasets.dicomStores
+    method: export
+    api_version: v1alpha2
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API DICOM store to export.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:dicom_store
+
+    params:
+    - group:
+        mutex: true
+        params:
+        - group:
+            params:
+            - arg_name: bq-table
+              api_field: exportDicomDataRequest.bigqueryDestination.tableUri
+              required: true
+              help_text: |
+                The BigQuery table where the DICOM store should
+                be written. If this table does not exist, a new table with the given
+                name will be created.
+            - arg_name: overwrite-table
+              api_field: exportDicomDataRequest.bigqueryDestination.force
+              default: null
+              help_text: |
+                If the destination table already exists and this flag is
+                `TRUE`, the table will be overwritten by the contents of the DICOM
+                store. If the flag is not set and the destination table already exists,
+                the export call returns an error.
+        - group:
+            params:
+            - arg_name: mime-type
+              api_field: exportDicomDataRequest.gcsDestination.mimeType
+              help_text: |
+                'MIME types supported by DICOM spec. Each file will be
+                written in the following format:
+                `.../{study_id}/{series_id}/{instance_id}[/{frame_number}].{extension}`
+                The frame_number component will exist only for multi-frame instances.
+                Refer to the DICOM conformance statement for permissible MIME types:
+                https://cloud.google.com/healthcare/docs/dicom#wado-rs  The following
+                extensions will be used for output files:   application/dicom -> .dcm
+                image/jpeg -> .jpg   image/png -> .png  If unspecified, the instances
+                will be exported in their original DICOM format.'
+            - arg_name: gcs-uri-prefix
+              api_field: exportDicomDataRequest.gcsDestination.uriPrefix
+              help_text: |
+                URI for a Google Cloud Storage directory to which result
+                files should be written (for example, `gs://bucket-id/path/to/destination/dir`).
+                If there is no trailing slash, the service will append one when composing
+                the object path. The user is responsible for creating the Google Cloud
+                Storage bucket referenced in `uri_prefix`.

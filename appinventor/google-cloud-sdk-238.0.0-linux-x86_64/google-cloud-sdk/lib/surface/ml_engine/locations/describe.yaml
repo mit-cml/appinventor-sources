@@ -1,0 +1,16 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Display CMLE capabilities in a location.
+    description: Display CMLE capabilities in a location.
+
+  request:
+    collection: ml.projects.locations
+
+  arguments:
+    resource:
+      help_text: The location you want to show details for.
+      spec: !REF googlecloudsdk.command_lib.ml_engine.resources:location
+
+  output:
+    format: json

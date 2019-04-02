@@ -1,0 +1,68 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 InstanceGroupConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  accelerators:
+    description: |-
+      The Compute Engine accelerator configuration for these instances.Beta
+      Feature: This feature is still under development. It may be changed before
+      final release.
+    type: array
+    items:
+      $ref: AcceleratorConfig.yaml
+  diskConfig:
+    description: Disk option config settings.
+    $ref: DiskConfig.yaml
+  imageUri:
+    description: |-
+      The Compute Engine image resource used for cluster instances. It can
+      be specified or may be inferred from SoftwareConfig.image_version.
+    type: string
+  isPreemptible:
+    description: |-
+      Specifies that this instance group contains preemptible instances.
+    type: boolean
+  machineTypeUri:
+    description: |-
+      The Compute Engine machine type used for cluster instances.A full URL,
+      partial URI, or short name are valid. Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception:
+      If you are using the Cloud Dataproc Auto Zone Placement feature, you
+      must use the short name of the machine type resource, for example,
+      n1-standard-2.
+    type: string
+  minCpuPlatform:
+    description: |-
+      Specifies the minimum cpu platform for the Instance Group. See Cloud
+      Dataproc&rarr;Minimum CPU Platform.
+    type: string
+  numInstances:
+    description: |-
+      The number of VM instances in the instance group. For master instance
+      groups, must be set to 1.
+    type: integer

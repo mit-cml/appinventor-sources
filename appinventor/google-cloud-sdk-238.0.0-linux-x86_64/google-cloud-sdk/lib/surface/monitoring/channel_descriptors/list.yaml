@@ -1,0 +1,17 @@
+- help_text:
+    brief: List notification channel descriptors.
+    description: List notification channel descriptors.
+
+  request:
+    collection: monitoring.projects.notificationChannelDescriptors
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: The project to list notification channel descriptors from.
+      spec: !REF googlecloudsdk.command_lib.monitoring.resources:project
+
+  output:
+    format: yaml

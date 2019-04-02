@@ -1,0 +1,17 @@
+subscription:
+  name: subscription
+  collection: pubsub.projects.subscriptions
+  attributes:
+  - parameter_name: subscriptionsId
+    attribute_name: subscription
+    help: |
+      The subscription name.
+
+topic:
+  name: topic
+  collection: pubsub.projects.topics
+  attributes:
+  - parameter_name: topicsId
+    attribute_name: topic
+    help: |
+      The topic name.
