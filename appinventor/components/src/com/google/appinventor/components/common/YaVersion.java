@@ -783,7 +783,10 @@ public class YaVersion {
   // - Added the AskForPermission method
   // - Added the PermissionDenied event
   // - Added the PermissionGranted event
-  public static final int FORM_COMPONENT_VERSION = 24;
+  // For FORM_COMPONENT_VERSION 25:
+  // - The Screen.MenuItems property was added
+  // - The MenuItemSelected event was added
+  public static final int FORM_COMPONENT_VERSION = 25;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

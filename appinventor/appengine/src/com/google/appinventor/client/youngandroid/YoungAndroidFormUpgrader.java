@@ -968,6 +968,12 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 24;
     }
 
+    if (srcCompVersion < 25) {
+      // The MenuItems property was added.
+      // The MenuItemSelected event was added.
+      srcCompVersion = 25;
+    }
+
     return srcCompVersion;
   }
 
