@@ -299,23 +299,8 @@ Blockly.Drawer.blockInfoToXML = function(blockInfo) {
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
-  // var blockSet = this.options.languageTree[drawerName];
-  // if(drawerName == "cat_Procedures") {
-  //   var newBlockSet = [];
-  //   for(var i=0;i<blockSet.length;i++) {
-  //     if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
-  //          && this.workspace_.getProcedureDatabase().voidProcedures == 0)
-  //        &&
-  //        !(blockSet[i] == "procedures_callreturn" // Include callreturn only if at least one defreturn declaration
-  //          && this.workspace_.getProcedureDatabase().returnProcedures == 0)){
-  //       newBlockSet.push(blockSet[i]);
-  //     }
-  //   }
-  //   blockSet = newBlockSet;
-  // }
-
-  var blockInfoArray = this.options.blockInfoArray;
-  // var blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
+  //var blockInfoArray = this.options.blockInfoArray;
+  var blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
   var drawerArray = blockInfoArray[drawerName];
 
   // if (!blockSet) {

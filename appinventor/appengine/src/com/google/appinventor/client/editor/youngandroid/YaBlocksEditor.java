@@ -321,7 +321,7 @@ public final class YaBlocksEditor extends FileEditor
 
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
-    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
+    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(form);
     items[1] = form.buildComponentsTree();
     items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);
     sourceStructureExplorer.updateTree(items, itemToSelect);
