@@ -6,11 +6,13 @@
   <g:HTMLPanel>
      <div class="ode-noDialogDivHeader">
       <div class="ode-noDialogDivInnerHeader">
+        <ui:msg>
+          <h3 class="ode-headerTitle">Welcome to the</h3>
+        </ui:msg>
+
         <div id='ode-codiLogoDiv'>
           <g:Image resource="{res.logo}" altText="" />
         </div>
-
-        <h3 class="ode-headerTitle">Welcome to the MIT App Inventor 2!</h3>
       </div>
     </div>
 

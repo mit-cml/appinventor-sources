@@ -49,6 +49,7 @@ public class NoProjectDialogBox extends DialogBox {
         add(uiBinder.createAndBindUi(this));
         this.center();
         this.setAnimationEnabled(true);
+        this.setAutoHideEnabled(true);
 
         closeDialogBox.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
