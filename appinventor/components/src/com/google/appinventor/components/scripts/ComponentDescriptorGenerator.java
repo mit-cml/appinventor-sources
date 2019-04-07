@@ -46,6 +46,7 @@ import javax.tools.FileObject;
  *   }*,
  *   "properties": [
  *     { "name": "PROPERTY-NAME",
+ *        "description": "DESCRIPTION",  //[suvam, 2019/03/25] Added description field to json
  *        "editorType": "EDITOR-TYPE",
  *        "defaultValue": "DEFAULT-VALUE"},*
  *    ],
@@ -236,7 +237,10 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
   private void outputProperty(String propertyName, DesignerProperty dp, StringBuilder sb) {
     sb.append("{ \"name\": \"");
     sb.append(propertyName);
-    sb.append("\", \"editorType\": \"");
+    //[suvam, 2019/03/25] Added description field to Component Json Structure of designer property
+    sb.append("\", \"description\": "); 
+    sb.append(formatDescription(dp.description()));
+    sb.append(", \"editorType\": \"");
     sb.append(dp.editorType());
     sb.append("\", \"defaultValue\": \"");
     sb.append(dp.defaultValue().replace("\"", "\\\""));
