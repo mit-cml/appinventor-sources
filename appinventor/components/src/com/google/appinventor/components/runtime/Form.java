@@ -2244,16 +2244,17 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * MenuItems property getter method
+   * MenuItems property getter method: returns a copy of the YailList containing
+   * names of option menu items, or an empty list if no menu item exists.
    *
-   * @return a YailList representing names of menu items
+   * @return a copy of YailList representing names of menu items
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList MenuItems() {
     if (optionsMenuItems == null) {
       return YailList.makeEmptyList();
     }
-    return optionsMenuItems;
+    return YailList.makeList(optionsMenuItems.toStringArray());
   }
 
   @Override
