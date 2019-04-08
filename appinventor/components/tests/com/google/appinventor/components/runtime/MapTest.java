@@ -153,7 +153,7 @@ public class MapTest extends MapTestBase {
 
   /**
    * Test that:
-   * !) Showing the scale invalidates the view
+   * 1) Showing the scale invalidates the view
    * 2) if we show the scale, the ShowScale getter will return true.
    */
   @Test
