@@ -12,10 +12,12 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
@@ -29,6 +31,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -38,45 +41,45 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
-public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
+public class SubsetJSONPropertyEditor  extends PropertyEditor
         implements ProjectChangeListener {
 
   private static SubsetJSONPropertyEditor INSTANCE;
   Tree componentTree;
   Tree blockTree;
+  DropDownButton dropDownButton;
 
   public SubsetJSONPropertyEditor() {
-    super();
-
     buildTrees();
 
-    VerticalPanel choicePanel = new VerticalPanel();
-    Button noneButton = new Button("None");
-    noneButton.addClickHandler(new ClickHandler() {
+    List<DropDownButton.DropDownItem> items = Lists.newArrayList();
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.noneCaption(), new Command() {
       @Override
-      public void onClick(ClickEvent event) {
-        property.setValue("");
-      }
-    });
-    Button matchButton = new Button("Match Project");
-    matchButton.addClickHandler(new ClickHandler() {
+      public void execute() {
+        clearSelections();
+        updateValue();
+      }}));
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "Match Project", new Command() {
       @Override
-      public void onClick(ClickEvent event) {
+      public void execute() {
         matchProject();
-        closeAdditionalChoiceDialog(true);
-      }
-    });
-    Button loadButton = new Button ("Load from File");
-//    loadButton.addClickHandler(new ClickHandler() {
+        updateValue();
+      }}));
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
+      @Override
+      public void execute() {
+
+      }}));
+    //    loadButton.addClickHandler(new ClickHandler() {
 //      @Override
 //      public void onClick(ClickEvent event) {
 //        FileUploadWizard.FileUploadedCallback callback = new FileUploadWizard.FileUploadedCallback() {
@@ -91,20 +94,14 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 //        uploader.show();
 //      }
 //    });
-    Button customButton = new Button("Custom");
-    customButton.addClickHandler(new ClickHandler() {
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.customEllipsis(), new Command() {
       @Override
-      public void onClick(ClickEvent event) {
+      public void execute() {
         showCustomSubsetPanel();
-      }
-    });
-
-    choicePanel.add(noneButton);
-    choicePanel.add(matchButton);
-    choicePanel.add(loadButton);
-    choicePanel.add(loadButton);
-    choicePanel.add(customButton);
-    initAdditionalChoicePanel(choicePanel);
+      }}));
+    dropDownButton = new DropDownButton("Subset Property Editor", "", items, false);
+    dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
+    initWidget(dropDownButton);
   }
 
   protected void showCustomSubsetPanel() {
@@ -174,14 +171,13 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
       @Override
       public void onClick(ClickEvent event) {
         subsetPanel.hide();
-        closeAdditionalChoiceDialog(false);
       }
     });
     okButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        updateValue();
         subsetPanel.hide();
-        closeAdditionalChoiceDialog(true);
       }
     });
     buttonPanel.add(okButton);
@@ -190,7 +186,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     treePanel.addWest(componentScroll, 50);
     treePanel.addEast(blockScroll, 50);
     subsetPanel.add(treePanel);
-//    subsetPanel.getWidget().setHeight("100%");
     INSTANCE = this;
     exportJavaMethods();
     subsetPanel.setHeight("600px");
@@ -513,11 +508,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     }
   }
 
-  @Override
-  protected void openAdditionalChoiceDialog() {
-    super.openAdditionalChoiceDialog();
-  }
-
   private void toggleChildren(TreeItem item, Boolean checked) {
     for (int i = 0; i <item.getChildCount(); ++i) {
       TreeItem childItem = item.getChild(i);
@@ -549,11 +539,15 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     return newItem;
   }
 
-  // AdditionalChoicePropertyEditor implementation
-  @Override
-  protected boolean okAction() {
-    property.setValue(createJSONString());
-    return true;
+  protected void updateValue() {
+    String propertyValue = createJSONString();
+    property.setValue(propertyValue);
+    if (propertyValue == "") {
+      dropDownButton.setCaption("None");
+      dropDownButton.setWidth("");
+    } else {
+      dropDownButton.setCaption(propertyValue.substring(0, 12) + "...");
+    }
   }
 
   private String createJSONString() {
