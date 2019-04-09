@@ -36,15 +36,15 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
@@ -56,18 +56,73 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   public SubsetJSONPropertyEditor() {
     super();
-    componentTree = new Tree();
-    blockTree = new Tree();
-    DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
+
+    buildTrees();
+
+    VerticalPanel choicePanel = new VerticalPanel();
+    Button noneButton = new Button("None");
+    noneButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        property.setValue("");
+      }
+    });
+    Button matchButton = new Button("Match Project");
+    matchButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        matchProject();
+        closeAdditionalChoiceDialog(true);
+      }
+    });
+    Button loadButton = new Button ("Load from File");
+//    loadButton.addClickHandler(new ClickHandler() {
+//      @Override
+//      public void onClick(ClickEvent event) {
+//        FileUploadWizard.FileUploadedCallback callback = new FileUploadWizard.FileUploadedCallback() {
+//          @Override
+//          public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
+//            // At this point, the asset has been uploaded to the server, and
+//            // has even been added to the assetsFolder. We are all set!
+//            loadJSONfile(fileNode);
+//          }
+//        };
+//        FileUploadWizard uploader = new FileUploadWizard(assetsFolder, callback);
+//        uploader.show();
+//      }
+//    });
+    Button customButton = new Button("Custom");
+    customButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        showCustomSubsetPanel();
+      }
+    });
+
+    choicePanel.add(noneButton);
+    choicePanel.add(matchButton);
+    choicePanel.add(loadButton);
+    choicePanel.add(loadButton);
+    choicePanel.add(customButton);
+    initAdditionalChoicePanel(choicePanel);
+  }
+
+  protected void showCustomSubsetPanel() {
+    if (property.getValue() != "") {
+      JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
+      loadComponents(jsonSet);
+      loadGlobalBlocks(jsonSet);
+    }
+    final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
+    final PopupPanel subsetPanel = new PopupPanel();
     VerticalPanel componentPanel = new VerticalPanel();
     VerticalPanel blockPanel = new VerticalPanel();
     HorizontalPanel loadPanel = new HorizontalPanel();
     HorizontalPanel savePanel = new HorizontalPanel();
+    HorizontalPanel buttonPanel = new HorizontalPanel();
     VerticalPanel saveLoadPanel = new VerticalPanel();
     final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
     ScrollPanel blockScroll = new ScrollPanel(blockPanel);
-
-    buildTrees();
 
     componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
     componentPanel.add(componentTree);
@@ -96,18 +151,6 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
     savePanel.add(saveButton);
     saveLoadPanel.add(loadPanel);
     saveLoadPanel.add(savePanel);
-    treePanel.addSouth(saveLoadPanel, 15 );
-    treePanel.addSouth(saveLoadPanel, 15 );
-    treePanel.addWest(componentScroll, 50);
-    treePanel.addEast(blockScroll, 50);
-    initAdditionalChoicePanel(treePanel);
-    INSTANCE = this;
-    exportJavaMethods();
-  }
-
-  @Override
-  protected void initAdditionalChoicePanel(Panel panel) {
-    super.initAdditionalChoicePanel(panel);
     Button clearButton = new Button(MESSAGES.clearButton());
     Button initializeButton = new Button("Match Project"); // TODO: Internationalize
     clearButton.addClickHandler(new ClickHandler() {
@@ -122,13 +165,44 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
         matchProject();
       }
     });
-    HorizontalPanel buttonPanel = (HorizontalPanel)((VerticalPanel)popup.getWidget()).getWidget(1);
+    Button cancelButton = new Button(MESSAGES.cancelButton());
+    Button okButton = new Button(MESSAGES.okButton());
     buttonPanel.add(clearButton);
     buttonPanel.add(initializeButton);
-
+    buttonPanel.add(cancelButton);
+    cancelButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        subsetPanel.hide();
+        closeAdditionalChoiceDialog(false);
+      }
+    });
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        subsetPanel.hide();
+        closeAdditionalChoiceDialog(true);
+      }
+    });
+    buttonPanel.add(okButton);
+    saveLoadPanel.add(buttonPanel);
+    treePanel.addSouth(saveLoadPanel, 15 );
+    treePanel.addWest(componentScroll, 50);
+    treePanel.addEast(blockScroll, 50);
+    subsetPanel.add(treePanel);
+//    subsetPanel.getWidget().setHeight("100%");
+    INSTANCE = this;
+    exportJavaMethods();
+    subsetPanel.setHeight("600px");
+    subsetPanel.setWidth("400px");
+    subsetPanel.center();
+    subsetPanel.setTitle(MESSAGES.blockSelectorBoxCaption());
+    subsetPanel.show();
   }
 
   private void buildTrees() {
+    componentTree = new Tree();
+    blockTree = new Tree();
     // Build tree of components and their related property/event/method blocks
     SimpleComponentDatabase db = SimpleComponentDatabase.getInstance();
     HashMap<String, TreeItem> categoryItems = new HashMap<String, TreeItem>();
@@ -441,17 +515,7 @@ public class SubsetJSONPropertyEditor  extends AdditionalChoicePropertyEditor
 
   @Override
   protected void openAdditionalChoiceDialog() {
-    if (property.getValue() != "") {
-      JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
-      loadComponents(jsonSet);
-      loadGlobalBlocks(jsonSet);
-    }
-    popup.setTitle(MESSAGES.blockSelectorBoxCaption());
-    popup.setWidth(400 + "px");
-    popup.setHeight(600 + "px");
-    popup.show();
-    popup.center();
-
+    super.openAdditionalChoiceDialog();
   }
 
   private void toggleChildren(TreeItem item, Boolean checked) {

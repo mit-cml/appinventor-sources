@@ -7,11 +7,11 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -99,7 +99,7 @@ public final class BlockSelectorBox extends Box {
    * the subset parameter. This keeps empty drawers from displaying in the Blocks Editor
    */
   private Set<String> getSubsetDrawerNames(MockForm form) {
-    String subsetJsonString = form.getPropertyValue("SubsetJSON");
+    String subsetJsonString = form.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
     if (subsetJsonString.length() > 0) {
       JSONObject subsetJSON = JSONParser.parseStrict(subsetJsonString).isObject();
       Set<String> subsetDrawers = new HashSet<String>(subsetJSON.get("shownBlockTypes").isObject().keySet());

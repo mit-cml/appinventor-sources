@@ -15,8 +15,8 @@ import java.util.List;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-final class ListWithNone {
-  interface ListBoxWrapper {
+public final class ListWithNone {
+  public interface ListBoxWrapper {
     void addItem(String item);
     String getItem(int index);
     void removeItem(int index);
@@ -34,7 +34,7 @@ final class ListWithNone {
    * @param noneDisplayItem the display item for "None"
    * @param listBoxWrapper a wrapper around the list box
    */
-  ListWithNone(String noneDisplayItem, ListBoxWrapper listBoxWrapper) {
+  public ListWithNone(String noneDisplayItem, ListBoxWrapper listBoxWrapper) {
     this.noneDisplayItem = noneDisplayItem;
     this.listBoxWrapper = listBoxWrapper;
     values = new ArrayList<String>();
@@ -48,7 +48,7 @@ final class ListWithNone {
    *
    * @param value the value to add to the list
    */
-  void addItem(String value) {
+  public void addItem(String value) {
     addItem(value, value);
   }
 
@@ -68,7 +68,7 @@ final class ListWithNone {
    *
    * @param value the value to select.
    */
-  void selectValue(String value) {
+  public void selectValue(String value) {
     int index = values.indexOf(value);
     if (index != -1) {
       listBoxWrapper.setSelectedIndex(index);
@@ -80,7 +80,7 @@ final class ListWithNone {
    *
    * @param value the value to remove from the list
    */
-  void removeValue(String value) {
+  public void removeValue(String value) {
     int index = values.indexOf(value);
     if (index != -1) {
       values.remove(index);
@@ -95,7 +95,7 @@ final class ListWithNone {
    * @return the value at the given index
    * @throws IndexOutOfBoundsException if the index is out of range
    */
-  String getValueAtIndex(int index) throws IndexOutOfBoundsException {
+  public String getValueAtIndex(int index) throws IndexOutOfBoundsException {
     if (index >= 0 && index < values.size()) {
       return values.get(index);
     }
@@ -118,7 +118,7 @@ final class ListWithNone {
    * @param value the value
    * @return true if the given value is in the list, false otherwise
    */
-  boolean containsValue(String value) {
+  public boolean containsValue(String value) {
     return values.contains(value);
   }
 
@@ -129,7 +129,7 @@ final class ListWithNone {
    * @return the display item for the given value
    * @throws IllegalArgumentException if the given value is not in the list
    */
-  String getDisplayItemForValue(String value) {
+  public String getDisplayItemForValue(String value) {
     int index = values.indexOf(value);
     if (index != -1) {
       return listBoxWrapper.getItem(index);

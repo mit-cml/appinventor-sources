@@ -55,7 +55,7 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, "",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SUBSET_JSON, "",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, "",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, "false",
