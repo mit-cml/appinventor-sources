@@ -7,7 +7,7 @@
      <div class="ode-noDialogDivHeader">
       <div class="ode-noDialogDivInnerHeader">
         <ui:msg>
-          <h3 class="ode-headerTitle">Welcome to the</h3>
+          <h3 class="ode-headerTitle">Welcome to</h3>
         </ui:msg>
 
         <div id='ode-codiLogoDiv'>
@@ -69,13 +69,11 @@
       </div>
     </div>
 
-    <div class="ode-noDialogProjectHrefDiv">
-      <g:Anchor ui:field='noDialogProjectHref' styleName="{style.ode-noDialogProjectHref}">Or click here to start a new project!</g:Anchor>
+    <div class="ode-bottomRow">
+        <g:Button ui:field='noDialogNewProject' styleName="{style.ode-noDialogNewProject}">Start a blank project</g:Button>
+        <g:Button ui:field='closeDialogBox' styleName='{style.ode-closeDialogBox}'>Close</g:Button>
     </div>
 
-    <div class='ode-closeDialogBoxDiv'>
-      <g:Button ui:field='closeDialogBox' styleName='{style.ode-closeDialogBox}'>Close</g:Button>
-    </div>
       
   </g:HTMLPanel>
 
@@ -106,6 +104,7 @@
       text-transform: uppercase;
       font-size: 11px;
       text-align: center;
+      margin: 0px 10px;
     }
 
     .ode-closeDialogBox:hover {
@@ -113,17 +112,23 @@
       cursor: pointer;
     }
 
-    .ode-noDialogProjectHref {
-      color: black;
+    .ode-noDialogNewProject {
       text-transform: uppercase;
       font-size: 13px;
-      font-weight: 600;
       text-decoration: none;
       text-align: center;
+      padding: 5px 20px;
+      width: 25%;
+      background-color: white;
+      border: 1px #8fc202 solid;
+      border-radius: 5px;
+      color: #8fc202;
+      margin: 0px 10px;
     }
 
-    .ode-noDialogProjectHref:hover {
-      color: #8fc202;
+    .ode-noDialogNewProject:hover {
+      background-color: rgba(143, 194, 2, 0.616);
+      color: white;
       cursor: pointer;
     }
   </ui:style>

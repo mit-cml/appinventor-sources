@@ -1310,15 +1310,15 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 #ode-codiLogoDiv {
-  max-width: 120px;
-  max-height: 68px;
+  max-width: 160px;
+  max-height: 90px;
   margin-left: 15px;
 }
 
 .ode-headerTitle {
   color: #ffffff;
   text-transform: uppercase;
-  font-size: 17px;
+  font-size: 16px;
   text-align: center;
 }
 
@@ -1377,17 +1377,12 @@ path.ode-SimpleMockMapFeature-selected {
   height: 90%;
 }
 
-.ode-noDialogProjectHrefDiv {
+.ode-bottomRow {
+  margin-top: 50px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 25px; 
-}
-
-.ode-closeDialogBoxDiv {
-  width: 100%;
-  display: block;
-  margin-top: 25px;
-  text-align: center;
+  border: 2px black solid;
 }
 
 /* End of NoProjectsDialogBox. */

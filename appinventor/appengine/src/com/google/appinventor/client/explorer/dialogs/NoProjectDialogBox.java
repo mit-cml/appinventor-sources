@@ -3,6 +3,7 @@ package com.google.appinventor.client.explorer.dialogs;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -37,7 +38,7 @@ public class NoProjectDialogBox extends DialogBox {
     @UiField Button goToPurr;
     @UiField Button goToTalk;
     @UiField Button goToYR;
-    @UiField Anchor noDialogProjectHref;
+    @UiField Button noDialogNewProject;
 
     /**
     * Creates a new dialog box when the user has no current projects in their
@@ -50,60 +51,34 @@ public class NoProjectDialogBox extends DialogBox {
         this.center();
         this.setAnimationEnabled(true);
         this.setAutoHideEnabled(true);
-
-        closeDialogBox.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                closeDialogBox();
-            }
-        });
-
-        goToPurr.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                goToPurrTutorial();
-            }
-        });
-
-        goToTalk.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                goToTalkTutorial();
-            }
-        });
-
-        goToYR.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                goToYRTutorial();
-            }
-        });
-
-        noDialogProjectHref.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                openNewProject();
-            }
-        });
-
     }
 
-    void closeDialogBox() {
+    @UiHandler("closeDialogBox")
+    void handleClose(ClickEvent e) {
         this.hide();
     }
 
-    void goToPurrTutorial() {
+    @UiHandler("goToPurr")
+    void handleGoToPurr(ClickEvent e) {
         this.hide();
         new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject());
     }
 
-    void goToTalkTutorial() {
+    @UiHandler("goToTalk")
+    void handleGoToTalk(ClickEvent e) {
         this.hide();
         TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc", new NewTutorialProject());
     }
 
-    void goToYRTutorial() {
+    @UiHandler("goToYR")
+    void handleGoToYR(ClickEvent e) {
         this.hide();
         TemplateUploadWizard.openProjectFromTemplate("http://appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc", new NewTutorialProject());
-    };
+    }
 
-    void openNewProject() {
+    @UiHandler("noDialogNewProject")
+    void handleNewProject(ClickEvent e) {
         this.hide();
         new NewYoungAndroidProjectWizard(null).show();
-    };
+    }
 }
