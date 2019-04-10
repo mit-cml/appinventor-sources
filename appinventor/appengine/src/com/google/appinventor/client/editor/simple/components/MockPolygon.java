@@ -256,8 +256,8 @@ public class MockPolygon extends MockPolygonBase {
         }
         for (var i = 1; i < latlngs.length; i++) {
           var hole = [];
-          for (var j = 0; j < latlngs[i].length; i++) {
-            holesJson.push([latlngs[i][j].lat, latlngs[i][j].lng]);
+          for (var j = 0; j < latlngs[i].length; j++) {
+            hole.push([latlngs[i][j].lat, latlngs[i][j].lng]);
           }
           holesJson.push(hole);
         }
