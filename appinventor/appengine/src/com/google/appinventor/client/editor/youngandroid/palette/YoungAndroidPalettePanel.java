@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 
   private DropTargetProvider dropTargetProvider;
+  private List<Integer> categoryOrder;
 
   /**
    * Creates a new component palette panel.
@@ -74,24 +77,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
-
-    for (ComponentCategory category : ComponentCategory.values()) {
-      if (showCategory(category)) {
-        VerticalPanel categoryPanel = new VerticalPanel();
-        categoryPanel.setWidth("100%");
-        categoryPanels.put(category, categoryPanel);
-        // The production version will not include a mapping for Extension because
-        // only compile-time categories are included. This allows us to i18n the
-        // Extension title for the palette.
-        String title = ComponentCategory.EXTENSION.equals(category) ?
-          MESSAGES.extensionComponentPallette() :
-          ComponentsTranslation.getCategoryName(category.getName());
-        stackPalette.add(categoryPanel, title);
-      }
-    }
-
-    initExtensionPanel();
-
+    categoryOrder = new ArrayList<Integer>();
     stackPalette.setWidth("100%");
     initWidget(stackPalette);
   }
@@ -173,15 +159,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     removePaletteItem(simplePaletteItems.get(componentTypeName), category);
+    simplePaletteItems.remove(componentTypeName);
   }
-
-
 
   /*
    * Adds a component entry to the palette.
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
+    if (panel == null) {
+      panel = addComponentCategory(category);
+    }
     PaletteHelper paletteHelper = paletteHelpers.get(category);
     if (paletteHelper != null) {
       paletteHelper.addPaletteItem(panel, component);
@@ -190,9 +178,37 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     }
   }
 
+  private VerticalPanel addComponentCategory(ComponentCategory category) {
+    VerticalPanel panel = new VerticalPanel();
+    panel.setWidth("100%");
+    categoryPanels.put(category, panel);
+    // The production version will not include a mapping for Extension because
+    // only compile-time categories are included. This allows us to i18n the
+    // Extension title for the palette.
+    int insert_index = Collections.binarySearch(categoryOrder, category.ordinal());
+    insert_index = - insert_index - 1;
+    stackPalette.insert(panel, insert_index);
+    String title = "";
+    if (ComponentCategory.EXTENSION.equals(category)) {
+      title = MESSAGES.extensionComponentPallette();
+      initExtensionPanel();
+    } else {
+      title = ComponentsTranslation.getCategoryName(category.getName());
+    }
+    stackPalette.setStackText(insert_index, title);
+    categoryOrder.add(insert_index, category.ordinal());
+    // When the categories are loaded, we want the first one open, which will almost always be User Interface
+    stackPalette.showStack(0);
+    return panel;
+  }
+
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
     panel.remove(component);
+    if (panel.getWidgetCount() < 1) {
+      stackPalette.remove(panel);
+      categoryPanels.remove(category);
+    }
   }
 
   private void initExtensionPanel() {
@@ -241,10 +257,15 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     for (ComponentCategory category : categoryPanels.keySet()) {
       VerticalPanel panel = categoryPanels.get(category);
       panel.clear();
+      stackPalette.remove(panel);
     }
     for (PaletteHelper pal : paletteHelpers.values()) {
       pal.clear();
     }
+    categoryPanels.clear();
+    paletteHelpers.clear();
+    categoryOrder.clear();
+    simplePaletteItems.clear();
   }
 
   @Override
