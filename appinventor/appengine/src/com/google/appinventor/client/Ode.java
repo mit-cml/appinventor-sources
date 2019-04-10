@@ -1540,8 +1540,12 @@ public class Ode implements EntryPoint {
    * @return The created and optionally displayed Dialog box.
    */
   public DialogBox createNoProjectsDialog(boolean showDialog) {
-    final NoProjectDialogBox dialogBox = new NoProjectDialogBox(); 
-    dialogBox.show();
+    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
+    
+    if (showDialog) {
+      dialogBox.show();
+    }
+  
     return dialogBox;
   }
 

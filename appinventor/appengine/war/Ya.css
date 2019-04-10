@@ -1285,7 +1285,6 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
-/* would pop more with a white border around their normal green border */
 
 /* Start of NoProjectsDialogBox. */
 .ode-noDialogDiv {
@@ -1335,7 +1334,6 @@ path.ode-SimpleMockMapFeature-selected {
   display: flex;
   align-items: flex-start;
   justify-content: space-evenly;
-  flex-wrap: wrap;
 }
 
 .ode-noDialogExampleDiv {
@@ -1382,6 +1380,13 @@ path.ode-SimpleMockMapFeature-selected {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 1076px) {
+  .ode-noDialogExampleDivs {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 /* End of NoProjectsDialogBox. */
