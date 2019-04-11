@@ -6345,7 +6345,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String switchToDutch();
 
-  @DefaultMessage("Deutch")
+  @DefaultMessage("Deutsch")
   @Description("")
   String switchToGerman();
 
