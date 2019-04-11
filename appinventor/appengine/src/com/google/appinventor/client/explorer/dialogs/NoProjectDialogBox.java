@@ -1,3 +1,9 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.explorer.dialogs;
 
 import com.google.gwt.core.client.GWT;
@@ -17,6 +23,11 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
+/**
+ * A dialog containing options to begin 3 different tutorials or being a new
+ * project from scratch. Should appear when the user currently has no projects
+ * in their projects list.
+ */
 public class NoProjectDialogBox extends DialogBox {
 
     private static NoProjectDialogBoxUiBinder uiBinder =
