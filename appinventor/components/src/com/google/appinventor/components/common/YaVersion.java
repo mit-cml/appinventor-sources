@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -431,8 +431,17 @@ public class YaVersion {
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 172:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 173:
+  // - FORM_COMPONENT_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 174:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 23
+  // For YOUNG_ANDROID_VERSION 175:
+  // - MAP_COMPONENT_VERSION was incremented 5
+  // For YOUNG_ANDROID_VERSION 176:
+  // - PHONECALL_COMPONENT_VERSION was incremented to 3
+  // - TEXTING_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 172;
+  public static final int YOUNG_ANDROID_VERSION = 176;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -494,8 +503,12 @@ public class YaVersion {
   // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
   // For BLOCKS_LANGUAGE_VERSION 21:
   // - The is-text block was added.
+  // For BLOCKS_LANGUAGE_VERSION 22:
+  // - Break block was added.
+  // For BLOCKS_LANGUAGE_VERSION 23:
+  // - Bitwise and, ior, and xor blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 22;
+  public static final int BLOCKS_LANGUAGE_VERSION = 23;
 
   // ................................. Component Version Numbers ..................................
 
@@ -748,7 +761,11 @@ public class YaVersion {
   // - The Classic option for themes was added
   // For FORM_COMPONENT_VERSION 23:
   // - The ActionBar property was deprecated
-  public static final int FORM_COMPONENT_VERSION = 23;
+  // For FORM_COMPONENT_VERSION 24:
+  // - Added the AskForPermission method
+  // - Added the PermissionDenied event
+  // - Added the PermissionGranted event
+  public static final int FORM_COMPONENT_VERSION = 24;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -867,7 +884,10 @@ public class YaVersion {
   // - GeoJSONError was renamed to LoadError
   // For MAP_COMPONENT_VERSION 4:
   // - Added Rotation property
-  public static final int MAP_COMPONENT_VERSION = 4;
+  // For MAP_COMPONENT_VERSION 5:
+  // - Added ShowScale property
+  // - Added ScaleUnits property
+  public static final int MAP_COMPONENT_VERSION = 5;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -940,7 +960,10 @@ public class YaVersion {
   // - The PhoneCallStarted event was added.
   // - The PhoneCallEnded event was added.
   // - The IncomingCallAnswered event was added.
-  public static final int PHONECALL_COMPONENT_VERSION = 2;
+  // For PHONECALL_COMPONENT_VERSION 3:
+  // - The MakePhoneCall method was renamed to MakePhoneCallDirect
+  // - The MakePhoneCall method was added
+  public static final int PHONECALL_COMPONENT_VERSION = 3;
 
   // For PHONENUMBERPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1022,7 +1045,12 @@ public class YaVersion {
   // For TEXTING_COMPONENT_VERISON 3:
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
-  public static final int TEXTING_COMPONENT_VERSION = 3;
+  // For TEXTING_COMPONENT_VERSION 4:
+  // - The SendMessage method was renamed to SendMessageDirect and given
+  //   conditional permissions
+  // - The SendMessage method was added
+  // - The ReceivingEnabled method was given conditional permissions
+  public static final int TEXTING_COMPONENT_VERSION = 4;
 
   // For TEXTTOSPEECH_COMPONENT_VERSION 2:
   // - added speech pitch and rate
@@ -1184,10 +1212,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.47";
+  public static final String PREFERRED_COMPANION = "2.51";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.47" };
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.51" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

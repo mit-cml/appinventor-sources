@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.VideoPlayer;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.R;
@@ -407,6 +408,9 @@ public class FullScreenVideoUtil implements OnCompletionListener,
       mFullScreenVideoBundle.putString(VIDEOPLAYER_SOURCE,
           source);
       return true;
+    } catch (PermissionException e) {
+      mForm.dispatchPermissionDeniedEvent(mFullScreenPlayer, "Source", e);
+      return false;
     } catch (IOException e) {
       mForm.dispatchErrorOccurredEvent(mFullScreenPlayer, "Source",
           ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, source);
@@ -459,6 +463,8 @@ public class FullScreenVideoUtil implements OnCompletionListener,
       MediaUtil.loadVideoView(mFullScreenVideoView, mForm,
           mFullScreenVideoBundle
               .getString(VIDEOPLAYER_SOURCE));
+    } catch (PermissionException e) {
+      mForm.dispatchPermissionDeniedEvent(mFullScreenPlayer, "Source", e);
     } catch (IOException e) {
       mForm.dispatchErrorOccurredEvent(mFullScreenPlayer, "Source",
           ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, mFullScreenVideoBundle

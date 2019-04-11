@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,8 +10,6 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -28,10 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,11 +152,12 @@ public final class ProjectBuilder {
 
         Set<String> componentTypes = isForCompanion ? getAllComponentTypes() :
             getComponentTypes(sourceFiles, project.getAssetsDirectory());
+        Map<String, Set<String>> componentBlocks = getComponentBlocks(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForCompanion,
-                             keyStorePath, childProcessRam, dexCachePath, reporter);
+            Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
+                isForCompanion, keyStorePath, childProcessRam, dexCachePath, reporter);
         console.close();
         userErrors.close();
 
@@ -245,6 +244,48 @@ public final class ProjectBuilder {
       }
     }
     return componentTypes;
+  }
+
+  /**
+   * Constructs a mapping of component types to the blocks of each type used in
+   * the project files. Properties specified in the designer are considered
+   * blocks for the purposes of this operation.
+   *
+   * @param files A list of files contained in the project.
+   * @return A mapping of component type names to sets of block names used in
+   * the project
+   * @throws IOException if any of the files named in {@code files} cannot be
+   * read
+   */
+  private static Map<String, Set<String>> getComponentBlocks(List<String> files)
+      throws IOException {
+    Map<String, Set<String>> result = new HashMap<>();
+    for (String f : files) {
+      if (f.endsWith(".bky")) {
+        File bkyFile = new File(f);
+        String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
+        for (Map.Entry<String, Set<String>> entry :
+            FormPropertiesAnalyzer.getComponentBlocksFromBlocksFile(bkyContent).entrySet()) {
+          if (result.containsKey(entry.getKey())) {
+            result.get(entry.getKey()).addAll(entry.getValue());
+          } else {
+            result.put(entry.getKey(), entry.getValue());
+          }
+        }
+      } else if (f.endsWith(".scm")) {
+        File scmFile = new File(f);
+        String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
+        for (Map.Entry<String, Set<String>> entry :
+            FormPropertiesAnalyzer.getComponentBlocksFromSchemeFile(scmContent).entrySet()) {
+          if (result.containsKey(entry.getKey())) {
+            result.get(entry.getKey()).addAll(entry.getValue());
+          } else {
+            result.put(entry.getKey(), entry.getValue());
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**

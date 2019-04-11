@@ -565,6 +565,8 @@
                   <h2 id="DatePicker">DatePicker</h2>
 
                   <p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p>
+                  <p>Note: Date and time are manipulated using methods in the <a href="sensors.html#Clock">Clock</a>
+                  component. </p>
 
                   <h3>Properties</h3>
                   <dl>
@@ -587,7 +589,7 @@
                     <dt><code>Image</code></dt>
                     <dd>Image to display on button.</dd>
                     <dt><code>Instant</code></dt>
-                    <dd>Instant of date. This instant can be used with <a href="http://ai2.appinventor.mit.edu/reference/components/sensors.html#Clock">Clock</a> component for date documentation, conversion, and matriculation.</dd>
+                    <dd>Instant of date. This instant can be used with <a href="sensors.html#Clock">Clock</a> component for date documentation, conversion, and matriculation.</dd>
                     <dt><code><em>Month</em></code></dt>
                     <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 1 = January, 12 = December.</dd>
                     <dt><code><em>MonthInText</em></code></dt>
@@ -946,7 +948,7 @@ none
 
 <p>Top-level component containing all other components in the program</p>
 
-<h3>Properties</h3>
+<h3><a name="screenproperties"></a>Properties</h3>
 <dl>
   <dt><code>AboutScreen</code></dt>
   <dd>Information about the screen.  It appears when "About this Application" is selected from the system menu. Use it to tell users about your app.  In multiple screen apps, each screen has its own AboutScreen info.</dd>
@@ -981,7 +983,8 @@ none
   <dt><code><em>Height</em></code></dt>
   <dd>Screen height (y-size).</dd>
   <dt><code>Icon</code> (designer only)</dt>
-  <dd></dd>
+  <dd>The image used for your App's display icon should be a 48x48 pixel or 96x96 pixel png or jpeg image. Larger
+    images cause compiling to fail. These image dimensions are standard for Android devices.</dd>
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
   <dt><code>PrimaryColor</code></dt>
@@ -1002,7 +1005,7 @@ none
   <dt><code>ShowListsAsJson</code> (designer only)</dt>
   <dd>
     If false, lists will be converted to strings using Lisp notation,
-    i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d). If true,
+    i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d)). If true,
     lists will appear as in Json or Python, e.g.  ["a", 1, "b", 2, ["c",
     "d"]].  This property appears only in Screen 1, and the value for
     Screen 1 determines the behavior for all screens. The property
@@ -1050,7 +1053,7 @@ none
   <dd>Screen width (x-size).</dd>
 </dl>
 
-<h3>Events</h3>
+<h3><a name="screenevents"></a>Events</h3>
 <dl>
   <dt><code>BackPressed()</code></dt>
   <dd>Device back button pressed.</dd>
@@ -1060,12 +1063,28 @@ none
   <dd>Screen starting</dd>
   <dt><code>OtherScreenClosed(text otherScreenName, any result)</code></dt>
   <dd>Event raised when another screen has closed and control has returned to this screen.</dd>
+  <dt><code>PermissionDenied(component component, text functionName, text permissionName)</code></dt>
+  <dd>Event run to handle when the app user has denied a needed permission.</dd>
+  <dt><code>PermissionGranted(text permissionName)</code></dt>
+  <dd>Event to handle when the app user has granted a needed
+   permission. This event is only run when permission is granted in
+   response to the AskForPermission method.</dd>
   <dt><code>ScreenOrientationChanged()</code></dt>
   <dd>Screen orientation changed</dd>
 </dl>
 
-<h3>Methods</h3>
-none
+<h3><a name="screenmethods"></a>Methods</h3>
+<dl>
+  <dt><code><a name="AskForPermission"></a>AskForPermission(text permissionName)</code></dt>
+  <dd>Ask the user to grant access to a sensitive permission, such as
+    ACCESS_FINE_LOCATION. This block is typically used as part of
+    a <code>PermissionDenied</code> event to ask for permission. If
+    the user grants permission, the <code>PermissionGranted</code>
+    event will be run. If the user denies permission,
+    the <code>PermissionDenied</code> event will be run.</dd>
+  <dt><code>HideKeyboard()</code></dt>
+  <dd>Hide the onscreen soft keyboard.</dd>
+</dl>
 
 
 <h2 id="Slider">Slider</h2>
@@ -1259,6 +1278,8 @@ none
 
                   <h2 id="TimePicker">TimePicker</h2>
                   <p><p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p></p>
+                  <p>Note: Date and time are manipulated using methods in the <a href="sensors.html#Clock">Clock</a>
+                    component. </p>
 
                   <h3>Properties</h3>
                   <dl>
@@ -1281,7 +1302,7 @@ none
                     <dt><code>Image</code></dt>
                     <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
                     <dt><code>Instant</code></dt>
-                    <dd>Instant of time. This instant can be used with <a href="http://ai2.appinventor.mit.edu/reference/components/sensors.html#Clock">Clock</a> component for time documentation, conversion, and matriculation.</dd>
+                    <dd>Instant of time. This instant can be used with <a href="sensors.html#Clock">Clock</a> component for time documentation, conversion, and matriculation.</dd>
                     <dt><code><em>Minute</em></code></dt>
                     <dd>The minute of the last time set using the time picker</dd>
                     <dt><code>Shape</code> (designer only)</dt>
@@ -1328,7 +1349,7 @@ none
 <h2 id="WebViewer"> WebViewer </h2>
 <img src="images/webviewer.png" alt="Picture of WebViewer component" />
 
-<p>Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write("The answer is" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to "hello", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString("hello from Javascript")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. </p>
+<p>Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methods <em>getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write("The answer is" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to "hello", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString("hello from Javascript")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. <br />Calling setWebViewString from JavaScript will also run the WebViewStringChanged event so that the blocks can handle when the WebViewString property changes.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -1357,7 +1378,10 @@ none
 </dl>
 
 <h3>Events</h3>
-none
+<dl>
+  <dt><code>WebViewStringChange(text value)</code></dt>
+  <dd>Event that runs when the AppInventor.setWebViewString method is called from JavaScript. The new WebViewString is given by the value parameter.</dd>
+</dl>
 
 <h3>Methods</h3>
 <dl>
