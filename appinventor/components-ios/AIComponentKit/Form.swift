@@ -37,6 +37,7 @@ import Toast_Swift
   @objc internal var _componentWithActiveEvent: Component?
   fileprivate var _statusBarHidden: Bool = true
   fileprivate var _linearView = LinearView()
+  fileprivate var _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -155,14 +156,26 @@ import Toast_Swift
       subview.removeFromSuperview()
     }
     clearComponents()
+    defaultPropertyValues()
+  }
+
+  private func recomputeLayout() {
+    _linearView.removeFromSuperview()
+    _scaleFrameLayout.removeFromSuperview()
     _linearView = LinearView(frame: view.frame)
     _linearView.accessibilityIdentifier = "Form root view"
-    view.addSubview(_linearView)
-    view.addConstraint(view.widthAnchor.constraint(equalTo: _linearView.widthAnchor))
-    view.addConstraint(view.heightAnchor.constraint(equalTo: _linearView.heightAnchor))
-    view.addConstraint(view.topAnchor.constraint(equalTo: _linearView.topAnchor))
-    view.addConstraint(view.leadingAnchor.constraint(equalTo: _linearView.leadingAnchor))
-    defaultPropertyValues()
+    if _compatibilityMode {
+      _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+    } else {
+      _scaleFrameLayout = ScaleFrameLayout(frame: UIScreen.main.bounds)
+    }
+    _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
+    _scaleFrameLayout.addSubview(_linearView)
+    view.addSubview(_scaleFrameLayout)
+    _linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor).isActive = true
+    _linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor).isActive = true
+    _linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor).isActive = true
+    _linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor).isActive = true
   }
 
   @objc func clearComponents() {
@@ -406,6 +419,7 @@ import Toast_Swift
     }
     set(scrollable) {
       _scrollable = scrollable
+      recomputeLayout()
     }
   }
 
@@ -437,6 +451,10 @@ import Toast_Swift
     }
     set(value) {
       _compatibilityMode = (value == "Fixed")
+      _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
+      _scaleFrameLayout.setNeedsLayout()
+      _linearView.setNeedsLayout()
+      recomputeLayout()
     }
   }
 

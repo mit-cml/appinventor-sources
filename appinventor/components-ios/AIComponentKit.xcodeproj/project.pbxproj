@@ -30,6 +30,7 @@
 		061DC7B0223C34A900539213 /* classic_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7AF223C34A900539213 /* classic_button.png */; };
 		061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B1223C395F00539213 /* classic_button.pressed.png */; };
 		061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B2223C395F00539213 /* classic_button.disabled.png */; };
+		061DC7B6224027C900539213 /* ScaleFrameLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061DC7B5224027C900539213 /* ScaleFrameLayout.swift */; };
 		061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061DC7B72241574D00539213 /* UIImage+Tint.swift */; };
 		061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061F8571203F28AC00683091 /* AppInventorTestCase.swift */; };
 		062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A71DCE409D0035E4A4 /* BluetoothClient.swift */; };
@@ -226,6 +227,7 @@
 		061DC7AF223C34A900539213 /* classic_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.png; sourceTree = "<group>"; };
 		061DC7B1223C395F00539213 /* classic_button.pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.pressed.png; sourceTree = "<group>"; };
 		061DC7B2223C395F00539213 /* classic_button.disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.disabled.png; sourceTree = "<group>"; };
+		061DC7B5224027C900539213 /* ScaleFrameLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleFrameLayout.swift; sourceTree = "<group>"; };
 		061DC7B72241574D00539213 /* UIImage+Tint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Tint.swift"; sourceTree = "<group>"; };
 		061F8571203F28AC00683091 /* AppInventorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppInventorTestCase.swift; sourceTree = "<group>"; };
 		062300A71DCE409D0035E4A4 /* BluetoothClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothClient.swift; sourceTree = "<group>"; };
@@ -628,6 +630,7 @@
 				DE033B4220179A9300544E5F /* PermissionHandler.swift */,
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
+				061DC7B5224027C900539213 /* ScaleFrameLayout.swift */,
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
 				DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
@@ -1150,6 +1153,7 @@
 				06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */,
 				08815DB5210A64CE00FA89F7 /* EvConnection.swift in Sources */,
 				CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */,
+				061DC7B6224027C900539213 /* ScaleFrameLayout.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				DECA138720D85D8F001C6273 /* Circle.swift in Sources */,
