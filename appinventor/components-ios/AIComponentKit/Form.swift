@@ -438,6 +438,7 @@ import Toast_Swift
     }
     set(show) {
       _statusBarHidden = !show
+      setNeedsStatusBarAppearanceUpdate()
     }
   }
   
