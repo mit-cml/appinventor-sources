@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import MapKit
@@ -103,9 +103,9 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open override var title: String? {
+  open override var Title: String? {
     didSet {
-      _marker.title = _title
+      _marker.Title = _title
     }
   }
 

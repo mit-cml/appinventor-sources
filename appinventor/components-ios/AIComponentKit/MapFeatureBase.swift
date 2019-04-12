@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import UIKit
@@ -42,7 +42,7 @@ import GEOSwift
     StrokeColor = -16777216
     StrokeWidth = 1
     Draggable = false
-    title = ""
+    Title = ""
     callout.widthAnchor.constraint(lessThanOrEqualToConstant: 300).isActive = true
     callout.heightAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
     callout.numberOfLines = 0
@@ -99,6 +99,12 @@ import GEOSwift
     }
   }
 
+  open var title: String? {
+    get {
+      return _title
+    }
+  }
+
   open var subtitle: String? {
     get {
       return _description
@@ -141,7 +147,7 @@ import GEOSwift
     }
   }
 
-  open var title: String? {
+  open var Title: String? {
     get {
       return " "
     }
@@ -149,11 +155,6 @@ import GEOSwift
       _title = title!
       setText()
     }
-  }
-
-  // For App Inventor naming compatability
-  open func Title() -> String {
-    return _title ?? ""
   }
 
   open var `Type`: String
@@ -270,7 +271,7 @@ import GEOSwift
     self.EnableInfobox = source.EnableInfobox
     self.StrokeColor = source.StrokeColor
     self.StrokeWidth = source.StrokeWidth
-    self.title = source.Title()
+    self.Title = source.Title
     self.Visible = source.Visible
   }
 }

@@ -109,7 +109,7 @@ open class GeoJSONUtil {
       }
     }
     properties[PROPERTY_TITLE] = { feature, value in
-      feature.title = String(describing: value)
+      (feature as MapFeature).Title = String(describing: value)
     }
     properties[PROPERTY_WIDTH] = { feature, value in
       if let marker = feature as? Marker {
@@ -186,7 +186,7 @@ open class GeoJSONUtil {
     return write(property: PROPERTY_DESCRIPTION, feature.Description) +
       write(property: PROPERTY_DRAGGABLE, feature.Draggable) +
       write(property: PROPERTY_INFOBOX, feature.EnableInfobox) +
-      write(property: PROPERTY_TITLE, feature.title) +
+      write(property: PROPERTY_TITLE, feature.Title) +
       write(property: PROPERTY_VISIBLE, feature.Visible)
   }
   

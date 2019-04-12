@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import CoreLocation
@@ -12,9 +12,9 @@ import GEOSwift
   var `Type`: String { get }
   var Visible: Bool { get set }
   var Draggable: Bool { get set }
-  var title: String? { get set }
   var Description: String { get set }
   var EnableInfobox: Bool { get set }
+  var Title: String? { get set }
   var Centroid: CLLocationCoordinate2D { get }
   var geometry: Geometry? { get }
   var index: Int32 { get }

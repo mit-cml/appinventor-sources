@@ -1,16 +1,7 @@
-//
-//  EventDispatcher.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/26/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset 2; -*-
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-
-func ==(lhs: EventDispatcher.EventClosure, rhs: EventDispatcher.EventClosure) -> Bool {
-  return lhs.componentId == rhs.componentId && lhs.eventName == rhs.eventName
-}
 
 open class EventDispatcher: NSObject {
   fileprivate static let mapDispatchDelegateToEventRegistry = NSMutableDictionary()
@@ -29,6 +20,15 @@ open class EventDispatcher: NSObject {
       get {
         return componentId.hashValue &+ 31 &* eventName.hashValue
       }
+    }
+
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(componentId)
+      hasher.combine(eventName)
+    }
+
+    static func == (lhs: EventClosure, rhs: EventClosure) -> Bool {
+      return lhs.componentId == rhs.componentId && lhs.eventName == rhs.eventName
     }
   }
   
