@@ -28,7 +28,6 @@ open class ReplForm: Form {
   }
 
   open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
-    NSLog("Delegating dispatch to YAIL")
     _componentWithActiveEvent = component
     if let interpreter = _httpdServer?.interpreter {
       let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
@@ -36,7 +35,6 @@ open class ReplForm: Form {
         NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
         return false
       }
-      NSLog("dispatchEvent result = \(String(describing: result))")
       if (result is Bool) {
         return result as! Bool
       } else if (result is NSNumber) {

@@ -143,8 +143,6 @@
   (syntax-rules ()
     ((_ event-func-name (arg ...) (expr ...))
      (begin
-       (write (quote event-func-name))
-       (display "\n")
        (define (event-func-name arg ...)
          (let ((arg (sanitize-component-data arg)) ...)
            expr ...))
@@ -167,29 +165,20 @@
       #`(begin
           (define-event-helper #,full-name #,args #,body)
           (if *this-is-the-repl*
-              (begin
-                (yail:invoke AIComponentKit.EventDispatcher 'registerEventForDelegation *this-form* '#,component-name '#,event-name)
-                (display "Registered for event delegation\n"))
+              (yail:invoke AIComponentKit.EventDispatcher 'registerEventForDelegation *this-form* '#,component-name '#,event-name)
               (add-to-events 'component-name 'event-name))))))
 
 (define (dispatchEvent component registeredComponentName eventName args)
-  (display "component = ")(display component)(display "\n")
-  (display "registeredComponentName = ")(display registeredComponentName)(display "\n")
-  (display "eventName = ")(display eventName)(display "\n")
-  (display "args = ")(display args)(display "\n")
   (let ((registeredObject (string->symbol registeredComponentName)))
-    (display "Registered object: ")(display registeredObject)(display "\n")
     (if (is-bound-in-form-environment registeredObject)
-        (begin (display "Is bound in form? #t\n")(display "found object? ")(display (lookup-in-form-environment registeredObject))(display "\n")
         (if (eq? (lookup-in-form-environment registeredObject) component)
             (let ((handler (lookup-handler registeredComponentName eventName)))
-              (display "Applying handler\n")
               (apply handler args)
               #t)
             (begin
               (yail:invoke AIComponentKit.EventDispatcher 'unregisterForEventDelegation *this-form* registeredComponentName eventName)
-              #f)))
-        (begin (display "Is bound in form? #f\n") #f))))
+              #f))
+        #f)))
 
 (define-syntax do-after-form-creation
   (syntax-rules ()
@@ -618,8 +607,6 @@
   (lambda (form _)
     (let ((condition (cadr form))
           (body (cddr form)))
-      (display "condition = ") (display condition) (display "\n")
-      (display "body = ") (display body) (display "\n")
       `(while-with-break *yail-break* ,condition ,@body))))
 
 (define-syntax foreach-with-break
