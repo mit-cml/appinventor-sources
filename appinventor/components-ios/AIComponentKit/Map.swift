@@ -127,7 +127,6 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     setupZoomControls()
     Width = kMapPreferredWidth
     Height = kMapPreferredHeight
-//    Initialize()
   }
 
   public func onResume() {}
@@ -168,15 +167,15 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
    * Handles setting initial values for Center and ZoomLevel
    * Code is handled asynchronously to ensure that values from the companion are processed first
    */
-  open func Initialize() {
-      if self._zoomLevelUpdate == nil {
-        self.ZoomLevel = 13
-      }
-      if self._centerUpdate == nil {
-        self.CenterFromString(DEFAULT_CENTER, animated: false)
-      }
-      self.setNeedsUpdate(animated: false)
-      self._initialized = true
+  @objc open func Initialize() {
+    if self._zoomLevelUpdate == nil {
+      self.ZoomLevel = 13
+    }
+    if self._centerUpdate == nil {
+      self.CenterFromString(DEFAULT_CENTER, animated: false)
+    }
+    self.setNeedsUpdate(animated: false)
+    self._initialized = true
   }
 
   private func setupZoomControls() {
