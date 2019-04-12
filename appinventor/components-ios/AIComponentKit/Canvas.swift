@@ -46,7 +46,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
   fileprivate var _sprites = [Sprite]()
 
   fileprivate var _imageSize: CGSize? = nil
-  fileprivate var _initialized = false
 
   public override init(_ parent: ComponentContainer) {
     _view = CanvasView()
@@ -70,15 +69,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _view.clipsToBounds = true
     parent.add(self)
 
-    /**
-     * constraints to force automatically sized width/height to match parent
-     * These constraints will break when setting pixel-based width or height greater than view's frame
-     */
-    if let superView = _view.superview {
-      _view.heightAnchor.constraint(lessThanOrEqualTo: superView.heightAnchor).isActive = true
-      _view.widthAnchor.constraint(lessThanOrEqualTo: superView.widthAnchor).isActive = true
-    }
-
     _view.addSubview(_backgroundImageView)
     _backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -87,19 +77,19 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
     _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
 
+    // Configure default dimension constraints. These are set to low priority so that they can be overriden
+    // by the user configuration.
+    let baseWidthConstraint = _view.widthAnchor.constraint(equalToConstant: CGFloat(kCanvasPreferredWidth))
+    baseWidthConstraint.priority = .defaultLow
+    baseWidthConstraint.isActive = true
+
+    let baseHeightConstraint = _view.heightAnchor.constraint(equalToConstant: CGFloat(kCanvasPreferredHeight))
+    baseHeightConstraint.priority = .defaultLow
+    baseHeightConstraint.isActive = true
+
     BackgroundColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
-    updateSize()
   }
 
-  @objc open func Initialize() {
-    _initialized = true
-    updateSize()
-    
-    Height = Int32(kCanvasPreferredHeight)
-    Width = Int32(kCanvasPreferredWidth)
-    BackgroundColor = _backgroundColor
-  }
-  
   // Returns a UIImage filled with the current background color
   @objc func backgroundColorImage() -> UIImage? {
     let color = argbToColor(_backgroundColor)
@@ -160,27 +150,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
           _backgroundImage = ""
           _backgroundImageView.image = nil
         }
-        updateSize()
       }
-    }
-  }
-
-  fileprivate func updateSize() {
-//    if _initialized {
-      updateWidth()
-      updateHeight()
-//    }
-  }
-
-  fileprivate func updateWidth() {
-    if _lastSetWidth == kLengthPreferred {
-      _view.constrain(width: Int32(_imageSize?.width ?? CGFloat(kCanvasPreferredWidth)))
-    }
-  }
-
-  fileprivate func updateHeight() {
-    if _lastSetHeight == kLengthPreferred {
-      _view.constrain(height: Int32(_imageSize?.height ?? CGFloat(kCanvasPreferredHeight)))
     }
   }
 
@@ -193,10 +163,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
     set(width) {
       _oldWidth = _view.bounds.width
-      if width == kLengthPreferred {
-        _view.constrain(width: Int32(_imageSize?.width ?? CGFloat(kCanvasPreferredWidth)))
-        _lastSetWidth = kLengthPreferred
-      } else {
+      super.Width = width
+      if width != kLengthPreferred {
         setNestedViewWidth(nestedView: _view, width: width, shouldAddConstraints: true)
       }
     }
@@ -230,10 +198,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     }
     set(height) {
       _oldHeight = _view.bounds.height
-      if height == kLengthPreferred {
-        _view.constrain(height: Int32(_imageSize?.height ?? CGFloat(kCanvasPreferredHeight)))
-        _lastSetHeight = kLengthPreferred
-      } else {
+      super.Height = height
+      if height != kLengthPreferred {
         setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
       }
     }
@@ -941,9 +907,6 @@ open class CanvasView: UIView {
   private var _drawn = false
   private weak var _canvas: Canvas?
   private var _oldSize: CGSize = .zero
-  private var _heightConstraint: NSLayoutConstraint? = nil
-  private var _widthConstraint: NSLayoutConstraint? = nil
-
 
   required public init?(coder aDecoder: NSCoder) {
     fatalError("This class does not support NSCoding")
@@ -966,24 +929,6 @@ open class CanvasView: UIView {
     set(c) {
       _canvas = c
     }
-  }
-
-  fileprivate func constrain(height: Int32) {
-    if let constraint = _heightConstraint {
-      self.removeConstraint(constraint)
-    }
-    _heightConstraint = heightAnchor.constraint(equalToConstant: CGFloat(height))
-    _heightConstraint?.priority = UILayoutPriority.defaultHigh
-    addConstraint(_heightConstraint!)
-  }
-
-  fileprivate func constrain(width: Int32) {
-    if let constraint = _widthConstraint {
-      self.removeConstraint(constraint)
-    }
-    _widthConstraint = widthAnchor.constraint(equalToConstant: CGFloat(width))
-    _widthConstraint?.priority = UILayoutPriority.defaultHigh
-    addConstraint(_widthConstraint!)
   }
 
   override open func draw(_ rect: CGRect) {
