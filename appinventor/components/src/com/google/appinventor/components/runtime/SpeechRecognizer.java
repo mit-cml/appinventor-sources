@@ -5,21 +5,19 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
-
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
+import android.os.Build;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+
+import android.content.Intent;
+import android.Manifest;
+import android.speech.RecognizerIntent;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
-
-import java.util.ArrayList;
+import com.google.appinventor.components.annotations.UsesPermissions;
 
 /**
  * Component for using the built in VoiceRecognizer to convert speech to text.
@@ -32,16 +30,21 @@ import java.util.ArrayList;
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/speechRecognizer.png")
+
 @SimpleObject
+@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO," +
+        "android.permission.INTERNET")
 public class SpeechRecognizer extends AndroidNonvisibleComponent
-    implements Component, ActivityResultListener {
+    implements Component, SpeechListener, Deleteable {
 
   private final ComponentContainer container;
   private String result;
+  private Intent recognizerIntent;
+  SpeechRecognizerController speechRecognizerController;
 
-  /* Used to identify the call to startActivityForResult. Will be passed back
-     into the resultReturned() callback method. */
-  private int requestCode;
+  private boolean useLegacy = true;
+
+  private boolean havePermission = false;
 
   /**
    * Creates a SpeechRecognizer component.
@@ -69,28 +72,42 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void GetText() {
-    BeforeGettingText();
-    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-    if (requestCode == 0) {
-      requestCode = form.registerForActivityResult(this);
+    if (!havePermission) {
+      final SpeechRecognizer me = this;
+      form.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          form.askPermission(Manifest.permission.RECORD_AUDIO,
+                  new PermissionResultHandler() {
+                    @Override
+                    public void HandlePermissionResponse(String permission, boolean granted) {
+                      if (granted) {
+                        me.havePermission = true;
+                        me.GetText();
+                      } else {
+                        form.dispatchPermissionDeniedEvent(me, "Start", Manifest.permission.RECORD_AUDIO);
+                      }
+                    }
+                  });
+        }
+      });
+      return;
     }
-    container.$context().startActivityForResult(intent, requestCode);
+    BeforeGettingText();
+    recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+    recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+    initialize();
+    speechRecognizerController.addListener(this);
+    speechRecognizerController.start();
   }
 
-  @Override
-  public void resultReturned(int requestCode, int resultCode, Intent data) {
-    if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
-      if (data.hasExtra(RecognizerIntent.EXTRA_RESULTS)) {
-        ArrayList<String> results;
-        results = data.getExtras().getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
-        result = results.get(0);
-      } else {
-        result = "";
-      }
-      AfterGettingText(result);
-    }
+  /**
+   * Function used to stop SpeechRecognizer.
+   */
+  @SimpleFunction
+  public void Stop() {
+    speechRecognizerController.stop();
   }
 
   /**
@@ -110,4 +127,59 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "AfterGettingText", result);
   }
 
+  /**
+   * Method from SpeechListener interface.
+   */
+  @Override
+  public void onPartialResult(String text) {
+    result = text;
+    AfterGettingText(result);
+  }
+
+  /**
+   * Method from SpeechListener interface.
+   */
+  @Override
+  public void onResult(String text) {
+    result = text;
+    AfterGettingText(result);
+    onDelete();
+  }
+
+  /**
+   * Method from SpeechListener interface.
+   */
+  @Override
+  public void onError(String message) {
+    result = message;
+    AfterGettingText(result);
+  }
+
+  @Override
+  public void onDelete() {
+    speechRecognizerController = null;
+    recognizerIntent = null;
+  }
+
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "If set, an app can retain their older behaviour.")
+  public boolean UseLegacy() {
+      return useLegacy;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(description = "Used to set UseLegacy property based on user's choice.")
+  public void UseLegacy(boolean useLegacy) {
+    this.useLegacy = useLegacy;
+  }
+
+  public void initialize(){
+    if (useLegacy == true || Build.VERSION.SDK_INT<8) {
+      speechRecognizerController = new IntentBasedSpeechRecognizer(container, recognizerIntent);
+    } else {
+      speechRecognizerController = new ServiceBasedSpeechRecognizer(container, recognizerIntent);
+    }
+  }
 }

@@ -1051,7 +1051,11 @@ public class YaVersion {
   // - The SavedRecording property was added.
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 2:
+  // - The UseLegacy property was added which is set to True by default.
+  // - The Stop method was added, which works only when UseLegacy
+  //   property is set to False.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
