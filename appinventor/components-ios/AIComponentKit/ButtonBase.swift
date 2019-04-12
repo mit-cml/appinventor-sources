@@ -10,12 +10,16 @@ public protocol AbstractMethodsForButton: AbstractMethodsForViewComponent {
 let kRoundedCornersRadius: Float = 10.0
 let kRoundedCornersArray = [kRoundedCornersRadius, kRoundedCornersRadius]
 let kShapedDefaultBackgroundColor = Color.lightGray
+fileprivate let DEFAULT_BUTTON_INSET = UIEdgeInsets(top: 4.0, left: 5.0, bottom: 8.0, right: 5.0)
+fileprivate let CLASSIC_DEFAULT_BUTTON_TEXTCOLOR = argbToColor(-16777216)
+fileprivate let CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR = argbToColor(-2147483648)
 
 open class ButtonBase: ViewComponent {
   @objc final var _view: UIButton
   fileprivate weak var _delegate: AbstractMethodsForButton?
   fileprivate var _textAlignment = Alignment.center
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _backgroundImage: UIImage?
   fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _bold = false
   fileprivate var _showFeedback = true
@@ -24,12 +28,29 @@ open class ButtonBase: ViewComponent {
   fileprivate var _shape = ButtonShape.normal
   fileprivate var _imagePath: String?
   fileprivate var _defaultTextColor: UIColor
+  fileprivate var _defaultHighlightColor: UIColor?
+  fileprivate static var _classicButton: UIImage!
+  fileprivate static var _classicButtonDisabled: UIImage!
+  fileprivate static var _classicButtonPressed: UIImage!
+
+  static func loadClassicButton() {
+    let bundle = Bundle(for: ButtonBase.self)
+    _classicButton = UIImage(contentsOfFile: bundle.path(forResource: "classic_button", ofType: "png")!)
+    _classicButton = _classicButton?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+    _classicButtonPressed = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.pressed", ofType: "png")!)
+    _classicButtonPressed = _classicButtonPressed?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+    _classicButtonDisabled = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.disabled", ofType: "png")!)
+    _classicButtonDisabled = _classicButtonDisabled?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+  }
 
   public override init(_ parent: ComponentContainer) {
+    if ButtonBase._classicButton == nil {
+      ButtonBase.loadClassicButton()
+    }
     self._view = UIButton(type: UIButton.ButtonType.custom)
     _defaultTextColor = self._view.tintColor
+    _defaultHighlightColor = self._view.titleColor(for: .highlighted)
     super.init(parent)
-    self._view.backgroundColor = argbToColor(_backgroundColor)
     self._view.translatesAutoresizingMaskIntoConstraints = false
     self._view.addTarget(self, action: #selector(TouchDown), for: UIControl.Event.touchDown)
     self._view.addTarget(self, action: #selector(TouchUp), for: UIControl.Event.touchUpInside)
@@ -44,6 +65,7 @@ open class ButtonBase: ViewComponent {
     Text = ""
     TextAlignment = Alignment.center.rawValue
     TextColor = Int32(Color.default.rawValue)
+    applyTheme()
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForButton) {
@@ -63,7 +85,7 @@ open class ButtonBase: ViewComponent {
     }
     set(argb) {
       _backgroundColor = argb
-      self._view.backgroundColor = argbToColor(argb)
+      applyTheme()
     }
   }
 
@@ -126,7 +148,7 @@ open class ButtonBase: ViewComponent {
     }
     set(path) {
       if (path == nil || path == "") {
-        _view.setImage(nil, for: UIControl.State.normal)
+        _backgroundImage = nil
       } else {
         NSLog("Path: \(String(describing: path))")
         var image = UIImage(named: path!);
@@ -136,24 +158,18 @@ open class ButtonBase: ViewComponent {
         if (image != nil) {
           NSLog("Image is not nil");
           _imagePath = path
-          _view.setBackgroundImage(image, for: UIControl.State.normal)
+          _backgroundImage = image
           NSLog("Width: \((image?.size.width)!) Height: \((image?.size.height)!)")
           _view.frame.size = (image?.size)!
-//          _view.sizeToFit()
-//          let constraints = [
-//            _view.widthAnchor.constraint(equalToConstant: (image?.size.width)!),
-//            _view.heightAnchor.constraint(equalToConstant: (image?.size.height)!)
-//          ]
-//          _view.addConstraints(constraints)
-//          NSLayoutConstraint.activate(constraints)
           _view.invalidateIntrinsicContentSize()
-          _view.setNeedsLayout()
           NSLog("Button frame size: \(_view.frame)")
-          _container.form.view.setNeedsLayout()
         } else {
           NSLog("Image is nil");
         }
       }
+      applyTheme()
+      _container.form.view.setNeedsLayout()
+      _view.setNeedsLayout()
     }
   }
 
@@ -174,9 +190,8 @@ open class ButtonBase: ViewComponent {
       return _showFeedback
     }
     set(feedback) {
-      _view.showsTouchWhenHighlighted = feedback
-      _view.setTitleColor(feedback ? UIColor.lightGray : nil, for: .highlighted)
       _showFeedback = feedback
+      applyTheme()
     }
   }
 
@@ -252,5 +267,57 @@ open class ButtonBase: ViewComponent {
 
   @objc open func longClick() -> Bool {
     return false;
+  }
+
+  func applyTheme() {
+    switch _container.form.Theme {
+    case "Classic":
+      self._view.imageView?.tintColor = nil
+      if let backgroundImage = _backgroundImage {
+        self._view.setBackgroundImage(backgroundImage, for: .normal)
+        self._view.setBackgroundImage(nil, for: [.disabled, .highlighted])
+        self._view.contentEdgeInsets = .zero
+      } else {
+        if _backgroundColor != Int32(bitPattern: Color.default.rawValue) {
+          let tint = argbToColor(_backgroundColor)
+          let bg = ButtonBase._classicButton.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          let bgd = ButtonBase._classicButtonDisabled.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          let bgh = ButtonBase._classicButtonPressed.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          self._view.setBackgroundImage(bg, for: .normal)
+          self._view.setBackgroundImage(ShowFeedback ? bgh : bg, for: .highlighted)
+          self._view.setBackgroundImage(bgd, for: .disabled)
+        } else {
+          self._view.setBackgroundImage(ButtonBase._classicButton, for: .normal)
+          self._view.setBackgroundImage(ButtonBase._classicButtonDisabled, for: .disabled)
+          self._view.setBackgroundImage(ShowFeedback ? ButtonBase._classicButtonPressed : ButtonBase._classicButton, for: .highlighted)
+        }
+        self._view.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 11.0, bottom: 11.0, right: 11.0)
+      }
+      if _textColor == Int32(bitPattern: Color.default.rawValue) {
+        self._view.setTitleColor(CLASSIC_DEFAULT_BUTTON_TEXTCOLOR, for: .normal)
+      }
+      self._view.setTitleColor(CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR, for: .disabled)
+      self._view.showsTouchWhenHighlighted = false
+      self._view.adjustsImageWhenHighlighted = ShowFeedback
+      break
+    default:
+      if _backgroundImage == nil && BackgroundColor != Int32(bitPattern: Color.default.rawValue) {
+        self._view.setBackgroundImage(nil, for: [.normal, .disabled, .highlighted])
+      } else {
+        self._view.setBackgroundImage(_backgroundImage, for: .normal)
+        self._view.setBackgroundImage(nil, for: .disabled)
+        self._view.setBackgroundImage(ShowFeedback ? nil : _backgroundImage, for: .highlighted)
+      }
+      if _textColor == Int32(bitPattern: Color.default.rawValue) {
+        self._view.setTitleColor(_defaultTextColor, for: .normal)
+      } else {
+        self._view.setTitleColor(argbToColor(_textColor), for: .normal)
+      }
+      self._view.showsTouchWhenHighlighted = ShowFeedback
+      self._view.adjustsImageWhenHighlighted = ShowFeedback
+      self._view.setTitleColor(_defaultHighlightColor, for: .highlighted)
+      self._view.setTitleColor(.gray, for: .disabled)
+      break
+    }
   }
 }

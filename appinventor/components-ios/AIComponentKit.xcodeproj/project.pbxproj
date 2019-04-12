@@ -27,6 +27,10 @@
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0618D2751F34DC3400A127A2 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618D2741F34DC3400A127A2 /* ListView.swift */; };
+		061DC7B0223C34A900539213 /* classic_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7AF223C34A900539213 /* classic_button.png */; };
+		061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B1223C395F00539213 /* classic_button.pressed.png */; };
+		061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 061DC7B2223C395F00539213 /* classic_button.disabled.png */; };
+		061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061DC7B72241574D00539213 /* UIImage+Tint.swift */; };
 		061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061F8571203F28AC00683091 /* AppInventorTestCase.swift */; };
 		062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A71DCE409D0035E4A4 /* BluetoothClient.swift */; };
 		062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */; };
@@ -78,7 +82,6 @@
 		06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B216071DB954A5000B3366 /* ColorUtil.swift */; };
 		06B216201DBDACBF000B3366 /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 06B2161E1DBDA4B4000B3366 /* runtime.scm */; };
 		06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747B1DC06F6B003888CB /* GCDWebServer.framework */; };
-		06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */; };
 		06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747D1DC06F6B003888CB /* SchemeKit.framework */; };
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
@@ -220,6 +223,10 @@
 		0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIComponentKitTests.swift; sourceTree = "<group>"; };
 		0618A2931D8CF4EE0013A191 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0618D2741F34DC3400A127A2 /* ListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		061DC7AF223C34A900539213 /* classic_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.png; sourceTree = "<group>"; };
+		061DC7B1223C395F00539213 /* classic_button.pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.pressed.png; sourceTree = "<group>"; };
+		061DC7B2223C395F00539213 /* classic_button.disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.disabled.png; sourceTree = "<group>"; };
+		061DC7B72241574D00539213 /* UIImage+Tint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Tint.swift"; sourceTree = "<group>"; };
 		061F8571203F28AC00683091 /* AppInventorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppInventorTestCase.swift; sourceTree = "<group>"; };
 		062300A71DCE409D0035E4A4 /* BluetoothClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothClient.swift; sourceTree = "<group>"; };
 		062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionBase.swift; sourceTree = "<group>"; };
@@ -406,6 +413,7 @@
 				041758522009417D007D2C31 /* String+ChopAffix.swift */,
 				CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */,
 				CBC787012032272E005363A3 /* String+Replace.swift */,
+				061DC7B72241574D00539213 /* UIImage+Tint.swift */,
 				06500853208E331900AC1327 /* UIView+AIHelpers.swift */,
 			);
 			name = Extensions;
@@ -455,6 +463,9 @@
 				06DA9F571D8D0B4B00389B04 /* util */,
 				0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */,
 				0618A2861D8CF4EE0013A191 /* AIComponentKit.h */,
+				061DC7B2223C395F00539213 /* classic_button.disabled.png */,
+				061DC7B1223C395F00539213 /* classic_button.pressed.png */,
+				061DC7AF223C34A900539213 /* classic_button.png */,
 				060395431F342ADE006D6E66 /* language-codes.plist */,
 				060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */,
 				06B2161E1DBDA4B4000B3366 /* runtime.scm */,
@@ -599,10 +610,9 @@
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
 				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
-				0417584F20093AE5007D2C31 /* FileError.swift */,
-				DE4CDF562093982F008412BC /* FontUtil.swift */,
 				DE84293320D3FC6A00094BCB /* GeometryUtil.swift */,
 				DE55C2E620EEA89A005ED8CB /* GeoJSONUtil.swift */,
+				0417584F20093AE5007D2C31 /* FileError.swift */,
 				CBC786812006AD2F005363A3 /* FileUtil.swift */,
 				DE4CDF562093982F008412BC /* FontUtil.swift */,
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
@@ -927,10 +937,13 @@
 			files = (
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
 				06B216201DBDACBF000B3366 /* runtime.scm in Resources */,
+				061DC7B0223C34A900539213 /* classic_button.png in Resources */,
+				061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */,
 				060395451F342ADE006D6E66 /* language-codes.plist in Resources */,
 				060395461F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist in Resources */,
 				DE5CBD281FE36C8B00F5EDDE /* webviewer.js in Resources */,
 				DED066B21FE0846F009C8165 /* webview-error.html in Resources */,
+				061DC7B3223C396000539213 /* classic_button.pressed.png in Resources */,
 				DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1090,6 +1103,7 @@
 				086DC63821023E1A00FDA182 /* EvCommand.swift in Sources */,
 				DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */,
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
+				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
 				0417585520098566007D2C31 /* File.swift in Sources */,
 				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
