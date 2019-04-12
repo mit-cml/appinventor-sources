@@ -33,25 +33,22 @@ open class FileUtil {
   public static func transformAndroidFilePath(_ filePath: String) throws -> String {
     let filePath = AssetManager.shared.transformPotentialAndroidPath(path: filePath)
     
-    try createFullFilePath(filePath)
+    try createFullFilePath(filePath, isAppend: false)
     return filePath
   }
   
   /**
    * Used to create absolute file names as specified by the File Component
    */
-  public static func absoluteFileName(_ fileName: String, _ isRepl: Bool) throws -> String {
+  public static func absoluteFileName(_ fileName: String, _ isRepl: Bool) -> String {
     var filePath = ""
     if fileName.starts(with: "//") {
       let postSlashIndex = fileName.index(fileName.startIndex, offsetBy: 2)
       if isRepl {
-        let file = fileName[postSlashIndex...]
-        let assetsFileName = "assets/\(file)"
-        filePath = AssetManager.shared.pathForExistingFileAsset(assetsFileName)
-        try createFullFilePath(filePath)
+        let file = String(fileName[postSlashIndex...])
+        filePath = AssetManager.shared.pathForExistingFileAsset(file)
       } else {
         filePath = AssetManager.shared.pathForAssetInBundle(filename: String(fileName[postSlashIndex...]))
-        try createFullFilePath(filePath)
       }
     } else if fileName.starts(with: "/") {
       let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
@@ -59,7 +56,6 @@ open class FileUtil {
     } else {
       if isRepl {
         filePath = AssetManager.shared.pathForPublicAsset("data/\(fileName)")
-        try createFullFilePath(filePath)
       } else {
         let path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
         filePath = "\(path)/\(fileName)"
@@ -73,15 +69,15 @@ open class FileUtil {
     let relativePath = directory + "/" + FILENAME_PREFIX + currentTimeInMS + "." + fileExtension
     let filePath = AssetManager.shared.pathForPrivateAsset(relativePath)
     
-    try createFullFilePath(filePath)
+    try createFullFilePath(filePath, isAppend: false)
     return filePath
   }
   
-  private static func createFullFilePath(_ filePath: String) throws {
+  public static func createFullFilePath(_ filePath: String, isAppend: Bool) throws {
     let files = FileManager()
     do {
       try files.createDirectory(atPath: NSString(string: filePath).deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
-      if files.fileExists(atPath: filePath) {
+      if !isAppend && files.fileExists(atPath: filePath) {
         try files.removeItem(atPath: filePath)
       }
     } catch {

@@ -24,7 +24,7 @@ open class File: NonvisibleComponent {
   @objc open func ReadFrom(_ fileName: String) {
     DispatchQueue.global(qos: .background).async {
       do {
-        let filePath: String = try FileUtil.absoluteFileName(fileName, self._isRepl)
+        let filePath: String = FileUtil.absoluteFileName(fileName, self._isRepl)
         if filePath.isEmpty || !FileManager().fileExists(atPath: filePath) {
           throw FileError(ErrorMessage.ERROR_CANNOT_FIND_FILE, fileName)
         } else {
@@ -48,22 +48,18 @@ open class File: NonvisibleComponent {
       _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_DELETE_ASSET.code, ErrorMessage.ERROR_CANNOT_DELETE_ASSET.message, fileName)
       return
     }
-    do {
-        let filePath = try FileUtil.absoluteFileName(fileName, _isRepl)
-        let fileManager = FileManager()
-        if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
-            _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_FIND_FILE.code, ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
-        } else {
-            do {
-                try fileManager.removeItem(atPath: filePath)
-            } catch {
-                NSLog("An unexpected error occurred when attempting to delete file: \(fileName)")
-            }
-        }
-    } catch {
-        _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_FIND_FILE.code, ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
-    }
     
+    let filePath = FileUtil.absoluteFileName(fileName, _isRepl)
+    let fileManager = FileManager()
+    if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
+      _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_FIND_FILE.code, ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
+    } else {
+      do {
+        try fileManager.removeItem(atPath: filePath)
+      } catch {
+        NSLog("An unexpected error occurred when attempting to delete file: \(fileName)")
+      }
+    }
   }
   
   private func write(_ fileName: String, _ text: String, _ append: Bool) {
@@ -73,7 +69,8 @@ open class File: NonvisibleComponent {
     }
     DispatchQueue.global(qos: .background).async {
       do {
-        let filePath = try FileUtil.absoluteFileName(fileName, self._isRepl)
+        let filePath = FileUtil.absoluteFileName(fileName, self._isRepl)
+        try FileUtil.createFullFilePath(filePath, isAppend: append)
         if append, let fileHandle = FileHandle(forWritingAtPath: filePath) {
           defer {
             fileHandle.closeFile()
@@ -94,7 +91,7 @@ open class File: NonvisibleComponent {
         }
       } catch {
         DispatchQueue.main.async {
-            append ? self._form.dispatchErrorOccurredEvent(self, "AppendTo", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName) : self._form.dispatchErrorOccurredEvent(self, "SaveFile", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
+          append ? self._form.dispatchErrorOccurredEvent(self, "AppendTo", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName) : self._form.dispatchErrorOccurredEvent(self, "SaveFile", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
         }
       }
     }

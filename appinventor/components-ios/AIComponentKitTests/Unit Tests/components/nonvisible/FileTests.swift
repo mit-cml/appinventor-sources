@@ -164,17 +164,12 @@ class FileTests: XCTestCase {
   
   // MARK: Helper Functions
   private func fileExists(_ fileName: String) -> Bool {
-    do {
-      return fileManager.fileExists(atPath: try FileUtil.absoluteFileName(fileName, file._form is ReplForm))
-    } catch {
-      NSLog("Could not check for file")
-    }
-    return false
+    return fileManager.fileExists(atPath: FileUtil.absoluteFileName(fileName, file._form is ReplForm))
   }
   
   private func fileTextMatches(_ fileName: String, _ expectedText: String) -> Bool {
     do {
-      let url = URL(fileURLWithPath: try FileUtil.absoluteFileName(fileName, file._form is ReplForm))
+      let url = URL(fileURLWithPath: FileUtil.absoluteFileName(fileName, file._form is ReplForm))
       let text = try String(contentsOf: url, encoding: .utf8)
       return expectedText == text
     } catch {
@@ -187,19 +182,15 @@ class FileTests: XCTestCase {
     if fileName.starts(with: "//") {
       return
     }
-    do {
-      let filePath = try FileUtil.absoluteFileName(fileName, file._form is ReplForm )
-      if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
-        return
-      } else {
-        do {
-          try fileManager.removeItem(atPath: filePath)
-        } catch {
-          NSLog("An unexpected error occurred when attempting to delete file: \(fileName)")
-        }
+    let filePath = FileUtil.absoluteFileName(fileName, file._form is ReplForm )
+    if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
+      return
+    } else {
+      do {
+        try fileManager.removeItem(atPath: filePath)
+      } catch {
+        NSLog("An unexpected error occurred when attempting to delete file: \(fileName)")
       }
-    } catch {
-      NSLog("Unable to get file name")
     }
   }
 }
