@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import Alamofire
@@ -145,7 +145,7 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
 
   func add(_ component: ViewComponent) {}
 
-  func setChildWidth(of component: ViewComponent, width: Int32) {}
+  func setChildWidth(of component: ViewComponent, to width: Int32) {}
 
-  func setChildHeight(of component: ViewComponent, height: Int32) {}
+  func setChildHeight(of component: ViewComponent, to width: Int32) {}
 }

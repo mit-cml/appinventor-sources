@@ -1,10 +1,5 @@
-//
-//  ViewComponent.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/16/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -52,17 +47,17 @@ import Foundation
     }
   }
 
-  open var Width: Int32 {
+  @objc open var Width: Int32 {
     get {
       return Int32(view.bounds.width)
     }
     set(width) {
+      _container.setChildWidth(of: self, to: width)
       _lastSetWidth = width
-      _container.setChildWidth(of: self, width: width)
     }
   }
 
-  open func setWidthPercent(_ toPercent: Int32) {
+  @objc open func setWidthPercent(_ toPercent: Int32) {
     if toPercent > 100 {
       Width = -1100
     } else if toPercent < 1 {
@@ -72,17 +67,17 @@ import Foundation
     }
   }
 
-  open var Height: Int32 {
+  @objc open var Height: Int32 {
     get {
       return Int32(view.bounds.height)
     }
     set(height) {
+      _container.setChildHeight(of: self, to: height)
       _lastSetHeight = height
-      _container.setChildHeight(of: self, height: height)
     }
   }
 
-  open func setHeightPercent(_ toPercent: Int32) {
+  @objc open func setHeightPercent(_ toPercent: Int32) {
     if toPercent > 100 {
       Height = -1100
     } else if toPercent < 1 {
@@ -118,9 +113,9 @@ import Foundation
 
     _container.form.view.removeConstraints(constraintsToRemove)
     _lastSetHeight = height
-    _container.setChildHeight(of: self, height: height)
+    _container.setChildHeight(of: self, to: height)
     _lastSetWidth = width
-    _container.setChildWidth(of: self, width: width)
+    _container.setChildWidth(of: self, to: width)
     if shouldAddConstraint {
       nestedView.frame = view.bounds
       let topAnchor = nestedView.topAnchor.constraint(equalTo: view.topAnchor)

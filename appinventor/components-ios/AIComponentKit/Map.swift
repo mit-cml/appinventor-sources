@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import MapKit
@@ -952,9 +952,9 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
 
   public func add(_ component: ViewComponent) {}
 
-  public func setChildWidth(of component: ViewComponent, width: Int32) {}
+  public func setChildWidth(of component: ViewComponent, to width: Int32) {}
 
-  public func setChildHeight(of component: ViewComponent, height: Int32) {}
+  public func setChildHeight(of component: ViewComponent, to height: Int32) {}
 }
 
 

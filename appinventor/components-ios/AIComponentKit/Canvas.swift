@@ -477,11 +477,11 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, ComponentCo
     // unsupported
   }
   
-  public func setChildWidth(of component: ViewComponent, width: Int32) {
+  public func setChildWidth(of component: ViewComponent, to width: Int32) {
     // unsupported
   }
   
-  public func setChildHeight(of component: ViewComponent, height: Int32) {
+  public func setChildHeight(of component: ViewComponent, to height: Int32) {
     // unsupported
   }
   

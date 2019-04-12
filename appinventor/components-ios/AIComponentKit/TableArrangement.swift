@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -319,14 +319,14 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     _view.add(component: component)
   }
 
-  public func setChildWidth(of component: ViewComponent, width: Int32) {
+  public func setChildWidth(of component: ViewComponent, to width: Int32) {
     component._lastSetWidth = width
     if _initialized {
       _view.update(column: component.Column, row: component.Row, for: .width)
     }
   }
 
-  public func setChildHeight(of component: ViewComponent, height: Int32) {
+  public func setChildHeight(of component: ViewComponent, to height: Int32) {
     component._lastSetHeight = height
     if _initialized  {
       _view.update(column: component.Column, row: component.Row, for: .height)

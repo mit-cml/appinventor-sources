@@ -1,10 +1,5 @@
-//
-//  HVArrangement.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/30/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -54,7 +49,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     _view.addItem(LinearViewItem(component.view))
   }
 
-  open func setChildWidth(of component: ViewComponent, width: Int32) {
+  open func setChildWidth(of component: ViewComponent, to width: Int32) {
     let child = component.view
     if width >= 0 {
       let constraint = child.widthAnchor.constraint(equalToConstant: CGFloat(width))
@@ -75,7 +70,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     form.view.setNeedsLayout()
   }
 
-  open func setChildHeight(of component: ViewComponent, height: Int32) {
+  open func setChildHeight(of component: ViewComponent, to height: Int32) {
     let child = component.view
     if height >= 0 {
       view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height)))
