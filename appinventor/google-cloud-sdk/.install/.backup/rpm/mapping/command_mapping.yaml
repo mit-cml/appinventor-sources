@@ -1,4 +1,0 @@
-install: sudo yum install {package}
-update: sudo yum update {package}
-remove: sudo yum remove {package}
-update-all: sudo yum makecache && sudo yum update {package}
