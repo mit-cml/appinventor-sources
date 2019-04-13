@@ -1,0 +1,695 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "apikeys:v1",
+  "name": "apikeys",
+  "version": "v1",
+  "revision": "0",
+  "title": "API Keys API",
+  "description": "Manages the API keys associated with developer projects.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "",
+  "protocol": "rest",
+  "rootUrl": "https://apikeys.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://apikeys.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/service.management": {
+          "description": "Manage your Google API service configuration"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ApiKey": {
+      "id": "ApiKey",
+      "description": "The representation of an API key managed by the `ApiKeys` API.\nAn API key is used for programmatic access to a project by a service account.",
+      "type": "object",
+      "properties": {
+        "keyId": {
+          "description": "Unique identifier for this ApiKey assigned by the server.\n@OutputOnly",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Human-readable display name of this API key.\nModifiable by user.",
+          "type": "string"
+        },
+        "currentKey": {
+          "description": "An encrypted and signed value held by this API key.\n@OutputOnly",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "A timestamp identifying the time this API key was originally created.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "createdBy": {
+          "description": "Email address of the user who originally created this API key.\n@OutputOnly",
+          "type": "string"
+        },
+        "previousKey": {
+          "description": "The value of `current_key` before this API key was regenerated.\n@OutputOnly",
+          "type": "string"
+        },
+        "previousKeyExpireTime": {
+          "description": "The expiration time for the validity of a `previous_key` value after an\nAPI key regeneration.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "browserKeyDetails": {
+          "description": "Key details that are specific to browser keys.",
+          "$ref": "BrowserKeyDetails"
+        },
+        "serverKeyDetails": {
+          "description": "Key details that are specific to server keys.",
+          "$ref": "ServerKeyDetails"
+        },
+        "androidKeyDetails": {
+          "description": "Key details that are specific to android keys.",
+          "$ref": "AndroidKeyDetails"
+        },
+        "iosKeyDetails": {
+          "description": "Key details that are specific to iOS keys.",
+          "$ref": "IosKeyDetails"
+        },
+        "apiTargetKeyDetails": {
+          "description": "API Target key details. These restrict which API a key can be used on.",
+          "$ref": "ApiTargetKeyDetails"
+        }
+      }
+    },
+    "BrowserKeyDetails": {
+      "id": "BrowserKeyDetails",
+      "description": "Key details that are specific to browser keys.",
+      "type": "object",
+      "properties": {
+        "allowedReferrers": {
+          "description": "A list of regular expressions for the referrer URLs that are allowed when\nmaking an API call with this key.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ServerKeyDetails": {
+      "id": "ServerKeyDetails",
+      "description": "Key details that are specific to server keys.",
+      "type": "object",
+      "properties": {
+        "allowedIps": {
+          "description": "A list of the caller IP addresses that are allowed when making an API call\nwith this key.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AndroidKeyDetails": {
+      "id": "AndroidKeyDetails",
+      "description": "Key details that are specific to android keys.",
+      "type": "object",
+      "properties": {
+        "allowedApplications": {
+          "description": "A list of Android applications that are allowed to make API calls with\nthis key.",
+          "type": "array",
+          "items": {
+            "$ref": "AndroidApplication"
+          }
+        }
+      }
+    },
+    "AndroidApplication": {
+      "id": "AndroidApplication",
+      "description": "Identifier of an Android application for API key use.",
+      "type": "object",
+      "properties": {
+        "sha1Fingerprint": {
+          "description": "The 20 byte SHA1 fingerprint of the application.",
+          "type": "string",
+          "format": "byte"
+        },
+        "packageName": {
+          "description": "The package name of the application.",
+          "type": "string"
+        }
+      }
+    },
+    "IosKeyDetails": {
+      "id": "IosKeyDetails",
+      "description": "Key details that are specific to iOS keys.",
+      "type": "object",
+      "properties": {
+        "allowedBundleIds": {
+          "description": "A list of bundle IDs that are allowed when making API calls with this key.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ApiTargetKeyDetails": {
+      "id": "ApiTargetKeyDetails",
+      "description": "Key details that specify which APIs a key is allowed to be used on.",
+      "type": "object",
+      "properties": {
+        "apiTargets": {
+          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction. It should be api_v1_name of\nservice config for legacy services. For new service, it should be the fully\nqualified service name (eg. apikeys.googleapis.com).",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ApiTarget"
+          }
+        }
+      }
+    },
+    "ApiTarget": {
+      "id": "ApiTarget",
+      "description": "A restriction for a specific service and optionally one or multiple\nspecific methods. Both fields are not case sensitive.",
+      "type": "object",
+      "properties": {
+        "methods": {
+          "description": "An optional list of one or more methods that can be called.\nIf empty, all methods for the service are allowed. A wildcard\n(*) can be used as the last symbol.\nExamples:\ngoogle.api.apikeys.v1.ApiKeys.ListApiKeys\ngoogle.api.apikeys.v1.ApiKeys.Get*\ngoogle.api.apikeys.v1.ApiKeys.Delete*",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListApiKeysResponse": {
+      "id": "ListApiKeysResponse",
+      "description": "Response message for `ListApiKeys` method.",
+      "type": "object",
+      "properties": {
+        "keys": {
+          "description": "A list of API keys.",
+          "type": "array",
+          "items": {
+            "$ref": "ApiKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token for the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetProjectForApiKeyResponse": {
+      "id": "GetProjectForApiKeyResponse",
+      "description": "Response message for `GetProjectForApiKey` method.",
+      "type": "object",
+      "properties": {
+        "projectNumber": {
+          "description": "The project number corresponding to the project key in the requests.\nThe project number that owns the API key specified in the request.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListDeletedApiKeysResponse": {
+      "id": "ListDeletedApiKeysResponse",
+      "description": "Response message for `ListDeletedApiKeys` method.",
+      "type": "object",
+      "properties": {
+        "keys": {
+          "description": "A list of deleted API keys.",
+          "type": "array",
+          "items": {
+            "$ref": "DeletedApiKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token for the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "DeletedApiKey": {
+      "id": "DeletedApiKey",
+      "description": "Information about a deleted API key.",
+      "type": "object",
+      "properties": {
+        "apiKey": {
+          "description": "The API key that was deleted\n@OutputOnly",
+          "$ref": "ApiKey"
+        },
+        "deletionTime": {
+          "description": "The time at which the key was deleted\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "source": {
+          "description": "What caused the key to be deleted\n@OutputOnly",
+          "enumDescriptions": [
+            "This API Key was deleted via a DeleteApiKey API call.",
+            "This API Key was deleted by a RegenerateApiKey API call."
+          ],
+          "type": "string",
+          "enum": [
+            "DELETION",
+            "REGENERATION"
+          ]
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "methods": {
+        "getProjectForApiKey": {
+          "id": "apikeys.projects.getProjectForApiKey",
+          "path": "v1/projects:getProjectForApiKey",
+          "flatPath": "v1/projects:getProjectForApiKey",
+          "httpMethod": "GET",
+          "parameters": {
+            "apiKey": {
+              "description": "Finds the project that owns the key with this `current_key` value.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "GetProjectForApiKeyResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ],
+          "description": "Get the project info about an API key."
+        }
+      }
+      ,
+      "resources": {
+        "apiKeys": {
+          "methods": {
+            "create": {
+              "id": "apikeys.projects.apiKeys.create",
+              "path": "v1/projects/{projectId}/apiKeys",
+              "flatPath": "v1/projects/{projectId}/apiKeys",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "The project for which this API key will be created.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "ApiKey"
+              },
+              "response": {
+                "$ref": "ApiKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Creates a new API key."
+            },
+            "list": {
+              "id": "apikeys.projects.apiKeys.list",
+              "path": "v1/projects/{projectId}/apiKeys",
+              "flatPath": "v1/projects/{projectId}/apiKeys",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "Lists all API keys associated with this project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Specifies the maximum number of results to be returned at a time.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Requests a specific page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListApiKeysResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Lists the API keys owned by a project."
+            },
+            "get": {
+              "id": "apikeys.projects.apiKeys.get",
+              "path": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API key.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyId": {
+                  "description": "The identifier for the key to be retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "keyId"
+              ],
+              "response": {
+                "$ref": "ApiKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Gets the metadata for an API key."
+            },
+            "patch": {
+              "id": "apikeys.projects.apiKeys.patch",
+              "path": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API key.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyId": {
+                  "description": "The identifier for the key to be modified.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask for updates.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "keyId"
+              ],
+              "request": {
+                "$ref": "ApiKey"
+              },
+              "response": {
+                "$ref": "ApiKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Patches the modifiable fields of an API key."
+            },
+            "delete": {
+              "id": "apikeys.projects.apiKeys.delete",
+              "path": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API key.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyId": {
+                  "description": "The identifier for the key to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "keyId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Deletes an API key."
+            },
+            "batchDelete": {
+              "id": "apikeys.projects.apiKeys.batchDelete",
+              "path": "v1/projects/{projectId}/apiKeys:batchDelete",
+              "flatPath": "v1/projects/{projectId}/apiKeys:batchDelete",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API keys.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyIds": {
+                  "description": "The identifiers for the keys to be deleted.",
+                  "location": "query",
+                  "repeated": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Bulk delete a list of API keys."
+            },
+            "regenerate": {
+              "id": "apikeys.projects.apiKeys.regenerate",
+              "path": "v1/projects/{projectId}/apiKeys/{keyId}:regenerate",
+              "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}:regenerate",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API key.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyId": {
+                  "description": "The identifier for the key to be regenerated.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "keyId"
+              ],
+              "response": {
+                "$ref": "ApiKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Regenerates the key string for the specified API key.\nThis writes a new key string to `current_key` and writes the previous key\nstring to `previous_key`.\nReturns the updated key entry."
+            },
+            "revert": {
+              "id": "apikeys.projects.apiKeys.revert",
+              "path": "v1/projects/{projectId}/apiKeys/{keyId}:revert",
+              "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}:revert",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "The project that owns the API key.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "keyId": {
+                  "description": "The identifier for the key to be reverted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "keyId"
+              ],
+              "response": {
+                "$ref": "ApiKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Reverts a previous key regeneration.\nThis swaps the contents of `current_key` and `previous_key`.\nReturns the updated key entry."
+            }
+          }
+        },
+        "deletedApiKeys": {
+          "methods": {
+            "list": {
+              "id": "apikeys.projects.deletedApiKeys.list",
+              "path": "v1/projects/{projectId}/deletedApiKeys",
+              "flatPath": "v1/projects/{projectId}/deletedApiKeys",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "Lists all deleted API keys associated with this project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Specifies the maximum number of results to be returned at a time.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Requests a specific page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListDeletedApiKeysResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Lists the deleted API keys owned by a project."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

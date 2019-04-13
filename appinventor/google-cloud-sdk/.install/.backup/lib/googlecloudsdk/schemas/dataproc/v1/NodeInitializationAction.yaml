@@ -1,0 +1,39 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1 NodeInitializationAction export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- executableFile
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  executableFile:
+    description: Cloud Storage URI of executable file.
+    type: string
+  executionTimeout:
+    description: |-
+      Amount of time executable has to complete. Default is 10 minutes. Cluster
+      creation fails with an explanatory error message (the name of the
+      executable that caused the error and the exceeded timeout period) if the
+      executable is not completed at end of the timeout period.
+    type: string

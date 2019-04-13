@@ -1,0 +1,118 @@
+- help_text:
+    brief: |
+      Create a Memorystore Redis instance.
+    description: |
+      Create a new Redis instance.
+
+      This command can fail for the following reasons:
+        * An instance with the same name already exists.
+        * The active account does not have permission to create instances.
+    examples: |
+      To create a basic tier instance with the name `my-redis-instance` in region `us-central-1`
+      with memory size of 5 GiB, run:
+
+        $ {command} my-redis-instance --region=us-central1 --size=5
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.redis.resources:instance
+      help_text: |
+        Arguments and flags that specify the Memorystore Redis instance you want
+        to create.
+    params:
+    - arg_name: zone
+      api_field: instance.locationId
+      help_text: |
+        The zone of the Redis instance. If not provided the service
+        will pick a random zone in the region. For the standard tier, instances
+        will be created across two zones for protection against zonal
+        failures. So if --alternative-zone is also provided, it must be
+        different from --zone.
+    - arg_name: alternative-zone
+      api_field: instance.alternativeLocationId
+      help_text: |
+        A secondary zone for the Redis instance. Only applicable to
+        the standard tier. This protects the instance against zonal failures
+        by provisioning it across two zones. If provided, alternative zone
+        must be a different zone from the one provided through `--zone`.
+    - arg_name: network
+      api_field: instance.authorizedNetwork
+      help_text: |
+        The name of the Google Compute Engine network to which the instance
+        will be connected. If left unspecified, the default network will be
+        used.
+      default: default
+      processor: googlecloudsdk.command_lib.redis.instances_create_util:ParseInstanceNetworkArg
+    - arg_name: tier
+      api_field: instance.tier
+      help_text: |
+        The service tier of the instance.
+      choices:
+      - enum_value: BASIC
+        arg_value: basic
+        help_text: Basic Redis instance with no replication
+      - enum_value: STANDARD_HA
+        arg_value: standard
+        help_text: Standard high-availability Redis instance with replication
+      default: basic
+    - arg_name: display-name
+      api_field: instance.displayName
+      help_text: |
+        A human-readable name for the instance.
+    - api_field: instance.redisConfigs.additionalProperties
+      metavar: KEY=VALUE
+      arg_name: redis-config
+      help_text: |
+        A list of Redis config KEY=VALUE pairs to set on the instance
+        according to http://redis.io/topics/config. Currently, the only
+        supported parameters are: maxmemory-policy, notify-keyspace-events.
+      type:
+        arg_dict:
+          flatten: true
+          spec:
+          - api_field: key
+          - api_field: value
+    - api_field: instance.labels.additionalProperties
+      arg_name: labels
+      metavar: KEY=VALUE
+      help_text: |
+        A list of label KEY=VALUE pairs to add.
+      type:
+        arg_dict:
+          flatten: true
+          spec:
+          - api_field: key
+          - api_field: value
+    - arg_name: redis-version
+      api_field: instance.redisVersion
+      hidden: true
+      metavar: VERSION
+      help_text: The version of Redis software.
+      choices:
+      - enum_value: REDIS_3_2
+        arg_value: redis_3_2
+        help_text: Redis 3.2 compatibility
+      - enum_value: REDIS_4_0
+        arg_value: redis_4_0
+        help_text: Redis 4.0 compatibility
+    - arg_name: reserved-ip-range
+      api_field: instance.reservedIpRange
+      help_text: |
+        The CIDR range of internal addresses that are reserved for this
+        instance. For example, 10.0.0.0/29 or 192.168.0.0/29. Range must be
+        unique and non-overlapping with existing ranges in the network. If left
+        unspecified, the service will automatically pick an available range.
+    - arg_name: size
+      api_field: instance.memorySizeGb
+      help_text: |
+        The memory size of the instance in GiB. If not provided, size of 1 GiB
+        will be used.
+      type: long
+      default: 1
+
+  async:
+    collection: redis.projects.locations.operations
+
+  request:
+    api_version: v1
+    collection: redis.projects.locations.instances

@@ -1,0 +1,748 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "edgeml:v1beta1",
+  "name": "edgeml",
+  "canonicalName": "Edge ML",
+  "version": "v1beta1",
+  "revision": "0",
+  "title": "Edge ML API",
+  "description": "Provides ML releated services for Cloud IoT Edge devices\n",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/iot-edge/",
+  "protocol": "rest",
+  "rootUrl": "https://edgeml.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://edgeml.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloudiot": {
+          "description": "Register and manage devices in the Google Cloud IoT service"
+        },
+        "https://www.googleapis.com/auth/devstorage.read_write": {
+          "description": "Manage your data in Google Cloud Storage"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "AnalyzeModelRequest": {
+      "id": "AnalyzeModelRequest",
+      "description": "Request for `AnalyzeModel`",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location of the input.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "The Google Cloud Storage location of the input.",
+      "type": "object",
+      "properties": {
+        "inputUris": {
+          "description": "Points to [Google Cloud Storage](https:\/\/cloud.google.com\/storage\/) URIs\ncontaining files with input content (only).\nOnly full object path is accepted, e.g. gs:\/\/bucket\/directory\/object.name\nReturns [google.rpc.Code.INVALID_ARGUMENT] for all other URI formats.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ConvertModelRequest": {
+      "id": "ConvertModelRequest",
+      "description": "Request for `ConvertModel`.",
+      "type": "object",
+      "properties": {
+        "tfliteConverterVersion": {
+          "description": "The version of TFLite converter to use. A version name such as \"1.12.0\" or\n\"latest\" are allowed. Currently, only \"1.12.0\" is supported. If not\nspecified, latest version will be used.",
+          "type": "string"
+        },
+        "inputConfig": {
+          "description": "Configuration specifying the input model to convert. Currently, only\nTensorFlow SavedModel is supported.",
+          "$ref": "InputConfig"
+        },
+        "outputConfig": {
+          "description": "Configuration specifying an output location for the TensorFlow Lite model.\nThe destination location specified in `output_config` must be different\nfrom the source location specified in `input_config`. The requesting user\nmust have `write` access to the output location. If a file exists in the\nspecified path, overwrites to that path.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "InputConfig": {
+      "id": "InputConfig",
+      "description": "The input content and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location of the input.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Google Cloud Storage location to write the output to.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output should be written to.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "The Google Cloud Storage URI where the results will be stored.\nOnly full object path is accepted, e.g. gs:\/\/bucket\/directory\/object.name\nThe result is written to this single file.",
+          "type": "string"
+        }
+      }
+    },
+    "CompileModelRequest": {
+      "id": "CompileModelRequest",
+      "description": "Request for `CompileModel`. Will be served in\n`google.longrunning.Operation.result.response`",
+      "type": "object",
+      "properties": {
+        "chipType": {
+          "description": "The target chip type.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "Version 1 of the Edge TPU."
+          ],
+          "type": "string",
+          "enum": [
+            "CHIP_TYPE_UNSPECIFIED",
+            "EDGE_TPU_V1"
+          ]
+        },
+        "minRuntimeVersion": {
+          "description": "The required minimum version of Edge TPU runtime. A version name such as\n\"1.0.0\" or \"latest\" are allowed.",
+          "type": "string"
+        },
+        "inputConfig": {
+          "description": "Configuration specifying the input model to compile. Currently, only\nTensorFlow Lite is supported. The requesting user must have `read` access\nto the input location.",
+          "$ref": "InputConfig"
+        },
+        "outputConfig": {
+          "description": "Configuration specifying an output location for the compiled TensorFlow\nLite model. The destination location specified in `output_config` must be\ndifferent from the source location specified in `input_config`. The\nrequesting user must have `write` access to the output location. If a file\nexists in the specified path, overwrites to that path.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "AnalyzeModelResponse": {
+      "id": "AnalyzeModelResponse",
+      "description": "Response for `AnalyzeModel`. Will be served in\n`google.longrunning.Operation.result.response`",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "description": "Model type of the input file.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "TensorFlow Lite model (not optimized for Edge TPU).",
+            "TensorFlow Lite model optimized for Edge TPU.",
+            "TensorFlow SavedModel.",
+            "Non-TensorFlow model. Currently, only scikit-learn is supported.",
+            "Unknown format."
+          ],
+          "type": "string",
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "TENSORFLOW_LITE",
+            "TENSORFLOW_LITE_EDGE_TPU_OPTIMIZED",
+            "TENSORFLOW_SAVED_MODEL",
+            "NON_TENSORFLOW_MODEL",
+            "UNKNOWN_FORMAT"
+          ]
+        },
+        "modelSignature": {
+          "description": "The information of input and output vectors of the model, if available.\nWill be set only if model_type is TFLite or TFLite optimized for Edge TPU.",
+          "$ref": "ModelSignature"
+        },
+        "edgeTpuCompilability": {
+          "description": "Indicates if the file can be compiled to Edge TPU optimized TFLite model\nfile by the latest version Edge TPU compiler.",
+          "$ref": "EdgeTpuCompilability"
+        },
+        "additionalMessage": {
+          "description": "Informative message, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "ModelSignature": {
+      "id": "ModelSignature",
+      "description": "Describes the signature of a TensorFlow model.",
+      "type": "object",
+      "properties": {
+        "inputTensors": {
+          "description": "Info of the input tensors.",
+          "type": "array",
+          "items": {
+            "$ref": "TensorRef"
+          }
+        },
+        "outputTensors": {
+          "description": "Info of the output tensors.",
+          "type": "array",
+          "items": {
+            "$ref": "TensorRef"
+          }
+        }
+      }
+    },
+    "TensorRef": {
+      "id": "TensorRef",
+      "description": "Information about a tensor including its index.",
+      "type": "object",
+      "properties": {
+        "index": {
+          "description": "Index of the tensor in the input or output layer.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "tensorInfo": {
+          "description": "Information about the tensor.",
+          "$ref": "TensorInfo"
+        }
+      }
+    },
+    "TensorInfo": {
+      "id": "TensorInfo",
+      "description": "Information about a tensor.",
+      "type": "object",
+      "properties": {
+        "tensorName": {
+          "description": "Name of the tensor.",
+          "type": "string"
+        },
+        "dimensions": {
+          "description": "Dimension description of the tensor.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "inferenceType": {
+          "description": "Type of the tensor.",
+          "enumDescriptions": [
+            "Default: unspecified.",
+            "Quantized unsigned 8-bit integer.",
+            "32-bit floating point values."
+          ],
+          "type": "string",
+          "enum": [
+            "INFERENCE_TYPE_UNSPECIFIED",
+            "QUANTIZED_UINT_8",
+            "FLOAT_32"
+          ]
+        }
+      }
+    },
+    "EdgeTpuCompilability": {
+      "id": "EdgeTpuCompilability",
+      "description": "Indicates if the TFLite model can be compiled to Edge TPU optimized TFLite\nmodel.",
+      "type": "object",
+      "properties": {
+        "compilableReason": {
+          "description": "If set, the model can be compiled. If the value is not `COMPILABLE`,\ncompiler might emit an warning message.",
+          "enumDescriptions": [
+            "Default: unspecified",
+            "The model can be compiled to Edge TPU optimized TFLite model.",
+            "The model can be compiled to Edge TPU optimized TFLite model, but has an\nunverified architecture. Compiler might emit an warning message."
+          ],
+          "type": "string",
+          "enum": [
+            "COMPILABLE_REASON_UNSPECIFIED",
+            "COMPILABLE",
+            "UNVERIFIED_ARCHITECTURE"
+          ]
+        },
+        "uncompilableReason": {
+          "description": "If set, the model cannot be compiled.",
+          "enumDescriptions": [
+            "Default: unspecified",
+            "Only TensorFlow Lite models can be compiled.",
+            "The model cannot be compiled since it is not quantized.",
+            "The model cannot be compiled since it is too big.",
+            "The model cannot be compiled since it is already compiled."
+          ],
+          "type": "string",
+          "enum": [
+            "UNCOMPILABLE_REASON_UNSPECIFIED",
+            "NON_TENSORFLOW_LITE",
+            "NON_QUANTIZED_MODEL",
+            "INPUT_TOO_LARGE",
+            "ALREADY_COMPILED"
+          ]
+        },
+        "additionalMessage": {
+          "description": "An informative message, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "CompileModelResponse": {
+      "id": "CompileModelResponse",
+      "description": "Response for `CompileModel`. Will be served in\n`google.longrunning.Operation.result.response`",
+      "type": "object",
+      "properties": {
+        "compileDuration": {
+          "description": "How long did it take to finish the compilation.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "fileSizeBytes": {
+          "description": "Size(in bytes) of the compiled file.",
+          "type": "string",
+          "format": "int64"
+        },
+        "modelSignature": {
+          "description": "The information of input and output vectors of the compiled model.",
+          "$ref": "ModelSignature"
+        },
+        "additionalMessage": {
+          "description": "Additional message, if any. For example, warning messages emitted while\ncompiling.",
+          "type": "string"
+        }
+      }
+    },
+    "ConvertModelResponse": {
+      "id": "ConvertModelResponse",
+      "description": "Response for `ConvertModel`.",
+      "type": "object",
+      "properties": {
+        "convertDuration": {
+          "description": "How long did it take to finish the conversion",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "fileSizeBytes": {
+          "description": "Size(in bytes) of the converted file",
+          "type": "string",
+          "format": "int64"
+        },
+        "tfliteConverterVersion": {
+          "description": "The version of the converter used, e.g. \"1.12.0\". If not specified, latest\nversion will be used.",
+          "type": "string"
+        },
+        "modelSignature": {
+          "description": "The information of input and output vectors of the compiled model.",
+          "$ref": "ModelSignature"
+        },
+        "edgeTpuCompilability": {
+          "description": "Indicates if the file can be compiled to Edge TPU optimized TFLite model\nfile by the latest version Edge TPU compiler.",
+          "$ref": "EdgeTpuCompilability"
+        },
+        "additionalMessage": {
+          "description": "Informative message, if any. For example, it can be warning messages from\nconverter.",
+          "type": "string"
+        }
+      }
+    },
+    "AnalyzeOperationMetadata": {
+      "id": "AnalyzeOperationMetadata",
+      "description": "Metadata that will be used in google.longrunning.Operation of `AnalyzeModel`\nrequest. Indicates the current state of the `AnalyzeModel` operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the operation.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "In queue, waiting for the process.",
+            "In progress.",
+            "The operation has been done successfully.",
+            "The operation has been failed."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_STATE_UNSPECIFIED",
+            "PENDING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "startTime": {
+          "description": "Indicates when the operation started, according to the server time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "elapsedDuration": {
+          "description": "Indicates how long has been elapsed since the operation started, according\nto the server time.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "additionalMessage": {
+          "description": "Informative message, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "CompileOperationMetadata": {
+      "id": "CompileOperationMetadata",
+      "description": "Metadata that will be used in google.longrunning.Operation of `CompileModel`\nrequest. Indicates the current state of the `CompileModel` operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the operation.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "In queue, waiting for the process.",
+            "In progress.",
+            "The operation has been done successfully.",
+            "The operation has been failed."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_STATE_UNSPECIFIED",
+            "PENDING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "startTime": {
+          "description": "Indicates when the operation started, according to the server time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "elapsedDuration": {
+          "description": "Indicates how long has been elapsed since the operation started, according\nto the server time.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "additionalMessage": {
+          "description": "Informative message, e.g. log messages emitted by Edge TPU compiler.",
+          "type": "string"
+        }
+      }
+    },
+    "ConvertOperationMetadata": {
+      "id": "ConvertOperationMetadata",
+      "description": "Metadata that will be used in google.longrunning.Operation of `ConvertModel`\nrequest. Indicates the current state of the `ConvertModel` operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the operation.",
+          "enumDescriptions": [
+            "Default: not specified.",
+            "In queue, waiting for the process.",
+            "In progress.",
+            "The operation has been done successfully.",
+            "The operation has been failed."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_STATE_UNSPECIFIED",
+            "PENDING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "startTime": {
+          "description": "Indicates when the operation started, according to the server time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "elapsedDuration": {
+          "description": "Indicates how long has been elapsed since the operation started, according\nto the server time.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "additionalMessage": {
+          "description": "Informative message, if any.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "edgeml.operations.get",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloudiot",
+            "https://www.googleapis.com/auth/devstorage.read_write"
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+        }
+      }
+    },
+    "projects": {
+      "resources": {
+        "models": {
+          "methods": {
+            "analyze": {
+              "id": "edgeml.projects.models.analyze",
+              "path": "v1beta1/{+project}/models:analyze",
+              "flatPath": "v1beta1/projects/{projectsId}/models:analyze",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "The project name, e.g. \"projects\/project_123\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project"
+              ],
+              "request": {
+                "$ref": "AnalyzeModelRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloudiot",
+                "https://www.googleapis.com/auth/devstorage.read_write"
+              ],
+              "description": "Takes as input a file and returns information about the file. The result\nof the Operation will be `AnalyzeModelResponse` if successful. If the given\nfile is in an unknown format, the operation will succeed and\n`Operation.result` will have a `response` with `model_type` of\n`UNKNOWN_FORMAT`. If the given file is bigger than 100 MB, the operation\nwill fail and the `Operation.result` will be an `INVALID_ARGUMENT` error."
+            },
+            "convert": {
+              "id": "edgeml.projects.models.convert",
+              "path": "v1beta1/{+project}/models:convert",
+              "flatPath": "v1beta1/projects/{projectsId}/models:convert",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "The project name, e.g. \"projects\/project_123\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project"
+              ],
+              "request": {
+                "$ref": "ConvertModelRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloudiot",
+                "https://www.googleapis.com/auth/devstorage.read_write"
+              ],
+              "description": "Converts the input to a TensorFlow Lite model. Currently, the input must be\na TensorFlow SavedModel file archived in a zip file. If the input model is\npre-quantized, it will generate a quantized TFLite model, that can be\ncompiled. If the input model is not quantized, the generated TFLite model\nwill also be non-quantized (and therefore unable to be compiled). Note that\nthis API method does not compile the file to a TPU-optimized TensorFlow\nLite model; use `CompileModel` API to do that compilation. The result of\nthe Operation will be `ConvertModelResponse` if successful."
+            },
+            "compile": {
+              "id": "edgeml.projects.models.compile",
+              "path": "v1beta1/{+project}/models:compile",
+              "flatPath": "v1beta1/projects/{projectsId}/models:compile",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "The project name, e.g. \"projects\/project_123\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project"
+              ],
+              "request": {
+                "$ref": "CompileModelRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloudiot",
+                "https://www.googleapis.com/auth/devstorage.read_write"
+              ],
+              "description": "Compiles the input to a TPU-optimized TensorFlow Lite model. Currently, the\ninput must be a pre-quantized TensorFlow Lite model. The result of the\nOperation will be `CompileModelResponse` if successful. Even if the input\nmodel has a structure that is not officially verified, compilation will\nsucceed, but with a warning message in\n`CompileModelResponse.additional_message`."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

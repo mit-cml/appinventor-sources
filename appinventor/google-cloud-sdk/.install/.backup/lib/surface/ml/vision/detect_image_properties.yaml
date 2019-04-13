@@ -1,0 +1,44 @@
+- release_tracks: [GA]
+
+  help_text:
+    brief: Detect general attributes of an image.
+    description: |
+      Detect general attributes of an image, such as dominant color.
+
+  request:
+    _COMMON_: request
+    static_fields:
+      requests.features.type: IMAGE_PROPERTIES
+
+  response:
+    _COMMON_: response
+
+  arguments:
+    params:
+    - _COMMON_: args.image_field
+
+  output:
+    format: json
+
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: Detect general attributes of an image.
+    description: |
+      Detect general attributes of an image, such as dominant color.
+
+  request:
+    _COMMON_: request
+    static_fields:
+      requests.features.type: IMAGE_PROPERTIES
+
+  response:
+    _COMMON_: response
+
+  arguments:
+    params:
+    - _COMMON_: args.image_field
+    - _COMMON_: args.model_field
+
+  output:
+    format: json

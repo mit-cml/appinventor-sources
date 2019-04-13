@@ -1,0 +1,26 @@
+- help_text:
+    brief: |
+      Describe a Cloud Filestore snapshot.
+    description: |
+      Displays all data associated with a Cloud Filestore snapshot given a valid snapshot name.
+
+      This command can fail for the following reasons:
+        * The snapshot specified does not exist.
+        * The active account does not have permission to access the given
+          snapshot.
+    examples: |
+      To display all data associated with a snapshot of the name 'my-snapshot' in the default
+      region, run:
+
+        $ {command} my-snapshot
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.filestore.resources:snapshot
+      help_text: |
+        Arguments and flags that specify the Cloud Filestore snapshot you want
+        to describe.
+
+  request:
+    api_version: v1p1alpha1
+    collection: file.projects.locations.snapshots

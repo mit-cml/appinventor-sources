@@ -1,0 +1,12 @@
+- help_text:
+    brief:  Create a Cloud Healthcare API annotation store.
+    description: |
+      Create a Cloud Healthcare API annotation store.
+  request:
+    collection: healthcare.projects.locations.datasets.annotationStores
+    api_version: v1alpha
+
+  arguments:
+    resource:
+      help_text: Cloud Healthcare API annotation store to create.
+      spec: !REF googlecloudsdk.command_lib.healthcare.resources:annotation_store

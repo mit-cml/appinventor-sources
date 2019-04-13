@@ -1,0 +1,591 @@
+{
+ "kind": "discovery#restDescription",
+ "discoveryVersion": "v1",
+ "id": "bigtableclusteradmin:v1",
+ "name": "bigtableclusteradmin",
+ "canonicalName": "Bigtable Cluster Admin",
+ "version": "v1",
+ "revision": "20181107",
+ "title": "Cloud Bigtable Cluster Admin API",
+ "description": "This is a OnePlatform service.",
+ "ownerDomain": "google.com",
+ "ownerName": "Google",
+ "icons": {
+  "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+  "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+ },
+ "documentationLink": "https://cloud.google.com/bigtable/",
+ "protocol": "rest",
+ "baseUrl": "https://bigtableclusteradmin.googleapis.com/v1/",
+ "basePath": "/v1/",
+ "rootUrl": "https://bigtableclusteradmin.googleapis.com/",
+ "servicePath": "v1/",
+ "batchPath": "batch",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "Deprecated. Please use quotaUser instead.",
+   "location": "query"
+  }
+ },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/cloud-bigtable.admin": {
+     "description": "Administer your Cloud Bigtable tables and clusters"
+    },
+    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster": {
+     "description": "Administer your Cloud Bigtable clusters"
+    },
+    "https://www.googleapis.com/auth/cloud-platform": {
+     "description": "View and manage your data across Google Cloud Platform services"
+    },
+    "https://www.googleapis.com/auth/cloud-platform.read-only": {
+     "description": "View your data across Google Cloud Platform services"
+    }
+   }
+  }
+ },
+ "schemas": {
+  "CancelOperationRequest": {
+   "id": "CancelOperationRequest",
+   "type": "object"
+  },
+  "Cluster": {
+   "id": "Cluster",
+   "type": "object",
+   "properties": {
+    "currentOperation": {
+     "$ref": "Operation"
+    },
+    "defaultStorageType": {
+     "type": "string",
+     "enum": [
+      "STORAGE_HDD",
+      "STORAGE_SSD",
+      "STORAGE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "displayName": {
+     "type": "string"
+    },
+    "hddBytes": {
+     "type": "string",
+     "format": "int64"
+    },
+    "name": {
+     "type": "string"
+    },
+    "serveNodes": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "ssdBytes": {
+     "type": "string",
+     "format": "int64"
+    }
+   }
+  },
+  "CreateClusterRequest": {
+   "id": "CreateClusterRequest",
+   "type": "object",
+   "properties": {
+    "cluster": {
+     "$ref": "Cluster"
+    },
+    "clusterId": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    }
+   }
+  },
+  "Empty": {
+   "id": "Empty",
+   "type": "object"
+  },
+  "ListClustersResponse": {
+   "id": "ListClustersResponse",
+   "type": "object",
+   "properties": {
+    "clusters": {
+     "type": "array",
+     "items": {
+      "$ref": "Cluster"
+     }
+    },
+    "failedZones": {
+     "type": "array",
+     "items": {
+      "$ref": "Zone"
+     }
+    }
+   }
+  },
+  "ListOperationsResponse": {
+   "id": "ListOperationsResponse",
+   "type": "object",
+   "properties": {
+    "nextPageToken": {
+     "type": "string"
+    },
+    "operations": {
+     "type": "array",
+     "items": {
+      "$ref": "Operation"
+     }
+    }
+   }
+  },
+  "ListZonesResponse": {
+   "id": "ListZonesResponse",
+   "type": "object",
+   "properties": {
+    "zones": {
+     "type": "array",
+     "items": {
+      "$ref": "Zone"
+     }
+    }
+   }
+  },
+  "Operation": {
+   "id": "Operation",
+   "type": "object",
+   "properties": {
+    "done": {
+     "type": "boolean"
+    },
+    "error": {
+     "$ref": "Status"
+    },
+    "metadata": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "any"
+     }
+    },
+    "name": {
+     "type": "string"
+    },
+    "response": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "any"
+     }
+    }
+   }
+  },
+  "Status": {
+   "id": "Status",
+   "type": "object",
+   "properties": {
+    "code": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "details": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "any"
+      }
+     }
+    },
+    "message": {
+     "type": "string"
+    }
+   }
+  },
+  "Zone": {
+   "id": "Zone",
+   "type": "object",
+   "properties": {
+    "displayName": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "status": {
+     "type": "string",
+     "enum": [
+      "EMERGENCY_MAINENANCE",
+      "OK",
+      "PLANNED_MAINTENANCE",
+      "UNKNOWN"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  }
+ },
+ "resources": {
+  "operations": {
+   "methods": {
+    "cancel": {
+     "id": "bigtableclusteradmin.operations.cancel",
+     "path": "{+name}:cancel",
+     "httpMethod": "POST",
+     "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use [Operations.GetOperation][google.longrunning.Operations.GetOperation] or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an [Operation.error][google.longrunning.Operation.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to `Code.CANCELLED`.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "name"
+     ],
+     "request": {
+      "$ref": "CancelOperationRequest"
+     },
+     "response": {
+      "$ref": "Empty"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+      "https://www.googleapis.com/auth/cloud-platform"
+     ]
+    },
+    "delete": {
+     "id": "bigtableclusteradmin.operations.delete",
+     "path": "{+name}",
+     "httpMethod": "DELETE",
+     "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "name"
+     ],
+     "response": {
+      "$ref": "Empty"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+      "https://www.googleapis.com/auth/cloud-platform"
+     ]
+    },
+    "get": {
+     "id": "bigtableclusteradmin.operations.get",
+     "path": "{+name}",
+     "httpMethod": "GET",
+     "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "name"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+      "https://www.googleapis.com/auth/cloud-platform"
+     ]
+    },
+    "list": {
+     "id": "bigtableclusteradmin.operations.list",
+     "path": "{name}",
+     "httpMethod": "GET",
+     "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `\"/v1/{name=users/*}/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "location": "query"
+      },
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "pageSize": {
+       "type": "integer",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "name"
+     ],
+     "response": {
+      "$ref": "ListOperationsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-bigtable.admin",
+      "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+      "https://www.googleapis.com/auth/cloud-platform"
+     ]
+    }
+   }
+  },
+  "projects": {
+   "resources": {
+    "aggregated": {
+     "resources": {
+      "clusters": {
+       "methods": {
+        "list": {
+         "id": "bigtableclusteradmin.projects.aggregated.clusters.list",
+         "path": "{+name}/aggregated/clusters",
+         "httpMethod": "GET",
+         "description": "Lists all clusters in the given project, along with any zones for which cluster information could not be retrieved.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "response": {
+          "$ref": "ListClustersResponse"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform"
+         ]
+        }
+       }
+      }
+     }
+    },
+    "zones": {
+     "methods": {
+      "list": {
+       "id": "bigtableclusteradmin.projects.zones.list",
+       "path": "{+name}/zones",
+       "httpMethod": "GET",
+       "description": "Lists the supported zones for the given project.",
+       "parameters": {
+        "name": {
+         "type": "string",
+         "required": true,
+         "location": "path"
+        }
+       },
+       "parameterOrder": [
+        "name"
+       ],
+       "response": {
+        "$ref": "ListZonesResponse"
+       },
+       "scopes": [
+        "https://www.googleapis.com/auth/cloud-bigtable.admin",
+        "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+        "https://www.googleapis.com/auth/cloud-platform"
+       ]
+      }
+     },
+     "resources": {
+      "clusters": {
+       "methods": {
+        "create": {
+         "id": "bigtableclusteradmin.projects.zones.clusters.create",
+         "path": "{+name}/clusters",
+         "httpMethod": "POST",
+         "description": "Creates a cluster and begins preparing it to begin serving. The returned cluster embeds as its \"current_operation\" a long-running operation which can be used to track the progress of turning up the new cluster. Immediately upon completion of this request: * The cluster will be readable via the API, with all requested attributes but no allocated resources. Until completion of the embedded operation: * Cancelling the operation will render the cluster immediately unreadable via the API. * All other attempts to modify or delete the cluster will be rejected. Upon completion of the embedded operation: * Billing for all successfully-allocated resources will begin (some types may have lower than the requested levels). * New tables can be created in the cluster. * The cluster's allocated resource levels will be readable via the API. The embedded operation's \"metadata\" field type is [CreateClusterMetadata][google.bigtable.admin.cluster.v1.CreateClusterMetadata] The embedded operation's \"response\" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "request": {
+          "$ref": "CreateClusterRequest"
+         },
+         "response": {
+          "$ref": "Cluster"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform"
+         ]
+        },
+        "delete": {
+         "id": "bigtableclusteradmin.projects.zones.clusters.delete",
+         "path": "{+name}",
+         "httpMethod": "DELETE",
+         "description": "Marks a cluster and all of its tables for permanent deletion in 7 days. Immediately upon completion of the request: * Billing will cease for all of the cluster's reserved resources. * The cluster's \"delete_time\" field will be set 7 days in the future. Soon afterward: * All tables within the cluster will become unavailable. Prior to the cluster's \"delete_time\": * The cluster can be recovered with a call to UndeleteCluster. * All other attempts to modify or delete the cluster will be rejected. At the cluster's \"delete_time\": * The cluster and *all of its tables* will immediately and irrevocably disappear from the API, and their data will be permanently deleted.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "response": {
+          "$ref": "Empty"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform"
+         ]
+        },
+        "get": {
+         "id": "bigtableclusteradmin.projects.zones.clusters.get",
+         "path": "{+name}",
+         "httpMethod": "GET",
+         "description": "Gets information about a particular cluster.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "response": {
+          "$ref": "Cluster"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform",
+          "https://www.googleapis.com/auth/cloud-platform.read-only"
+         ]
+        },
+        "patch": {
+         "id": "bigtableclusteradmin.projects.zones.clusters.patch",
+         "path": "{+name}",
+         "httpMethod": "PATCH",
+         "description": "Updates a cluster, and begins allocating or releasing resources as requested. The returned cluster embeds as its \"current_operation\" a long-running operation which can be used to track the progress of updating the cluster. Immediately upon completion of this request: * For resource types where a decrease in the cluster's allocation has been requested, billing will be based on the newly-requested level. Until completion of the embedded operation: * Cancelling the operation will set its metadata's \"cancelled_at_time\", and begin restoring resources to their pre-request values. The operation is guaranteed to succeed at undoing all resource changes, after which point it will terminate with a CANCELLED status. * All other attempts to modify or delete the cluster will be rejected. * Reading the cluster via the API will continue to give the pre-request resource levels. Upon completion of the embedded operation: * Billing will begin for all successfully-allocated resources (some types may have lower than the requested levels). * All newly-reserved resources will be available for serving the cluster's tables. * The cluster's new resource levels will be readable via the API. [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's \"response\" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful. This method supports patch semantics.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "request": {
+          "$ref": "Cluster"
+         },
+         "response": {
+          "$ref": "Cluster"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform"
+         ]
+        },
+        "update": {
+         "id": "bigtableclusteradmin.projects.zones.clusters.update",
+         "path": "{+name}",
+         "httpMethod": "PUT",
+         "description": "Updates a cluster, and begins allocating or releasing resources as requested. The returned cluster embeds as its \"current_operation\" a long-running operation which can be used to track the progress of updating the cluster. Immediately upon completion of this request: * For resource types where a decrease in the cluster's allocation has been requested, billing will be based on the newly-requested level. Until completion of the embedded operation: * Cancelling the operation will set its metadata's \"cancelled_at_time\", and begin restoring resources to their pre-request values. The operation is guaranteed to succeed at undoing all resource changes, after which point it will terminate with a CANCELLED status. * All other attempts to modify or delete the cluster will be rejected. * Reading the cluster via the API will continue to give the pre-request resource levels. Upon completion of the embedded operation: * Billing will begin for all successfully-allocated resources (some types may have lower than the requested levels). * All newly-reserved resources will be available for serving the cluster's tables. * The cluster's new resource levels will be readable via the API. [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's \"response\" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.",
+         "parameters": {
+          "name": {
+           "type": "string",
+           "required": true,
+           "location": "path"
+          }
+         },
+         "parameterOrder": [
+          "name"
+         ],
+         "request": {
+          "$ref": "Cluster"
+         },
+         "response": {
+          "$ref": "Cluster"
+         },
+         "scopes": [
+          "https://www.googleapis.com/auth/cloud-bigtable.admin",
+          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+          "https://www.googleapis.com/auth/cloud-platform"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,56 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 BasicYarnAutoscalingConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- scaleUpFactor
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  gracefulDecommissionTimeout:
+    description: |-
+      Timeout used during an autoscaling event (cluster update) between 0
+      seconds (no graceful decommission) and 1 day.Default: 0s.
+    type: string
+  scaleDownFactor:
+    description: |-
+      Fraction of suggested decrease in workers to scale down by between 0 and
+      1. Suggested decrease when scaling down is determined by the amount of
+      average available memory since the last cooldown period.Default: 1.0.
+    type: number
+  scaleDownMinWorkerFraction:
+    description: |-
+      Minimum workers as a fraction of the current cluster size to to scale down
+      by between 0 and 1.Default: 0.0.
+    type: number
+  scaleUpFactor:
+    description: |-
+      Fraction of suggested increase in workers to scale up by between 0 and 1.
+      Suggested increase when scaling up is determined by the amount of average
+      pending memory since the last cooldown period.
+    type: number
+  scaleUpMinWorkerFraction:
+    description: |-
+      Minimum workers as a fraction of the current cluster size to to scale up
+      by between 0 and 1.Default: 0.0.
+    type: number

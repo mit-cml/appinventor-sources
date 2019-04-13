@@ -1,0 +1,41 @@
+- help_text:
+    brief: |
+      List Cloud Filestore snapshots.
+    description: |
+      List all Cloud Filestore snapshots under the specified project and region.
+
+      To specify the maximum number of snapshots to list, use the --limit flag.
+    examples: |
+      To list up to five snapshots, run:
+
+          $ {command} --limit=5
+
+  arguments:
+    resource:
+      help_text: |
+        Project name.
+      spec: !REF googlecloudsdk.command_lib.filestore.resources:project
+      override_resource_collection: true
+    params:
+    - arg_name: region
+      help_text: |
+        Region of the snapshots to display. If unspecified, all snapshots will be listed.
+
+  request:
+    api_version: v1p1alpha1
+    collection: file.projects.locations.snapshots
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.filestore.util:AddDefaultRegionToListRequest
+
+  response:
+    id_field: name
+
+  output:
+    format: |
+      table(
+        name.basename():label=NAME:sort=1,
+        name.segment(3):label=REGION,
+        sourceInstance.split('/').slice(3:).join('/'):label=SRC_INSTANCE,
+        sourceFileShare:label=SRC_FILE_SHARE,
+        state
+      )

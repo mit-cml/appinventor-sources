@@ -1,0 +1,145 @@
+# common parameters
+
+project:
+  name: project
+  collection: cloudresourcemanager.projects
+  attributes:
+  - &project
+    parameter_name: project
+    attribute_name: project
+    help: The Google Cloud Platform project name.
+    property: core/project
+
+region:
+  name: region
+  collection: compute.regions
+  attributes:
+  - &region
+    parameter_name: region
+    attribute_name: region
+    help: The name of the Google Compute Engine region.
+    property: compute/region
+
+zone:
+  name: zone
+  collection: compute.zones
+  attributes:
+  - &zone
+    parameter_name: zone
+    attribute_name: zone
+    help: The name of the Google Compute Engine zone.
+    property: compute/zone
+
+# resource name parameters
+
+allocation:
+  name: allocation
+  collection: compute.allocations
+  attributes:
+  - *project
+  - *zone
+  - &allocation
+    parameter_name: allocation
+    attribute_name: allocation
+    help:
+      The name of the Google Compute Engine zonal allocation.
+
+commitment:
+  name: commitment
+  collection: compute.regionCommitments
+  attributes:
+  - *project
+  - *region
+  - &commitment
+    parameter_name: commitment
+    attribute_name: commitment
+    help: The name of the Google Compute Engine regional commitment.
+
+disk:
+  name: disk
+  collection: compute.disks
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: disk
+    attribute_name: disk
+    help: The name of the Google Compute Engine disk.
+
+image:
+  name: image
+  collection: compute.images
+  attributes:
+  - *project
+  - parameter_name: image
+    attribute_name: image
+    help: The name of the Google Compute Engine image.
+
+instance:
+  name: instance
+  collection: compute.instances
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: instance
+    attribute_name: instance
+    help: The name of the Google Compute Engine instance.
+
+instance_template:
+  name: instance_template
+  collection: compute.instanceTemplates
+  attributes:
+  - *project
+  - parameter_name: instanceTemplate
+    attribute_name: instance_template
+    help: The name of the Google Compute Engine instance template.
+
+node_group:
+  name: node_group
+  collection: compute.nodeGroups
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: nodeGroup
+    attribute_name: node_group
+    help: The name of the Google Compute Engine node group.
+
+node_template:
+  name: node_template
+  collection: compute.nodeTemplates
+  attributes:
+  - *project
+  - *region
+  - parameter_name: nodeTemplate
+    attribute_name: node_template
+    help: The name of the Google Compute Engine node template.
+
+reservation:
+  name: reservation
+  collection: compute.allocations
+  attributes:
+  - *project
+  - *zone
+  - &reservation
+    parameter_name: allocation
+    attribute_name: reservation
+    help:
+      The name of the Google Compute Engine reservation.
+
+subnet:
+  name: subnetwork
+  collection: compute.subnetworks
+  attributes:
+  - *project
+  - *region
+  - parameter_name: subnetwork
+    attribute_name: subnetwork
+    help: The name of the Google Compute Engine subnetwork.
+
+snapshot:
+  name: snapshot
+  collection: compute.snapshots
+  attributes:
+  - *project
+  - parameter_name: snapshot
+    attribute_name: snapshot_name
+    help: The name of the Google Compute Engine snapshot.

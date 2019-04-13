@@ -1,0 +1,13 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Delete a device.
+    description: Delete a device.
+
+  request:
+    collection: cloudiot.projects.locations.registries.devices
+
+  arguments:
+    resource:
+      help_text: The device you want to delete.
+      spec: !REF googlecloudsdk.command_lib.iot.resources:device

@@ -1,0 +1,50 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: dataproc v1beta2 InstanceGroupAutoscalingPolicyConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- maxInstances
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  maxInstances:
+    description: |-
+      Maximum number of instances for this group. Must be >= min_instances.
+    type: integer
+  minInstances:
+    description: |-
+      Minimum number of instances for this group.Default for primary workers is
+      2, default for secondary workers is 0.
+    type: integer
+  weight:
+    description: |-
+      Weight for instance group. Determines fraction of total workers in cluster
+      that will be composed of instances from this instance group (e.g. if
+      primary workers have weight 2 and secondary workers have weight 1, then
+      the cluster should have approximately 2 primary workers to each secondary
+      worker. Cluster may not reach these exact weights if constrained by
+      min/max bounds or other autoscaling configurations.Default 1. Note that
+      all groups have equal an equal weight by default, so the cluster will
+      attempt to maintain an equal number of workers in each group within
+      configured size bounds per group.
+    type: integer

@@ -1,0 +1,29 @@
+- release_tracks: [ALPHA]
+
+  help_text:
+    brief: Set the IAM policy for a model.
+    description: |
+      Sets the IAM policy for the given model as defined in a JSON or YAML file.
+
+
+    examples: |
+      The following command will read am IAM policy defined in a JSON file
+      'policy.json' and set it for the model `my_model`:
+
+      $ {command} my_model policy.json
+
+      See https://cloud.google.com/iam/docs/managing-policies for details of the
+      policy file format and contents.
+  request:
+    collection: ml.projects.models
+
+  iam:
+    set_iam_policy_request_path: googleIamV1SetIamPolicyRequest
+    message_type_overrides:
+      policy: GoogleIamV1Policy
+      set_iam_policy_request: GoogleIamV1SetIamPolicyRequest
+
+  arguments:
+    resource:
+      help_text: The model to set the IAM policy for.
+      spec: !REF googlecloudsdk.command_lib.ml.resources:model

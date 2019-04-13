@@ -1,0 +1,46 @@
+{% extends "skeleton.html" %}
+{% block page_title %}Inbound Mail{% endblock %}
+
+{% block page_head %}
+  <script src="/templates/mail.js"></script>
+  <link type="text/css" rel="stylesheet" href="/assets/mail.css">
+{% endblock %}
+
+
+{% block body %}
+<div id="mail">
+  <h3>Inbound Mail</h3>
+  <div id="mail-feedback"></div>
+  <form id="mail-form" action="/mail" method="post">
+
+    <div class="ae-settings-block">
+      <label for="from">From</label>
+      <input type="text" id="from" name="from" size="40">
+    </div>
+
+    <div class="ae-settings-block">
+      <label for="to">To</label>
+      <input type="text" id="to" name="to" size="40">
+    </div>
+
+    <div class="ae-settings-block">
+      <label for="cc">Cc</label>
+      <input type="text" id="cc" name="cc" size="40">
+    </div>
+
+    <div class="ae-settings-block">
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" size="40">
+    </div>
+
+    <div id="body-fields" class="ae-settings-block">
+      <label for="body">Message body (plain text)</label>
+      <textarea id="body" name="body" rows="10" cols="50"></textarea>
+    </div>
+
+    <div id="mail-submit">
+      <input class="ae-button ae-button-submit" type="submit" value="Send Email">
+    </div>
+  </form>
+</div>
+{% endblock %}

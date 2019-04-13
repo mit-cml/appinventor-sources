@@ -1,0 +1,21 @@
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: List access levels.
+    description: List access levels.
+
+  request:
+    collection: accesscontextmanager.accessPolicies.accessLevels
+
+  arguments:
+    resource:
+      help_text: The access policy you want to list the access levels for.
+      spec: !REF googlecloudsdk.command_lib.accesscontextmanager.resources:policy
+
+  output:
+    format: |
+      table(
+          name.basename(),
+          title,
+          format("{0}", basic.yesno(yes="Basic", no="")):label=LEVEL_TYPE
+      )

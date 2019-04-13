@@ -1,0 +1,34 @@
+- help_text:
+    brief: |
+      List VPC Access connectors.
+    description: |
+      List all VPC Access connectors under the specified project and region.
+
+      You can specify the maximum number of connectors to list using the
+      `--limit` flag.
+    examples: |
+      The following command lists a maximum of five instances in us-central1:
+
+          $ {command} --region=us-central1 --limit=5
+
+  request:
+    collection: vpcaccess.projects.locations.connectors
+
+  response:
+    id_field: name
+
+  arguments:
+    resource:
+      help_text: The region of the connectos to list.
+      spec: !REF googlecloudsdk.command_lib.compute.networks.vpc_access.resources:region
+
+  output:
+    format: |
+      table(
+         name.basename():label=CONNECTOR_ID:sort=1,
+         name.segment(3):label=REGION,
+         type,
+         network,
+         ipCidrRange,
+         status
+       )

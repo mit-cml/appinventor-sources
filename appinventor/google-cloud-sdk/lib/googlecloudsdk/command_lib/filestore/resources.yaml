@@ -1,0 +1,31 @@
+project:
+  name: project
+  collection: file.projects
+  attributes:
+  - parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project
+
+region:
+  name: region
+  collection: file.projects.locations
+  attributes:
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The region of the Filestore {resource}.
+  disable_auto_completers: false
+
+snapshot:
+  name: snapshot
+  collection: file.projects.locations.snapshots
+  request_id_field: snapshotId
+  attributes:
+  - *region
+  - parameter_name: snapshotsId
+    attribute_name: snapshot
+    help: The name of the Filestore snapshot.
+  disable_auto_completers: false
