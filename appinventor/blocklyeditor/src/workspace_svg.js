@@ -613,15 +613,15 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    * @param {!Blockly.Block} block the block that will be compared in the sortByCategory function
    * @returns {string} text to be used in the comparison
    */
-  function comparisonName(block){
+  function comparisonName(block) {
     // Add trailing numbers to represent their sequence
-    if (block.category == 'Variables'){
+    if (block.category == 'Variables') {
       return ('1,' + block.type);
     }
-    if (block.category === 'Procedures'){
+    if (block.category === 'Procedures') {
       return ('2,'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
     }
-    if (block.category == 'Component'){
+    if (block.category == 'Component') {
       var component = block.type + ',' + block.instanceName + ',' + block.eventName;
       return ('3,' + component);
     }
@@ -635,13 +635,13 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    * @param {string} b second string to be compared
    * @returns {number} returns 0 if the strings are equal, and -1 or 1 if they are not
    */
-  function compareStrTextNum(strA,strB){
+  function compareStrTextNum(strA,strB) {
     // Use Regular Expression to match text and numbers
     var regexStrA = strA.match(/(.*?)([0-9]+)$/gi);
     var regexStrB = strB.match(/(.*?)([0-9]+)$/gi);
 
     // There are numbers in the strings, compare numbers
-    if (regexStrA != null && regexStrB != null){
+    if (regexStrA != null && regexStrB != null) {
       numStrA = strA.match(/([0-9]+)$/gi);
       numStrB = strB.match(/([0-9]+)$/gi);
       numA = parseInt(numStrA);
@@ -649,8 +649,8 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
       if (numA > numB) return +1;
       else if (numA < numB) return -1;
       else return 0;
-    }else{
-      return strA.localeCompare(strB);
+    }else {
+      return strA.localeCompare(strB, undefined, {numeric:true});
     }
   }
 
@@ -665,56 +665,82 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var comparatorA = comparisonName(a).toLowerCase();
     var comparatorB = comparisonName(b).toLowerCase();
 
-    if (a.category != b.category){
-      return comparatorA.localeCompare(comparatorB);
+    if (a.category != b.category) {
+      return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
     }
 
     // Sort by Category First, also handles other floating blocks
-    if (a.category == b.category && a.category != "Component"){
+    if (a.category == b.category && a.category != "Component") {
       // Remove '1,'
       comparatorA = comparatorA.substr(2);
       comparatorB = comparatorB.substr(2);
-      return compareStrTextNum(comparatorA, comparatorB);
+      var res = compareStrTextNum(comparatorA, comparatorB);
+      if (a.category == "Variables" && a.type == b.type) {
+        // Sort Variables
+        if (a.type == "global_declaration") {
+          // initialize variables, extract just global variable names
+          var nameA = a.svgGroup_.textContent;
+          // remove substring "initialize global<varname>to" and only keep <varname>
+          nameA = nameA.substring(17, nameA.length - 2);
+          var nameB = b.svgGroup_.textContent;
+          nameB = nameB.substring(17, nameB.length - 2);
+          res = compareStrTextNum(nameA, nameB);
+        }else {
+          var nameA = a.fieldVar_.text_;
+          var nameB = b.fieldVar_.text_;
+          if (nameA.includes("global") && nameB.includes("global")) {
+            // Global Variables and get variable names, remove "global"
+            res = compareStrTextNum(nameA.substring(6), nameB.substring(6));
+          }else {
+            // Other floating variables
+            res = compareStrTextNum(nameA, nameB);
+          }
+        }
+      }
+      return res;
     }
 
     // 3.Component event handlers, lexicographically sorted by 
     // type name, instance name, then event name
-    if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName){
-      if (a.typeName == b.typeName){
+    if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName) {
+      if (a.typeName == b.typeName) {
         return compareStrTextNum(a.instanceName, b.instanceName);
       }
-      return comparatorA.localeCompare(comparatorB);
+      return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
     }
 
     // 4. For Component blocks, sorted internally first by type, 
     // whether they are generic (generics precede specifics), 
     // then by instance name (for specific blocks), 
     // then by method/property name.
-    if (a.category == "Component" && b.category == "Component"){
+    if (a.category == "Component" && b.category == "Component") {
       var geneA = ',2';
-      if (a.isGeneric){
+      if (a.isGeneric) {
         geneA = ',1';
       }
 
       var geneB = ',2';
-      if (b.isGeneric){
+      if (b.isGeneric) {
         geneB = ',1';
       }
 
       var componentA = a.type + geneA;
       var componentB = b.type + geneB;
 
-      var res = componentA.localeCompare(componentB);
-      if (res == 0){
-        // compare instance names
-        res = compareStrTextNum(a.instanceName, b.instanceName);
+      var res = componentA.localeCompare(componentB, undefined, {numeric:true});
+      if (res == 0) {
+        // compare type names
+        res = compareStrTextNum(a.typeName, b.typeName);
       }
-
-      if (res == 0){
+      //the comparator is the type name, instance name, then event name
+      if (res == 0) {
+        if (a.instanceName && b.instanceName) {
+          res = compareStrTextNum(a.instanceName, b.instanceName);
+        } 
         // Compare property names
         var prop_method_A = a.propertyName || a.methodName;
         var prop_method_B = b.propertyName || b.methodName;
-        res = prop_method_A.toLowerCase().localeCompare(prop_method_B.toLowerCase());
+        res = prop_method_A.toLowerCase().localeCompare(prop_method_B.toLowerCase(), undefined, {numeric:true});
       }
       return res;
     }
@@ -736,8 +762,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     // If the blocks are arranged by Category, sort the array
     if (Blockly.workspace_arranged_type === Blockly.BLKS_CATEGORY){
       topblocks.sort(sortByCategory);
-      console.log("After Sort By Category");
-      console.log(topblocks);
     }
     var metrics = Blockly.mainWorkspace.getMetrics();
     var spacing = Blockly.mainWorkspace.options.gridOptions.spacing;
