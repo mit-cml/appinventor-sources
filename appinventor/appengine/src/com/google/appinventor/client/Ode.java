@@ -84,6 +84,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -812,48 +813,69 @@ public class Ode implements EntryPoint {
         }
 
         userSettings = new UserSettings(user);
-
-        // Gallery settings
-        gallerySettings = new GallerySettings();
-        //gallerySettings.loadGallerySettings();
-        loadGallerySettings();
-
-        // Initialize project and editor managers
-        // The project manager loads the user's projects asynchronously
-        projectManager = new ProjectManager();
-        projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
+        userSettings.loadSettings(new Command() {
           @Override
-          public void onProjectsLoaded() {
-            projectManager.removeProjectManagerEventListener(this);
+          public void execute() {
 
-            // This handles any built-in templates stored in /war
-            // Retrieve template data stored in war/templates folder and
-            // and save it for later use in TemplateUploadWizard
-            OdeAsyncCallback<String> templateCallback =
-                new OdeAsyncCallback<String>(
-                  // failure message
-                  MESSAGES.createProjectError()) {
-                  @Override
-                  public void onSuccess(String json) {
-                    // Save the templateData
-                    TemplateUploadWizard.initializeBuiltInTemplates(json);
-                    // Here we call userSettings.loadSettings, but the settings are actually loaded
-                    // asynchronously, so this loadSettings call will return before they are loaded.
-                    // After the user settings have been loaded, openPreviousProject will be called.
-                    // We have to call this after the builtin templates have been loaded otherwise
-                    // we will get a NPF.
-                    userSettings.loadSettings();
-                  }
-                };
-            Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
+            // Gallery settings
+            gallerySettings = new GallerySettings();
+            //gallerySettings.loadGallerySettings();
+            loadGallerySettings();
+
+            // Initialize project and editor managers
+            // The project manager loads the user's projects asynchronously
+            projectManager = new ProjectManager();
+            projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
+              @Override
+              public void onProjectsLoaded() {
+                projectManager.removeProjectManagerEventListener(this);
+                openPreviousProject();
+
+                // This handles any built-in templates stored in /war
+                // Retrieve template data stored in war/templates folder and
+                // and save it for later use in TemplateUploadWizard
+                OdeAsyncCallback<String> templateCallback =
+                    new OdeAsyncCallback<String>(
+                        // failure message
+                        MESSAGES.createProjectError()) {
+                      @Override
+                      public void onSuccess(String json) {
+                        // Save the templateData
+                        TemplateUploadWizard.initializeBuiltInTemplates(json);
+                      }
+                    };
+                Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
+              }
+            });
+            editorManager = new EditorManager();
+
+            // Initialize UI
+            initializeUi();
+
+            topPanel.showUserEmail(user.getUserEmail());
           }
         });
-        editorManager = new EditorManager();
+      }
 
-        // Initialize UI
-        initializeUi();
+      private boolean isSet(String str) {
+        return str != null && !str.equals("");
+      }
 
-        topPanel.showUserEmail(user.getUserEmail());
+      private String makeUri(String base) {
+        String[] params = new String[] { "locale", "repo", "galleryId" };
+        String separator = "?";
+        StringBuilder sb = new StringBuilder(base);
+        for (String param : params) {
+          String value = Window.Location.getParameter(param);
+          if (isSet(value)) {
+            sb.append(separator);
+            sb.append(param);
+            sb.append("=");
+            sb.append(value);
+            separator = "&";
+          }
+        }
+        return sb.toString();
       }
 
       @Override
@@ -870,26 +892,10 @@ public class Ode implements EntryPoint {
               return;
             case Response.SC_FORBIDDEN:
               // forbidden => need tos accept
-              Window.open("/" + ServerLayout.YA_TOS_FORM, "_self", null);
+              Window.open(makeUri("/" + ServerLayout.YA_TOS_FORM), "_self", null);
               return;
             case Response.SC_PRECONDITION_FAILED:
-              String locale = Window.Location.getParameter("locale");
-              String repo = Window.Location.getParameter("repo");
-              galleryId = Window.Location.getParameter("galleryId");
-              String separator = "?";
-              String uri = "/login/";
-              if (locale != null && !locale.equals("")) {
-                uri += separator + "locale=" + locale;
-                separator = "&";
-              }
-              if (repo != null && !repo.equals("")) {
-                uri += separator + "repo=" + repo;
-                separator = "&";
-              }
-              if (galleryId != null && !galleryId.equals("")) {
-                uri += separator + "galleryId=" + galleryId;
-              }
-              Window.Location.replace(uri);
+              Window.Location.replace(makeUri("/login/"));
               return;           // likely not reached
           }
         }
@@ -1495,6 +1501,49 @@ public class Ode implements EntryPoint {
     return pb;
   }
 
+  /**
+   * Compares two locales and determines if they are equal. We consider oldLocale value
+   * of null to be equal to the empty string to handle default values.
+   * @param oldLocale one locale
+   * @param newLocale another locale
+   * @param defaultValue the default locale
+   * @return  true if the locale ISO strings are equal modulo case or if both
+   *          are empty, otherwise false
+   */
+  @VisibleForTesting
+  static boolean compareLocales(String oldLocale, String newLocale, String defaultValue) {
+    if ((oldLocale == null || oldLocale.isEmpty()) && (newLocale == null || newLocale.isEmpty())) {
+      return true;
+    } else if (oldLocale == null || oldLocale.isEmpty()) {
+      return defaultValue.equalsIgnoreCase(newLocale);
+    } else {
+      return oldLocale.equalsIgnoreCase(newLocale);
+    }
+  }
+
+  /**
+   * Check the user's locale against the currently requested locale. No locale
+   * is specified in the query string, then we redirect to the user's previous
+   * locale. English, the default locale, won't redirect in this scenario to
+   * prevent double requests for most of our users. If locale parameter is
+   * specified and the locales don't match, then we set the user's last locale
+   * to the current locale.
+   */
+  public static boolean handleUserLocale() {
+    String locale = Window.Location.getParameter("locale");
+    String lastUserLocale = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).getPropertyValue(SettingsConstants.USER_LAST_LOCALE);
+    if (!compareLocales(locale, lastUserLocale, "en")) {
+      if (locale == null) {
+        Window.Location.assign(Window.Location.createUrlBuilder().setParameter("locale", lastUserLocale).buildString());
+        return false;
+      } else {
+        userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).changePropertyValue(SettingsConstants.USER_LAST_LOCALE, locale);
+        userSettings.saveSettings(null);
+      }
+    }
+    return true;
+  }
+
   private void resizeWorkArea(WorkAreaPanel workArea) {
     // Subtract 16px from width to account for vertical scrollbar FF3 likes to add
     workArea.onResize(Window.getClientWidth() - 16, Window.getClientHeight());
@@ -1656,7 +1705,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+        if (projectManager.projectCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
         }
