@@ -237,7 +237,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
   private void outputProperty(String propertyName, DesignerProperty dp, StringBuilder sb) {
     sb.append("{ \"name\": \"");
     sb.append(propertyName);
-    //[suvam, 2019/03/25] Added description field to Component Json Structure of designer property
+    //[suvam, 2019/03/26] Added description field to Component Json Structure of designer property
     sb.append("\", \"description\": "); 
     sb.append(formatDescription(dp.description()));
     sb.append(", \"editorType\": \"");
