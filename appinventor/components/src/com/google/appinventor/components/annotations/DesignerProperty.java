@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 public @interface DesignerProperty {
 
   /**
-   * [suvam, 2019/03/25] Added description field to Designer Property.
+   * [suvam, 2019/03/26] Added description field to Designer Property.
    * If non-empty, description to use in user-level documentation.
    */
   String description() default "";

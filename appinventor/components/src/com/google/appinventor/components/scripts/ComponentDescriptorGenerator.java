@@ -46,7 +46,7 @@ import javax.tools.FileObject;
  *   }*,
  *   "properties": [
  *     { "name": "PROPERTY-NAME",
- *        "description": "DESCRIPTION",  //[suvam, 2019/03/25] Added description field to json
+ *        "description": "DESCRIPTION",
  *        "editorType": "EDITOR-TYPE",
  *        "defaultValue": "DEFAULT-VALUE"},*
  *    ],
