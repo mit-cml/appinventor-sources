@@ -543,10 +543,10 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     String propertyValue = createJSONString();
     property.setValue(propertyValue);
     if (propertyValue == "") {
-      dropDownButton.setCaption("None");
+      dropDownButton.setCaption(MESSAGES.noneCaption());
       dropDownButton.setWidth("");
     } else {
-      dropDownButton.setCaption(propertyValue.substring(0, 12) + "...");
+      dropDownButton.setCaption("Subset Defined");
     }
   }
 
