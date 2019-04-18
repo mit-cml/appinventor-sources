@@ -22,6 +22,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -60,41 +62,39 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
   public SubsetJSONPropertyEditor() {
     buildTrees();
+    final FileUpload file = new FileUpload();
+    file.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent changeEvent) {
+        loadJSONfile(file, true);
+      }
+    });
+    PopupPanel sp = new PopupPanel();
+    sp.add(file);
+    sp.setVisible(false);
+    sp.show();
 
     List<DropDownButton.DropDownItem> items = Lists.newArrayList();
     items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.noneCaption(), new Command() {
       @Override
       public void execute() {
-        clearSelections();
+        property.setValue("");
         updateValue();
       }}));
     items.add(new DropDownButton.DropDownItem("Subset Property Editor", "Match Project", new Command() {
       @Override
       public void execute() {
         matchProject();
+        property.setValue(createJSONString());
         updateValue();
       }}));
     items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.fileUploadWizardCaption(), new Command() {
       @Override
       public void execute() {
-
+        file.click();
       }}));
-    //    loadButton.addClickHandler(new ClickHandler() {
-//      @Override
-//      public void onClick(ClickEvent event) {
-//        FileUploadWizard.FileUploadedCallback callback = new FileUploadWizard.FileUploadedCallback() {
-//          @Override
-//          public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
-//            // At this point, the asset has been uploaded to the server, and
-//            // has even been added to the assetsFolder. We are all set!
-//            loadJSONfile(fileNode);
-//          }
-//        };
-//        FileUploadWizard uploader = new FileUploadWizard(assetsFolder, callback);
-//        uploader.show();
-//      }
-//    });
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.customEllipsis(), new Command() {
+
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "View and Modify", new Command() {
       @Override
       public void execute() {
         showCustomSubsetPanel();
@@ -102,6 +102,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     dropDownButton = new DropDownButton("Subset Property Editor", "", items, false);
     dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
     initWidget(dropDownButton);
+    INSTANCE = this;
+    exportJavaMethods();
   }
 
   protected void showCustomSubsetPanel() {
@@ -131,7 +133,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     loadButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        loadJSONfile(file);
+        loadJSONfile(file, false);
       }
     });
     Button saveButton = new Button(MESSAGES.saveAsButton());
@@ -176,6 +178,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     okButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        property.setValue(createJSONString());
         updateValue();
         subsetPanel.hide();
       }
@@ -186,8 +189,6 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     treePanel.addWest(componentScroll, 50);
     treePanel.addEast(blockScroll, 50);
     subsetPanel.add(treePanel);
-    INSTANCE = this;
-    exportJavaMethods();
     subsetPanel.setHeight("600px");
     subsetPanel.setWidth("400px");
     subsetPanel.center();
@@ -245,8 +246,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     }
 
     // Build tree of global blocks by category
-    JavaScriptObject barney = getBlockDict();
-    JSONObject blockDict = new JSONObject(barney);
+    JSONObject blockDict = new JSONObject(getBlockDict());
     for (String blockCategory:blockDict.keySet()) {
 
       // There appears to be no centralized method for internationalizing the built-in block category names.
@@ -293,9 +293,9 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     for (int i = 0; i < componentTree.getItemCount(); ++i) {
       TreeItem componentCatItem = componentTree.getItem(i);
       CheckBox componentCatCb = (CheckBox)componentCatItem.getWidget();
-      String fred = componentCatCb.getName().toUpperCase();
-      if (shownComponents.containsKey(fred)) {
-        JSONArray jsonComponentCat = shownComponents.get(fred).isArray();
+      String catName = componentCatCb.getName().toUpperCase();
+      if (shownComponents.containsKey(catName)) {
+        JSONArray jsonComponentCat = shownComponents.get(catName).isArray();
         if (jsonComponentCat.size() > 0) {
           componentCatCb.setValue(true, false);
           HashMap<String, String> jsonComponentHash = new HashMap<String, String>();
@@ -318,9 +318,9 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
                 if (componentBlockType == "component_set_get") {
                   componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("property_name").isString().stringValue(), "PROP");
                 } else if (componentBlockType == "component_event") {
-                  JSONValue barney = jsonComponentBlockType.get("mutatorNameToValue");
-                  JSONValue pebbles = barney.isObject().get("event_name");
-                  componentPropHash.put(pebbles.isString().stringValue(), "EVENT");
+                  JSONValue mutatorValue = jsonComponentBlockType.get("mutatorNameToValue");
+                  JSONValue event_name = mutatorValue.isObject().get("event_name");
+                  componentPropHash.put(event_name.isString().stringValue(), "EVENT");
                 } else if (componentBlockType == "component_method") {
                   componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("method_name").isString().stringValue(), "METHOD");
                 }
@@ -340,9 +340,11 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
               toggleChildren(componentItem, false);
             }
           }
+        } else {
+          componentCatCb.setValue(false, false);
+          toggleChildren(componentCatItem, false);
         }
-      }
-      else {
+      } else {
         componentCatCb.setValue(false, false);
         toggleChildren(componentCatItem, false);
       }
@@ -429,7 +431,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     }
   }
 
-  private void loadJSONfile(FileUpload filePath) {
+  private void loadJSONfile(FileUpload filePath, Boolean doUpdate) {
     String uploadFilename = filePath.getFilename();
     if (!uploadFilename.isEmpty()) {
       final String filename = makeValidFilename(uploadFilename);
@@ -440,38 +442,40 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       } else if (!filename.endsWith(".json")){
         Window.alert(MESSAGES.malformedFilenameTitle());
       } else {
-        loadJSONfileNative(filePath.getElement());
+        loadJSONfileNative(filePath.getElement(), doUpdate);
       }
     }
   }
 
-  public void callLoadComponents(String jsonStr) {
-    JSONObject jsonObj = JSONParser.parseStrict(jsonStr).isObject();
-    INSTANCE.loadComponents(jsonObj);
-  }
-
   public void callLoadGlobalBlocks(String jsonStr) {
     JSONObject jsonObj = JSONParser.parseStrict(jsonStr).isObject();
+    INSTANCE.loadComponents(jsonObj);
     INSTANCE.loadGlobalBlocks(jsonObj);
+  }
+
+  public void callUpdateValue(String jsonStr) {
+    INSTANCE.property.setValue(jsonStr);
+    INSTANCE.updateValue();
   }
 
   public native void exportJavaMethods() /*-{
     var that = this;
-    $wnd.load_components = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callLoadComponents(Ljava/lang/String;));
-    $wnd.load_global_blocks = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callLoadGlobalBlocks(Ljava/lang/String;));
+    $wnd.load_trees = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callLoadGlobalBlocks(Ljava/lang/String;));
+    $wnd.update_value = $entry(that.@com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor::callUpdateValue(Ljava/lang/String;));
   }-*/;
 
 
-
-  private native void loadJSONfileNative(Element fileElement) /*-{
+  private native void loadJSONfileNative(Element fileElement, boolean doUpdate) /*-{
     var selectedFile = fileElement.files[0];
     if (selectedFile.type == "application/json") {
       var reader = new FileReader();
       reader.onload = function(e) {
         var loadedstr = reader.result;
-        var JSONStrObj = JSON.parse(loadedstr);
-        $wnd.load_components(loadedstr);
-        $wnd.load_global_blocks(loadedstr);
+        if (doUpdate) {
+          $wnd.update_value(loadedstr);
+        } else {
+          $wnd.load_trees(loadedstr);
+        }
       }
       reader.readAsText(selectedFile);
     } else {
@@ -540,9 +544,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   }
 
   protected void updateValue() {
-    String propertyValue = createJSONString();
-    property.setValue(propertyValue);
-    if (propertyValue == "") {
+    if (property.getValue() == "") {
       dropDownButton.setCaption(MESSAGES.noneCaption());
       dropDownButton.setWidth("");
     } else {
