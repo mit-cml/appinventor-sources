@@ -213,7 +213,7 @@ public final class MockForm extends MockContainer {
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
-  private static final String PROPERTY_NAME_BLOCK_SUBSET = "BlockSubset";
+  private static final String PROPERTY_NAME_BLOCK_SUBSET = "Toolbox";
   private static final String PROPERTY_NAME_ACTIONBAR = "ActionBar";
   private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";

@@ -75,7 +75,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     sp.show();
 
     List<DropDownButton.DropDownItem> items = Lists.newArrayList();
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.noneCaption(), new Command() {
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "All", new Command() {
       @Override
       public void execute() {
         property.setValue("");
@@ -545,10 +545,10 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
   protected void updateValue() {
     if (property.getValue() == "") {
-      dropDownButton.setCaption(MESSAGES.noneCaption());
+      dropDownButton.setCaption("All");
       dropDownButton.setWidth("");
     } else {
-      dropDownButton.setCaption("Subset Defined");
+      dropDownButton.setCaption("Toolbox Defined");
     }
   }
 
