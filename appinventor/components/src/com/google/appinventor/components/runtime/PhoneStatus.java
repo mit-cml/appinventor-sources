@@ -160,14 +160,18 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
     firstSeed = seed;
 
-    /* Setup communications via WebRTC */
-    if (useWebRTC) {
-      WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer);
-      webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, seed);
-      ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
-    } else {
+    /*
+     * Set the HMAC seed, but only if we are doing the legacy HTTP
+     * thing.  Note: Currently we *always* start the HTTP Daemon, even
+     * in WebRTC mode By not setting the seed, we ensure that the HTTP
+     * Daemon cannot accept any blocks
+     *
+     */
+
+    if (!useWebRTC) {
       AppInvHTTPD.setHmacKey(seed);
     }
+
     MessageDigest Sha1;
     try {
       Sha1 = MessageDigest.getInstance("SHA1");
@@ -200,6 +204,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       return false;
     }
+  }
+
+  @SimpleFunction(description = "Start the WebRTC engine")
+  public void startWebRTC(String rendezvousServer, String iceServers) {
+    WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer, iceServers);
+    webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, firstSeed);
+    ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
   }
 
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")
