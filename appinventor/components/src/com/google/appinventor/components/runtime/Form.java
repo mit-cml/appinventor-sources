@@ -1863,7 +1863,7 @@ public class Form extends AppInventorCompatActivity
     defaultValue = "")
   @SimpleProperty(userVisible = false,
     description = "A JSON string representing the subset for the screen")
-  public void Toolbox(String json) {
+  public void BlocksToolkit(String json) {
     // We don't actually do anything. This property is stored in the
     // project properties file
   }

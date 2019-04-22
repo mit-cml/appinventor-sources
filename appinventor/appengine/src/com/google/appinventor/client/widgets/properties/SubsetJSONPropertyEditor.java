@@ -548,7 +548,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       dropDownButton.setCaption("All");
       dropDownButton.setWidth("");
     } else {
-      dropDownButton.setCaption("Toolbox Defined");
+      dropDownButton.setCaption("Toolkit Defined");
     }
   }
 
