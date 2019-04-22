@@ -95,7 +95,7 @@ Blockly.Drawer.createSubsetBlockInfoArray_ = function() {
     var formName = Blockly.mainWorkspace.formName;
     var screenName = formName.split("_")[1];
     if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
-      subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlockSubset");
+      subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
     } else {
       subsetJsonString = JSON.stringify(window.reactGetSubsetString());
     }  
@@ -401,7 +401,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var screenName = formName.split("_")[1];
   var subsetJsonString;
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
-    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlockSubset");
+    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
   } else {
     subsetJsonString = JSON.stringify(window.reactGetSubsetString());
   }
