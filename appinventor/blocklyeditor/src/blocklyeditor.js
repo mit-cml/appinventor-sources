@@ -40,6 +40,31 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
+unboundVariableHandler = function(myBlock, yailText) {
+  var unbound_vars = Blockly.LexicalVariable.freeVariables(myBlock);
+  unbound_vars = unbound_vars.toList();
+  if (unbound_vars.length == 0) {
+    Blockly.ReplMgr.putYail(yailText, myBlock);
+  } else {
+    var form = "<form>Enter values for:<br>";
+    for (v in unbound_vars) {
+      form  +=  unbound_vars[v] + '<input type=text name=' + unbound_vars[v] + '><br>';
+    }
+    form += "</form>";
+    var dialog = new Blockly.Util.Dialog('Unbound Variables',form, 'Submit', false, 'Cancel', 10, function (button) {
+      if (button == 'Submit') {
+        var code = "(let (";
+        for (i in unbound_vars) {
+          code += '($' + unbound_vars[i] + ' ' + Blockly.Yail.quotifyForREPL(document.querySelector('input[name="' + unbound_vars[i] + '"]').value) + ') ';
+        };
+        code += ")" + Blockly.Yail.blockToCode1(myBlock) + ")";
+        Blockly.ReplMgr.putYail(code, myBlock);
+      }
+      dialog.hide();
+    });
+  };
+};
+
 /**
  * Add a "Do It" option to the context menu for every block. If the user is an admin also
  * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
@@ -88,7 +113,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
       } else {
         yailText = yailTextOrArray;
       }
-      Blockly.ReplMgr.putYail(yailText, myBlock);
+      unboundVariableHandler(myBlock, yailText);
     }
   };
   options.push(doitOption);
