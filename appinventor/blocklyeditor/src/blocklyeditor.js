@@ -49,6 +49,12 @@ Blockly.BlocklyEditor.render = function() {
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
+  var downloadBlockOption = {enabled: true, text: Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG};
+  downloadBlockOption.callback = function() {
+    Blockly.exportBlockAsPng(myBlock);
+  };
+  options.push(downloadBlockOption);
+  var doitOption = { enabled: !this.disabled};
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: !this.disabled};
     yailOption.text = Blockly.Msg.GENERATE_YAIL;

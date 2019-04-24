@@ -121,7 +121,64 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
     return func;
   } else {
     var f = function() {
-      return func.apply(this, Array.prototype.slice.call(arguments));
+      var self = this;
+      var result = func.apply(this, Array.prototype.slice.call(arguments));
+      // BEGIN: Configure drag and drop of blocks images to workspace
+      var background = '#fff';
+      result.addEventListener('dragenter', function(e) {
+        background = self.svgBackground_.style.fill;
+        if (e.dataTransfer.types.indexOf('Files') >= 0) {
+          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+          e.dataTransfer.dropEffect = 'copy';
+          e.preventDefault();
+        } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+          e.dataTransfer.dropEffect = 'copy';
+          e.preventDefault();
+        }
+      });
+      result.addEventListener('dragover', function(e) {
+        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
+            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          e.preventDefault();
+        }
+      });
+      result.addEventListener('dragleave', function(e) {
+        self.svgBackground_.style.fill = background;
+      });
+      result.addEventListener('drop', function(e) {
+        self.svgBackground_.style.fill = background;
+        if (e.dataTransfer.types.indexOf('Files') >= 0) {
+          if (e.dataTransfer.files.item(0).type === 'image/png') {
+            e.preventDefault();
+            var metrics = Blockly.mainWorkspace.getMetrics();
+            var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+            point.x = (point.x + metrics.viewLeft) / self.scale;
+            point.y = (point.y + metrics.viewTop) / self.scale;
+            Blockly.importPngAsBlock(self, point, e.dataTransfer.files.item(0));
+          }
+        } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          var data = e.dataTransfer.getData('text/uri-list')
+          if (data.match(/\.png$/)) {
+            e.preventDefault();
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4 && xhr.status === 200) {
+                var metrics = Blockly.mainWorkspace.getMetrics();
+                var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+                point.x = (point.x + metrics.viewLeft) / self.scale;
+                point.y = (point.y + metrics.viewTop) / self.scale;
+                Blockly.importPngAsBlock(self, point, xhr.response);
+              }
+            };
+            xhr.responseType = 'blob';
+            xhr.open('GET', data, true);
+            xhr.send();
+          }
+        }
+      });
+      // END: Configure drag and drop of blocks images to workspace
+      return result;
     };
     f.isWrapper = true;
     return f;
