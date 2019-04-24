@@ -25,7 +25,7 @@ import Toast_Swift
   fileprivate var _primaryColor: Int32 = Int32(bitPattern: 0xFF3F51B5)
   fileprivate var _primaryColorDark: Int32 = Int32(bitPattern: 0xFF303F9F)
   fileprivate var _scrollable = false
-  fileprivate var _theme = AIComponentKit.Theme.DeviceDefault
+  fileprivate var _theme = AIComponentKit.Theme.Classic
   fileprivate var _title = "Screen1"
   fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
   fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
@@ -467,8 +467,8 @@ import Toast_Swift
       let newTheme = AIComponentKit.Theme.fromString(value)
       if _theme != newTheme {
         _theme = newTheme
-        updateNavbar()
       }
+      updateNavbar()
     }
   }
 
