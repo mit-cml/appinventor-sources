@@ -3,6 +3,24 @@
 
 import Foundation
 
+private let kMaxAspectRatio = CGFloat(854.0)/CGFloat(480.0)
+private let kDefaultNormalShortDimension = CGFloat(320)
+
+func computeCompatibleScaling() -> CGFloat {
+  let dims = UIScreen.main.nativeBounds
+  print("nativeBounds = \(dims)")
+  let density = UIScreen.main.nativeScale
+  let (shortSize, longSize) = (dims.width, dims.height)
+  let newShortSize = Int(kDefaultNormalShortDimension * density + 0.5)
+  let aspect = min(kMaxAspectRatio, longSize/shortSize)
+  let newLongSize = Int(CGFloat(newShortSize) * aspect + 0.5)
+  let (newWidth, newHeight) = (newShortSize, newLongSize)
+  let sw = dims.width/CGFloat(newWidth)
+  let sh = dims.height/CGFloat(newHeight)
+  let scale = min(sw, sh)
+  return max(1.0, scale)
+}
+
 class ScaleFrameLayout: UIView {
 
   enum Mode {
@@ -11,13 +29,19 @@ class ScaleFrameLayout: UIView {
   }
 
   private var _mode = Mode.Responsive
+  private var _scale = computeCompatibleScaling()
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
+    clipsToBounds = true
+    accessibilityIdentifier = "Root View"
   }
 
   required init?(coder aCoder: NSCoder) {
     super.init(coder: aCoder)
+    clipsToBounds = true
+    clearsContextBeforeDrawing = true
+    accessibilityIdentifier = "Root View"
   }
 
   public var mode: Mode {
@@ -37,7 +61,7 @@ class ScaleFrameLayout: UIView {
           print("center = \(center)")
           layer.anchorPoint = CGPoint(x: 0, y: 0)
           center = layer.anchorPoint
-          let scale = CGFloat(UIScreen.main.bounds.width / 320.0)
+          let scale = _scale
           self.transform = CGAffineTransform(scaleX: scale, y: scale)
           break
         case .Responsive:
@@ -54,7 +78,7 @@ class ScaleFrameLayout: UIView {
     get {
       switch _mode {
       case .Fixed:
-        return 375.0/320.0
+        return _scale
       case .Responsive:
         return 1.0
       }
