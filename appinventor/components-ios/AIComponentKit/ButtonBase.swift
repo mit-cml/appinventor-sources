@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -10,12 +10,68 @@ public protocol AbstractMethodsForButton: AbstractMethodsForViewComponent {
 let kRoundedCornersRadius: Float = 10.0
 let kRoundedCornersArray = [kRoundedCornersRadius, kRoundedCornersRadius]
 let kShapedDefaultBackgroundColor = Color.lightGray
+fileprivate let kDefaultColor = Int32(bitPattern: Color.default.rawValue)
 fileprivate let DEFAULT_BUTTON_INSET = UIEdgeInsets(top: 4.0, left: 5.0, bottom: 8.0, right: 5.0)
-fileprivate let CLASSIC_DEFAULT_BUTTON_TEXTCOLOR = argbToColor(-16777216)
-fileprivate let CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR = argbToColor(-2147483648)
+fileprivate let CLASSIC_DEFAULT_BUTTON_TEXTCOLOR = argbToColor(Int32(-16777216))
+fileprivate let CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR = argbToColor(Int32(-2147483648))
+
+@objc public class MAIButton: UIButton {
+  private var ovalLayer: CAShapeLayer?
+  private var _bgColor: UIColor?
+
+  override open var backgroundColor: UIColor? {
+    get {
+      return _bgColor ?? super.backgroundColor
+    }
+    set(backgroundColor) {
+      if isOval {
+        ovalLayer?.fillColor = backgroundColor?.cgColor
+      } else {
+        super.backgroundColor = backgroundColor
+      }
+      _bgColor = backgroundColor
+    }
+  }
+
+  var isOval: Bool {
+    get {
+      return ovalLayer != nil
+    }
+    set(oval) {
+      ovalLayer?.removeFromSuperlayer()
+      if oval {
+        ovalLayer = CAShapeLayer()
+        layer.insertSublayer(ovalLayer!, at: 0)
+        ovalLayer?.backgroundColor = _bgColor?.cgColor
+        super.backgroundColor = nil
+      } else {
+        super.backgroundColor = _bgColor
+      }
+    }
+  }
+
+  override public func layoutSubviews() {
+    super.layoutSubviews()
+    if let ovalLayer = ovalLayer {
+      ovalLayer.path = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: frame.width, height: frame.height)).cgPath
+    }
+  }
+}
+
+enum ButtonStylePipeline: Int {
+  case Base
+  case FontColor
+  case Highlight
+  case BackgroundImage
+  case Shape
+  case DefaultShape
+  case BackgroundColor
+}
+
+typealias PipelineStep = (ButtonBase)->Bool
 
 open class ButtonBase: ViewComponent {
-  @objc final var _view: UIButton
+  @objc final var _view: MAIButton
   fileprivate weak var _delegate: AbstractMethodsForButton?
   fileprivate var _textAlignment = Alignment.center
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
@@ -32,6 +88,10 @@ open class ButtonBase: ViewComponent {
   fileprivate static var _classicButton: UIImage!
   fileprivate static var _classicButtonDisabled: UIImage!
   fileprivate static var _classicButtonPressed: UIImage!
+  fileprivate static var CLASSIC_DEFAULT_PIPELINE = [ButtonStylePipeline:PipelineStep]()
+  fileprivate static var MODERN_DEFAULT_PIPELINE = [ButtonStylePipeline:PipelineStep]()
+  fileprivate var _stylePipeline: [ButtonStylePipeline:PipelineStep]
+  fileprivate var _needsStyleApplied = true
 
   static func loadClassicButton() {
     let bundle = Bundle(for: ButtonBase.self)
@@ -41,15 +101,83 @@ open class ButtonBase: ViewComponent {
     _classicButtonPressed = _classicButtonPressed?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
     _classicButtonDisabled = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.disabled", ofType: "png")!)
     _classicButtonDisabled = _classicButtonDisabled?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+
+    // Classic Android theme
+    CLASSIC_DEFAULT_PIPELINE[.Base] = { $0._view.imageView?.tintColor = nil; return true }
+    CLASSIC_DEFAULT_PIPELINE[.BackgroundImage] = {
+      if let backgroundImage = $0._backgroundImage {
+        $0._view.isOval = false  // always false when an image is supplied
+        $0._view.layer.cornerRadius = CGFloat(0.0)
+        $0._view.setBackgroundImage(backgroundImage, for: .normal)
+        $0._view.setBackgroundImage(backgroundImage, for: .disabled)
+        $0._view.setBackgroundImage(backgroundImage, for: .highlighted)
+        $0._view.contentEdgeInsets = .zero
+        $0._view.invalidateIntrinsicContentSize()
+        return false
+      }
+      return true
+    }
+    CLASSIC_DEFAULT_PIPELINE[.Shape] = {
+      $0._view.isOval = $0._shape == .oval
+      $0._view.layer.cornerRadius = CGFloat($0._shape == .rounded ? kRoundedCornersRadius : 0.0)
+      return true
+    }
+    CLASSIC_DEFAULT_PIPELINE[.DefaultShape] = {
+      $0._view.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 11.0, bottom: 11.0, right: 11.0)
+      if $0._shape == .normal {
+        var bg = ButtonBase._classicButton, bgd = ButtonBase._classicButtonDisabled, bgh = ButtonBase._classicButtonPressed
+        if $0._backgroundColor != kDefaultColor {
+          let tint = argbToColor($0._backgroundColor)
+          bg = ButtonBase._classicButton.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          bgd = ButtonBase._classicButtonDisabled.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          if $0.ShowFeedback {
+            bgh = ButtonBase._classicButtonPressed.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          }
+        }
+        $0._view.setBackgroundImage(bg, for: .normal)
+        $0._view.setBackgroundImage(bgd, for: .disabled)
+        $0._view.setBackgroundImage($0.ShowFeedback ? bgh : bg, for: .highlighted)
+        return false
+      }
+      return true
+    }
+    CLASSIC_DEFAULT_PIPELINE[.BackgroundColor] = {
+      $0._view.backgroundColor = argbToColor($0._backgroundColor == kDefaultColor ? Int32(bitPattern: kShapedDefaultBackgroundColor.rawValue) : $0._backgroundColor)
+      return true
+    }
+    CLASSIC_DEFAULT_PIPELINE[.FontColor] = {
+      $0._view.setTitleColor($0._textColor == kDefaultColor ? CLASSIC_DEFAULT_BUTTON_TEXTCOLOR : argbToColor($0._textColor), for: .normal)
+      $0._view.setTitleColor(CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR, for: .disabled)
+      return true
+    }
+    CLASSIC_DEFAULT_PIPELINE[.Highlight] = {
+      $0._view.showsTouchWhenHighlighted = ($0._container.form.Theme != "Classic" || $0._backgroundImage != nil) && $0.ShowFeedback
+      $0._view.adjustsImageWhenHighlighted = $0.ShowFeedback
+      return true
+    }
+
+    // Modern iOS theme
+    let defaultbuttoncolor = UIButton().titleColor(for: .normal)
+    MODERN_DEFAULT_PIPELINE = CLASSIC_DEFAULT_PIPELINE
+    MODERN_DEFAULT_PIPELINE[.FontColor] = {
+      $0._view.setTitleColor($0._textColor == kDefaultColor ? defaultbuttoncolor : argbToColor($0._textColor), for: .normal)
+      return true
+    }
+    MODERN_DEFAULT_PIPELINE[.DefaultShape] = { (MAIButton) in return true }  // Cancels Classic button style
+    MODERN_DEFAULT_PIPELINE[.BackgroundColor] = {
+      $0._view.backgroundColor = $0._backgroundColor == kDefaultColor ? nil : argbToColor($0._backgroundColor)
+      return true
+    }
   }
 
   public override init(_ parent: ComponentContainer) {
     if ButtonBase._classicButton == nil {
       ButtonBase.loadClassicButton()
     }
-    self._view = UIButton(type: UIButton.ButtonType.custom)
+    self._view = MAIButton(type: UIButton.ButtonType.custom)
     _defaultTextColor = self._view.tintColor
     _defaultHighlightColor = self._view.titleColor(for: .highlighted)
+    _stylePipeline = ButtonBase.CLASSIC_DEFAULT_PIPELINE
     super.init(parent)
     self._view.translatesAutoresizingMaskIntoConstraints = false
     self._view.addTarget(self, action: #selector(TouchDown), for: UIControl.Event.touchDown)
@@ -65,7 +193,6 @@ open class ButtonBase: ViewComponent {
     Text = ""
     TextAlignment = Alignment.center.rawValue
     TextColor = Int32(Color.default.rawValue)
-    applyTheme()
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForButton) {
@@ -78,14 +205,21 @@ open class ButtonBase: ViewComponent {
       return _view
     }
   }
-  
+
+  @objc func Initialize() {
+    if _container.form.Theme != "Classic" {
+      _stylePipeline = ButtonBase.MODERN_DEFAULT_PIPELINE
+    }
+    applyStyle()
+  }
+
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
     set(argb) {
       _backgroundColor = argb
-      applyTheme()
+      setNeedsStyleApplied()
     }
   }
 
@@ -132,7 +266,6 @@ open class ButtonBase: ViewComponent {
     }
   }
 
-
   @objc open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)
@@ -150,26 +283,18 @@ open class ButtonBase: ViewComponent {
       if (path == nil || path == "") {
         _backgroundImage = nil
       } else {
-        NSLog("Path: \(String(describing: path))")
         var image = UIImage(named: path!);
         if (image == nil) {
           image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path!))
         }
         if (image != nil) {
-          NSLog("Image is not nil");
           _imagePath = path
           _backgroundImage = image
-          NSLog("Width: \((image?.size.width)!) Height: \((image?.size.height)!)")
           _view.frame.size = (image?.size)!
           _view.invalidateIntrinsicContentSize()
-          NSLog("Button frame size: \(_view.frame)")
-        } else {
-          NSLog("Image is nil");
         }
       }
-      applyTheme()
-      _container.form.view.setNeedsLayout()
-      _view.setNeedsLayout()
+      setNeedsStyleApplied()
     }
   }
 
@@ -180,7 +305,7 @@ open class ButtonBase: ViewComponent {
     set(shape) {
       if let shape = ButtonShape(rawValue: shape) {
         _shape = shape
-        // TODO(ewpatton): Adjust button shape
+        setNeedsStyleApplied()
       }
     }
   }
@@ -191,7 +316,7 @@ open class ButtonBase: ViewComponent {
     }
     set(feedback) {
       _showFeedback = feedback
-      applyTheme()
+      setNeedsStyleApplied()
     }
   }
 
@@ -269,55 +394,21 @@ open class ButtonBase: ViewComponent {
     return false;
   }
 
-  func applyTheme() {
-    switch _container.form.Theme {
-    case "Classic":
-      self._view.imageView?.tintColor = nil
-      if let backgroundImage = _backgroundImage {
-        self._view.setBackgroundImage(backgroundImage, for: .normal)
-        self._view.setBackgroundImage(nil, for: [.disabled, .highlighted])
-        self._view.contentEdgeInsets = .zero
-      } else {
-        if _backgroundColor != Int32(bitPattern: Color.default.rawValue) {
-          let tint = argbToColor(_backgroundColor)
-          let bg = ButtonBase._classicButton.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-          let bgd = ButtonBase._classicButtonDisabled.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-          let bgh = ButtonBase._classicButtonPressed.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-          self._view.setBackgroundImage(bg, for: .normal)
-          self._view.setBackgroundImage(ShowFeedback ? bgh : bg, for: .highlighted)
-          self._view.setBackgroundImage(bgd, for: .disabled)
-        } else {
-          self._view.setBackgroundImage(ButtonBase._classicButton, for: .normal)
-          self._view.setBackgroundImage(ButtonBase._classicButtonDisabled, for: .disabled)
-          self._view.setBackgroundImage(ShowFeedback ? ButtonBase._classicButtonPressed : ButtonBase._classicButton, for: .highlighted)
-        }
-        self._view.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 11.0, bottom: 11.0, right: 11.0)
+  func setNeedsStyleApplied() {
+    if !_needsStyleApplied {
+      _needsStyleApplied = true
+      DispatchQueue.main.async {
+        self.applyStyle()
       }
-      if _textColor == Int32(bitPattern: Color.default.rawValue) {
-        self._view.setTitleColor(CLASSIC_DEFAULT_BUTTON_TEXTCOLOR, for: .normal)
-      }
-      self._view.setTitleColor(CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR, for: .disabled)
-      self._view.showsTouchWhenHighlighted = false
-      self._view.adjustsImageWhenHighlighted = ShowFeedback
-      break
-    default:
-      if _backgroundImage == nil && BackgroundColor != Int32(bitPattern: Color.default.rawValue) {
-        self._view.setBackgroundImage(nil, for: [.normal, .disabled, .highlighted])
-      } else {
-        self._view.setBackgroundImage(_backgroundImage, for: .normal)
-        self._view.setBackgroundImage(nil, for: .disabled)
-        self._view.setBackgroundImage(ShowFeedback ? nil : _backgroundImage, for: .highlighted)
-      }
-      if _textColor == Int32(bitPattern: Color.default.rawValue) {
-        self._view.setTitleColor(_defaultTextColor, for: .normal)
-      } else {
-        self._view.setTitleColor(argbToColor(_textColor), for: .normal)
-      }
-      self._view.showsTouchWhenHighlighted = ShowFeedback
-      self._view.adjustsImageWhenHighlighted = ShowFeedback
-      self._view.setTitleColor(_defaultHighlightColor, for: .highlighted)
-      self._view.setTitleColor(.gray, for: .disabled)
-      break
     }
+  }
+
+  func applyStyle() {
+    _needsStyleApplied = false
+    for step in _stylePipeline.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
+      if !step.value(self) { break }
+    }
+    _container.form.view.setNeedsLayout()
+    _view.setNeedsLayout()
   }
 }

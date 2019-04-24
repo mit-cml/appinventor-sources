@@ -1,10 +1,5 @@
-//
-//  ColorUtil.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/20/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -19,6 +14,10 @@ public func argbToColor( _ argb: Int32) -> UIColor {
   argb >>= 8
   a = Float(argb & 0xFF) / 255.0
   return UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: CGFloat(a))
+}
+
+public func argbToColor(_ argb: UInt32) -> UIColor {
+  return argbToColor(Int32(bitPattern: argb))
 }
 
 public func colorToArgb(_ color: UIColor) -> Int32 {
