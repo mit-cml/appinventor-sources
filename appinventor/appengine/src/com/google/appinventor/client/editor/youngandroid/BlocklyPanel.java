@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2019 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -381,6 +382,7 @@ public class BlocklyPanel extends HTMLPanel {
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     terminateDrag();  // cancel a drag before showing the modal dialog
+    ConnectProgressBar.tempHide(true); // Hide any connection progress bar
     dialogBox.show();
     return dialogBox;
   }
@@ -394,6 +396,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
 
   public static void HideDialog(DialogBox dialog) {
+    ConnectProgressBar.tempHide(false); // unhide the progress bar if it was hidden
     dialog.hide();
   }
 
@@ -627,7 +630,7 @@ public class BlocklyPanel extends HTMLPanel {
         block.rename(e.oldValue, e.newValue);
       }
       cb(e);
-      if (workspace.rendered) {
+      if (workspace.rendered && !e.isTransient) {
         var handler = this.getWarningHandler();
         if (handler) {
           // [lyn 12/31/2013] Check for duplicate component event handlers before
@@ -653,6 +656,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
   native void makeActive()/*-{
     Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    Blockly.mainWorkspace.refreshBackpack();
     // Trigger a screen switch to send new YAIL.
     var parts = Blockly.mainWorkspace.formName.split(/_/);
     if (Blockly.ReplMgr.isConnected()) {

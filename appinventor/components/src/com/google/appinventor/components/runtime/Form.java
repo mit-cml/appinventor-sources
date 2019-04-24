@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -81,7 +82,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -199,8 +203,11 @@ public class Form extends AppInventorCompatActivity
 
   private static boolean showListsAsJson = false;
 
+  private final Set<String> permissions = new HashSet<String>();
+
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
+  private final Map<Integer, Set<ActivityResultListener>> activityResultMultiMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
   private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
@@ -342,6 +349,8 @@ public class Form extends AppInventorCompatActivity
       progress.dismiss();
     }
 
+    populatePermissions();
+
     // Check to see if we need to ask for WRITE_EXTERNAL_STORAGE
     // permission.  We look at the application manifest to see if it
     // is declared there. If it is, then we need to ask the user to
@@ -350,28 +359,9 @@ public class Form extends AppInventorCompatActivity
     // we have to have yet another continuation of the onCreate
     // process (onCreateFinish2). Sigh.
 
-    boolean needSdcardWrite = false;
-    try {
-      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(),
-        PackageManager.GET_PERMISSIONS);
-      for (String permission : packageInfo.requestedPermissions) {
-        if (DEBUG) {
-          Log.d(LOG_TAG, "requestedPersmission: " + permission);
-        }
-        if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
-          // If we are the Companion and we are not using the Splash Screen, then we
-          // will need to prompt for permissions here.
-          if (!(this instanceof ReplForm) || !AppInventorFeatures.doCompanionSplashScreen()) {
-            needSdcardWrite = true;
-          }
-          if (DEBUG) {
-            Log.d(LOG_TAG, "NEED TO REQUEST PERMISSION!");
-          }
-        }
-      }
-    } catch (Exception e) {
-      Log.e(LOG_TAG, "Exception while attempting to learn permissions.", e);
-    }
+    boolean needSdcardWrite = doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+        // Don't ask permission if we are REPL and using the splash screen
+        !(isRepl() && AppInventorFeatures.doCompanionSplashScreen());
     if (needSdcardWrite) {
       askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
         new PermissionResultHandler() {
@@ -423,6 +413,19 @@ public class Form extends AppInventorCompatActivity
     // before initialization finishes. Instead the compiler suppresses the invocation of the
     // event and leaves it up to the library implementation.
     Initialize();
+  }
+
+  /**
+   * Builds a set of permissions requested by the app from the package manifest.
+   */
+  private void populatePermissions() {
+    try {
+      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(),
+          PackageManager.GET_PERMISSIONS);
+      Collections.addAll(permissions, packageInfo.requestedPermissions);
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "Exception while attempting to learn permissions.", e);
+    }
   }
 
   private void defaultPropertyValues() {
@@ -603,6 +606,13 @@ public class Form extends AppInventorCompatActivity
       if (component != null) {
         component.resultReturned(requestCode, resultCode, data);
       }
+      // Many components are interested in this request (e.g., Texting, PhoneCall)
+      Set<ActivityResultListener> listeners = activityResultMultiMap.get(requestCode);
+      if (listeners != null) {
+        for (ActivityResultListener listener : listeners.toArray(new ActivityResultListener[0])) {
+          listener.resultReturned(requestCode, resultCode, data);
+        }
+      }
     }
   }
 
@@ -629,6 +639,22 @@ public class Form extends AppInventorCompatActivity
     return requestCode;
   }
 
+  /**
+   * Register a {@code listener} for the given {@code requestCode}. This is used to simulate
+   * broadcast receivers as a workaround for PhoneCall and Texting handlers related to initiating
+   * calls/messages.
+   *
+   * @param listener The object to report activity results to for the given request code
+   */
+  public void registerForActivityResult(ActivityResultListener listener, int requestCode) {
+    Set<ActivityResultListener> listeners = activityResultMultiMap.get(requestCode);
+    if (listeners == null) {
+      listeners = Sets.newHashSet();
+      activityResultMultiMap.put(requestCode, listeners);
+    }
+    listeners.add(listener);
+  }
+
   public void unregisterForActivityResult(ActivityResultListener listener) {
     List<Integer> keysToDelete = Lists.newArrayList();
     for (Map.Entry<Integer, ActivityResultListener> mapEntry : activityResultMap.entrySet()) {
@@ -638,6 +664,17 @@ public class Form extends AppInventorCompatActivity
     }
     for (Integer key : keysToDelete) {
       activityResultMap.remove(key);
+    }
+
+    // Remove any simulated broadcast receivers
+    Iterator<Map.Entry<Integer, Set<ActivityResultListener>>> it =
+        activityResultMultiMap.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<Integer, Set<ActivityResultListener>> entry = it.next();
+      entry.getValue().remove(listener);
+      if (entry.getValue().size() == 0) {
+        it.remove();
+      }
     }
   }
 
@@ -1763,10 +1800,12 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
   public void Theme(String theme) {
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      backgroundColor = Component.COLOR_WHITE;
+      setBackground(frameLayout);
       return;  // Only "Classic" is supported below SDK 11 due to minSDK in AppCompat
     }
     if (usesDefaultBackground) {
-      if (theme.equalsIgnoreCase("AppTheme")) {
+      if (theme.equalsIgnoreCase("AppTheme") && !isClassicMode()) {
         backgroundColor = Component.COLOR_BLACK;
       } else {
         backgroundColor = Component.COLOR_WHITE;
@@ -2470,8 +2509,7 @@ public class Form extends AppInventorCompatActivity
    */
   public void askPermission(final String permission, final PermissionResultHandler responseRequestor) {
     final Form form = this;
-    if (ContextCompat.checkSelfPermission(form, permission) ==
-        PackageManager.PERMISSION_GRANTED) {
+    if (!isDeniedPermission(permission)) {
       // We already have permission, so no need to ask
       responseRequestor.HandlePermissionResponse(permission, true);
       return;
@@ -2512,6 +2550,18 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Tests whether the app declares the given permission.
+   *
+   * @param permissionName The name of the permission to test.
+   * @see android.Manifest.permission
+   * @return True if the permission is declared in the manifest, otherwise false.
+   */
+  @SuppressWarnings("WeakerAccess")  // May be used by extensions
+  public boolean doesAppDeclarePermission(String permissionName) {
+    return permissions.contains(permissionName);
+  }
+
+  /**
    * Gets the path to an asset.
    *
    * @param asset The filename of an application asset
@@ -2530,13 +2580,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SuppressWarnings({"WeakerAccess"})  // May be called by extensions
   public InputStream openAsset(String asset) throws IOException {
-    String path = getAssetPath(asset);
-    if (path.startsWith(ASSETS_PREFIX)) {
-      final AssetManager am = getAssets();
-      return am.open(path.substring(ASSETS_PREFIX.length()));
-    } else {
-      return FileUtil.openFile(URI.create(path));
-    }
+    return openAssetInternal(getAssetPath(asset));
   }
 
   /**
@@ -2563,13 +2607,21 @@ public class Form extends AppInventorCompatActivity
    * stream to prevent resource leaking.
    * @throws IOException if the asset is not found or cannot be read
    */
+  @SuppressWarnings("unused")  // May be called by extensions
   public InputStream openAssetForExtension(Component component, String asset) throws IOException {
-    String path = getAssetPathForExtension(component, asset);
+    return openAssetInternal(getAssetPathForExtension(component, asset));
+  }
+
+  @SuppressWarnings("WeakerAccess")  // Visible for testing
+  @VisibleForTesting
+  InputStream openAssetInternal(String path) throws IOException {
     if (path.startsWith(ASSETS_PREFIX)) {
       final AssetManager am = getAssets();
       return am.open(path.substring(ASSETS_PREFIX.length()));
-    } else {
+    } else if (path.startsWith("file:")) {
       return FileUtil.openFile(URI.create(path));
+    } else {
+      return FileUtil.openFile(path);
     }
   }
 }

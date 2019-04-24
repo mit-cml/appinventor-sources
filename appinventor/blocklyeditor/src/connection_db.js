@@ -83,10 +83,12 @@ Blockly.ConnectionDB.prototype.removeConnection_ = function(connection) {
  * O(n) removal of duplicate connections.
  */
 Blockly.ConnectionDB.prototype.removeDupes = function() {
-  for (var i = 0; i < this.length - 1; i++) {
-    if (this[i] == this[i+1]) {
-      this.splice(i, 1);
-      i--;
-    }
+  var map = {};
+  for (var i = 0; i < this.length; i++) {
+    var conn = this[i],
+      key = conn.getSourceBlock().id + ' ' + conn.x_ + ' ' + conn.y_;
+    if (!map[key]) map[key] = conn;
   }
+  this.splice(0, this.length);
+  Array.prototype.push.apply(this, Object.values(map));
 };

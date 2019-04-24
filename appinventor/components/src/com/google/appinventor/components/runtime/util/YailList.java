@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import gnu.lists.LList;
 import gnu.lists.Pair;
+import gnu.math.IntNum;
 
 import org.json.JSONException;
 
@@ -119,7 +120,11 @@ public class YailList extends Pair {
    * @return the string
    */
   public static String YailListElementToString(Object element) {
-    if (Number.class.isInstance(element)) {
+    if (element instanceof IntNum) {
+      return ((IntNum) element).toString(10);
+    } else if (element instanceof Long) {
+      return Long.toString((Long) element);
+    } else if (Number.class.isInstance(element)) {
       return YailNumberToString.format(((Number) element).doubleValue());
     } else {
       return String.valueOf(element);

@@ -12,7 +12,7 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 7.
+This code is tested and known to work with Java 8.
 
 ## Contributors
 The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) about whatever you intend to change or add.
@@ -28,7 +28,7 @@ Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
 ### Dependencies
-You will need a full Java JDK (version 7, preferably from Oracle; JRE is not enough) and Python to compile and run the servers.
+You will need a full Java JDK (version 8, OpenJDK preferred; JRE is not enough) and Python to compile and run the servers.
 
 You will also need a copy of the [App Engine SDK](https://developers.google.com/appengine/downloads) for Java and [ant](http://ant.apache.org/).
 

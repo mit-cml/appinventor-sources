@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -223,14 +224,31 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @SimpleEvent(description = "A GeoJSON document was successfully read from url. The features " +
       "specified in the document are provided as a list in features.")
   public void GotFeatures(String url, YailList features) {
-    EventDispatcher.dispatchEvent(this, "GotFeatures", url, features);
+    if (!EventDispatcher.dispatchEvent(this, "GotFeatures", url, features)) {
+      // If the app inventor hasn't defined GotFeatures, we by default create the features for them
+      Iterator it = features.iterator();
+      it.next();  // skip *list* symbol
+      while (it.hasNext()) {
+        FeatureFromDescription((YailList) it.next());
+      }
+    }
   }
 
   @SimpleEvent(description = "An error was encountered while processing a GeoJSON document at " +
       "the given url. The responseCode parameter will contain an HTTP status code and the " +
       "errorMessage parameter will contain a detailed error message.")
   public void LoadError(String url, int responseCode, String errorMessage) {
-    EventDispatcher.dispatchEvent(this, "LoadError", url, responseCode, errorMessage);
+    if (!EventDispatcher.dispatchEvent(this, "LoadError", url, responseCode, errorMessage)) {
+      // If the app inventor hasn't defined LoadError, we by default report it via the Form's error
+      // handler.
+      if (url.startsWith("file:")) {
+        $form().dispatchErrorOccurredEvent(this, "LoadFromURL",
+            ErrorMessages.ERROR_CANNOT_READ_FILE, url);
+      } else {
+        $form().dispatchErrorOccurredEvent(this, "LoadFromURL",
+            ErrorMessages.ERROR_WEB_UNABLE_TO_GET, url);
+      }
+    }
   }
 
   @Override
@@ -395,8 +413,8 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
         pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail((JSONArray) value)}));
       } else if (value instanceof JSONObject) {
         pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail((JSONObject) value)}));
-      } else {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE);
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
         throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
       }
     }
@@ -417,8 +435,8 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
         items.add(jsonArrayToYail((JSONArray) value));
       } else if (value instanceof JSONObject) {
         items.add(jsonObjectToYail((JSONObject) value));
-      } else {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE);
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
         throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
       }
     }
