@@ -65,6 +65,9 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 }
 
 + (instancetype)referenceWithObject:(id)object {
+  if (object == nil) {
+    return nil;
+  }
   return [[CopyableReference alloc] initWithObject:object];
 }
 
@@ -112,7 +115,7 @@ struct native_method {
 
 struct native_instance {
   OBJECT_HEADER
-  __unsafe_unretained id object_;
+  __weak id object_;
 };
 
 static pic_value
@@ -277,7 +280,10 @@ yail_make_native_instance(pic_state *pic, id object) {
   native_instance *native = (native_instance *)pic_obj_alloc(pic, offsetof(native_instance, object_), YAIL_TYPE_INSTANCE);
   native->object_ = object;
   pic_value value = pic_obj_value(native);
-  objects[[CopyableReference referenceWithObject:object]] = [NSNumber numberWithUnsignedLongLong:value];
+  CopyableReference *ref = [CopyableReference referenceWithObject:object];
+  if (ref) {
+    objects[ref] = [NSNumber numberWithUnsignedLongLong:value];
+  }
   return value;
 }
 
@@ -291,7 +297,10 @@ yail_native_instance_typename(pic_state *PIC_UNUSED(pic), struct native_instance
 
 void
 yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
-  [objects removeObjectForKey:[CopyableReference referenceWithObject:instance->object_]];
+  CopyableReference *ref = [CopyableReference referenceWithObject:instance->object_];
+  if (ref) {
+    [objects removeObjectForKey:ref];
+  }
 }
 
 int
