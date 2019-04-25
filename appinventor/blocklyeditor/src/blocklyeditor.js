@@ -40,24 +40,24 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
-unboundVariableHandler = function(myBlock, yailText) {
+function unboundVariableHandler(myBlock, yailText) {
   var unbound_vars = Blockly.LexicalVariable.freeVariables(myBlock);
   unbound_vars = unbound_vars.toList();
   if (unbound_vars.length == 0) {
     Blockly.ReplMgr.putYail(yailText, myBlock);
   } else {
-    var form = "<form>Enter values for:<br>";
-    for (v in unbound_vars) {
+    var form = "<form>" + Blockly.Msg.DIALOG_ENTER_VALUES + "<br>";
+    for (var v in unbound_vars) {
       form  +=  unbound_vars[v] + '<input type=text name=' + unbound_vars[v] + '><br>';
     }
     form += "</form>";
-    var dialog = new Blockly.Util.Dialog('Unbound Variables',form, 'Submit', false, 'Cancel', 10, function (button) {
-      if (button == 'Submit') {
+    var dialog = new Blockly.Util.Dialog('Unbound Variables',form, Blockly.Msg.DIALOG_SUBMIT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
+      if (button == Blockly.Msg.DIALOG_SUBMIT) {
         var code = "(let (";
-        for (i in unbound_vars) {
+        for (var i in unbound_vars) {
           code += '($' + unbound_vars[i] + ' ' + Blockly.Yail.quotifyForREPL(document.querySelector('input[name="' + unbound_vars[i] + '"]').value) + ') ';
         };
-        code += ")" + Blockly.Yail.blockToCode1(myBlock) + ")";
+        code += ")" + yailText + ")";
         Blockly.ReplMgr.putYail(code, myBlock);
       }
       dialog.hide();
