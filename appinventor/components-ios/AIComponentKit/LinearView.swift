@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -32,7 +32,8 @@ let TightSizingPriority = UILayoutPriority(10)
 let ConstraintPriority = UILayoutPriority(8)
 let DefaultSizingPriority = UILayoutPriority(6)
 
-public class LinearView: UIStackView {
+public class LinearView: UIView {
+  fileprivate var _outer = UIStackView()
   fileprivate var _inner = UIStackView()
   fileprivate var _horizontalAlign = HorizontalGravity.left
   fileprivate var _verticalAlign = VerticalGravity.top
@@ -52,31 +53,38 @@ public class LinearView: UIStackView {
     setup()
   }
   
-  required public init(coder aDecoder: NSCoder) {
+  required public init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     setup()
   }
 
   private func setup() {
+    clipsToBounds = true
     translatesAutoresizingMaskIntoConstraints = false
+    _outer.translatesAutoresizingMaskIntoConstraints = false
     _inner.translatesAutoresizingMaskIntoConstraints = false
     _backgroundView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(_backgroundView)
+    addSubview(_outer)
     addConstraint(_backgroundView.widthAnchor.constraint(equalTo: widthAnchor))
     addConstraint(_backgroundView.heightAnchor.constraint(equalTo: heightAnchor))
     addConstraint(_backgroundView.topAnchor.constraint(equalTo: topAnchor))
     addConstraint(_backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor))
-    spacing = 0
-    alignment = .top
-    distribution = .fill
-    axis = .horizontal
+    _outer.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+    _outer.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+    _outer.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    _outer.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    _outer.spacing = 0
+    _outer.alignment = .top
+    _outer.distribution = .fill
+    _outer.axis = .horizontal
     _inner.spacing = 0
     _inner.alignment = .leading
     _inner.distribution = .fill
     _inner.axis = .vertical
-    addArrangedSubview(_head)
-    addArrangedSubview(_inner)
-    addArrangedSubview(_tail)
+    _outer.addArrangedSubview(_head)
+    _outer.addArrangedSubview(_inner)
+    _outer.addArrangedSubview(_tail)
     _inner.addArrangedSubview(_innerHead)
     _inner.addArrangedSubview(_innerTail)
     updatePositioningConstraints()
@@ -131,10 +139,10 @@ public class LinearView: UIStackView {
         _inner.removeConstraint(_innerEqualConstraint)
         if _orientation == .horizontal {
           _inner.axis = .horizontal
-          axis = .vertical
+          _outer.axis = .vertical
         } else {
           _inner.axis = .vertical
-          axis = .horizontal
+          _outer.axis = .horizontal
         }
         updatePositioningConstraints()
         updatePriorities()
