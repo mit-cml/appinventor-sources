@@ -31,6 +31,7 @@ let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue +
 let TightSizingPriority = UILayoutPriority(10)
 let ConstraintPriority = UILayoutPriority(8)
 let DefaultSizingPriority = UILayoutPriority(6)
+let FillParentHuggingPriority = UILayoutPriority(5)
 
 public class LinearView: UIView {
   fileprivate var _outer = UIStackView()

@@ -108,15 +108,16 @@ import Toast_Swift
       oldConstraint.isActive = false
     }
     form.view.setNeedsLayout()
+    component.view.setContentHuggingPriority(.defaultLow, for: .horizontal)
     var constraint: NSLayoutConstraint!
     if width >= 0 {
       constraint = NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(width))
     } else if width == kLengthPreferred {
       constraint = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
     } else if width == kLengthFillParent {
-      // handled by hugging/compression priority in LinearView
-      component.view.setContentHuggingPriority(UILayoutPriority(5), for: .horizontal)
-      return
+      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
+      constraint = component.view.widthAnchor.constraint(greaterThanOrEqualTo: widthAnchor)
+      constraint.priority = UILayoutPriority(1)
     } else if width <= kLengthPercentTag {
       let percent = CGFloat(Double(-(width + 1000)) / 100.0)
       constraint = component.view.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor, multiplier: percent)
@@ -134,15 +135,16 @@ import Toast_Swift
       oldConstraint.isActive = false
     }
     form.view.setNeedsLayout()
+    component.view.setContentHuggingPriority(.defaultLow, for: .vertical)
     var constraint: NSLayoutConstraint!
     if height >= 0 {
       constraint = NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height))
     } else if height == kLengthPreferred {
       constraint = NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
     } else if height == kLengthFillParent {
-      // handled by hugging/compression priority in LinearView
-      component.view.setContentHuggingPriority(UILayoutPriority(5), for: .vertical)
-      return
+      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .vertical)
+      constraint = component.view.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor)
+      constraint.priority = UILayoutPriority(1)
     } else if height <= kLengthPercentTag {
       let percent = CGFloat(Double(-(height + 1000)) / 100.0)
       constraint = component.view.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor, multiplier: percent)
