@@ -114,7 +114,9 @@ import Toast_Swift
     } else if width == kLengthPreferred {
       constraint = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
     } else if width == kLengthFillParent {
-      constraint = component.view.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor)
+      // handled by hugging/compression priority in LinearView
+      component.view.setContentHuggingPriority(UILayoutPriority(5), for: .horizontal)
+      return
     } else if width <= kLengthPercentTag {
       let percent = CGFloat(Double(-(width + 1000)) / 100.0)
       constraint = component.view.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor, multiplier: percent)
@@ -138,7 +140,9 @@ import Toast_Swift
     } else if height == kLengthPreferred {
       constraint = NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
     } else if height == kLengthFillParent {
-      constraint = component.view.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor)
+      // handled by hugging/compression priority in LinearView
+      component.view.setContentHuggingPriority(UILayoutPriority(5), for: .vertical)
+      return
     } else if height <= kLengthPercentTag {
       let percent = CGFloat(Double(-(height + 1000)) / 100.0)
       constraint = component.view.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor, multiplier: percent)
@@ -717,6 +721,14 @@ import Toast_Swift
       }
       parent.setNeedsStatusBarAppearanceUpdate()
     }
+  }
+
+  var widthAnchor: NSLayoutDimension {
+    return _scaleFrameLayout.widthAnchor
+  }
+
+  var heightAnchor: NSLayoutDimension {
+    return _scaleFrameLayout.heightAnchor
   }
 }
 

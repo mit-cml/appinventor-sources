@@ -18,6 +18,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   fileprivate var _backgroundColor = UIColor.white
   fileprivate var _imagePath = ""
   fileprivate var _lastConstraint: NSLayoutConstraint! = nil
+  private var _dimensions = [Int:NSLayoutConstraint]()
 
   public init(_ parent: ComponentContainer, orientation: HVOrientation, scrollable: Bool) {
     _orientation = orientation
@@ -50,43 +51,53 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
-    let child = component.view
-    if width >= 0 {
-      let constraint = child.widthAnchor.constraint(equalToConstant: CGFloat(width))
-      constraint.priority = UILayoutPriority.required
-      view.addConstraint(constraint)
-    } else if width == kLengthPreferred {
-
-      view.addConstraint(NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
-    } else if width == kLengthFillParent {
-      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
-    } else if width <= kLengthPercentTag {
-      let width = -(width + 1000)
-      let pWidth = CGFloat(width) / CGFloat(100.0)
-      form.view.addConstraint(child.widthAnchor.constraint(equalTo: form.view.widthAnchor, multiplier: pWidth))
-    } else {
-      NSLog("Unable to process width value \(width)")
+    let hash = component.view.hash &* 2
+    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
+      oldConstraint.isActive = false
     }
     form.view.setNeedsLayout()
+    var constraint: NSLayoutConstraint!
+    if width >= 0 {
+      constraint = NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(width))
+    } else if width == kLengthPreferred {
+      constraint = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+    } else if width == kLengthFillParent {
+      // handled by hugging/compression priority in LinearView
+      return
+    } else if width <= kLengthPercentTag {
+      let percent = CGFloat(Double(-(width + 1000)) / 100.0)
+      constraint = component.view.widthAnchor.constraint(equalTo: form.widthAnchor, multiplier: percent)
+    } else {
+      NSLog("Unable to process width value \(width)")
+      return
+    }
+    constraint.isActive = true
+    _dimensions[hash] = constraint
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
-    let child = component.view
-    if height >= 0 {
-      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height)))
-      child.frame.size.height = CGFloat(height)
-    } else if height == kLengthPreferred {
-      view.addConstraint(NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
-    } else if height == kLengthFillParent {
-      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
-    } else if height <= kLengthPercentTag {
-      let height = -(height + 1000)
-      let pHeight = CGFloat(height) / CGFloat(100.0)
-      form.view.addConstraint(child.heightAnchor.constraint(equalTo: form.view.heightAnchor, multiplier: pHeight))
-    } else {
-      NSLog("Unable to process width value \(height)")
+    let hash = component.view.hash &* 2 | 1
+    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
+      oldConstraint.isActive = false
     }
     form.view.setNeedsLayout()
+    var constraint: NSLayoutConstraint!
+    if height >= 0 {
+      constraint = NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height))
+    } else if height == kLengthPreferred {
+      constraint = NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+    } else if height == kLengthFillParent {
+      // handled by hugging/compression priority in LinearView
+      return
+    } else if height <= kLengthPercentTag {
+      let percent = CGFloat(Double(-(height + 1000)) / 100.0)
+      constraint = component.view.heightAnchor.constraint(equalTo: form.heightAnchor, multiplier: percent)
+    } else {
+      NSLog("Unable to process width value \(height)")
+      return
+    }
+    constraint.isActive = true
+    _dimensions[hash] = constraint
   }
 
   // MARK: HVArrangement Properties
