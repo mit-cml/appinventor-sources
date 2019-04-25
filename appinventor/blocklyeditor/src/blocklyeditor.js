@@ -68,7 +68,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   }
   var connectedToRepl = top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
   var doitOption = { enabled: !this.disabled && connectedToRepl};
-  doitOption.text = connectedToRepl ? Blockly.Msg.DO_IT : Blockly.Msg.DO_IT_DISCONNECTED;
+  doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
     var yailText;
     //Blockly.Yail.blockToCode1 returns a string if the block is a statement
