@@ -58,6 +58,13 @@ open class ReplForm: Form {
       _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
     }
   }
+
+  @objc open func stopHTTPD() {
+    if let server = _httpdServer {
+      server.stop()
+      _httpdServer = nil
+    }
+  }
   
   @objc open var interpreter: SCMInterpreter? {
     get {

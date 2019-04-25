@@ -45,6 +45,10 @@ public class ViewController: UINavigationController {
   
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+//    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+//      menuButton.action = #selector(openMenu(caller:))
+//      menuButton.target = self
+//    }
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm
       form.Initialize()
@@ -129,5 +133,23 @@ public class ViewController: UINavigationController {
 
   override public var childForStatusBarStyle: UIViewController? {
     return form
+  }
+
+  @objc func openMenu(caller: UIBarButtonItem) {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+      let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+      controller.addAction(UIAlertAction(title: "Close Project", style: .default) { (UIAlertAction) in
+        (self.form as! ReplForm).stopHTTPD()
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let newRoot = storyboard.instantiateInitialViewController()
+        UIApplication.shared.delegate?.window??.rootViewController = newRoot
+        controller.dismiss(animated: false)
+      })
+      controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
+        controller.dismiss(animated: true)
+      })
+      present(controller, animated: true)
+    } else {
+    }
   }
 }
