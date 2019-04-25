@@ -51,7 +51,7 @@ function unboundVariableHandler(myBlock, yailText) {
       form  +=  unbound_vars[v] + '<input type=text name=' + unbound_vars[v] + '><br>';
     }
     form += "</form>";
-    var dialog = new Blockly.Util.Dialog('Unbound Variables',form, Blockly.Msg.DIALOG_SUBMIT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.DIALOG_UNBOUND_VAR, form, Blockly.Msg.DIALOG_SUBMIT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
       if (button == Blockly.Msg.DIALOG_SUBMIT) {
         var code = "(let (";
         for (var i in unbound_vars) {
