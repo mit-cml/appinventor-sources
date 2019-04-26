@@ -920,6 +920,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 06EF8CDF1D8CE2F6009FB227;
