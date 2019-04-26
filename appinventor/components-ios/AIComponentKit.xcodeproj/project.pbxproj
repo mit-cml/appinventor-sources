@@ -1216,7 +1216,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CURRENT_PROJECT_VERSION = 1;
@@ -1251,7 +1250,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CURRENT_PROJECT_VERSION = 1;
