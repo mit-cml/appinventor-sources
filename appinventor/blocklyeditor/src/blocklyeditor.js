@@ -49,7 +49,6 @@ Blockly.BlocklyEditor.render = function() {
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
-  var doitOption = { enabled: !this.disabled};
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: !this.disabled};
     yailOption.text = Blockly.Msg.GENERATE_YAIL;
@@ -67,6 +66,8 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     };
     options.push(yailOption);
   }
+  var connectedToRepl = top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+  var doitOption = { enabled: !this.disabled && connectedToRepl};
   doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
     var yailText;
@@ -74,8 +75,8 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     //and an array if the block is a value
     var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
     var dialog;
-    if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
-      dialog = new goog.ui.Dialog(null, true);
+    if (!connectedToRepl) {
+      dialog = new goog.ui.Dialog(null, true, new goog.dom.DomHelper(top.document));
       dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
       dialog.setTextContent(Blockly.Msg.CONNECT_TO_DO_IT);
       dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
