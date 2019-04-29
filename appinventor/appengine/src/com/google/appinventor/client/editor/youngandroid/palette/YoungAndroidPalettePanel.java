@@ -27,10 +27,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Button;
+import com.google.appinventor.client.utils.Trie;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -56,6 +61,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 
   private DropTargetProvider dropTargetProvider;
+  // initialize a Trie
+  private Trie componentTrie;
 
   /**
    * Creates a new component palette panel.
@@ -75,6 +82,26 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
 
+    componentTrie = new Trie();
+    //Load Component strings to Trie
+    for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      componentTrie.insert(component.toLowerCase());
+    }
+
+    // initialize the panel that holds search
+    final VerticalPanel panel = new VerticalPanel();
+    panel.setWidth("100%");
+    final TextBox searchText = new TextBox();
+    Button searchButton = new Button(MESSAGES.searchComponentButton());
+
+    panel.add(searchText);
+    panel.add(searchButton);
+
+    stackPalette.setWidth("100%");
+    initWidget(stackPalette);
+
+    stackPalette.add(panel, "Search for Component");
+
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
         VerticalPanel categoryPanel = new VerticalPanel();
@@ -92,8 +119,21 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     initExtensionPanel();
 
-    stackPalette.setWidth("100%");
-    initWidget(stackPalette);
+    // Add button event
+    searchButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        String search_str = searchText.getText().trim().toLowerCase();
+        Collection<String> allComponents = componentTrie.getAllWords(search_str);
+        for (String name: allComponents) {
+          String componentName = name.substring(0, 1).toUpperCase() + name.substring(1);
+          if (simplePaletteItems.containsKey(componentName)) { 
+            SimplePaletteItem item = simplePaletteItems.get(componentName);
+            panel.add(item);
+          }
+        }
+      }
+    });    
   }
 
   private static boolean showCategory(ComponentCategory category) {

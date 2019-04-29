@@ -1076,6 +1076,11 @@ public interface OdeMessages extends Messages {
   @Description("Message when blocks fail to load properly")
   String blocksLoadFailure(String formName);
 
+  // Used in editor/youngandroid/palette/YoungAndroidPalletePanel.java
+  @DefaultMessage("Search")
+  @Description("search components")
+  String searchComponentButton();
+
   //Used in editor/youngandroid/properties/YoungAndroidAccelerometerSensitivityChoicePropertyEditor.java
 
   @DefaultMessage("weak")
