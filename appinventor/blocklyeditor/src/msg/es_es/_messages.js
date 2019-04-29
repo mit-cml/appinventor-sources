@@ -48,20 +48,20 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
     Blockly.Msg.SORT_C = 'Ordenar Bloques por Categoría';
 
 // Variable renaming.
-    Blockly.MSG_CHANGE_VALUE_TITLE = 'Cambiar valor:';
-    Blockly.MSG_NEW_VARIABLE = 'Nueva variable...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = 'Nuevo nombre de variable:';
-    Blockly.MSG_RENAME_VARIABLE = 'Renombrar variable...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = 'Renombrar todas las "%1" variables:';
+    Blockly.Msg.CHANGE_VALUE_TITLE = 'Cambiar valor:';
+    Blockly.Msg.NEW_VARIABLE = 'Nueva variable...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = 'Nuevo nombre de variable:';
+    Blockly.Msg.RENAME_VARIABLE = 'Renombrar variable...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Renombrar todas las "%1" variables:';
 
 // Toolbox.
-    Blockly.MSG_VARIABLE_CATEGORY = 'Variables';
-    Blockly.MSG_PROCEDURE_CATEGORY = 'Procedimientos';
+    Blockly.Msg.VARIABLE_CATEGORY = 'Variables';
+    Blockly.Msg.PROCEDURE_CATEGORY = 'Procedimientos';
 
 // Warnings/Errors
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "Este bloque no se puede colocar en una definición";
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Escoja un elemento válido.";
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "El evento está duplicado para este componente.";
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "Este bloque no se puede colocar en una definición";
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Escoja un elemento válido.";
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = "El evento está duplicado para este componente.";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = 'Pincha el cuadrado para escoger un color.';

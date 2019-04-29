@@ -345,6 +345,15 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
         info.setPropertyList.push(property.name);
       }
     }
+    // Copy the designer property information to the block information
+    for (j = 0; property = componentInfo.properties[j]; ++j) {
+      var target = info.properties[property['name']];
+      // All designer properties should have setters, but if not...
+      if (!target) continue;
+      Object.keys(property).forEach(function(k) {
+        target[k] = property[k];
+      });
+    }
   }
 };
 

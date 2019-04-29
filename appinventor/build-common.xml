@@ -13,7 +13,7 @@
 
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
-<project name="CommonDefinitions">
+<project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
   <description>
@@ -170,6 +170,7 @@
   <macrodef name="ai.dojunit">
     <attribute name="aij-testingtarget" />
     <attribute name="aij-dir" />
+    <attribute name="aij-prod" default="false" />
     <!-- The following element is used to workaround a bug in older JDKs that prevents
          Robolectric's annotations from being read by javac -->
     <element name="aij-supplemental-includes" optional="true" />
@@ -203,6 +204,9 @@
              maxmemory="925m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
+        <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
+        <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war ${local.build.dir}/build/war" unless:true="@{aij-prod}"/>
+        <sysproperty key="java.awt.headless" value="true"/>
         <classpath refid="@{aij-testingtarget}.path"/>
         <formatter type="xml"/>
         <!-- If the ant command line sets the test_name property (see above)
@@ -316,17 +320,6 @@
   <target name="common_CommonTranslations">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonTranslations"/>
-  </target>
-
-  <!-- ====================================================================
-       common_BlocksEditorHttpConstants builds:
-       - build/common/BlocksEditorHttpConstants.jar
-       - build/common/BlocksEditorHttpConstants-gwt.jar
-       ==================================================================== -->
-  
-  <target name="common_BlocksEditorHttpConstants">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
-         target="BlocksEditorHttpConstants"/>
   </target>
 
   <!-- ====================================================================

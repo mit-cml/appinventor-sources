@@ -37,7 +37,6 @@
 
   <target name="extensions">
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="extensions"/>
   </target>
 

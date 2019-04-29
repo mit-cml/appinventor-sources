@@ -86,25 +86,25 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     + '</p><p><a href="/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
 
 // Variable renaming.
-    Blockly.MSG_CHANGE_VALUE_TITLE = '修改數值:';
-    Blockly.MSG_NEW_VARIABLE = '新增變數...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = '新增變數名稱:';
-    Blockly.MSG_RENAME_VARIABLE = '變數重新命名...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = '將所有 "%1" 變數重新命名為:';
+    Blockly.Msg.CHANGE_VALUE_TITLE = '修改數值:';
+    Blockly.Msg.NEW_VARIABLE = '新增變數...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = '新增變數名稱:';
+    Blockly.Msg.RENAME_VARIABLE = '變數重新命名...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = '將所有 "%1" 變數重新命名為:';
 
 // Toolbox.
-    Blockly.MSG_VARIABLE_CATEGORY = '變數';
-    Blockly.MSG_PROCEDURE_CATEGORY = '程序';
+    Blockly.Msg.VARIABLE_CATEGORY = '變數';
+    Blockly.Msg.PROCEDURE_CATEGORY = '程序';
 
 // Warnings/Errors
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = '該程式方塊無法定義';
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = '請從下拉式選單中選取有效項目';
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = '已存在相同名稱的事件處理器';
-    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "元件不存在";
-    Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "該程式方塊未定義。刪除該程式方塊！";
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = '該程式方塊無法定義';
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = '請從下拉式選單中選取有效項目';
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = '已存在相同名稱的事件處理器';
+    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "元件不存在";
+    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "該程式方塊未定義。刪除該程式方塊！";
 
-    Blockly.ERROR_CAN_NOT_DO_IT_CONTENT = '只有連接「AI Companion」或「模擬器」才能執行';
-    Blockly.ERROR_CAN_NOT_DO_IT_TITLE = '無法執行該程式方塊';
+    Blockly.Msg.ERROR_CAN_NOT_DO_IT_CONTENT = '只有連接「AI Companion」或「模擬器」才能執行';
+    Blockly.Msg.ERROR_CAN_NOT_DO_IT_TITLE = '無法執行該程式方塊';
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = '點擊方形區域來選取顏色';
