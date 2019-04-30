@@ -410,7 +410,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   console.log("Subset json string");
   console.log(subsetJsonString);
 
-  try {
+  if (subsetJsonString.length > 0) {
     subsetArray = JSON.parse(subsetJsonString);
     console.log("subsetArray");
     console.log(subsetArray);
@@ -474,7 +474,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
       var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
     }
-  } catch (err) {
+  } else {
 
     console.log("Using default blocks because no JSON specified");
     //create event blocks
@@ -516,86 +516,6 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
   }
 
-  // if (subsetArray.length > 0) {
-  //   console.log("pushing subsets~");
-  //   var subsetBlockArray = subsetArray["ShownBlockTypes"]["ComponentBlocks"][typeName];
-  //   for (var i = 0; i < subsetBlockArray; i++) {
-  //     var obj = subsetBlockArray[i];
-  //     obj['mutatorNameToValue']['instance_name'] = instanceRecord.name;
-  //     obj['fieldNameToValue']['COMPONENT_SELECTOR'] = instanceRecord.name;
-  //     xmlArrayTest.push(this.blockTypeToXMLArray(obj));
-  //   }
-  // } 
-
-
-  // if(typeName == "WebViewer"){
-  //     var formName = Blockly.mainWorkspace.formName;
-
-  //     var jsonDataString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName , instanceName , "JSONBlocks");
-  //     var jsonDataArray = [];
-
-  //     // If jsonDataString is not the right format, JSON.parse(jsonDataString) will make an error.
-  //     // In this case ensure only WebViewer blocks come out safely without any error by using try...catch.
-  //     try {
-  //         jsonDataArray = JSON.parse(jsonDataString);
-  //     }
-  //     catch(err){
-  //     }
-
-
-  //     // Below code in the for loop will only execute when JSON.parse(jsonDataString) have returned an array safely.
-  //     for(var i=0; i<jsonDataArray.length; i++){
-  //         var jsonData = JSON.stringify(jsonDataArray[i]);
-  //         var encodedURI = encodeURIComponent(jsonData); //what about ''?
-
-  //         var xmlString = '<xml><block xmlns="http://www.w3.org/1999/xhtml" type="customizable_block" '
-  //             + '><mutation block_info=' + '\"'+encodedURI +'\"'
-  //             + ' webviewer_name=' + '\"'+instanceName+'\"'
-  //             + '></mutation></block></xml>';
-
-  //         var xmlFromString = Blockly.Xml.textToDom(xmlString).children[0];
-  //         xmlArray.push(xmlFromString);
-  //     }
-  // }
-
-
-  // //create event blocks
-  // goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
-  //   if (event.deprecated != 'true') {
-  //     Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
-  //       'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
-  //     }));
-  //   }
-  // }, this);
-
-  // //create non-generic method blocks
-  // goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
-  //   if (method.deprecated != 'true') {
-  //     Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
-  //       'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
-  //     }));
-  //   }
-  // }, this);
-
-  // //for each property
-  // goog.object.forEach(componentInfo.properties, function(property, name) {
-  //   if (property.deprecated != 'true') {
-  //     var params = {'component_type': typeName, 'instance_name': instanceRecord.name,
-  //                   'property_name': name};
-  //     if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
-  //       params['set_or_get'] = 'get';
-  //       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-  //     }
-  //     if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
-  //       params['set_or_get'] = 'set';
-  //       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-  //     }
-  //   }
-  // }, this);
-
-  // //create component literal block
-  // var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
-  // Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
   console.log("XML Array");
   console.log(xmlArray);
   return xmlArray;

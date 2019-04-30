@@ -656,7 +656,6 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         jsonObjList[0] = obj;
         break;
       case "blockProperties":
-        var rw = "read-write";
         if (rw != "invisible") {
           var obj = {};
           obj["type"] = "component_set_get";
