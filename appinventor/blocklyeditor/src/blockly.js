@@ -58,12 +58,15 @@ Blockly.hideChaff = (function(func) {
  */
 Blockly.confirmDeletion = function(callback) {
   var DELETION_THRESHOLD = 3;
-  var descendantCount = Blockly.selected.getDescendants().length;
 
-  // Filter out indirect descendants
-  if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
-    descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
+  var descendantCount = Blockly.mainWorkspace.getAllBlocks().length;
+  if (Blockly.selected != null) {
+    descendantCount = Blockly.selected.getDescendants().length;
+    if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
+      descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
+    }
   }
+
 
   if (descendantCount >= DELETION_THRESHOLD) {
     if (Blockly.Util && Blockly.Util.Dialog) {
