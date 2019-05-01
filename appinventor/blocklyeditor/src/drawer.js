@@ -108,7 +108,6 @@ Blockly.Drawer.createSubsetBlockInfoArray_ = function() {
     var drawerTypes = ["Logic", "Control", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"];
     var fullBlockArray = Blockly.Drawer.createBlockInfoArray_();
     var blockArray = {};
-//    drawerTypes.forEach(function(type) {
     for (var key in subsetBlockArray) {
       if (key != 'ComponentBlocks') {
         var typeName = "cat_" + key;

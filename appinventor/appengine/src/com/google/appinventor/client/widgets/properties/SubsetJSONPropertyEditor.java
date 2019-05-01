@@ -215,14 +215,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         final CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
         final TreeItem subTree = createCascadeCheckboxItem(subcb);
         subcb.setName(cname);
-        for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
-          if (pdef.getRW() != "invisible") {
-            CheckBox propcb = new CheckBox(ComponentsTranslation.getPropertyName(pdef.getName()));
-            propcb.setName("blockProperties");
-            propcb.setFormValue(pdef.getRW());
-            subTree.addItem(createCascadeCheckboxItem(propcb));
-          }
-        }
+        // Event, Method, Property order needs to match Blockly.Drawer.prototype.instanceRecordToXMLArray
+        // so that component blocks are displayed in the same order with or without a subset defined.
         for (ComponentDatabaseInterface.EventDefinition edef : cd.getEvents()) {
           CheckBox eventcb = new CheckBox(ComponentsTranslation.getEventName(edef.getName()));
           eventcb.setName("events");
@@ -234,6 +228,14 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           methcb.setName("methods");
           methcb.setFormValue("none");
           subTree.addItem(createCascadeCheckboxItem(methcb));
+        }
+        for (ComponentDatabaseInterface.BlockPropertyDefinition pdef : cd.getBlockProperties()) {
+          if (pdef.getRW() != "invisible") {
+            CheckBox propcb = new CheckBox(ComponentsTranslation.getPropertyName(pdef.getName()));
+            propcb.setName("blockProperties");
+            propcb.setFormValue(pdef.getRW());
+            subTree.addItem(createCascadeCheckboxItem(propcb));
+          }
         }
         TreeItem t = categoryItems.get(cd.getCategoryDocUrlString());
         t.addItem(subTree);
