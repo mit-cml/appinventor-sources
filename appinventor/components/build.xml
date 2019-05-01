@@ -180,6 +180,7 @@
     <!-- END Android Support Libraries -->
     <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <!-- Add extension libraries here -->
