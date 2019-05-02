@@ -211,7 +211,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     }
     for (String cname : db.getComponentNames()) {
       ComponentDatabaseInterface.ComponentDefinition cd = db.getComponentDefinition(cname);
-      if (categoryItems.containsKey(cd.getCategoryDocUrlString())) {
+      if (categoryItems.containsKey(cd.getCategoryDocUrlString()) && db.getShowOnPalette(cname) ) {
         final CheckBox subcb = new CheckBox(ComponentsTranslation.getComponentName(cname));
         final TreeItem subTree = createCascadeCheckboxItem(subcb);
         subcb.setName(cname);

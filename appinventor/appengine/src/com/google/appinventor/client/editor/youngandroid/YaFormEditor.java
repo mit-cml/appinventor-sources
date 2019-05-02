@@ -534,18 +534,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   public void reloadComponentPalette(String subsetjson) {
     OdeLog.log(subsetjson);
-    Set<String> shownComponents = COMPONENT_DATABASE.getComponentNames();
+    Set<String> shownComponents = new HashSet<String>();
     if (subsetjson.length() > 0) {
       try {
         String shownComponentsStr = getShownComponents(subsetjson);
         shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
-        palettePanel.clearComponents();
-        for (String component : shownComponents) {
-          palettePanel.addComponent(component);
-        }
       } catch (Exception e) {
         OdeLog.log("invalid subset string");
       }
+    } else {
+      shownComponents = COMPONENT_DATABASE.getComponentNames();
     }
     palettePanel.clearComponents();
     for (String component : shownComponents) {
