@@ -649,10 +649,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
             arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
           }
         }
-<<<<<<< HEAD
         // List all variations on a block, separated by commas
-=======
->>>>>>> 4a71b8d35a530f2e9cd1e739c7329ce0635266f8
         blockCatDict[block.category][blockName] = arrTranslatedNames.join(", ");
       }
     }
