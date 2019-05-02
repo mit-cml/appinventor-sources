@@ -190,7 +190,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     treePanel.addEast(blockScroll, 50);
     subsetPanel.add(treePanel);
     subsetPanel.setHeight("600px");
-    subsetPanel.setWidth("400px");
+    subsetPanel.setWidth("600px");
     subsetPanel.center();
     subsetPanel.setTitle(MESSAGES.blockSelectorBoxCaption());
     subsetPanel.show();
@@ -281,6 +281,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       JSONObject blockCatDict = blockCatDictVal.isObject();
       for (String blockID:blockCatDict.keySet()) {
         CheckBox blockCb = new CheckBox(blockCatDict.get(blockID).isString().stringValue());
+ //       blockCb.setWidth("200px");
+        blockCb.setWordWrap(true);
         blockCb.setName(blockID);
         blockCatItem.addItem(createCascadeCheckboxItem(blockCb));
       }
@@ -637,7 +639,18 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         if (!blockCatDict[block.category]) {
           blockCatDict[block.category] = {};
         }
-        blockCatDict[block.category][blockName] = (block.typeblock[0]).translatedName;
+        var arrTranslatedNames = new Array();
+        for (i = 0; i < block.typeblock.length; ++i) {
+          arrTranslatedNames[i] = block.typeblock[i].translatedName;
+          // Have not found a way to genericize code where multiple blocks have the exact same translated name.
+          // If there's a better way, please fix.
+          if (blockName == 'controls_forRange') {
+            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX;
+          } else if (blockName == 'controls_forEach') {
+            arrTranslatedNames[i] += Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX;
+          }
+        }
+        blockCatDict[block.category][blockName] = arrTranslatedNames.join(", ");
       }
     }
     return blockCatDict;
