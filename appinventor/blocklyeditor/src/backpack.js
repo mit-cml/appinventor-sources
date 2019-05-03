@@ -450,7 +450,6 @@ Blockly.Backpack.prototype.openBackpackMenu = function(e) {
     }
   };
   options.push(backpackClear);
-
   Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();
@@ -637,15 +636,11 @@ Blockly.Backpack.prototype.getContents = function(callback) {
     top.BlocklyPanel_getSharedBackpack(Blockly.Backpack.backPackId, function(content) {
       if (!content) {
         Blockly.Backpack.contents = [];
-        // Blockly.Backpack.contentsHash_ = {};
         p.shrink();
         callback([]);
       } else {
         var parsed = JSON.parse(content);
         Blockly.Backpack.contents = parsed;
-        // Blockly.Backpack.contents.forEach(function(content) {
-        //   Blockly.Backpack.contentsHash_.push(........)
-        // });
         p.resize();
         callback(parsed);
       }
@@ -662,7 +657,6 @@ Blockly.Backpack.prototype.getContents = function(callback) {
  */
 Blockly.Backpack.prototype.setContents = function(backpack, store) {
   Blockly.Backpack.contents = backpack;
-
   if (store) {
     if (Blockly.Backpack.backPackId) {
       top.BlocklyPanel_storeSharedBackpack(Blockly.Backpack.backPackId,
