@@ -91,6 +91,10 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     char c = number.objCType[0];
     switch(c) {
       case 'c':
+        // Technically 'c' is a char, but NSNumber encodes booleans as chars.
+        // Other integers will be stored as ints or longs, so we should be safe
+        // to assume that if something is a char it's actually a boolean value.
+        return number.boolValue ? pic_true_value(pic_) : pic_false_value(pic_);
       case 's':
       case 'i':
       case 'l':
