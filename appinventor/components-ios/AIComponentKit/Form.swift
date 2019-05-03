@@ -17,7 +17,6 @@ import Toast_Swift
   fileprivate var compatScalingFactor: Float?
   fileprivate var applicationIsBeingClosed = false
   @objc var formName: String = ""
-  fileprivate var screenInitialized = false
   fileprivate var _components: [Component] = []
   fileprivate var _aboutScreen: String?
   fileprivate var _appName: String?
@@ -550,18 +549,30 @@ import Toast_Swift
 
   // MARK: Form Events
   open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
-    if let error = ErrorMessage(rawValue: Int(errorNumber)) {
-      let formattedMessage = String(format: error.message, messageArgs)
-      EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: component, functionName as NSString, NSNumber(value: errorNumber), formattedMessage as NSString)
+    runOnUiThread {
+      if let error = ErrorMessage(rawValue: Int(errorNumber)) {
+        let formattedMessage = String(format: error.message, messageArgs)
+        self.ErrorOccurred(component, functionName, errorNumber, formattedMessage)
+      }
     }
   }
 
   @objc open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
-    // TODO: Implementation
+    runOnUiThread {
+      if let error = ErrorMessage(rawValue: Int(errorNumber)) {
+        let formattedMessage = String(format: error.message, messageArgs)
+        self.ErrorOccurred(component, functionNames, errorNumber, formattedMessage)
+      }
+    }
   }
 
   open func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
-    // TODO: Implementation
+    runOnUiThread {
+      if let error = ErrorMessage(rawValue: Int(errorNumber)) {
+        let formattedMessage = String(format: error.message, messageArgs)
+        self.ErrorOccurredDialog(component, functionName, errorNumber, formattedMessage, "Error in \(functionName)", "Dismiss")
+      }
+    }
   }
 
   @objc open func BackPressed() {
@@ -569,11 +580,17 @@ import Toast_Swift
   }
 
   @objc open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
-    EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: functionName as NSString, NSNumber(value: errorNumber), message as NSString)
+    let handled = EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: component as AnyObject, functionName as NSString, NSNumber(value: errorNumber), message as NSString)
+    if !handled && _screenInitialized {
+      Notifier(self).ShowAlert("Error \(errorNumber): \(message)")
+    }
   }
 
   @objc open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
-    // TODO: Implementation
+    let handled = EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurredDialog", arguments: component as AnyObject, functionName as NSString, NSNumber(value: errorNumber), message as NSString, title as NSString, buttonText as NSString)
+    if !handled && _screenInitialized {
+      Notifier(self).ShowMessageDialog("Error \(errorNumber): \(message)", title, buttonText)
+    }
   }
 
   @objc open func Initialize() {
@@ -731,6 +748,15 @@ import Toast_Swift
 
   var heightAnchor: NSLayoutDimension {
     return _scaleFrameLayout.heightAnchor
+  }
+
+  /**
+   * Run the given closure on the UI thread.
+   *
+   * @param code The closure to execute on the main (UI) thread.
+   */
+  open func runOnUiThread(_ code: @escaping () -> ()) {
+    DispatchQueue.main.async(execute: code)
   }
 }
 
