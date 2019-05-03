@@ -380,14 +380,11 @@ Blockly.Backpack.prototype.removeFromBackpack = function(ids) {
   var p = this;
   this.getContents(function(/** @type {string[]} */ contents) {
     if (contents && contents.length) {
-      for (var i = 0; i < contents.length; i++) {
-        var xml = Blockly.Xml.textToDom(contents[i]);
-        var blockID = xml.firstElementChild.getAttribute("id");
-        if (ids.indexOf(blockID) >= 0) {
-          contents.splice(i, 1);
-          i--;
-        }
-      }
+      var blockInBackPack = p.workspace_.backpack_.flyout_.workspace_.topBlocks_.map(function(elt) {
+        return elt.id;
+      });
+      var index = blockInBackPack.indexOf(ids[0]);
+      contents.splice(index, 1);
       p.setContents(contents, true);
       if (contents.length === 0) {
         p.shrink();
@@ -453,7 +450,7 @@ Blockly.Backpack.prototype.openBackpackMenu = function(e) {
     }
   };
   options.push(backpackClear);
-  
+
   Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();
@@ -640,11 +637,15 @@ Blockly.Backpack.prototype.getContents = function(callback) {
     top.BlocklyPanel_getSharedBackpack(Blockly.Backpack.backPackId, function(content) {
       if (!content) {
         Blockly.Backpack.contents = [];
+        // Blockly.Backpack.contentsHash_ = {};
         p.shrink();
         callback([]);
       } else {
         var parsed = JSON.parse(content);
         Blockly.Backpack.contents = parsed;
+        // Blockly.Backpack.contents.forEach(function(content) {
+        //   Blockly.Backpack.contentsHash_.push(........)
+        // });
         p.resize();
         callback(parsed);
       }
@@ -661,6 +662,7 @@ Blockly.Backpack.prototype.getContents = function(callback) {
  */
 Blockly.Backpack.prototype.setContents = function(backpack, store) {
   Blockly.Backpack.contents = backpack;
+
   if (store) {
     if (Blockly.Backpack.backPackId) {
       top.BlocklyPanel_storeSharedBackpack(Blockly.Backpack.backPackId,
