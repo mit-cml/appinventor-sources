@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import MapKit
@@ -24,7 +24,7 @@ open class Marker: MapFeatureBase, MapMarker {
 
   typealias View = MKAnnotationView
 
-  public init(_ container: MapFeatureContainer) {
+  @objc public init(_ container: MapFeatureContainer) {
     ShowShadow = false
     _imageView.addSubview(_pinView)
     super.init(container: container, view: _imageView)
@@ -57,7 +57,7 @@ open class Marker: MapFeatureBase, MapMarker {
     AnchorVertical = _anchorVertical.rawValue
   }
 
-  public var AnchorHorizontal: Int32 {
+  @objc open var AnchorHorizontal: Int32 {
     get {
       return _anchorHorizontal.rawValue
     }
@@ -79,7 +79,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  public var AnchorVertical: Int32 {
+  @objc open var AnchorVertical: Int32 {
     get {
       return _anchorVertical.rawValue
     }
@@ -101,14 +101,14 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open override var Draggable: Bool {
+  @objc open override var Draggable: Bool {
     didSet {
       _imageView.isDraggable = _draggable
       _pinView.isDraggable = _draggable
     }
   }
 
-  open override var EnableInfobox: Bool {
+  @objc open override var EnableInfobox: Bool {
     get {
       return _view.canShowCallout
     }
@@ -118,7 +118,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open var FillColor: Int32 {
+  @objc open var FillColor: Int32 {
     get {
       return colorToArgb(_pinView.pinTintColor)
     }
@@ -128,7 +128,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open var ImageAsset: String {
+  @objc open var ImageAsset: String {
     get {
       return _imagePath
     }
@@ -161,7 +161,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open var Height: Int32 {
+  @objc open var Height: Int32 {
     get {
       return _height
     }
@@ -171,11 +171,11 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open func setHeightPercent(_ height: Int32) {
+  @objc open func setHeightPercent(_ height: Int32) {
     Height = -(1000 + height)
   }
 
-  open var Latitude: Double {
+  @objc open var Latitude: Double {
     get {
       return coordinate.latitude
     }
@@ -189,7 +189,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open var Longitude: Double {
+  @objc open var Longitude: Double {
     get {
       return coordinate.longitude
     }
@@ -206,9 +206,9 @@ open class Marker: MapFeatureBase, MapMarker {
   /*
    * Deprecated. Included for backwards compatability
    */
-  public var ShowShadow: Bool
+  @objc public var ShowShadow: Bool
 
-  open override var StrokeColor: Int32 {
+  @objc open override var StrokeColor: Int32 {
     get {
       return _strokeColor
     }
@@ -218,7 +218,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open override var StrokeWidth: Int32 {
+  @objc open override var StrokeWidth: Int32 {
     get {
       return _strokeWidth
     }
@@ -228,7 +228,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open var Width: Int32 {
+  @objc open var Width: Int32 {
     get {
       return _width
     }
@@ -238,7 +238,7 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open func setWidthPercent(_ width: Int32) {
+  @objc open func setWidthPercent(_ width: Int32) {
     Width = -(1000 + width)
   }
 
@@ -275,7 +275,7 @@ open class Marker: MapFeatureBase, MapMarker {
   }
 
   // MARK: methods
-  open func BearingToFeature(_ feature: MapFeatureBase, _ centroids: Bool) -> Double {
+  @objc open func BearingToFeature(_ feature: MapFeatureBase, _ centroids: Bool) -> Double {
     if centroids {
       return bearing(from: coordinate, to: feature.Centroid)
     } else if let thisShape = _shape, let otherShape = feature.geometry {
@@ -286,15 +286,15 @@ open class Marker: MapFeatureBase, MapMarker {
     }
   }
 
-  open func BearingToPoint(_ latitude: Double, _ longitude: Double) -> Double {
+  @objc open func BearingToPoint(_ latitude: Double, _ longitude: Double) -> Double {
     return bearing(from: coordinate, to: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
   }
 
-  open override func HideInfobox() {
+  @objc open override func HideInfobox() {
     _map?.mapView.deselectAnnotation(self, animated: true)
   }
 
-  public func SetLocation(_ latitude: Double, _ longitude: Double) {
+  @objc public func SetLocation(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
       _container?.form.dispatchErrorOccurredEvent(self, "SetLocation", ErrorMessage.ERROR_INVALID_LATITUDE.code, ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return
@@ -307,7 +307,7 @@ open class Marker: MapFeatureBase, MapMarker {
     _shape = Waypoint(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
 
-  open override func ShowInfobox() {
+  @objc open override func ShowInfobox() {
     var changed = false
     if !_view.canShowCallout {
       changed = true
