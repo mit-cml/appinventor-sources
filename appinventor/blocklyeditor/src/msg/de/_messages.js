@@ -220,10 +220,10 @@ Blockly.Msg.de.switch_language_to_german = {
         'einer Schleife verwendet werden.';
 
     Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#while';;
-    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'solange';
-    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'test';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'während';
+    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = '';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'mache';
-    Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'solange';
+    Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'während';
     Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Führt die Anweisungen der \'mache\'-Sektion aus, solange der test '
         + 'wahr (true) ist.';
 
