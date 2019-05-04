@@ -380,11 +380,13 @@ Blockly.Backpack.prototype.removeFromBackpack = function(ids) {
   var p = this;
   this.getContents(function(/** @type {string[]} */ contents) {
     if (contents && contents.length) {
-      var blockInBackPack = p.workspace_.backpack_.flyout_.workspace_.topBlocks_.map(function(elt) {
+      var blockInBackPack = p.flyout_.workspace_.getTopBlocks(true).map(function(elt) {
         return elt.id;
       });
       var index = blockInBackPack.indexOf(ids[0]);
-      contents.splice(index, 1);
+      if (index >= 0) {
+        contents.splice(index, 1);
+      }
       p.setContents(contents, true);
       if (contents.length === 0) {
         p.shrink();
