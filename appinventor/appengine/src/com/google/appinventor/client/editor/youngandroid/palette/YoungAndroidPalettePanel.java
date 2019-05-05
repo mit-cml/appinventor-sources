@@ -30,6 +30,12 @@ import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.event.dom.client.KeyEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyCodeEvent;
 import com.google.appinventor.client.utils.Trie;
 
 import java.util.HashMap;
@@ -67,6 +73,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // Map translated component names to English names
   private final Map<String, String> translationMap;
 
+  private final TextBox searchText; 
+  private final VerticalPanel searchResults;
+  private final Button searchButton;
+
   /**
    * Creates a new component palette panel.
    *
@@ -99,24 +109,34 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     // initialize the panel that holds search
    
-    final TextBox searchText = new TextBox();
-    Button searchButton = new Button(MESSAGES.searchComponentButton());
+    searchText = new TextBox();
+    searchText.setWidth("90%");
+    searchText.getElement().setPropertyString("placeholder", "Enter Component Names...");
+    searchButton = new Button(MESSAGES.searchComponentButton());
     Button clearButton = new Button(MESSAGES.clearComponentsButton());
+    searchText.addKeyPressHandler(new returnKeyHandler());
+    searchButton.addClickHandler(new searchClickHandler());
+    clearButton.addClickHandler(new clearClickHandler());
 
     // buttonPanel holds search and clear button
     final HorizontalPanel buttonPanel = new HorizontalPanel();
 
     buttonPanel.add(searchButton);
     buttonPanel.add(clearButton);
+    buttonPanel.setSpacing(2);
+
+    panel.setSpacing(3);
     panel.add(searchText);
     panel.add(buttonPanel);
-    
-    buttonPanel.setSpacing(2);
-    
-    stackPalette.setWidth("100%");
-    initWidget(stackPalette);
+    panel.setWidth("100%");
 
-    stackPalette.add(panel, "Search for Component");
+    searchResults = new VerticalPanel();
+    searchResults.setWidth("100%");
+    stackPalette.setWidth("100%");
+
+    initWidget(panel);
+    panel.add(searchResults);
+    panel.add(stackPalette);
 
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
@@ -134,37 +154,69 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     }
 
     initExtensionPanel();
+  }
 
-    // searchButton click will search and display components that match user inputs
-    searchButton.addClickHandler(new ClickHandler() {
-      @Override
+  /**
+   *  Users press enter button, results will be added to searchResults panel
+   */
+  private class returnKeyHandler implements KeyPressHandler {
+     @Override
+      public void onKeyPress(KeyPressEvent event) {
+          if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+              searchButton.click();
+          }
+      }
+  }
+
+  /**
+   *   clearButton on click remove searchResults elements
+   */
+  private class clearClickHandler implements ClickHandler {
+    @Override
+    public void onClick(ClickEvent event) {
+      searchResults.clear();
+    }
+  }
+
+  /**
+   *  User clicks on searchButton and results will be added to searchResults panel
+   */
+  private class searchClickHandler implements ClickHandler {
+    @Override
       public void onClick(ClickEvent event) {
         String search_str = searchText.getText().trim().toLowerCase();
+        // Empty strings will return nothing
         if(search_str.length() != 0){
-          // Empty strings will return nothing
+          // Remove previos search results
+          searchResults.clear();
           Collection<String> allComponents = componentTrie.getAllWords(search_str);
           for (String name: allComponents) {
             if (translationMap.containsKey(name)) {
               String englishName = translationMap.get(name);
               if (simplePaletteItems.containsKey(englishName)) { 
                 SimplePaletteItem item = simplePaletteItems.get(englishName);
-                panel.add(item);
+
+                int version = COMPONENT_DATABASE.getComponentVersion(englishName);
+                String versionName = COMPONENT_DATABASE.getComponentVersionName(englishName);
+                String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(englishName);
+                String helpString = COMPONENT_DATABASE.getHelpString(englishName);
+                String helpUrl = COMPONENT_DATABASE.getHelpUrl(englishName);
+                String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(englishName);
+                String categoryString = COMPONENT_DATABASE.getCategoryString(englishName);
+                Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(englishName);
+                Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(englishName);
+                Boolean external = COMPONENT_DATABASE.getComponentExternal(englishName);
+
+                SimpleComponentDescriptor scd = 
+                new SimpleComponentDescriptor(englishName, editor, version, versionName, 
+                  dateBuilt, helpString, helpUrl,categoryDocUrlString, showOnPalette, nonVisible, external);
+                SimplePaletteItem newItem = new SimplePaletteItem(scd, dropTargetProvider);
+                searchResults.add(newItem);
               }
             }
           }
         }
       }
-    }); 
-
-    // clearButton on click remove panel elements
-    clearButton.addClickHandler(new ClickHandler(){
-      @Override
-      public void onClick(ClickEvent event) {
-        panel.clear();
-        panel.add(searchText);
-        panel.add(buttonPanel);
-      }
-    });
   }
 
   private static boolean showCategory(ComponentCategory category) {
