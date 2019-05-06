@@ -132,6 +132,42 @@ class BuiltinBlockTests: XCTestCase {
     NSLog("result = \(result)")
   }
 
+  func testReplaceAllTextEmpty() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all \"\" \"\" \"\")")
+    XCTAssertEqual("", result)
+  }
+
+  func testReplaceAllTextNoMatch() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all \"foo\" \"bar\" \"\")")
+    XCTAssertEqual("foo", result)
+  }
+
+  func testReplaceAllTextFullMatch() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all \"foo\" \"foo\" \"bar\")")
+    XCTAssertEqual("bar", result)
+  }
+
+  func testReplaceAllTextPrefix() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all \"foobar\" \"foo\" \"bar\")")
+    XCTAssertEqual("barbar", result)
+  }
+
+  func testReplaceAllTextSuffix() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all \"foobar\" \"bar\" \"foo\")")
+    XCTAssertEqual("foofoo", result)
+  }
+
+  func testReplaceAllTest() throws {
+    let interpreter = try getInterpreterForTesting()
+    let result = interpreter.evalForm("(string-replace-all (string-replace-all (string-replace-all \"PT0H0M31S\" \"H\" \":\") \"M\" \":\") \"S\" \"\")")
+    XCTAssertEqual("PT0:0:31", result)
+  }
+
   func testControlBlocks() throws {
     try runTestsFromYail(path: "control.yail")
   }
