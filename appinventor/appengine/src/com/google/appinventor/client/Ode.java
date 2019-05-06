@@ -30,6 +30,7 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
+import com.google.appinventor.client.editor.youngandroid.HelpPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -223,6 +224,7 @@ public class Ode implements EntryPoint {
   private DeckPanel deckPanel;
   private HorizontalPanel overDeckPanel;
   private Frame tutorialPanel;
+  private Frame helpPanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
@@ -245,6 +247,7 @@ public class Ode implements EntryPoint {
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
+  private boolean helpVisible = false;
 
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
@@ -966,6 +969,12 @@ public class Ode implements EntryPoint {
     // the project
     tutorialPanel.setVisible(false);
 
+    //Create Help Panel
+    helpPanel = new TutorialPanel();
+    helpPanel.setWidth("100%");
+    helpPanel.setHeight("100%");
+    helpPanel.setVisible(false);
+
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
       @Override
@@ -1187,6 +1196,9 @@ public class Ode implements EntryPoint {
     overDeckPanel.setCellWidth(tutorialPanel, "0%");
     overDeckPanel.setCellHeight(tutorialPanel, "100%");
     overDeckPanel.add(deckPanel);
+    overDeckPanel.add(helpPanel);
+    overDeckPanel.setCellWidth(helpPanel, "0%");
+    overDeckPanel.setCellHeight(helpPanel, "100%");
     mainPanel.add(overDeckPanel, DockPanel.CENTER);
     mainPanel.setCellHeight(overDeckPanel, "100%");
     mainPanel.setCellWidth(overDeckPanel, "100%");
@@ -2455,6 +2467,18 @@ public class Ode implements EntryPoint {
     }
   }
 
+
+  private void hideHelp() {
+    helpPanel.setVisible(false);
+    overDeckPanel.setCellWidth(helpPanel, "0%");
+  }
+
+  private void showHelp() {
+    if (helpVisible) {
+      helpPanel.setVisible(true);
+    }
+  }
+
   public void setTutorialVisible(boolean visible) {
     tutorialVisible = visible;
     if (visible) {
@@ -2464,6 +2488,17 @@ public class Ode implements EntryPoint {
       tutorialPanel.setVisible(false);
       overDeckPanel.setCellWidth(tutorialPanel, "0%");
     }
+  }
+
+  public void setHelpVisible(boolean visible){
+    helpVisible = visible;
+    if (visible) {
+      helpPanel.setVisible(true);
+      helpPanel.setWidth("500px");
+    } else {
+      helpPanel.setVisible(false);
+      overDeckPanel.setCellWidth(helpPanel, "0%");
+    } 
   }
 
   /**
@@ -2480,6 +2515,10 @@ public class Ode implements EntryPoint {
     return tutorialVisible;
   }
 
+  public boolean isHelpVisible() {
+    return helpVisible;
+  }
+
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
         && !newURL.startsWith("http://appinv.us/"))) {
@@ -2489,8 +2528,14 @@ public class Ode implements EntryPoint {
       tutorialPanel.setUrl(newURL);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
+     
     }
   }
+
+  public void setHelpURL(String helpURL) {
+    
+      helpPanel.setUrl(helpURL);
+    }
 
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
