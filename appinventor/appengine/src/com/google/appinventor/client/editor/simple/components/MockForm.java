@@ -31,7 +31,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 
 import com.google.gwt.user.client.Window;
@@ -62,6 +63,7 @@ public final class MockForm extends MockContainer {
 
     // UI elements
     private Label title;
+    private MockMenu menu;
     private Button menuButton;
     private AbsolutePanel bar;
     private boolean actionBar;
@@ -94,6 +96,37 @@ public final class MockForm extends MockContainer {
     }
 
     /*
+     * Initialize menu (should only be called after components are loaded).
+     */
+    void loadMenu() {
+      for (MockComponent child : children) {
+        if (child instanceof MockMenu) {
+          menu = (MockMenu) child;
+          break;
+        }
+      }
+      if (menu == null) {
+        menu = new MockMenu(editor);
+        addComponent(menu);
+      }
+      menuButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          menu.toggle();
+        }
+      });
+      updateMenuEnabled();
+    }
+
+    /*
+     * Disable menu if action bar is absent.
+     */
+    void updateMenuEnabled() {
+      if (menu != null) {
+        menu.setEnabled(actionBar && isVisible());
+      }
+    }
+
+    /*
      * Changes the title in the title bar.
      */
     void changeTitle(String newTitle) {
@@ -110,6 +143,7 @@ public final class MockForm extends MockContainer {
         removeStyleDependentName("ActionBar");
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
       }
+      updateMenuEnabled();
     }
 
     void setBackgroundColor(String color) {
@@ -314,6 +348,12 @@ public final class MockForm extends MockContainer {
     initialized = true;
     // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    titleBar.loadMenu();
   }
 
   public void changePreviewSize(int width, int height, int idx) {
@@ -665,6 +705,7 @@ public final class MockForm extends MockContainer {
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
+    titleBar.updateMenuEnabled();
   }
 
   private void setActionBarProperty(String actionBar) {

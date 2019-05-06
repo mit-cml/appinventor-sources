@@ -256,7 +256,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     if (component instanceof MockVisibleComponent) {
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
-      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)) {
+      // Menu Items are only allowed in Menu, not other containers.
+      if (!(component instanceof MockSprite) &&
+          !(component instanceof MockMapFeature) &&
+          !(component instanceof MockMenuItem)) {
         return true;
       }
     }
