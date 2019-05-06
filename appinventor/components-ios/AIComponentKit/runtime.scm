@@ -789,6 +789,8 @@
     (lambda (x)
       (max lowest (min x highest)))))
 
+(define ERROR_DIVISION_BY_ZERO 3200)
+
 (define (yail-divide n d)
   ;; For divide by 0 exceptions, we show a notification to the user, but still return
   ;; a result.  The app developer can
@@ -797,7 +799,7 @@
          ;; Treat 0/0 as a special case, returning 0.
          ;; We do this because Kawa throws an exception of its own if you divide
          ;; 0 by 0. Whereas it returns "1/0" or +-Inf.0 if the numerator is non-zero.
-         (begin (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+         (begin (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO (number->string n))
            ;; return 0 in this case.  The zero was chosen arbitrarily.
            n))
         ((= d 0)
@@ -808,7 +810,7 @@
            ;; We also convert the result to inexact, to code around the complexity (or Kawa bug?) that
            ;; inexact infinity is different from exact infinity.  For example
            ;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
-           (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+           (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO (number->string n))
            (exact->inexact (/ n d))))
         (else
          ;; Otherise, return the result of the Kawa devision.

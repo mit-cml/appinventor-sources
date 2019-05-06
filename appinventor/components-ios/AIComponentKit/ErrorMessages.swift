@@ -90,6 +90,9 @@ import Foundation
   case FUSION_TABLES_QUERY_ERROR = 2601
   case FUSION_TABLES_AUTH_ERROR = 2602
 
+  // Form errors that are signalled in runtime.scm
+  case ERROR_DIVISION_BY_ZERO = 3200
+
   // Map Errors
   case ERROR_LINESTRING_TOO_FEW_POINTS = 3401
   case ERROR_LINESTRING_PARSE_ERROR = 3402
@@ -274,6 +277,10 @@ import Foundation
       return "Fusion tables returned an error. The query was: %s. The response was: %s"
     case .FUSION_TABLES_AUTH_ERROR:
       return "An error occured when attempting to authenticate for Fusion Tables. The error was %s"
+
+    // Form Errors
+    case .ERROR_DIVISION_BY_ZERO:
+      return "Trying to divide %s by 0.  The result might not be valid."
 
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:

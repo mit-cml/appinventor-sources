@@ -551,7 +551,7 @@ import Toast_Swift
   open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     runOnUiThread {
       if let error = ErrorMessage(rawValue: Int(errorNumber)) {
-        let formattedMessage = String(format: error.message, messageArgs)
+        let formattedMessage = String(format: error.message, messageArgs: messageArgs)
         self.ErrorOccurred(component, functionName, errorNumber, formattedMessage)
       }
     }
@@ -560,7 +560,7 @@ import Toast_Swift
   @objc open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
     runOnUiThread {
       if let error = ErrorMessage(rawValue: Int(errorNumber)) {
-        let formattedMessage = String(format: error.message, messageArgs)
+        let formattedMessage = String(format: error.message, messageArgs: messageArgs)
         self.ErrorOccurred(component, functionNames, errorNumber, formattedMessage)
       }
     }
@@ -569,7 +569,7 @@ import Toast_Swift
   open func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     runOnUiThread {
       if let error = ErrorMessage(rawValue: Int(errorNumber)) {
-        let formattedMessage = String(format: error.message, messageArgs)
+        let formattedMessage = String(format: error.message, messageArgs: messageArgs)
         self.ErrorOccurredDialog(component, functionName, errorNumber, formattedMessage, "Error in \(functionName)", "Dismiss")
       }
     }
