@@ -33,6 +33,8 @@ import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.simple.components.MockMarker;
+import com.google.appinventor.client.editor.simple.components.MockMenu;
+import com.google.appinventor.client.editor.simple.components.MockMenuItem;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
@@ -397,6 +399,10 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockMenu.TYPE)) {
+      return new MockMenu(editor);
+    } else if (name.equals(MockMenuItem.TYPE)) {
+      return new MockMenuItem(editor);
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {

@@ -1032,6 +1032,7 @@ select.ode-PropertyEditor[disabled] {
   background-color: transparent;
   font: 20px Roboto bold;
   color: white;
+  cursor: pointer;
   display: none;
 }
 
@@ -1046,6 +1047,11 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockContainer-selected {
   border: 2px solid #8fc202;
+}
+
+.ode-SimpleMockFormMenu {
+  background-color: white;
+  z-index: 100;
 }
 
 .ode-SimpleMockComponent {
