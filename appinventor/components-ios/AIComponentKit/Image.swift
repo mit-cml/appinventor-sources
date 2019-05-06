@@ -15,6 +15,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     _view.isUserInteractionEnabled = true
     _view.translatesAutoresizingMaskIntoConstraints = false
     super.init(parent)
+    setDelegate(self)
     parent.add(self)
     ScalePictureToFit = false
   }
