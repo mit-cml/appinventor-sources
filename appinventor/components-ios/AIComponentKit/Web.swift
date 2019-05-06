@@ -12,7 +12,7 @@ open class Web: NonvisibleComponent {
   fileprivate var _cookieStorage = HTTPCookieStorage()
 
   fileprivate let stringToEncoding: [String: String.Encoding] =
-    ["uft8": .utf8, "utf-8": .utf8, "utf16": .utf16, "utf-16": .utf16, "utf32": .utf32,
+    ["utf8": .utf8, "utf-8": .utf8, "utf16": .utf16, "utf-16": .utf16, "utf32": .utf32,
      "utf-32": .utf32, "iso2022jp": .iso2022JP, "iso-2022-jp": .iso2022JP, "iso-8859-1": .isoLatin1,
      "iso88591": .isoLatin1, "iso-8859-2": .isoLatin2, "iso88592": .isoLatin2, "ascii": .ascii]
 
@@ -174,13 +174,12 @@ open class Web: NonvisibleComponent {
         self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
       } else {
         if let data = data {
-          if let encodingName = response?.textEncodingName {
-            guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
-              self._form.dispatchErrorOccurredEvent(self, "performRequest", ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.message, encodingName)
-              return
-            }
-            responseContent = responseContentStr as NSString
+          let encodingName = response?.textEncodingName ?? "utf8"
+          guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
+            self._form.dispatchErrorOccurredEvent(self, "performRequest", ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.message, encodingName)
+            return
           }
+          responseContent = responseContentStr as NSString
         }
         self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
       }
@@ -219,7 +218,7 @@ open class Web: NonvisibleComponent {
     }
   }
 
-  open func UriEncode(_ text: String) -> String {
+  @objc open func UriEncode(_ text: String) -> String {
     return text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
   }
 
@@ -260,7 +259,7 @@ open class Web: NonvisibleComponent {
     return requestHeadersDic
   }
 
-  open func BuildRequestData(_ list: [AnyObject]) -> String{
+  @objc open func BuildRequestData(_ list: [AnyObject]) -> String{
     do {
       return try buildRequestData(list)
     } catch (let error as BuildRequestDataException) {
@@ -292,7 +291,7 @@ open class Web: NonvisibleComponent {
     return data
   }
 
-  open func HtmlTextDecode(_ htmlText: String) -> String {
+  @objc open func HtmlTextDecode(_ htmlText: String) -> String {
     if let text = HTMLEntities.decodeHTMLText(htmlText) {
       return text
     } else {
@@ -301,7 +300,7 @@ open class Web: NonvisibleComponent {
     }
   }
 
-  open func XMLTextDecode(_ xmlText: String) -> AnyObject {
+  @objc open func XMLTextDecode(_ xmlText: String) -> AnyObject {
     do {
       let xml = try XmlToJson.main.parseXML(xmlText)
       return JsonTextDecode(xml)
@@ -311,7 +310,7 @@ open class Web: NonvisibleComponent {
     }
   }
 
-  open func JsonTextDecode(_ jsonString: String) -> AnyObject {
+  @objc open func JsonTextDecode(_ jsonString: String) -> AnyObject {
     do {
       return try getPublicObjectFromJson(jsonString)
     } catch let error {
