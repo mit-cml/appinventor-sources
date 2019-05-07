@@ -440,8 +440,24 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 176:
   // - PHONECALL_COMPONENT_VERSION was incremented to 3
   // - TEXTING_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 177:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 178:
+  // - CLOCK_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 179:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 180:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 181:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 25
+  // For YOUNG_ANDROID_VERSION 182:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 26
+  // For YOUNG_ANDROID_VERSION 183:
+  // - CANVAS_COMPONENT_VERSION was incremented to 11
+  // For YOUNG_ANDROID_VERESION 184:
+  // - Added Switch
 
-  public static final int YOUNG_ANDROID_VERSION = 176;
+  public static final int YOUNG_ANDROID_VERSION = 184;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -507,8 +523,14 @@ public class YaVersion {
   // - Break block was added.
   // For BLOCKS_LANGUAGE_VERSION 23:
   // - Bitwise and, ior, and xor blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 24:
+  // - List reverse block was added.
+  // For BLOCKS_LANGUAGE_VERSION 25:
+  // - List join with separator block was added.
+  // For BLOCKS_LANGUAGE_VERSION 26:
+  // - Generic event handlers were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 23;
+  public static final int BLOCKS_LANGUAGE_VERSION = 26;
 
   // ................................. Component Version Numbers ..................................
 
@@ -653,7 +675,9 @@ public class YaVersion {
   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
   // For CANVAS_COMPONENT_VERSION 10:
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
-  public static final int CANVAS_COMPONENT_VERSION = 10;
+  // For CANVAS_COMPONENT_VERSION 11:
+  // - DrawShape & DrawArc was added
+  public static final int CANVAS_COMPONENT_VERSION = 11;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -666,7 +690,11 @@ public class YaVersion {
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
-  public static final int CLOCK_COMPONENT_VERSION = 3;
+  // For CLOCK_COMPONENT_VERSION 3:
+  // - Duration Support was added
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - MakeTime, MakeDate, MakeInstantFromParts methods were added
+  public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -906,7 +934,9 @@ public class YaVersion {
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
   // For NOTIFIER_COMPONENT_VERSION 5:
   // - Added TextInputCanceled & ChoosingCanceled event
-  public static final int NOTIFIER_COMPONENT_VERSION = 5;
+  // For NOTIFIER_COMPONENT_VERSION 6:
+  // - Added a ShowPasswordDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 6;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
@@ -1022,6 +1052,10 @@ public class YaVersion {
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+
+  // For SWITCH_COMPONENT_VERSION 1
+  //  - Initial Version
+  public static final int SWITCH_COMPONENT_VERSION = 1;
 
   public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
 
@@ -1142,7 +1176,9 @@ public class YaVersion {
   // - The FullScreen property was added to the VideoPlayer.
   // For VIDEOPLAYER_COMPONENT_VERSION 5:
   // - The Volume property (setter only) was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
+  // For VIDEOPLAYER_COMPONENT_VERSION 6:
+  // - The Stop method was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 6;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
