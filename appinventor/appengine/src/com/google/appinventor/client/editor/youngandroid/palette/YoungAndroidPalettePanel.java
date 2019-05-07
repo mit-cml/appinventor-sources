@@ -33,9 +33,14 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.event.dom.client.KeyEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyCodeEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+
 import com.google.appinventor.client.utils.Trie;
 
 import java.util.HashMap;
@@ -70,6 +75,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private DropTargetProvider dropTargetProvider;
   // initialize a Trie
   private Trie componentTrie;
+
+  // panel that holds all palette items
+  final VerticalPanel panel;
   // Map translated component names to English names
   private final Map<String, String> translationMap;
 
@@ -97,7 +105,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     componentTrie = new Trie();
     translationMap = new HashMap();
-    final VerticalPanel panel = new VerticalPanel();
+    panel = new VerticalPanel();
     panel.setWidth("100%");
 
     //Load Component strings to Trie
@@ -107,14 +115,15 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       translationMap.put(translationName, component);
     }
 
-    // initialize the panel that holds search
-   
     searchText = new TextBox();
     searchText.setWidth("90%");
     searchText.getElement().setPropertyString("placeholder", "Enter Component Names...");
     searchButton = new Button(MESSAGES.searchComponentButton());
     Button clearButton = new Button(MESSAGES.clearComponentsButton());
+
+    searchText.addKeyUpHandler(new searchKeyUpHandler());
     searchText.addKeyPressHandler(new returnKeyHandler());
+    searchText.addKeyDownHandler(new escapeKeyDownHandler());
     searchButton.addClickHandler(new searchClickHandler());
     clearButton.addClickHandler(new clearClickHandler());
 
@@ -156,6 +165,29 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     initExtensionPanel();
   }
 
+   /**
+   *  Automatic search and list results as users input the string
+   */
+  private class searchKeyUpHandler implements KeyUpHandler {
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+      searchButton.click();
+    }
+  }
+
+  /**
+   *  Users press escapte button, results and searchText will be cleared
+   */
+  private class escapeKeyDownHandler implements KeyDownHandler {
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        searchResults.clear();
+        searchText.setText("");
+      }
+    }
+  }
+
   /**
    *  Users press enter button, results will be added to searchResults panel
    */
@@ -163,7 +195,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
      @Override
       public void onKeyPress(KeyPressEvent event) {
           if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-              searchButton.click();
+            searchButton.click();
           }
       }
   }
@@ -175,6 +207,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     @Override
     public void onClick(ClickEvent event) {
       searchResults.clear();
+      searchText.setText("");
     }
   }
 
@@ -186,7 +219,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       public void onClick(ClickEvent event) {
         String search_str = searchText.getText().trim().toLowerCase();
         // Empty strings will return nothing
-        if(search_str.length() != 0){
+        if(search_str.length() != 0) {
           // Remove previos search results
           searchResults.clear();
           Collection<String> allComponents = componentTrie.getAllWords(search_str);
@@ -195,7 +228,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
               String englishName = translationMap.get(name);
               if (simplePaletteItems.containsKey(englishName)) { 
                 SimplePaletteItem item = simplePaletteItems.get(englishName);
-
                 int version = COMPONENT_DATABASE.getComponentVersion(englishName);
                 String versionName = COMPONENT_DATABASE.getComponentVersionName(englishName);
                 String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(englishName);
