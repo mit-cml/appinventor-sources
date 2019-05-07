@@ -24,6 +24,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     
     setupViews()
+    Height = 32
   }
   
   private func setupViews() {
