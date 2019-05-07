@@ -168,6 +168,15 @@
               (yail:invoke AIComponentKit.EventDispatcher 'registerEventForDelegation *this-form* '#,component-name '#,event-name)
               (add-to-events 'component-name 'event-name))))))
 
+(define-macro define-generic-event
+  (lambda (form env)
+    (let* ((component-type (cadr form))
+           (event-name (caddr form))
+           (args (cadddr form))
+           (body (cddddr form))
+           (full-name (symbol-append 'any$ component-type '$ event-name)))
+      #`(define-event-helper #,full-name #,args #,body))))
+
 (define (dispatchEvent component registeredComponentName eventName args)
   (let ((registeredObject (string->symbol registeredComponentName)))
     (if (is-bound-in-form-environment registeredObject)
@@ -178,6 +187,18 @@
             (begin
               (yail:invoke AIComponentKit.EventDispatcher 'unregisterForEventDelegation *this-form* registeredComponentName eventName)
               #f))
+        #f)))
+
+(define (get-simple-name object)
+  (*:getSimpleName (*:getClass object)))
+
+(define (dispatchGenericEvent component eventName unhandled args)
+  (let* ((handler-symbol (string->symbol (string-append "any$" (get-simple-name component) "$" eventName)))
+         (handler (lookup-in-form-environment handler-symbol)))
+    (if handler
+        (begin
+          (apply handler (cons component (cons unhandled args)))
+          #t)
         #f)))
 
 (define-syntax do-after-form-creation
@@ -461,6 +482,25 @@
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
       (sanitize-component-data result))))
+
+(define (call-component-type-method possible-component component-type method-name arglist typelist)
+  ;; Note that we use the cdr of the typelist because it contains the generic
+  ;; 'component' type for the component and we want to check the more specific type
+  ;; that is passed in via the component-type argument
+  (let ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+        (component-value (coerce-to-component-of-type possible-component component-type)))
+    (if (not (yail:isa component-value AIComponentKit.Component))
+        (generate-runtime-type-error method-name
+                                     (list (get-display-representation possible-component)))
+        (let ((result
+               (if (all-coercible? coerced-args)
+                   (apply invoke
+                          `(,component-value
+                            ,method-name
+                            ,@coerced-args))
+                   (generate-runtime-type-error method-name arglist))))
+          ;; TODO(markf): this should probably be generalized but for now this is OK, I think
+          (sanitize-component-data result)))))
 
 (define (generate-runtime-type-error proc-name arglist)
   (let ((string-name (coerce-to-string proc-name)))

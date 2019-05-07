@@ -61,14 +61,16 @@ open class EventDispatcher: NSObject {
   @discardableResult
   open class func dispatchEvent(of component: Component, called eventName: String, arguments: AnyObject...) -> Bool {
     let dispatchDelegate = component.dispatchDelegate
+    var dispatched = false
     if (dispatchDelegate.canDispatchEvent(of: component, called: eventName)) {
       let er = mapDispatchDelegateToEventRegistry[dispatchDelegate] as! EventRegistry?
       let eventClosures: Set<EventClosure>? = er?.eventClosuresMap[eventName]
       if eventClosures != nil && (eventClosures?.count)! > 0 {
-        return delegateDispatchEvent(to: dispatchDelegate, withClosures: eventClosures!, forComponent: component, arguments: arguments)
+        dispatched = delegateDispatchEvent(to: dispatchDelegate, withClosures: eventClosures!, forComponent: component, arguments: arguments)
       }
+      dispatchDelegate.dispatchGenericEvent(of: component, eventName: eventName, unhandled: !dispatched, arguments: arguments)
     }
-    return false
+    return dispatched
   }
   
   fileprivate class func delegateDispatchEvent(to dispatchDelegate: HandlesEventDispatching, withClosures closures: Set<EventClosure>, forComponent component: Component, arguments: [AnyObject]) -> Bool {

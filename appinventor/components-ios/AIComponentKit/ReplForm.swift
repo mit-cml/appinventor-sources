@@ -48,6 +48,16 @@ open class ReplForm: Form {
     return false
   }
 
+  open override func dispatchGenericEvent(of component: Component, eventName: String, unhandled: Bool, arguments: [AnyObject]) {
+    _componentWithActiveEvent = component
+    if let interpreter = _httpdServer?.interpreter {
+      interpreter.invokeMethod("dispatchGenericEvent", withArgArray: [component, eventName, unhandled, arguments])
+      if (interpreter.exception != nil) {
+        NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
+      }
+    }
+  }
+
   open override func Initialize() {
     super.Initialize()
     EventDispatcher.dispatchEvent(of: self, called: "Initialize")

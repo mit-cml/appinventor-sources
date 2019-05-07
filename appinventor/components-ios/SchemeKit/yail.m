@@ -1073,7 +1073,13 @@ pic_value yail_get_simple_name(pic_state *pic) {
 
   if (yail_native_class_p(pic, native_class)) {
     const char *name = yail_native_class_name(pic, yail_native_class_ptr(pic, native_class));
-    return pic_cstr_value(pic, name);
+    size_t lastDot = 0;
+    for (size_t i = 0; name[i] != 0; i++) {
+      if (name[i] == '.') {
+        lastDot = i + 1;
+      }
+    }
+    return pic_cstr_value(pic, name + lastDot);
   } else {
     pic_error(pic, "Expected a native class", 1, native_class);
     return pic_undef_value(pic);

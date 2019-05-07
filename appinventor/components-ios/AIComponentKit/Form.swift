@@ -65,8 +65,12 @@ import Toast_Swift
   }
 
   open func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
-    // TODO(ewpatton): Implementation
+    // Will be overriden in compiled apps
     return false
+  }
+
+  open func dispatchGenericEvent(of component: Component, eventName: String, unhandled: Bool, arguments: [AnyObject]) {
+    // Will be overriden in compiled apps
   }
 
   open var dispatchDelegate: HandlesEventDispatching {
