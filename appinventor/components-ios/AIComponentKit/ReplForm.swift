@@ -1,12 +1,12 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import SchemeKit
 
 open class ReplForm: Form {
   @objc internal static weak var topform: ReplForm?
-  fileprivate var _httpdServer: AppInvHTTPD?
+  fileprivate static var _httpdServer: AppInvHTTPD?
   fileprivate var _assetsLoaded = false
   
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
@@ -29,7 +29,7 @@ open class ReplForm: Form {
 
   open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     _componentWithActiveEvent = component
-    if let interpreter = _httpdServer?.interpreter {
+    if let interpreter = ReplForm._httpdServer?.interpreter {
       let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
       if (interpreter.exception != nil) {
         NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
@@ -50,7 +50,7 @@ open class ReplForm: Form {
 
   open override func dispatchGenericEvent(of component: Component, eventName: String, unhandled: Bool, arguments: [AnyObject]) {
     _componentWithActiveEvent = component
-    if let interpreter = _httpdServer?.interpreter {
+    if let interpreter = ReplForm._httpdServer?.interpreter {
       interpreter.invokeMethod("dispatchGenericEvent", withArgArray: [component, eventName, unhandled, arguments])
       if (interpreter.exception != nil) {
         NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
@@ -58,35 +58,37 @@ open class ReplForm: Form {
     }
   }
 
-  open override func Initialize() {
-    super.Initialize()
-    EventDispatcher.dispatchEvent(of: self, called: "Initialize")
-  }
-
   @objc open func startHTTPD(_ secure: Bool) {
-    if _httpdServer == nil {
-      _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
+    if ReplForm._httpdServer == nil {
+      ReplForm._httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
     }
   }
 
   @objc open func stopHTTPD() {
-    if let server = _httpdServer {
+    if let server = ReplForm._httpdServer {
       server.stop()
-      _httpdServer = nil
+      ReplForm._httpdServer = nil
     }
   }
   
   @objc open var interpreter: SCMInterpreter? {
     get {
-      return _httpdServer?.interpreter
+      return ReplForm._httpdServer?.interpreter
     }
   }
-/*
+
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     interpreter?.setCurrentForm(self)
   }
-*/
+
+  open override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    if self.isMovingFromParent {
+      RetValManager.shared()?.popScreen("")
+    }
+  }
+
   open override func doSwitchForm(to formName: String, startValue: AnyObject?) {
     let newForm = ReplForm(nibName: nil, bundle: nil)
     newForm.formName = formName

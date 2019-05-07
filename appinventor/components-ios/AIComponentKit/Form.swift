@@ -37,6 +37,9 @@ import Toast_Swift
   fileprivate var _statusBarHidden: Bool = true
   fileprivate var _linearView = LinearView()
   fileprivate var _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+  // For screen switching
+  var lastFormName = ""
+  var formResult: AnyObject?
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -51,6 +54,19 @@ import Toast_Swift
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     Form.activeForm = self
+  }
+
+  open override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    if isMovingFromParent {
+      if let vcs = navigationController?.viewControllers, let parent = vcs.last as? Form {
+        parent.lastFormName = formName
+        if parent.formResult == nil {
+          // No close value provided, so we will use the empty string
+          parent.formResult = "" as AnyObject
+        }
+      }
+    }
   }
 
   open func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
@@ -380,6 +396,15 @@ import Toast_Swift
     }
   }
 
+  @objc open var Name: String {
+    get {
+      return formName
+    }
+    set(name) {
+      formName = name
+    }
+  }
+
   @objc open var OpenScreenAnimation: String {
     get {
       return "slide"
@@ -598,7 +623,14 @@ import Toast_Swift
   }
 
   @objc open func Initialize() {
+    EventDispatcher.dispatchEvent(of: self, called: "Initialize")
     _screenInitialized = true
+    if let previousFormValue = formResult {
+      OtherScreenClosed(lastFormName, previousFormValue)
+      // Clear these values for the next round through
+      formResult = nil
+      lastFormName = ""
+    }
   }
 
   @objc open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
@@ -638,14 +670,20 @@ import Toast_Swift
   @objc func doCloseScreen(withValue value: AnyObject? = nil) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
-      Form.activeForm?.OtherScreenClosed(self.formName, value ?? "" as NSString)
+    }
+    if let vcs = navigationController?.viewControllers, let parentForm = vcs.last as? Form {
+      parentForm.lastFormName = self.formName
+      parentForm.formResult = value ?? "" as AnyObject
     }
   }
 
   @objc func doCloseScreen(withPlainText text: String) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
-      Form.activeForm?.OtherScreenClosed(self.formName, text as NSString)
+    }
+    if let vcs = navigationController?.viewControllers, let parentForm = vcs.last as? Form {
+      parentForm.lastFormName = self.formName
+      parentForm.formResult = text as AnyObject
     }
   }
 
@@ -706,10 +744,7 @@ import Toast_Swift
   @objc open class func closeScreenWithPlainText(_ text: String) {
     if let form = activeForm, let vcs = activeForm?.navigationController?.viewControllers {
       if vcs.count > 1 {
-        if let parentForm = vcs[vcs.count - 2] as? Form {
-          form.doCloseScreen()
-          parentForm.OtherScreenClosed(form.formName, text as NSString)
-        }
+        form.doCloseScreen(withPlainText: text)
       }
     }
   }

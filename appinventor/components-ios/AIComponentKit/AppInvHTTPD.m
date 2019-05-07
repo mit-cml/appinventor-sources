@@ -97,7 +97,6 @@ static NSString *kMimeJson = @"application/json";
 }
 
 - (GCDWebServerResponse *)values:(GCDWebServerRequest *)request {
-  sleep(10);
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[[RetValManager sharedManager] fetch:YES]];
   response.contentType = @"application/json";
   response.statusCode = 200;

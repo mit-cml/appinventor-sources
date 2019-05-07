@@ -1,5 +1,5 @@
 ; -*- mode: scheme; -*-
-; Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+; Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 (import (scheme base)
         (scheme write)
@@ -177,12 +177,17 @@
            (full-name (symbol-append 'any$ component-type '$ event-name)))
       #`(define-event-helper #,full-name #,args #,body))))
 
+(define (sanitize-input arg)
+  (if (and (list? arg) (not (yail-list? arg)))
+      (cons '*list* arg)
+      arg))
+
 (define (dispatchEvent component registeredComponentName eventName args)
   (let ((registeredObject (string->symbol registeredComponentName)))
     (if (is-bound-in-form-environment registeredObject)
         (if (eq? (lookup-in-form-environment registeredObject) component)
             (let ((handler (lookup-handler registeredComponentName eventName)))
-              (apply handler args)
+              (apply handler (map sanitize-input args))
               #t)
             (begin
               (yail:invoke AIComponentKit.EventDispatcher 'unregisterForEventDelegation *this-form* registeredComponentName eventName)
@@ -686,8 +691,7 @@
   '())
 
 (define (set-form-name name)
-  ;TODO(ewpatton): Fix implementation to setName
-  (yail:invoke *this-form* 'setTitle name))
+  (yail:invoke *this-form* 'setName name))
 
 (define-syntax try-catch
   (syntax-rules ()

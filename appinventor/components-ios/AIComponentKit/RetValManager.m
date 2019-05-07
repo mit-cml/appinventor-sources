@@ -79,7 +79,7 @@ static RetValManager *_manager = nil;
 
 - (NSString *)fetch:(BOOL)block {
   NSDate *finishBy = [NSDate dateWithTimeIntervalSinceNow:TENSECONDS];
-  NSDate *exitBy = [NSDate dateWithTimeIntervalSinceNow:TENSECONDS - 100];
+  NSDate *exitBy = [NSDate dateWithTimeIntervalSinceNow:TENSECONDS - 0.1];
   [_waitLock lock];
   @try {
     while (_results.count == 0 && block) {

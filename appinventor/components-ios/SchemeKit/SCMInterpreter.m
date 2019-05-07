@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
 
 #import "SCMInterpreter.h"
 #include "picrin.h"
@@ -139,7 +139,9 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     for (NSUInteger i = 0 ; i < items.count ; ++i ) {
       values[i] = [self picValueForObjCValue:items[i]];
     }
-    return pic_make_list(pic_, items.count, values);
+    pic_value list = pic_make_list(pic_, items.count, values);
+    free(values);
+    return list;
   }
   return yail_make_native_instance(pic_, value);
 }
