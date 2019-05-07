@@ -1455,6 +1455,9 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
     Blockly.Msg.DIALOG_SUBMIT = 'Submit';
     Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
+    Blockly.Msg.TYPE_STRING = 'String';
+    Blockly.Msg.TYPE_INT = 'Integer';
+    Blockly.Msg.TYPE_BOOL = 'Boolean';
   }
 };
 
