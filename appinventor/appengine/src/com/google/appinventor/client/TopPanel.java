@@ -166,7 +166,7 @@ public class TopPanel extends Composite {
       TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
       feedbackLink.addClickHandler(
         new WindowOpenClickHandler(feedbackUrl));
-      feedbackLink.setStyleName("ode-TopPanelFeedbackButton");
+      feedbackLink.setStyleName("ode-TopPanelButton");
       links.add(feedbackLink);
     }
 
