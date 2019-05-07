@@ -103,50 +103,27 @@ public class FullScreenVideoUtil implements OnCompletionListener,
     mForm = form;
     mHandler = handler;
 
-    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
-      mFullScreenVideoDialog = new Dialog(mForm,
-          R.style.Theme_NoTitleBar_Fullscreen) {
-          public void onBackPressed() {
-            // Allows the user to force exiting full-screen.
-            Bundle values = new Bundle();
-            values.putInt(VIDEOPLAYER_POSITION,
-              mFullScreenVideoView.getCurrentPosition());
-            values.putBoolean(VIDEOPLAYER_PLAYING,
-              mFullScreenVideoView.isPlaying());
-            values.putString(VIDEOPLAYER_SOURCE,
-              mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
-            mFullScreenPlayer.fullScreenKilled(values);
-              super.onBackPressed();
-          }
+    mFullScreenVideoDialog = new Dialog(mForm,
+        R.style.Theme_NoTitleBar_Fullscreen) {
+        public void onBackPressed() {
+          // Allows the user to force exiting full-screen.
+          Bundle values = new Bundle();
+          values.putInt(VIDEOPLAYER_POSITION,
+            mFullScreenVideoView.getCurrentPosition());
+          values.putBoolean(VIDEOPLAYER_PLAYING,
+            mFullScreenVideoView.isPlaying());
+          values.putString(VIDEOPLAYER_SOURCE,
+            mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
+          mFullScreenPlayer.fullScreenKilled(values);
+          super.onBackPressed();
+        }
 
-          public void onStart() {
-            super.onStart();
-            // Prepare the Dialog media.
-            startDialog();
-          }
-        };
-    } else {
-      mFullScreenVideoDialog = new Dialog(mForm,
-          R.style.Theme_NoTitleBar_Fullscreen) {
-          protected void onStop() {
-            Bundle values = new Bundle();
-            values.putInt(VIDEOPLAYER_POSITION,
-              mFullScreenVideoView.getCurrentPosition());
-            values.putBoolean(VIDEOPLAYER_PLAYING,
-              mFullScreenVideoView.isPlaying());
-            values.putString(VIDEOPLAYER_SOURCE,
-             mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
-            mFullScreenPlayer.fullScreenKilled(values);
-            super.onStop();
-          }
-
-          public void onStart() {
-            super.onStart();
-            // Prepare the Dialog media.
-            startDialog();
-          }
-        };
-    }
+        public void onStart() {
+          super.onStart();
+          // Prepare the Dialog media.
+          startDialog();
+        }
+      };
   }
 
   /**

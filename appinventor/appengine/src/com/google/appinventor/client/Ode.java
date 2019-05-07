@@ -807,9 +807,9 @@ public class Ode implements EntryPoint {
         }
 
         if (result.getRendezvousServer() != null) {
-          setRendezvousServer(result.getRendezvousServer());
+          setRendezvousServer(result.getRendezvousServer(), true);
         } else {
-          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER);
+          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER, false);
         }
 
         userSettings = new UserSettings(user);
@@ -2523,10 +2523,28 @@ public class Ode implements EntryPoint {
     }
   }
 
-  // Native code to set the top level rendezvousServer variable
-  // where blockly code can easily find it.
-  private native void setRendezvousServer(String server) /*-{
+  /**
+   * setRendezvousServer
+   *
+   * Setup the Rendezvous server location.
+   *
+   * There are two places where the rendezvous servers is setup. The
+   * "compiled in" version is in YaVersion.RENDEZVOUS_SERVER.  The
+   * runtime version is in appengine-web.xml. If they differ, we set
+   * "top.includeQRcode" to true so that when we display the
+   * QRCode, we include the name of the Rendezvous server. Note: What
+   * is important here is what version of the rendezvous server is
+   * compiled into the Companion itself. The Companion does *not* get
+   * the default version from YaVersion, but from the blocks that are
+   * used to build the Companion.
+   *
+   * @param server the domain name of the Rendezvous servers
+   * @param inclQRcode true to indicate that the rendezvous server domain name should be included in the QR Code
+   *
+   */
+  private native void setRendezvousServer(String server, boolean inclQRcode) /*-{
     top.rendezvousServer = server;
+    top.includeQRcode = inclQRcode;
   }-*/;
 
   // Native code to open a new window (or tab) to display the

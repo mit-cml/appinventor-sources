@@ -61,7 +61,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies whether the component should be visible on the screen.  Value is true if the 
+   * Specifies whether the component should be visible on the screen.  Value is true if the
    * component is showing and false if hidden.
    * @param  visibility desired state
    */
@@ -94,12 +94,15 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param  width in pixels
    */
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's horizontal width, measured in pixels.")
   public void Width(int width) {
     container.setChildWidth(this, width);
     lastSetWidth = width;
-    if (width <= Component.LENGTH_PERCENT_TAG)
+    if (width <= Component.LENGTH_PERCENT_TAG) {
       container.$form().registerPercentLength(this, width, Form.PercentStorageRecord.Dim.WIDTH);
+    } else {
+      container.$form().unregisterPercentLength(this, Form.PercentStorageRecord.Dim.WIDTH);
+    }
   }
 
   /**
@@ -110,7 +113,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's horizontal width as a percentage of the Width of its parent Component.")
   public void WidthPercent(int pCent) {
     if (pCent < 0 || pCent > 100) {
       container.$form().dispatchErrorOccurredEvent(this, "WidthPercent",
@@ -180,12 +183,15 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param  height in pixels
    */
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's vertical height, measured in pixels.")
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
-    if (height <= Component.LENGTH_PERCENT_TAG)
+    if (height <= Component.LENGTH_PERCENT_TAG) {
       container.$form().registerPercentLength(this, height, Form.PercentStorageRecord.Dim.HEIGHT);
+    } else {
+      container.$form().unregisterPercentLength(this, Form.PercentStorageRecord.Dim.HEIGHT);
+    }
   }
 
   /**
@@ -196,7 +202,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies the component's vertical height as a percentage of the height of its parent Component.")
   public void HeightPercent(int pCent) {
     if (pCent < 0 || pCent > 100) {
       container.$form().dispatchErrorOccurredEvent(this, "HeightPercent",
