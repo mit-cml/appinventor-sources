@@ -29,6 +29,8 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     _view.scrollEnabled = scrollable
     super.setDelegate(self)
     parent.add(self)
+    Width = -1
+    Height = -1
   }
 
   // MARK: AbstractMethodsForViewComponent protocol implementation
@@ -51,57 +53,29 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
-    let hash = component.view.hash &* 2
-    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
-      oldConstraint.isActive = false
-    }
-    form.view.setNeedsLayout()
-    component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
-    var constraint: NSLayoutConstraint!
-    if width >= 0 {
-      constraint = NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(width))
+    if width <= kLengthPercentTag {
+      _view.setWidth(of: component.view, to: Length(percent: width, of: form.scaleFrameLayout))
     } else if width == kLengthPreferred {
-      constraint = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+      _view.setWidth(of: component.view, to: .Automatic)
     } else if width == kLengthFillParent {
-      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
-      constraint = component.view.widthAnchor.constraint(greaterThanOrEqualTo: _view.widthAnchor)
-      constraint.priority = UILayoutPriority(1)
-    } else if width <= kLengthPercentTag {
-      let percent = CGFloat(Double(-(width + 1000)) / 100.0)
-      constraint = component.view.widthAnchor.constraint(equalTo: form.widthAnchor, multiplier: percent)
+      _view.setWidth(of: component.view, to: .FillParent)
     } else {
-      NSLog("Unable to process width value \(width)")
-      return
+      _view.setWidth(of: component.view, to: Length(pixels: width))
     }
-    constraint.isActive = true
-    _dimensions[hash] = constraint
+    _view.setNeedsLayout()
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
-    let hash = component.view.hash &* 2 | 1
-    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
-      oldConstraint.isActive = false
-    }
-    form.view.setNeedsLayout()
-    component.view.setContentHuggingPriority(.defaultLow, for: .vertical)
-    var constraint: NSLayoutConstraint!
-    if height >= 0 {
-      constraint = NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height))
+    if height <= kLengthPercentTag {
+      _view.setHeight(of: component.view, to: Length(percent: height, of: form.scaleFrameLayout))
     } else if height == kLengthPreferred {
-      constraint = NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+      _view.setHeight(of: component.view, to: .Automatic)
     } else if height == kLengthFillParent {
-      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .vertical)
-      constraint = component.view.heightAnchor.constraint(greaterThanOrEqualTo: _view.heightAnchor)
-      constraint.priority = UILayoutPriority(1)
-    } else if height <= kLengthPercentTag {
-      let percent = CGFloat(Double(-(height + 1000)) / 100.0)
-      constraint = component.view.heightAnchor.constraint(equalTo: form.heightAnchor, multiplier: percent)
+      _view.setHeight(of: component.view, to: .FillParent)
     } else {
-      NSLog("Unable to process width value \(height)")
-      return
+      _view.setHeight(of: component.view, to: Length(pixels: height))
     }
-    constraint.isActive = true
-    _dimensions[hash] = constraint
+    _view.setNeedsLayout()
   }
 
   // MARK: HVArrangement Properties
@@ -161,55 +135,6 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       }
       _imagePath = ""
       _view.backgroundColor = _backgroundColor
-    }
-  }
-
-  // MARK: Private implementation
-  private func updateHorizontalConstraints(_ child: UIView) {
-    if _orientation == .horizontal {
-      if _components.count == 1 {
-        let constraint = child.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor)
-        constraint.priority = UILayoutPriority.required
-        view.addConstraint(constraint)
-      } else {
-        let constraint = _components[_components.count - 2].view.trailingAnchor.constraint(equalTo: child.leadingAnchor)
-        constraint.priority = UILayoutPriority.required
-        view.addConstraint(constraint)
-      }
-      _lastConstraint = _view.trailingAnchor.constraint(greaterThanOrEqualTo: child.trailingAnchor)
-      view.addConstraint(_lastConstraint)
-    } else {
-    }
-  }
-
-  private func updateVerticalConstraints(_ child: UIView) {
-    if _orientation == .horizontal {
-      var constraint = _view.heightAnchor.constraint(greaterThanOrEqualTo: child.heightAnchor)
-      constraint.priority = UILayoutPriority.defaultLow
-      view.addConstraint(constraint)
-      if _components.count == 1 {
-        constraint = child.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor)
-        constraint.priority = UILayoutPriority.required
-        view.addConstraint(constraint)
-      } else {
-        constraint = _components[_components.count - 2].view.trailingAnchor.constraint(equalTo: child.leadingAnchor)
-        constraint.priority = UILayoutPriority.required
-        view.addConstraint(constraint)
-      }
-      _lastConstraint = _view.trailingAnchor.constraint(greaterThanOrEqualTo: child.trailingAnchor)
-      view.addConstraint(_lastConstraint)
-    } else {
-      var constraint = _view.widthAnchor.constraint(greaterThanOrEqualTo: child.widthAnchor)
-      constraint.priority = UILayoutPriority.defaultLow
-      view.addConstraint(constraint)
-      if _components.count == 0 {
-      } else {
-        constraint = _components[_components.count - 2].view.bottomAnchor.constraint(equalTo: child.topAnchor)
-        constraint.priority = UILayoutPriority.required
-        view.addConstraint(constraint)
-      }
-      _lastConstraint = _view.bottomAnchor.constraint(greaterThanOrEqualTo: child.bottomAnchor)
-      view.addConstraint(_lastConstraint)
     }
   }
 }

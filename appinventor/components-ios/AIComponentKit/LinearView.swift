@@ -27,11 +27,52 @@ private class HelperView: UIView {
   }
 }
 
+public class Length: Equatable {
+  static let Automatic = Length(-1)
+  static let FillParent = Length(-2)
+
+  private let rawValue: Int32
+  fileprivate let view: UIView!
+  fileprivate var constraint: NSLayoutConstraint? = nil
+
+  private init(_ fixed: Int32) {
+    rawValue = fixed
+    self.view = nil
+  }
+
+  public init(pixels: Int32) {
+    rawValue = pixels
+    self.view = nil
+  }
+
+  public init(percent: Int32, of view: UIView) {
+    rawValue = -1000 - percent
+    self.view = view
+  }
+
+  public static func == (lhs: Length, rhs: Length) -> Bool {
+    return lhs.rawValue == rhs.rawValue && lhs.view == rhs.view
+  }
+
+  public var isPercent: Bool {
+    return view != nil
+  }
+
+  public var cgFloat: CGFloat {
+    if isPercent {
+      return CGFloat(rawValue) / 100.0
+    } else {
+      return CGFloat(rawValue)
+    }
+  }
+}
+
 let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue + UILayoutPriority.defaultLow.rawValue)) / 2
 let TightSizingPriority = UILayoutPriority(10)
 let ConstraintPriority = UILayoutPriority(8)
 let DefaultSizingPriority = UILayoutPriority(6)
 let FillParentHuggingPriority = UILayoutPriority(5)
+let AutomaticHuggingPriority = UILayoutPriority.defaultLow  //UILayoutPriority(26)  // Needs to be greater than 25 otherwise intrinsic content size overrides
 
 public class LinearView: UIView {
   fileprivate var _outer = UIStackView()
@@ -44,10 +85,19 @@ public class LinearView: UIView {
   fileprivate var _tail = HelperView()
   fileprivate var _innerHead = HelperView()
   fileprivate var _innerTail = HelperView()
+  fileprivate var _innerHeadZero: NSLayoutConstraint!
+  fileprivate var _innerTailZero: NSLayoutConstraint!
   fileprivate var _outerEqualConstraint: NSLayoutConstraint!
   fileprivate var _innerEqualConstraint: NSLayoutConstraint!
   fileprivate var _equalConstraint: NSLayoutConstraint!
   fileprivate var _backgroundView = UIView()
+  fileprivate var _fillParentView = UIView()
+  private var widthConstraints = [UIView:Length]()
+  private var widthFillParent = 0
+  private var heightConstraints = [UIView:Length]()
+  private var heightFillParent = 0
+  private var widthFillParentConstraint: NSLayoutConstraint?
+  private var heightFillParentConstraint: NSLayoutConstraint?
 
   override init(frame aRect: CGRect) {
     super.init(frame: aRect)
@@ -65,12 +115,14 @@ public class LinearView: UIView {
     _outer.translatesAutoresizingMaskIntoConstraints = false
     _inner.translatesAutoresizingMaskIntoConstraints = false
     _backgroundView.translatesAutoresizingMaskIntoConstraints = false
+    _fillParentView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(_backgroundView)
+    addSubview(_fillParentView)
     addSubview(_outer)
-    addConstraint(_backgroundView.widthAnchor.constraint(equalTo: widthAnchor))
-    addConstraint(_backgroundView.heightAnchor.constraint(equalTo: heightAnchor))
-    addConstraint(_backgroundView.topAnchor.constraint(equalTo: topAnchor))
-    addConstraint(_backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor))
+    _backgroundView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+    _backgroundView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+    _backgroundView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    _backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
     _outer.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     _outer.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
     _outer.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -90,8 +142,6 @@ public class LinearView: UIView {
     _inner.addArrangedSubview(_innerTail)
     updatePositioningConstraints()
     updatePriorities()
-    addDefaultDimension(for: widthAnchor, length: kEmptyHVArrangementWidth)
-    addDefaultDimension(for: heightAnchor, length: kEmptyHVArrangementHeight)
   }
 
   @objc open var scrollEnabled: Bool {
@@ -168,6 +218,150 @@ public class LinearView: UIView {
     }
   }
 
+  /**
+   * Sets the width of an arranged child of the LinearView.
+   *
+   * This method is not threadsafe. It should only be called from the UI thread.
+   */
+  open func setWidth(of view: UIView, to length: Length) {
+    // Remove old constraint
+    if let oldLength = widthConstraints[view] {
+      oldLength.constraint?.isActive = false
+      if oldLength == .FillParent {
+        widthFillParent -= 1
+      }
+      if widthFillParent == 0 && orientation == .horizontal {
+        widthFillParentConstraint?.isActive = false
+        widthFillParentConstraint = nil
+        _innerEqualConstraint.isActive = true
+        _innerHeadZero.isActive = false
+        _innerTailZero.isActive = false
+        setNeedsUpdateConstraints()
+      }
+    }
+
+    if length == .FillParent {
+      view.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
+    } else {
+      view.setContentHuggingPriority(AutomaticHuggingPriority, for: .horizontal)
+    }
+
+    // Add new constraint
+    if length == .FillParent {
+      if orientation == .horizontal {
+        widthFillParent += 1
+        if widthFillParent == 1 {
+          widthFillParentConstraint = _inner.widthAnchor.constraint(equalTo: widthAnchor)
+          widthFillParentConstraint?.isActive = true
+          _innerEqualConstraint.isActive = false
+          _innerHeadZero.isActive = true
+          _innerTailZero.isActive = true
+          setNeedsUpdateConstraints()
+        }
+        length.constraint = _fillParentView.widthAnchor.constraint(equalTo: view.widthAnchor)
+        length.constraint?.priority = UILayoutPriority.defaultHigh
+      } else {
+        length.constraint = view.widthAnchor.constraint(equalTo: self.widthAnchor)
+      }
+    } else if length == .Automatic {
+      length.constraint = _inner.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor)
+    } else if length.isPercent {
+      length.constraint = view.widthAnchor.constraint(equalTo: length.view.widthAnchor, multiplier: length.cgFloat)
+    } else {
+      length.constraint = view.widthAnchor.constraint(equalToConstant: length.cgFloat)
+    }
+    length.constraint?.isActive = true
+    widthConstraints[view] = length
+    invalidateIntrinsicContentSize()
+  }
+
+  /**
+   * Sets the height of an arranged child of the LinearView.
+   *
+   * This method is not threadsafe. It should only be called from the UI thread.
+   */
+  open func setHeight(of view: UIView, to length: Length) {
+    // Remove old constraint
+    if let oldLength = heightConstraints[view] {
+      oldLength.constraint?.isActive = false
+      if oldLength == .FillParent {
+        heightFillParent -= 1
+      }
+      if heightFillParent == 0 && orientation == .vertical {
+        heightFillParentConstraint?.isActive = false
+        heightFillParentConstraint = nil
+        _innerEqualConstraint.isActive = true
+        _innerHeadZero.isActive = false
+        _innerTailZero.isActive = false
+        setNeedsUpdateConstraints()
+      }
+    }
+
+    if length == .FillParent {
+      view.setContentHuggingPriority(FillParentHuggingPriority, for: .vertical)
+    } else {
+      view.setContentHuggingPriority(AutomaticHuggingPriority, for: .vertical)
+    }
+
+    // Add new constraint
+    if length == .FillParent {
+      if orientation == .vertical {
+        heightFillParent += 1
+        if heightFillParent == 1 {
+          heightFillParentConstraint = _inner.heightAnchor.constraint(equalTo: heightAnchor)
+          heightFillParentConstraint?.isActive = true
+          _innerEqualConstraint.isActive = false
+          _innerHeadZero.isActive = true
+          _innerTailZero.isActive = true
+          setNeedsUpdateConstraints()
+        }
+        length.constraint = _fillParentView.heightAnchor.constraint(equalTo: view.heightAnchor)
+        length.constraint?.priority = UILayoutPriority.defaultHigh
+      } else {
+        length.constraint = view.heightAnchor.constraint(equalTo: self.heightAnchor)
+      }
+    } else if length == .Automatic {
+      length.constraint = _inner.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
+    } else if length.isPercent {
+      length.constraint = view.heightAnchor.constraint(equalTo: length.view.heightAnchor, multiplier: length.cgFloat)
+    } else {
+      length.constraint = view.heightAnchor.constraint(equalToConstant: length.cgFloat)
+    }
+    length.constraint?.isActive = true
+    heightConstraints[view] = length
+    invalidateIntrinsicContentSize()
+  }
+
+  open override func updateConstraints() {
+    super.updateConstraints()
+    updatePriorities()
+  }
+
+  open override var intrinsicContentSize: CGSize {
+    if _items.count == 0 {
+      return CGSize(width: 100, height: 100)
+    } else {
+      var max = CGFloat(0.0), sum = CGFloat(0.0)
+      if orientation == .horizontal {
+        _items.forEach { item in
+          if item.view.intrinsicContentSize.height > max {
+            max = item.view.intrinsicContentSize.height
+          }
+          sum += item.view.intrinsicContentSize.width
+        }
+        return CGSize(width: sum, height: max)
+      } else {
+        _items.forEach { item in
+          if item.view.intrinsicContentSize.width > max {
+            max = item.view.intrinsicContentSize.width
+          }
+          sum += item.view.intrinsicContentSize.height
+        }
+        return CGSize(width: max, height: sum)
+      }
+    }
+  }
+
   // MARK: Private Implementation
 
   private func updateHorizontalAlignment() {
@@ -229,13 +423,21 @@ public class LinearView: UIView {
       _outerEqualConstraint = _head.heightAnchor.constraint(equalTo: _tail.heightAnchor)
       _innerEqualConstraint = _innerHead.widthAnchor.constraint(equalTo: _innerTail.widthAnchor)
       _equalConstraint = widthAnchor.constraint(equalTo: _inner.widthAnchor)
+      _innerHeadZero = _innerHead.widthAnchor.constraint(equalToConstant: 0.0)
+      _innerTailZero = _innerTail.widthAnchor.constraint(equalToConstant: 0.0)
     } else {
       _outerEqualConstraint = _head.widthAnchor.constraint(equalTo: _tail.widthAnchor)
       _innerEqualConstraint = _innerHead.heightAnchor.constraint(equalTo: _innerTail.heightAnchor)
       _equalConstraint = heightAnchor.constraint(equalTo: _inner.heightAnchor)
+      _innerHeadZero = _innerHead.heightAnchor.constraint(equalToConstant: 0.0)
+      _innerTailZero = _innerTail.heightAnchor.constraint(equalToConstant: 0.0)
     }
     _outerEqualConstraint.priority = ConstraintPriority
+    _outerEqualConstraint.identifier = "Outer equality constraint"
     _innerEqualConstraint.priority = ConstraintPriority
+    _innerEqualConstraint.identifier = "Inner equality constraint"
+    _innerHeadZero.identifier = "Inner head zero"
+    _innerTailZero.identifier = "Inner tail zero"
     addConstraint(_equalConstraint)
     addConstraint(_outerEqualConstraint)
     _inner.addConstraint(_innerEqualConstraint)
@@ -265,25 +467,29 @@ public class LinearView: UIView {
     // Dynamic horizontal control
     horizontalHead.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
     horizontalTail.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
-    switch _horizontalAlign {
-    case .left:
-      horizontalHead.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
-    case .center:
-      break
-    case .right:
-      horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+    if widthFillParent == 0 {
+      switch _horizontalAlign {
+      case .left:
+        horizontalHead.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+      case .center:
+        break
+      case .right:
+        horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+      }
     }
 
     // Dynamic vertical control
     verticalHead.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
     verticalTail.setContentHuggingPriority(DefaultSizingPriority, for: .vertical)
-    switch _verticalAlign {
-    case .top:
-      verticalHead.setContentHuggingPriority(TightSizingPriority, for: .vertical)
-    case .center:
-      break
-    case .bottom:
-      verticalTail.setContentHuggingPriority(TightSizingPriority, for: .vertical)
+    if heightFillParent == 0 {
+      switch _verticalAlign {
+      case .top:
+        verticalHead.setContentHuggingPriority(TightSizingPriority, for: .vertical)
+      case .center:
+        break
+      case .bottom:
+        verticalTail.setContentHuggingPriority(TightSizingPriority, for: .vertical)
+      }
     }
   }
 }

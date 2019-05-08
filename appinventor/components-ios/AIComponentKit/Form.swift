@@ -31,7 +31,6 @@ import Toast_Swift
   fileprivate var _backgroundImage = ""
   fileprivate var _screenInitialized = false
   fileprivate var _startText = ""
-  fileprivate var _viewLayout = LinearLayout()
   fileprivate var _compatibilityMode = true
   @objc internal var _componentWithActiveEvent: Component?
   fileprivate var _statusBarHidden: Bool = true
@@ -122,57 +121,33 @@ import Toast_Swift
   private var _dimensions = [Int:NSLayoutConstraint]()
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
-    let hash = component.view.hash &* 2
-    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
-      oldConstraint.isActive = false
-    }
-    form.view.setNeedsLayout()
-    component.view.setContentHuggingPriority(.defaultLow, for: .horizontal)
-    var constraint: NSLayoutConstraint!
-    if width >= 0 {
-      constraint = NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(width))
+    if width <= kLengthPercentTag {
+      _linearView.setWidth(of: component.view, to: Length(percent: width, of: _scaleFrameLayout))
     } else if width == kLengthPreferred {
-      constraint = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+      _linearView.setWidth(of: component.view, to: .Automatic)
     } else if width == kLengthFillParent {
-      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .horizontal)
-      constraint = component.view.widthAnchor.constraint(greaterThanOrEqualTo: widthAnchor)
-      constraint.priority = UILayoutPriority(1)
-    } else if width <= kLengthPercentTag {
-      let percent = CGFloat(Double(-(width + 1000)) / 100.0)
-      constraint = component.view.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor, multiplier: percent)
+      _linearView.setWidth(of: component.view, to: .FillParent)
     } else {
-      NSLog("Unable to process width value \(width)")
-      return
+      _linearView.setWidth(of: component.view, to: Length(pixels: width))
     }
-    constraint.isActive = true
-    _dimensions[hash] = constraint
+    _linearView.setNeedsLayout()
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
-    let hash = component.view.hash &* 2 | 1
-    if let oldConstraint = _dimensions.removeValue(forKey: hash) {
-      oldConstraint.isActive = false
-    }
-    form.view.setNeedsLayout()
-    component.view.setContentHuggingPriority(.defaultLow, for: .vertical)
-    var constraint: NSLayoutConstraint!
-    if height >= 0 {
-      constraint = NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height))
+    if height <= kLengthPercentTag {
+      _linearView.setHeight(of: component.view, to: Length(percent: height, of: _scaleFrameLayout))
     } else if height == kLengthPreferred {
-      constraint = NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0))
+      _linearView.setHeight(of: component.view, to: .Automatic)
     } else if height == kLengthFillParent {
-      component.view.setContentHuggingPriority(FillParentHuggingPriority, for: .vertical)
-      constraint = component.view.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor)
-      constraint.priority = UILayoutPriority(1)
-    } else if height <= kLengthPercentTag {
-      let percent = CGFloat(Double(-(height + 1000)) / 100.0)
-      constraint = component.view.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor, multiplier: percent)
+      _linearView.setHeight(of: component.view, to: .FillParent)
     } else {
-      NSLog("Unable to process width value \(height)")
-      return
+      _linearView.setHeight(of: component.view, to: Length(pixels: height))
     }
-    constraint.isActive = true
-    _dimensions[hash] = constraint
+    _linearView.setNeedsLayout()
+  }
+
+  open var scaleFrameLayout: ScaleFrameLayout {
+    return _scaleFrameLayout
   }
 
   @objc open func clear() {
@@ -201,6 +176,8 @@ import Toast_Swift
     _linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor).isActive = true
     _linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor).isActive = true
     _linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor).isActive = true
+    _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
+    _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
   }
 
   @objc func clearComponents() {

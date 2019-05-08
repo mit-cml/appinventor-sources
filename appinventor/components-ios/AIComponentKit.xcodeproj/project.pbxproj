@@ -38,7 +38,6 @@
 		061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061F8571203F28AC00683091 /* AppInventorTestCase.swift */; };
 		062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A71DCE409D0035E4A4 /* BluetoothClient.swift */; };
 		062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */; };
-		062832961DBE9591009605D5 /* LinearLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832951DBE9591009605D5 /* LinearLayout.swift */; };
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
 		0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */; };
@@ -238,7 +237,6 @@
 		061F8571203F28AC00683091 /* AppInventorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppInventorTestCase.swift; sourceTree = "<group>"; };
 		062300A71DCE409D0035E4A4 /* BluetoothClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothClient.swift; sourceTree = "<group>"; };
 		062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionBase.swift; sourceTree = "<group>"; };
-		062832951DBE9591009605D5 /* LinearLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearLayout.swift; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LifecycleDelegate.swift; sourceTree = "<group>"; };
@@ -628,7 +626,6 @@
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
 				DE4EA34520AE2CDD009681D8 /* HTMLEntities.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
-				062832951DBE9591009605D5 /* LinearLayout.swift */,
 				0644F7021F38EDF200642E4D /* LinearView.swift */,
 				0417585620098EE0007D2C31 /* LinkedList.swift */,
 				06E59EA71D92C7E800C42804 /* NetworkUtils.h */,
@@ -1154,7 +1151,6 @@
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
 				DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */,
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
-				062832961DBE9591009605D5 /* LinearLayout.swift in Sources */,
 				0644F6C01F37CAD800642E4D /* Player.swift in Sources */,
 				06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */,
 				068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */,

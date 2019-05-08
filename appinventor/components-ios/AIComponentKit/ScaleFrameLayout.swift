@@ -8,7 +8,6 @@ private let kDefaultNormalShortDimension = CGFloat(320)
 
 func computeCompatibleScaling() -> CGFloat {
   let dims = UIScreen.main.nativeBounds
-  print("nativeBounds = \(dims)")
   let density = UIScreen.main.nativeScale
   let (shortSize, longSize) = (dims.width, dims.height)
   let newShortSize = Int(kDefaultNormalShortDimension * density + 0.5)
@@ -21,9 +20,9 @@ func computeCompatibleScaling() -> CGFloat {
   return max(1.0, scale)
 }
 
-class ScaleFrameLayout: UIView {
+public class ScaleFrameLayout: UIView {
 
-  enum Mode {
+  public enum Mode {
     case Fixed
     case Responsive
   }
@@ -49,8 +48,6 @@ class ScaleFrameLayout: UIView {
       return _mode
     }
     set(mode) {
-      print("Screen native bounds = \(UIScreen.main.nativeBounds)")
-      print("Screen bounds = \(UIScreen.main.bounds)")
       if _mode != mode {
         _mode = mode
         switch _mode {
