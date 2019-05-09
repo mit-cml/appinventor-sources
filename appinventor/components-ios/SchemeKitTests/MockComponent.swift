@@ -22,12 +22,12 @@ import Foundation
   private var _e: NSObject = NSObject()
   private let _parent: MockContainer
 
-  public init(_ parent: MockContainer) {
+  @objc public init(_ parent: MockContainer) {
     _parent = parent
     super.init()
   }
 
-  public var PropertyA: Bool {
+  @objc public var PropertyA: Bool {
     get {
       return _a
     }
@@ -36,7 +36,7 @@ import Foundation
     }
   }
   
-  public var PropertyB: Int {
+  @objc public var PropertyB: Int {
     get {
       return _b
     }
@@ -45,7 +45,7 @@ import Foundation
     }
   }
 
-  public var PropertyC: Double {
+  @objc public var PropertyC: Double {
     get {
       return _c
     }
@@ -54,7 +54,7 @@ import Foundation
     }
   }
   
-  public var PropertyD: String {
+  @objc public var PropertyD: String {
     get {
       return _d
     }
@@ -63,7 +63,7 @@ import Foundation
     }
   }
   
-  public var PropertyE: NSObject {
+  @objc public var PropertyE: NSObject {
     get {
       return _e
     }
@@ -72,59 +72,59 @@ import Foundation
     }
   }
   
-  public func DoStuff(coolBool: Bool) {
+  @objc public func DoStuff(coolBool: Bool) {
     NSLog("Did stuff with bool = \(coolBool)")
   }
   
-  public func DoStuff(coolInt: Int) {
+  @objc public func DoStuff(coolInt: Int) {
     NSLog("Did stuff with int = \(coolInt)")
   }
   
-  public func DoStuff(coolDouble: Double) {
+  @objc public func DoStuff(coolDouble: Double) {
     NSLog("Did stuff with int = \(coolDouble)")
   }
   
-  public func DoStuff(coolString: String) {
+  @objc public func DoStuff(coolString: String) {
     NSLog("Did stuff with string = \(coolString)")
   }
   
-  public func DoStuff(coolObject: String) {
+  @objc public func DoStuff(coolObject: String) {
     NSLog("Did stuff with object = \(coolObject)")
   }
   
-  public func DoStuff(coolComponent: MockComponent) {
+  @objc public func DoStuff(coolComponent: MockComponent) {
     NSLog("Did stuff with component = \(coolComponent)")
   }
   
-  public func DoStuff(_ stuff: MockComponent, times: Int) {
+  @objc public func DoStuff(_ stuff: MockComponent, times: Int) {
     NSLog("Did stuff \(times) with component = \(stuff)")
   }
   
-  public func ConnectWithUUID(uuid: String) {
+  @objc public func ConnectWithUUID(uuid: String) {
     NSLog("Did connect with UUID = \(uuid)")
   }
   
-  public func ConnectWithUUID(_ uuid: String) {
+  @objc public func ConnectWithUUID(_ uuid: String) {
     NSLog("Did connect with UUID = \(uuid)")
   }
   
-  public func Connect(anyObject: AnyObject) {
+  @objc public func Connect(anyObject: AnyObject) {
     NSLog("Did connect with object = \(anyObject)")
   }
   
-  public func Connect(any: Any) {
+  @objc public func Connect(any: Any) {
     NSLog("Did connect with any = \(any)")
   }
   
-  public func Connect(times: NSNumber) {
+  @objc public func Connect(times: NSNumber) {
     NSLog("Did connect with number = \(times)")
   }
 
-  public static func makeMockComponent(_ parent: MockContainer) -> MockComponent {
+  @objc public static func makeMockComponent(_ parent: MockContainer) -> MockComponent {
     return MockComponent(parent);
   }
 
-  public func copy(with zone: NSZone? = nil) -> Any {
+  @objc public func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
 }
