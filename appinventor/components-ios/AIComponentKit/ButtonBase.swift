@@ -157,10 +157,13 @@ open class ButtonBase: ViewComponent {
     }
 
     // Modern iOS theme
-    let defaultbuttoncolor = UIButton().titleColor(for: .normal)
+    let defaultbuttoncolor = UIButton().tintColor
     MODERN_DEFAULT_PIPELINE = CLASSIC_DEFAULT_PIPELINE
     MODERN_DEFAULT_PIPELINE[.FontColor] = {
-      $0._view.setTitleColor($0._textColor == kDefaultColor ? defaultbuttoncolor : argbToColor($0._textColor), for: .normal)
+      let color = $0._textColor == kDefaultColor ? defaultbuttoncolor : argbToColor($0._textColor)
+      let highlightColor = color?.withAlphaComponent(0.3)
+      $0._view.setTitleColor(color, for: .normal)
+      $0._view.setTitleColor($0.ShowFeedback ? highlightColor : nil, for: .highlighted)
       return true
     }
     MODERN_DEFAULT_PIPELINE[.DefaultShape] = { (MAIButton) in return true }  // Cancels Classic button style
