@@ -440,7 +440,22 @@ Blockly.Blocks.component_event = {
   },
 
   declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
-    return this.getVars();
+    var names = [];
+    for (var i = 0, param; param = this.getField('VAR' + i); i++) {
+      names.push(param.getText());
+      if (param.eventparam && param.eventparam != param.getText()) {
+        names.push(param.eventparam);
+      }
+    }
+    return names;
+  },
+
+  declaredVariables: function() {
+    var names = [];
+    for (var i = 0, param; param = this.getField('VAR' + i); i++) {
+      names.push(param.getText());
+    }
+    return names;
   },
 
   blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
