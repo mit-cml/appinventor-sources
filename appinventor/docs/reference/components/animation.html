@@ -591,7 +591,7 @@
                    <dt><code>PaintColor</code></dt>
                    <dd>The color in which lines are drawn</dd>
                    <dt><code>TextAlignment</code></dt>
-		   <dd>Determines the alignment of the text drawn by
+                   <dd>Determines the alignment of the text drawn by
                    DrawText() or DrawAngle() with respect to the point
                    specified by that command:
                    point at the left of the text, point at the center of the text, or point at the right of the text.</dd>
@@ -633,6 +633,11 @@
                  <dl>
                    <dt><code>Clear()</code></dt>
                    <dd>Clears anything drawn on this Canvas but not any background color or image.</dd>
+                   <dt><code>DrawArc(number left, number top, number right, number bottom, number startAngle, number sweepAngle, boolean useCenter, boolean fill)</code></dt>
+                   <dd>Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
+                  Start angle is 0 when heading to the right, and increase when rotate clockwise.
+                  When useCenter is true, a sector will be drawed instead of an arc.
+                  When fill is true, a filled arc (or sector) will be drawed instead of just an outline.</dd>
                    <dt><code>DrawCircle(number x, number y, number r)</code></dt>
                    <dd>Draws a circle (filled in) at the given coordinates on the canvas, with the
                   given radius.</dd>
@@ -640,6 +645,11 @@
                    <dd>Draws a line between the given coordinates on the canvas.</dd>
                    <dt><code>DrawPoint(number x, number y)</code></dt>
                    <dd>Draws a point at the given coordinates on the canvas.</dd>
+                   <dt><code>DrawShape(list pointList, boolean fill)</code></dt>
+                   <dd>Draws a shape on the canvas.
+                  pointList should be a list contains sub-lists with two number which represents a coordinate.
+                  The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+                  When fill is true, the shape will be filled.</dd>
                    <dt><code>DrawText(text text, number x, number y)</code></dt>
                    <dd>Draws the specified text relative to the specified coordinates using the values of the FontSize and TextAlignment properties.</dd>
                    <dt><code>DrawTextAtAngle(text text, number x, number y, number angle)</code></dt>

@@ -181,7 +181,7 @@ goog.require('goog.Timer');
 
           var a = document.createElement('a');
           a.download = name;
-          a.target = "_blank";
+          a.target = '_self';
           if (canvas.toBlob === undefined) {
             var src = canvas.toDataURL('image/png');
             a.href = src;

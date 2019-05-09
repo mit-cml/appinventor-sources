@@ -86,10 +86,21 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             ? referenceComponentsUrl + "index.html"
             : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
       }
-      if (version > 0) {
+      if (!scd.getVersionName().equals("")) {
+        HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
+            scd.getVersionName());
+        html.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(html);
+      } else if (version > 0) {
         HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " + version);
         html.setStyleName("ode-ComponentHelpPopup-Body");
         inner.add(html);
+      }
+      if (scd.getExternal() && scd.getDateBuilt() != null && !scd.getDateBuilt().equals("")) {
+        String date = scd.getDateBuilt().split("T")[0];
+        HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\"" + scd.getDateBuilt() + "\">" + date + "</time>");
+        dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
+        inner.add(dateCreatedHtml);
       }
       if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +

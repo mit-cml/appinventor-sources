@@ -34,6 +34,7 @@ public class MockPolygon extends MockPolygonBase {
   static MockPolygon fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockPolygon polygon = new MockPolygon(parent.editor);
     polygon.feature = layer;
+    String name = null;
     boolean hadFillColor = false, hadStrokeColor = false, hadStrokeWidth = false;
     for (String key : properties.keySet()) {
       if (key.equalsIgnoreCase(PROPERTY_NAME_STROKEWIDTH) || key.equalsIgnoreCase(CSS_PROPERTY_STROKEWIDTH)) {
@@ -46,9 +47,7 @@ public class MockPolygon extends MockPolygonBase {
         polygon.getProperties().changePropertyValue(PROPERTY_NAME_FILLCOLOR, properties.get(key).isString().stringValue());
         hadFillColor = true;
       } else if (key.equalsIgnoreCase(PROPERTY_NAME_NAME)) {
-        String name = properties.get(key).isString().stringValue();
-        name = name.replaceAll("[ \t]+", "_");
-        polygon.changeProperty(PROPERTY_NAME_NAME, name);
+        name = properties.get(key).isString().stringValue();
       } else if (key.equalsIgnoreCase(PROPERTY_NAME_VISIBLE)) {
         polygon.setVisibleProperty(properties.get(key).isString().stringValue());
       }
@@ -62,6 +61,7 @@ public class MockPolygon extends MockPolygonBase {
     if (!hadStrokeWidth) {
       polygon.getProperties().changePropertyValue(PROPERTY_NAME_STROKEWIDTH, "1");
     }
+    processFeatureName(polygon, parent, name);
     polygon.preserveLayerData();
     return polygon;
   }
@@ -256,8 +256,8 @@ public class MockPolygon extends MockPolygonBase {
         }
         for (var i = 1; i < latlngs.length; i++) {
           var hole = [];
-          for (var j = 0; j < latlngs[i].length; i++) {
-            holesJson.push([latlngs[i][j].lat, latlngs[i][j].lng]);
+          for (var j = 0; j < latlngs[i].length; j++) {
+            hole.push([latlngs[i][j].lat, latlngs[i][j].lng]);
           }
           holesJson.push(hole);
         }

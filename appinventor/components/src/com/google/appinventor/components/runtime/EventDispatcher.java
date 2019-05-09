@@ -197,6 +197,7 @@ public class EventDispatcher {
       if (eventClosures != null && eventClosures.size() > 0) {
         dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
       }
+      dispatchDelegate.dispatchGenericEvent(component, eventName, !dispatched, args);
     }
     return dispatched;
   }

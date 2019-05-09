@@ -19,11 +19,15 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -40,6 +44,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -70,6 +75,24 @@ public class TopPanel extends Composite {
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   final Ode ode = Ode.getInstance();
+
+  interface Translations extends ClientBundle {
+    Translations INSTANCE = GWT.create(Translations.class);
+
+    @Source("languages.json")
+    TextResource languages();
+  }
+
+  static {
+    loadLanguages(Translations.INSTANCE.languages().getText());
+    LANGUAGES = Dictionary.getDictionary("LANGUAGES");
+  }
+
+  private static native void loadLanguages(String resource)/*-{
+    $wnd['LANGUAGES'] = JSON.parse(resource);
+  }-*/;
+
+  private static final Dictionary LANGUAGES;
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -233,30 +256,11 @@ public class TopPanel extends Composite {
 
   private String getDisplayName(String localeName){
     String nativeName=LocaleInfo.getLocaleNativeDisplayName(localeName);
-    if (localeName == "zh_CN") {
-      nativeName = MESSAGES.SwitchToSimplifiedChinese();
-    } else if (localeName == "zh_TW") {
-      nativeName = MESSAGES.SwitchToTraditionalChinese();
-    } else if (localeName == "es_ES") {
-      nativeName = MESSAGES.SwitchToSpanish();
-    } else if (localeName == "fr_FR") {
-      nativeName = MESSAGES.SwitchToFrench();
-    } else if (localeName == "it_IT") {
-      nativeName = MESSAGES.SwitchToItalian();
-    } else if (localeName == "ru") {
-      nativeName = MESSAGES.SwitchToRussian();
-    } else if (localeName == "ko_KR") {
-      nativeName = MESSAGES.SwitchToKorean();
-    } else if (localeName == "sv") {
-      nativeName = MESSAGES.SwitchToSwedish();
-    } else if (localeName == "pt_BR") {
-      nativeName = MESSAGES.switchToPortugueseBR();
-    } else if (localeName == "pt") {
-      nativeName = MESSAGES.switchToPortuguese();
-    } else if (localeName == "nl") {
-      nativeName = MESSAGES.switchToDutch();
+    try {
+      return LANGUAGES.get(localeName);
+    } catch (MissingResourceException e) {
+      return nativeName;
     }
-    return nativeName;
   }
 
   public void updateAccountMessageButton(){

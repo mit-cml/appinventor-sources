@@ -96,9 +96,6 @@ public class LoginServlet extends HttpServlet {
     // These params are passed around so they can take effect even if we
     // were not logged in.
     String locale = params.get("locale");
-    if (locale == null) {
-      locale = "en";
-    }
     String repo = params.get("repo");
     String galleryId = params.get("galleryId");
     String redirect = params.get("redirect");
@@ -106,7 +103,12 @@ public class LoginServlet extends HttpServlet {
     if (DEBUG) {
       LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
     }
-    ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
+    ResourceBundle bundle;
+    if (locale == null) {
+      bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale("en"));
+    } else {
+      bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
+    }
 
     if (page.equals("google")) {
       // We get here after we have gone through the Google Login page
@@ -164,7 +166,7 @@ public class LoginServlet extends HttpServlet {
           return;
         }
         String uri = new UriBuilder("/login/google")
-          .add("locale", locale)
+          .add("locale", locale.equals("en") ? null : locale)
           .add("repo", repo)
           .add("galleryId", galleryId)
           .add("redirect", redirect).build();

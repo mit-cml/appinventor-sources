@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,6 +14,7 @@ import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -22,6 +23,7 @@ import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
+import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -95,7 +97,11 @@ public final class SimpleComponentDescriptor {
   private MockComponent cachedMockComponent = null;
 
   // The version of the extension (meaning is defined by the extension author).
-  private int version = -1;
+  private final int version;
+
+  private final String versionName;
+
+  private final String dateBuilt;
 
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
@@ -170,6 +176,8 @@ public final class SimpleComponentDescriptor {
   public SimpleComponentDescriptor(String name,
                                    SimpleEditor editor,
                                    int version,
+                                   String versionName,
+                                   String dateBuilt,
                                    String helpString,
                                    String helpUrl,
                                    String categoryDocUrlString,
@@ -179,6 +187,8 @@ public final class SimpleComponentDescriptor {
     this.name = name;
     this.editor = editor;
     this.version = version;
+    this.versionName = versionName;
+    this.dateBuilt = dateBuilt;
     this.helpString = helpString;
     this.helpUrl = helpUrl;
     this.categoryDocUrlString = categoryDocUrlString;
@@ -284,6 +294,24 @@ public final class SimpleComponentDescriptor {
   }
 
   /**
+   * Returns the custom version name of the component, if any.
+   *
+   * @return  component version name
+   */
+  public String getVersionName() {
+    return versionName;
+  }
+
+  /**
+   * Returns the date the component was built, if any.
+   *
+   * @return  ISO 8601 formated date the component was built
+   */
+  public String getDateBuilt() {
+    return dateBuilt;
+  }
+
+  /**
    * Returns a draggable image for the component. Used when dragging a
    * component from the palette onto the form.
    *
@@ -348,6 +376,10 @@ public final class SimpleComponentDescriptor {
         return new MockCloudDB(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
+      } else if(name.equals(MockFusionTablesControl.TYPE)) {
+        return new MockFusionTablesControl(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
@@ -360,6 +392,8 @@ public final class SimpleComponentDescriptor {
       return new MockCanvas(editor);
     } else if (name.equals(MockCheckBox.TYPE)) {
       return new MockCheckBox(editor);
+    } else if (name.equals(MockSwitch.TYPE)) {
+      return new MockSwitch(editor);
     } else if (name.equals(MockImage.TYPE)) {
       return new MockImage(editor);
     } else if (name.equals(MockLabel.TYPE)) {

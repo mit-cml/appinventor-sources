@@ -9,6 +9,7 @@ package com.google.appinventor.buildserver;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,23 @@ public final class Main {
     @Option(name = "--dexCacheDir",
             usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
+
+    @Option(name = "--includeDangerousPermissions",
+        usage = "Add extra features not allowed in the Google Play store.")
+    boolean includeDangerousPermissions = false;
+
+    @Option(name = "--extensions",
+        usage = "Include the named extensions in the compilation.",
+        handler = StringArrayOptionHandler.class)
+    String[] extensions = null;
+
+    @Option(name = "--outputFileName",
+        usage = "Use the specified file name for output rather than the App Name.")
+    String outputFileName = null;
+
+    @Option(name = "--isForEmulator",
+        usage = "Exclude native libraries for emulator.")
+    boolean isForEmulator = false;
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -82,7 +100,11 @@ public final class Main {
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,
+                                         commandLineOptions.outputFileName,
                                          commandLineOptions.isForCompanion,
+                                         commandLineOptions.isForEmulator,
+                                         commandLineOptions.includeDangerousPermissions,
+                                         commandLineOptions.extensions,
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir, null);
     System.exit(result.getResult());

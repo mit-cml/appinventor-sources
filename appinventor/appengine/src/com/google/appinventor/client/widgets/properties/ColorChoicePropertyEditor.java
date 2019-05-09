@@ -231,6 +231,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
       advancedPanel = new PopupPanel();
       advancedPanel.add(panel);
+      advancedPanel.setAutoHideEnabled(true);
 
       choices.add(new DropDownItem(WIDGET_NAME, makeCustomHTML(1.0, 255, 0, 0), new Command() {
         @Override

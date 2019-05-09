@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017 MIT, All rights reserved
+// Copyright 2017-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,12 +34,12 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.CloudDBJedisListener;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -1201,18 +1201,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       if (!fileName.startsWith("/")) {
         throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
       }
-      File inputFile = new File(fileName);
-      if (!inputFile.isFile()) {
-        throw new YailRuntimeError("Cannot find file", "ReadFrom");
-      }
       String extension = getFileExtension(fileName);
-      FileInputStream inputStream = new FileInputStream(inputFile);
-      byte [] content = new byte[(int)inputFile.length()];
-      int bytesRead = inputStream.read(content);
-      if (bytesRead != inputFile.length()) {
-        throw new YailRuntimeError("Did not read complete file!", "Read");
-      }
-      inputStream.close();
+      byte [] content = FileUtil.readFile(fileName);
       String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
       Object [] results = new Object[2];
       results[0] = "." + extension;

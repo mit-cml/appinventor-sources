@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012-2017 Massachusetts Institute of Technology. All rights reserved.
+// Copyright 2012-2019 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Helper functions for generating Yail for blocks.
@@ -53,6 +53,7 @@ Blockly.Yail.YAIL_COMPONENT_REMOVE = "(remove-component ";
 Blockly.Yail.YAIL_COMPONENT_TYPE = "component";
 Blockly.Yail.YAIL_DEFINE = "(def ";
 Blockly.Yail.YAIL_DEFINE_EVENT = "(define-event ";
+Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT = '(define-generic-event ';
 Blockly.Yail.YAIL_DEFINE_FORM = "(define-form ";
 Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION = "(do-after-form-creation ";
 Blockly.Yail.YAIL_DOUBLE_QUOTE = "\"";
@@ -127,7 +128,8 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
   }
 
   if (!forRepl) {
-    code.push(Blockly.Yail.getYailPrelude(packageName, formName));
+    code.push(Blockly.Yail.getYailPrelude(packageName, formName,
+      !jsonObject.Properties['Theme'] || jsonObject.Properties['Theme'] === 'Classic'));
   }
     
   var componentMap = workspace.buildComponentMap([], [], false, false);
@@ -189,12 +191,14 @@ Blockly.Yail.getDeepNames = function(componentJson, componentNames) {
  * @returns {String} Yail code
  * @private
 */
-Blockly.Yail.getYailPrelude = function(packageName, formName) {
+Blockly.Yail.getYailPrelude = function(packageName, formName, classicTheme) {
  return "#|\n$Source $Yail\n|#\n\n"
      + Blockly.Yail.YAIL_DEFINE_FORM
      + packageName
      + Blockly.Yail.YAIL_SPACER
      + formName
+     + Blockly.Yail.YAIL_SPACER
+     + (classicTheme ? "#t" : "#f")
      + Blockly.Yail.YAIL_CLOSE_BLOCK
      + "(require <com.google.youngandroid.runtime>)\n";
 };
@@ -378,12 +382,33 @@ Blockly.Yail.getFormPropertiesLines = function(formName, componentJson, includeC
  */
 Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, componentDb) {
   var code = [];
-  for (var prop in componentJson) {
-    if (prop.charAt(0) != "$" && prop != "Uuid" && prop != "TutorialURL") {
-      code.push(Blockly.Yail.getPropertySetterString(componentName, componentJson.$Type, prop, 
-        componentJson[prop], componentDb));
+  var type = componentDb.getType(componentJson['$Type']);
+  function shouldSendProperty(prop, info) {
+    return (prop.charAt(0) !== '$' && prop !== 'Uuid' && prop !== 'TutorialURL') ||
+      (info && info['alwaysSend']);
+  }
+  // Gather all of the properties together
+  var propsToSend = Object.keys(componentJson);
+  for (var prop in type['properties']) {
+    var property = type['properties'][prop];
+    if (property['alwaysSend'] && !(prop in componentJson)) {
+      propsToSend.push(property['name']);
     }
   }
+  // Keep ordering so default properties will still be sent in the right position.
+  propsToSend.sort();
+  // Construct the code
+  propsToSend.forEach(function(prop) {
+    var info = type['properties'][prop];
+    if (shouldSendProperty(prop, info)) {
+      var value = componentJson[prop];
+      if (!Boolean(value) && value !== '') {
+        value = info['defaultValue'];
+      }
+      code.push(Blockly.Yail.getPropertySetterString(componentName, componentJson['$Type'], prop,
+        value, componentDb));
+    }
+  });
   return code;
 };
 

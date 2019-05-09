@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -74,9 +75,27 @@ public class TutorialPanel extends Frame {
     ok.setStyleName("DialogBox-button");
 
     // Adds Image
-    Image image = new Image(img);
+    final Image image = new Image(img);
     image.addLoadHandler(new LoadHandler() {
         public void onLoad(LoadEvent evt) {
+          final int imageWidth = image.getWidth();
+          final int imageHeight = image.getHeight();
+          final int windowWidth = (int) ((float) Window.getClientWidth() * 0.8);
+          final int windowHeight = (int) ((float) Window.getClientHeight() * 0.9);
+          int effectiveWidth = imageWidth;
+          int effectiveHeight = imageHeight;
+
+          if (imageWidth > windowWidth) {
+            effectiveWidth = windowWidth;
+            effectiveHeight = (int)(imageHeight * ((float)effectiveWidth / imageWidth));
+          }
+
+          if (effectiveHeight > windowHeight) {
+            effectiveHeight = windowHeight;
+            effectiveWidth = (int)(imageWidth * ((float)effectiveHeight / imageHeight));
+          }
+
+          image.setPixelSize(effectiveWidth, effectiveHeight);
           dialogBox.center();
         }
       });

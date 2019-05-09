@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.resources.client.ImageResource;
@@ -125,13 +126,32 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
     }
     int i = name.length() - 1;
     while (name.charAt(i) >= '0' && name.charAt(i) <= '9') i--;
-    String base = name.substring(0, i);
+    String base = name.substring(0, i + 1);
     int counter = 1;
     if (i < name.length() - 1) {
       counter = Integer.parseInt(name.substring(i + 1)) + 1;
     }
     while (names.contains(base + counter)) counter++;
     return base + counter;
+  }
+
+  protected static void processFeatureName(MockMapFeatureBase feature, MockFeatureCollection parent,
+      String name) {
+    if (name == null) {
+      name = feature.getPropertyValue(PROPERTY_NAME_TITLE);
+    }
+    name = name.replaceAll("[ \t]+", "_");
+    if (name.equalsIgnoreCase("")) {
+      name = ComponentsTranslation.getComponentName(feature.getType()) + "1";
+    }
+    name = ensureUniqueName(name, parent.editor.getComponentNames());
+    parent.addVisibleComponent(feature, -1);
+    final String oldName = feature.getPropertyValue(PROPERTY_NAME_NAME);
+    if (oldName == null || !oldName.equals(name)) {
+      feature.changeProperty(PROPERTY_NAME_NAME, name);
+      feature.onPropertyChange(PROPERTY_NAME_NAME, name);
+      feature.getForm().fireComponentRenamed(feature, oldName);
+    }
   }
 
   // JSNI Methods

@@ -149,6 +149,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       removeComponent(componentTypeName);
     }
     int version = COMPONENT_DATABASE.getComponentVersion(componentTypeName);
+    String versionName = COMPONENT_DATABASE.getComponentVersionName(componentTypeName);
+    String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(componentTypeName);
     String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
     String helpUrl = COMPONENT_DATABASE.getHelpUrl(componentTypeName);
     String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
@@ -159,7 +161,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     if (showOnPalette && showCategory(category)) {
       SimplePaletteItem item = new SimplePaletteItem(
-          new SimpleComponentDescriptor(componentTypeName, editor, version, helpString, helpUrl,
+          new SimpleComponentDescriptor(componentTypeName, editor, version, versionName, dateBuilt, helpString, helpUrl,
               categoryDocUrlString, showOnPalette, nonVisible, external),
             dropTargetProvider);
       simplePaletteItems.put(componentTypeName, item);

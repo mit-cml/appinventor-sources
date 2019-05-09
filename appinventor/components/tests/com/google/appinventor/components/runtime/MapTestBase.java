@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.view.ViewGroup;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.tileprovider.modules.ShadowMapTileModuleProviderBase;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
@@ -13,6 +14,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.osmdroid.util.GeoPoint;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.Shadow;
 
 import static com.google.appinventor.components.runtime.util.GeometryUtil.ONE_DEG_IN_METERS;
 
@@ -133,6 +135,10 @@ public class MapTestBase extends RobolectricTestBase {
 
   public Map getMap() {
     return map;
+  }
+
+  public ShadowMapView getMapShadow() {
+    return Shadow.extract(((ViewGroup)map.getView()).getChildAt(0));
   }
 
   @Before

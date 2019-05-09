@@ -28,3 +28,11 @@
   fill: #ddd;
   fill-opacity: .8;
 }
+
+.blocklybackpackImage:hover {
+  cursor: pointer;
+}
+
+.blocklyZoomButton:hover {
+  cursor: pointer;
+}

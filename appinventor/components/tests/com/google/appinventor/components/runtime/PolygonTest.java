@@ -5,7 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.view.ViewGroup;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
+import com.google.appinventor.components.runtime.shadows.org.osmdroid.views.ShadowMapView;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -13,12 +15,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.robolectric.Shadows;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowView;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the Polygon component.
@@ -33,6 +40,7 @@ public class PolygonTest extends MapTestBase {
   public void setUp() {
     super.setUp();
     polygon = new Polygon(getMap());
+    polygon.Initialize();
   }
 
   @Test
@@ -108,6 +116,14 @@ public class PolygonTest extends MapTestBase {
     defaultPolygon(polygon);
     YailList points = polygon.Points();
     assertEquals(4, points.size());
+  }
+
+  @Test
+  public void testPointsInvalidatesView() {
+    ShadowMapView view = getMapShadow();
+    view.clearWasInvalidated();
+    defaultPolygon(polygon);
+    assertTrue(view.wasInvalidated());
   }
 
   @Test
@@ -190,6 +206,22 @@ public class PolygonTest extends MapTestBase {
     YailList holes = polygon.HolePoints();
     assertEquals(1, holes.size());  // one hole in polygon
     assertEquals(3, ((YailList) holes.get(1)).size());  // three points in the hole
+  }
+
+  @Test
+  public void testHolePointsInvalidatesView() {
+    defaultPolygon(polygon);
+    ShadowMapView view = getMapShadow();
+    view.clearWasInvalidated();
+    polygon.HolePoints(YailList.makeList(new Object[] {
+        // First hole
+        YailList.makeList(new Object[] {
+            GeometryUtil.asYailList(new GeoPoint(0.5, 0.5)),
+            GeometryUtil.asYailList(new GeoPoint(0.25, 0.5)),
+            GeometryUtil.asYailList(new GeoPoint(0.5, 0.25))
+        })
+    }));
+    assertTrue(view.wasInvalidated());
   }
 
   @Test

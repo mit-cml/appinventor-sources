@@ -10,8 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.SmsMessage;
+import android.widget.TextView;
 
 /**
  * Helper methods for calling APIs added in KITKAT (4.4, API level 19)
@@ -38,5 +40,33 @@ public final class KitkatUtil {
       Collections.addAll(result, messages);
     }
     return result;
+  }
+
+  /**
+   * Get the minimum width of the view. On versions prior to Kitkat, getMinWidth is undefined so we return the
+   * width of the component. Therefore, this method should be called before the component is manipulated.
+   * @param view The text view of which to get the minimum width
+   * @return The "minimum" allowable width of the view
+   */
+  public static int getMinWidth(TextView view) {
+    if (Build.VERSION.SDK_INT >= 16) {
+      return view.getMinWidth();
+    } else {
+      return view.getWidth();
+    }
+  }
+
+  /**
+   * Get the minimum height of the view. On versions prior to Kitkat, getMinHeight is undefined so we return the
+   * height of the component. Therefore, this method should be called before the component is manipulated.
+   * @param view The text view of which to get the minimum height
+   * @return The "minimum" allowable height of the view
+   */
+  public static int getMinHeight(TextView view) {
+    if (Build.VERSION.SDK_INT >= 16) {
+      return view.getMinHeight();
+    } else {
+      return view.getHeight();
+    }
   }
 }

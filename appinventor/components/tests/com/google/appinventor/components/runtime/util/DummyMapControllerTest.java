@@ -244,6 +244,11 @@ public class DummyMapControllerTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
+  public void testUpdateFeatureHoles() {
+    mapController.updateFeatureDraggable(null);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
   public void testUpdateFeaturePositionCircle() {
     mapController.updateFeaturePosition((MapCircle) null);
   }

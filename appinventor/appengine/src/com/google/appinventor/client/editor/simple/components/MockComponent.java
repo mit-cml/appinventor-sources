@@ -35,13 +35,10 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
-import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -75,7 +72,6 @@ import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ComponentDefinition;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 
@@ -99,9 +95,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
-  protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
-    "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
-    "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
@@ -198,8 +191,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       }
 
       // Check that it is a variable name used in the Yail code
-      if (YAIL_NAMES.contains(newName)) {
-        Window.alert(MESSAGES.badComponentNameError());
+      if (TextValidators.isReservedName(newName)) {
+        Window.alert(MESSAGES.reservedNameError());
         return false;
       }
 

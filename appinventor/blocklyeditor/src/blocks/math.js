@@ -312,6 +312,107 @@ Blockly.Blocks['math_power'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_POWER}]
 };
 
+
+Blockly.Blocks['math_bitwise'] = {
+  category: 'Math',
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.math_bitwise.HELPURLS()[mode];
+  },
+  init: function () {
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('NUM0')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('NUM1')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    this.setInputsInline(false);
+    this.setTooltip(function () {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.math_bitwise.TOOLTIPS()[mode];
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.itemCount_ = 2;
+    this.valuesToSave = {'OP': null};
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_mutator_item', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+    input.appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.setFieldValue(this.valuesToSave['OP'], 'OP');
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum == 0) {
+      input.appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+      this.setFieldValue(this.valuesToSave['OP'], 'OP');
+    }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+
+    for (var i = 0; i < Blockly.Blocks.math_bitwise.OPERATORS.length; i++) {
+      if (Blockly.Blocks.math_bitwise.OPERATORS[i][1] == this.getFieldValue("OP")) {
+        containerBlock.setFieldValue(Blockly.Blocks.math_bitwise.OPERATORS[i][0], "CONTAINER_TEXT");
+      }
+    }
+
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_MATH_BITWISE_AND,
+    dropDown: {
+      titleName: 'OP',
+      value: 'BITAND'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_MATH_BITWISE_IOR,
+    dropDown: {
+      titleName: 'OP',
+      value: 'BITIOR'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_MATH_BITWISE_XOR,
+    dropDown: {
+      titleName: 'OP',
+      value: 'BITXOR'
+    }
+  }]
+};
+
+Blockly.Blocks.math_bitwise.OPERATORS = function () {
+  return [[Blockly.Msg.LANG_MATH_BITWISE_AND, 'BITAND'],
+    [Blockly.Msg.LANG_MATH_BITWISE_IOR, 'BITIOR'],
+    [Blockly.Msg.LANG_MATH_BITWISE_XOR, 'BITXOR']]
+};
+
+Blockly.Blocks.math_bitwise.TOOLTIPS = function () {
+  return {
+    BITAND: Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND,
+    BITIOR: Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR,
+    BITXOR: Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR
+  }
+};
+
+Blockly.Blocks.math_bitwise.HELPURLS = function () {
+  return {
+    BITAND: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND,
+    BITIOR: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_IOR,
+    BITXOR: Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR
+  }
+};
+
 Blockly.Blocks['math_random_int'] = {
   // Random integer between [X] and [Y].
   category: 'Math',
@@ -374,7 +475,10 @@ Blockly.Blocks['math_on_list'] = {
   // Evaluate a list of numbers to return sum, average, min, max, etc.
   // Some functions also work on text (min, max, mode, median).
   category: 'Math',
-  helpUrl: '',
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.math_on_list.HELPURLS()[mode];
+  },
   init: function () {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
@@ -450,6 +554,13 @@ Blockly.Blocks.math_on_list.TOOLTIPS = function () {
   return {
     MIN: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN,
     MAX: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX
+  }
+};
+
+Blockly.Blocks.math_on_list.HELPURLS = function () {
+  return {
+    MIN: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MIN,
+    MAX: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MAX
   }
 };
 
@@ -566,7 +677,7 @@ Blockly.Blocks['math_abs'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -579,7 +690,7 @@ Blockly.Blocks['math_abs'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -589,7 +700,7 @@ Blockly.Blocks['math_neg'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -602,7 +713,7 @@ Blockly.Blocks['math_neg'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -612,7 +723,7 @@ Blockly.Blocks['math_round'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -625,7 +736,7 @@ Blockly.Blocks['math_round'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -635,7 +746,7 @@ Blockly.Blocks['math_ceiling'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -648,7 +759,7 @@ Blockly.Blocks['math_ceiling'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };
@@ -658,7 +769,7 @@ Blockly.Blocks['math_floor'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_single.HELPURLS[mode];
+    return Blockly.Blocks.math_single.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -671,7 +782,7 @@ Blockly.Blocks['math_floor'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   }
 };

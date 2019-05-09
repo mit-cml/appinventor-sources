@@ -1,34 +1,34 @@
-node.js version of MIT App Inventor Rendezvous Server
-===
 
-This codebase provides the basic functions of the Rendezvous
-Server. It also logs to a CouchDB instance the POST's received from
-the phone. This database can then be mined for statistics.
 
-This is the code that we use for the public MIT Server
+# MIT App Inventor Rendezvous Server
 
-### To Run:
+This directory contains the code needed to run the MIT App Inventor
+Rendezvous Server version 2.
 
-Prerequisites:
+Version 2 supports both our “legacy” httpd connection to the MIT AI2
+Companion and the newer WebRTC based system.
 
-     * Node.js (tested with version v0.12.12)
-     * npm install sqlite3
-     * npm install memcache
 
-Setup a user named "appinv" (should be a system account, but doesn't have to be).
-The "appinv" userid's home directory should be in /home/appinv
+# Installation
 
-  - Put rendezvous.js in /home/appinv.
-  - Put rendezvous.conf in /etc/init for upstart (Ubuntu 12.04LTS).
-  - Create rendezvous.sqlite in /home/appinv
-    * sqlite3 rendezvous.sqlite <<EOF
-      CREATE TABLE log (time timestamp, ip text, useragent text);
-      EOF
+This code is designed to run in a docker container. You can build the
+needed image simply with:
 
-Note: If you do not create rendezvous.sqlite, the server will work
-just fine, it just won't create any log records. Also note that the
-apache server you put in front of nodejs may well have logs.
+    docker build -t <imagename> .
 
-If you do create the logging database, be sure to pay attention to it
-and prune it from time to time, otherwise it will grow in size without
-bound until it fills your disk. You have been warned!
+Run the resulting image on your server as:
+
+    docker run --restart=always -d -p 80:3000 --name=rendezvous <imagename>
+
+<imagename> is a name you pick for your image. The image expects (and
+should create) a docker volume which it mounts in “/data”. An sqlite3
+database will be created here which will gather statistics. Keep an
+eye on this database as it will grow without bound. You may need to
+trim it periodically.
+
+Logs for the running server are in /var/log/supervisor within the
+container. These logs are automatically managed (trimmed as needed) so
+you need not worry about them. They mostly contain debugging output
+which isn’t of much value (and which a newer version may flush
+completely).
+

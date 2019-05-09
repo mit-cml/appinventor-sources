@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -431,8 +431,33 @@ public class YaVersion {
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 172:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 173:
+  // - FORM_COMPONENT_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 174:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 23
+  // For YOUNG_ANDROID_VERSION 175:
+  // - MAP_COMPONENT_VERSION was incremented 5
+  // For YOUNG_ANDROID_VERSION 176:
+  // - PHONECALL_COMPONENT_VERSION was incremented to 3
+  // - TEXTING_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 177:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 178:
+  // - CLOCK_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 179:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 24
+  // For YOUNG_ANDROID_VERSION 180:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 181:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 25
+  // For YOUNG_ANDROID_VERSION 182:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 26
+  // For YOUNG_ANDROID_VERSION 183:
+  // - CANVAS_COMPONENT_VERSION was incremented to 11
+  // For YOUNG_ANDROID_VERESION 184:
+  // - Added Switch
 
-  public static final int YOUNG_ANDROID_VERSION = 172;
+  public static final int YOUNG_ANDROID_VERSION = 184;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -494,8 +519,18 @@ public class YaVersion {
   // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
   // For BLOCKS_LANGUAGE_VERSION 21:
   // - The is-text block was added.
+  // For BLOCKS_LANGUAGE_VERSION 22:
+  // - Break block was added.
+  // For BLOCKS_LANGUAGE_VERSION 23:
+  // - Bitwise and, ior, and xor blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 24:
+  // - List reverse block was added.
+  // For BLOCKS_LANGUAGE_VERSION 25:
+  // - List join with separator block was added.
+  // For BLOCKS_LANGUAGE_VERSION 26:
+  // - Generic event handlers were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 22;
+  public static final int BLOCKS_LANGUAGE_VERSION = 26;
 
   // ................................. Component Version Numbers ..................................
 
@@ -640,7 +675,9 @@ public class YaVersion {
   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
   // For CANVAS_COMPONENT_VERSION 10:
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
-  public static final int CANVAS_COMPONENT_VERSION = 10;
+  // For CANVAS_COMPONENT_VERSION 11:
+  // - DrawShape & DrawArc was added
+  public static final int CANVAS_COMPONENT_VERSION = 11;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -653,7 +690,11 @@ public class YaVersion {
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
-  public static final int CLOCK_COMPONENT_VERSION = 3;
+  // For CLOCK_COMPONENT_VERSION 3:
+  // - Duration Support was added
+  // For CLOCK_COMPONENT_VERSION 4:
+  // - MakeTime, MakeDate, MakeInstantFromParts methods were added
+  public static final int CLOCK_COMPONENT_VERSION = 4;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -748,7 +789,11 @@ public class YaVersion {
   // - The Classic option for themes was added
   // For FORM_COMPONENT_VERSION 23:
   // - The ActionBar property was deprecated
-  public static final int FORM_COMPONENT_VERSION = 23;
+  // For FORM_COMPONENT_VERSION 24:
+  // - Added the AskForPermission method
+  // - Added the PermissionDenied event
+  // - Added the PermissionGranted event
+  public static final int FORM_COMPONENT_VERSION = 24;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -867,7 +912,10 @@ public class YaVersion {
   // - GeoJSONError was renamed to LoadError
   // For MAP_COMPONENT_VERSION 4:
   // - Added Rotation property
-  public static final int MAP_COMPONENT_VERSION = 4;
+  // For MAP_COMPONENT_VERSION 5:
+  // - Added ShowScale property
+  // - Added ScaleUnits property
+  public static final int MAP_COMPONENT_VERSION = 5;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -886,7 +934,9 @@ public class YaVersion {
   // - Added a ShowProgressDialog method, and a DismissProgressDialog method
   // For NOTIFIER_COMPONENT_VERSION 5:
   // - Added TextInputCanceled & ChoosingCanceled event
-  public static final int NOTIFIER_COMPONENT_VERSION = 5;
+  // For NOTIFIER_COMPONENT_VERSION 6:
+  // - Added a ShowPasswordDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 6;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
@@ -940,7 +990,10 @@ public class YaVersion {
   // - The PhoneCallStarted event was added.
   // - The PhoneCallEnded event was added.
   // - The IncomingCallAnswered event was added.
-  public static final int PHONECALL_COMPONENT_VERSION = 2;
+  // For PHONECALL_COMPONENT_VERSION 3:
+  // - The MakePhoneCall method was renamed to MakePhoneCallDirect
+  // - The MakePhoneCall method was added
+  public static final int PHONECALL_COMPONENT_VERSION = 3;
 
   // For PHONENUMBERPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1000,6 +1053,10 @@ public class YaVersion {
 
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
 
+  // For SWITCH_COMPONENT_VERSION 1
+  //  - Initial Version
+  public static final int SWITCH_COMPONENT_VERSION = 1;
+
   public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
 
   // For TEXTBOX_COMPONENT_VERSION 2:
@@ -1022,7 +1079,12 @@ public class YaVersion {
   // For TEXTING_COMPONENT_VERISON 3:
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
-  public static final int TEXTING_COMPONENT_VERSION = 3;
+  // For TEXTING_COMPONENT_VERSION 4:
+  // - The SendMessage method was renamed to SendMessageDirect and given
+  //   conditional permissions
+  // - The SendMessage method was added
+  // - The ReceivingEnabled method was given conditional permissions
+  public static final int TEXTING_COMPONENT_VERSION = 4;
 
   // For TEXTTOSPEECH_COMPONENT_VERSION 2:
   // - added speech pitch and rate
@@ -1114,7 +1176,9 @@ public class YaVersion {
   // - The FullScreen property was added to the VideoPlayer.
   // For VIDEOPLAYER_COMPONENT_VERSION 5:
   // - The Volume property (setter only) was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
+  // For VIDEOPLAYER_COMPONENT_VERSION 6:
+  // - The Stop method was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 6;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
@@ -1184,10 +1248,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.47";
+  public static final String PREFERRED_COMPANION = "2.52 or 2.52u";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.47" };
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.52", "2.52u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

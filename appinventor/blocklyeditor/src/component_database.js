@@ -157,9 +157,12 @@ Blockly.ComponentDatabase.prototype.renameInstance = function(uid, oldName, newN
   if (!this.hasInstance(uid)) {
     return false;
   }
+  if (oldName === newName) {  // oldName is the same as newName... don't waste time
+    return false;
+  }
   this.instances_[uid].name = newName;
-  this.instanceNameUid_[newName] = uid;
   delete this.instanceNameUid_[oldName];
+  this.instanceNameUid_[newName] = uid;
   return true;
 };
 
@@ -341,6 +344,15 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
         property.mutability = Blockly.PROPERTY_WRITEABLE;
         info.setPropertyList.push(property.name);
       }
+    }
+    // Copy the designer property information to the block information
+    for (j = 0; property = componentInfo.properties[j]; ++j) {
+      var target = info.properties[property['name']];
+      // All designer properties should have setters, but if not...
+      if (!target) continue;
+      Object.keys(property).forEach(function(k) {
+        target[k] = property[k];
+      });
     }
   }
 };

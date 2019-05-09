@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,8 +11,11 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -33,6 +36,14 @@ import javax.tools.FileObject;
  *   "nonVisible": "true"|"false",
  *   "iconName": "ICON-FILE-NAME",
  *   "androidMinSdk": "ANDROID-MIN-SDK",
+ *   "conditionals": {
+ *     "permissions": {
+ *       "eventOrMethodName": [ "PERMISSION-NAME",+ ],+
+ *     },
+ *     "broadcastReceivers": {
+ *       "eventOrMethodName": [ "BROADCAST-RECEIVER",+ ],+
+ *     }
+ *   }*,
  *   "properties": [
  *     { "name": "PROPERTY-NAME",
  *        "editorType": "EDITOR-TYPE",
@@ -80,6 +91,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(Boolean.toString(component.external));
     sb.append("\",\n  \"version\": \"");
     sb.append(component.getVersion());
+    if (component.getVersionName() != null && !component.getVersionName().equals("")) {
+      sb.append("\",\n  \"versionName\": \"");
+      sb.append(component.getVersionName());
+    }
+    sb.append("\",\n  \"dateBuilt\": \"");
+    sb.append(component.getDateBuilt());
     sb.append("\",\n  \"categoryString\": \"");
     sb.append(component.getCategoryString());
     sb.append("\",\n  \"helpString\": ");
@@ -94,12 +111,21 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getIconName());
     sb.append("\",\n  \"androidMinSdk\": ");
     sb.append(component.getAndroidMinSdk());
+    outputConditionalAnnotations(component, sb);
     sb.append(",\n  \"properties\": [");
     String separator = "";
+    Set<String> alwaysSendProperties = new HashSet<String>();
+    Map<String, String> defaultValues = new HashMap<String, String>();
     for (Map.Entry<String, DesignerProperty> entry : component.designerProperties.entrySet()) {
       String propertyName = entry.getKey();
       DesignerProperty dp = entry.getValue();
       sb.append(separator);
+      if (dp.alwaysSend()) {
+        alwaysSendProperties.add(propertyName);
+        // We need to include the default value since it will be sent if no
+        // value is specified (we don't write it in the .scm file).
+        defaultValues.put(propertyName, dp.defaultValue());
+      }
       outputProperty(propertyName, dp, sb);
       separator = ",\n";
     }
@@ -114,7 +140,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       // Note: carrying this over from the old Java blocks editor. I'm not sure
       // that we'll actually do anything with invisible properties in the blocks
       // editor. (sharon@google.com)
-      outputBlockProperty(prop.name, prop, sb);
+      outputBlockProperty(prop.name, prop, alwaysSendProperties.contains(prop.name), defaultValues.get(prop.name), sb);
       separator = ",\n    ";
     }
     sb.append("],\n  \"events\": [");
@@ -146,6 +172,67 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("}\n");
   }
 
+  /**
+   * Writes a multimap from string to string out as JSON to the given
+   * StringBuilder {@code sb}. The multimap is realized as a JSON dictionary
+   * mapping to an array of strings.
+   *
+   * @param sb The StringBuilder to receive the multimap.
+   * @param indent The indent level for pretty printing. Must not be null.
+   * @param map A mapping to output.
+   */
+  private static void outputMultimap(StringBuilder sb, String indent, Map<String, String[]> map) {
+    boolean first = true;
+    sb.append("{");
+    for (Map.Entry<String, String[]> entry : map.entrySet()) {
+      if (!first) sb.append(",");
+      sb.append("\n");
+      sb.append(indent);
+      sb.append("  \"");
+      sb.append(entry.getKey());
+      sb.append("\": [\n");
+      sb.append(indent);
+      sb.append("    \"");
+      StringUtils.join(sb, "\",\n" + indent + "    \"", entry.getValue());
+      sb.append("\"\n");
+      sb.append(indent);
+      sb.append("  ]");
+      first = false;
+    }
+    sb.append("\n");
+    sb.append(indent);
+    sb.append("}");
+  }
+
+  /**
+   * Outputs the information of a component's conditional annotations (if any)
+   * to the JSON component descriptor.
+   *
+   * @param component The component information being written.
+   * @param sb The StringBuilder to receive the JSON descriptor.
+   */
+  private void outputConditionalAnnotations(ComponentInfo component, StringBuilder sb) {
+    if (component.conditionalPermissions.size() +
+        component.conditionalBroadcastReceivers.size() == 0) {
+      return;
+    }
+    sb.append(",\n  \"conditionals\":{\n    ");
+    boolean first = true;
+    if (component.conditionalPermissions.size() > 0) {
+      sb.append("\"permissions\": ");
+      outputMultimap(sb, "    ", component.conditionalPermissions);
+      first = false;
+    }
+    if (component.conditionalBroadcastReceivers.size() > 0) {
+      if (!first) sb.append(",\n    ");
+      sb.append("\"broadcastReceivers\": ");
+      outputMultimap(sb, "    ", component.conditionalBroadcastReceivers);
+      first = false;
+    }
+    // Add other annotations here as needed
+    sb.append("\n  }");
+  }
+
   private void outputProperty(String propertyName, DesignerProperty dp, StringBuilder sb) {
     sb.append("{ \"name\": \"");
     sb.append(propertyName);
@@ -174,10 +261,22 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     listLiteralBuilder.append("]");
 
     sb.append(listLiteralBuilder.toString());
+    if (dp.alwaysSend()) {
+      sb.append(", \"alwaysSend\": true");
+    }
     sb.append("}");
   }
 
-  private void outputBlockProperty(String propertyName, Property prop, StringBuilder sb) {
+  /**
+   * Outputs the block description of a property.
+   *
+   * @param propertyName The property name
+   * @param prop The property description
+   * @param alwaysSend True if the block represents a DesignerProperty that is marked as always needing to be sent
+   * @param defaultValue The default value of the property (only required if alwaysSend is true).
+   * @param sb The StringBuilder to receive the output JSON
+   */
+  private void outputBlockProperty(String propertyName, Property prop, boolean alwaysSend, String defaultValue, StringBuilder sb) {
     sb.append("{ \"name\": \"");
     sb.append(propertyName);
     sb.append("\", \"description\": ");
@@ -189,7 +288,14 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     // [lyn, 2015/12/20] Added deprecated field to JSON.
     // If we want to save space in simple-components.json,
     // we could include this field only when it is "true"
-    sb.append("\", \"deprecated\": \"" + prop.isDeprecated() + "\"");
+    sb.append("\", \"deprecated\": \"");
+    sb.append(prop.isDeprecated());
+    sb.append("\"");
+    if (alwaysSend) {
+      sb.append(", \"alwaysSend\": true, \"defaultValue\": \"");
+      sb.append(defaultValue.replaceAll("\"", "\\\""));
+      sb.append("\"");
+    }
     sb.append("}");
   }
 

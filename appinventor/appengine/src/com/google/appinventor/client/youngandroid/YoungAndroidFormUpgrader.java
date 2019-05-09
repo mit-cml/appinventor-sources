@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -705,6 +705,11 @@ public final class YoungAndroidFormUpgrader {
       componentProperties.put("TextAlignment", def);
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // No properties need to be modified to upgrade to version 11.
+      // DrawShape & DrawArc was added.
+      srcCompVersion = 11;
+    }
     return srcCompVersion;
   }
 
@@ -721,12 +726,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // (2) The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
       // No properties need to be modified to upgrade to version 2.
       // (3) Duration Support was added
       // No properties need to be added to upgrade to version 3.
-      srcCompVersion = 3;
+      // (4) Added MakeDate, MakeTime, MakeInstantFromParts methods
+      // No properties need to be added to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -957,6 +964,13 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.remove("ActionBar");  // Resets ActionBar to default (False)
       }
       srcCompVersion = 23;
+    }
+
+    if (srcCompVersion < 24) {
+      // The AskForPermissions method was added.
+      // The PermissionDenied event was added.
+      // The PermissionGranted event was added.
+      srcCompVersion = 24;
     }
 
     return srcCompVersion;
@@ -1206,6 +1220,9 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1358,6 +1375,10 @@ public final class YoungAndroidFormUpgrader {
       // Added TextInputCanceled & ChoosingCanceled event
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added PasswordDialog
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1381,10 +1402,15 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
-        // The Volume property (setter only) was created.
-        // No properties need to be modified to upgrade to version 4.
-        srcCompVersion = 5;
-      }
+      // The Volume property (setter only) was created.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The Stop method was created.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1426,6 +1452,9 @@ public final class YoungAndroidFormUpgrader {
         }
       }
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      srcCompVersion = 4;
     }
 
     return srcCompVersion;
@@ -1531,14 +1560,16 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeMapProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 4) {
+    if (srcCompVersion < 5) {
       // Version 2
       // The Markers property (blocks-only) was renamed to Features
       // Version 3
       // Block event handlers were renamed
       // Version 4
       // The Rotation property was added with default 0.0 (due north)
-      srcCompVersion = 4;
+      // Verison 5
+      // The ScaleUnits and ShowScale properties were added
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

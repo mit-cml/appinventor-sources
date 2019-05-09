@@ -62,7 +62,8 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
     for (var i = 0, block; i < topBlocks.length; i++) {
       block = topBlocks[i];
       if (block.type === 'global_declaration') {
-        return block.x === 16 && block.y === 182;
+        var xy = block.getRelativeToSurfaceXY();
+        return xy.x === 16 && xy.y === 182;
       }
     }
     return false;

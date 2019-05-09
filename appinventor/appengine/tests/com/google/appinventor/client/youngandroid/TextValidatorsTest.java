@@ -28,6 +28,9 @@ public class TextValidatorsTest extends TestCase {
   private final List<String> illegalComponentIdentifierNames = Arrays.asList("", "!你好吗", "2你好吗",
 		  "123按_钮", "1按2钮 ", "1botón", "!botón2");
 
+  private final List<String> reservedWordNames = Arrays.asList("YailList", "YailNumberToString", "YailRuntimeError",
+          "final", "interface", "static");
+
   public void testIdentifierFilter(){
     for (String legalIdentifier : legalIdentifierNames) {
       assertTrue(TextValidators.isValidIdentifier(legalIdentifier));
@@ -37,12 +40,21 @@ public class TextValidatorsTest extends TestCase {
     }
   }
 
-  public void testComponentIdentifierFilter(){
-	    for (String legalComponentIdentifier : legalComponentIdentifierNames) {
-	      assertTrue(TextValidators.isValidComponentIdentifier(legalComponentIdentifier));
-	    }
-	    for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
-	      assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
-	    }
+  public void testComponentIdentifierFilter() {
+    for (String legalComponentIdentifier : legalComponentIdentifierNames) {
+      assertTrue(TextValidators.isValidComponentIdentifier(legalComponentIdentifier));
+    }
+    for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
+      assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
+    }
+  }
+
+  public void testReservedNameFilter() {
+    for (String reservedWord : reservedWordNames) {
+      assertTrue(TextValidators.isReservedName(reservedWord));
+    }
+    for (String notReservedWord : legalIdentifierNames) {
+      assertFalse(TextValidators.isReservedName(notReservedWord));
+    }
   }
 }

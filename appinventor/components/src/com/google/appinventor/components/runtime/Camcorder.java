@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.Manifest;
 
 import java.io.File;
 import java.util.Date;
@@ -40,7 +41,8 @@ import java.util.Date;
   nonVisible = true,
   iconName = "images/camcorder.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE," +
+  "android.permission.CAMERA")
 public class Camcorder extends AndroidNonvisibleComponent
   implements ActivityResultListener, Component {
 
@@ -50,6 +52,9 @@ public class Camcorder extends AndroidNonvisibleComponent
   /* Used to identify the call to startActivityForResult. Will be passed back
      into the resultReturned() callback method. */
   private int requestCode;
+
+  // Have camera permission
+  private boolean havePermission = false;
 
   /**
    * Creates a Camcorder component.
@@ -67,6 +72,28 @@ public class Camcorder extends AndroidNonvisibleComponent
   @SimpleFunction
   public void RecordVideo() {
     String state = Environment.getExternalStorageState();
+    if (!havePermission) {
+      final Camcorder me = this;
+      form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            form.askPermission(Manifest.permission.CAMERA,
+                               new PermissionResultHandler() {
+                                 @Override
+                                 public void HandlePermissionResponse(String permission, boolean granted) {
+                                   if (granted) {
+                                     me.havePermission = true;
+                                     me.RecordVideo();
+                                   } else {
+                                     form.dispatchPermissionDeniedEvent(me, "RecordVideo",
+                                         Manifest.permission.CAMERA);
+                                   }
+                                 }
+                               });
+          }
+        });
+      return;
+    }
 
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CamcorderComponent", "External storage is available and writable");

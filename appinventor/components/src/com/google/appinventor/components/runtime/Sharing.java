@@ -1,24 +1,29 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.content.Intent;
+
 import android.net.Uri;
+
 import android.webkit.MimeTypeMap;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.NougatUtil;
 
 import java.io.File;
-
 
 /**
  * Component for sharing files and/or messages through Android's built-in sharing
@@ -84,7 +89,6 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
-
     if (!file.startsWith("file://"))
       file = "file://" + file;
 
@@ -95,8 +99,10 @@ public class Sharing extends AndroidNonvisibleComponent {
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String type = mime.getMimeTypeFromExtension(fileExtension);
 
+      Uri shareableUri = NougatUtil.getPackageUri(form, imageFile);
       Intent shareIntent = new Intent(Intent.ACTION_SEND);
-      shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+      shareIntent.putExtra(Intent.EXTRA_STREAM, shareableUri);
+      shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
       shareIntent.setType(type);
       if (message.length() > 0) {
         shareIntent.putExtra(Intent.EXTRA_TEXT, message);

@@ -126,6 +126,38 @@ Blockly.Yail.math_arithmetic.OPERATORS = {
   POWER: ['expt', Blockly.Yail.ORDER_NONE]
 };
 
+Blockly.Yail['math_bitwise'] = function() {
+  // Bitwise and, inclusive or, and exclusive or. All can take variable number of arguments.
+  var mode = this.getFieldValue('OP');
+  var tuple = Blockly.Yail.math_bitwise.OPERATORS[mode];
+  var operator = tuple[0];
+  var order = tuple[1];
+  var args = "";
+  var typeString = "";
+  for(var i=0;i<this.itemCount_;i++) {
+    args += (Blockly.Yail.valueToCode(this, 'NUM' + i, order) || 0) + Blockly.Yail.YAIL_SPACER;
+    typeString += "number" + Blockly.Yail.YAIL_SPACER;
+  }
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
+      + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
+      + args
+      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + typeString
+      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+Blockly.Yail.math_bitwise.OPERATORS = {
+    BITAND: ['bitwise-and', Blockly.Yail.ORDER_NONE],
+    BITIOR: ['bitwise-ior', Blockly.Yail.ORDER_NONE],
+    BITXOR: ['bitwise-xor', Blockly.Yail.ORDER_NONE]
+};
+
 Blockly.Yail['math_single'] = function() {
   // Basic arithmetic operators.
   var mode = this.getFieldValue('OP');

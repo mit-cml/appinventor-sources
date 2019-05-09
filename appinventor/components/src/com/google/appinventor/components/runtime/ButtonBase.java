@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -14,6 +16,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
+import com.google.appinventor.components.runtime.util.KitkatUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -98,6 +101,20 @@ public abstract class ButtonBase extends AndroidViewComponent
   private Drawable backgroundImageDrawable;
 
   /**
+   * The minimum width of a button for the current theme.
+   *
+   * We store this statically because it should be constant across all buttons in the app.
+   */
+  private static int defaultButtonMinWidth = 0;
+
+  /**
+   * The minimum height of a button for the current theme.
+   *
+   * We store this statically because it should be constant across all buttons in the app.
+   */
+  private static int defaultButtonMinHeight = 0;
+
+  /**
    * Creates a new ButtonBase component.
    *
    * @param container  container, component will be placed in
@@ -109,6 +126,8 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
     defaultColorStateList = view.getTextColors();
+    defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
+    defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
 
     // Adds the component to its designated container
     container.$add(this);
@@ -144,28 +163,27 @@ public abstract class ButtonBase extends AndroidViewComponent
      * release when not-pressed.
      */
     @Override
-    public boolean onTouch(View view, MotionEvent me)
-    {
-        //NOTE: We ALWAYS return false because we want to indicate that this listener has not
-        //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
-        if (me.getAction() == MotionEvent.ACTION_DOWN) {
-            //button pressed, provide visual feedback AND return false
-            if (ShowFeedback()) {
-               view.getBackground().setAlpha(70); // translucent
-               view.invalidate();
-            }
-            TouchDown();
-        } else if (me.getAction() == MotionEvent.ACTION_UP ||
-            me.getAction() == MotionEvent.ACTION_CANCEL) {
-            //button released, set button back to normal AND return false
-            if (ShowFeedback()) {
-               view.getBackground().setAlpha(255); // opaque
-               view.invalidate();
-            }
-            TouchUp();
+    public boolean onTouch(View view, MotionEvent me) {
+      //NOTE: We ALWAYS return false because we want to indicate that this listener has not
+      //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
+      if (me.getAction() == MotionEvent.ACTION_DOWN) {
+        //button pressed, provide visual feedback AND return false
+        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+          view.getBackground().setAlpha(70); // translucent
+          view.invalidate();
         }
+        TouchDown();
+      } else if (me.getAction() == MotionEvent.ACTION_UP ||
+              me.getAction() == MotionEvent.ACTION_CANCEL) {
+        //button released, set button back to normal AND return false
+        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+          view.getBackground().setAlpha(255); // opaque
+          view.invalidate();
+        }
+        TouchUp();
+      }
 
-        return false;
+      return false;
     }
 
   @Override
@@ -371,6 +389,12 @@ public abstract class ButtonBase extends AndroidViewComponent
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
           ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+        } else if (backgroundColor == Component.COLOR_NONE) {
+          // Clear the background image.
+          ViewUtil.setBackgroundDrawable(view, null);
+          //Now we set again the default drawable
+          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
         } else {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
@@ -384,18 +408,28 @@ public abstract class ButtonBase extends AndroidViewComponent
         // create a drawable with the appropriate shape and color.
         setShape();
       }
+      TextViewUtil.setMinSize(view, defaultButtonMinWidth, defaultButtonMinHeight);
     } else {
       // If there is a background image
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+      TextViewUtil.setMinSize(view, 0, 0);
     }
+  }
+
+  private ColorStateList createRippleState () {
+
+    int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
+    int enabled_color = defaultColorStateList.getColorForState(view.getDrawableState(), android.R.attr.state_enabled);
+    int[] colors = new int[] { Color.argb(70, Color.red(enabled_color), Color.green(enabled_color),
+            Color.blue(enabled_color)) };
+
+    return new ColorStateList(states, colors);
   }
 
   // Throw IllegalArgumentException if shape has illegal value.
   private void setShape() {
     ShapeDrawable drawable = new ShapeDrawable();
-    // Set color of drawable.
-    drawable.getPaint().setColor((backgroundColor == Component.COLOR_DEFAULT)
-                                 ? SHAPED_DEFAULT_BACKGROUND_COLOR : backgroundColor);
+
     // Set shape of drawable.
     switch (shape) {
       case Component.BUTTON_SHAPE_ROUNDED:
@@ -410,8 +444,24 @@ public abstract class ButtonBase extends AndroidViewComponent
       default:
         throw new IllegalArgumentException();
     }
+
     // Set drawable to the background of the button.
-    view.setBackgroundDrawable(drawable);
+    if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
+    } else {
+      ViewUtil.setBackgroundDrawable(view, drawable);
+    }
+
+    if (backgroundColor == Component.COLOR_NONE) {
+      view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
+    }
+    else if (backgroundColor == Component.COLOR_DEFAULT) {
+      view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+    }
+    else {
+      view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
+    }
+
     view.invalidate();
   }
 

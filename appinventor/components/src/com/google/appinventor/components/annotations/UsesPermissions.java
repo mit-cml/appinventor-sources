@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * @author markf@google.com (Mark Friedman)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface UsesPermissions {
 
   /**
@@ -27,4 +27,12 @@ public @interface UsesPermissions {
    * @see android.Manifest.permission
    */
   String permissionNames() default "";
+
+  /**
+   * The names of the permissions as a list.
+   *
+   * @return  the permission names
+   * @see android.Manifest.permission
+   */
+  String[] value() default {};
 }

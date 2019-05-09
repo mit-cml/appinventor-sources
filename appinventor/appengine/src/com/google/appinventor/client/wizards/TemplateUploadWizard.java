@@ -656,7 +656,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param url A string of the form "http://... .asc
    * @param onSuccessCommand
    */
-  private static void openTemplateProject(String url, final NewProjectCommand onSuccessCommand) {
+  private static void openTemplateProject(final String url, final NewProjectCommand onSuccessCommand) {
     final Ode ode = Ode.getInstance();
 
     // This Async callback is called after the project is input and created
@@ -703,9 +703,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         // Response received from the GET
         @Override
         public void onResponseReceived(Request request, Response response) {
-         // The response.getText is the zip data used to create a new project.
-         // The callback opens the project
-         ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
+          // The response.getText is the zip data used to create a new project.
+          // The callback opens the project
+          if (response != null && response.getStatusCode() == 200 && response.getText() != null && !response.getText().isEmpty()) {
+            ode.getProjectService().newProjectFromExternalTemplate(projectName, response.getText(), callback);
+          } else if (url.startsWith("http:")) {
+            openTemplateProject(url.replaceFirst("http:", "https:"), onSuccessCommand);
+          }
         }
       });
     } catch (RequestException e) {

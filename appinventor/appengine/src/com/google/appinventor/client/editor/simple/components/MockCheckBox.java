@@ -1,31 +1,27 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Mock CheckBox component.
+ * Mock CheckBox component, inherited from MockToggleBase
  *
- * @author lizlooney@google.com (Liz Looney)
+ * @author lizlooney@google.com (Liz Looney), srlane@mit.edu (Susan Rati Lane)
  */
-public final class MockCheckBox extends MockWrapper {
+public final class MockCheckBox extends MockToggleBase<CheckBox> {
 
   /**
    * Component type name.
    */
   public static final String TYPE = "CheckBox";
-
-  // GWT checkbox widget used to mock a Simple CheckBox
-  private CheckBox checkboxWidget;
 
   /**
    * Creates a new MockCheckbox component.
@@ -34,10 +30,8 @@ public final class MockCheckBox extends MockWrapper {
    */
   public MockCheckBox(SimpleEditor editor) {
     super(editor, TYPE, images.checkbox());
-
-    // Initialize mock checkbox UI
-    checkboxWidget = new CheckBox();
-    initWrapper(checkboxWidget);
+    toggleWidget = new CheckBox();
+    initWrapper(toggleWidget);
   }
 
   /**
@@ -57,132 +51,33 @@ public final class MockCheckBox extends MockWrapper {
     }
   }
 
-  @Override
   protected Widget createClonedWidget() {
-    return new ClonedCheckBox(checkboxWidget);
-  }
-
-  @Override
-  public void onCreateFromPalette() {
-    // Change checkbox caption to component name
-    changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
-  }
-
-  /*
-   * Sets the checkbox's BackgroundColor property to a new value.
-   */
-  private void setBackgroundColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetBackgroundColor(checkboxWidget, text);
-  }
-
-  /*
-   * Sets the checkbox's Enabled property to a new value.
-   */
-  private void setEnabledProperty(String text) {
-    MockComponentsUtil.setEnabled(this, text);
-  }
-
-  /*
-   * Sets the checkbox's FontBold property to a new value.
-   */
-  private void setFontBoldProperty(String text) {
-    MockComponentsUtil.setWidgetFontBold(checkboxWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's FontItalic property to a new value.
-   */
-  private void setFontItalicProperty(String text) {
-    MockComponentsUtil.setWidgetFontItalic(checkboxWidget, text);
-    updatePreferredSize();
-  }
-
-  @Override
-  int getHeightHint() {
-    int hint = super.getHeightHint();
-    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-      return Math.round(height);
-    } else {
-      return hint;
-    }
-  }
-
-  /*
-   * Sets the checkbox's FontSize property to a new value.
-   */
-  private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(checkboxWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's FontTypeface property to a new value.
-   */
-  private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(checkboxWidget, text);
-    updatePreferredSize();
+    return new ClonedCheckBox(toggleWidget);
   }
 
   /*
    * Sets the checkbox's Text property to a new value.
    */
-  private void setTextProperty(String text) {
-    checkboxWidget.setText(text);
+  protected void setTextProperty(String text) {
+    toggleWidget.setText(text);
     updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's TextColor property to a new value.
-   */
-  private void setTextColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFF000000";  // black
-    }
-    MockComponentsUtil.setWidgetTextColor(checkboxWidget, text);
   }
 
   /*
    * Sets the checkbox's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
-    checkboxWidget.setChecked(Boolean.parseBoolean(text));
+    toggleWidget.setChecked(Boolean.parseBoolean(text));
   }
-
-  // PropertyChangeListener implementation
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-      setBackgroundColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
-      setEnabledProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
-      setFontBoldProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {
-      setFontItalicProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-      setFontSizeProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
-      setFontTypefaceProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
-      setTextColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
+    if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
+      refreshForm();
     }
   }
 }

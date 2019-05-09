@@ -134,7 +134,10 @@ public class MockCircle extends MockMapFeatureBaseWithFill {
   // JSNI Methods
   private native void initCircle()/*-{
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::feature =
-      top.L.circle([], @com.google.appinventor.components.common.ComponentConstants::CIRCLE_PREFERRED_RADIUS, {
+      // Fix for https://github.com/mit-cml/appinventor-sources/issues/1379: Initial coordinate
+      // should match default property values for Latitude and Longitude (i.e., (0, 0)) otherwise
+      // Leaflet throws an exception when we later add the Circle to the Map.
+      top.L.circle([0, 0], @com.google.appinventor.components.common.ComponentConstants::CIRCLE_PREFERRED_RADIUS, {
         className: 'leaflet-interactive',
         weight: 1,
         color: '#000',

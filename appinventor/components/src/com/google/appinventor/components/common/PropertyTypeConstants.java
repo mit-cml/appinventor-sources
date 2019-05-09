@@ -163,6 +163,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_LONGITUDE = "longitude";
 
   /**
+   * Unit system for the map scale bar.
+   */
+  public static final String PROPERTY_TYPE_MAP_UNIT_SYSTEM = "map_unit_system";
+
+  /**
    * Map types supported by the Map component.
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapTypePropertyEditor

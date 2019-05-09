@@ -74,7 +74,11 @@ public class BlocklyCodeGeneratorTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
-
+  public void testListsJoinWithSeparator() throws Exception {
+    String result = BlocklyTestUtils.generatorTest(
+        testpath + "/tests/com/google/appinventor/generators_unit/listsJoinWithSeparatorTest.js");
+    assertEquals("true", result.toString());
+  }
 
     // add more unit tests here
 

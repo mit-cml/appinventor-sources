@@ -170,6 +170,10 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       case 34:  // Page Down
       case 35:  // Shift
       case 36:  // End
+      case 37:  // Left Arrow
+      case 38:  // Up Arrow
+      case 39:  // Right Arrow
+      case 40:  // Down Arrow
       case 45:  // Ins
       case 91:  // Meta
       case 112: // F1
@@ -197,8 +201,12 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       // Can't seem to make Firefox display first character, so keep all browsers from automatically
       // displaying the first character and add it manually.
       e.preventDefault();
+      if (e.charCode == 0) {
+        // Don't try to render a non-printing character.
+        return;
+      }
       goog.dom.getElement(this.inputText_).value =
-        String.fromCharCode(e.charCode != null ? e.charCode : e.keycode);
+        String.fromCharCode(e.charCode != null ? e.charCode : e.keyCode);
     }
   };
 

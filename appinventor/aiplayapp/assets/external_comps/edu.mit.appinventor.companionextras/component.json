@@ -1,0 +1,26 @@
+{
+ "categoryString": "EXTENSION",
+ "dateBuilt": "2019-05-02T17:02:15-0400",
+ "nonVisible": "true",
+ "iconName": "",
+ "methods": [{
+  "deprecated": "false",
+  "name": "Extra1",
+  "description": "Extra1 -- Extra function to download and install an APK file.",
+  "params": [{
+   "name": "urlToApk",
+   "type": "text"
+  }]
+ }],
+ "blockProperties": [],
+ "helpUrl": "",
+ "type": "edu.mit.appinventor.companionextras.CompanionExtras",
+ "androidMinSdk": 7,
+ "version": "1",
+ "external": "true",
+ "showOnPalette": "true",
+ "name": "CompanionExtras",
+ "helpString": "An extension to provide additional functionality to non-Play Store Companions",
+ "properties": [],
+ "events": []
+}

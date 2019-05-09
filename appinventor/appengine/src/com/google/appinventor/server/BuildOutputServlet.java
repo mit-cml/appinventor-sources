@@ -65,6 +65,10 @@ public class BuildOutputServlet extends OdeServlet {
       String uri = req.getRequestURI();
       // First, call split with no limit parameter.
       String[] uriComponents = uri.split("/");
+      if (uriComponents.length < 3) {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
       nonceValue = uriComponents[2];
 
       storageIo.cleanupNonces(); // This removes expired Nonce objects

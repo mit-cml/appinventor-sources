@@ -49,7 +49,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
    * @param nextCommand
    * @param serviceName
    */
-  public ShowProgressBarCommand(String target,ChainableCommand nextCommand, String serviceName) {
+  public ShowProgressBarCommand(String target, ChainableCommand nextCommand, String serviceName) {
     // Since we don't know when the barcode dialog is finished, we can't
     // support a command after this one.
     super(nextCommand); // no next command

@@ -1,0 +1,151 @@
+<!-- Copyright © 2018 Massachusetts Institute of Technology
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+   -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to MIT App Inventor</title>
+        <script type="text/javascript">
+         var permissions = ['android.permission.WRITE_EXTERNAL_STORAGE'];
+         function permresult(permission, result) {
+             start();/* Re-evaluate whether or not to display */
+         }
+         function hasallpermissions() {
+             var haveall = true;
+             for (var i = 0; i < permissions.length; i++) {
+                 haveall = haveall && Android.hasPermission(permissions[i]);
+             }
+             return haveall;
+         }
+         function start() {
+             var item = document.getElementById("needpermission");
+             var cbutton = document.getElementById("cbutton");
+             if (!hasallpermissions()) {
+                 item.style.display = "block";
+                 cbutton.style.display = "none";
+             } else {
+                 item.style.display = "none";
+                 cbutton.style.display = "block";
+             }
+             if (localStorage) {
+                 var again = document.getElementById("again");
+                 var checkbox = document.getElementById("checkbox");
+                 var inhibit = localStorage.getItem("inhibit");
+                 again.style.display = "inline";
+                 if (inhibit == "true") {
+                     checkbox.checked = true;
+                 }
+             }
+             getmotd();
+         }
+         function getpermission() {
+             for (var i = 0; i < permissions.length; i++) {
+                 var perm = permissions[i];
+                 if (!Android.hasPermission(perm)) {
+                     Android.askPermission(perm);
+                     break;
+                 }
+             }
+         }
+         function done() {
+             var checkbox = document.getElementById("checkbox");
+             if (checkbox.checked) {
+                 localStorage.setItem("inhibit", "true");
+                 localStorage.setItem("generation", localStorage.getItem("sgen"));
+             } else {
+                 localStorage.setItem("inhibit", "false");
+             }
+             Android.finished();
+         }
+         function getmotd() {
+             var xhr = new XMLHttpRequest();
+             xhr.open("GET", "http://templates.appinventor.mit.edu/mit/m.json");
+             xhr.onreadystatechange = function() {
+                 if (this.readyState == 4 && this.status == 200) {
+                     var json = JSON.parse(this.response);
+                     var ele = document.getElementById("version");
+                     var version = Android.getVersion();
+                     var vmessage = json[version];
+                     if (!vmessage) {
+                         vmessage = json.message;
+                     }
+                     if (vmessage) {
+                         ele.innerHTML = vmessage;
+                     }
+                     var motd = json.motd;
+                     if (motd) {
+                         ele = document.getElementById("motd");
+                         ele.innerHTML = motd;
+                     }
+                     if (localStorage) {
+                         var generation = localStorage.getItem("generation");
+                         if (!generation) {
+                             generation = "0";
+                         }
+                         var sgen = json.generation;
+                         var inhibit = localStorage.getItem("inhibit");
+                         if (sgen && generation) {
+                             sgen = parseInt(sgen);
+                             generation = parseInt(generation);
+                             localStorage.setItem("sgen", sgen);
+                             if (generation >= sgen && inhibit == "true") {
+                                 setTimeout(done, 2000);
+                             }
+                         }
+                     }
+                 }
+             };
+             xhr.send();
+         }
+        </script>
+
+    </head>
+    <body onload="start();">
+        <center>
+            <h1>Welcome to MIT App Inventor!</h1>
+        </center>
+        <p>
+          This app is the MIT App Inventor Companion. It is designed
+          to be used with the MIT App Inventor online app development
+          environment. You can learn more at
+          http://appinventor.mit.edu.
+        </p>
+        <div id="version">
+        </div>
+        <div id="motd">
+        </div>
+        <div id="needpermission" style="display:none;">
+        <p>
+            The Companion needs STORAGE permission. Press the "Get Permissions" button below to ask your device
+            to grant these permissions.
+        </p>
+        <p>&nbsp;</p>
+        <button onclick="getpermission();">Get Permissions</button>
+        </div>
+        <p>&nbsp;</p>
+        <div id="cbutton">
+            <div id="again" style="display:none;">
+                <p>
+                    Not interested in seeing these messages? Check the box
+                    below, and they will only display for a few seconds,
+                    unless there are important changes.
+                </p>
+                <p>
+                    Display messages for a short time:&nbsp;<input type="checkbox" id="checkbox">
+                </p>
+            </div>
+            <button onclick="done();">Continue</button>
+        </div>
+    </body>
+</html>

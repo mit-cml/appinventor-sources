@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2018 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2019 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -69,6 +69,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   opt_workspace = opt_workspace || Blockly.mainWorkspace;
   var preUpgradeFormJsonObject = JSON.parse(preUpgradeFormJsonString);
   var dom = Blockly.Xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
+  var didUpgrade = false;
 
   /**
    * Upgrade the given componentType. If componentType is "Language", upgrades the blocks language.
@@ -117,6 +118,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
         // Apply upgrader, possibly mutating rep and changing its dynamic type.
         rep = Blockly.Versioning.applyUpgrader(versionUpgrader, rep, opt_workspace);
       }
+      didUpgrade = true;
     } // otherwise, preUpgradeVersion and systemVersion are equal and no updgrade is necessary
     return rep; // Return final blocks representation, for dynamic typing purposes
   }
@@ -166,6 +168,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   Blockly.Versioning.log("Blockly.Versioning.upgrade: Final conversion to Blockly.mainWorkspace");
   Blockly.Versioning.ensureWorkspace(blocksRep, opt_workspace); // No need to use result; does work by side effect on Blockly.mainWorkspace
 
+  return didUpgrade;
 };
 
 /**
@@ -260,7 +263,7 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep, opt_workspace) {
     var workspace = opt_workspace || Blockly.mainWorkspace;
     Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.mainWorkspace");
     workspace.clear(); // Remove any existing blocks before we add new ones.
-    Blockly.Xml.domToWorkspaceHeadless(blocksRep, workspace);
+    Blockly.Xml.domToWorkspace(blocksRep, workspace);
     // update top block positions in event of save before rendering.
     var blocks = workspace.getTopBlocks();
     for (var i = 0; i < blocks.length; i++) {
@@ -1372,7 +1375,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: No blocks need to be modified to upgrade to version 10
     // The default value of TextAlignment was changed from Normal (left) to Center
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // DrawShape & DrawArc was added
+    // No blocks need to be modified to upgrade to version 11.
+    11: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1404,7 +1411,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // Duration Support was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // MakeDate, MakeTime, MakeInstantFromParts methods added
+    4: "noUpgrade"
 
   }, // End Clock upgraders
 
@@ -1765,8 +1775,19 @@ Blockly.Versioning.AllUpgradeMaps =
     21: "noUpgrade",
 
     // AI2: Added Break Block
-    22: "noUpgrade"
+    22: "noUpgrade",
 
+    // AI2: Added Bitwise Blocks
+    23: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 24, added List Reverse Block
+    24: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 25, added Join With Separator Block
+    25: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
+    26: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1856,7 +1877,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The Rotation property was added to Map
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2:
+    // - The ScaleUnits and ShowScale properties were added to Map
+    5: "noUpgrade"
 
   }, // End Map upgraders
 
@@ -1905,7 +1930,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // Added TextInputCanceled & ChoosingCanceled event
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added a PasswordDialog for masked text input.
+    6: "noUpgrade"
 
   }, // End Notifier upgraders
 
@@ -2063,7 +2091,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: - The PhoneCallStarted event was added.
     // - The PhoneCallEnded event was added.
     // - The IncomingCallAnswered event was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    3: 'noUpgrade'
 
   }, // End PhoneCall upgraders
 
@@ -2231,7 +2261,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 23:
     // - The ActionBar designer property was hidden and tied to the Theme property. No blocks need to be changed.
-    23: "noUpgrade"
+    23: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 24:
+    // - The AskForPermissions method, PermissionDenied event, and PermissionGranted event were added. No blocks need to be changed.
+    24: "noUpgrade"
 
 
   }, // End Screen
@@ -2338,7 +2372,9 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyTypeChange(componentName, "ReceivingEnabled", "receivingEnabled is now an integer in the range 1-3 instead of a boolean");
     */
-    3: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    4: 'noUpgrade'
 
   }, // End Texting
 
@@ -2482,7 +2518,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: The Volume property (setter only) was added to the VideoPlayer.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Stop method was added to the VideoPlayer.
+    6: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 

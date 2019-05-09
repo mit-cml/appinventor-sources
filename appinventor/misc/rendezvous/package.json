@@ -1,0 +1,19 @@
+{
+  "name": "rendezvous2",
+  "version": "2.0.0",
+  "description": "MIT App Inventor Rendezvous Server",
+  "main": "rendezvous.js",
+  "dependencies": {
+    "memcache": "^0.3.0",
+    "workerpool": "^2.3.1",
+    "object-assign": "^4.1.1",
+    "sqlite3": "^3.1.13",
+    "async-lock": "^1.1.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jeffrey I. Schiller <jis@mit.edu>",
+  "license": "Apache-2.0"
+}

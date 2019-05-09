@@ -2,6 +2,7 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application></application>
   <version>1</version>
+  <runtime>java8</runtime>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
@@ -12,7 +13,9 @@
     <include path="/companions/*" />
     <include path="/about/*" expiration="1d" />
     <include path="/static/**" expiration="1d" />
+    <include path="/websiteassets/**" expiration="10s" />
     <include path="/images/*" expiration="365d" />
+    <include path="/js/*" />
     <include path="/Ya_tos_form.html" expiration="1d" />
     <include path="/favicon.ico" expiration="365d" />
     <include path="/gwt.css" expiration="1d" />
@@ -108,6 +111,23 @@
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
 
+    <!-- We provide below for a second buildserver. If this field is
+         non-empty then the user is presented a choice of two different
+         build servers. This feature was introduced to support building
+         against two different versions of the Android SDK. As of 8/1/2018
+         MIT is using this feature with the first buildserver building Apps
+         with a minSdk of 7 (but no targetSdk defined) to support older
+         devices. The second buildserver is configured with a minSdk of 14
+         and a targetSdk of 26 (along with the necessary component code
+         changes). This is required for new Apps submitted to the Google
+         Play Store. Having two buildservers provides us the flexibility to
+         support older devices while also ensuring that people can submit
+         MIT App Inventor created Apps to the Google Play Store.
+    -->
+
+    <!-- host[:port] to use for the second build server -->
+    <property name="build2.server.host" value="" />
+
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
          AppScale.Keep it blank when deploy on GAE -->
@@ -169,6 +189,14 @@
     <property name="clouddb.server" value="clouddb.example.com"/>
     <property name="clouddb.uuid.secret" value="changeme!"/>
     <property name="clouddb.secret" value="changeme too!" />
+
+    <!-- This appears to be needed after a suspected change in how
+         POSTs work with URLFetch around 09/20/2018 -->
+    <property name="appengine.api.urlfetch.defaultDeadline" value="40"/>
+
+    <!-- So the calls to the buildserver can re-use connections -->
+    <property name="http.keepAlive" value="true" />
+    <property name="http.maxConnections" value="5" />
 
   </system-properties>
 
