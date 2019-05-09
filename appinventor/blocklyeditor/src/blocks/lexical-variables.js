@@ -145,7 +145,7 @@ Blockly.Blocks['lexical_variable_get'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only rename lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       var newName = freeSubstitution.apply(oldName);
       if (newName !== oldName) {
@@ -157,7 +157,7 @@ Blockly.Blocks['lexical_variable_get'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only return lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       return new Blockly.NameSet([oldName])
     } else {
@@ -202,7 +202,7 @@ Blockly.Blocks['lexical_variable_set'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only rename lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       var newName = freeSubstitution.apply(oldName);
       if (newName !== oldName) {
@@ -219,7 +219,7 @@ Blockly.Blocks['lexical_variable_set'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only return lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       result.insert(oldName);
     }
