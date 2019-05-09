@@ -19,7 +19,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     Checked = false
     super.init(parent)
     super.setDelegate(self)
-    _button.addTarget(self, action: #selector(Changed), for: .touchUpInside)
+    _button.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
     parent.add(self)
     
