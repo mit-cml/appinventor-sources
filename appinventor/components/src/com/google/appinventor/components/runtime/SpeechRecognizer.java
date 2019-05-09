@@ -5,19 +5,23 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
-import android.os.Build;
-import com.google.appinventor.components.annotations.SimpleProperty;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
 
 import android.content.Intent;
 import android.Manifest;
+import android.os.Build;
 import android.speech.RecognizerIntent;
-import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.annotations.UsesPermissions;
 
 /**
  * Component for using the built in VoiceRecognizer to convert speech to text.
@@ -40,11 +44,10 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   private final ComponentContainer container;
   private String result;
   private Intent recognizerIntent;
-  SpeechRecognizerController speechRecognizerController;
-
-  private boolean useLegacy = true;
+  private SpeechRecognizerController speechRecognizerController;
 
   private boolean havePermission = false;
+  private boolean useLegacy = true;
 
   /**
    * Creates a SpeechRecognizer component.
@@ -72,23 +75,24 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void GetText() {
+    // Need to check if we have RECORD_AUDIO permission
     if (!havePermission) {
       final SpeechRecognizer me = this;
       form.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           form.askPermission(Manifest.permission.RECORD_AUDIO,
-                  new PermissionResultHandler() {
-                    @Override
-                    public void HandlePermissionResponse(String permission, boolean granted) {
-                      if (granted) {
-                        me.havePermission = true;
-                        me.GetText();
-                      } else {
-                        form.dispatchPermissionDeniedEvent(me, "Start", Manifest.permission.RECORD_AUDIO);
-                      }
-                    }
-                  });
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    me.havePermission = true;
+                    me.GetText();
+                  } else {
+                    form.dispatchPermissionDeniedEvent(me, "GetText", Manifest.permission.RECORD_AUDIO);
+                  }
+                }
+          });
         }
       });
       return;
@@ -97,13 +101,15 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
     recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-    initialize();
+    UseLegacy(useLegacy);
     speechRecognizerController.addListener(this);
     speechRecognizerController.start();
   }
 
   /**
-   * Function used to stop SpeechRecognizer.
+   * Function used to forcefully stop listening speech in cases where
+   * SpeechRecognizer cannot stop automatically.
+   * This function works only when UseLegacy property is set to 'false'.
    */
   @SimpleFunction
   public void Stop() {
@@ -120,11 +126,13 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Simple event to raise after the VoiceReco activity has returned
+   * Simple event to raise after the VoiceReco activity has returned.
+   * Partial is 'false' when SpeechRecognizer stops automatically after listening,
+   * else it is 'true' if SpeechRecognizer returns partial results.
    */
   @SimpleEvent
-  public void AfterGettingText(String result) {
-    EventDispatcher.dispatchEvent(this, "AfterGettingText", result);
+  public void AfterGettingText(String result, boolean partial) {
+    EventDispatcher.dispatchEvent(this, "AfterGettingText", result, partial);
   }
 
   /**
@@ -133,7 +141,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   @Override
   public void onPartialResult(String text) {
     result = text;
-    AfterGettingText(result);
+    AfterGettingText(result, true);
   }
 
   /**
@@ -142,7 +150,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   @Override
   public void onResult(String text) {
     result = text;
-    AfterGettingText(result);
+    AfterGettingText(result, false);
     onDelete();
   }
 
@@ -152,7 +160,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   @Override
   public void onError(String message) {
     result = message;
-    AfterGettingText(result);
+    AfterGettingText(result, false);
   }
 
   @Override
@@ -163,19 +171,18 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
 
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "If set, an app can retain their older behaviour.")
+      description = "If true, an app can retain their older behaviour.")
   public boolean UseLegacy() {
-      return useLegacy;
+    return useLegacy;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(description = "Used to set UseLegacy property based on user's choice.")
+  @SimpleProperty(description = "If true, a separate dialog is used to recognize speech. "
+      + "If false, speech is recognized without changing the user interface and "
+      + "partial results are also provided.")
   public void UseLegacy(boolean useLegacy) {
     this.useLegacy = useLegacy;
-  }
-
-  public void initialize(){
     if (useLegacy == true || Build.VERSION.SDK_INT<8) {
       speechRecognizerController = new IntentBasedSpeechRecognizer(container, recognizerIntent);
     } else {

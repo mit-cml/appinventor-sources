@@ -1,3 +1,9 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
@@ -7,11 +13,10 @@ import android.speech.RecognizerIntent;
 import java.util.ArrayList;
 
 public class IntentBasedSpeechRecognizer extends SpeechRecognizerController
-        implements ActivityResultListener{
+    implements ActivityResultListener {
 
   private String result;
   private ComponentContainer container;
-  private SpeechListener speechListener;
   private Intent recognizerIntent;
 
   /* Used to identify the call to startActivityForResult. Will be passed back
@@ -24,12 +29,7 @@ public class IntentBasedSpeechRecognizer extends SpeechRecognizerController
   }
 
   @Override
-  void addListener(SpeechListener speechListener) {
-    this.speechListener = speechListener;
-  }
-
-  @Override
-  void start() {
+  public void start() {
     if(requestCode == 0) {
       requestCode = container.$form().registerForActivityResult(this);
     }
@@ -37,11 +37,9 @@ public class IntentBasedSpeechRecognizer extends SpeechRecognizerController
   }
 
   @Override
-  void stop() {
+  public void stop() {
     //implementation not available
   }
-
-
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
@@ -49,10 +47,10 @@ public class IntentBasedSpeechRecognizer extends SpeechRecognizerController
       if (data.hasExtra(RecognizerIntent.EXTRA_RESULTS)) {
         ArrayList<String> results = data.getExtras().getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
         result = results.get(0);
-        speechListener.onResult(result);
       } else {
         result = "";
       }
+      speechListener.onResult(result);
     }
   }
 }

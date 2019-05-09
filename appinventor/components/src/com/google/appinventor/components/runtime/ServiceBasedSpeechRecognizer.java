@@ -1,3 +1,9 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.content.Intent;
@@ -8,22 +14,16 @@ import android.speech.SpeechRecognizer;
 import java.util.ArrayList;
 
 public class ServiceBasedSpeechRecognizer extends SpeechRecognizerController
-        implements RecognitionListener {
+    implements RecognitionListener {
 
   private SpeechRecognizer speech = null;
   private Intent recognizerIntent;
-  private SpeechListener speechListener;
   private ComponentContainer container;
   private String result;
 
   public ServiceBasedSpeechRecognizer(ComponentContainer container, Intent recognizerIntent) {
     this.container = container;
     this.recognizerIntent = recognizerIntent;
-  }
-
-  @Override
-  void addListener(SpeechListener speechListener) {
-    this.speechListener = speechListener;
   }
 
   @Override
@@ -76,8 +76,8 @@ public class ServiceBasedSpeechRecognizer extends SpeechRecognizerController
     } else {
       ArrayList<String> results = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
       result = results.get(0);
-      speechListener.onResult(result);
     }
+    speechListener.onResult(result);
   }
 
   @Override
@@ -87,8 +87,8 @@ public class ServiceBasedSpeechRecognizer extends SpeechRecognizerController
     } else {
       ArrayList<String> results = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
       result = results.get(0);
-      speechListener.onPartialResult(result);
     }
+    speechListener.onPartialResult(result);
   }
 
   @Override
