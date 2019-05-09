@@ -941,6 +941,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Creates a global variable and gives it the value of the attached blocks.';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'global';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = '/reference/blocks/variables.html#get';
     Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = 'get';

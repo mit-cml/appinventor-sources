@@ -90,7 +90,7 @@ Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
   var text = this.getText();
   if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
     this.sourceBlock_.eventparam = undefined;
-    if (text.indexOf(Blockly.globalNamePrefix + ' ') === 0) {
+    if (text.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + ' ') === 0) {
       this.sourceBlock_.eventparam = null;
       return;
     }
@@ -459,8 +459,8 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
         var renamingFunction = block.renameLexicalVar;
         if (renamingFunction) {
             renamingFunction.call(block,
-                                  Blockly.globalNamePrefix + Blockly.menuSeparator + oldName,
-                                  Blockly.globalNamePrefix + Blockly.menuSeparator + newName);
+                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
+                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
         }
       }
     }
@@ -906,7 +906,7 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
     var referenceName = unprefixedPair[1];
     var referenceNotInEnv = ((Blockly.usePrefixInYail && (env.indexOf(possiblyPrefixedReferenceName) == -1))
                              || ((!Blockly.usePrefixInYail) && (env.indexOf(referenceName) == -1)))
-    if (!(referencePrefix === Blockly.globalNamePrefix)) {
+    if (!(referencePrefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX)) {
       if ((referenceName === name) && referenceNotInEnv) {
         // if referenceName refers to name and not some intervening declaration, it's a reference to be renamed:
         blocksToRename.push(block);
@@ -1032,7 +1032,7 @@ Blockly.LexicalVariable.getEventParam = function (block) {
                                 // evaluated it.
   var prefixPair = Blockly.unprefixName(block.getFieldValue("VAR"));
   var prefix = prefixPair[0];
-  if (prefix !== Blockly.globalNamePrefix) {
+  if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
     var name = prefixPair[1];
     var child = block;
     var parent = block.getParent();
