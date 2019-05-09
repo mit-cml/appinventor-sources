@@ -165,13 +165,17 @@ import Toast_Swift
     _linearView = LinearView(frame: view.frame)
     _linearView.accessibilityIdentifier = "Form root view"
     if _compatibilityMode {
-      _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+      _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: view.frame.height / _scaleFrameLayout.scale))
     } else {
-      _scaleFrameLayout = ScaleFrameLayout(frame: UIScreen.main.bounds)
+      _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(origin: .zero, size: view.frame.size))
     }
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
     _scaleFrameLayout.addSubview(_linearView)
     view.addSubview(_scaleFrameLayout)
+    _scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+    _scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+    _scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale).isActive = true
+    _scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale).isActive = true
     _linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor).isActive = true
     _linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor).isActive = true
     _linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor).isActive = true
