@@ -329,7 +329,7 @@ open class ButtonBase: ViewComponent {
     }
     set(text) {
       _view.setTitle(text, for: UIControl.State.normal)
-      _view.frame.size = _view.intrinsicContentSize
+      _view.setNeedsLayout()
     }
   }
 
