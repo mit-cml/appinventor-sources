@@ -171,7 +171,9 @@ open class Web: NonvisibleComponent {
       if (self._saveResponse) {
         let path = self.saveResponseContent(response!, webProps.responseFileName, responseType, data)
 
-        self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
+        DispatchQueue.main.async {
+          self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
+        }
       } else {
         if let data = data {
           let encodingName = response?.textEncodingName ?? "utf8"
@@ -181,7 +183,9 @@ open class Web: NonvisibleComponent {
           }
           responseContent = responseContentStr as NSString
         }
-        self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
+        DispatchQueue.main.async {
+          self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
+        }
       }
     })
 
