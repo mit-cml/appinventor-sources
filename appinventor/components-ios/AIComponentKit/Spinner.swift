@@ -213,7 +213,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
         _viewController!.selectItem(i)
         _selectionIndex = Int32(i) + 1
       } else {
-        self.Text = _prompt
+        self.Text = ""
         _selectionIndex = 0
       }
     }
@@ -231,7 +231,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
         self.Text = _selection
       } else {
         _selection = ""
-        self.Text = _prompt
+        self.Text = ""
       }
     }
   }
