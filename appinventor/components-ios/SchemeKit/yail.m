@@ -426,9 +426,15 @@ nsnumber_to_yail(pic_state *pic, NSNumber *number) {
     return pic_int_value(pic, number.intValue);
   } else if (0 == strcmp(type, @encode(NSInteger))) {
     //TODO: handle overflow
+    if (number.doubleValue > INT_MAX || number.doubleValue < INT_MIN) {
+      return pic_float_value(pic, number.doubleValue);
+    }
     return pic_int_value(pic, (int) number.integerValue);
   } else if (0 == strcmp(type, @encode(NSUInteger))) {
     //TODO: handle overflow
+    if (number.doubleValue > LONG_MAX || number.doubleValue < LONG_MIN) {
+      return pic_float_value(pic, number.doubleValue);
+    }
     return pic_int_value(pic, (int) number.unsignedIntegerValue);
   } else if (0 == strcmp(type, @encode(float))) {
     return pic_float_value(pic, number.floatValue);
@@ -732,11 +738,22 @@ yail_invoke(pic_state *pic) {
       NSInteger value = 0;
       [invocation getReturnValue:&value];
       //TODO: handle overflow
-      return pic_int_value(pic, (int) value);
+      if (sizeof(NSInteger) == sizeof(unsigned int) ||
+          (INT_MIN <= (long) value && (long) value <= INT_MAX)) {
+        return pic_int_value(pic, (int) value);
+      } else {
+        return pic_float_value(pic, (double) value);
+      }
     } else if (0 == strcmp(retType, @encode(NSUInteger))) {
       NSUInteger value = 0;
       [invocation getReturnValue:&value];
       //TODO: handle overflow
+      if (sizeof(NSUInteger) == sizeof(unsigned int) ||
+          (unsigned long) value <= INT_MAX) {
+        return pic_int_value(pic, (int) value);
+      } else {
+        return pic_float_value(pic, (double) value);
+      }
       return pic_int_value(pic, (int) value);
     } else if (0 == strcmp(retType, @encode(float))) {
       float value = 0;
@@ -836,6 +853,21 @@ yail_isa(pic_state *pic) {
 }
 
 pic_value
+yail_format_integer(pic_state *pic) {
+  static const int BUFSIZE=24;
+  double f;
+  unsigned long i;
+  char buf[BUFSIZE];
+
+  pic_get_args(pic, "f", &f);
+  i = f;
+
+  snprintf(&buf[0], BUFSIZE, "%lu", i);
+
+  return pic_cstr_value(pic, buf);
+}
+
+pic_value
 yail_format_inexact(pic_state *pic) {
   static const int BUFSIZE = 24;
   double value, absvalue;
@@ -845,12 +877,12 @@ yail_format_inexact(pic_state *pic) {
   absvalue = fabs(value);
 
   if (absvalue > 1e6 || absvalue < 1e-6) {
-    snprintf(&buf[0], BUFSIZE - 1, "%E", value);
+    snprintf(&buf[0], BUFSIZE, "%E", value);
   } else {
-    snprintf(&buf[0], BUFSIZE - 1, "%F", value);
+    snprintf(&buf[0], BUFSIZE, "%F", value);
   }
 
-  return pic_str_value(pic, buf, strlen(buf));
+  return pic_cstr_value(pic, buf);
 }
 
 pic_value
@@ -1106,6 +1138,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "invoke", yail_invoke);
   pic_defun(pic, "yail:isa", yail_isa);
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
+  pic_defun(pic, "yail:format-exact", yail_format_integer);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
   pic_defun(pic, "*:getClass", yail_get_class);
   pic_defun(pic, "*:getSimpleName", yail_get_simple_name);

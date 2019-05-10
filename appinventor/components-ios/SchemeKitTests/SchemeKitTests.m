@@ -590,4 +590,12 @@ typedef union {
   XCTAssertEqualObjects(@"你好", result);
 }
 
+- (void)testFormatLong {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"(yail:format-exact 4028354713.0)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertEqualObjects(@"4028354713", result);
+}
+
 @end

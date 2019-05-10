@@ -66,7 +66,7 @@ open class Clock: NonvisibleComponent {
   }
   
   @objc open func MakeInstantFromMillis(_ millis: Int64) -> Date {
-    return Date(timeIntervalSince1970: TimeInterval(millis / 1000))
+    return Date(timeIntervalSince1970: TimeInterval(Double(millis) / 1000.0))
   }
   
   @objc open func GetMillis(_ instant: Date) -> Int64 {
@@ -75,7 +75,7 @@ open class Clock: NonvisibleComponent {
   
   @objc open func AddDuration(_ instant: Date, _ quantity: Int64) -> Date {
     let _newInstant = instant
-    return _newInstant.addingTimeInterval(TimeInterval(quantity/1000))
+    return _newInstant.addingTimeInterval(TimeInterval(Double(quantity)/1000.0))
   }
   
   @objc open func AddSeconds(_ instant: Date, _ quantity: Int64) -> Date {
@@ -107,7 +107,9 @@ open class Clock: NonvisibleComponent {
   }
   
   @objc open func Duration(_ start: Date, _ end: Date) -> Int64 {
-    return Int64(end.timeIntervalSince(start) * 1000.0)
+    let diff = end.timeIntervalSince(start)
+    let result = Int64(diff * 1000.0)
+    return result
   }
   
   @objc open func DurationToSeconds(_ duration: Int64) -> Int64 {

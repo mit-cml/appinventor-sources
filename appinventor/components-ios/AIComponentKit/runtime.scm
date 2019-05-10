@@ -1793,7 +1793,7 @@ list, use the make-yail-list constructor with no arguments.
 
 (define (appinventor-number->string n)
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
-        ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
+        ((integer? n) (yail:format-exact n))
         ((exact? n) (appinventor-number->string (exact->inexact n)))
         (else (*format-inexact* n))))
 

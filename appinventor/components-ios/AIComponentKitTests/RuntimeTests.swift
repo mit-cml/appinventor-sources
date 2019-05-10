@@ -190,4 +190,11 @@ class RuntimeTests: XCTestCase {
     interpreter.setCurrentForm(form)
     XCTAssertEqual("Success", interpreter.evalForm("(begin (set-and-coerce-property-and-check! *this-form* 'com.google.appinventor.components.runtime.Form 'Title \"Success\" 'text) (get-property-and-check *this-form* 'com.google.appinventor.components.runtime.Form 'Title))"))
   }
+
+  func testAppInventorNumberToString() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("4028354713", interpreter.evalForm("(appinventor-number->string 4028354713)"))
+  }
 }
