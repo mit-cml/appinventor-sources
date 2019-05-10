@@ -110,7 +110,8 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)
-    self.Text = _prompt
+    Prompt = ""
+    _currSelectionIndex = SelectionIndex
   }
 
   @objc open func AfterSelecting() {
@@ -149,9 +150,17 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
       return _items
     }
     set(items) {
+      var pendingSelectionIndex = SelectionIndex
+      if (items.count == 0) {
+        pendingSelectionIndex = 0
+      } else if (items.count < _items.count && SelectionIndex > items.count) {
+        pendingSelectionIndex = Int32(items.count)
+      } else if (SelectionIndex == 0 && items.count > 0) {
+        pendingSelectionIndex = 1
+      }
       _items = items
       _viewController!.reloadComponents()
-      self.Selection = ""
+      SelectionIndex = pendingSelectionIndex
     }
   }
 
@@ -160,9 +169,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
       return ""
     }
     set(itemstring) {
-      _items = elementsFromString(itemstring)
-      _viewController!.reloadComponents()
-      self.Selection = ""
+      Elements = elementsFromString(itemstring)
     }
   }
 
@@ -192,9 +199,6 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
     set(prompt) {
       _prompt = prompt
-      if _selection == "" {
-        self.Text = _prompt
-      }
     }
   }
 
