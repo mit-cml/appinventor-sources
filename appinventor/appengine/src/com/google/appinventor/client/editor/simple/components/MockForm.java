@@ -220,6 +220,8 @@ public final class MockForm extends MockContainer {
 
   // Form UI components
   AbsolutePanel formWidget;
+  AbsolutePanel phoneWidget;
+
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private MockComponent selectedComponent;
@@ -262,6 +264,8 @@ public final class MockForm extends MockContainer {
     // future problems if we ever have threads creating forms in parallel.
     myLayout = MockFormHelper.getLayout();
 
+    phoneWidget = new AbsolutePanel();
+    phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
     formWidget = new AbsolutePanel();
     formWidget.setStylePrimaryName("ode-SimpleMockForm");
 
@@ -277,7 +281,8 @@ public final class MockForm extends MockContainer {
     //Add navigation bar at the bottom of the viewer.
     formWidget.add(new NavigationBar());
 
-    initComponent(formWidget);
+    phoneWidget.add(formWidget);
+    initComponent(phoneWidget);
 
     // Set up the initial state of the vertical alignment property editor and its dropdowns
     try {
@@ -292,17 +297,37 @@ public final class MockForm extends MockContainer {
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
   }
 
-  public void changePreviewSize(int width, int height) {
+  public void changePreviewSize(int width, int height, int idx) {
     // It will definitely be modified in the future to add more options.
     PORTRAIT_WIDTH = width;
     PORTRAIT_HEIGHT = height;
     LANDSCAPE_WIDTH = height;
     LANDSCAPE_HEIGHT = width;
 
-    if (landscape)
+//    if (isTablet) {
+//      PORTRAIT_WIDTH = TABLET_PORTRAIT_WIDTH;
+//      PORTRAIT_HEIGHT = TABLET_PORTRAIT_HEIGHT;
+//      LANDSCAPE_WIDTH = TABLET_LANDSCAPE_WIDTH;
+//      LANDSCAPE_HEIGHT = TABLET_LANDSCAPE_HEIGHT;
+//    } else {
+//      PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
+//      PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
+//      LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
+//      LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
+//    }
+
+    if (landscape) {
+      if (idx == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
+      else if (idx == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      else if (idx == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
-    else
+    }
+   else {
+      if (idx == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      else if (idx == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      else if (idx == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
       resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+    }
   }
 
   /*
@@ -521,10 +546,12 @@ public final class MockForm extends MockContainer {
         screenWidth = LANDSCAPE_WIDTH;
         screenHeight = LANDSCAPE_HEIGHT;
         landscape = true;
+        phoneWidget.setStyleName("ode-SimpleMockFormPhoneLandscape");
       } else {
         screenWidth = PORTRAIT_WIDTH;
         screenHeight = PORTRAIT_HEIGHT;
         landscape = false;
+        phoneWidget.setStyleName("ode-SimpleMockFormPhonePortrait");
       }
       usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
       resizePanel(screenWidth, screenHeight);
