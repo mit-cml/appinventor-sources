@@ -12,7 +12,7 @@ import AVKit
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-public class ViewController: UINavigationController {
+public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc public var Height: Int32 = 0
   @objc public var Width: Int32 = 0
   private static var controller: ViewController?
@@ -78,6 +78,7 @@ public class ViewController: UINavigationController {
       let ipaddr: String! = NetworkUtils.getIPAddress()
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
       versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
+      connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
@@ -151,5 +152,16 @@ public class ViewController: UINavigationController {
       present(controller, animated: true)
     } else {
     }
+  }
+
+  open func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    if textField.text?.count == 6 {
+      DispatchQueue.main.async {
+        self.connect(nil)
+      }
+      textField.resignFirstResponder()
+      return false
+    }
+    return true
   }
 }
