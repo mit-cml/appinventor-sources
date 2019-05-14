@@ -276,7 +276,7 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     parent.add(self)
   }
 
-  open func Initialize() {
+  @objc open func Initialize() {
     _view.initialize()
     if Height == kLengthPreferred {
       _view.updateHeight(from: 0, to: kLengthPreferred)
@@ -287,29 +287,29 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     _initialized = true
   }
 
-  open var Columns: Int32 = 2
+  @objc open var Columns: Int32 = 2
 
-  open override var Height: Int32 {
+  @objc open override var Height: Int32 {
     didSet(height) {
       _view.updateHeight(from: height, to: Height)
     }
   }
 
-  open var Rows: Int32 = 2
+  @objc open var Rows: Int32 = 2
 
-  open override var Width: Int32 {
+  @objc open override var Width: Int32 {
     didSet(width) {
       _view.updateWidth(from: width, to: Width)
     }
   }
 
-  open override var view: UIView {
+  @objc open override var view: UIView {
     get {
       return _view
     }
   }
 
-  open var form: Form {
+  @objc open var form: Form {
     get {
       return _container.form
     }
