@@ -990,14 +990,12 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid black;
 }
 
-
+/* ==== start: skins for Android */
 .ode-SimpleMockFormPhoneLandscape {
     background: url(images/phoneLandscape.png);
     background-repeat: no-repeat;
     background-position: right top;
     background-size: 100% 100%;
-    /*padding: 5px 54px 5px 54px;*/
-    /*padding: 11px 54px 11px 64px;*/
     padding: 11px 43px 7px 48px;
 }
 
@@ -1007,7 +1005,6 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  /*padding: 50px 11px 64px 11px;*/
   padding: 50px 11px 43px 7px;
 }
 
@@ -1028,14 +1025,11 @@ select.ode-PropertyEditor[disabled] {
   /*padding: 54px 11px 64px 11px;*/
   padding: 64px 13px 55px 13px;
 }
-/**/
 .ode-SimpleMockFormPhoneLandscapeMonitor {
   background: url(images/phoneLandscapeMonitor.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  /*padding: 5px 54px 5px 54px;*/
-  /*padding: 11px 54px 11px 64px;*/
   padding: 44px 43px 7px 48px;
 }
 
@@ -1044,11 +1038,10 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  /*padding: 5px 55px 5px 54px;;*/
-  /*padding: 11px 54px 11px 64px;*/
   padding: 99px 36px 75px 34px;
 }
-/**/
+/* ==== end: skins for Android */
+
 .ode-SimpleMockForm-selected {
   border: 2px solid #8fc202;
 }

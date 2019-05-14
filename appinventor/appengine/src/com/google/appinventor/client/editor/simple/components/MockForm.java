@@ -304,17 +304,6 @@ public final class MockForm extends MockContainer {
     LANDSCAPE_WIDTH = height;
     LANDSCAPE_HEIGHT = width;
 
-//    if (isTablet) {
-//      PORTRAIT_WIDTH = TABLET_PORTRAIT_WIDTH;
-//      PORTRAIT_HEIGHT = TABLET_PORTRAIT_HEIGHT;
-//      LANDSCAPE_WIDTH = TABLET_LANDSCAPE_WIDTH;
-//      LANDSCAPE_HEIGHT = TABLET_LANDSCAPE_HEIGHT;
-//    } else {
-//      PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
-//      PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
-//      LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
-//      LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
-//    }
 
     if (landscape) {
       if (idx == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
