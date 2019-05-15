@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract superclass for all container mock components.
+ * Abstract superclass for all container k components.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -124,7 +124,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
   }
 
-  
+
   /**
    * Adds a new component to the end of this container.
    *
@@ -272,8 +272,12 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
       // Chart Data components are only allowed on Charts, not other containers.
+      // AR nodes are only allowed on ARView3D, not other containers.
+      // AR image markers are only allowed on ARView3D, not other containers.
+      // AR lights are only allowed on ARView3D, not other containers.
       if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
-              && !(component instanceof MockChartData)) {
+          && !(component instanceof MockChartData) && !(component instanceof MockARNode)
+          && !(component instanceof MockImageMarker) && !(component instanceof MockARLight)) {
         return true;
       }
     }

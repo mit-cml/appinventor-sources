@@ -164,6 +164,8 @@
       <fileset dir="src/${appinventor.pkg}">
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
+        <!-- ARView3D is a special case (see MockARView3D.java) -->
+        <include name="images/arView3DBig.png" />
       </fileset>
       <fileset dir="${lib.dir}">
         <include name="closure-library/closure/goog/base.js"/>

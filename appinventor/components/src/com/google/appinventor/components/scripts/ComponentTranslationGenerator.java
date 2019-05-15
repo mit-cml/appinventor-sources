@@ -550,13 +550,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
 
     // Components are already sorted.
     Set<String> categories = new TreeSet<>();
-    Set<String> properties = new TreeSet<>();
-    Set<String> methods = new TreeSet<>();
-    Set<String> events = new TreeSet<>();
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
-      ComponentInfo component = entry.getValue();
-      outputComponent(component, properties, methods, events, sb);
-      categories.add(component.getCategory());
+      sb.append("    output").append(entry.getValue().getName()).append("(map);\n");
+      categories.add(entry.getValue().getCategory());
     }
     for (Map.Entry<String, OptionList> entry : optionLists.entrySet()) {
       OptionList optionList = entry.getValue();
@@ -591,8 +587,16 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     outputPropertyCategory("Appearance", sb);
     outputPropertyCategory("Behavior", sb);
     outputPropertyCategory("Unspecified", sb);
-    sb.append("  return map;\n");
-    sb.append("  }\n");
+    sb.append("    return map;\n");
+    sb.append("  }\n\n");
+    Set<String> properties = new TreeSet<>();
+    Set<String> methods = new TreeSet<>();
+    Set<String> events = new TreeSet<>();
+    for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
+      sb.append("  private static void output").append(entry.getValue().getName()).append("(Map<String, String> map) {\n");
+      outputComponent(entry.getValue(), properties, methods, events, sb);
+      sb.append("  }\n");
+    }
     sb.append("}\n");
     FileObject src = createOutputFileObject(OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();

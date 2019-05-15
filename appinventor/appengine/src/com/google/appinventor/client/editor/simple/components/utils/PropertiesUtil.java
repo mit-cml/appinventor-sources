@@ -16,6 +16,9 @@ import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPal
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAccelerometerSensitivityChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARFalloffTypePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARPlaneDetectionTypePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARTrackingTypePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
@@ -216,6 +219,12 @@ public class PropertiesUtil {
       return new YoungAndroidVerticalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ASSET)) {
       return new YoungAndroidAssetSelectorPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_TRACKING_TYPE)) {
+      return new YoungAndroidARTrackingTypePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_FALLOFF_TYPE)) {
+      return new YoungAndroidARFalloffTypePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_PLANE_DETECTION_TYPE)) {
+      return new YoungAndroidARPlaneDetectionTypePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BEST_FIT_MODEL)) {
       return new YoungAndroidBestFitModelPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BLUETOOTHCLIENT)) {
