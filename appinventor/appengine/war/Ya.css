@@ -1001,7 +1001,6 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockFormPhonePortrait {
   background: url(images/phonePortrait.png);
-  /*   background: url(images/phonePortrait.png); */
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
@@ -1013,8 +1012,6 @@ select.ode-PropertyEditor[disabled] {
     background-repeat: no-repeat;
     background-position: right top;
     background-size: 100% 100%;
-    /*padding: 5px 55px 5px 54px;;*/
-    /*padding: 11px 54px 11px 64px;*/
     padding: 15px 56px 12px 64px;;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
@@ -1022,7 +1019,6 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  /*padding: 54px 11px 64px 11px;*/
   padding: 64px 13px 55px 13px;
 }
 .ode-SimpleMockFormPhoneLandscapeMonitor {
