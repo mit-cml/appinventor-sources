@@ -119,3 +119,31 @@ public let kDefaultValueTextToSpeechLanguage = ""
 @objc public protocol Component: NSCopying {
   var dispatchDelegate: HandlesEventDispatching? { get }
 }
+
+public enum Truncation: Int32 {
+  case none = 1
+  case end = 2
+  case middle = 3
+  case start = 4
+}
+
+public enum ARTrackingType: Int32 {
+  case worldTracking = 1
+  case orientationTracking = 2
+  case imageTracking = 3
+  //  case faceTracking = 4
+  //  case objectScanning = 5
+}
+
+public enum ARPlaneDetectionType: Int32 {
+  case none = 1
+  case horizontal = 2
+  case vertical = 3
+  case both = 4
+}
+
+public enum ARFalloffType: Int32 {
+  case none = 0
+  case linear = 1
+  case quadratic = 2
+}
