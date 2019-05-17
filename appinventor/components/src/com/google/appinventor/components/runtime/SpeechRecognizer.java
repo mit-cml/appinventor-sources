@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -39,7 +39,7 @@ import android.speech.RecognizerIntent;
 @UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO," +
         "android.permission.INTERNET")
 public class SpeechRecognizer extends AndroidNonvisibleComponent
-    implements Component, SpeechListener, Deleteable {
+    implements Component, OnClearListener, SpeechListener {
 
   private final ComponentContainer container;
   private String result;
@@ -56,8 +56,13 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   public SpeechRecognizer(ComponentContainer container) {
     super(container.$form());
+    container.$form().registerForOnClear(this);
     this.container = container;
     result = "";
+    recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+    recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+    UseLegacy(useLegacy);
   }
 
   /**
@@ -98,10 +103,6 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
       return;
     }
     BeforeGettingText();
-    recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-    recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-    recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-    UseLegacy(useLegacy);
     speechRecognizerController.addListener(this);
     speechRecognizerController.start();
   }
@@ -113,7 +114,9 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
-    speechRecognizerController.stop();
+    if (speechRecognizerController != null) {
+      speechRecognizerController.stop();
+    }
   }
 
   /**
@@ -151,7 +154,6 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   public void onResult(String text) {
     result = text;
     AfterGettingText(result, false);
-    onDelete();
   }
 
   /**
@@ -164,7 +166,8 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   }
 
   @Override
-  public void onDelete() {
+  public void onClear() {
+    Stop();
     speechRecognizerController = null;
     recognizerIntent = null;
   }
@@ -183,6 +186,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
       + "partial results are also provided.")
   public void UseLegacy(boolean useLegacy) {
     this.useLegacy = useLegacy;
+    Stop();
     if (useLegacy == true || Build.VERSION.SDK_INT<8) {
       speechRecognizerController = new IntentBasedSpeechRecognizer(container, recognizerIntent);
     } else {
