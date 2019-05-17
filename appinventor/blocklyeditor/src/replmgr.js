@@ -464,8 +464,11 @@ Blockly.ReplMgr.putYail = (function() {
                                          'offer' : desc}));
                 webrtcpeer.setLocalDescription(desc);
             });
-            poll();
-
+            top.ConnectProgressBar_setProgress(15, Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING);
+            setTimeout(function() {
+              top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
+              poll();
+            }, 5000);           // Wait 5 seconds for Rendezvous server to gather all ice candidates
         },
         'chunker' : (function() {
             var seq = 0;
