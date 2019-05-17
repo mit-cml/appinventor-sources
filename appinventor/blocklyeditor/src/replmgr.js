@@ -334,6 +334,24 @@ Blockly.ReplMgr.putYail = (function() {
             var offer;
             var key = rs.replcode;
             var haveoffer = false;
+            var connectionstate = "none";
+            var webrtcerror = function(doalert, msg) {
+              webrtcdata = null;
+              webrtcstarting = false;
+              webrtcrunning = false;
+              webrtcforcestop = true;
+              top.BlocklyPanel_indicateDisconnect();
+              top.ConnectProgressBar_hide();
+              if (!webrtcpeer) {
+                webrtcpeer.close();
+              }
+              if (doalert) {
+                  var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, msg, Blockly.Msg.REPL_OK, false, null, 0,
+                      function() {
+                          dialog.hide();
+                      });
+              }
+            };
             webrtcisopen = false;
             webrtcforcestop = false;
             top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
@@ -348,11 +366,17 @@ Blockly.ReplMgr.putYail = (function() {
                                 var hunk = json[i];
                                 var candidate = hunk['candidate'];
                                 offer = hunk['offer'];
-                                if (candidate && haveoffer) {
+                                if (candidate && haveoffer && connectionstate != "none") {
                                     var nonce = hunk['nonce'];
                                     if (!seennonce[nonce]) {
                                         seennonce[nonce] = true;
-                                        webrtcpeer.addIceCandidate(candidate);
+                                        console.log("addIceCandidate: signalingState = " + webrtcpeer.signalingState +
+                                                    " iceConnectionState = " + webrtcpeer.iceConnectionState);
+                                        console.log("addIceCandidate: candidate = " + JSON.stringify(candidate));
+                                        webrtcpeer.addIceCandidate(candidate)["catch"](function(e) {
+                                            console.error(e);
+                                            webrtcerror(true, Bockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + e);
+                                        });
                                     } else {
                                         console.log("Seen nonce " + nonce);
                                     }
@@ -368,24 +392,24 @@ Blockly.ReplMgr.putYail = (function() {
                         if (!webrtcisopen && !webrtcforcestop) {
                             setTimeout(poll, 1000); // Try again in one second
                         }
+                    } else if (this.readyState == 4) { // Done, but didn't get a 200 back
+                        webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "Rendezvous Fail: " + this.status);
                     }
                 };
                 xhr.send();
             };
             webrtcpeer = new RTCPeerConnection(top.ReplState.iceservers);
             webrtcpeer.oniceconnectionstatechange = function(evt) {
-                console.log("oniceconnectionstatechange: evt.type = " + evt.type);
-                if (this.iceConnectionState == "disconnected" ||
-                    this.iceConnectionState == "failed") {
-                    webrtcdata = null;
-                    webrtcstarting = false;
-                    webrtcrunning = false;
-                    top.BlocklyPanel_indicateDisconnect();
-                    webrtcpeer.close();
+                console.log("oniceconnectionstatechange: evt.type = " + evt.type + " connection state = " + this.iceConnectionState);
+                connectionstate = this.iceConnectionState;
+                if (connectionstate == "disconnected" ||
+                    connectionstate == "failed") {
+                    webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "state = " + connectionstate);
                 }
             };
             webrtcpeer.onsignalingstatechange = function(evt) {
                 console.log("onsignalingstatechange: evt.type = " + evt.type);
+                console.log("onsignalingstatechange: signalingstate = " + this.signalingState);
             };
             webrtcpeer.onicecandidate = function(evt) {
                 if (evt.type == 'icecandidate') {
