@@ -2,7 +2,7 @@
 // Copyright 2015 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Portuguese Strings 
+ * @fileoverview Portuguese Strings
  * @author plcarvalho@gmail.com (Paulo Carvalho)
  * Adapted from the pt_BR translation by mail@eduardovalle.com (Eduardo Valle)
  */
@@ -18,7 +18,7 @@ goog.require('Blockly.Msg.pt');
  */
 
 Blockly.Msg.pt.switch_language_to_portuguese = {
-  // Switch language to Portuguese 
+  // Switch language to Portuguese
   category: '',
   helpUrl: '',
   init: function() {
@@ -589,6 +589,7 @@ Blockly.Msg.pt.switch_language_to_portuguese = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'para cada número no intervalo';
     Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'raiz quadrada';
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
+    Blockly.Msg.REPL_RESET = "Restabelecer";
   }
 };
 

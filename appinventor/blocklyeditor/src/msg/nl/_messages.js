@@ -587,6 +587,7 @@ Blockly.Msg.nl.switch_language_to_dutch = {
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Geeft het kleinste van zijn argumenten terug..';
     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Geeft het grootste van zijn argumenten terug..';
+    Blockly.Msg.REPL_RESET = "Reset";
 
     Blockly.Msg.TIME_YEARS = "Jaren";
     Blockly.Msg.TIME_MONTHS = "Maanden";

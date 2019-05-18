@@ -554,6 +554,7 @@ Blockly.Msg.fr.switch_language_to_french = {
     Blockly.Msg.REPL_USB_CONNECTED_WAIT = 'USB connecté, attente \' ';
     Blockly.Msg.REPL_VERIFYING_COMPANION = 'Vérification que le Compagnon est lancé ...';
     Blockly.Msg.REPL_YOUR_CODE_IS = 'Votre code est';
+    Blockly.Msg.REPL_RESET = "Réinitialiser";
     Blockly.Msg.SHOW_WARNINGS = 'Afficher les avertissements';
     Blockly.Msg.SORT_C = 'Trier les blocs par catégorie';
     Blockly.Msg.SORT_H = 'Trier les blocs par hauteur\' ';

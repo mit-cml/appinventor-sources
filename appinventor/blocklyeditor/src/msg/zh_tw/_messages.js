@@ -25,8 +25,8 @@
  * @author roadlabs@gmail.com (roadlabs)
  * @author jcjzhl@gmail.com (Congjun Jin)
  * @author joechuang01.tw@gmail.com (Chuang Kai Chiao)
- * @author nissin@cavedu.com (David Tseng) 
- * @author tank@mail.chsh.ntct.edu.tw (Tank Tsai) 
+ * @author nissin@cavedu.com (David Tseng)
+ * @author tank@mail.chsh.ntct.edu.tw (Tank Tsai)
  */
 
 'use strict';
@@ -888,6 +888,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     Blockly.Msg.REPL_OK_LOWER = "確定";
     Blockly.Msg.REPL_GOT_IT = "升級完成";
     Blockly.Msg.REPL_UPDATE_INFO = '正在安裝更新套件，請在裝置（或模擬器）上檢查確認。<br /><br />注意：升級完成後，請選擇“完成”（不要選開啟）。然後在瀏覽器中開啟並進入App Inventor，點選“連接裝置”並選擇“重置連線”項。';
+    Blockly.Msg.REPL_RESET = "重啟";
 
     Blockly.Msg.REPL_UPDATE_NO_UPDATE = "無可用更新";
     Blockly.Msg.REPL_UPDATE_NO_CONNECTION = "請先與AI Companion連線才能開始更新";
