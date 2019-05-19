@@ -470,7 +470,7 @@ Blockly.exportBlockAsPng = function(block) {
         png.setCodeChunk(code);
         var blob = png.toBlob();
         var a = document.createElement('a');
-        a.download = name;
+        a.download = (block.getChildren().length === 0 ? block.type : 'blocks') + '.png';
         a.target = '_self';
         a.href = URL.createObjectURL(blob);
         document.body.appendChild(a);
