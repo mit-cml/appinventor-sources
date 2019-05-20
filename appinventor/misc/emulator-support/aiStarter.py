@@ -129,7 +129,7 @@ def replstart(device=None):
     try:
         subprocess.check_output(f'"{ADB}" -s {device} forward tcp:8001 tcp:8001', shell=True)
         if re.match('emulator.*', device):  # Only fake the menu key for the emulator
-            subprocess.check_output(f'"{PLATDIR}adb" -s {device} shell input keyevent 82', shell=True)
+            subprocess.check_output(f'"{ADB}" -s {device} shell input keyevent 82', shell=True)
         subprocess.check_output(
             f'"{ADB}" -s {device} shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true',
             shell=True)
