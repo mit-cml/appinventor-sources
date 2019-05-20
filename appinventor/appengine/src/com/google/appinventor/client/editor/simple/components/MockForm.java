@@ -198,6 +198,7 @@ public final class MockForm extends MockContainer {
   private int LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
   private int LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
   private boolean landscape = false;
+  private int idxPhoneSize = 0;
 
   // Property names
   private static final String PROPERTY_NAME_TITLE = "Title";
@@ -304,21 +305,30 @@ public final class MockForm extends MockContainer {
     LANDSCAPE_WIDTH = height;
     LANDSCAPE_HEIGHT = width;
 
+    idxPhoneSize = idx;
 
     if (landscape) {
-      if (idx == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
-      else if (idx == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
-      else if (idx == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      setPhoneStyle();
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
     }
    else {
-      if (idx == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
-      else if (idx == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
-      else if (idx == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
-      resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+      setPhoneStyle();
+      resizePanel(width, height);
     }
   }
 
+  private void setPhoneStyle() {
+    if (landscape) {
+      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
+      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+    }
+    else {
+      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+    }
+  }
   /*
    * Resizes the scrollPanel and formWidget based on the screen size.
    */
@@ -535,12 +545,12 @@ public final class MockForm extends MockContainer {
         screenWidth = LANDSCAPE_WIDTH;
         screenHeight = LANDSCAPE_HEIGHT;
         landscape = true;
-        phoneWidget.setStyleName("ode-SimpleMockFormPhoneLandscape");
+        setPhoneStyle();
       } else {
         screenWidth = PORTRAIT_WIDTH;
         screenHeight = PORTRAIT_HEIGHT;
         landscape = false;
-        phoneWidget.setStyleName("ode-SimpleMockFormPhonePortrait");
+        setPhoneStyle();
       }
       usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
       resizePanel(screenWidth, screenHeight);
