@@ -79,6 +79,7 @@ Blockly.ReplStateObj.prototype = {
     'dialog' : null,                    // The Dialog Box with the code and QR Code
     'count' : 0,                        // Count of number of reads from rendezvous server
     'didversioncheck' : false,
+    'isUSB' : false,            // True if using a USB connection
     'rendezvous2' : 'http://rendezvous.appinventor.mit.edu/rendezvous2/',
     'iceservers' : { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
                                         'username' : 'oh',
@@ -789,7 +790,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             if (installer === undefined)
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
-            if (installer != "com.android.vending" && top.COMPANION_UPDATE_URL) {
+            if (installer != "com.android.vending" && top.COMPANION_UPDATE_URL && !rs.isUSB) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE,
@@ -863,6 +864,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
         rs.state = Blockly.ReplMgr.rsState.IDLE;
         rs.connection = null;
         rs.didversioncheck = false;
+        rs.isUSB = false;
         context.resetYail(false);
         top.BlocklyPanel_indicateDisconnect();
         // End reset companion state
@@ -880,6 +882,11 @@ Blockly.ReplMgr.triggerUpdate = function() {
 
     if (top.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
         showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_CONNECTION);
+        return;
+    }
+
+    if (top.ReplState.replcode != 'emulator' || top.ReplState.isUSB == true) {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_EMULATOR_ONLY);
         return;
     }
 
@@ -909,7 +916,8 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                                          console.log("Update: _package success");
                                                          reset(); //  New companion, no connection left!
                                                      } else if (this.readyState == 4) {
-                                                         console.log("Update: _package state = 4 probably ok");
+                                                         console.log("Update: _package state = 4 probably ok (status = " + this.status +
+                                                                     ")");
                                                          reset();
                                                      }
                                                  };
@@ -1300,6 +1308,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
+    rs.isUSB = usb;
     var RefreshAssets = top.AssetManager_refreshAssets;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
@@ -1435,7 +1444,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 // say that an update is advisable (or needed)
                 var installer = json.installer;
                 if (!json.version || !Blockly.ReplMgr.acceptableVersion(json.version)) {
-                    if (top.COMPANION_UPDATE_URL1) {
+                    if (top.COMPANION_UPDATE_URL1 && !rs.isUSB) {
                         var url = top.location.origin + top.COMPANION_UPDATE_URL1;
                         var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                          Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2 + '<br/>' +
