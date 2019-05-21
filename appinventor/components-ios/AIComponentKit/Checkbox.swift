@@ -1,14 +1,176 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import SwiftSVG
 
-public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
-  fileprivate var _view = UIView()
-  fileprivate var _button = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
-  fileprivate var _text = UILabel()
+private let CHECKBOX_HORIZONTAL_MARGIN: CGFloat = 17 * 30.0 / 55.0
+private let CHECKBOX_VERTICAL_MARGIN: CGFloat = 19.0 * 30.0 / 55.0
+private let CHECKBOX_SIZE: CGFloat = 30.0
+private let CHECKBOX_TEXT_MARGIN_BOTTOM: CGFloat = 5 * 30.0 / 55.0
+private let CHECKBOX_CHECKED_COLOR = UIColor(red: 0, green: 150.0 / 255.0, blue: 136.0 / 255.0, alpha: 1.0).cgColor
+private let CHECKBOX_ENABLED_COLOR = UIColor.black.withAlphaComponent(138.0 / 255.0).cgColor
+private let CHECKBOX_DISABLED_COLOR = UIColor.black.withAlphaComponent(36.0 / 255.0).cgColor
 
+private var checked: SVGLayer!
+private var unchecked: SVGLayer!
+private var waiting = [(SVGLayer, SVGLayer) -> Void]()
+
+/**
+ * loadCheckbox(completion:) loads the image assets for the CheckBox. SwiftSVG
+ * caches the resulting layer internally, so if we want to reuse these for more
+ * than one checkbox we need to copy them. When the designer first loads, it
+ * is possible that many checkboxes will need access to these layers. This
+ * function manages multiple requests for the content and calls completion
+ * handlers once the data is available.
+ */
+func loadCheckBox(completion: @escaping (SVGLayer, SVGLayer) -> Void) {
+  if checked != nil && unchecked != nil {
+    completion(checked.svgLayerCopy!, unchecked.svgLayerCopy!)
+  } else {
+    waiting.append(completion)
+    if waiting.count == 1 {
+      if let boxPath = Bundle(for: CheckBox.self).url(forResource: "checked", withExtension: "svg"),
+         let unboxPath = Bundle(for: CheckBox.self).url(forResource: "unchecked", withExtension: "svg") {
+        CALayer(SVGURL: boxPath, completion: { (layer) in
+          checked = layer
+          if unchecked != nil {
+            DispatchQueue.main.async {
+              for completion in waiting {
+                completion(checked.svgLayerCopy!, unchecked.svgLayerCopy!)
+              }
+              waiting.removeAll()
+            }
+          }
+        })
+        CALayer(SVGURL: unboxPath, completion: { (layer) in
+          unchecked = layer
+          if checked != nil {
+            DispatchQueue.main.async {
+              for completion in waiting {
+                completion(checked.svgLayerCopy!, unchecked.svgLayerCopy!)
+              }
+              waiting.removeAll()
+            }
+          }
+        })
+      }
+    }
+  }
+}
+
+/**
+ * CheckBoxView is a custom UIView to handle the logic of the CheckBox. It is
+ * responsible for updating the state of the button and its appearance as a
+ * function of user or block interaction with the component.
+ */
+class CheckBoxView: UIView {
+  fileprivate var _button = UIButton(frame: .zero)
+  fileprivate var _text = UILabel()
+  fileprivate var _checked: CAShapeLayer!
+  fileprivate var _unchecked: CAShapeLayer!
+
+  public init() {
+    super.init(frame: .zero)
+    loadCheckBox { (checked, unchecked) in
+      self._checked = checked
+      self._unchecked = unchecked
+      // TODO(ewpatton): Figure out why these constants work...
+      self._checked.position = CGPoint(x: 9.5, y: 10.5)
+      self._unchecked.position = CGPoint(x: 9.5, y: 10.5)
+      self._button.layer.addSublayer(self.Checked ? self._checked : self._unchecked)
+      self.updateColor()
+    }
+
+    clipsToBounds = true
+    translatesAutoresizingMaskIntoConstraints = false
+    _button.translatesAutoresizingMaskIntoConstraints = false
+    _text.translatesAutoresizingMaskIntoConstraints = false
+    _text.numberOfLines = 0
+    _text.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+    addSubview(_button)
+    addSubview(_text)
+
+    // Configure checkbox button constraints
+    _button.widthAnchor.constraint(equalToConstant: CHECKBOX_SIZE).isActive = true
+    _button.heightAnchor.constraint(equalToConstant: CHECKBOX_SIZE).isActive = true
+    _button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+    _button.topAnchor.constraint(greaterThanOrEqualTo: topAnchor,
+        constant: CHECKBOX_VERTICAL_MARGIN).isActive = true
+    bottomAnchor.constraint(greaterThanOrEqualTo: _button.bottomAnchor,
+        constant: CHECKBOX_VERTICAL_MARGIN).isActive = true
+    _button.leadingAnchor.constraint(equalTo: leadingAnchor,
+        constant: CHECKBOX_HORIZONTAL_MARGIN).isActive = true
+
+    // Configure text constraints
+    _text.leadingAnchor.constraint(equalTo: _button.trailingAnchor,
+        constant: CHECKBOX_HORIZONTAL_MARGIN).isActive = true
+    _text.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+    _text.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    _text.topAnchor.constraint(greaterThanOrEqualTo: topAnchor,
+        constant: CHECKBOX_TEXT_MARGIN_BOTTOM).isActive = true
+    bottomAnchor.constraint(greaterThanOrEqualTo: _text.bottomAnchor,
+        constant: CHECKBOX_TEXT_MARGIN_BOTTOM).isActive = true
+  }
+
+  public var Checked: Bool = false {
+    didSet {
+      if oldValue != Checked {
+        if oldValue {
+          _button.layer.addSublayer(_unchecked)
+          _checked.removeFromSuperlayer()
+        } else {
+          _button.layer.addSublayer(_checked)
+          _unchecked.removeFromSuperlayer()
+        }
+        updateColor()
+      }
+    }
+  }
+
+  public var Enabled: Bool = true {
+    didSet {
+      _button.isEnabled = Enabled
+      if oldValue != Enabled {
+        updateColor()
+      }
+    }
+  }
+
+  private func updateColor() {
+    if let layer = Checked ? _checked : _unchecked {
+      if !Enabled {
+        layer.fillColor = CHECKBOX_DISABLED_COLOR
+      } else if Checked {
+        layer.fillColor = CHECKBOX_CHECKED_COLOR
+      } else {
+        layer.fillColor = CHECKBOX_ENABLED_COLOR
+      }
+      setNeedsDisplay()
+    }
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  // We need to override intrinsicContentSize to allow for automatic and
+  // fill parent sizing
+  open override var intrinsicContentSize: CGSize {
+    let textHeight = _text.intrinsicContentSize.height + 2.0 * CHECKBOX_TEXT_MARGIN_BOTTOM
+    let checkboxHeight = CHECKBOX_SIZE + 2.0 * CHECKBOX_VERTICAL_MARGIN
+    let width = _text.intrinsicContentSize.width + 2.0 * (CHECKBOX_HORIZONTAL_MARGIN + CHECKBOX_SIZE)
+    return CGSize(width: width, height: max(textHeight, checkboxHeight))
+  }
+
+  class override var requiresConstraintBasedLayout: Bool {
+    return true
+  }
+}
+
+public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
+  fileprivate var _view = CheckBoxView()
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _bold = false
   fileprivate var _fontTypeface = Typeface.normal
@@ -16,40 +178,14 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
 
   public override init(_ parent: ComponentContainer) {
-    Checked = false
     super.init(parent)
     super.setDelegate(self)
-    _button.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
+    _view._button.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
     parent.add(self)
-    
-    setupViews()
-    Height = 32
-  }
-  
-  private func setupViews() {
-    _view.translatesAutoresizingMaskIntoConstraints = false
-    _button.translatesAutoresizingMaskIntoConstraints = false
-    _text.translatesAutoresizingMaskIntoConstraints = false
-    _text.numberOfLines = 0
-    
-    _view.addSubview(_button)
-    _view.addSubview(_text)
-    
-    _button.centerYAnchor.constraint(equalTo: _view.centerYAnchor).isActive = true
-    _button.leftAnchor.constraint(equalTo: _view.leftAnchor, constant: 15).isActive = true
-    _button.widthAnchor.constraint(lessThanOrEqualToConstant: 15).isActive = true
-    _button.heightAnchor.constraint(lessThanOrEqualToConstant: 15).isActive = true
-    
-    _text.centerYAnchor.constraint(equalTo: _view.centerYAnchor).isActive = true
-    _text.leftAnchor.constraint(equalTo: _button.rightAnchor, constant: 10).isActive = true
-    _text.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
-    _text.topAnchor.constraint(greaterThanOrEqualTo: _view.topAnchor).isActive = true
-    _text.bottomAnchor.constraint(lessThanOrEqualTo: _view.bottomAnchor).isActive = true
-    _text.heightAnchor.constraint(greaterThanOrEqualTo: _button.heightAnchor).isActive = true
+    Checked = false
+    Enabled = true
     FontSize = 14.0
-    _view.clipsToBounds = true
-    renderCheck()
   }
 
   open override var view: UIView {
@@ -69,41 +205,20 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
   }
 
   @objc open var Checked: Bool {
-    didSet {
-      if oldValue != Checked {
-        renderCheck()
-        Changed()
-      }
+    get {
+      return _view.Checked
+    }
+    set(checked) {
+      _view.Checked = checked
     }
   }
 
   @objc open var Enabled: Bool {
     get {
-      return _button.isEnabled
+      return _view.Enabled
     }
     set(enabled) {
-      if _button.isEnabled != enabled {
-        _button.isEnabled = enabled
-        renderCheck()
-      }
-    }
-  }
-
-  fileprivate func renderCheck() {
-    _button.removeAllViews()
-    if let boxPath = Bundle(for: CheckBox.self).url(forResource: (Checked ? "checked": "unchecked"), withExtension: "svg") {
-      let checkBox = UIView(SVGURL: boxPath) { (layer) in
-        if !self.Enabled {
-          layer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 36.0 / 255.0).cgColor
-        }
-        else if self.Checked {
-          layer.fillColor = UIColor(red: 0, green: 150.0 / 255.0, blue: 136.0 / 255.0, alpha: 1.0).cgColor
-        } else {
-          layer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 138.0 /
-            255.0).cgColor
-        }
-      }
-      _button.addSubview(checkBox)
+      _view.Enabled = enabled
     }
   }
 
@@ -113,7 +228,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(shouldBold) {
       _bold = shouldBold
-      _text.font = getFontTrait(font: _text.font, trait: .traitBold, shouldSet: shouldBold)
+      _view._text.font = getFontTrait(font: _view._text.font, trait: .traitBold, shouldSet: shouldBold)
     }
   }
 
@@ -123,16 +238,16 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(shouldItalic) {
       _italic = shouldItalic
-      _text.font = getFontTrait(font: _text.font, trait: .traitItalic, shouldSet: shouldItalic)
+      _view._text.font = getFontTrait(font: _view._text.font, trait: .traitItalic, shouldSet: shouldItalic)
     }
   }
 
   @objc open var FontSize: Float32 {
     get {
-      return Float32(_text.font.pointSize)
+      return Float32(_view._text.font.pointSize)
     }
     set(size) {
-      _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(size))
+      _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(size))
     }
   }
 
@@ -140,31 +255,36 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     get {
       return _fontTypeface.rawValue
     }
-    set(newTypeface) {
-
+    set(newTypeFace) {
+      if newTypeFace != _fontTypeface.rawValue {
+        if let type = Typeface(rawValue: Int32(newTypeFace)) {
+          _fontTypeface = type
+          _view._text.font = getFontTypeface(font: _view._text.font, typeFace: type)
+        }
+      }
     }
   }
 
   @objc open var Text: String {
     get {
-      return _text.text ?? ""
+      return _view._text.text ?? ""
     }
     set(newText) {
-      _text.text = newText
+      _view._text.text = newText
     }
   }
 
   @objc open var TextColor: Int32 {
     get {
-      return colorToArgb(_text.textColor)
+      return colorToArgb(_view._text.textColor)
     }
     set(color) {
-      _text.textColor = argbToColor(color)
+      _view._text.textColor = argbToColor(color)
     }
   }
 
   @objc fileprivate func changeSwitch(gesture: UITapGestureRecognizer) {
-    if _button.isEnabled {
+    if _view.Enabled {
       Checked = !Checked
     }
   }
