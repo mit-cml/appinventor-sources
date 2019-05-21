@@ -366,7 +366,7 @@ Blockly.ReplMgr.putYail = (function() {
                                 var hunk = json[i];
                                 var candidate = hunk['candidate'];
                                 offer = hunk['offer'];
-                                if (candidate && haveoffer && connectionstate != "none") {
+                                if (candidate && haveoffer) {
                                     var nonce = hunk['nonce'];
                                     if (!seennonce[nonce]) {
                                         seennonce[nonce] = true;

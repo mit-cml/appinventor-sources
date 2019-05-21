@@ -49,9 +49,11 @@ import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
+import org.webrtc.PeerConnection.ContinualGatheringPolicy;
 import org.webrtc.PeerConnection.IceConnectionState;
 import org.webrtc.PeerConnection.IceGatheringState;
 import org.webrtc.PeerConnection.Observer;
+import org.webrtc.PeerConnection.RTCConfiguration;
 import org.webrtc.PeerConnection.SignalingState;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
@@ -160,6 +162,11 @@ public class WebRTCNativeMgr {
         try {
           if (DEBUG) {
             Log.d(LOG_TAG, "IceCandidate = " + iceCandidate.toString());
+            if (iceCandidate.sdp == null) {
+              Log.d(LOG_TAG, "IceCandidate is null");
+            } else {
+              Log.d(LOG_TAG, "IceCandidateSDP = " + iceCandidate.sdp);
+            }
           }
           /* Send to Peer */
           JSONObject response = new JSONObject();
@@ -185,6 +192,9 @@ public class WebRTCNativeMgr {
       }
 
       public void onIceGatheringChange(IceGatheringState iceGatheringState) {
+        if (DEBUG) {
+          Log.d(LOG_TAG, "onIceGatheringChange: iceGatheringState = " + iceGatheringState);
+        }
       }
 
       public void onRemoveStream(MediaStream mediaStream) {
@@ -194,6 +204,9 @@ public class WebRTCNativeMgr {
       }
 
       public void onSignalingChange(SignalingState signalingState) {
+        if (DEBUG) {
+          Log.d(LOG_TAG, "onSignalingChange: signalingState = " + signalingState);
+        }
       }
     };
 
@@ -265,7 +278,9 @@ public class WebRTCNativeMgr {
     /* Create the factory */
     PeerConnectionFactory factory = new PeerConnectionFactory(options);
     /* Create the peer connection using the iceServers we received in the constructor */
-    peerConnection = factory.createPeerConnection(iceServers, new MediaConstraints(),
+    RTCConfiguration rtcConfig = new RTCConfiguration(iceServers);
+    rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_CONTINUALLY;
+    peerConnection = factory.createPeerConnection(rtcConfig, new MediaConstraints(),
       observer);
     timer.schedule(new TimerTask() {
         @Override
@@ -382,14 +397,7 @@ public class WebRTCNativeMgr {
           }
           if (element.isNull("candidate")) {
             i++;
-            String nonce = element.optString("nonce");
-            if (!seenNonces.contains(nonce)) {
-              if (DEBUG) {
-                Log.d(LOG_TAG, "Received a null candidate, done?");
-              }
-              peerConnection.addIceCandidate(new IceCandidate("", 0, ""));
-              seenNonces.add(nonce);
-            }
+            // do nothing on a received null
             continue;
           }
           String nonce = element.optString("nonce");
