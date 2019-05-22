@@ -249,7 +249,7 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
       m.invoke(o, url);
     } catch (Exception e) {
       // Fall back to using the browser
-      Uri uri = Uri.parse(url);
+      Uri uri = Uri.parse(url + "?store=1");
       Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
       form.startActivity(intent);
     }
