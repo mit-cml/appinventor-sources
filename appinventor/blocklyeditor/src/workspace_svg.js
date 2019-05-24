@@ -121,33 +121,33 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
     return func;
   } else {
     var f = function() {
-      var self = this;
+      var self = /** @type {Blockly.WorkspaceSvg} */ this;
       var result = func.apply(this, Array.prototype.slice.call(arguments));
       // BEGIN: Configure drag and drop of blocks images to workspace
-      var background = '#fff';
       result.addEventListener('dragenter', function(e) {
-        background = self.svgBackground_.style.fill;
-        if (e.dataTransfer.types.indexOf('Files') >= 0) {
-          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
-          e.dataTransfer.dropEffect = 'copy';
-          e.preventDefault();
-        } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
+            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
           self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
           e.dataTransfer.dropEffect = 'copy';
           e.preventDefault();
         }
-      });
+      }, true);
       result.addEventListener('dragover', function(e) {
         if (e.dataTransfer.types.indexOf('Files') >= 0 ||
             e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+          e.dataTransfer.dropEffect = 'copy';
           e.preventDefault();
         }
-      });
+      }, true);
       result.addEventListener('dragleave', function(e) {
-        self.svgBackground_.style.fill = background;
-      });
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+      }, true);
+      result.addEventListener('dragexit', function(e) {
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+      }, true);
       result.addEventListener('drop', function(e) {
-        self.svgBackground_.style.fill = background;
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
         if (e.dataTransfer.types.indexOf('Files') >= 0) {
           if (e.dataTransfer.files.item(0).type === 'image/png') {
             e.preventDefault();
