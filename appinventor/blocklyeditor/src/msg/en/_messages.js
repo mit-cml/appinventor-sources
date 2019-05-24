@@ -96,6 +96,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Show All Comments';
     Blockly.Msg.GENERICIZE_BLOCK = 'Make Generic';
     Blockly.Msg.UNGENERICIZE_BLOCK = 'Make Specific';
+    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Download Blocks as PNG';
 
 // Variable renaming.
     Blockly.Msg.CHANGE_VALUE_TITLE = 'Change value:';

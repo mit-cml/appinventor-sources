@@ -40,6 +40,14 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
+Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
+  var downloadBlockOption = {enabled: true, text: Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG};
+  downloadBlockOption.callback = function() {
+    Blockly.exportBlockAsPng(myBlock);
+  };
+  options.splice(options.length - 1, 0, downloadBlockOption);
+};
+
 /**
  * Add a "Do It" option to the context menu for every block. If the user is an admin also
  * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
@@ -49,6 +57,7 @@ Blockly.BlocklyEditor.render = function() {
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
+  Blockly.BlocklyEditor.addPngExportOption(myBlock, options);
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: !this.disabled};
     yailOption.text = Blockly.Msg.GENERATE_YAIL;
