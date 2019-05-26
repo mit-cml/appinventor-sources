@@ -152,6 +152,7 @@
     <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
     <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${public.deps.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
+    <copy toFile="${public.deps.dir}/mpandroidchart.aar" file="${lib.dir}/mpandroidchart/mpandroidchart.aar" />
     <!-- BEGIN Android Support Libraries -->
     <copy toFile="${public.deps.dir}/animated-vector-drawable.aar" file="${support.dir}/animated-vector-drawable-26.1.0.aar" />
     <copy toFile="${public.deps.dir}/animated-vector-drawable.jar" file="${support.dir}/animated-vector-drawable-26.1.0.jar" />
