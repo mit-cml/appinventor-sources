@@ -1477,6 +1477,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "30 Secure Connection Established";
     Blockly.Msg.DIALOG_FOUND_COMPANION = "10 Found the Companion";
 
+//Blockly.Util.Dialog Messages
+    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
+    Blockly.Msg.DIALOG_SUBMIT = 'Submit';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
   }
 };
 

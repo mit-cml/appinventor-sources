@@ -40,6 +40,31 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
+function unboundVariableHandler(myBlock, yailText) {
+  var unbound_vars = Blockly.LexicalVariable.freeVariables(myBlock);
+  unbound_vars = unbound_vars.toList();
+  if (unbound_vars.length == 0) {
+    Blockly.ReplMgr.putYail(yailText, myBlock);
+  } else {
+    var form = "<form onsubmit='return false;'>" + Blockly.Msg.DIALOG_ENTER_VALUES + "<br>";
+    for (var v in unbound_vars) {
+      form  +=  unbound_vars[v] + ' = <input type=text name=' + unbound_vars[v] + '><br>';
+    }
+    form += "</form>";
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.DIALOG_UNBOUND_VAR, form, Blockly.Msg.DO_IT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
+      if (button == Blockly.Msg.DIALOG_SUBMIT) {
+        var code = "(let (";
+        for (var i in unbound_vars) {
+          code += '($' + unbound_vars[i] + ' ' + Blockly.Yail.quotifyForREPL(document.querySelector('input[name="' + unbound_vars[i] + '"]').value) + ') ';
+        };
+        code += ")" + yailText + ")";
+        Blockly.ReplMgr.putYail(code, myBlock);
+      }
+      dialog.hide();
+    });
+  };
+}
+
 Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
   var downloadBlockOption = {enabled: true, text: Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG};
   downloadBlockOption.callback = function() {
@@ -98,7 +123,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
       } else {
         yailText = yailTextOrArray;
       }
-      Blockly.ReplMgr.putYail(yailText, myBlock);
+      unboundVariableHandler(myBlock, yailText);
     }
   };
   options.push(doitOption);
