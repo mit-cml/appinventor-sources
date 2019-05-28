@@ -132,7 +132,7 @@ public class DownloadServletTest {
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
     checkResponseHeader(response, "attachment; filename=\"filename123.apk\"");
-    assertEquals("application/vnd.android.package-archive; charset=utf-8",
+    assertEquals("application/vnd.android.package-archive",
         response.getContentType());
     PowerMock.verifyAll();
   }
@@ -148,7 +148,7 @@ public class DownloadServletTest {
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
     checkResponseHeader(response, "attachment; filename=\"filename123.apk\"");
-    assertEquals("application/vnd.android.package-archive; charset=utf-8",
+    assertEquals("application/vnd.android.package-archive",
         response.getContentType());
     PowerMock.verifyAll();
   }

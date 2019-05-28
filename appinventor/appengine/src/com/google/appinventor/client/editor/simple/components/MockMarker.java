@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.simple.components;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
@@ -18,6 +17,7 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
@@ -53,65 +53,40 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
   static MockMarker fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockMarker marker = new MockMarker(parent.editor);
     marker.feature = layer;
-    String name = null;
-    boolean hadImageAsset = false;
-    for (String key : properties.keySet()) {
-      String value;
-      if (key.equalsIgnoreCase(PROPERTY_NAME_STROKEWIDTH) || key.equalsIgnoreCase(CSS_PROPERTY_STROKEWIDTH)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_STROKEWIDTH, value);
-        marker.onPropertyChange(PROPERTY_NAME_STROKEWIDTH, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_STROKECOLOR) || key.equalsIgnoreCase(CSS_PROPERTY_STROKE)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_STROKECOLOR, value);
-        marker.onPropertyChange(PROPERTY_NAME_STROKECOLOR, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_FILLCOLOR) || key.equalsIgnoreCase(CSS_PROPERTY_FILL)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_FILLCOLOR, value);
-        marker.onPropertyChange(PROPERTY_NAME_FILLCOLOR, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_ANCHORHORIZONTAL)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_ANCHORHORIZONTAL, value);
-        marker.onPropertyChange(PROPERTY_NAME_ANCHORHORIZONTAL, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_ANCHORVERTICAL)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_ANCHORVERTICAL, value);
-        marker.onPropertyChange(PROPERTY_NAME_ANCHORVERTICAL, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_WIDTH)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_WIDTH, value);
-        marker.onPropertyChange(PROPERTY_NAME_WIDTH, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_HEIGHT)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_HEIGHT, value);
-        marker.onPropertyChange(PROPERTY_NAME_HEIGHT, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_NAME)) {
-        name = properties.get(key).isString().stringValue();
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_IMAGE_ASSET)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_IMAGE_ASSET, value);
-        marker.onPropertyChange(PROPERTY_NAME_IMAGE_ASSET, value);
-        hadImageAsset = true;
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_VISIBLE)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_VISIBLE, value);
-        marker.onPropertyChange(PROPERTY_NAME_VISIBLE, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_TITLE)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_TITLE, value);
-        marker.onPropertyChange(PROPERTY_NAME_TITLE, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_DESCRIPTION)) {
-        value = properties.get(key).isString().stringValue();
-        marker.changeProperty(PROPERTY_NAME_DESCRIPTION, value);
-        marker.onPropertyChange(PROPERTY_NAME_DESCRIPTION, value);
-      }
-    }
-    processFeatureName(marker, parent, name);
-    if (!hadImageAsset) {
-      marker.setImageAsset(null);
-    }
     marker.preserveLayerData();
+    marker.processFromGeoJSON(parent, properties);
     return marker;
+  }
+
+  protected void processFromGeoJSON(MockFeatureCollection parent, JSONObject properties) {
+    setImageAsset(null);
+    super.processFromGeoJSON(parent, properties);
+  }
+
+  protected void processPropertyFromGeoJSON(String key, JSONValue value) {
+    if (key.equalsIgnoreCase(PROPERTY_NAME_ANCHORHORIZONTAL)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_ANCHORHORIZONTAL, v);
+      onPropertyChange(PROPERTY_NAME_ANCHORHORIZONTAL, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_ANCHORVERTICAL)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_ANCHORVERTICAL, v);
+      onPropertyChange(PROPERTY_NAME_ANCHORVERTICAL, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_HEIGHT)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_HEIGHT, v);
+      onPropertyChange(PROPERTY_NAME_HEIGHT, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_WIDTH)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_WIDTH, v);
+      onPropertyChange(PROPERTY_NAME_WIDTH, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_IMAGE_ASSET)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_IMAGE_ASSET, v);
+      onPropertyChange(PROPERTY_NAME_IMAGE_ASSET, v);
+    } else {
+      super.processPropertyFromGeoJSON(key, value);
+    }
   }
 
   @Override

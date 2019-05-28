@@ -144,3 +144,35 @@ Blockly.Block.prototype.isolate = function(healStack) {
 
 Blockly.Block.prototype.interpolateMsg.SPLIT_REGEX_ = /(%\d+|\n)/;
 Blockly.Block.prototype.interpolateMsg.INLINE_REGEX_ = /%1\s*$/;
+
+/**
+ * Walk the tree of blocks starting with this block.
+ *
+ * @param {function(Blockly.Block, number)} callback  the callback function to evaluate for each
+ * block. The function receives the block and the logical depth of the block in the tree.
+ */
+Blockly.Block.prototype.walk = function(callback) {
+  function doWalk(block, depth) {
+    callback(block, depth);
+    block.inputList.forEach(function(input) {
+      if ((input.type === Blockly.INPUT_VALUE || input.type === Blockly.NEXT_STATEMENT) &&
+          input.connection && input.connection.targetBlock()) {
+        doWalk(input.connection.targetBlock(), depth + 1);
+      }
+      if (block.nextConnection && block.nextConnection.targetBlock()) {
+        doWalk(block.nextConnection.targetBlock(), depth);
+      }
+    })
+  }
+  doWalk(this, 0);
+};
+
+/**
+ * @type {?function(this: Blockly.BlockSvg, !Element)}
+ */
+Blockly.Block.prototype.domToMutation = null;
+
+/**
+ * @type {?function(this: Blockly.BlockSvg):!Element}
+ */
+Blockly.Block.prototype.mutationToDom = null;

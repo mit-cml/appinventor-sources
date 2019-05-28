@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -24,6 +26,8 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
   public static final String PROPERTY_NAME_TITLE = "Title";
   public static final String CSS_PROPERTY_STROKEWIDTH = "stroke-width";
   public static final String CSS_PROPERTY_STROKE = "stroke";
+  public static final String DEFAULT_STROKE_WIDTH = "1";
+  public static final String DEFAULT_STROKE_COLOR = "&HFF000000";
 
   protected final SimplePanel panel;
   protected MockMap map = null;
@@ -151,6 +155,66 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
       feature.changeProperty(PROPERTY_NAME_NAME, name);
       feature.onPropertyChange(PROPERTY_NAME_NAME, name);
       feature.getForm().fireComponentRenamed(feature, oldName);
+    }
+  }
+
+  /**
+   * Process the information from the feature's GeoJSON properties field. Subclasses may override
+   * this function to set default values, but _must_ call super.processFromGeoJSON() otherwise
+   * properties defined in superclasses will not get set.
+   *
+   * @param parent the mock feature collection that will contain the feature
+   * @param properties the properties object from the GeoJSON
+   */
+  protected void processFromGeoJSON(MockFeatureCollection parent, JSONObject properties) {
+    setStrokeWidthProperty(DEFAULT_STROKE_COLOR);
+    setStrokeColorProperty(DEFAULT_STROKE_WIDTH);
+    String name = null;
+    for (String key : properties.keySet()) {
+      if (key.equalsIgnoreCase(PROPERTY_NAME_NAME)) {
+        name = properties.get(key).isString().stringValue();
+      } else {
+        processPropertyFromGeoJSON(key, properties.get(key));
+      }
+    }
+    processFeatureName(this, parent, name);
+    // Use the name as the title if the properties did not include one (issue #1425)
+    if (getPropertyValue(PROPERTY_NAME_TITLE).isEmpty()) {
+      changeProperty(PROPERTY_NAME_TITLE, getPropertyValue(PROPERTY_NAME_NAME));
+    }
+  }
+
+  /**
+   * Process a key-value pair from the feature's GeoJSON properties field. Subclasses may override
+   * this function to process properties specific to their implementation, but _must_ call
+   * super.processPropertyFromGeoJSON() otherwise properties defined in superclasses will not
+   * get set.
+   * @param key a JSON key from the GeoJSON properties
+   * @param value the corresponding value for <code>key</code> in the properties
+   */
+  protected void processPropertyFromGeoJSON(String key, JSONValue value) {
+    if (key.equalsIgnoreCase(PROPERTY_NAME_STROKEWIDTH) ||
+        key.equalsIgnoreCase(CSS_PROPERTY_STROKEWIDTH)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_STROKEWIDTH, v);
+      onPropertyChange(PROPERTY_NAME_STROKEWIDTH, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_STROKECOLOR) ||
+               key.equalsIgnoreCase(CSS_PROPERTY_STROKE)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_STROKECOLOR, v);
+      onPropertyChange(PROPERTY_NAME_STROKECOLOR, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_VISIBLE)) {
+      String v = value.toString().equalsIgnoreCase("false") ? "False" : "True";
+      changeProperty(PROPERTY_NAME_VISIBLE, v);
+      onPropertyChange(PROPERTY_NAME_VISIBLE, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_TITLE)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_TITLE, v);
+      onPropertyChange(PROPERTY_NAME_TITLE, v);
+    } else if (key.equalsIgnoreCase(PROPERTY_NAME_DESCRIPTION)) {
+      String v = value.isString().stringValue();
+      changeProperty(PROPERTY_NAME_DESCRIPTION, v);
+      onPropertyChange(PROPERTY_NAME_DESCRIPTION, v);
     }
   }
 

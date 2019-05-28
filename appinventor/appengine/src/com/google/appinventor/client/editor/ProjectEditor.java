@@ -204,6 +204,7 @@ public abstract class ProjectEditor extends Composite {
       fileIds.remove(index);
       deckPanel.remove(fileEditor);
       if (selectedFileEditor == fileEditor) {
+        selectedFileEditor.onHide();
         selectedFileEditor = null;
       }
       fileEditor.onClose();

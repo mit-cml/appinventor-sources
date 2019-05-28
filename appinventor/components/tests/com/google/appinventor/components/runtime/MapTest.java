@@ -9,6 +9,7 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.view.View;
 import android.widget.RelativeLayout;
+import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -20,11 +21,15 @@ import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowSensorManager;
 import org.robolectric.shadows.ShadowView;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 
 import static com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher.assertErrorOccurred;
@@ -43,6 +48,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
+@Config(shadows = ShadowAsynchUtil.class)
 public class MapTest extends MapTestBase {
 
   private Map map;
@@ -153,7 +159,7 @@ public class MapTest extends MapTestBase {
 
   /**
    * Test that:
-   * !) Showing the scale invalidates the view
+   * 1) Showing the scale invalidates the view
    * 2) if we show the scale, the ShowScale getter will return true.
    */
   @Test
@@ -389,6 +395,22 @@ public class MapTest extends MapTestBase {
     map.Features(YailList.makeEmptyList());
     assertEquals(0, map.Features().size());
     assertEquals(defaultFeatureListSize, map.getController().getOverlayCount());
+  }
+
+  @Test
+  public void testLoadFromURL() throws MalformedURLException {
+    ShadowEventDispatcher.doNotHandleEvent(map, "GotFeatures");
+    String target = TestUtils.APP_INVENTOR_ROOT_DIR + "/components/tests/assets/com.google.appinventor.components.runtime.test/usa-new-england.geojson".replace('/', File.separatorChar);
+    map.LoadFromURL(new File(target).toURI().toURL().toString());
+    ShadowAsynchUtil.runAllPendingRunnables();
+    runAllEvents();
+    assertEventFiredAny(map, "GotFeatures");
+    assertEquals(6, map.Features().size());
+
+    // Test that the Polygons have been initialized, otherwise they won't draw.
+    for (int i = 0; i < map.Features().size(); i++) {
+      assertTrue(((Polygon)map.Features().getObject(i)).isInitialized());
+    }
   }
 
   private MapView getMapView() {
