@@ -46,12 +46,12 @@ function unboundVariableHandler(myBlock, yailText) {
   if (unbound_vars.length == 0) {
     Blockly.ReplMgr.putYail(yailText, myBlock);
   } else {
-    var form = "<form>" + Blockly.Msg.DIALOG_ENTER_VALUES + "<br>";
+    var form = "<form onsubmit='return false;'>" + Blockly.Msg.DIALOG_ENTER_VALUES + "<br>";
     for (var v in unbound_vars) {
       form  +=  unbound_vars[v] + ' = <input type=text name=' + unbound_vars[v] + '><br>';
     }
     form += "</form>";
-    var dialog = new Blockly.Util.Dialog(Blockly.Msg.DIALOG_UNBOUND_VAR, form, Blockly.Msg.DIALOG_SUBMIT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.DIALOG_UNBOUND_VAR, form, Blockly.Msg.DO_IT, false, Blockly.Msg.REPL_CANCEL, 10, function (button) {
       if (button == Blockly.Msg.DIALOG_SUBMIT) {
         var code = "(let (";
         for (var i in unbound_vars) {
