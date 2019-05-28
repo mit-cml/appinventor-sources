@@ -232,6 +232,8 @@ public final class Compiler {
 
   private final int childProcessRamMb;  // Maximum ram that can be used by a child processes, in MB.
   private final boolean isForCompanion;
+  private final boolean isForEmulator;
+  private final boolean includeDangerousPermissions;
   private final Project project;
   private final PrintStream out;
   private final PrintStream err;
@@ -403,6 +405,9 @@ public final class Compiler {
    */
   @VisibleForTesting
   void generateNativeLibNames() {
+    if (isForEmulator) {  // no libraries for emulator
+      return;
+    }
     try {
       loadJsonInfo(nativeLibsNeeded, ComponentDescriptorConstants.NATIVE_TARGET);
     } catch (IOException e) {
@@ -549,9 +554,10 @@ public final class Compiler {
    * @param out The writer the style will be written to.
    * @param name The name of the new style.
    * @param parent The parent style to inherit from.
+   * @param sdk The SDK version that the theme overlays
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent, boolean holo) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, int sdk) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
@@ -560,6 +566,8 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    boolean holo = sdk >= 11 && sdk < 21;
+    boolean needsClassicSwitch = false;
     if (!parent.equals("android:Theme")) {
       out.write("<item name=\"windowActionBar\">true</item>\n");
       out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
@@ -571,8 +579,20 @@ public final class Compiler {
       out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+    } else {
+      out.write("<item name=\"switchStyle\">@style/ClassicSwitch</item>\n");
+      needsClassicSwitch = true;
     }
     out.write("</style>\n");
+    if (needsClassicSwitch) {
+      out.write("<style name=\"ClassicSwitch\" parent=\"Widget.AppCompat.CompoundButton.Switch\">\n");
+      if (sdk == 23) {
+        out.write("<item name=\"android:background\">@drawable/abc_control_background_material</item>\n");
+      } else {
+        out.write("<item name=\"android:background\">@drawable/abc_item_background_holo_light</item>\n");
+      }
+      out.write("</style>\n");
+    }
   }
 
   private static void writeActionBarStyle(Writer out, String name, String parent,
@@ -621,6 +641,7 @@ public final class Compiler {
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
     boolean needsBlackTitleText = false;
+    boolean holo = "-v11".equals(suffix) || "-v14".equals(suffix);
     if (isClassicTheme) {
       parentTheme = "android:Theme";
     } else {
@@ -665,9 +686,10 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
 
-      writeTheme(out, "AppTheme", parentTheme, suffix.equals("-v11"));
+      writeTheme(out, "AppTheme", parentTheme,
+          suffix.isEmpty() ? 7 : Integer.parseInt(suffix.substring(2)));
       if (!isClassicTheme) {
-        if ("-v11".equals(suffix)) {  // Handle Holo
+        if (holo) {  // Handle Holo
           if (parentTheme.contains("Light")) {
             writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.Light.ActionBar", needsBlackTitleText);
           } else {
@@ -724,6 +746,9 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    if (includeDangerousPermissions) {
+      vName += "u";
+    }
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
@@ -781,10 +806,11 @@ public final class Compiler {
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
-      if (isForCompanion && AppInventorFeatures.limitPermissions()) {
+      if (isForCompanion && !includeDangerousPermissions) {
         permissions.remove("android.permission.RECEIVE_SMS");
         permissions.remove("android.permission.SEND_SMS");
         permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
+        permissions.remove("android.permission.CALL_PHONE");
       }
 
       for (String permission : permissions) {
@@ -793,7 +819,6 @@ public final class Compiler {
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
         out.write("  <uses-permission android:name=\"android.permission.READ_LOGS\" />\n");
-        out.write("  <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n");
       }
 
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
@@ -905,6 +930,10 @@ public final class Compiler {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
           for (String subelement : subelementSet) {
+            if (isForCompanion && !includeDangerousPermissions &&
+                subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
+              continue;
+            }
             out.write(subelement);
           }
         }
@@ -927,6 +956,17 @@ public final class Compiler {
       for (String broadcastReceiver : simpleBroadcastReceivers) {
         String[] brNameAndActions = broadcastReceiver.split(",");
         if (brNameAndActions.length == 0) continue;
+        // Remove the SMS_RECEIVED broadcast receiver if we aren't including dangerous permissions
+        if (isForCompanion && !includeDangerousPermissions) {
+          boolean skip = false;
+          for (String action : brNameAndActions) {
+            if (action.equalsIgnoreCase("android.provider.Telephony.SMS_RECEIVED")) {
+              skip = true;
+              break;
+            }
+          }
+          if (skip) continue;
+        }
         out.write(
             "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
         if (brNameAndActions.length > 1){
@@ -981,14 +1021,16 @@ public final class Compiler {
    */
   public static boolean compile(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForCompanion, String keystoreFilePath,
-                                int childProcessRam, String dexCacheDir,
+                                boolean isForCompanion, boolean isForEmulator,
+                                boolean includeDangerousPermissions, String keystoreFilePath,
+                                int childProcessRam, String dexCacheDir, String outputFileName,
                                 BuildServer.ProgressReporter reporter) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors, isForCompanion,
-                                     childProcessRam, dexCacheDir, reporter);
+    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors,
+        isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam, dexCacheDir,
+        reporter);
 
     compiler.generateAssets();
     compiler.generateActivities();
@@ -1031,10 +1073,12 @@ public final class Compiler {
     File style11Dir = createDir(resDir, "values-v11");
     File style14Dir = createDir(resDir, "values-v14");
     File style21Dir = createDir(resDir, "values-v21");
+    File style23Dir = createDir(resDir, "values-v23");
     if (!compiler.createValuesXml(styleDir, "") ||
         !compiler.createValuesXml(style11Dir, "-v11") ||
         !compiler.createValuesXml(style14Dir, "-v14") ||
-        !compiler.createValuesXml(style21Dir, "-v21")) {
+        !compiler.createValuesXml(style21Dir, "-v21") ||
+        !compiler.createValuesXml(style23Dir, "-v23")) {
       return false;
     }
 
@@ -1127,8 +1171,11 @@ public final class Compiler {
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
-    String apkAbsolutePath = deployDir.getAbsolutePath() + SLASH +
-        project.getProjectName() + ".apk";
+    String fileName = outputFileName;
+    if (fileName == null) {
+      fileName = project.getProjectName() + ".apk";
+    }
+    String apkAbsolutePath = deployDir.getAbsolutePath() + SLASH + fileName;
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClassesDir)) {
       return false;
     }
@@ -1247,7 +1294,7 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForCompanion,
+           PrintStream userErrors, boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
            int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
     this.project = project;
     this.compBlocks = compBlocks;
@@ -1259,6 +1306,8 @@ public final class Compiler {
     this.err = err;
     this.userErrors = userErrors;
     this.isForCompanion = isForCompanion;
+    this.isForEmulator = isForEmulator;
+    this.includeDangerousPermissions = includeDangerousPermissions;
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
     this.reporter = reporter;

@@ -55,6 +55,16 @@ public class BuildOutputServlet extends OdeServlet {
     // Set a default http header to avoid security vulnerabilities.
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
+    if ("store=1".equals(req.getQueryString())) {  // Play Store companion adds this for Chrome to
+                                                   // do the right thing w.r.t. the download
+      String body = "<!DOCTYPE html><html><head><meta http-equiv=\"refresh\" content=\"0; url=" +
+          req.getRequestURI() + "\" /></head><body></body></html>";
+      resp.setContentLength(body.length());
+      ServletOutputStream os = resp.getOutputStream();
+      os.write(body.getBytes());
+      os.close();
+      return;
+    }
 
     RawFile downloadableFile;
 

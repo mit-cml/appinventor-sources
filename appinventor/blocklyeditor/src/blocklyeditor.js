@@ -40,6 +40,14 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
+Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
+  var downloadBlockOption = {enabled: true, text: Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG};
+  downloadBlockOption.callback = function() {
+    Blockly.exportBlockAsPng(myBlock);
+  };
+  options.splice(options.length - 1, 0, downloadBlockOption);
+};
+
 /**
  * Add a "Do It" option to the context menu for every block. If the user is an admin also
  * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
@@ -49,6 +57,7 @@ Blockly.BlocklyEditor.render = function() {
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
+  Blockly.BlocklyEditor.addPngExportOption(myBlock, options);
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: !this.disabled};
     yailOption.text = Blockly.Msg.GENERATE_YAIL;
@@ -156,7 +165,6 @@ Blockly.usePrefixInYail = false;
      + maybe index variables have prefix "index", or maybe instead they are treated as "param"
 */
 
-Blockly.globalNamePrefix = "global"; // For names introduced by global variable declarations
 Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
 Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
 Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
@@ -183,14 +191,14 @@ function (prefix) {
 };
 
 Blockly.prefixGlobalMenuName = function (name) {
-  return Blockly.globalNamePrefix + Blockly.menuSeparator + name;
+  return Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + name;
 };
 
 // Return a list of (1) prefix (if it exists, "" if not) and (2) unprefixed name
 Blockly.unprefixName = function (name) {
-  if (name.indexOf(Blockly.globalNamePrefix + Blockly.menuSeparator) == 0) {
+  if (name.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator) == 0) {
     // Globals always have prefix, regardless of flags. Handle these specially
-    return [Blockly.globalNamePrefix, name.substring(Blockly.globalNamePrefix.length + Blockly.menuSeparator.length)];
+    return [Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX, name.substring(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX.length + Blockly.menuSeparator.length)];
   } else if (!Blockly.showPrefixToUser) {
     return ["", name];
   } else {

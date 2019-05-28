@@ -460,6 +460,7 @@
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
                     <li> <a href="#Spinner"> Spinner </a> </li>
+                    <li> <a href="#Switch"> Switch </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
                     <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
@@ -835,7 +836,7 @@ none
 
 <h2 id="Notifier">Notifier</h2>
 
-<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by the user. It can only be dismissed by using the DismissProgressDialog block.</li><li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
+<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised.</li><li> ShowPasswordDialog: lets the user enter password in response to the message, after which the AfterTextInput event is raised.</li><li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by the user. It can only be dismissed by using the DismissProgressDialog block.</li><li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
 
 <h3>Properties</h3>
 <dl>
@@ -879,6 +880,8 @@ none
   <dd>Shows a dialog box with an optional title and message (use empty strings if they are not wanted). This dialog box contains a spinning artifact to indicate that the program is working. It cannot be canceled by the user but must be dismissed by the App Inventor Program by using the DismissProgressDialog block.</dd>
   <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
   <dd>Shows a dialog box where the user can enter text, after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering text will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the text that was entered, or "Cancel" if the CANCEL button was pressed.</dd>
+  <dt><code>ShowPasswordDialog(text message, text title, boolean cancelable)</code></dt>
+  <dd>Shows a dialog box where the user can enter password (input is masked), after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button.  AfterTextInput event behaves the same way as ShowTextDialog.</dd>
 </dl>
 
                   <h2 id="PasswordTextBox"> PasswordTextBox </h2>
@@ -1148,6 +1151,47 @@ none
   <dt><code>DisplayDropdown()</code></dt>
   <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
 </dl>
+                  <h2 id="Switch"> Switch </h2>
+                  <p> Switch components can detect user taps and can change
+                    their
+                    boolean state in response. They are identical to Checkboxes except in appearance.</p>
+                  <p> Switches have an on (true) state and an off (false) state. A switch component raises an event when the user taps it to toggle between states. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for switch background. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, user can switch to change state and trigger event. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Switch height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Switch width (x-size). </dd>
+                    <dt> <code> On </code> </dt>
+                    <dd> True if the switch is in the On state, false otherwise. </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Text to display on switch. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for switch text. </dd>
+                    <dt> <code> ThumbColorActive </code> </dt>
+                    <dd> Color of the switch button when the switch is in the On state. </dd>
+                    <dt> <code> ThumbColorInactive </code> </dt>
+                    <dd> Color of the switch button when the switch is in the Off state. </dd>
+                    <dt> <code> TrackColorActive </code> </dt>
+                    <dd> Color of the switch slider when the switch is in the On state. </dd>
+                    <dt> <code> TrackColorInactive </code> </dt>
+                    <dd> Color of the switch slider when the switch is in the Off state. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If set, switch is visible. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> Changed() </code> </dt>
+                    <dd> User change the state of the switch from On to Off or back. </dd>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Check box became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Check box stopped being the focused component. </dd>
+                  </dl>
 
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />

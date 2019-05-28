@@ -14,7 +14,7 @@
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime,
-                   JsonComponentDescription,XmlComponentDescription,
+                   JsonComponentDescription,
                    ComponentList,ComponentTranslation,Barcode">
   </target>
 
@@ -233,6 +233,7 @@
 
   <path id="libsForAndroidRuntimeTests.path">
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <path refid="AndroidRuntime.path" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
@@ -403,22 +404,6 @@
     <copy file="${JsonComponentDescription-class.dir}/simple_components.json"
           todir="${public.build.dir}"/>
   </target>
-
-    <!-- =====================================================================
-         XmlComponentDescription: create lang_def.xml for Blocks Editor.
-         ===================================================================== -->
-    <target name="XmlComponentDescription"
-            description="Make ya_lang_def.xml file for Blocks Editor."
-            depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
-      <property name="XmlComponentDescription-class.dir"
-                location="${class.dir}/XmlComponentDescription" />
-      <ai.apt apt-classdir="${XmlComponentDescription-class.dir}"
-              apt-processor="com.google.appinventor.components.scripts.LangDefXmlGenerator"
-              apt-target="${XmlComponentDescription-class.dir}/ya_lang_def.xml"/>
-
-      <copy file="${XmlComponentDescription-class.dir}/ya_lang_def.xml"
-            todir="${public.build.dir}"/>
-    </target>
 
     <!-- =====================================================================
          ComponentList: create simple_components.txt and
