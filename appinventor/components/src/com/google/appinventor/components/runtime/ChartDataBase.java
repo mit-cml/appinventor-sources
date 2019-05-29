@@ -3,6 +3,9 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.ChartData;
 
 public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisibleComponent {
+
+    protected T chartData;
+
     /**
      * Creates a new AndroidNonvisibleComponent.
      *
@@ -10,5 +13,16 @@ public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisib
      */
     protected ChartDataBase(Form form) {
         super(form);
+    }
+
+    /**
+     * Getter method for the ChartData object.
+     *
+     * This should be accessed by Charts to know what data to import.
+     *
+     * @return - ChartData object
+     */
+    public T getChartData() {
+        return chartData;
     }
 }
