@@ -6,9 +6,10 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public abstract class ChartBase<T extends Chart> extends AndroidViewComponent {
+public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extends AndroidViewComponent {
 
     protected T view;
+    protected D data;
 
     private String description;
     private int backgroundColor;

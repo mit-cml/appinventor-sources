@@ -16,7 +16,7 @@ import java.util.ArrayList;
     nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject
-public final class ChartDataLine extends ChartDataBase<LineData> {
+public final class ChartDataLine extends ChartDataBase<LineDataSet> {
     /**
      * Creates a new Line Chart Data component.
      *
@@ -25,11 +25,8 @@ public final class ChartDataLine extends ChartDataBase<LineData> {
     public ChartDataLine(Form form) {
         super(form);
 
-        // TBD: Support multiple data sets, allow changing label
-        LineDataSet lineDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
-
-        // Instantiate the LineData object
-        chartData = new LineData(lineDataSet);
+        // Instantiate new LineDataSet object
+        dataSeries = new LineDataSet(new ArrayList<Entry>(), "Data");
     }
 
     /**
@@ -41,6 +38,6 @@ public final class ChartDataLine extends ChartDataBase<LineData> {
     @SimpleFunction(description = "Adds (x, y) point to the Line Data.")
     public void AddEntry(int x, int y) {
         Entry entry = new Entry(x, y);
-        chartData.getDataSetByIndex(0).addEntry(entry);
+        dataSeries.addEntry(entry);
     }
 }
