@@ -7,7 +7,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 
 @DesignerComponent(version = 1,
-    category = ComponentCategory.LAYOUT,
+    category = ComponentCategory.CHARTS,
     description = "A component that allows visualizing data using lines")
 @SimpleObject
 public final class ChartLine extends ChartBase<LineChart> {
