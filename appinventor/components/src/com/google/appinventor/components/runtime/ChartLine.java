@@ -19,6 +19,8 @@ public final class ChartLine extends ChartBase<LineChart> {
      */
     public ChartLine(ComponentContainer container) {
         super(container);
+
+        view = new LineChart(container.$context());
     }
 
     @Override
