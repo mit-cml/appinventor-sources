@@ -21,6 +21,8 @@ public final class ChartLine extends ChartBase<LineChart> {
         super(container);
 
         view = new LineChart(container.$context());
+
+        initChart();
     }
 
     @Override

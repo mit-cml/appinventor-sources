@@ -33,6 +33,8 @@ public abstract class ChartBase<T extends Chart> extends AndroidViewComponent {
         // Set default values
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+
+        view.setEnabled(true);
     }
 
     /**
