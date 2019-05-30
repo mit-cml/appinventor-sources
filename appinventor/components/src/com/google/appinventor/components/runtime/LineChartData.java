@@ -17,13 +17,13 @@ import java.util.ArrayList;
     nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject
-public final class ChartDataLine extends ChartDataBase<LineData> {
+public final class LineChartData extends ChartDataBase<LineData> {
     /**
      * Creates a new Line Chart Data component.
      *
      * @param form the container that this component will be placed in
      */
-    public ChartDataLine(Form form) {
+    public LineChartData(Form form) {
         super(form);
 
         // Instantiate new LineDataSet object

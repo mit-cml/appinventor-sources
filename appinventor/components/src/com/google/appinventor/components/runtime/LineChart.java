@@ -1,8 +1,6 @@
 package com.google.appinventor.components.runtime;
 
 import android.view.View;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -11,17 +9,17 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
     category = ComponentCategory.CHARTS,
     description = "A component that allows visualizing data using lines")
 @SimpleObject
-public final class ChartLine extends ChartBase<LineChart, ChartDataLine> {
+public final class LineChart extends ChartBase<com.github.mikephil.charting.charts.LineChart, LineChartData> {
 
     /**
      * Creates a new Line Chart component.
      *
      * @param container container, component will be placed in
      */
-    public ChartLine(ComponentContainer container) {
+    public LineChart(ComponentContainer container) {
         super(container);
 
-        view = new LineChart(container.$context());
+        view = new com.github.mikephil.charting.charts.LineChart(container.$context());
 
         initChart();
     }
@@ -33,8 +31,8 @@ public final class ChartLine extends ChartBase<LineChart, ChartDataLine> {
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.ChartDataLine")
-    public void ChartData(ChartDataLine data) {
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.LineChartData")
+    public void ChartData(LineChartData data) {
         this.data = data;
         data.addChart(this);
         view.setData(this.data.getChartData());

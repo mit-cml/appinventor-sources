@@ -50,7 +50,7 @@ import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-import com.google.appinventor.client.editor.simple.components.MockChartLine;
+import com.google.appinventor.client.editor.simple.components.MockLineChart;
 
 import com.google.appinventor.shared.storage.StorageUtil;
 
@@ -457,8 +457,8 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
-    } else if (name.equals(MockChartLine.TYPE)) {
-      return new MockChartLine(editor);
+    } else if (name.equals(MockLineChart.TYPE)) {
+      return new MockLineChart(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);
