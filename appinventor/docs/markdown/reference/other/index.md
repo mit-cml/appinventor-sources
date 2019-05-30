@@ -30,3 +30,5 @@ These documents provide additional details on some App Inventor topics.
 * [Controlling Internet of Things Devices with MIT App Inventor](IoT.html)
 * [Project merger tool](merger.html)
 * [Experiments with Virtual Reality and MIT App Inventor](vr.html)
+* [Don't Repeat Yourself (DRY) using Generic Blocks](any-component-blocks.html)
+* [Import and export code blocks as PNGs](download-pngs.html)
