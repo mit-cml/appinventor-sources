@@ -97,7 +97,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   if (block.isGeneric) {
     var compBlock = block.getInputTargetBlock('COMPONENT');
     item.enabled = compBlock && compBlock.type === 'component_component_block';
-    item.text = Blockly.Msg.UNGENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.UNGENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function () {
       try {
         Blockly.Events.setGroup(true);
@@ -126,7 +127,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     };
   } else if (block.type === 'component_event') {
     item.enabled = true;
-    item.text = Blockly.Msg.GENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.GENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function() {
       try {
         Blockly.Events.setGroup(true);
@@ -181,7 +183,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     };
   } else {
     item.enabled = true;
-    item.text = Blockly.Msg.GENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.GENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function() {
       try {
         Blockly.Events.setGroup(true);
