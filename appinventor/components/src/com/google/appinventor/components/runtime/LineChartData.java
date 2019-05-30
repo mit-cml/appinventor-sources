@@ -52,7 +52,9 @@ public final class LineChartData extends ChartDataBase<LineData> {
             dataSet.addEntry(entry);
             chartData.addDataSet(dataSet);
         } else {
-            chartData.addEntry(entry, 0);
+            chartData.getDataSetByIndex(0).addEntryOrdered(entry);
+            chartData.notifyDataChanged();
+            // chartData.addEntry(entry, 0);
         }
 
         refreshCharts();
