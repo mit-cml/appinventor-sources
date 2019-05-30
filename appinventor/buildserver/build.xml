@@ -144,14 +144,22 @@
             validity="10000" />
   </target>
 
+  <target name="CheckPlayAppSrcZip">
+    <uptodate property="PlayAppSrcZip.uptodate" targetfile="${local.build.dir}/aiplayapp.zip">
+      <srcfiles file="${user.home}/.appinventor/debug.keystore" />
+      <srcfiles dir="${appinventor.dir}/aiplayapp" includes="src/**/*,youngandroidproject/*,assets/**/*" />
+    </uptodate>
+  </target>
+
   <!-- =====================================================================
        GenPlayAppSrcZip Version for the Google Play Store works over WiFi
        ===================================================================== -->
   <target name="GenPlayAppSrcZip"
-          depends="init,MakeKeyStore">
+          depends="init,MakeKeyStore,CheckPlayAppSrcZip"
+          unless="PlayAppSrcZip.uptodate">
     <copy tofile="${appinventor.dir}/aiplayapp/android.keystore" file="${user.home}/.appinventor/debug.keystore" />
     <zip destfile="${local.build.dir}/aiplayapp.zip" basedir="${appinventor.dir}/aiplayapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*,assets/*,android.keystore" />
+         includes="src/**/*,youngandroidproject/*,assets/**/*,android.keystore" />
     <!-- We delete the keyfile below so as to not leave it laying around the source
          tree -->
     <delete file="${appinventor.dir}/aiplayapp/android.keystore" failonerror="true" />
@@ -191,6 +199,79 @@
       <arg value="--isForCompanion" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
+    </java>
+  </target>
+
+  <target name="CheckPlayAppExtras">
+    <uptodate property="PlayAppExtras.uptodate" targetfile="${public.build.dir}/MITAI2Companion-full.apk">
+      <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
+      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       PlayAppExtras: builds ../build/buildserver/MITAI2Companion-full.apk
+       ===================================================================== -->
+  <target name="PlayAppExtras"
+          depends="CheckPlayAppExtras"
+          unless="PlayAppExtras.uptodate">
+    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--childProcessRamMb" />
+      <arg value="1024" />
+      <arg value="--inputZipFile" />
+      <arg value="${local.build.dir}/aiplayapp.zip" />
+      <arg value="--userName" />
+      <arg value="App Inventor" />
+      <arg value="--isForCompanion" />
+      <arg value="--includeDangerousPermissions" />
+      <arg value="--extensions" />
+      <arg value="edu.mit.appinventor.companionextras.CompanionExtras" />
+      <arg value="--outputDir" />
+      <arg value="${public.build.dir}" />
+      <arg value="--outputFileName" />
+      <arg value="MITAI2Companion-full.apk" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
+    </java>
+  </target>
+
+  <target name="CheckEmulator">
+    <uptodate property="Emulator.uptodate" targetfile="${public.build.dir}/Emulator.apk">
+      <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
+      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       Emulator: builds ../build/buildserver/Emulator.apk
+       ===================================================================== -->
+  <target name="Emulator"
+          depends="CheckEmulator"
+          unless="Emulator.uptodate">
+    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--childProcessRamMb" />
+      <arg value="1024" />
+      <arg value="--inputZipFile" />
+      <arg value="${local.build.dir}/aiplayapp.zip" />
+      <arg value="--userName" />
+      <arg value="App Inventor" />
+      <arg value="--isForCompanion" />
+      <arg value="--isForEmulator" />
+      <arg value="--includeDangerousPermissions" />
+      <arg value="--outputDir" />
+      <arg value="${public.build.dir}" />
+      <arg value="--outputFileName" />
+      <arg value="Emulator.apk" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
     </java>

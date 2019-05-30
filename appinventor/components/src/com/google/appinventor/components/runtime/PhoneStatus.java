@@ -8,12 +8,14 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
+import android.content.Intent;
+
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 
 import android.os.Build;
@@ -38,10 +40,11 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
-import com.google.appinventor.components.runtime.util.PackageInstaller;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 
 import java.util.Formatter;
@@ -75,6 +78,8 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private final Form form;
   private static PhoneStatus mainInstance = null;
   private static boolean useWebRTC = false;
+  private String firstSeed = null;
+  private String firstHmacSeed = null;
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
@@ -116,14 +121,60 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     "process if we are using WebRTC. This is a bit of a kludge...")
   public String setHmacSeedReturnCode(String seed, String rendezvousServer) {
 
-    /* Setup communications via WebRTC */
-    if (useWebRTC) {
-      WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer);
-      webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, seed);
-      ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
-    } else {
+    /* If we get an empty seed, just ignore it. */
+    if (seed.equals("")) {
+      return "";
+    }
+
+    /*
+     * Check to see if we are being re-entered.
+     *
+     * The Companion's design is to setup communications with
+     * the user's browser and get to work. Once this process starts,
+     * enough things are in motion that it is best to quit the
+     * Companion and start a fresh copy if a different code is needed.
+     *
+     * If the same code is entered more then once, we just ignore the
+     * second attempt. This often happens when someone scans a QR Code
+     * and then presses the "Connect" Button because they do not know
+     * that they don't have to do that. Effectively we are "de-bouncing"
+     * the button.
+     *
+     */
+    if (firstSeed != null) {    // Hmm. We've been here before!
+      if (!firstSeed.equals(seed)) {
+        // Attempting to use a different seed (code)
+        // Provide a warning dialog box
+        Notifier.oneButtonAlert(Form.getActiveForm(),
+          "You cannot use two codes with one start up of the Companion. You should restart the " +
+          "Companion and try again.",
+          "Warning", "OK", new Runnable() {
+              @Override public void run() {
+                // We are going to die here, so the user has to start a new copy. This isn't ideal. A more
+                // correct solution would be to gracefully shutdown the connection process and restart it with
+                // the new seed.
+                Form.getActiveForm().finish();
+                System.exit(0);         // Truly ugly...
+              }
+            });
+      }
+      return firstHmacSeed;
+    }
+
+    firstSeed = seed;
+
+    /*
+     * Set the HMAC seed, but only if we are doing the legacy HTTP
+     * thing.  Note: Currently we *always* start the HTTP Daemon, even
+     * in WebRTC mode By not setting the seed, we ensure that the HTTP
+     * Daemon cannot accept any blocks
+     *
+     */
+
+    if (!useWebRTC) {
       AppInvHTTPD.setHmacKey(seed);
     }
+
     MessageDigest Sha1;
     try {
       Sha1 = MessageDigest.getInstance("SHA1");
@@ -140,7 +191,8 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     }
     Log.d(LOG_TAG, "Seed = " + seed);
     Log.d(LOG_TAG, "Code = " + sb.toString());
-    return sb.toString();
+    firstHmacSeed = sb.toString();
+    return firstHmacSeed;
   }
 
   @SimpleFunction(description = "Returns true if we are running in the emulator or USB Connection")
@@ -155,6 +207,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       return false;
     }
+  }
+
+  @SimpleFunction(description = "Start the WebRTC engine")
+  public void startWebRTC(String rendezvousServer, String iceServers) {
+    WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer, iceServers);
+    webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, firstSeed);
+    ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
   }
 
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")
@@ -181,9 +240,19 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     // t.start();
   }
 
-  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package")
+  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package via the installed browser")
   public void installURL(String url) {
-    PackageInstaller.doPackageInstall(form, url);
+    try {
+      Class<?> clazz = Class.forName("edu.mit.appinventor.companionextras.CompanionExtras");
+      Object o = clazz.getConstructor(Form.class).newInstance(form);
+      Method m = clazz.getMethod("Extra1", String.class);
+      m.invoke(o, url);
+    } catch (Exception e) {
+      // Fall back to using the browser
+      Uri uri = Uri.parse(url);
+      Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
+      form.startActivity(intent);
+    }
   }
 
   @SimpleFunction(description = "Really Exit the Application")
@@ -271,6 +340,11 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       return "unknown";
     }
+  }
+
+  @SimpleFunction(description = "Return the ACRA Installation ID")
+  public String InstallationId() {
+    return org.acra.util.Installation.id(Form.getActiveForm());
   }
 
   /* Static context way to get the useWebRTC flag */

@@ -524,6 +524,15 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
+  //create generic event blocks
+  goog.object.forEach(componentInfo.eventDictionary, function(event, name){
+    if(!event.deprecated){
+      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
+        component_type: typeName, event_name: name, is_generic: 'true'
+      }));
+    }
+  }, this);
+
   //create generic method blocks
   goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
     if (!method.deprecated) {
@@ -741,6 +750,56 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
 };
 
 Blockly.Drawer.defaultBlockXMLStrings = {
+  controls_forRange: {xmlString:
+  '<xml>' +
+    '<block type="controls_forRange">' +
+      '<value name="START"><block type="math_number"><title name="NUM">1</title></block></value>' +
+      '<value name="END"><block type="math_number"><title name="NUM">5</title></block></value>' +
+      '<value name="STEP"><block type="math_number"><title name="NUM">1</title></block></value>' +
+    '</block>' +
+  '</xml>' },
+
+   math_random_int: {xmlString:
+  '<xml>' +
+    '<block type="math_random_int">' +
+    '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
+    '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  color_make_color: {xmlString:
+  '<xml>' +
+    '<block type="color_make_color">' +
+      '<value name="COLORLIST">' +
+        '<block type="lists_create_with" inline="false">' +
+          '<mutation items="3"></mutation>' +
+          '<value name="ADD0"><block type="math_number"><title name="NUM">255</title></block></value>' +
+          '<value name="ADD1"><block type="math_number"><title name="NUM">0</title></block></value>' +
+          '<value name="ADD2"><block type="math_number"><title name="NUM">0</title></block></value>' +
+        '</block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>'},
+  lists_create_with: {xmlString:
+  '<xml>' +
+    '<block type="lists_create_with">' +
+      '<mutation items="0"></mutation>' +
+    '</block>' +
+    '<block type="lists_create_with">' +
+      '<mutation items="2"></mutation>' +
+    '</block>' +
+  '</xml>'},
+   lists_lookup_in_pairs: {xmlString:
+  '<xml>' +
+    '<block type="lists_lookup_in_pairs">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  lists_join_with_separator: {xmlString:
+    '<xml>' +
+      '<block type="lists_join_with_separator">' +
+      '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
+      '</block>' +
+    '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
@@ -798,6 +857,31 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Canvas.DrawShape has fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawShape"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Canvas.DrawArc has useCenter default to FALSE and fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawArc"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG6"><block type="logic_boolean"><field name="BOOL">FALSE</field></block></value>' +
+         '<value name="ARG7"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
 

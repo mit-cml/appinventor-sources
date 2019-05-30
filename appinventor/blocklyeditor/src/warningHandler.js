@@ -293,6 +293,10 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
 
 //Check if the block is inside of a variable declaration block, if so, create an error
 Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
+  // Allow property getters as they should be pure.
+  if (block.type === 'component_set_get' && block.setOrGet === 'get') {
+    return false;
+  }
   var rootBlock = block.getRootBlock();
   if(rootBlock.type == "global_declaration"){
     var errorMessage = Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION;

@@ -232,6 +232,8 @@ public final class Compiler {
 
   private final int childProcessRamMb;  // Maximum ram that can be used by a child processes, in MB.
   private final boolean isForCompanion;
+  private final boolean isForEmulator;
+  private final boolean includeDangerousPermissions;
   private final Project project;
   private final PrintStream out;
   private final PrintStream err;
@@ -403,6 +405,9 @@ public final class Compiler {
    */
   @VisibleForTesting
   void generateNativeLibNames() {
+    if (isForEmulator) {  // no libraries for emulator
+      return;
+    }
     try {
       loadJsonInfo(nativeLibsNeeded, ComponentDescriptorConstants.NATIVE_TARGET);
     } catch (IOException e) {
@@ -724,6 +729,9 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    if (includeDangerousPermissions) {
+      vName += "u";
+    }
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
@@ -781,10 +789,11 @@ public final class Compiler {
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
-      if (isForCompanion && AppInventorFeatures.limitPermissions()) {
+      if (isForCompanion && !includeDangerousPermissions) {
         permissions.remove("android.permission.RECEIVE_SMS");
         permissions.remove("android.permission.SEND_SMS");
         permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
+        permissions.remove("android.permission.CALL_PHONE");
       }
 
       for (String permission : permissions) {
@@ -793,7 +802,6 @@ public final class Compiler {
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
         out.write("  <uses-permission android:name=\"android.permission.READ_LOGS\" />\n");
-        out.write("  <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n");
       }
 
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
@@ -905,6 +913,10 @@ public final class Compiler {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
           for (String subelement : subelementSet) {
+            if (isForCompanion && !includeDangerousPermissions &&
+                subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
+              continue;
+            }
             out.write(subelement);
           }
         }
@@ -927,6 +939,17 @@ public final class Compiler {
       for (String broadcastReceiver : simpleBroadcastReceivers) {
         String[] brNameAndActions = broadcastReceiver.split(",");
         if (brNameAndActions.length == 0) continue;
+        // Remove the SMS_RECEIVED broadcast receiver if we aren't including dangerous permissions
+        if (isForCompanion && !includeDangerousPermissions) {
+          boolean skip = false;
+          for (String action : brNameAndActions) {
+            if (action.equalsIgnoreCase("android.provider.Telephony.SMS_RECEIVED")) {
+              skip = true;
+              break;
+            }
+          }
+          if (skip) continue;
+        }
         out.write(
             "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
         if (brNameAndActions.length > 1){
@@ -981,14 +1004,16 @@ public final class Compiler {
    */
   public static boolean compile(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForCompanion, String keystoreFilePath,
-                                int childProcessRam, String dexCacheDir,
+                                boolean isForCompanion, boolean isForEmulator,
+                                boolean includeDangerousPermissions, String keystoreFilePath,
+                                int childProcessRam, String dexCacheDir, String outputFileName,
                                 BuildServer.ProgressReporter reporter) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors, isForCompanion,
-                                     childProcessRam, dexCacheDir, reporter);
+    Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors,
+        isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam, dexCacheDir,
+        reporter);
 
     compiler.generateAssets();
     compiler.generateActivities();
@@ -1127,8 +1152,11 @@ public final class Compiler {
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
-    String apkAbsolutePath = deployDir.getAbsolutePath() + SLASH +
-        project.getProjectName() + ".apk";
+    String fileName = outputFileName;
+    if (fileName == null) {
+      fileName = project.getProjectName() + ".apk";
+    }
+    String apkAbsolutePath = deployDir.getAbsolutePath() + SLASH + fileName;
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClassesDir)) {
       return false;
     }
@@ -1247,7 +1275,7 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> compTypes, Map<String, Set<String>> compBlocks, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForCompanion,
+           PrintStream userErrors, boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions,
            int childProcessMaxRam, String dexCacheDir, BuildServer.ProgressReporter reporter) {
     this.project = project;
     this.compBlocks = compBlocks;
@@ -1259,6 +1287,8 @@ public final class Compiler {
     this.err = err;
     this.userErrors = userErrors;
     this.isForCompanion = isForCompanion;
+    this.isForEmulator = isForEmulator;
+    this.includeDangerousPermissions = includeDangerousPermissions;
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
     this.reporter = reporter;

@@ -1375,7 +1375,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: No blocks need to be modified to upgrade to version 10
     // The default value of TextAlignment was changed from Normal (left) to Center
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // DrawShape & DrawArc was added
+    // No blocks need to be modified to upgrade to version 11.
+    11: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1407,7 +1411,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // Duration Support was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // MakeDate, MakeTime, MakeInstantFromParts methods added
+    4: "noUpgrade"
 
   }, // End Clock upgraders
 
@@ -1771,8 +1778,16 @@ Blockly.Versioning.AllUpgradeMaps =
     22: "noUpgrade",
 
     // AI2: Added Bitwise Blocks
-    23: "noUpgrade"
+    23: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 24, added List Reverse Block
+    24: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 25, added Join With Separator Block
+    25: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
+    26: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1915,7 +1930,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // Added TextInputCanceled & ChoosingCanceled event
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added a PasswordDialog for masked text input.
+    6: "noUpgrade"
 
   }, // End Notifier upgraders
 
@@ -2500,7 +2518,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: The Volume property (setter only) was added to the VideoPlayer.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Stop method was added to the VideoPlayer.
+    6: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 
