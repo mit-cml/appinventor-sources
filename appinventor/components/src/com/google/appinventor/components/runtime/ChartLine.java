@@ -36,7 +36,8 @@ public final class ChartLine extends ChartBase<LineChart, ChartDataLine> {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.ChartDataLine")
     public void ChartData(ChartDataLine data) {
         this.data = data;
-        view.setData(data.getChartData());
+        data.addChart(this);
+        view.setData(this.data.getChartData());
         view.invalidate();
     }
 }

@@ -46,5 +46,7 @@ public final class ChartDataLine extends ChartDataBase<LineData> {
         } else {
             chartData.addEntry(entry, 0);
         }
+
+        refreshCharts();
     }
 }

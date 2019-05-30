@@ -88,4 +88,12 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
 
         view.setBackgroundColor(argb);
     }
+
+    /**
+     * Refreshes the Chart upon adding new data.
+     */
+    public void Refresh() {
+        view.notifyDataSetChanged();
+        view.invalidate();
+    }
 }
