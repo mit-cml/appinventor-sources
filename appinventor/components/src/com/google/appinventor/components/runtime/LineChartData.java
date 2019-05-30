@@ -48,6 +48,7 @@ public final class LineChartData extends ChartDataBase<LineData> {
         if (chartData.getDataSetCount() == 0) {
             LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
             dataSet.setColor(Color.BLACK);
+            dataSet.setCircleColor(Color.BLACK);
             dataSet.addEntry(entry);
             chartData.addDataSet(dataSet);
         } else {

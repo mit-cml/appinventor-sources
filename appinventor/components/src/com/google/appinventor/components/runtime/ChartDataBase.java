@@ -40,6 +40,15 @@ public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisib
     }
 
     /**
+     * Removes a Chart Component to be observed by this Chart Data component
+     *
+     * @param chart  Chart component
+     */
+    public void removeChart(ChartBase chart) {
+        charts.remove(chart);
+    }
+
+    /**
      * Refreshes all the Charts that use this Chart Data component.
      * Called whenever there are changes to the underlying Chart data object.
      */

@@ -33,8 +33,15 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
             description = "")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.LineChartData")
     public void ChartData(LineChartData data) {
-        this.data = data;
+        // Remove this Chart from previous LineChartData component
+        if (data != null) {
+            data.removeChart(this);
+        }
+
+        // Add Chart to LineChartData component
         data.addChart(this);
+
+        this.data = data;
         view.setData(this.data.getChartData());
         view.invalidate();
     }
