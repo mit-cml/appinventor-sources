@@ -90,7 +90,7 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
     }
 
     /**
-     * Refreshes the Chart upon adding new data.
+     * Refreshes the Chart to react to Data Set changes.
      */
     public void Refresh() {
         view.notifyDataSetChanged();

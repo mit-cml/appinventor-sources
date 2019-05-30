@@ -40,6 +40,11 @@ public final class LineChartData extends ChartDataBase<LineData> {
     public void AddEntry(int x, int y) {
         Entry entry = new Entry(x, y);
 
+        // TBD: Multiple dataset support
+        // For now, this stores all the data in one Data Set.
+        // The reason for this if statement is because passing in a DataSet with
+        // no entries will cause exceptions, so if there are no entries initially,
+        // the ChartData object should have no DataSet attached to it.
         if (chartData.getDataSetCount() == 0) {
             LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
             dataSet.setColor(Color.BLACK);
