@@ -1,10 +1,10 @@
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.data.ChartData;
 
-public abstract class ChartDataBase<T extends DataSet> extends AndroidNonvisibleComponent {
+public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisibleComponent {
 
-    protected T dataSeries;
+    protected T chartData;
 
     /**
      * Creates a new AndroidNonvisibleComponent.
@@ -22,8 +22,8 @@ public abstract class ChartDataBase<T extends DataSet> extends AndroidNonvisible
      *
      * @return - ChartData object
      */
-    public T getDataSeries() {
-        return dataSeries;
+    public T getChartData() {
+        return chartData;
     }
 
 
