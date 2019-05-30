@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Color;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -41,6 +42,7 @@ public final class ChartDataLine extends ChartDataBase<LineData> {
 
         if (chartData.getDataSetCount() == 0) {
             LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
+            dataSet.setColor(Color.BLACK);
             dataSet.addEntry(entry);
             chartData.addDataSet(dataSet);
         } else {
