@@ -165,6 +165,9 @@
       <fileset dir="${docs.dir}/html/static">
         <include name="js/*"/>
       </fileset>
+      <fileset dir="src/${appinventor.pkg}">
+        <include name="images/help.png"/>
+      </fileset>
     </copy>
     <!-- Resources for Maps designer view -->
     <copy todir="${build.static.dir}/">
