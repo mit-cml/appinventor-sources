@@ -3,11 +3,17 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import org.pepstock.charba.client.LineChart;
 import org.pepstock.charba.client.data.LineDataset;
+import org.pepstock.charba.client.resources.EmbeddedResources;
+import org.pepstock.charba.client.resources.ResourcesType;
 
 public final class MockLineChart extends MockVisibleComponent {
     public static final String TYPE = "LineChart";
 
     private LineChart lineChartWidget;
+
+    static {
+        ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
+    }
 
     /**
      * Creates a new instance of a Mock Line Chart component.
