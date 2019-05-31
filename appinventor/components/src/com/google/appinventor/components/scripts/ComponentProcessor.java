@@ -37,6 +37,7 @@ import java.io.Writer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -971,6 +972,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
+      Collections.addAll(componentInfo.permissions, usesPermissions.value());
     }
 
     // Gather library names.
