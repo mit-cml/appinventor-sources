@@ -4,6 +4,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.LineChart;
 import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.data.Labels;
 import org.pepstock.charba.client.data.LineDataset;
 import org.pepstock.charba.client.enums.CubicInterpolationMode;
 import org.pepstock.charba.client.enums.SteppedLine;
@@ -36,27 +37,20 @@ public final class MockLineChart extends MockVisibleComponent {
         LineDataset dataset = lineChartWidget.newDataset();
 
         // Construct test data
-        ArrayList<DataPoint> dataPoints = new ArrayList<>();
-
-        for (int i = 0; i < 10; ++i) {
-            DataPoint point = new DataPoint();
-            point.setX(i);
-            point.setY(2*i);
-            dataPoints.add(point);
-        }
-
-        dataset.setDataPoints(dataPoints);
+        dataset.setData(1, 7, 5, 4);
 
         // Style settings
         dataset.setFill(false);
         dataset.setPointBackgroundColor("black");
         dataset.setBorderColor("black");
-        dataset.setCubicInterpolationMode(CubicInterpolationMode.MONOTONE);
-
+        dataset.setBorderWidth(1);
+        dataset.setLineTension(0);
+        dataset.setLabel("Data");
 
         // Chart widget setup
         lineChartWidget.getData().setDatasets(dataset);
         lineChartWidget.getOptions().setMaintainAspectRatio(false);
+        lineChartWidget.getData().setLabels("1", "2", "3", "4");
 
         lineChartWidget.setStylePrimaryName("ode-SimpleMockComponent");
         initComponent(lineChartWidget);
