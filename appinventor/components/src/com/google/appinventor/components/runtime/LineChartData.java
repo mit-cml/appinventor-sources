@@ -12,7 +12,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import java.util.ArrayList;
 
 @DesignerComponent(version = 1,
-    description = "",
+    description = "A component that holds data for Line Charts",
     category = ComponentCategory.CHARTS,
     nonVisible = true,
     iconName = "images/web.png")
