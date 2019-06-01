@@ -33,6 +33,19 @@ public final class MockLineChart extends MockVisibleComponent {
         // Initialize Line Chart mock Widget
         lineChartWidget = new LineChart();
 
+        loadTestData();
+
+        // Chart widget setup
+        lineChartWidget.getOptions().setMaintainAspectRatio(false);
+        lineChartWidget.getOptions().getTitle().setDisplay(true);
+        lineChartWidget.setStylePrimaryName("ode-SimpleMockComponent");
+        initComponent(lineChartWidget);
+    }
+
+    /**
+     * Loads a test data set for the Line Chart widget.
+     */
+    private void loadTestData() {
         // Initialize data set
         LineDataset dataset = lineChartWidget.newDataset();
 
@@ -47,20 +60,11 @@ public final class MockLineChart extends MockVisibleComponent {
         dataset.setLineTension(0);
         dataset.setLabel("Data");
 
-        // Chart widget setup
+        // Set the data set to the chart
         lineChartWidget.getData().setDatasets(dataset);
-        lineChartWidget.getOptions().setMaintainAspectRatio(false);
+
+        // Set x value labels
         lineChartWidget.getData().setLabels("1", "2", "3", "4");
-
-        lineChartWidget.setStylePrimaryName("ode-SimpleMockComponent");
-        initComponent(lineChartWidget);
-    }
-
-    @Override
-    public void onPropertyChange(String propertyName, String newValue) {
-        super.onPropertyChange(propertyName, newValue);
-
-        // TBD
     }
 
     @Override
@@ -71,5 +75,12 @@ public final class MockLineChart extends MockVisibleComponent {
     @Override
     public int getPreferredHeight() {
         return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+    }
+
+    @Override
+    public void onPropertyChange(String propertyName, String newValue) {
+        super.onPropertyChange(propertyName, newValue);
+
+        // TBD
     }
 }
