@@ -19,25 +19,19 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.event.dom.client.KeyEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyCodeEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 
@@ -47,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.*;
-import java.util.Map.Entry;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -83,7 +76,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private final TextBox searchText; 
   private final VerticalPanel searchResults;
-  private final Button searchButton;
 
   /**
    * Creates a new component palette panel.
@@ -116,27 +108,16 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     }
 
     searchText = new TextBox();
-    searchText.setWidth("90%");
-    searchText.getElement().setPropertyString("placeholder", "Enter Component Names...");
-    searchButton = new Button(MESSAGES.searchComponentButton());
-    Button clearButton = new Button(MESSAGES.clearComponentsButton());
+    searchText.setWidth("100%");
+    searchText.getElement().setPropertyString("placeholder", "Search Components...");
+    searchText.getElement().setAttribute("type", "search");
 
-    searchText.addKeyUpHandler(new searchKeyUpHandler());
-    searchText.addKeyPressHandler(new returnKeyHandler());
-    searchText.addKeyDownHandler(new escapeKeyDownHandler());
-    searchButton.addClickHandler(new searchClickHandler());
-    clearButton.addClickHandler(new clearClickHandler());
-
-    // buttonPanel holds search and clear button
-    final HorizontalPanel buttonPanel = new HorizontalPanel();
-
-    buttonPanel.add(searchButton);
-    buttonPanel.add(clearButton);
-    buttonPanel.setSpacing(2);
+    searchText.addKeyUpHandler(new SearchKeyUpHandler());
+    searchText.addKeyPressHandler(new ReturnKeyHandler());
+    searchText.addKeyDownHandler(new EscapeKeyDownHandler());
 
     panel.setSpacing(3);
     panel.add(searchText);
-    panel.add(buttonPanel);
     panel.setWidth("100%");
 
     searchResults = new VerticalPanel();
@@ -168,17 +149,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    /**
    *  Automatic search and list results as users input the string
    */
-  private class searchKeyUpHandler implements KeyUpHandler {
+  private class SearchKeyUpHandler implements KeyUpHandler {
     @Override
     public void onKeyUp(KeyUpEvent event) {
-      searchButton.click();
+      doSearch();
     }
   }
 
   /**
    *  Users press escapte button, results and searchText will be cleared
    */
-  private class escapeKeyDownHandler implements KeyDownHandler {
+  private class EscapeKeyDownHandler implements KeyDownHandler {
     @Override
     public void onKeyDown(KeyDownEvent event) {
       if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
@@ -191,64 +172,56 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   /**
    *  Users press enter button, results will be added to searchResults panel
    */
-  private class returnKeyHandler implements KeyPressHandler {
+  private class ReturnKeyHandler implements KeyPressHandler {
      @Override
       public void onKeyPress(KeyPressEvent event) {
-          if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-            searchButton.click();
-          }
+        switch (event.getCharCode()) {
+          case KeyCodes.KEY_END:
+          case KeyCodes.KEY_DELETE:
+          case KeyCodes.KEY_BACKSPACE:
+            doSearch();
+            break;
+        }
       }
-  }
-
-  /**
-   *   clearButton on click remove searchResults elements
-   */
-  private class clearClickHandler implements ClickHandler {
-    @Override
-    public void onClick(ClickEvent event) {
-      searchResults.clear();
-      searchText.setText("");
-    }
   }
 
   /**
    *  User clicks on searchButton and results will be added to searchResults panel
    */
-  private class searchClickHandler implements ClickHandler {
-    @Override
-      public void onClick(ClickEvent event) {
-        String search_str = searchText.getText().trim().toLowerCase();
-        // Empty strings will return nothing
-        if(search_str.length() != 0) {
-          // Remove previos search results
-          searchResults.clear();
-          Collection<String> allComponents = componentTrie.getAllWords(search_str);
-          for (String name: allComponents) {
-            if (translationMap.containsKey(name)) {
-              String englishName = translationMap.get(name);
-              if (simplePaletteItems.containsKey(englishName)) { 
-                SimplePaletteItem item = simplePaletteItems.get(englishName);
-                int version = COMPONENT_DATABASE.getComponentVersion(englishName);
-                String versionName = COMPONENT_DATABASE.getComponentVersionName(englishName);
-                String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(englishName);
-                String helpString = COMPONENT_DATABASE.getHelpString(englishName);
-                String helpUrl = COMPONENT_DATABASE.getHelpUrl(englishName);
-                String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(englishName);
-                String categoryString = COMPONENT_DATABASE.getCategoryString(englishName);
-                Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(englishName);
-                Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(englishName);
-                Boolean external = COMPONENT_DATABASE.getComponentExternal(englishName);
+  private void doSearch() {
+    String search_str = searchText.getText().trim().toLowerCase();
+    // Empty strings will return nothing
+    if (search_str.length() != 0) {
+      // Remove previous search results
+      searchResults.clear();
+      Collection<String> allComponents = componentTrie.getAllWords(search_str);
+      for (String name : allComponents) {
+        if (translationMap.containsKey(name)) {
+          String englishName = translationMap.get(name);
+          if (simplePaletteItems.containsKey(englishName)) {
+            SimplePaletteItem item = simplePaletteItems.get(englishName);
+            int version = COMPONENT_DATABASE.getComponentVersion(englishName);
+            String versionName = COMPONENT_DATABASE.getComponentVersionName(englishName);
+            String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(englishName);
+            String helpString = COMPONENT_DATABASE.getHelpString(englishName);
+            String helpUrl = COMPONENT_DATABASE.getHelpUrl(englishName);
+            String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(englishName);
+            String categoryString = COMPONENT_DATABASE.getCategoryString(englishName);
+            Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(englishName);
+            Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(englishName);
+            Boolean external = COMPONENT_DATABASE.getComponentExternal(englishName);
 
-                SimpleComponentDescriptor scd = 
-                new SimpleComponentDescriptor(englishName, editor, version, versionName, 
-                  dateBuilt, helpString, helpUrl,categoryDocUrlString, showOnPalette, nonVisible, external);
-                SimplePaletteItem newItem = new SimplePaletteItem(scd, dropTargetProvider);
-                searchResults.add(newItem);
-              }
-            }
+            SimpleComponentDescriptor scd =
+                new SimpleComponentDescriptor(englishName, editor, version, versionName,
+                    dateBuilt, helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external);
+            SimplePaletteItem newItem = new SimplePaletteItem(scd, dropTargetProvider);
+            searchResults.add(newItem);
           }
         }
       }
+    } else {
+      searchResults.clear();
+    }
   }
 
   private static boolean showCategory(ComponentCategory category) {
