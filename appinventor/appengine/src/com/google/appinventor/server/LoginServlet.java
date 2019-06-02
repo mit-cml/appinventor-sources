@@ -166,7 +166,7 @@ public class LoginServlet extends HttpServlet {
           return;
         }
         String uri = new UriBuilder("/login/google")
-          .add("locale", locale.equals("en") ? null : locale)
+          .add("locale", "en".equals(locale) ? null : locale)
           .add("repo", repo)
           .add("galleryId", galleryId)
           .add("redirect", redirect).build();

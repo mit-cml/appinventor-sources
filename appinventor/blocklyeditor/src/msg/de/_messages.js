@@ -91,23 +91,23 @@ Blockly.Msg.de.switch_language_to_german = {
     Blockly.Msg.DISABLE_SNAPPING = 'Einrasten in Gitter deaktivieren';
 
 // Variable renaming.
-    Blockly.MSG_CHANGE_VALUE_TITLE = 'Wert ändern:'; 
-    Blockly.MSG_NEW_VARIABLE = 'Neue Variable...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = 'Neuer Variablenname:';
-    Blockly.MSG_RENAME_VARIABLE = 'Variable umbenennen...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = 'Alle "%1" Variablen umbenennen in:';
+    Blockly.Msg.CHANGE_VALUE_TITLE = 'Wert ändern:'; 
+    Blockly.Msg.NEW_VARIABLE = 'Neue Variable...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = 'Neuer Variablenname:';
+    Blockly.Msg.RENAME_VARIABLE = 'Variable umbenennen...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Alle "%1" Variablen umbenennen in:';
 
 // Toolbox.
-    Blockly.MSG_VARIABLE_CATEGORY = 'Variablen';
-    Blockly.MSG_PROCEDURE_CATEGORY = 'Prozeduren';
+    Blockly.Msg.VARIABLE_CATEGORY = 'Variablen';
+    Blockly.Msg.PROCEDURE_CATEGORY = 'Prozeduren';
 
 // Warnings/Errors
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "Dieser Block darf nicht in einer Definition sein"; 
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Wählen Sie einen gültigen Eintrag im Dropdown."; 
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "Das ist ein duplizierter Ereignisbehandler für diese Komponente."; 
-    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Komponente existiert nicht";
-    Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "Dieser Block ist nicht definiert. Diesen Block löschen!";
-    Blockly.ERROR_BREAK_ONLY_IN_LOOP = "Der Break-Block sollte nur innerhalb von Schleifen verwendet werden"; 
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "Dieser Block darf nicht in einer Definition sein"; 
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Wählen Sie einen gültigen Eintrag im Dropdown."; 
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = "Das ist ein duplizierter Ereignisbehandler für diese Komponente."; 
+    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Komponente existiert nicht";
+    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "Dieser Block ist nicht definiert. Diesen Block löschen!";
+    Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "Der Break-Block sollte nur innerhalb von Schleifen verwendet werden"; 
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';
