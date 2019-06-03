@@ -59,14 +59,21 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   Tree componentTree;
   Tree blockTree;
   DropDownButton dropDownButton;
+  final FileUpload file = new FileUpload();
+  final PopupPanel customPopup = new PopupPanel();
+  boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
     buildTrees();
-    final FileUpload file = new FileUpload();
     file.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent changeEvent) {
-        loadJSONfile(file, true);
+        if (customPopupShowing) {
+          loadJSONfile(file, false);
+        }
+        else {
+          loadJSONfile(file, true);
+        }
       }
     });
     PopupPanel sp = new PopupPanel();
@@ -111,89 +118,95 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       JSONObject jsonSet = JSONParser.parseStrict(property.getValue()).isObject();
       loadComponents(jsonSet);
       loadGlobalBlocks(jsonSet);
+    } else {
+      clearSelections();
     }
-    final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
-    final PopupPanel subsetPanel = new PopupPanel();
-    VerticalPanel componentPanel = new VerticalPanel();
-    VerticalPanel blockPanel = new VerticalPanel();
-    HorizontalPanel loadPanel = new HorizontalPanel();
-    HorizontalPanel savePanel = new HorizontalPanel();
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    VerticalPanel saveLoadPanel = new VerticalPanel();
-    final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
-    ScrollPanel blockScroll = new ScrollPanel(blockPanel);
 
-    componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
-    componentPanel.add(componentTree);
-    blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
-    blockPanel.add(blockTree);
+    if (customPopup.getTitle() != MESSAGES.blockSelectorBoxCaption()) {
+      // This is a test to see if the popup has been initialized, but it might be better to just
+      // use a flag.
+      final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
+      VerticalPanel componentPanel = new VerticalPanel();
+      VerticalPanel blockPanel = new VerticalPanel();
+      HorizontalPanel loadPanel = new HorizontalPanel();
+      HorizontalPanel savePanel = new HorizontalPanel();
+      HorizontalPanel buttonPanel = new HorizontalPanel();
+      VerticalPanel saveLoadPanel = new VerticalPanel();
+      final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
+      ScrollPanel blockScroll = new ScrollPanel(blockPanel);
 
-    final FileUpload file = new FileUpload();
-    Button loadButton = new Button("Load from File"); // TODO: Need to internationalize
-    loadButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        loadJSONfile(file, false);
-      }
-    });
-    Button saveButton = new Button(MESSAGES.saveAsButton());
-    final TextBox saveFileName = new TextBox();
-    saveButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        saveFile(saveFileName);
-      }
-    });
-    loadPanel.add(file);
-    loadPanel.add(loadButton);
-    savePanel.add(saveFileName);
-    savePanel.add(saveButton);
-    saveLoadPanel.add(loadPanel);
-    saveLoadPanel.add(savePanel);
-    Button clearButton = new Button(MESSAGES.clearButton());
-    Button initializeButton = new Button("Match Project"); // TODO: Internationalize
-    clearButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        clearSelections();
-      }
-    });
-    initializeButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        matchProject();
-      }
-    });
-    Button cancelButton = new Button(MESSAGES.cancelButton());
-    Button okButton = new Button(MESSAGES.okButton());
-    buttonPanel.add(clearButton);
-    buttonPanel.add(initializeButton);
-    buttonPanel.add(cancelButton);
-    cancelButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        subsetPanel.hide();
-      }
-    });
-    okButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        property.setValue(createJSONString());
-        updateValue();
-        subsetPanel.hide();
-      }
-    });
-    buttonPanel.add(okButton);
-    saveLoadPanel.add(buttonPanel);
-    treePanel.addSouth(saveLoadPanel, 15 );
-    treePanel.addWest(componentScroll, 50);
-    treePanel.addEast(blockScroll, 50);
-    subsetPanel.add(treePanel);
-    subsetPanel.setHeight("600px");
-    subsetPanel.setWidth("600px");
-    subsetPanel.center();
-    subsetPanel.setTitle(MESSAGES.blockSelectorBoxCaption());
-    subsetPanel.show();
+      componentPanel.add(new Label(MESSAGES.sourceStructureBoxCaption()));
+      componentPanel.add(componentTree);
+      blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
+      blockPanel.add(blockTree);
+
+      Button loadButton = new Button(MESSAGES.fileUploadWizardCaption()); // TODO: Need to internationalize
+      loadButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          file.click();
+        }
+      });
+      Button saveButton = new Button(MESSAGES.saveAsButton());
+      final TextBox saveFileName = new TextBox();
+      saveButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          saveFile(saveFileName);
+        }
+      });
+      loadPanel.add(loadButton);
+      savePanel.add(saveFileName);
+      savePanel.add(saveButton);
+      saveLoadPanel.add(loadPanel);
+      saveLoadPanel.add(savePanel);
+      Button clearButton = new Button(MESSAGES.clearButton());
+      Button initializeButton = new Button("Match Project"); // TODO: Internationalize
+      clearButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          clearSelections();
+        }
+      });
+      initializeButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          matchProject();
+        }
+      });
+      Button cancelButton = new Button(MESSAGES.cancelButton());
+      Button okButton = new Button(MESSAGES.okButton());
+      buttonPanel.add(clearButton);
+      buttonPanel.add(initializeButton);
+      buttonPanel.add(cancelButton);
+      cancelButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          customPopup.hide();
+        }
+      });
+      okButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          property.setValue(createJSONString());
+          updateValue();
+          customPopupShowing = false;
+          customPopup.hide();
+        }
+      });
+      buttonPanel.add(okButton);
+      saveLoadPanel.add(buttonPanel);
+      treePanel.addSouth(saveLoadPanel, 15);
+      treePanel.addWest(componentScroll, 50);
+      treePanel.addEast(blockScroll, 50);
+      customPopup.add(treePanel);
+      customPopup.setHeight("600px");
+      customPopup.setWidth("600px");
+      customPopup.center();
+      customPopup.setTitle(MESSAGES.blockSelectorBoxCaption());
+    }
+    customPopupShowing = true;
+    customPopup.show();
   }
 
   private void buildTrees() {
@@ -474,10 +487,9 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       var reader = new FileReader();
       reader.onload = function(e) {
         var loadedstr = reader.result;
+        $wnd.load_trees(loadedstr);
         if (doUpdate) {
           $wnd.update_value(loadedstr);
-        } else {
-          $wnd.load_trees(loadedstr);
         }
       }
       reader.readAsText(selectedFile);
