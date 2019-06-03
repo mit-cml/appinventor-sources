@@ -68,15 +68,64 @@
   <property name="build.static.dir" location="${build.war.dir}/static" />
 
   <!-- =====================================================================
+       Check whether or not the documentation needs to be (re-)compiled
+       ===================================================================== -->
+  <target name="CheckDocs">
+    <uptodate property="Docs.uptodate">
+      <srcfiles dir="${appinventor.dir}/docs/markdown">
+        <exclude name="_layouts/*" />
+        <exclude name="Gemfile*" />
+        <exclude name="_config.yml" />
+        <exclude name=".sass-cache/**/*" />
+      </srcfiles>
+      <firstmatchmapper>
+        <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
+        <globmapper from="*" to="${appinventor.dir}/docs/html/*" />
+      </firstmatchmapper>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       Builds the documentation from the corresponding Markdown files.
+       ===================================================================== -->
+  <target name="BuildDocs" depends="components_Markdown,CheckDocs"
+          unless="Docs.uptodate">
+    <!-- We set failifexecutionfails to false so the whole build doesn't fail
+         if the developer doesn't have Jekyll set up -->
+    <exec executable="jekyll" failonerror="true" failifexecutionfails="false">
+      <arg value="build" />
+      <arg value="-s" />
+      <arg value="${docs.dir}/markdown" />
+      <arg value="--layouts" />
+      <arg value="${docs.dir}/markdown/_layouts" />
+      <arg value="-d" />
+      <arg value="${docs.dir}/html" />
+    </exec>
+  </target>
+
+  <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,blocklyeditor_BlocklyCompile,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war" />
-      <fileset dir="${docs.dir}"/>
+      <fileset dir="${docs.dir}">
+        <include name="companions/*"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html">
+        <include name="index.html"/>
+        <include name="reference/**/*"/>
+        <exclude name="static/*"/>
+        <exclude name="assets/*"/>
+        <exclude name="images/*"/>
+        <exclude name="js/*"/>
+        <exclude name="css/*"/>
+        <!-- Jekyll generates this even if we don't include the plugin -->
+        <exclude name="feed.xml"/>
+      </fileset>
     </copy>
     <copy todir="${build.static.dir}/css" flatten="true">
       <fileset dir="${lib.dir}/blockly">
@@ -84,6 +133,9 @@
       </fileset>
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*.css"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static/css">
+        <include name="*"/>
       </fileset>
     </copy>
     <mkdir dir="${build.static.dir}/media"/>
@@ -109,6 +161,9 @@
         <include name="closure-library/closure/goog/css/dialog.css"/>
         <include name="closure-library/closure/goog/css/hsvapalette.css"/>
         <include name="closure-library/closure/goog/deps.js"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static">
+        <include name="js/*"/>
       </fileset>
     </copy>
     <!-- Resources for Maps designer view -->

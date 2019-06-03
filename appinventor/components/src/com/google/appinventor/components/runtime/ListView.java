@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -393,6 +394,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The color of the listview background.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -423,6 +425,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * alpha, red, green, and blue components
    */
   @SimpleProperty(description = "The color of the item when it is selected.")
+  @IsColor
   public int SelectionColor() {
     return selectionColor;
   }
@@ -457,6 +460,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The text color of the listview items.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }

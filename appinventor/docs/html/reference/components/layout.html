@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Layout</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://groups.google.com/forum/#!forum/mitappinventortest"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Layout</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="layout">Layout</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#HorizontalArrangement">HorizontalArrangement</a></li>
+  <li><a href="#HorizontalScrollArrangement">HorizontalScrollArrangement</a></li>
+  <li><a href="#TableArrangement">TableArrangement</a></li>
+  <li><a href="#VerticalArrangement">VerticalArrangement</a></li>
+  <li><a href="#VerticalScrollArrangement">VerticalScrollArrangement</a></li>
+</ul>
+
+<h2 id="HorizontalArrangement">HorizontalArrangement</h2>
+
+<h3 id="HorizontalArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="HorizontalArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
+  <dd>A number that encodes how contents of the HorizontalArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dt id="HorizontalArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
+  <dd>A number that encodes how the contents of the HorizontalArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dt id="HorizontalArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the background color of the HorizontalArrangement</dd>
+  <dt id="HorizontalArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the HorizontalArrangement, measured in pixels.</dd>
+  <dt id="HorizontalArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the HorizontalArrangement as a percentage of the height of the Screen.</dd>
+  <dt id="HorizontalArrangement.Image" class="text"><em>Image</em></dt>
+  <dd>Returns the path of the background image of the HorizontalArrangement.</dd>
+  <dt id="HorizontalArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the HorizontalArrangement is visible.</dd>
+  <dt id="HorizontalArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the HorizontalArrangement, measured in pixels.</dd>
+  <dt id="HorizontalArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the HorizontalArrangement as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h2 id="HorizontalScrollArrangement">HorizontalScrollArrangement</h2>
+
+<h3 id="HorizontalScrollArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="HorizontalScrollArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
+  <dd>A number that encodes how contents of the HorizontalScrollArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dt id="HorizontalScrollArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
+  <dd>A number that encodes how the contents of the HorizontalScrollArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dt id="HorizontalScrollArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the background color of the HorizontalScrollArrangement</dd>
+  <dt id="HorizontalScrollArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the HorizontalScrollArrangement, measured in pixels.</dd>
+  <dt id="HorizontalScrollArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the HorizontalScrollArrangement as a percentage of the height of the Screen.</dd>
+  <dt id="HorizontalScrollArrangement.Image" class="text"><em>Image</em></dt>
+  <dd>Returns the path of the background image of the HorizontalScrollArrangement.</dd>
+  <dt id="HorizontalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the HorizontalScrollArrangement is visible.</dd>
+  <dt id="HorizontalScrollArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the HorizontalScrollArrangement, measured in pixels.</dd>
+  <dt id="HorizontalScrollArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the HorizontalScrollArrangement as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h2 id="TableArrangement">TableArrangement</h2>
+
+<h3 id="TableArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TableArrangement.Columns" class="number do"><em>Columns</em></dt>
+  <dd>Columns property getter method.</dd>
+  <dt id="TableArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the TableArrangement, measured in pixels.</dd>
+  <dt id="TableArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the TableArrangement as a percentage of the height of the Screen.</dd>
+  <dt id="TableArrangement.Rows" class="number do"><em>Rows</em></dt>
+  <dd>Rows property getter method.</dd>
+  <dt id="TableArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the TableArrangement is visible.</dd>
+  <dt id="TableArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the TableArrangement, measured in pixels.</dd>
+  <dt id="TableArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the TableArrangement as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h2 id="VerticalArrangement">VerticalArrangement</h2>
+
+<h3 id="VerticalArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="VerticalArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
+  <dd>A number that encodes how contents of the VerticalArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dt id="VerticalArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
+  <dd>A number that encodes how the contents of the VerticalArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dt id="VerticalArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the background color of the VerticalArrangement</dd>
+  <dt id="VerticalArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the VerticalArrangement, measured in pixels.</dd>
+  <dt id="VerticalArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the VerticalArrangement as a percentage of the height of the Screen.</dd>
+  <dt id="VerticalArrangement.Image" class="text"><em>Image</em></dt>
+  <dd>Returns the path of the background image of the VerticalArrangement.</dd>
+  <dt id="VerticalArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the VerticalArrangement is visible.</dd>
+  <dt id="VerticalArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the VerticalArrangement, measured in pixels.</dd>
+  <dt id="VerticalArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the VerticalArrangement as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h2 id="VerticalScrollArrangement">VerticalScrollArrangement</h2>
+
+<h3 id="VerticalScrollArrangement-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="VerticalScrollArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
+  <dd>A number that encodes how contents of the VerticalScrollArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dt id="VerticalScrollArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
+  <dd>A number that encodes how the contents of the VerticalScrollArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dt id="VerticalScrollArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the background color of the VerticalScrollArrangement</dd>
+  <dt id="VerticalScrollArrangement.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the VerticalScrollArrangement, measured in pixels.</dd>
+  <dt id="VerticalScrollArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the VerticalScrollArrangement as a percentage of the height of the Screen.</dd>
+  <dt id="VerticalScrollArrangement.Image" class="text"><em>Image</em></dt>
+  <dd>Returns the path of the background image of the VerticalScrollArrangement.</dd>
+  <dt id="VerticalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the VerticalScrollArrangement is visible.</dd>
+  <dt id="VerticalScrollArrangement.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the VerticalScrollArrangement, measured in pixels.</dd>
+  <dt id="VerticalScrollArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the VerticalScrollArrangement as a percentage of the width of the Screen.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">Unported License Terms of Service</a>
+		</li>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2019 Massachusetts Institute of Technology</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://groups.google.com/forum/#!forum/mitappinventortest">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+		<div>
+		    <div>
+			<span>GitHub:</span>
+			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                           target="_blank">mit-cml</a>
+			<div>
+			</div>
+	            </div>
+	        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

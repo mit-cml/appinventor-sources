@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -193,6 +194,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The background color of the input box.  You can choose " +
       "a color by name in the Designer or in the Blocks Editor.  The " +
       "default background color is 'default' (shaded 3-D look).")
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -428,6 +430,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The color for the text.  You can choose a color by name " +
       "in the Designer or in the Blocks Editor.  The default text color is " +
       "black.")
+  @IsColor
   public int TextColor() {
     return textColor;
   }

@@ -204,12 +204,12 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set the zoom level of the map.</p>
-   * <p>Valid values of ZoomLevel are dependent on the tile provider and the latitude and
+   * Set the zoom level of the map.
+   * Valid values of ZoomLevel are dependent on the tile provider and the latitude and
    * longitude of the map. For example, zoom levels are more constrained over oceans than dense
    * city centers to conserve space for storing tiles, so valid values may be 1-7 over ocean and
    * 1-18 over cities. Tile providers may send warning or error tiles if the zoom level is too
-   * great for the server to support.</p>
+   * great for the server to support.
    *
    * @param zoom New zoom level.
    */
@@ -221,7 +221,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Get the zoom level of the map.</p>
+   * Get the zoom level of the map.
    *
    * @return Returns the current zoom level of the map.
    */
@@ -237,8 +237,9 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set whether the user can zoom the map using touch gestures. This value does not affect
-   * whether the user can zoom using the zoom controls from {@link #ShowZoom}.</p>
+   * Set whether the user can zoom the map using touch gestures. This value does not affect
+   * whether the user can zoom using the zoom controls provided by
+   * <a href="#Map.ShowZoom">ShowZoom</a>.
    *
    * @param zoom If true, then the user can use pinch/expand gestures to change the map zoom level.
    */
@@ -274,12 +275,12 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set the type of map tile used for the base tile layer. Valid values are:</p>
-   * <ol>
-   * <li>Roads</li>
-   * <li>Aerial</li>
-   * <li>Terrain</li>
-   * </ol>
+   * Set the type of map tile used for the base tile layer.
+   * Valid values are:
+   *
+   *  1. Roads
+   *  2. Aerial
+   *  3. Terrain
    *
    * @param type Integer identifying the tile set to use for the map's base layer.
    */

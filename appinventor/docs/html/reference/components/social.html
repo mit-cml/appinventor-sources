@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Social</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://groups.google.com/forum/#!forum/mitappinventortest"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Social</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="social">Social</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#ContactPicker">ContactPicker</a></li>
+  <li><a href="#EmailPicker">EmailPicker</a></li>
+  <li><a href="#PhoneCall">PhoneCall</a></li>
+  <li><a href="#PhoneNumberPicker">PhoneNumberPicker</a></li>
+  <li><a href="#Sharing">Sharing</a></li>
+  <li><a href="#Texting">Texting</a></li>
+  <li><a href="#Twitter">Twitter</a></li>
+</ul>
+
+<h2 id="ContactPicker">ContactPicker</h2>
+
+<h3 id="ContactPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ContactPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the button’s background color</dd>
+  <dt id="ContactPicker.ContactName" class="text ro bo"><em>ContactName</em></dt>
+  <dd>Name property getter method.</dd>
+  <dt id="ContactPicker.ContactUri" class="text ro bo"><em>ContactUri</em></dt>
+  <dd>URI that specifies the location of the contact on the device.</dd>
+  <dt id="ContactPicker.EmailAddress" class="text ro bo"><em>EmailAddress</em></dt>
+  <dd>EmailAddress property getter method.</dd>
+  <dt id="ContactPicker.EmailAddressList" class="list ro bo"><em>EmailAddressList</em></dt>
+  <dd>EmailAddressList property getter method.</dd>
+  <dt id="ContactPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If set, user can tap ContactPicker to cause action.</dd>
+  <dt id="ContactPicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>If set, ContactPicker text is displayed in bold.</dd>
+  <dt id="ContactPicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>If set, ContactPicker text is displayed in italics.</dd>
+  <dt id="ContactPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Point size for ContactPicker text.</dd>
+  <dt id="ContactPicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dd>Font family for ContactPicker text.</dd>
+  <dt id="ContactPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the ContactPicker, measured in pixels.</dd>
+  <dt id="ContactPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the ContactPicker as a percentage of the height of the Screen.</dd>
+  <dt id="ContactPicker.Image" class="text"><em>Image</em></dt>
+  <dd>Image to display on button.</dd>
+  <dt id="ContactPicker.PhoneNumber" class="text ro bo"><em>PhoneNumber</em></dt>
+  <dd>PhoneNumber property getter method.</dd>
+  <dt id="ContactPicker.PhoneNumberList" class="list ro bo"><em>PhoneNumberList</em></dt>
+  <dd>PhoneNumberList property getter method.</dd>
+  <dt id="ContactPicker.Picture" class="text ro bo"><em>Picture</em></dt>
+  <dd>Picture URI for this contact, which can be
+ used to retrieve the contact’s photo and other fields.</dd>
+  <dt id="ContactPicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Returns the style of the button.</dd>
+  <dt id="ContactPicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown  for a ContactPicker that as an image as background.</dd>
+  <dt id="ContactPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Text to display on ContactPicker.</dd>
+  <dt id="ContactPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Left, center, or right.</dd>
+  <dt id="ContactPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Color for button text.</dd>
+  <dt id="ContactPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the ContactPicker is visible.</dd>
+  <dt id="ContactPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the ContactPicker, measured in pixels.</dd>
+  <dt id="ContactPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the ContactPicker as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h3 id="ContactPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ContactPicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="ContactPicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the ContactPicker is clicked or the list is shown
+ using the Open block.  This event occurs before the list of items is displayed, and 
+ can be used to prepare the list before it is shown.</dd>
+  <dt id="ContactPicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the ContactPicker so it is now possible to click it.</dd>
+  <dt id="ContactPicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the ContactPicker so it is now no longer possible to click it.</dd>
+  <dt id="ContactPicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the ContactPicker was pressed down.</dd>
+  <dt id="ContactPicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the ContactPicker has been released.</dd>
+</dl>
+
+<h3 id="ContactPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ContactPicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+  <dt id="ContactPicker.ViewContact" class="method"><i></i> ViewContact(<em class="text">uri</em>)</dt>
+  <dd>view a contact via its URI</dd>
+</dl>
+
+<h2 id="EmailPicker">EmailPicker</h2>
+
+<h3 id="EmailPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="EmailPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is ‘default’ (shaded 3-D look).</dd>
+  <dt id="EmailPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Whether the user can enter text into the EmailPicker.  By default, this is true.</dd>
+  <dt id="EmailPicker.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Whether the font for the text should be bold.  By default, it is not.</dd>
+  <dt id="EmailPicker.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Whether the text should appear in italics.  By default, it does not.</dd>
+  <dt id="EmailPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>The font size for the text.  By default, it is 14.0 points.</dd>
+  <dt id="EmailPicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dd>The font for the text.  The value can be changed in the Designer.</dd>
+  <dt id="EmailPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the EmailPicker, measured in pixels.</dd>
+  <dt id="EmailPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the EmailPicker as a percentage of the height of the Screen.</dd>
+  <dt id="EmailPicker.Hint" class="text"><em>Hint</em></dt>
+  <dd>Text that should appear faintly in the EmailPicker to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.</dd>
+  <dt id="EmailPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Returns the textbox contents.</dd>
+  <dt id="EmailPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Whether the text should be left justified, centered, or right justified.  By default, text is left justified.</dd>
+  <dt id="EmailPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.</dd>
+  <dt id="EmailPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the EmailPicker is visible.</dd>
+  <dt id="EmailPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the EmailPicker, measured in pixels.</dd>
+  <dt id="EmailPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the EmailPicker as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h3 id="EmailPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="EmailPicker.GotFocus">GotFocus()</dt>
+  <dd>Event raised when this component is selected for input, such as by
+ the user touching it.</dd>
+  <dt id="EmailPicker.LostFocus">LostFocus()</dt>
+  <dd>Event raised when the EmailPicker is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+</dl>
+
+<h3 id="EmailPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="EmailPicker.RequestFocus" class="method"><i></i> RequestFocus()</dt>
+  <dd>Sets the EmailPicker active.</dd>
+</dl>
+
+<h2 id="PhoneCall">PhoneCall</h2>
+
+<h3 id="PhoneCall-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PhoneCall.PhoneNumber" class="text"><em>PhoneNumber</em></dt>
+  <dd>PhoneNumber property getter method.</dd>
+</dl>
+
+<h3 id="PhoneCall-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PhoneCall.IncomingCallAnswered">IncomingCallAnswered(<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that an incoming phone call is answered. phoneNumber is the incoming call phone number.</dd>
+  <dt id="PhoneCall.PhoneCallEnded">PhoneCallEnded(<em class="number">status</em>,<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.</dd>
+  <dt id="PhoneCall.PhoneCallStarted">PhoneCallStarted(<em class="number">status</em>,<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.</dd>
+</dl>
+
+<h3 id="PhoneCall-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PhoneCall.MakePhoneCall" class="method"><i></i> MakePhoneCall()</dt>
+  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+  <dt id="PhoneCall.MakePhoneCallDirect" class="method"><i></i> MakePhoneCallDirect()</dt>
+  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+</dl>
+
+<h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
+
+<h3 id="PhoneNumberPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PhoneNumberPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Returns the button’s background color</dd>
+  <dt id="PhoneNumberPicker.ContactName" class="text ro bo"><em>ContactName</em></dt>
+  <dd>Name property getter method.</dd>
+  <dt id="PhoneNumberPicker.ContactUri" class="text ro bo"><em>ContactUri</em></dt>
+  <dd>URI that specifies the location of the contact on the device.</dd>
+  <dt id="PhoneNumberPicker.EmailAddress" class="text ro bo"><em>EmailAddress</em></dt>
+  <dd>EmailAddress property getter method.</dd>
+  <dt id="PhoneNumberPicker.EmailAddressList" class="list ro bo"><em>EmailAddressList</em></dt>
+  <dd>EmailAddressList property getter method.</dd>
+  <dt id="PhoneNumberPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If set, user can tap ContactPicker to cause action.</dd>
+  <dt id="PhoneNumberPicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>If set, ContactPicker text is displayed in bold.</dd>
+  <dt id="PhoneNumberPicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>If set, ContactPicker text is displayed in italics.</dd>
+  <dt id="PhoneNumberPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Point size for ContactPicker text.</dd>
+  <dt id="PhoneNumberPicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dd>Font family for ContactPicker text.</dd>
+  <dt id="PhoneNumberPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the vertical height of the ContactPicker, measured in pixels.</dd>
+  <dt id="PhoneNumberPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the vertical height of the ContactPicker as a percentage of the height of the Screen.</dd>
+  <dt id="PhoneNumberPicker.Image" class="text"><em>Image</em></dt>
+  <dd>Image to display on button.</dd>
+  <dt id="PhoneNumberPicker.PhoneNumber" class="text ro bo"><em>PhoneNumber</em></dt>
+  <dd>PhoneNumber property getter method.</dd>
+  <dt id="PhoneNumberPicker.PhoneNumberList" class="list ro bo"><em>PhoneNumberList</em></dt>
+  <dd>PhoneNumberList property getter method.</dd>
+  <dt id="PhoneNumberPicker.Picture" class="text ro bo"><em>Picture</em></dt>
+  <dd>Picture URI for this contact, which can be
+ used to retrieve the contact’s photo and other fields.</dd>
+  <dt id="PhoneNumberPicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Returns the style of the button.</dd>
+  <dt id="PhoneNumberPicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown  for a ContactPicker that as an image as background.</dd>
+  <dt id="PhoneNumberPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Text to display on ContactPicker.</dd>
+  <dt id="PhoneNumberPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Left, center, or right.</dd>
+  <dt id="PhoneNumberPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Color for button text.</dd>
+  <dt id="PhoneNumberPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Returns true iff the ContactPicker is visible.</dd>
+  <dt id="PhoneNumberPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the ContactPicker, measured in pixels.</dd>
+  <dt id="PhoneNumberPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the ContactPicker as a percentage of the width of the Screen.</dd>
+</dl>
+
+<h3 id="PhoneNumberPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PhoneNumberPicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="PhoneNumberPicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the ContactPicker is clicked or the list is shown
+ using the Open block.  This event occurs before the list of items is displayed, and 
+ can be used to prepare the list before it is shown.</dd>
+  <dt id="PhoneNumberPicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the ContactPicker so it is now possible to click it.</dd>
+  <dt id="PhoneNumberPicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the ContactPicker so it is now no longer possible to click it.</dd>
+  <dt id="PhoneNumberPicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the ContactPicker was pressed down.</dd>
+  <dt id="PhoneNumberPicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the ContactPicker has been released.</dd>
+</dl>
+
+<h3 id="PhoneNumberPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PhoneNumberPicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+  <dt id="PhoneNumberPicker.ViewContact" class="method"><i></i> ViewContact(<em class="text">uri</em>)</dt>
+  <dd>view a contact via its URI</dd>
+</dl>
+
+<h2 id="Sharing">Sharing</h2>
+
+<h3 id="Sharing-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Sharing.ShareFile" class="method"><i></i> ShareFile(<em class="text">file</em>)</dt>
+  <dd>Shares a file through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the file inserted on it.</dd>
+  <dt id="Sharing.ShareFileWithMessage" class="method"><i></i> ShareFileWithMessage(<em class="text">file</em>,<em class="text">message</em>)</dt>
+  <dd>Shares both a file and a message through any capable application installed on the phone by displaying a list of available apps and allowing the user to  choose one from the list. The selected app will open with the file and message inserted on it.</dd>
+  <dt id="Sharing.ShareMessage" class="method"><i></i> ShareMessage(<em class="text">message</em>)</dt>
+  <dd>Shares a message through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the message inserted on it.</dd>
+</dl>
+
+<h2 id="Texting">Texting</h2>
+
+<h3 id="Texting-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Texting.GoogleVoiceEnabled" class="boolean"><em>GoogleVoiceEnabled</em></dt>
+  <dd>If true, then SendMessage will attempt to send messages over Wifi using Google Voice.  This requires that the Google Voice app must be installed and set up on the phone or tablet, with a Google Voice account.  If GoogleVoiceEnabled is false, the device must have phone and texting service in order to send or receive messages with this component.</dd>
+  <dt id="Texting.Message" class="text"><em>Message</em></dt>
+  <dd>The message that will be sent when the SendMessage method is called.</dd>
+  <dt id="Texting.PhoneNumber" class="text"><em>PhoneNumber</em></dt>
+  <dd>Sets the phone number to send the text message to when the SendMessage function is called.</dd>
+  <dt id="Texting.ReceivingEnabled" class="number"><em>ReceivingEnabled</em></dt>
+  <dd>If set to 1 (OFF) no messages will be received.  If set to 2 (FOREGROUND) or3 (ALWAYS) the component will respond to messages if it is running. If the app is not running then the message will be discarded if set to 2 (FOREGROUND). If set to 3 (ALWAYS) and the app is not running the phone will show a notification.  Selecting the notification will bring up the app and signal the MessageReceived event.  Messages received when the app is dormant will be queued, and so several MessageReceived events might appear when the app awakens.  As an app developer, it would be a good idea to give your users control over this property, so they can make their phones ignore text messages when your app is installed.</dd>
+</dl>
+
+<h3 id="Texting-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Texting.MessageReceived">MessageReceived(<em class="text">number</em>,<em class="text">messageText</em>)</dt>
+  <dd>Event that’s raised when a text message is received by the phone.</dd>
+</dl>
+
+<h3 id="Texting-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Texting.SendMessage" class="method"><i></i> SendMessage()</dt>
+  <dd>Send a text message</dd>
+  <dt id="Texting.SendMessageDirect" class="method"><i></i> SendMessageDirect()</dt>
+  <dd>Send a text message directly</dd>
+</dl>
+
+<h2 id="Twitter">Twitter</h2>
+
+<h3 id="Twitter-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Twitter.ConsumerKey" class="text"><em>ConsumerKey</em></dt>
+  <dd>ConsumerKey property getter method.</dd>
+  <dt id="Twitter.ConsumerSecret" class="text"><em>ConsumerSecret</em></dt>
+  <dd>ConsumerSecret property getter method.</dd>
+  <dt id="Twitter.DirectMessages" class="list ro bo"><em>DirectMessages</em></dt>
+  <dd>This property contains a list of the most recent messages mentioning the logged-in user.  Initially, the list is empty.  To set it, the program must: &lt;ol&gt; &lt;li&gt; Call the <code>Authorize</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>Authorized</code> event.&lt;/li&gt; &lt;li&gt; Call the <code>RequestDirectMessages</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>DirectMessagesReceived</code> event.&lt;/li&gt;&lt;/ol&gt;
+The value of this property will then be set to the list of direct messages retrieved (and maintain that value until any subsequent call to <code>RequestDirectMessages</code>).</dd>
+  <dt id="Twitter.Followers" class="list ro bo"><em>Followers</em></dt>
+  <dd>This property contains a list of the followers of the logged-in user.  Initially, the list is empty.  To set it, the program must: &lt;ol&gt; &lt;li&gt; Call the <code>Authorize</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>IsAuthorized</code> event.&lt;/li&gt; &lt;li&gt; Call the <code>RequestFollowers</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>FollowersReceived</code> event.&lt;/li&gt;&lt;/ol&gt;
+The value of this property will then be set to the list of followers (and maintain its value until any subsequent call to <code>RequestFollowers</code>).</dd>
+  <dt id="Twitter.FriendTimeline" class="list ro bo"><em>FriendTimeline</em></dt>
+  <dd>This property contains the 20 most recent messages of users being followed.  Initially, the list is empty.  To set it, the program must: &lt;ol&gt; &lt;li&gt; Call the <code>Authorize</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>IsAuthorized</code> event.&lt;/li&gt; &lt;li&gt; Specify users to follow with one or more calls to the <code>Follow</code> method.&lt;/li&gt; &lt;li&gt; Call the <code>RequestFriendTimeline</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>FriendTimelineReceived</code> event.&lt;/li&gt; &lt;/ol&gt;
+The value of this property will then be set to the list of messages (and maintain its value until any subsequent call to <code>RequestFriendTimeline</code>.</dd>
+  <dt id="Twitter.Mentions" class="list ro bo"><em>Mentions</em></dt>
+  <dd>This property contains a list of mentions of the logged-in user.  Initially, the list is empty.  To set it, the program must: &lt;ol&gt; &lt;li&gt; Call the <code>Authorize</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>IsAuthorized</code> event.&lt;/li&gt; &lt;li&gt; Call the <code>RequestMentions</code> method.&lt;/li&gt; &lt;li&gt; Wait for the <code>MentionsReceived</code> event.&lt;/li&gt;&lt;/ol&gt;
+The value of this property will then be set to the list of mentions (and will maintain its value until any subsequent calls to <code>RequestMentions</code>).</dd>
+  <dt id="Twitter.SearchResults" class="list ro bo"><em>SearchResults</em></dt>
+  <dd>This property, which is initially empty, is set to a list of search results after the program: &lt;ol&gt;&lt;li&gt;Calls the <code>SearchTwitter</code> method.&lt;/li&gt; &lt;li&gt;Waits for the <code>SearchSuccessful</code> event.&lt;/li&gt;&lt;/ol&gt;
+The value of the property will then be the same as the parameter to <code>SearchSuccessful</code>.  Note that it is not necessary to call the <code>Authorize</code> method before calling <code>SearchTwitter</code>.</dd>
+  <dt id="Twitter.TwitPic_API_Key" class="text bo"><em>TwitPic_API_Key</em></dt>
+  <dd>TwitPicAPIkey property getter method.</dd>
+  <dt id="Twitter.Username" class="text ro bo"><em>Username</em></dt>
+  <dd>The user name of the authorized user. Empty if there is no authorized user.</dd>
+</dl>
+
+<h3 id="Twitter-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Twitter.DirectMessagesReceived">DirectMessagesReceived(<em class="list">messages</em>)</dt>
+  <dd>This event is raised when the recent messages requested through <code>RequestDirectMessages</code> have been retrieved. A list of the messages can then be found in the <code>messages</code> parameter or the <code>Messages</code> property.</dd>
+  <dt id="Twitter.FollowersReceived">FollowersReceived(<em class="list">followers2</em>)</dt>
+  <dd>This event is raised when all of the followers of the logged-in user requested through <code>RequestFollowers</code> have been retrieved. A list of the followers can then be found in the <code>followers</code> parameter or the <code>Followers</code> property.</dd>
+  <dt id="Twitter.FriendTimelineReceived">FriendTimelineReceived(<em class="list">timeline</em>)</dt>
+  <dd>This event is raised when the messages requested through <code>RequestFriendTimeline</code> have been retrieved. The <code>timeline</code> parameter and the <code>Timeline</code> property will contain a list of lists, where each sub-list contains a status update of the form (username message)</dd>
+  <dt id="Twitter.IsAuthorized">IsAuthorized()</dt>
+  <dd>This event is raised after the program calls <code>Authorize</code> if the authorization was successful.  It is also called after a call to <code>CheckAuthorized</code> if we already have a valid access token. After this event has been raised, any other method for this component can be called.</dd>
+  <dt id="Twitter.MentionsReceived">MentionsReceived(<em class="list">mentions</em>)</dt>
+  <dd>This event is raised when the mentions of the logged-in user requested through <code>RequestMentions</code> have been retrieved.  A list of the mentions can then be found in the <code>mentions</code> parameter or the <code>Mentions</code> property.</dd>
+  <dt id="Twitter.SearchSuccessful">SearchSuccessful(<em class="list">searchResults</em>)</dt>
+  <dd>This event is raised when the results of the search requested through <code>SearchSuccessful</code> have been retrieved. A list of the results can then be found in the <code>results</code> parameter or the <code>Results</code> property.</dd>
+</dl>
+
+<h3 id="Twitter-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Twitter.Authorize" class="method"><i></i> Authorize()</dt>
+  <dd>Redirects user to login to Twitter via the Web browser using the OAuth protocol if we don’t already have authorization.</dd>
+  <dt id="Twitter.CheckAuthorized" class="method"><i></i> CheckAuthorized()</dt>
+  <dd>Checks whether we already have access, and if so, causes IsAuthorized event handler to be called.</dd>
+  <dt id="Twitter.DeAuthorize" class="method"><i></i> DeAuthorize()</dt>
+  <dd>Removes Twitter authorization from this running app instance</dd>
+  <dt id="Twitter.DirectMessage" class="method"><i></i> DirectMessage(<em class="text">user</em>,<em class="text">message</em>)</dt>
+  <dd>This sends a direct (private) message to the specified user.  The message will be trimmed if it exceeds 160characters. &lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+  <dt id="Twitter.Follow" class="method"><i></i> Follow(<em class="text">user</em>)</dt>
+  <dd>Starts following a user.</dd>
+  <dt id="Twitter.RequestDirectMessages" class="method"><i></i> RequestDirectMessages()</dt>
+  <dd>Requests the 20 most recent direct messages sent to the logged-in user.  When the messages have been retrieved, the system will raise the <code>DirectMessagesReceived</code> event and set the <code>DirectMessages</code> property to the list of messages.&lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+  <dt id="Twitter.RequestFollowers" class="method"><i></i> RequestFollowers()</dt>
+  <dd>Gets who is following you.</dd>
+  <dt id="Twitter.RequestFriendTimeline" class="method"><i></i> RequestFriendTimeline()</dt>
+  <dd>Gets the most recent 20 messages in the user’s timeline.</dd>
+  <dt id="Twitter.RequestMentions" class="method"><i></i> RequestMentions()</dt>
+  <dd>Requests the 20 most recent mentions of the logged-in user.  When the mentions have been retrieved, the system will raise the <code>MentionsReceived</code> event and set the <code>Mentions</code> property to the list of mentions.&lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+  <dt id="Twitter.SearchTwitter" class="method"><i></i> SearchTwitter(<em class="text">query</em>)</dt>
+  <dd>This searches Twitter for the given String query.&lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+  <dt id="Twitter.StopFollowing" class="method"><i></i> StopFollowing(<em class="text">user</em>)</dt>
+  <dd>Stops following a user.</dd>
+  <dt id="Twitter.Tweet" class="method"><i></i> Tweet(<em class="text">status</em>)</dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it exceeds 160 characters. &lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+  <dt id="Twitter.TweetWithImage" class="method"><i></i> TweetWithImage(<em class="text">status</em>,<em class="text">imagePath</em>)</dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text and a path to the image to be uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or invalid, only the text will be tweeted.&lt;p&gt;<u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.&lt;/p&gt;</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">Unported License Terms of Service</a>
+		</li>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2019 Massachusetts Institute of Technology</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://groups.google.com/forum/#!forum/mitappinventortest">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+		<div>
+		    <div>
+			<span>GitHub:</span>
+			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                           target="_blank">mit-cml</a>
+			<div>
+			</div>
+	            </div>
+	        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

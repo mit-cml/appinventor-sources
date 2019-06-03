@@ -8,6 +8,7 @@ package com.google.appinventor.components.scripts;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -27,6 +28,7 @@ import com.google.appinventor.components.annotations.androidmanifest.MetaDataEle
 import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
 import com.google.appinventor.components.annotations.androidmanifest.DataElement;
 import com.google.appinventor.components.annotations.androidmanifest.CategoryElement;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -216,6 +218,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected final String type;
 
+    protected final boolean color;
+
     /**
      * Constructs a Parameter.
      *
@@ -223,8 +227,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * @param type the parameter's Java type (such as "int" or "java.lang.String")
      */
     protected Parameter(String name, String type) {
+      this(name, type, false);
+    }
+
+    protected Parameter(String name, String type, boolean color) {
       this.name = name;
       this.type = type;
+      this.color = color;
     }
 
     /**
@@ -284,6 +293,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       parameters.add(new Parameter(name, type));
     }
 
+    protected void addParameter(String name, String type, boolean color) {
+      parameters.add(new Parameter(name, type, color));
+    }
+
     /**
      * Generates a comma-separated string corresponding to the parameter list,
      * using Yail types (e.g., "number n, text t1").
@@ -341,6 +354,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       implements Cloneable, Comparable<Method> {
     // Inherits name, description, and parameters
     private String returnType;
+    private boolean color;
 
     protected Method(String name, String description, boolean userVisible, boolean deprecated) {
       super(name, description, "Method", userVisible, deprecated);
@@ -349,6 +363,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     protected String getReturnType() {
       return returnType;
+    }
+
+    protected boolean isColor() {
+      return color;
     }
 
     @Override
@@ -381,6 +399,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private boolean readable;
     private boolean writable;
     private String componentInfoName;
+    private boolean color;
 
     protected Property(String name, String description,
                        PropertyCategory category, boolean userVisible, boolean deprecated) {
@@ -400,6 +419,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       that.readable = readable;
       that.writable = writable;
       that.componentInfoName = componentInfoName;
+      that.color = color;
       return that;
     }
 
@@ -473,6 +493,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected boolean isWritable() {
       return writable;
+    }
+
+    protected boolean isColor() {
+      return color;
     }
 
     /**
@@ -1164,6 +1188,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         throw new RuntimeException("Property method is void and has no parameters: "
                                    + propertyName);
       }
+      if (element.getAnnotation(IsColor.class) != null) {
+        property.color = true;
+      }
     } else {
       // It is a setter.
       property.writable = true;
@@ -1172,6 +1199,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                    propertyName);
       }
       typeMirror = parameters.get(0);
+      for (VariableElement ve : ((ExecutableElement) element).getParameters()) {
+        if (ve.getAnnotation(IsColor.class) != null) {
+          property.color = true;
+        }
+      }
     }
 
     // Use typeMirror to set the property's type.
@@ -1387,6 +1419,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         // prior Property element with the same property name, verifying that
         // they are consistent.
         Property newProperty = executableElementToProperty(element, componentInfo.name);
+        if (designerProperty != null
+            && designerProperty.editorType().equals(PropertyTypeConstants.PROPERTY_TYPE_COLOR)) {
+          // Properties that use a color editor should be marked as a color property
+          newProperty.color = true;
+        }
 
         if (componentInfo.properties.containsKey(propertyName)) {
           Property priorProperty = componentInfo.properties.get(propertyName);
@@ -1426,6 +1463,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           priorProperty.userVisible = priorProperty.userVisible && newProperty.userVisible;
           priorProperty.deprecated = priorProperty.deprecated && newProperty.deprecated;
           priorProperty.componentInfoName = componentInfo.name;
+          priorProperty.color = newProperty.color || priorProperty.color;
         } else {
           // Add the new property to the properties map.
           componentInfo.properties.put(propertyName, newProperty);
@@ -1498,7 +1536,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         // Extract the parameters.
         for (VariableElement ve : e.getParameters()) {
           event.addParameter(ve.getSimpleName().toString(),
-                             ve.asType().toString());
+                             ve.asType().toString(),
+                             ve.getAnnotation(IsColor.class) != null);
           updateComponentTypes(ve.asType());
         }
       }
@@ -1552,13 +1591,17 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         // Extract the parameters.
         for (VariableElement ve : e.getParameters()) {
           method.addParameter(ve.getSimpleName().toString(),
-                              ve.asType().toString());
+                              ve.asType().toString(),
+                              ve.getAnnotation(IsColor.class) != null);
           updateComponentTypes(ve.asType());
         }
 
         // Extract the return type.
         if (e.getReturnType().getKind() != TypeKind.VOID) {
           method.returnType = e.getReturnType().toString();
+          if (e.getAnnotation(IsColor.class) != null) {
+            method.color = true;
+          }
           updateComponentTypes(e.getReturnType());
         }
       }
