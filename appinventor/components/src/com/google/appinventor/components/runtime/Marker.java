@@ -182,12 +182,21 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     Longitude(0);
   }
 
+  /**
+   * The type of the map feature. For Marker, this returns the text "Marker".
+   * @return the type of the feature
+   */
   @SimpleProperty
   @Override
   public String Type() {
     return MapFactory.MapFeatureType.TYPE_MARKER;
   }
 
+  /**
+   * The latitude of the marker, in decimal degrees, with positive values representing
+   * degrees north of the equator.
+   * @param latitude the new latitude of the marker. Range: [-90, 90]
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LATITUDE,
       defaultValue = "0")
   @SimpleProperty
@@ -207,6 +216,11 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return location.getLatitude();
   }
 
+  /**
+   * The longitude of the marker, in decimal degrees, with positive values representing
+   * degrees east of the prime meridian.
+   * @param longitude the new longitude of the marker. Range: [-180, 180]
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
       defaultValue = "0")
   @SimpleProperty
@@ -302,6 +316,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return false;
   }
 
+  /**
+   * Sets the width of the marker image, in pixels.
+   * @param width the new width of the marker image
+   */
   @Override
   @SimpleProperty
   public void Width(int width) {
@@ -320,6 +338,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return this.width;
   }
 
+  /**
+   * Sets the width of the marker image, as a percentage of the screen width.
+   * @param pCent the new width, in percent, of the marker image
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void WidthPercent(int pCent) {
@@ -327,6 +349,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeatureSize(this);
   }
 
+  /**
+   * Sets the height of the marker image, in pixels.
+   * @param height the new height of the marker image
+   */
   @Override
   @SimpleProperty
   public void Height(int height) {
@@ -345,6 +371,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return this.height;
   }
 
+  /**
+   * Sets the height of the marker image, as a percentage of the screen height.
+   * @param pCent The new height, in percent, of the marker image.
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void HeightPercent(int pCent) {

@@ -541,3 +541,22 @@ Blockly.BlockSvg.prototype.addSelect = function() {
     block_0 = block_0.getParent();
   } while (block_0);
 };
+
+/**
+ * Load the block's help page in a new window. This version overrides the implementation in Blockly
+ * in order to include the locale query parameter that the documentation page will use to redirect
+ * the user if a translation exists for their language.
+ *
+ * @private
+ */
+Blockly.BlockSvg.prototype.showHelp_ = function() {
+  var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
+  if (url) {
+    var parts = url.split('#');
+    var hereparts = top.location.href.match('[&?]locale=([a-zA-Z-]*)');
+    if (hereparts && hereparts[1].toLowerCase() !== 'en') {
+      parts[0] += '?locale=' + hereparts[1];
+    }
+    window.open(parts.join('#'));
+  }
+};

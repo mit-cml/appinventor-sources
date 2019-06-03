@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -38,6 +39,7 @@ public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements H
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The paint color used to fill in the %type%.")
+  @IsColor
   @Override
   public int FillColor() {
     return fillColor;

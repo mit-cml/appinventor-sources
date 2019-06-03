@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -151,6 +152,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The paint color used to outline the %type%.")
+  @IsColor
   public int StrokeColor() {
     return strokeColor;
   }

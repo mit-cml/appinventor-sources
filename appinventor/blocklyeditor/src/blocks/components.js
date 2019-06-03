@@ -416,7 +416,13 @@ Blockly.Blocks.component_event = {
   },
   helpUrl : function() {
     var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
+    if (url && url[0] == '/') {
+      var parts = url.split('#');
+      parts[1] = this.typeName + '.' + this.eventName;
+      url = parts.join('#');
+    }
+    return url;
   },
 
   getVars: function() {
@@ -591,7 +597,13 @@ Blockly.Blocks.component_method = {
   category : 'Component',
   helpUrl : function() {
       var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-      return Blockly.ComponentBlock.METHODS_HELPURLS[mode];
+      var url = Blockly.ComponentBlock.METHODS_HELPURLS[mode];
+      if (url && url[0] == '/') {
+        var parts = url.split('#');
+        parts[1] = this.typeName + '.' + this.methodName;
+        url = parts.join('#');
+      }
+      return url;
   },
   init: function() {
     this.genericComponentInput = Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT;
@@ -943,7 +955,13 @@ Blockly.Blocks.component_set_get = {
   //this.blockType = 'getter',
   helpUrl : function() {
     var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.PROPERTIES_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.PROPERTIES_HELPURLS[mode];
+    if (url && url[0] == '/') {
+      var parts = url.split('#');
+      parts[1] = this.typeName + '.' + this.propertyName;
+      url = parts.join('#');
+    }
+    return url;
   },
 
   init: function() {

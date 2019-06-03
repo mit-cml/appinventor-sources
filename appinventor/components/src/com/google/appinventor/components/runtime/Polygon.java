@@ -191,7 +191,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
   }
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Gets or sets the sequence of points used to draw holes in the polygon.")
   public YailList HolePoints() {
     if (holePoints.isEmpty()) {
       return YailList.makeEmptyList();

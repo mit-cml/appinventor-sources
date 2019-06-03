@@ -101,7 +101,8 @@ public class LineString extends MapFeatureBase implements MapLineString {
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The type of the map feature.")
+      description = "The type of the map feature. For LineString, this returns "
+          + "the text \"LineString\".")
   @Override
   public String Type() {
     return MapFactory.MapFeatureType.TYPE_LINESTRING;

@@ -101,7 +101,9 @@ public class Rectangle extends PolygonBase implements MapRectangle {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The east edge of the rectangle, in decimal degrees east "
+          + "of the prime meridian.")
   public void EastLongitude(double east) {
     this.east = east;
     clearGeometry();
@@ -117,7 +119,9 @@ public class Rectangle extends PolygonBase implements MapRectangle {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The north edge of the rectangle, in decimal degrees north"
+          + " of the equator.")
   public void NorthLatitude(double north) {
     this.north = north;
     clearGeometry();
@@ -133,7 +137,9 @@ public class Rectangle extends PolygonBase implements MapRectangle {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The south edge of the rectangle, in decimal degrees north"
+          + " of the equator.")
   public void SouthLatitude(double south) {
     this.south = south;
     clearGeometry();
@@ -149,7 +155,9 @@ public class Rectangle extends PolygonBase implements MapRectangle {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The west edge of the rectangle, in decimal degrees east"
+          + " of the equator.")
   public void WestLongitude(double west) {
     this.west = west;
     clearGeometry();
