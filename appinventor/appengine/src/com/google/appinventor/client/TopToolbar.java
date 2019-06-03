@@ -509,9 +509,9 @@ public class TopToolbar extends Composite {
   private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
           exportProject(selectedProjects.get(0));
