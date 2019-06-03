@@ -456,8 +456,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 11
   // For YOUNG_ANDROID_VERESION 184:
   // - Added Switch
+  // For YOUNG_ANDROiD_VERSION 185:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 184;
+  public static final int YOUNG_ANDROID_VERSION = 185;
 
   // ............................... Blocks Language Version Number ...............................
 
