@@ -1,47 +1,18 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
-/**
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Korean strings.
- * @author pillarlee16@gmail.com (Byeongju Lee)
- */
+// -*- mode: javascript; js-indent-level: 2; -*-
+// Copyright 2018-2019 Massachusetts Institute of Technology. All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 'use strict';
 
 goog.provide('AI.Blockly.Msg.ko_kr');
-
 goog.require('Blockly.Msg.ko');
 
-/**
- * Due to the frequency of long strings, the 80-column wrap rule need not apply
- * to message files.
- */
-
 Blockly.Msg.ko.switch_language_to_korean = {
-  // Switch language to Korean.
+  // Switch language to korean.
   category: '',
   helpUrl: '',
   init: function() {
-    Blockly.Msg.ko.switch_blockly_language_to_ko.init();
     Blockly.Msg.UNDO = '실행 취소';
     Blockly.Msg.REDO = '다시 실행';
     Blockly.Msg.CLEAN_UP = '블록 정리';
@@ -116,14 +87,16 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_COLOUR_DARK_GRAY = '짙은 회색';
     Blockly.Msg.LANG_COLOUR_GRAY = '회색';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR = '색상 분리하기';
+    Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_HELPURL = '/reference/blocks/colors.html#split';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP = '각각 0에서 255사이의 빨강, 초록, 파랑색과 투명도값을 가지는 리스트를 반환합니다.';
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR = '색상 만들기';
+    Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_HELPURL = '/reference/blocks/colors.html#make';
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = '주어진 빨강, 초록, 파랑색과 투명도값을 조합한 색상을 만듭니다.';
     Blockly.Msg.LANG_CATEGORY_CONTROLS = '제어';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = '만약';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = '아니고 만약';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = '아니면';
-    Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = '그러면 실행';
+    Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = '이라면 실행';
     Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF = '만약';
     Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = '조건을 추가 또는 삭제하거나 순서를 바꾸어 만약 블럭을 재설정합니다.';
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = '아니고 만약';
@@ -142,7 +115,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = '값';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = '실행';
     Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = '시작 숫자부터 마지막 숫자까지 숫자를 셉니다.\n 각 숫자마다, 현재 숫자를 변수 \"%1\"에 지정하고\n 해당 명령문을 실행합니다.';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = '횟수 반복';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = '횟수 반복하기';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = '인덱스';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = '시작';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = '끝';
@@ -152,7 +125,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = '각';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = '범위내의';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = '시작부터 끝까지 범위 내의 각 간격의 숫자마다 \'실행\' 영역의 블록을 실행합니다.  현재 숫자를 참조하려면 해당 변수 이름의 가져오기 블록을 사용하세요.';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = '리스트 반복';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = '리스트 반복하기';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR = '항목';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST = '리스트';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO = '실행';
@@ -164,15 +137,15 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = '벗어나기';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = '다음 반복 이어나가기';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = '진입되어 있는 반복문 벗어나기';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = '이번 반복 블록의 나머지는 뛰어넘고,\n 다음 반복 블록으로 이어나갑니다.';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = '이번 반복 블록의 나머지는 뛰어넘고, 다음 반복 블록으로 이어나갑니다.';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING = '경고: 이 블럭은 반복문 안에서만 사용됩니다.';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = '조건 반복';
-    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = '참인 동안';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = '조건 반복하기';
+    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = '조건';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = '실행';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = '조건 반복';
     Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = '검사 결과가 참이라면 \'실행\' 구역의 블록을 계속하여 실행합니다.';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = '만약';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = '그러면';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = '이라면';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = '아니면';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = '만약';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = '실행 후';
@@ -180,7 +153,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = '\'실행\' 영역에 있는 블록을 실행하고 결과를 반환한다. 변수에 값을 반환하기 전에 함수를 실행해야 하는 경우 유용합니다.';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = '실행/결과';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = '결과 실행';
-    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = '결과값 무시하고 실행';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = '결과값 무시하고 실행하기';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = '무시하고 실행';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE = '다른 스크린 열기';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME = '스크린 이름';
@@ -226,7 +199,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND = '만약 모든 입력값이 참이면 참을 반환합니다.';
     Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR = '만약 하나 이상의 값이 참이면 참을 반환합니다.';
     Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT = '아니다';
-    Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP = '만약 입력값이 거짓이면 참을 반환합니다.\n 만약 입력값이 참이면 거짓을 반환합니다.';
+    Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP = '만약 입력값이 거짓이면 참을 반환합니다. 만약 입력값이 참이면 거짓을 반환합니다.';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE = '참';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE = '거짓';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE = '불린값 참(true)을 반환합니다.';
@@ -236,10 +209,10 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = '숫자';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ = '만약 두 수가 서로 같으면 참을 반환합니다.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = '만약 두 수가 서로 다르면 참을 반환합니다.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = '만약 앞의 수가 뒤의 수보다 작으면\n 참을 반환합니다.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = '만약 앞의 수가 뒤의 수보다 작거나 같으면\n 참을 반환합니다.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT = '만약 앞의 수가 뒤의 수보다 크면\n 참을 반환합니다.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = '만약 앞의 수가 뒤의 수보다 크거나 같으면\n 참을 반환합니다.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = '만약 앞의 수가 뒤의 수보다 작으면 참을 반환합니다.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = '만약 앞의 수가 뒤의 수보다 작거나 같으면 참을 반환합니다.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT = '만약 앞의 수가 뒤의 수보다 크면 참을 반환합니다.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = '만약 앞의 수가 뒤의 수보다 크거나 같으면 참을 반환합니다.';
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
     Blockly.Msg.LANG_MATH_COMPARE_NEQ = '≠';
     Blockly.Msg.LANG_MATH_COMPARE_LT = '<';
@@ -250,7 +223,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS = '두 수를 뺀 값을 반환합니다.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY = '두 수를 곱한 값을 반환합니다.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE = '두 수를 나눈 값을 반환합니다.';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = '앞의 수를 뒤의 수만큼 제곱한 값을\n 반환합니다.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = '앞의 수를 뒤의 수만큼 제곱한 값을 반환합니다.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND = '두 숫자의 비트 AND를 반환합니다.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR = '두 숫자의 비트 OR을 반환합니다.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR = '두 숫자의 비트 배타적 OR을 반환합니다.';
@@ -295,10 +268,10 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = '여러 구분자로 텍스트 모두 분할하기';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT = '텍스트 모두 분할하기';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = '여러 구분자로 텍스트 모두 분할하기';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = '주어진 텍스트를 두 번째로 나눕니다. \'에서 \'the text \'의 위치를 구분 점으로 사용하고 분할 점 앞에있는 조각과 분할 한 조각으로 구성된 두 항목 목록을 반환합니다. 포인트. 쉼표로 쪼개진 점으로 \"apple, banana, cherry, dogfood\"를 나눠서 두 항목의 목록을 반환합니다. 첫 번째 텍스트는 \"apple\"이고 두 번째 텍스트는 \"banana, cherry, dogfood\"입니다. \"apple\"다음에 쉼표가 결과에 나타나지 않습니다. 그 이유는 이것이 나누기 이기 때문입니다.';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = '지정된 텍스트를 두 항목으로 나눕니다. \'목록의\'항목 \'의 첫 번째 위치를\'에서 \'를 나누기 위치로 사용합니다. \"사과 바나나 사과 포도 사랑\"을 \"(ba, ap)\"로 나누면 첫 번째는 \"좋아\"하고 두 번째 것은 \"바나나 사과 포도\"라고 표시됩니다.';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = '주어진 텍스트를 두 번째로 나눕니다. \'에서 \'the text \'의 위치를 구분 점으로 사용하고 분할 점 앞에있는 조각과 분할 한 조각으로 구성된 두 항목 목록을 반환합니다. 포인트. 쉼표로 쪼개진 점으로 \"apple, banana, cherry, dogfood\"를 나눠서 두 항목의 목록을 반환합니다. 첫 번째 텍스트는 \"apple\"이고 두 번째 텍스트는 \"banana, cherry, dogfood\"입니다. \"apple\"다음에 쉼표가 결과에 나타나지 않습니다. 그 이유는 이것이 나누기 point.lockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = \'/reference/blocks/text.html#splitat이기 때문입니다.';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = '지정된 텍스트를 두 항목으로 나눕니다. \'목록의\'항목 \'의 첫 번째 위치를\'에서 \'를 나누기 위치로 사용합니다. \"사과 바나나 사과 포도 사랑\"을 \"(ba, ap)\"로 나누면 첫 번째는 \"좋아\"하고 두 번째 것은 \"바나나 사과 포도\"라고 표시됩니다. lockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = \'/reference/blocks/text.html#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = '나누기 점으로 \"at\"텍스트를 사용하여 텍스트를 조각으로 나누고 결과 목록을 생성합니다. \"나누기\"하나, 둘, 셋, 넷 \"at\", \"(쉼표)는\"(one two three four) \"목록을 반환합니다. \"-potato\"에서 \"one-potato, two-potato, three-potato, four\"를 나눠서 \"(one two three four)\"목록을 반환합니다. #스플릿';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = '주어진 텍스트를리스트에서 \"at\"을 구분 점으로 사용하여 목록으로 나눈 다음 결과 목록을 리턴합니다. 첫 번째 항목이 쉼표이고 두 번째 항목이 \"rry\"인 두 요소 목록으로 \"appleberry, banana, cherry, dogfood\"를 \"at\"로 분리하면 \"applebe banana che dogfood\" \"';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = '주어진 텍스트를리스트에서 \"at\"을 구분 점으로 사용하여 목록으로 나눈 다음 결과 목록을 리턴합니다. 첫 번째 항목이 쉼표이고 두 번째 항목이 \"rry\"인 두 요소 목록으로 \"appleberry, banana, cherry, dogfood\"를 \"at\"로 분리하면 \"applebe banana che dogfood\" \".lockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = \'/reference/blocks/text.html#splitatany';
     Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE = '빈 칸으로 분할하기';
     Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = '텍스트를 빈 칸으로 구분하여 분할합니다.';
     Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT = '텍스트에서 문자열 추출하기';
@@ -315,7 +288,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = '\"부분\"과 일치하는 모든 항목을 \"교체\"로 바꾼 새로운 텍스트를 반환합니다.';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = '텍스트 인가요?';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = '값';
-    Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = '<code> 값 </code>이 문자열이면 true를 반환합니다.';
+    Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = '<code> 값 </ code>이 문자열이면 true를 반환합니다.';
     Blockly.Msg.LANG_CATEGORY_LISTS = '리스트';
     Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE = '빈 리스트 만들기';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST = '리스트 만들기';
@@ -458,5 +431,5 @@ Blockly.Msg.ko.switch_language_to_korean = {
   }
 };
 
-//Blockly.Msg.ko.switch_blockly_language_to_ko.init();
+Blockly.Msg.ko.switch_blockly_language_to_ko.init();
 Blockly.Msg.ko.switch_language_to_korean.init();
