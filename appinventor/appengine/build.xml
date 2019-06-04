@@ -435,7 +435,7 @@
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
+        <pathelement location="${lib.dir}/charba/charba-2.5-sources.jar" />
         <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
         <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
         <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
