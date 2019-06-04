@@ -481,6 +481,10 @@ Blockly.Blocks.component_event = {
     var types = {};
 
     componentDb.forEachInstance(function(instance) {
+      if (instance.typeName == 'Form') {
+        // We do not want to permit "any" event blocks for Form
+        return;
+      }
       types[instance.typeName] = true;
       componentDb.forEventInType(instance.typeName, function(_, eventName) {
         tb.push({
@@ -1185,6 +1189,10 @@ Blockly.Blocks.component_set_get = {
     }
 
     function pushGenericBlock(prefix, mode, property, typeName) {
+      if (typeName == 'Form') {
+        // We do not want to have a generic set or get for Form
+        return;
+      }
       tb.push({
         translatedName: prefix + componentDb.getInternationalizedComponentType(typeName) + '.' +
           componentDb.getInternationalizedPropertyName(property),
