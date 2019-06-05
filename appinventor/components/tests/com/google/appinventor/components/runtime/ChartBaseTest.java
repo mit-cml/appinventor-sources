@@ -17,6 +17,7 @@ public class ChartBaseTest extends RobolectricTestBase {
     public void testChartBaseDefaults() {
         Assert.assertEquals(Component.COLOR_DEFAULT, chart.BackgroundColor());
         Assert.assertEquals("", chart.Description());
+        Assert.assertTrue(chart.getView().isEnabled());
     }
 
     /**

@@ -34,8 +34,6 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
         // Set default values
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
-
-        view.setEnabled(true);
     }
 
     /**
