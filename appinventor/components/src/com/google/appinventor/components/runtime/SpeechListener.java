@@ -24,5 +24,5 @@ public interface SpeechListener {
   /**
    * In case we need to report any errors, such as the activity or service dying for an unexpected reason
    */
-  void onError(String message);
+  void onError(int errorCode);
 }

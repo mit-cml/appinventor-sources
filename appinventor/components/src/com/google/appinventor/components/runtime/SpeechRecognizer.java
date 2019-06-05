@@ -160,9 +160,9 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    * Method from SpeechListener interface.
    */
   @Override
-  public void onError(String message) {
-    result = message;
-    AfterGettingText(result, false);
+  public void onError(int errorNumber) {
+    String functionName = "GetText";
+    form.dispatchErrorOccurredEvent(this, functionName, errorNumber);
   }
 
   @Override

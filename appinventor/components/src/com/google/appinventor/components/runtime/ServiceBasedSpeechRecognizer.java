@@ -5,6 +5,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
@@ -66,8 +68,8 @@ public class ServiceBasedSpeechRecognizer extends SpeechRecognizerController
 
   @Override
   public void onError(int i) {
-    result = getErrorMessage(i);
-    speechListener.onError(result);
+    int errorNumber = getErrorMessage(i);
+    speechListener.onError(errorNumber);
   }
 
   @Override
@@ -97,40 +99,37 @@ public class ServiceBasedSpeechRecognizer extends SpeechRecognizerController
 
   }
 
-  private String getErrorMessage(int errorCode) {
-    String message;
+  private int getErrorMessage(int errorCode) {
+    int errCode = ErrorMessages.ERROR_DEFAULT;
     switch (errorCode) {
       case SpeechRecognizer.ERROR_AUDIO:
-        message = "Audio Recording Error";
+        errCode = ErrorMessages.ERROR_AUDIO;
         break;
       case SpeechRecognizer.ERROR_CLIENT:
-        message = "Client Side Error";
+        errCode = ErrorMessages.ERROR_CLIENT;
         break;
       case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-        message = "Insufficient Permissions";
+        errCode = ErrorMessages.ERROR_INSUFFICIENT_PERMISSIONS;
         break;
       case SpeechRecognizer.ERROR_NETWORK:
-        message = "Network Error";
+        errCode = ErrorMessages.ERROR_NETWORK;
         break;
       case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-        message = "Network Timeout";
+        errCode = ErrorMessages.ERROR_NETWORK_TIMEOUT;
         break;
       case SpeechRecognizer.ERROR_NO_MATCH:
-        message = "No Match";
+        errCode = ErrorMessages.ERROR_NO_MATCH;
         break;
       case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-        message = "RecognitionService Busy";
+        errCode = ErrorMessages.ERROR_RECOGNIZER_BUSY;
         break;
       case SpeechRecognizer.ERROR_SERVER:
-        message = "Error From Server";
+        errCode = ErrorMessages.ERROR_SERVER;
         break;
       case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-        message = "No Speech Input";
-        break;
-      default:
-        message = "Please Try Again !";
+        errCode = ErrorMessages.ERROR_SPEECH_TIMEOUT;
         break;
     }
-    return message;
+    return errCode;
   }
 }
