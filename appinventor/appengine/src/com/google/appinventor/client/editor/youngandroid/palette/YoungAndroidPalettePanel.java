@@ -19,6 +19,8 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
@@ -115,6 +117,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
     searchText.addKeyDownHandler(new EscapeKeyDownHandler());
+    searchText.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        doSearch();
+      }
+    })
 
     panel.setSpacing(3);
     panel.add(searchText);
