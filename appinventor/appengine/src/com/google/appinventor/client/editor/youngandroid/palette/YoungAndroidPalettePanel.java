@@ -21,6 +21,8 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
@@ -98,7 +100,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
 
     componentTrie = new Trie();
-    translationMap = new HashMap();
+    translationMap = new HashMap<String, String>();
     panel = new VerticalPanel();
     panel.setWidth("100%");
 
@@ -111,7 +113,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     searchText = new TextBox();
     searchText.setWidth("100%");
-    searchText.getElement().setPropertyString("placeholder", "Search Components...");
+    searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
     searchText.getElement().setAttribute("type", "search");
 
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
@@ -122,7 +124,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       public void onBlur(BlurEvent event) {
         doSearch();
       }
-    })
+    });
+    searchText.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        doSearch();
+      }
+    });
 
     panel.setSpacing(3);
     panel.add(searchText);
