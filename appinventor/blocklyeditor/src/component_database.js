@@ -380,7 +380,7 @@ Blockly.ComponentDatabase.prototype.populateTranslations = function(translations
         this.i18nParamNames_[parts[1]] = translations[key];
       } else if (parts[0] == 'EVENTDESC') {
         this.i18nEventDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] == 'METHODDESC') {
+      } else if (parts[0] == 'METHDESC') {
         this.i18nMethodDescriptions_[parts[1]] = translations[key];
       } else if (parts[0] == 'PROPDESC') {
         this.i18nPropertyDescriptions_[parts[1]] = translations[key];

@@ -1009,8 +1009,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
-        if (thisBlock.propertyObject) {
-          thisBlock.setTooltip(thisBlock.propertyObject.description);
+        if (thisBlock.propertyName) {
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
         }
@@ -1244,9 +1244,6 @@ Blockly.Blocks.component_set_get = {
     var isDefined = validate.call(this);
     if (isDefined) {
       this.notBadBlock();
-      if (this.propertyObject) {
-        this.setTooltip(this.propertyObject.description); // update the tooltipDescription, if block is defined
-      }
     } else {
       this.badBlock(true);
     }
