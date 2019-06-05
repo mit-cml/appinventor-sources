@@ -19,7 +19,10 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
@@ -27,10 +30,21 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+
+import com.google.appinventor.client.utils.Trie;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -56,6 +70,16 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final Map<String, SimplePaletteItem> simplePaletteItems;
 
   private DropTargetProvider dropTargetProvider;
+  // initialize a Trie
+  private Trie componentTrie;
+
+  // panel that holds all palette items
+  final VerticalPanel panel;
+  // Map translated component names to English names
+  private final Map<String, String> translationMap;
+
+  private final TextBox searchText; 
+  private final VerticalPanel searchResults;
 
   /**
    * Creates a new component palette panel.
@@ -75,6 +99,51 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
 
+    componentTrie = new Trie();
+    translationMap = new HashMap<String, String>();
+    panel = new VerticalPanel();
+    panel.setWidth("100%");
+
+    //Load Component strings to Trie
+    for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      String translationName = ComponentsTranslation.getComponentName(component).toLowerCase();
+      componentTrie.insert(translationName);
+      translationMap.put(translationName, component);
+    }
+
+    searchText = new TextBox();
+    searchText.setWidth("100%");
+    searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
+    searchText.getElement().setAttribute("type", "search");
+
+    searchText.addKeyUpHandler(new SearchKeyUpHandler());
+    searchText.addKeyPressHandler(new ReturnKeyHandler());
+    searchText.addKeyDownHandler(new EscapeKeyDownHandler());
+    searchText.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        doSearch();
+      }
+    });
+    searchText.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        doSearch();
+      }
+    });
+
+    panel.setSpacing(3);
+    panel.add(searchText);
+    panel.setWidth("100%");
+
+    searchResults = new VerticalPanel();
+    searchResults.setWidth("100%");
+    stackPalette.setWidth("100%");
+
+    initWidget(panel);
+    panel.add(searchResults);
+    panel.add(stackPalette);
+
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
         VerticalPanel categoryPanel = new VerticalPanel();
@@ -91,9 +160,84 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     }
 
     initExtensionPanel();
+  }
 
-    stackPalette.setWidth("100%");
-    initWidget(stackPalette);
+   /**
+   *  Automatic search and list results as users input the string
+   */
+  private class SearchKeyUpHandler implements KeyUpHandler {
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+      doSearch();
+    }
+  }
+
+  /**
+   *  Users press escapte button, results and searchText will be cleared
+   */
+  private class EscapeKeyDownHandler implements KeyDownHandler {
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        searchResults.clear();
+        searchText.setText("");
+      }
+    }
+  }
+
+  /**
+   *  Users press enter button, results will be added to searchResults panel
+   */
+  private class ReturnKeyHandler implements KeyPressHandler {
+     @Override
+      public void onKeyPress(KeyPressEvent event) {
+        switch (event.getCharCode()) {
+          case KeyCodes.KEY_END:
+          case KeyCodes.KEY_DELETE:
+          case KeyCodes.KEY_BACKSPACE:
+            doSearch();
+            break;
+        }
+      }
+  }
+
+  /**
+   *  User clicks on searchButton and results will be added to searchResults panel
+   */
+  private void doSearch() {
+    String search_str = searchText.getText().trim().toLowerCase();
+    // Empty strings will return nothing
+    if (search_str.length() != 0) {
+      // Remove previous search results
+      searchResults.clear();
+      Collection<String> allComponents = componentTrie.getAllWords(search_str);
+      for (String name : allComponents) {
+        if (translationMap.containsKey(name)) {
+          String englishName = translationMap.get(name);
+          if (simplePaletteItems.containsKey(englishName)) {
+            SimplePaletteItem item = simplePaletteItems.get(englishName);
+            int version = COMPONENT_DATABASE.getComponentVersion(englishName);
+            String versionName = COMPONENT_DATABASE.getComponentVersionName(englishName);
+            String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(englishName);
+            String helpString = COMPONENT_DATABASE.getHelpString(englishName);
+            String helpUrl = COMPONENT_DATABASE.getHelpUrl(englishName);
+            String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(englishName);
+            String categoryString = COMPONENT_DATABASE.getCategoryString(englishName);
+            Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(englishName);
+            Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(englishName);
+            Boolean external = COMPONENT_DATABASE.getComponentExternal(englishName);
+
+            SimpleComponentDescriptor scd =
+                new SimpleComponentDescriptor(englishName, editor, version, versionName,
+                    dateBuilt, helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external);
+            SimplePaletteItem newItem = new SimplePaletteItem(scd, dropTargetProvider);
+            searchResults.add(newItem);
+          }
+        }
+      }
+    } else {
+      searchResults.clear();
+    }
   }
 
   private static boolean showCategory(ComponentCategory category) {
