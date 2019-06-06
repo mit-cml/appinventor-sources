@@ -14,18 +14,13 @@ import java.util.ArrayList;
 @DesignerComponent(version = 1,
     description = "A component that holds data for Line Charts",
     category = ComponentCategory.CHARTS,
-    nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject
 public final class LineChartData extends ChartDataBase<LineData> {
     /**
      * Creates a new Line Chart Data component.
-     *
-     * @param form the container that this component will be placed in
      */
-    public LineChartData(Form form) {
-        super(form);
-
+    public LineChartData() {
         // Instantiate new LineDataSet object
         chartData = new LineData();
     }

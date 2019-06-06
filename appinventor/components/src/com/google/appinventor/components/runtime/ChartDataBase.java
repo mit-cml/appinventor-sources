@@ -5,7 +5,7 @@ import com.github.mikephil.charting.data.ChartData;
 
 import java.util.HashSet;
 
-public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisibleComponent {
+public abstract class ChartDataBase<T extends ChartData> implements Component {
 
     protected T chartData;
     protected HashSet<ChartBase> charts;
@@ -15,11 +15,11 @@ public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisib
      *
      * @param form the container that this component will be placed in
      */
-    protected ChartDataBase(Form form) {
-        super(form);
-
-        charts = new HashSet<ChartBase>();
-    }
+//    protected ChartDataBase(Form form) {
+//        super(form);
+//
+//        charts = new HashSet<ChartBase>();
+//    }
 
     /**
      * Getter method for the underlying data object of the ChartData component
@@ -58,5 +58,10 @@ public abstract class ChartDataBase<T extends ChartData> extends AndroidNonvisib
                 chart.Refresh();
             }
         }
+    }
+
+    @Override
+    public HandlesEventDispatching getDispatchDelegate() {
+        return null;
     }
 }
