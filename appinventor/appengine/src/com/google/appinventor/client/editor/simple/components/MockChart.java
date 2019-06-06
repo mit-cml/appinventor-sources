@@ -92,14 +92,20 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         }
     }
 
-    @Override
-    protected boolean acceptableSource(DragSource source) {
+    /**
+     * Returns the Mock Component of the Drag Source.
+     *
+     * @param source  DragSource instance
+     * @return  MockComponent instance
+     */
+    protected MockComponent getComponentFromDragSource(DragSource source) {
         MockComponent component = null;
         if (source instanceof MockComponent) {
             component = (MockComponent) source;
         } else if (source instanceof SimplePaletteItem) {
             component = (MockComponent) source.getDragWidget();
         }
-        return component instanceof MockLineChartData;
+
+        return component;
     }
 }

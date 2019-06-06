@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.LineChart;
 import org.pepstock.charba.client.data.DataPoint;
@@ -62,5 +63,10 @@ public final class MockLineChart extends MockChart<LineChart> {
     @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
+    }
+
+    @Override
+    protected boolean acceptableSource(DragSource source) {
+        return getComponentFromDragSource(source) instanceof MockLineChartData;
     }
 }
