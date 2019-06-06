@@ -16,7 +16,7 @@ import java.util.ArrayList;
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
-public final class LineChartData extends ChartDataBase<LineData> {
+public final class LineChartData extends ChartDataBase<LineDataSet> {
     protected LineChart container = null;
 
     /**
@@ -26,7 +26,9 @@ public final class LineChartData extends ChartDataBase<LineData> {
         this.container = lineChartContainer;
 
         // Instantiate new LineDataSet object
-        chartData = new LineData();
+        chartDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
+        chartDataSet.setColor(Color.BLACK);
+        chartDataSet.setCircleColor(Color.BLACK);
     }
 
     /**
@@ -36,26 +38,16 @@ public final class LineChartData extends ChartDataBase<LineData> {
      * @param y - y value of entry
      */
     @SimpleFunction(description = "Adds (x, y) point to the Line Data.")
-    public void AddEntry(int x, int y) {
-        Entry entry = new Entry(x, y);
+    public void AddEntry(float x, float y) {
+        boolean addDataset = (chartDataSet.getEntryCount() == 0);
 
-        // TBD: Multiple dataset support
-        // For now, this stores all the data in one Data Set.
-        // The reason for this if statement is because passing in a DataSet with
-        // no entries will cause exceptions, so if there are no entries initially,
-        // the ChartData object should have no DataSet attached to it.
-        if (chartData.getDataSetCount() == 0) {
-            LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
-            dataSet.setColor(Color.BLACK);
-            dataSet.setCircleColor(Color.BLACK);
-            dataSet.addEntry(entry);
-            chartData.addDataSet(dataSet);
-        } else {
-            chartData.getDataSetByIndex(0).addEntryOrdered(entry);
-            chartData.notifyDataChanged();
-            // chartData.addEntry(entry, 0);
+        Entry entry = new Entry(x, y);
+        chartDataSet.addEntryOrdered(entry);
+
+        if (addDataset) {
+            container.AddDataSet(chartDataSet);
         }
 
-        refreshCharts();
+        container.Refresh();
     }
 }

@@ -1,20 +1,20 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.DataSet;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extends AndroidViewComponent implements ComponentContainer {
+public abstract class ChartBase<T extends Chart, D extends DataSet> extends AndroidViewComponent implements ComponentContainer {
 
     protected T view;
-    protected D data;
 
     private String description;
     private int backgroundColor;
-
 
     /**
      * Creates a new ChartBase component.
@@ -36,6 +36,40 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
     }
+
+    @Override
+    public Activity $context() {
+        return container.$context();
+    }
+
+    @Override
+    public Form $form() {
+        return container.$form();
+    }
+
+    @Override
+    public void $add(AndroidViewComponent component) {
+        throw new UnsupportedOperationException("ChartBase.$add() called");
+    }
+
+    @Override
+    public void setChildWidth(AndroidViewComponent component, int width) {
+        throw new UnsupportedOperationException("ChartBase.setChildWidth called");
+    }
+
+    @Override
+    public void setChildHeight(AndroidViewComponent component, int height) {
+        throw new UnsupportedOperationException("ChartBase.setChildHeight called");
+    }
+
+//    /**
+//     * Getter method for the Chart view object.
+//     *
+//     * @return  Chart view casted to appropriate type
+//     */
+//    public T getChart() {
+//        return view;
+//    }
 
     /**
      * Returns the description label text of the Chart.
@@ -92,32 +126,16 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
      * Refreshes the Chart to react to Data Set changes.
      */
     public void Refresh() {
+        view.getData().notifyDataChanged();
         view.notifyDataSetChanged();
         view.invalidate();
     }
 
-    @Override
-    public Activity $context() {
-        return container.$context();
-    }
 
-    @Override
-    public Form $form() {
-        return container.$form();
-    }
-
-    @Override
-    public void $add(AndroidViewComponent component) {
-        throw new UnsupportedOperationException("ChartBase.$add() called");
-    }
-
-    @Override
-    public void setChildWidth(AndroidViewComponent component, int width) {
-        throw new UnsupportedOperationException("ChartBase.setChildWidth called");
-    }
-
-    @Override
-    public void setChildHeight(AndroidViewComponent component, int height) {
-        throw new UnsupportedOperationException("ChartBase.setChildHeight called");
-    }
+    /**
+     * Adds new data set to the Chart data.
+     *
+     * @param dataSet - data set to add
+     */
+    public abstract void AddDataSet(D dataSet);
 }
