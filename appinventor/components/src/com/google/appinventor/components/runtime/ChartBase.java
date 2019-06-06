@@ -1,12 +1,13 @@
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extends AndroidViewComponent {
+public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extends AndroidViewComponent implements ComponentContainer {
 
     protected T view;
     protected D data;
@@ -93,5 +94,30 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
     public void Refresh() {
         view.notifyDataSetChanged();
         view.invalidate();
+    }
+
+    @Override
+    public Activity $context() {
+        return container.$context();
+    }
+
+    @Override
+    public Form $form() {
+        return container.$form();
+    }
+
+    @Override
+    public void $add(AndroidViewComponent component) {
+        throw new UnsupportedOperationException("ChartBase.$add() called");
+    }
+
+    @Override
+    public void setChildWidth(AndroidViewComponent component, int width) {
+        throw new UnsupportedOperationException("ChartBase.setChildWidth called");
+    }
+
+    @Override
+    public void setChildHeight(AndroidViewComponent component, int height) {
+        throw new UnsupportedOperationException("ChartBase.setChildHeight called");
     }
 }

@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
 import android.view.View;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;

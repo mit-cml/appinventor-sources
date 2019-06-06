@@ -12,10 +12,6 @@ public class MockLineChartData extends MockVisibleComponent {
     // GWT label widget used to mock a Simple Label
     private InlineHTML labelWidget;
 
-    private String savedText;     // Saved text, so if we change from
-    // text to/from html we have the text
-    // to set
-
     /**
      * Creates a new MockLabel component.
      *
@@ -27,6 +23,7 @@ public class MockLineChartData extends MockVisibleComponent {
         // Initialize mock label UI
         labelWidget = new InlineHTML();
         labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
+        labelWidget.setText("LINE CHART DATA");
         initComponent(labelWidget);
     }
 }

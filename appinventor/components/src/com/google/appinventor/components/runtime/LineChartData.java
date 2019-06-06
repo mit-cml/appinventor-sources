@@ -17,10 +17,14 @@ import java.util.ArrayList;
     iconName = "images/web.png")
 @SimpleObject
 public final class LineChartData extends ChartDataBase<LineData> {
+    protected LineChart container = null;
+
     /**
      * Creates a new Line Chart Data component.
      */
-    public LineChartData() {
+    public LineChartData(LineChart lineChartContainer) {
+        this.container = lineChartContainer;
+
         // Instantiate new LineDataSet object
         chartData = new LineData();
     }
