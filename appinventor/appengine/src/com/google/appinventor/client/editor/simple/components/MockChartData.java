@@ -38,4 +38,15 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         this.chart = chart;
     }
+
+    @Override
+    protected boolean isPropertyVisible(String propertyName) {
+        // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
+        if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
+                propertyName.equals(PROPERTY_NAME_WIDTH)) {
+            return false;
+        }
+
+        return super.isPropertyVisible(propertyName);
+    }
 }
