@@ -1,12 +1,11 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.ChartModelBase;
+import com.google.appinventor.components.runtime.util.ChartModel;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
@@ -127,7 +126,10 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      * Refreshes the Chart to react to Data Set changes.
      */
     public void Refresh() {
-        view.getData().notifyDataChanged();
+        if (view.getData() != null) {
+            view.getData().notifyDataChanged();
+        }
+
         view.notifyDataSetChanged();
         view.invalidate();
     }
@@ -145,5 +147,5 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      *
      * @return  Chart Model instance
      */
-    public abstract ChartModelBase createChartModel();
+    public abstract ChartModel createChartModel();
 }

@@ -15,21 +15,11 @@ import java.util.ArrayList;
     iconName = "images/web.png")
 @SimpleObject
 public final class CoordinateData extends ChartDataBase {
-    protected ChartBase container = null;
-
     /**
      * Creates a new Coordinate Data component.
      */
     public CoordinateData(ChartBase chartContainer) {
-        this.container = chartContainer;
-
-        chartModel = chartContainer.createChartModel();
-
-        chartModel.getDataset().setColor(Color.BLACK);
-
-//        chartDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
-//        chartDataSet.setColor(Color.BLACK);
-//        chartDataSet.setCircleColor(Color.BLACK);
+        super(chartContainer);
     }
 
     /**
