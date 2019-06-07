@@ -14,7 +14,6 @@ import org.pepstock.charba.client.resources.ResourcesType;
 abstract class MockChart<C extends AbstractChart> extends MockContainer {
     private static final String PROPERTY_DESCRIPTION = "Description";
 
-    private AbsolutePanel chartPanel;
     protected C chartWidget;
 
     static {
@@ -40,15 +39,16 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.getOptions().setMaintainAspectRatio(false);
         chartWidget.getOptions().getTitle().setDisplay(true);
 
-        chartPanel = new AbsolutePanel();
-        chartPanel.setStylePrimaryName("ode-SimpleMockComponent");
-
-        rootPanel.setHeight("100%");
-
+        // Since the Mcok Chart component is not a container in a normal
+        // sense (attached components should not be visible), the Chart Widget
+        // is added to the root panel, and the root panel itself is initialized.
+        // This is done to ensure that Mock Chart Data components can be dragged
+        // onto the Chart itself, rather than outside the Chart component.
+        rootPanel.setStylePrimaryName("ode-SimpleMockComponent");
         rootPanel.add(chartWidget);
-        chartPanel.add(rootPanel);
+        chartWidget.setWidth("100%"); // Fill root panel with Chart Widget's width
 
-        initComponent(chartPanel);
+        initComponent(rootPanel);
     }
 
     /**

@@ -49,4 +49,10 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         return super.isPropertyVisible(propertyName);
     }
+
+    @Override
+    protected void onSelectedChange(boolean selected) {
+        super.onSelectedChange(selected);
+        removeStyleDependentName("selected"); // Force remove styling
+    }
 }
