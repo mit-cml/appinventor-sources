@@ -2,8 +2,6 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -12,23 +10,22 @@ import com.google.appinventor.components.common.ComponentCategory;
 import java.util.ArrayList;
 
 @DesignerComponent(version = 1,
-    description = "A component that holds data for Line Charts",
+    description = "A component that holds point-based data",
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
-public final class LineChartData extends ChartDataBase<LineDataSet> {
-    protected LineChart container = null;
+public final class PointChartData extends ChartDataBase {
+    protected ChartBase container = null;
 
     /**
      * Creates a new Line Chart Data component.
      */
-    public LineChartData(LineChart lineChartContainer) {
-        this.container = lineChartContainer;
+    public PointChartData(ChartBase chartContainer) {
+        this.container = chartContainer;
 
-        // Instantiate new LineDataSet object
-        chartDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
-        chartDataSet.setColor(Color.BLACK);
-        chartDataSet.setCircleColor(Color.BLACK);
+//        chartDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
+//        chartDataSet.setColor(Color.BLACK);
+//        chartDataSet.setCircleColor(Color.BLACK);
     }
 
     /**
