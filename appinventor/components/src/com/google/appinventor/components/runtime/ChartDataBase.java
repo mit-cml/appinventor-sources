@@ -1,9 +1,11 @@
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.data.DataSet;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.runtime.util.ChartModelBase;
 
-public abstract class ChartDataBase<D extends DataSet> implements Component {
-    protected D chartDataSet;
+@SimpleObject
+public abstract class ChartDataBase implements Component {
+    protected ChartModelBase chartModel = null;
 
     @Override
     public HandlesEventDispatching getDispatchDelegate() {

@@ -10,18 +10,22 @@ import com.google.appinventor.components.common.ComponentCategory;
 import java.util.ArrayList;
 
 @DesignerComponent(version = 1,
-    description = "A component that holds point-based data",
+    description = "A component that holds (x, y)-coordinate based data",
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
-public final class PointChartData extends ChartDataBase {
+public final class CoordinateData extends ChartDataBase {
     protected ChartBase container = null;
 
     /**
-     * Creates a new Line Chart Data component.
+     * Creates a new Coordinate Data component.
      */
-    public PointChartData(ChartBase chartContainer) {
+    public CoordinateData(ChartBase chartContainer) {
         this.container = chartContainer;
+
+        chartModel = chartContainer.createChartModel();
+
+        chartModel.getDataset().setColor(Color.BLACK);
 
 //        chartDataSet = new LineDataSet(new ArrayList<Entry>(), "Data");
 //        chartDataSet.setColor(Color.BLACK);
@@ -29,22 +33,23 @@ public final class PointChartData extends ChartDataBase {
     }
 
     /**
-     * Adds entry to the Line Data Series
+     * Adds entry to the Data Series.
      *
      * @param x - x value of entry
      * @param y - y value of entry
      */
-    @SimpleFunction(description = "Adds (x, y) point to the Line Data.")
+    @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
     public void AddEntry(float x, float y) {
-        boolean addDataset = (chartDataSet.getEntryCount() == 0);
+        boolean addDataset = (chartModel.getDataset().getEntryCount() == 0);
 
-        Entry entry = new Entry(x, y);
-        chartDataSet.addEntryOrdered(entry);
+        chartModel.addEntry(x, y);
 
+        // Data set was empty before. We should add it to the Chart.
         if (addDataset) {
-            container.AddDataSet(chartDataSet);
+            container.AddDataSet(chartModel.getDataset()); // Safe add. DataModel guarantees proper types.
         }
 
+        // Refresh Chart with new data
         container.Refresh();
     }
 }

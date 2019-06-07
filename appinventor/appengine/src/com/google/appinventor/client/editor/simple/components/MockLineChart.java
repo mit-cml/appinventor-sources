@@ -2,17 +2,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.widgets.dnd.DragSource;
-import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.LineChart;
-import org.pepstock.charba.client.data.DataPoint;
-import org.pepstock.charba.client.data.Labels;
 import org.pepstock.charba.client.data.LineDataset;
-import org.pepstock.charba.client.enums.CubicInterpolationMode;
-import org.pepstock.charba.client.enums.SteppedLine;
-import org.pepstock.charba.client.resources.EmbeddedResources;
-import org.pepstock.charba.client.resources.ResourcesType;
-
-import java.util.ArrayList;
 
 public final class MockLineChart extends MockChart<LineChart> {
     public static final String TYPE = "LineChart";
@@ -67,6 +58,6 @@ public final class MockLineChart extends MockChart<LineChart> {
 
     @Override
     protected boolean acceptableSource(DragSource source) {
-        return getComponentFromDragSource(source) instanceof MockLineChartData;
+        return getComponentFromDragSource(source) instanceof MockCoordinateData;
     }
 }

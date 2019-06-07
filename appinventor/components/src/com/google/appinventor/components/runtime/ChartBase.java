@@ -6,6 +6,7 @@ import com.github.mikephil.charting.data.DataSet;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.ChartModelBase;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
@@ -138,4 +139,11 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      * @param dataSet - data set to add
      */
     public abstract void AddDataSet(D dataSet);
+
+    /**
+     * Creates a new Chart Model object instance.
+     *
+     * @return  Chart Model instance
+     */
+    public abstract ChartModelBase createChartModel();
 }
