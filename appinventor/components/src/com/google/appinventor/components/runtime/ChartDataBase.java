@@ -22,6 +22,10 @@ public abstract class ChartDataBase implements Component {
         this.container = chartContainer;
 
         chartModel = chartContainer.createChartModel();
+
+        // Set default values
+        Color(Component.COLOR_BLACK);
+        Label("");
     }
 
     /**
