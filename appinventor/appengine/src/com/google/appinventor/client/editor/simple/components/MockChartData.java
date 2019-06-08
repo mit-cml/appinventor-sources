@@ -65,8 +65,10 @@ public abstract class MockChartData extends MockVisibleComponent {
     }
 
     protected void initializeDataSetFromChart() {
+        int add = chart.chartWidget.getData().getDatasets().size();
+
         dataSeries = chart.chartWidget.newDataset();
 
-        dataSeries.setData(1, 2, 3, 4);
+        dataSeries.setData(1 + add, 2 + add, 3 + add, 4 + add);
     }
 }

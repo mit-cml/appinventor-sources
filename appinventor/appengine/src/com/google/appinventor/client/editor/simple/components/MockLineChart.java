@@ -19,6 +19,9 @@ public final class MockLineChart extends MockChart<LineChart> {
         // Initialize Line Chart mock Widget
         chartWidget = new LineChart();
 
+        // Temporary, to be removed later
+        chartWidget.getData().setLabels("1", "2", "3", "4");
+
         // Initialize the Chart
         initChart();
     }
