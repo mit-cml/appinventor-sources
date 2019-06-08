@@ -46,8 +46,6 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
 
     @Override
     public ChartModel createChartModel() {
-        LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "");
-
-        return new LineChartModel(dataSet);
+        return new LineChartModel();
     }
 }
