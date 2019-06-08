@@ -11,7 +11,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     // Temporary placeholder for the Chart Data image
     private InlineHTML labelWidget;
 
-    protected Dataset dataSeries;
+    protected MockChartModel chartModel;
     protected MockChart chart;
 
     /**
@@ -41,10 +41,10 @@ public abstract class MockChartData extends MockVisibleComponent {
         labelWidget.setHeight("0");
 
         this.chart = chart;
+        this.chartModel = chart.createChartModel();
+        chartModel.addDefaultData();
 
-        initializeDataSetFromChart();
-
-        chart.addDataSeries(dataSeries);
+        this.chart.addDataSeries(chartModel.getDataSeries());
     }
 
     @Override
@@ -64,11 +64,11 @@ public abstract class MockChartData extends MockVisibleComponent {
         removeStyleDependentName("selected"); // Force remove styling
     }
 
-    protected void initializeDataSetFromChart() {
-        int add = chart.chartWidget.getData().getDatasets().size();
-
-        dataSeries = chart.chartWidget.newDataset();
-
-        dataSeries.setData(1 + add, 2 + add, 3 + add, 4 + add);
-    }
+//    protected void initializeDataSetFromChart() {
+//        int add = chart.chartWidget.getData().getDatasets().size();
+//
+//        dataSeries = chart.chartWidget.newDataset();
+//
+//        dataSeries.setData(1 + add, 2 + add, 3 + add, 4 + add);
+//    }
 }

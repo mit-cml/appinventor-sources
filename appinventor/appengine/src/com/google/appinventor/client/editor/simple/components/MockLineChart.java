@@ -27,6 +27,11 @@ public final class MockLineChart extends MockChart<LineChart> {
     }
 
     @Override
+    public MockChartModel createChartModel() {
+        return new MockLineChartModel();
+    }
+
+    @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
     }

@@ -103,6 +103,8 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.update();
     }
 
+    public abstract MockChartModel createChartModel();
+
     /**
      * Returns the Mock Component of the Drag Source.
      *
