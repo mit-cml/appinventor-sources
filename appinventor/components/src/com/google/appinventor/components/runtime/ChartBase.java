@@ -126,6 +126,7 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      * Refreshes the Chart to react to Data Set changes.
      */
     public void Refresh() {
+        // Only refresh data itself if data exists on Chart
         if (view.getData() != null) {
             view.getData().notifyDataChanged();
         }
