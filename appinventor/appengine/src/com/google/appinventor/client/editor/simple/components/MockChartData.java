@@ -14,6 +14,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     protected MockChartModel chartModel;
     protected MockChart chart;
 
+    protected List<Float> yValues;
+
     /**
      * Creates a new instance of a Mock Chart Data component.
      *
@@ -42,7 +44,7 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         this.chart = chart;
         this.chartModel = chart.createChartModel();
-        chartModel.addDefaultData();
+        setDefaultData();
 
         this.chart.addDataSeries(chartModel.getDataSeries());
     }
@@ -63,6 +65,8 @@ public abstract class MockChartData extends MockVisibleComponent {
         super.onSelectedChange(selected);
         removeStyleDependentName("selected"); // Force remove styling
     }
+
+    protected abstract void setDefaultData();
 
 //    protected void initializeDataSetFromChart() {
 //        int add = chart.chartWidget.getData().getDatasets().size();
