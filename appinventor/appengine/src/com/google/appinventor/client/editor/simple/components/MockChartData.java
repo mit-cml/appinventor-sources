@@ -3,11 +3,15 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.InlineHTML;
+import org.pepstock.charba.client.data.Dataset;
+
+import java.util.List;
 
 public abstract class MockChartData extends MockVisibleComponent {
     // Temporary placeholder for the Chart Data image
     private InlineHTML labelWidget;
 
+    protected Dataset dataSeries;
     protected MockChart chart;
 
     /**
@@ -37,6 +41,10 @@ public abstract class MockChartData extends MockVisibleComponent {
         labelWidget.setHeight("0");
 
         this.chart = chart;
+
+        initializeDataSetFromChart();
+
+        chart.addDataSeries(dataSeries);
     }
 
     @Override
@@ -54,5 +62,11 @@ public abstract class MockChartData extends MockVisibleComponent {
     protected void onSelectedChange(boolean selected) {
         super.onSelectedChange(selected);
         removeStyleDependentName("selected"); // Force remove styling
+    }
+
+    protected void initializeDataSetFromChart() {
+        dataSeries = chart.chartWidget.newDataset();
+
+        dataSeries.setData(1, 2, 3, 4);
     }
 }

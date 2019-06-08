@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.pepstock.charba.client.AbstractChart;
 import org.pepstock.charba.client.Chart;
+import org.pepstock.charba.client.data.Dataset;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -90,6 +91,16 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
             setBackgroundColorProperty(newValue);
         }
+    }
+
+    public void addDataSeries(Dataset dataSeries) {
+        if (chartWidget.getData().getDatasets().size() == 0) {
+            chartWidget.getData().setDatasets(dataSeries);
+        } else {
+            chartWidget.getData().getDatasets().add(dataSeries);
+        }
+
+        chartWidget.update();
     }
 
     /**
