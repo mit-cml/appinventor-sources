@@ -3,7 +3,7 @@ package com.google.appinventor.components.runtime.util;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 
-public class LineChartModel extends ChartModelBase<LineDataSet> {
+public class LineChartModel extends ChartModel<LineDataSet> {
     /**
      * Initializes a new LineChartModel object instance.
      *
@@ -22,5 +22,11 @@ public class LineChartModel extends ChartModelBase<LineDataSet> {
     public void addEntry(float x, float y) {
         Entry entry = new Entry(x, y);
         dataset.addEntryOrdered(entry);
+    }
+
+    @Override
+    public void setColor(int argb) {
+        super.setColor(argb);
+        dataset.setCircleColor(argb);
     }
 }

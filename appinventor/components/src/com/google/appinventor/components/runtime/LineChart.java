@@ -1,14 +1,12 @@
 package com.google.appinventor.components.runtime;
 
-import android.app.Activity;
 import android.view.View;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.ChartModelBase;
+import com.google.appinventor.components.runtime.util.ChartModel;
 import com.google.appinventor.components.runtime.util.LineChartModel;
 
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
     }
 
     @Override
-    public ChartModelBase createChartModel() {
+    public ChartModel createChartModel() {
         LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "");
 
         return new LineChartModel(dataSet);
