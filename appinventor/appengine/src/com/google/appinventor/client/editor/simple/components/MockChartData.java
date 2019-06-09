@@ -52,7 +52,7 @@ public abstract class MockChartData extends MockVisibleComponent {
         this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
         this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
 
-        this.chart.chartWidget.update();
+        refreshChart();
     }
 
     @Override
@@ -75,8 +75,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     @Override
     public void onRemoved() {
         super.onRemoved();
-        chart.chartWidget.getData().getDatasets().remove(chartModel.getDataSeries());
-        chart.chartWidget.update();
+        chartModel.removeDataSeriesFromChart();
+        refreshChart();
     }
 
     protected abstract void setDefaultData();
@@ -85,16 +85,25 @@ public abstract class MockChartData extends MockVisibleComponent {
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
 
-        if (chartModel == null || chartModel.getDataSeries() == null) {
+        // No Chart Model exists (Data not yet added to Chart), simply
+        // return from the method without processing property adding.
+        if (chartModel == null) {
             return;
         }
 
         if (propertyName.equals(PROPERTY_COLOR)) {
             chartModel.changeColor(newValue);
-            chart.chartWidget.draw();
+            refreshChart();
         } else if (propertyName.equals(PROPERTY_LABEL)) {
             chartModel.changeLabel(newValue);
-            chart.chartWidget.draw();
+            refreshChart();
         }
+    }
+
+    /**
+     * Refreshes the Chart view.
+     */
+    protected void refreshChart() {
+        chart.chartWidget.update();
     }
 }

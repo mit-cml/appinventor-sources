@@ -8,18 +8,36 @@ public abstract class MockChartModel<D extends Dataset> {
     protected D dataSeries;
     protected Data chartData;
 
+    /**
+     * Creates a new Mock Chart Model object instance, linking it with
+     * the Data object of a specific Chart.
+     *
+     * @param chartData  Chart Data object to link to
+     */
     protected MockChartModel(Data chartData) {
         this.chartData = chartData;
     }
 
-    public D getDataSeries() {
-        return dataSeries;
-    }
-
+    /**
+     * Adds an (x,y) based entry to the Data Series.
+     *
+     * @param x  x value
+     * @param y  y value
+     */
     public abstract void addEntry(float x, float y);
 
+    /**
+     * Changes the Color of the Data Series.
+     *
+     * @param color  New Color value in &HAARRGGBB format.
+     */
     public abstract void changeColor(String color);
 
+    /**
+     * Changes the label of the Data Series.
+     *
+     * @param text  New text value
+     */
     public void changeLabel(String text) {
         dataSeries.setLabel(text);
     }
@@ -38,5 +56,12 @@ public abstract class MockChartModel<D extends Dataset> {
         } else {
             chartData.getDatasets().add(dataSeries);
         }
+    }
+
+    /**
+     * Removes the Data Series from the Chart.
+     */
+    public void removeDataSeriesFromChart() {
+        chartData.getDatasets().remove(dataSeries);
     }
 }
