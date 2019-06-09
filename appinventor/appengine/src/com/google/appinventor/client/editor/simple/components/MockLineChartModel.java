@@ -13,11 +13,8 @@ public class MockLineChartModel extends MockChartModel<LineDataset> {
         dataSeries = new LineDataset();
 
         dataSeries.setFill(false);
-        dataSeries.setPointBackgroundColor("black");
-        dataSeries.setBackgroundColor("black");
         dataSeries.setBorderWidth(1);
         dataSeries.setLineTension(0);
-        dataSeries.setLabel("");
     }
 
     @Override

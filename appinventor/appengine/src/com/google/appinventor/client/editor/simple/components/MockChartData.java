@@ -49,6 +49,9 @@ public abstract class MockChartData extends MockVisibleComponent {
         this.chartModel = chart.createChartModel();
         setDefaultData();
 
+        this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
+        this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
+
         this.chart.addDataSeries(chartModel.getDataSeries());
     }
 
