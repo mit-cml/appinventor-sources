@@ -34,10 +34,7 @@ public class MockLineChartModel extends MockChartModel<LineDataset> {
 
     @Override
     public void changeColor(String color) {
-        // Color value is passed in as follows: &HAARRGGBB
-        // But we need a format: #RRGGBBAA
-        // TBD: move to utility method
-        color = "#" + color.substring(4) + color.substring(2, 4);
+        color = getHexColor(color);
         dataSeries.setBackgroundColor(color);
         dataSeries.setPointBackgroundColor(color);
         dataSeries.setBorderColor(color);

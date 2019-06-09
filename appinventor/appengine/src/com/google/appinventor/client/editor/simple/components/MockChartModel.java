@@ -64,4 +64,15 @@ public abstract class MockChartModel<D extends Dataset> {
     public void removeDataSeriesFromChart() {
         chartData.getDatasets().remove(dataSeries);
     }
+
+    /**
+     * Converts an ARGB color to RGBA hex format.
+     *
+     * @param color  &HAARRGGBB format color string
+     * @return #RRGGBBAA format color string
+     */
+    protected String getHexColor(String color) {
+        // The idea: Remove &H at the beginning, replace with # and reorder ARGB to RGBA
+        return "#" + color.substring(4) + color.substring(2, 4);
+    }
 }
