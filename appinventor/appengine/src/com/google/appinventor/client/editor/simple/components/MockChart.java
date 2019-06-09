@@ -106,6 +106,11 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         }
     }
 
+    /**
+     * Adds a data series to the Chart.
+     *
+     * @param dataSeries  Data Series object to add.
+     */
     public void addDataSeries(Dataset dataSeries) {
         if (chartWidget.getData().getDatasets().size() == 0) {
             chartWidget.getData().setDatasets(dataSeries);
@@ -116,6 +121,11 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.update();
     }
 
+    /**
+     * Creates a Chart Model instance of the proper type for this Chart.
+     *
+     * @return  New Chart Model instance.
+     */
     public abstract MockChartModel createChartModel();
 
     /**
