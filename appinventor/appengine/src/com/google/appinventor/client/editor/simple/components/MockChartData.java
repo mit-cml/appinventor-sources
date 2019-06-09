@@ -66,6 +66,13 @@ public abstract class MockChartData extends MockVisibleComponent {
         removeStyleDependentName("selected"); // Force remove styling
     }
 
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+        chart.chartWidget.getData().getDatasets().remove(chartModel.getDataSeries());
+        chart.chartWidget.update();
+    }
+
     protected abstract void setDefaultData();
 
 //    protected void initializeDataSetFromChart() {

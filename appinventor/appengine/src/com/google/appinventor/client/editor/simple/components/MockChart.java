@@ -4,6 +4,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.pepstock.charba.client.AbstractChart;
@@ -50,6 +51,18 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.setWidth("100%"); // Fill root panel with Chart Widget's width
 
         initComponent(rootPanel);
+
+        // Re-attach all children MockChartData components
+        chartWidget.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent arg0) {
+                if (arg0.isAttached()) {
+                    for (MockComponent child : children) {
+                        ((MockChartData) child).addToChart(MockChart.this);
+                    }
+                }
+            }
+        });
     }
 
     /**
