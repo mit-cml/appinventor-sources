@@ -24,7 +24,7 @@ public final class MockLineChart extends MockChart<LineChart> {
 
     @Override
     public MockChartModel createChartModel() {
-        return new MockLineChartModel();
+        return new MockLineChartModel(chartWidget.getData());
     }
 
     @Override

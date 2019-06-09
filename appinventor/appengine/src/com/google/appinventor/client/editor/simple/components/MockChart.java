@@ -107,29 +107,6 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
     }
 
     /**
-     * Adds a data series to the Chart.
-     *
-     * @param dataSeries  Data Series object to add.
-     */
-    public void addDataSeries(Dataset dataSeries) {
-        // When adding the first Data Series, it should be set
-        // to the Chart Data object itself rather then appended,
-        // to register the first (new) DataSet List to the Chart data.
-        // Subsequent adding of Data Series objects can simply be added
-        // to the end of the List.
-        if (chartWidget.getData().getDatasets().size() == 0) {
-            chartWidget.getData().setDatasets(dataSeries);
-        } else {
-            chartWidget.getData().getDatasets().add(dataSeries);
-        }
-
-        // Refresh the Chart. Although the Controller is typically responsible
-        // for refreshing the Chart, since this method should be called on the Mock
-        // Chart object, the refreshing can be done here.
-        chartWidget.update();
-    }
-
-    /**
      * Creates a Chart Model instance of the proper type for this Chart.
      *
      * @return  New Chart Model instance.
