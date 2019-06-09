@@ -8,8 +8,6 @@ import java.util.List;
 public class MockCoordinateData extends MockChartData {
     public static final String TYPE = "CoordinateData";
 
-    private List<Float> xValues;
-
     /**
      * Creates a new MockCoordinateData component.
      *

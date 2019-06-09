@@ -17,8 +17,6 @@ public abstract class MockChartData extends MockVisibleComponent {
     protected MockChartModel chartModel;
     protected MockChart chart;
 
-    protected List<Float> yValues;
-
     /**
      * Creates a new instance of a Mock Chart Data component.
      *
