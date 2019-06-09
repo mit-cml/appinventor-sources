@@ -15,7 +15,7 @@ public class MockLineChartModel extends MockChartModel<LineDataset> {
         dataSeries.setFill(false);
         dataSeries.setPointBackgroundColor("black");
         dataSeries.setBackgroundColor("black");
-        dataSeries.setBorderWidth(2);
+        dataSeries.setBorderWidth(1);
         dataSeries.setLineTension(0);
         dataSeries.setLabel("");
     }
@@ -26,5 +26,16 @@ public class MockLineChartModel extends MockChartModel<LineDataset> {
         point.setX(x);
         point.setY(y);
         dataSeries.getDataPoints(true).add(point);
+    }
+
+    @Override
+    public void changeColor(String color) {
+        // Color value is passed in as follows: &HAARRGGBB
+        // But we need a format: #RRGGBBAA
+        // TBD: move to utility method
+        color = "#" + color.substring(4) + color.substring(2, 4);
+        dataSeries.setBackgroundColor(color);
+        dataSeries.setPointBackgroundColor(color);
+        dataSeries.setBorderColor(color);
     }
 }

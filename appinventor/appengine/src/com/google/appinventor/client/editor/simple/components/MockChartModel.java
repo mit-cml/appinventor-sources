@@ -19,4 +19,10 @@ public abstract class MockChartModel<D extends Dataset> {
     }
 
     public abstract void addEntry(float x, float y);
+
+    public abstract void changeColor(String color);
+
+    public void changeLabel(String text) {
+        dataSeries.setLabel(text);
+    }
 }

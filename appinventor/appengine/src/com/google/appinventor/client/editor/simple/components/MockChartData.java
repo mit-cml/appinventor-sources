@@ -8,6 +8,9 @@ import org.pepstock.charba.client.data.Dataset;
 import java.util.List;
 
 public abstract class MockChartData extends MockVisibleComponent {
+    private static final String PROPERTY_COLOR = "Color";
+    private static final String PROPERTY_LABEL = "Label";
+
     // Temporary placeholder for the Chart Data image
     private InlineHTML labelWidget;
 
@@ -74,6 +77,23 @@ public abstract class MockChartData extends MockVisibleComponent {
     }
 
     protected abstract void setDefaultData();
+
+    @Override
+    public void onPropertyChange(String propertyName, String newValue) {
+        super.onPropertyChange(propertyName, newValue);
+
+        if (chartModel == null || chartModel.getDataSeries() == null) {
+            return;
+        }
+
+        if (propertyName.equals(PROPERTY_COLOR)) {
+            chartModel.changeColor(newValue);
+            chart.chartWidget.draw();
+        } else if (propertyName.equals(PROPERTY_LABEL)) {
+            chartModel.changeLabel(newValue);
+            chart.chartWidget.draw();
+        }
+    }
 
 //    protected void initializeDataSetFromChart() {
 //        int add = chart.chartWidget.getData().getDatasets().size();
