@@ -1,8 +1,10 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import org.pepstock.charba.client.AbstractChart;
 import org.pepstock.charba.client.data.Data;
+import org.pepstock.charba.client.data.DataPoint;
 import org.pepstock.charba.client.data.Dataset;
+
+import java.util.List;
 
 public abstract class MockChartModel<D extends Dataset> {
     protected D dataSeries;
@@ -74,4 +76,11 @@ public abstract class MockChartModel<D extends Dataset> {
      * @param elements String in CSV format
      */
     public abstract void setElements(String elements);
+
+    /**
+     * Sets the default data option for a Data Point List (in-place)
+     *
+     * @param dataPoints  empty list of Data Points to populate.
+     */
+    protected abstract void setDefaultElements(List<DataPoint> dataPoints);
 }

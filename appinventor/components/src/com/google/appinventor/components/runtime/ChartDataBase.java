@@ -85,7 +85,7 @@ public abstract class ChartDataBase implements Component {
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
     @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR)
-    public void ElementsFromString(String itemstring) {
+    public void ElementsFromPairs(String itemstring) {
 
     }
 

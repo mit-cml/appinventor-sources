@@ -10,6 +10,7 @@ import java.util.List;
 public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
+    private static final String PROPERTY_PAIRS = "ElementsFromPairs";
 
     // Temporary placeholder for the Chart Data image
     private InlineHTML labelWidget;
@@ -85,7 +86,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      *
      * @param text  new elements text
      */
-    private void setElementsFromStringProperty(String text){
+    private void setElementsFromPairsProperty(String text){
         currentElements = text;
 
         chartModel.setElements(currentElements);
@@ -107,8 +108,8 @@ public abstract class MockChartData extends MockVisibleComponent {
         } else if (propertyName.equals(PROPERTY_LABEL)) {
             chartModel.changeLabel(newValue);
             refreshChart();
-        } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW)) {
-            setElementsFromStringProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_PAIRS)) {
+            setElementsFromPairsProperty(newValue);
             refreshChart();
         }
     }
