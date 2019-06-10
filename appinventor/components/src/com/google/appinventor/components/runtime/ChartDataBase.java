@@ -6,6 +6,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ChartModel;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
@@ -76,6 +77,16 @@ public abstract class ChartDataBase implements Component {
         this.label = text;
         chartModel.setLabel(text);
         container.Refresh();
+    }
+
+    /**
+     * Specifies the text elements of the ListView.
+     * @param itemstring a string containing a comma-separated list of the strings to be picked from
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR)
+    public void ElementsFromString(String itemstring) {
+
     }
 
     @Override

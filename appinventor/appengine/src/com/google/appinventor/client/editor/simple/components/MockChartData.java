@@ -49,8 +49,8 @@ public abstract class MockChartData extends MockVisibleComponent {
         this.chart = chart;
         this.chartModel = chart.createChartModel();
 
-        // Set the default properties
-        setDefaultProperties();
+        // Set the properties to the Data Series
+        setDataSeriesProperties();
 
         // Refresh the Chart view
         refreshChart();
@@ -121,13 +121,13 @@ public abstract class MockChartData extends MockVisibleComponent {
     }
 
     /**
-     * Sets the default properties for the Chart Data component.
+     * Sets the properties for the Chart Data component.
      *
-     * The need for this method is the fact that the component's default
+     * The need for this method is the fact that the component's
      * properties can only be set after the Data component has been added to
      * the Chart.
      */
-    protected void setDefaultProperties() {
+    protected void setDataSeriesProperties() {
         this.chartModel.setElements(currentElements);
         this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
         this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
