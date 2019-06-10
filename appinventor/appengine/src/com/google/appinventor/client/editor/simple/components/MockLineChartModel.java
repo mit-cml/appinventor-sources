@@ -39,17 +39,7 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
         // Default data
         if (entries.length == 0 || elements.equals("")) {
             int add = chartData.getDatasets().indexOf(dataSeries);
-
-            DataPoint dp1 = new DataPoint();
-            dp1.setX(1);
-            dp1.setY(1 + add);
-            DataPoint dp2 = new DataPoint();
-            dp2.setX(2);
-            dp2.setY(2 + add);
-
-            dataSeries.setDataPoints(dp1, dp2);
-
-            return;
+            entries = new String[] { (1 + add) + "", (2 + add) + "", (3 + add) + "", (4 + add) + "" };
         }
 
         DataPoint[] dataPoints = new DataPoint[entries.length];
@@ -57,7 +47,7 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
         for (int i = 0; i < entries.length; ++i) {
             dataPoints[i] = new DataPoint();
             dataPoints[i].setX((i+1));
-            dataPoints[i].setY((i+1));
+            dataPoints[i].setY(Double.parseDouble(entries[i]));
         }
 
         dataSeries.setDataPoints(dataPoints);
