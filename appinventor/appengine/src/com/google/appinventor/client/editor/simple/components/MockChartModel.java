@@ -19,14 +19,6 @@ public abstract class MockChartModel<D extends Dataset> {
     }
 
     /**
-     * Adds an (x,y) based entry to the Data Series.
-     *
-     * @param x  x value
-     * @param y  y value
-     */
-    public abstract void addEntry(float x, float y);
-
-    /**
      * Changes the Color of the Data Series.
      *
      * @param color  New Color value in &HAARRGGBB format.
@@ -75,4 +67,11 @@ public abstract class MockChartModel<D extends Dataset> {
         // The idea: Remove &H at the beginning, replace with # and reorder ARGB to RGBA
         return "#" + color.substring(4) + color.substring(2, 4);
     }
+
+    /**
+     * Sets the elements of the Data Series from a CSV-formatted String.
+     *
+     * @param elements String in CSV format
+     */
+    public abstract void setElements(String elements);
 }

@@ -2,9 +2,9 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.widgets.dnd.DragSource;
-import org.pepstock.charba.client.LineChart;
+import org.pepstock.charba.client.ScatterChart;
 
-public final class MockLineChart extends MockChart<LineChart> {
+public final class MockLineChart extends MockChart<ScatterChart> {
     public static final String TYPE = "LineChart";
 
     /**
@@ -16,7 +16,7 @@ public final class MockLineChart extends MockChart<LineChart> {
         super(editor, TYPE, images.image());
 
         // Initialize Line Chart mock Widget
-        chartWidget = new LineChart();
+        chartWidget = new ScatterChart();
 
         // Initialize the Chart
         initChart();

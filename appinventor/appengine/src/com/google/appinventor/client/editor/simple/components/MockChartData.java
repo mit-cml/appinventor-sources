@@ -17,6 +17,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     protected MockChartModel chartModel;
     protected MockChart chart;
 
+    private String currentElements = "";
+
     /**
      * Creates a new instance of a Mock Chart Data component.
      *
@@ -78,7 +80,16 @@ public abstract class MockChartData extends MockVisibleComponent {
         refreshChart();
     }
 
-    protected abstract void setDefaultData();
+    /**
+     * Sets the current elements of the Chart Data component.
+     *
+     * @param text  new elements text
+     */
+    private void setElementsFromStringProperty(String text){
+        currentElements = text;
+
+        chartModel.setElements(currentElements);
+    }
 
     @Override
     public void onPropertyChange(String propertyName, String newValue) {
@@ -95,6 +106,9 @@ public abstract class MockChartData extends MockVisibleComponent {
             refreshChart();
         } else if (propertyName.equals(PROPERTY_LABEL)) {
             chartModel.changeLabel(newValue);
+            refreshChart();
+        } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW)) {
+            setElementsFromStringProperty(newValue);
             refreshChart();
         }
     }
@@ -114,8 +128,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * the Chart.
      */
     protected void setDefaultProperties() {
-        setDefaultData();
-
+        this.chartModel.setElements(currentElements);
         this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
         this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
     }
