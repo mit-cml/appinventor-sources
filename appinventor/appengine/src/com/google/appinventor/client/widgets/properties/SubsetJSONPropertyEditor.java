@@ -37,6 +37,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -47,6 +49,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
 import java.util.List;
@@ -128,10 +131,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
       VerticalPanel componentPanel = new VerticalPanel();
       VerticalPanel blockPanel = new VerticalPanel();
-      HorizontalPanel loadPanel = new HorizontalPanel();
-      HorizontalPanel savePanel = new HorizontalPanel();
       HorizontalPanel buttonPanel = new HorizontalPanel();
-      VerticalPanel saveLoadPanel = new VerticalPanel();
       final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
       ScrollPanel blockScroll = new ScrollPanel(blockPanel);
 
@@ -148,18 +148,12 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       });
       Button saveButton = new Button(MESSAGES.saveAsButton());
-      final TextBox saveFileName = new TextBox();
       saveButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          saveFile(saveFileName);
+          saveFile();
         }
       });
-      loadPanel.add(loadButton);
-      savePanel.add(saveFileName);
-      savePanel.add(saveButton);
-      saveLoadPanel.add(loadPanel);
-      saveLoadPanel.add(savePanel);
       Button clearButton = new Button(MESSAGES.clearButton());
       Button initializeButton = new Button("Match Project"); // TODO: Internationalize
       clearButton.addClickHandler(new ClickHandler() {
@@ -176,6 +170,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       });
       Button cancelButton = new Button(MESSAGES.cancelButton());
       Button okButton = new Button(MESSAGES.okButton());
+      buttonPanel.add(saveButton);
+      buttonPanel.add(loadButton);
       buttonPanel.add(clearButton);
       buttonPanel.add(initializeButton);
       buttonPanel.add(cancelButton);
@@ -195,8 +191,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       });
       buttonPanel.add(okButton);
-      saveLoadPanel.add(buttonPanel);
-      treePanel.addSouth(saveLoadPanel, 15);
+      treePanel.addSouth(buttonPanel, 5);
       treePanel.addWest(componentScroll, 50);
       treePanel.addEast(blockScroll, 50);
       customPopup.add(treePanel);
@@ -510,21 +505,37 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     return filename;
   }
 
-  private void saveFile(TextBox saveFileName) {
-    String jsonString = createJSONString();
-    if (jsonString.length() > 0) {
-      String saveFileText = saveFileName.getText();
-      if (saveFileText.length() > 0) {
-        if (!saveFileText.endsWith(".json")) {
-          saveFileText = saveFileText + ".json";
-        }
-        saveFileNative(saveFileText, jsonString);
-      } else {
-        Window.alert("Please supply a file name.");
+  private void saveFile() {
+    // Prompt user for file name, generate the JSON, and save the file
+    final DialogBox dialogBox = new DialogBox(false, true);
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.saveAsButton() + "...");
+    final Label saveNameLabel = new Label("Save as file:");  // Todo: Internationalize
+    final TextBox saveName = new TextBox();
+    final HorizontalPanel savePanel = new HorizontalPanel();
+    savePanel.add(saveNameLabel);
+    savePanel.add(saveName);
+    Button cancelButton = new Button("Cancel");
+    cancelButton.addClickListener(new ClickListener() {
+      @Override
+      public void onClick(Widget sender) {
+        dialogBox.hide();
       }
-    } else {
-      Window.alert("Please select components and blocks.");
-    }
+    });
+    savePanel.add(cancelButton);
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+      @Override
+      public void onClick(Widget sender) {
+        String jsonString = createJSONString();
+        saveFileNative(saveName.getText(), jsonString);
+        dialogBox.hide();
+      }
+    });
+    savePanel.add(okButton);
+    dialogBox.setWidget(savePanel);
+    dialogBox.center();
+    dialogBox.show();
   }
 
   private void toggleChildren(TreeItem item, Boolean checked) {
