@@ -316,7 +316,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public void removeComponent(String componentTypeName) {
     String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
-    removePaletteItem(simplePaletteItems.get(componentTypeName), category);
+    if (simplePaletteItems.containsKey(componentTypeName)) {
+      removePaletteItem(simplePaletteItems.get(componentTypeName), category);
+    }
   }
 
 
