@@ -33,6 +33,6 @@ public final class CoordinateData extends ChartDataBase {
         chartModel.addEntry(x, y);
 
         // Refresh Chart with new data
-        container.Refresh();
+        refreshChart();
     }
 }

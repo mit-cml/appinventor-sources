@@ -60,7 +60,7 @@ public class LineChartModel extends ChartModel<LineDataSet> {
         dataset.setValues(values);
 
         // Data Set was not in Chart before. Add it to Chart.
-        if (!data.contains(dataset) && dataset.getEntryCount() != 0) {
+        if (!data.contains(dataset)) {
             data.addDataSet(dataset); // Safe add
         }
     }
