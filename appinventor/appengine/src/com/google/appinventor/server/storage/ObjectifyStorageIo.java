@@ -747,22 +747,38 @@ public class ObjectifyStorageIo implements  StorageIo {
     return file;
   }
 
+  //new delete project function to set the deleted flag bit and store the project data
   @Override
   public void deleteProject(final String userId, final long projectId) {
     validateGCS();
+    // setting the deleted flag as true
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.deleteProjectFlag = true;
+            datastore.put(projectData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
     // blobs associated with the project
-    final List<String> blobKeys = new ArrayList<String>();
+   /* final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
     try {
       // first job deletes the UserProjectData in the user's entity group
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          // delete the UserProjectData object
-          Key<UserData> userKey = userKey(userId);
-          datastore.delete(userProjectKey(userKey, projectId));
-          // delete any FileData objects associated with this project
-        }
+//          // delete the UserProjectData object
+//          Key<UserData> userKey = userKey(userId);
+//          datastore.delete(userProjectKey(userKey, projectId));
+//          // delete any FileData objects associated with this project
+          }
       }, true);
       // second job deletes the project files and ProjectData in the project's
       // entity group
@@ -798,7 +814,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
-    }
+    }*/
 
   }
 

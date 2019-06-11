@@ -382,6 +382,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectRemoved(Project project) {
+    //Setting the condition to check whether the projects are marked deleted or not
+
+
+
     projects.remove(project);
     projectWidgets.remove(project);
 
