@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -51,7 +52,7 @@ public abstract class ChartDataBase implements Component {
     public void Color(int argb) {
         color = argb;
         chartModel.setColor(color);
-        container.Refresh();
+        refreshChart();
     }
 
     /**
@@ -76,7 +77,7 @@ public abstract class ChartDataBase implements Component {
     public void Label(String text) {
         this.label = text;
         chartModel.setLabel(text);
-        container.Refresh();
+        refreshChart();
     }
 
     /**
@@ -92,6 +93,14 @@ public abstract class ChartDataBase implements Component {
         }
 
         chartModel.setElements(elements);
+        refreshChart();
+    }
+
+    /**
+     * Refreshes the Chart view object.
+     */
+    protected void refreshChart() {
+        container.updateData(chartModel.getData());
         container.Refresh();
     }
 
