@@ -79,10 +79,14 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       }
     });
-    PopupPanel sp = new PopupPanel();
-    sp.add(file);
-    sp.setVisible(false);
-    sp.show();
+
+    // This is an invisible panel holding a FileUpload button. It exists because we want to access
+    // the file selection dialog from the subset editor dropdown menu item. There may be a better way
+    // to do this.
+    PopupPanel invisibleFilePanel = new PopupPanel();
+    invisibleFilePanel.add(file);
+    invisibleFilePanel.setVisible(false);
+    invisibleFilePanel.show();
 
     List<DropDownButton.DropDownItem> items = Lists.newArrayList();
     items.add(new DropDownButton.DropDownItem("Subset Property Editor", "All", new Command() {
@@ -125,9 +129,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       clearSelections();
     }
 
-    if (customPopup.getTitle() != MESSAGES.blockSelectorBoxCaption()) {
-      // This is a test to see if the popup has been initialized, but it might be better to just
-      // use a flag.
+    if (customPopup.getTitle() != MESSAGES.blocksToolkitTitle()) {
       final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
       VerticalPanel componentPanel = new VerticalPanel();
       VerticalPanel blockPanel = new VerticalPanel();
@@ -147,7 +149,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           file.click();
         }
       });
-      Button saveButton = new Button(MESSAGES.saveAsButton());
+      Button saveButton = new Button(MESSAGES.exportButton());
       saveButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -174,7 +176,6 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       buttonPanel.add(loadButton);
       buttonPanel.add(clearButton);
       buttonPanel.add(initializeButton);
-      buttonPanel.add(cancelButton);
       cancelButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -191,14 +192,17 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       });
       buttonPanel.add(okButton);
+      buttonPanel.add(cancelButton);
+      Label customTitle = new Label(MESSAGES.blocksToolkitTitle());
+      treePanel.addNorth(customTitle, 5);
       treePanel.addSouth(buttonPanel, 5);
       treePanel.addWest(componentScroll, 50);
       treePanel.addEast(blockScroll, 50);
+      customPopup.setTitle(MESSAGES.blocksToolkitTitle());
       customPopup.add(treePanel);
       customPopup.setHeight("600px");
       customPopup.setWidth("600px");
       customPopup.center();
-      customPopup.setTitle(MESSAGES.blockSelectorBoxCaption());
     }
     customPopupShowing = true;
     customPopup.show();
@@ -509,7 +513,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     // Prompt user for file name, generate the JSON, and save the file
     final DialogBox dialogBox = new DialogBox(false, true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText(MESSAGES.saveAsButton() + "...");
+    dialogBox.setText(MESSAGES.exportButton());
     final Label saveNameLabel = new Label("Save as file:");  // Todo: Internationalize
     final TextBox saveName = new TextBox();
     final HorizontalPanel savePanel = new HorizontalPanel();
