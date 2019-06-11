@@ -43,4 +43,11 @@ public abstract class ChartModel<T extends DataSet> {
     public void setLabel(String text) {
         dataset.setLabel(text);
     }
+
+    /**
+     * Sets the elements of the Data Series from a CSV-formatted String.
+     *
+     * @param elements String in CSV format
+     */
+    public abstract void setElements(String elements);
 }

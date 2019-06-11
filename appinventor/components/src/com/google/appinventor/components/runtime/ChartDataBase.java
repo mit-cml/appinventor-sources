@@ -78,6 +78,22 @@ public abstract class ChartDataBase implements Component {
         container.Refresh();
     }
 
+    /**
+     * Specifies the elements of the entries that the Chart should have.
+     * @param elements  Comma-separated values of Chart entries alternating between x and y values.
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR)
+    public void ElementsFromPairs(String elements) {
+        // Base case:  nothing to add
+        if (elements.equals("")) {
+            return;
+        }
+
+        chartModel.setElements(elements);
+        container.Refresh();
+    }
+
     @Override
     public HandlesEventDispatching getDispatchDelegate() {
         return null;
