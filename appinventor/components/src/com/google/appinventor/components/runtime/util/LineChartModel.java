@@ -16,6 +16,7 @@ public class LineChartModel extends ChartModel<LineDataSet> {
     public LineChartModel(LineData data) {
         super(data);
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
+        this.data.addDataSet(dataset); // Safe add
     }
 
     /**
@@ -27,11 +28,6 @@ public class LineChartModel extends ChartModel<LineDataSet> {
     public void addEntry(float x, float y) {
         Entry entry = new Entry(x, y);
         dataset.addEntryOrdered(entry);
-
-        // Data Set was not in Chart before. Add it to Chart.
-        if (!data.contains(dataset)) {
-            data.addDataSet(dataset); // Safe add
-        }
     }
 
     @Override
@@ -58,10 +54,5 @@ public class LineChartModel extends ChartModel<LineDataSet> {
         }
 
         dataset.setValues(values);
-
-        // Data Set was not in Chart before. Add it to Chart.
-        if (!data.contains(dataset)) {
-            data.addDataSet(dataset); // Safe add
-        }
     }
 }

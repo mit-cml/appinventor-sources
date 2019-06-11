@@ -150,8 +150,11 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      * @param data  Data object instance to update Chart with
      */
     public void updateData(ChartData data) {
+        // If data is null and this method is called, that means that
+        // the Data has been updated. However, we must also make sure
+        // that there is at least 1 data set in the Data object.
         if (view.getData() == null && data.getDataSetCount() != 0) {
-            view.setData(data);
+            view.setData(data); // Safe set
         }
     }
 }
