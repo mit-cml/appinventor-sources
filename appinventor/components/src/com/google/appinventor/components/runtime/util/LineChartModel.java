@@ -9,14 +9,6 @@ import java.util.List;
 
 public class LineChartModel extends ChartModel<LineDataSet> {
     /**
-     * Initializes a new LineChartModel object instance with an
-     * empty dataset.
-     */
-    public LineChartModel() {
-        super(new LineDataSet(new ArrayList<Entry>(), ""));
-    }
-
-    /**
      * Initializes a new LineChartModel object instance.
      *
      * @param data  Line Chart Data object instance
