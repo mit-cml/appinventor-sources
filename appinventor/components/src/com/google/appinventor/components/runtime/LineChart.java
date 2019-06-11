@@ -36,18 +36,15 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
     }
 
     @Override
-    public void AddDataSet(LineDataSet dataSet) {
-        if (view.getData() == null) {
-            view.setData(new LineData());
+    public ChartModel createChartModel() {
+        // Get the View's Data object instance
+        LineData data = view.getData();
+
+        // Data does not yet exist on the Chart
+        if (data == null) {
+            data = new LineData();
         }
 
-        view.getData().addDataSet(dataSet);
-    }
-
-    @Override
-    public ChartModel createChartModel() {
-        LineDataSet dataSet = new LineDataSet(new ArrayList<Entry>(), "");
-
-        return new LineChartModel(dataSet);
+        return new LineChartModel(data);
     }
 }
