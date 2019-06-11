@@ -129,7 +129,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * the Chart.
      */
     protected void setDataSeriesProperties() {
-        this.chartModel.setElements(getPropertyValue(PROPERTY_PAIRS));
+        setElementsFromPairsProperty(getPropertyValue(PROPERTY_PAIRS));
         this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
         this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
     }
