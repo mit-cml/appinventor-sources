@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
@@ -10,10 +11,11 @@ public class LineChartModel extends ChartModel<LineDataSet> {
     /**
      * Initializes a new LineChartModel object instance.
      *
-     * @param dataset  Line Chart Data Set object instance
+     * @param data  Line Chart Data objec tinstance
      */
-    public LineChartModel(LineDataSet dataset) {
-        super(dataset);
+    public LineChartModel(LineData data) {
+        super(data);
+        dataset = new LineDataSet(new ArrayList<Entry>(), "");
     }
 
     /**
@@ -25,6 +27,11 @@ public class LineChartModel extends ChartModel<LineDataSet> {
     public void addEntry(float x, float y) {
         Entry entry = new Entry(x, y);
         dataset.addEntryOrdered(entry);
+
+        // Data Set was not in Chart before. Add it to Chart.
+        if (!data.contains(dataset)) {
+            data.addDataSet(dataset); // Safe add
+        }
     }
 
     @Override
@@ -51,5 +58,10 @@ public class LineChartModel extends ChartModel<LineDataSet> {
         }
 
         dataset.setValues(values);
+
+        // Data Set was not in Chart before. Add it to Chart.
+        if (!data.contains(dataset) && dataset.getEntryCount() != 0) {
+            data.addDataSet(dataset); // Safe add
+        }
     }
 }

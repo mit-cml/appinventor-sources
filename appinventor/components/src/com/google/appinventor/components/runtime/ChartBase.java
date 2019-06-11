@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
@@ -135,18 +136,22 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
         view.invalidate();
     }
 
-
-    /**
-     * Adds new data set to the Chart data.
-     *
-     * @param dataSet - data set to add
-     */
-    public abstract void AddDataSet(D dataSet);
-
     /**
      * Creates a new Chart Model object instance.
      *
      * @return  Chart Model instance
      */
     public abstract ChartModel createChartModel();
+
+    /**
+     * Updates the Data object instance of the Chart, if there is no data on
+     * the Chart object in the first place.
+     *
+     * @param data  Data object instance to update Chart with
+     */
+    public void updateData(ChartData data) {
+        if (view.getData() == null && data.getDataSetCount() != 0) {
+            view.setData(data);
+        }
+    }
 }

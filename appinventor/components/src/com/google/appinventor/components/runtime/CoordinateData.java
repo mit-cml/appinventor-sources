@@ -30,14 +30,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
     public void AddEntry(float x, float y) {
-        boolean addDataset = (chartModel.getDataset().getEntryCount() == 0);
-
         chartModel.addEntry(x, y);
-
-        // Data set was empty before. We should add it to the Chart.
-        if (addDataset) {
-            container.AddDataSet(chartModel.getDataset()); // Safe add. DataModel guarantees proper types.
-        }
 
         // Refresh Chart with new data
         container.Refresh();
