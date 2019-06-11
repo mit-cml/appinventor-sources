@@ -11,7 +11,7 @@ public class LineChartModel extends ChartModel<LineDataSet> {
     /**
      * Initializes a new LineChartModel object instance.
      *
-     * @param data  Line Chart Data objec tinstance
+     * @param data  Line Chart Data object instance
      */
     public LineChartModel(LineData data) {
         super(data);
