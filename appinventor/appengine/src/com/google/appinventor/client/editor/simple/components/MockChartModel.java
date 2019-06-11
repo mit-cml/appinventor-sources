@@ -60,14 +60,14 @@ public abstract class MockChartModel<D extends Dataset> {
     }
 
     /**
-     * Converts an ARGB color to RGBA hex format.
+     * Converts an ARGB color to RGB hex format.
      *
      * @param color  &HAARRGGBB format color string
-     * @return #RRGGBBAA format color string
+     * @return #RRGGBB format color string
      */
     protected String getHexColor(String color) {
-        // The idea: Remove &H at the beginning, replace with # and reorder ARGB to RGBA
-        return "#" + color.substring(4) + color.substring(2, 4);
+        // The idea: Remove &H at the beginning, replace with # and reorder ARGB to RGB
+        return "#" + color.substring(4);
     }
 
     /**
