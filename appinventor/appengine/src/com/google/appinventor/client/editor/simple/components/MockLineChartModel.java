@@ -7,6 +7,7 @@ import org.pepstock.charba.client.data.ScatterDataset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class MockLineChartModel extends MockChartModel<ScatterDataset> {
 
@@ -72,12 +73,25 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
 
     @Override
     protected void setDefaultElements(List<DataPoint> dataPoints) {
-        int add = chartData.getDatasets().indexOf(dataSeries);
+        final int points = 4; // Number of points to add
 
-        for (int i = 1; i <= 4; ++i) {
+        // TBD: Might change this in the future.
+        // Generally, this should not cause performance issues because typically there are not
+        // that many data points.
+        Optional<DataPoint> maxYPoint = chartData.getDatasets() // Get all the data sets
+                .stream() // Create a stream
+                .flatMap(l -> ((ScatterDataset)l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
+                .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value
+
+        // Get the maximum data point Y value and subract points/2.
+        // The subtraction ensures that the starting data value of this data set
+        // Will be just 1 above the starting value of the last data set.
+        double yVal = maxYPoint.map(DataPoint::getY).orElse(points/2.0) - (points/2);
+
+        for (int i = 0; i < points; ++i) {
             DataPoint dataPoint = new DataPoint();
-            dataPoint.setX(i);
-            dataPoint.setY((i + add));
+            dataPoint.setX(i+1);
+            dataPoint.setY((yVal + i));
             dataPoints.add(dataPoint);
         }
     }
