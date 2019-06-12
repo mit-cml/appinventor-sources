@@ -2482,7 +2482,7 @@ public class Ode implements EntryPoint {
 
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/")) && !newURL.startsWith("https://lyndat.github.io/")) {
+        && !newURL.startsWith("http://appinv.us/"))) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
