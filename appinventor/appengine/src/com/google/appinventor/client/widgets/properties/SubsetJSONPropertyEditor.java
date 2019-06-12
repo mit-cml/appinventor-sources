@@ -149,7 +149,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
           file.click();
         }
       });
-      Button saveButton = new Button(MESSAGES.exportButton());
+      Button saveButton = new Button(MESSAGES.saveAsButton());
       saveButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -513,7 +513,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     // Prompt user for file name, generate the JSON, and save the file
     final DialogBox dialogBox = new DialogBox(false, true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText(MESSAGES.exportButton());
+    dialogBox.setText(MESSAGES.saveAsButton());
     final Label saveNameLabel = new Label("Save as file:");  // Todo: Internationalize
     final TextBox saveName = new TextBox();
     final HorizontalPanel savePanel = new HorizontalPanel();
