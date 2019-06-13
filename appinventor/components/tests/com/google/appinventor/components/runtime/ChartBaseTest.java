@@ -11,7 +11,6 @@ import org.junit.Test;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
