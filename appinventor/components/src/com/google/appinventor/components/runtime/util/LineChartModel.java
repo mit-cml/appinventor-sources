@@ -5,6 +5,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class LineChartModel extends ChartModel<LineDataSet> {
@@ -53,7 +55,13 @@ public class LineChartModel extends ChartModel<LineDataSet> {
             }
         }
 
-        // Sort values! (TBD)
+        // Sort the Entries by X value.
+        Collections.sort(values, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                return Float.compare(entry.getX(), t1.getX());
+            }
+        });
 
         dataset.setValues(values);
     }

@@ -7,7 +7,15 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Unit teests for the LineChartModel class.
+ */
 public class LineChartModelTest extends RobolectricTestBase {
+    /*
+     * TBD: abstract common properties (i.e. Label & Color)
+     */
+
+
     private LineChartModel model;
     private LineData data;
 
