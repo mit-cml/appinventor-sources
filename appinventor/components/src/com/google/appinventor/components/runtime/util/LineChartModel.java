@@ -53,6 +53,8 @@ public class LineChartModel extends ChartModel<LineDataSet> {
             }
         }
 
+        // Sort values! (TBD)
+
         dataset.setValues(values);
     }
 }
