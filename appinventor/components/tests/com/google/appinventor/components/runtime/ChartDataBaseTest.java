@@ -123,4 +123,24 @@ public class ChartDataBaseTest {
         Assert.assertEquals(label, chartData.Label());
         verify(model);
     }
+
+    /**
+     * Tests that the ChartData's Elements setter
+     * calls the right method of the ChartModel object.
+     */
+    @Test
+    public void testElementsFromPairs() {
+        String elements = "1, 1, 2, 2";
+
+        // Set up the mock to expect the setElements method call
+        model.setElements(elements);
+        expectLastCall();
+        setupChartComponents();
+
+        // Change the elements of the Data Series
+        chartData.ElementsFromPairs(elements);
+
+        // Verify the method call
+        verify(model);
+    }
 }
