@@ -32,8 +32,22 @@ Blockly.WarningHandler.WarningState = {
   WARNING: 1,
   ERROR: 2
 };
-Blockly.WarningHandler.prototype.currentWarning = 0;
-Blockly.WarningHandler.prototype.currentError = 0;
+
+/**
+ * The currently selected index into the array of block IDs with warnings. If nothing has been
+ * selected (i.e., if we are not stepping through warnings), this should be -1 so that the next
+ * index will be 0.
+ * @type {number}
+ */
+Blockly.WarningHandler.prototype.currentWarning = -1;
+
+/**
+ * The currently selected index into the array of block IDs with errors. If nothing has been
+ * selected (i.e., if we are not stepping through errors), this should be -1 so that the next
+ * index will be 0.
+ * @type {number}
+ */
+Blockly.WarningHandler.prototype.currentError = -1;
 
 Blockly.WarningHandler.prototype.updateWarningErrorCount = function() {
   //update the error and warning count in the UI
@@ -49,7 +63,7 @@ Blockly.WarningHandler.prototype.updateCurrentWarningAndError = function() {
   var indicator = this.workspace.getWarningIndicator();
   if (indicator) {
     // indicator is only available after the workspace has been drawn.
-    indicator.updateCurrentWarningAndError(this.currentWarning, this.currentError)
+    indicator.updateCurrentWarningAndError(this.currentWarning, this.currentError);
   }
 };
 
@@ -122,7 +136,8 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
 
 Blockly.WarningHandler.prototype.previousWarning = function() {
   var k = Object.keys(this.warningIdHash);
-  if (this.currentWarning < k.length)
+  if (k.length === 0) return;  // nothing to see here.
+  if (0 <= this.currentWarning && this.currentWarning < k.length)
     this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(false);
   if (this.currentWarning > 0) {
     this.currentWarning--;
@@ -134,7 +149,8 @@ Blockly.WarningHandler.prototype.previousWarning = function() {
 
 Blockly.WarningHandler.prototype.nextWarning = function() {
   var k = Object.keys(this.warningIdHash);
-  if (this.currentWarning < k.length)
+  if (k.length === 0) return;  // nothing to see here.
+  if (0 <= this.currentWarning && this.currentWarning < k.length)
     this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(false);
   if (this.currentWarning < k.length - 1) {
     this.currentWarning++;
@@ -147,7 +163,8 @@ Blockly.WarningHandler.prototype.nextWarning = function() {
 
 Blockly.WarningHandler.prototype.previousError = function() {
   var k = Object.keys(this.errorIdHash);
-  if (this.currentError < k.length)
+  if (k.length === 0) return;  // nothing to see here.
+  if (0 <= this.currentError && this.currentError < k.length)
     this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
   if (k.length > 0) {
     if (this.currentError > 0) {
@@ -161,7 +178,8 @@ Blockly.WarningHandler.prototype.previousError = function() {
 
 Blockly.WarningHandler.prototype.nextError = function() {
   var k = Object.keys(this.errorIdHash);
-  if (this.currentError < k.length)
+  if (k.length === 0) return;  // nothing to see here.
+  if (0 <= this.currentError && this.currentError < k.length)
     this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
   if (k.length > 0) {
     if (this.currentError < k.length - 1) {

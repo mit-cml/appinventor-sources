@@ -554,9 +554,10 @@ public final class Compiler {
    * @param out The writer the style will be written to.
    * @param name The name of the new style.
    * @param parent The parent style to inherit from.
+   * @param sdk The SDK version that the theme overlays
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent, boolean holo) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, int sdk) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
@@ -565,6 +566,8 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    boolean holo = sdk >= 11 && sdk < 21;
+    boolean needsClassicSwitch = false;
     if (!parent.equals("android:Theme")) {
       out.write("<item name=\"windowActionBar\">true</item>\n");
       out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
@@ -576,8 +579,20 @@ public final class Compiler {
       out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+    } else {
+      out.write("<item name=\"switchStyle\">@style/ClassicSwitch</item>\n");
+      needsClassicSwitch = true;
     }
     out.write("</style>\n");
+    if (needsClassicSwitch) {
+      out.write("<style name=\"ClassicSwitch\" parent=\"Widget.AppCompat.CompoundButton.Switch\">\n");
+      if (sdk == 23) {
+        out.write("<item name=\"android:background\">@drawable/abc_control_background_material</item>\n");
+      } else {
+        out.write("<item name=\"android:background\">@drawable/abc_item_background_holo_light</item>\n");
+      }
+      out.write("</style>\n");
+    }
   }
 
   private static void writeActionBarStyle(Writer out, String name, String parent,
@@ -626,6 +641,7 @@ public final class Compiler {
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
     boolean needsBlackTitleText = false;
+    boolean holo = "-v11".equals(suffix) || "-v14".equals(suffix);
     if (isClassicTheme) {
       parentTheme = "android:Theme";
     } else {
@@ -670,9 +686,10 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
 
-      writeTheme(out, "AppTheme", parentTheme, suffix.equals("-v11"));
+      writeTheme(out, "AppTheme", parentTheme,
+          suffix.isEmpty() ? 7 : Integer.parseInt(suffix.substring(2)));
       if (!isClassicTheme) {
-        if ("-v11".equals(suffix)) {  // Handle Holo
+        if (holo) {  // Handle Holo
           if (parentTheme.contains("Light")) {
             writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.Light.ActionBar", needsBlackTitleText);
           } else {
@@ -1056,10 +1073,12 @@ public final class Compiler {
     File style11Dir = createDir(resDir, "values-v11");
     File style14Dir = createDir(resDir, "values-v14");
     File style21Dir = createDir(resDir, "values-v21");
+    File style23Dir = createDir(resDir, "values-v23");
     if (!compiler.createValuesXml(styleDir, "") ||
         !compiler.createValuesXml(style11Dir, "-v11") ||
         !compiler.createValuesXml(style14Dir, "-v14") ||
-        !compiler.createValuesXml(style21Dir, "-v21")) {
+        !compiler.createValuesXml(style21Dir, "-v21") ||
+        !compiler.createValuesXml(style23Dir, "-v23")) {
       return false;
     }
 
