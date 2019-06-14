@@ -16,6 +16,9 @@ public final class MockLineChart extends MockChart<ScatterChart> {
         super(editor, TYPE, images.image());
 
         // Initialize Line Chart mock Widget
+        // We are using ScatterChart instead of LineChart because
+        // ScatterCharts in Charba allow more flexibility for our use case
+        // E.g. datasets with varying amount of data points and scale.
         chartWidget = new ScatterChart();
 
         // Initialize the Chart
@@ -23,7 +26,7 @@ public final class MockLineChart extends MockChart<ScatterChart> {
     }
 
     @Override
-    public MockChartModel createChartModel() {
+    public MockLineChartModel createChartModel() {
         return new MockLineChartModel(chartWidget.getData());
     }
 
