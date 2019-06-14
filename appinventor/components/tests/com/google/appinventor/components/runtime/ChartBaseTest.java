@@ -14,13 +14,12 @@ import static org.easymock.EasyMock.verify;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
- * Unit tests for the ChartBase class.
+ * Abstract test class for the ChartBase class.
  *
- * Instantiates an implementation of the LineChart to test functionality that is common
- * for all the Chart components, and not dependent on the subclass.
+ * Contains test cases for functionality independent of the Chart subclass.
  */
-public class ChartBaseTest extends RobolectricTestBase {
-    private ChartBase chart;
+public abstract class ChartBaseTest<T extends ChartBase> extends RobolectricTestBase {
+    protected T chart;
 
     /**
      * Test to ensure that Chart has the expected default properties.
@@ -134,7 +133,5 @@ public class ChartBaseTest extends RobolectricTestBase {
     @Before
     public void setUp() {
         super.setUp();
-        chart = new LineChart(getForm()); // Chart type does not matter, since this is an abstract class test
-        chart.getView().requestLayout();
     }
 }
