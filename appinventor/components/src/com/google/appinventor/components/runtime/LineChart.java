@@ -32,7 +32,7 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
     }
 
     @Override
-    public ChartModel createChartModel() {
+    public LineChartModel createChartModel() {
         return new LineChartModel(data);
     }
 }
