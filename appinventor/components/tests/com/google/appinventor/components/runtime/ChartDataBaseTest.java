@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.runtime.util.ChartModel;
 import junit.framework.Assert;
 import org.easymock.EasyMock;
 import org.junit.Before;

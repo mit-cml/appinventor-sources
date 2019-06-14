@@ -3,8 +3,6 @@ package com.google.appinventor.components.runtime;
 import android.view.View;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.LineData;
-import com.google.appinventor.components.runtime.util.ChartModel;
-import com.google.appinventor.components.runtime.util.LineChartModel;
 import org.junit.Before;
 import org.junit.Test;
 

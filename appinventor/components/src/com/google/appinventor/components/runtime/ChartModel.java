@@ -1,10 +1,10 @@
-package com.google.appinventor.components.runtime.util;
+package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 
-public abstract class ChartModel<T extends DataSet> {
-    protected ChartData data;
+public abstract class ChartModel<T extends DataSet, D extends ChartData> {
+    protected D data;
     protected T dataset;
 
     /**
@@ -12,7 +12,7 @@ public abstract class ChartModel<T extends DataSet> {
      *
      * @param data  Chart data instance
      */
-    protected ChartModel(ChartData data) {
+    protected ChartModel(D data) {
         this.data = data;
     }
 

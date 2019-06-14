@@ -1,7 +1,8 @@
-package com.google.appinventor.components.runtime.util;
+package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
+import com.google.appinventor.components.runtime.LineChartModel;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
 import junit.framework.Assert;
 import org.junit.Before;
@@ -16,7 +17,7 @@ public class LineChartModelTest extends RobolectricTestBase {
      */
 
 
-    private LineChartModel model;
+    private com.google.appinventor.components.runtime.LineChartModel model;
     private LineData data;
 
     @Before

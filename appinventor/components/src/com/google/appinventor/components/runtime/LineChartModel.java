@@ -1,4 +1,4 @@
-package com.google.appinventor.components.runtime.util;
+package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class LineChartModel extends ChartModel<LineDataSet> {
+public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     /**
      * Initializes a new LineChartModel object instance.
      *

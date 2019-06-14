@@ -6,7 +6,6 @@ import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.ChartModel;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
