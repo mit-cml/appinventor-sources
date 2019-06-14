@@ -1,13 +1,15 @@
-package com.google.appinventor.components.runtime.util;
+package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public class LineChartModel extends ChartModel<LineDataSet> {
+public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     /**
      * Initializes a new LineChartModel object instance.
      *
@@ -52,6 +54,14 @@ public class LineChartModel extends ChartModel<LineDataSet> {
                 return; // Do not update entries; Invalid input.
             }
         }
+
+        // Sort the Entries by X value.
+        Collections.sort(values, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                return Float.compare(entry.getX(), t1.getX());
+            }
+        });
 
         dataset.setValues(values);
     }

@@ -17,10 +17,8 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
         // Create the Data Series object
         dataSeries = new ScatterDataset();
 
-        dataSeries.setFill(false);
-        dataSeries.setBorderWidth(1);
-        dataSeries.setLineTension(0);
-        dataSeries.setShowLine(true);
+        // Set the default style properties for the Data Series
+        setDefaultStylingProperties();
 
         // Adds the Data Series to the Chart.
         addDataSeriesToChart();
@@ -63,11 +61,12 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
             // is a must, because otherwise, the Chart will not look representative.
             // Consider adding: (1, 2), (5, 3), (2, 5). We want the x = 2
             // value to be continuous on the Line Chart, rather than
-            // going outside the Chart.
+            // going outside the Chart, which would happen since we
+            // are using a Scatter Chart.
             dataPoints.sort(Comparator.comparingDouble(DataPoint::getX));
         }
 
-        // Set the data points to the actual Data Series
+        // Set the generated data points to the Data Series
         dataSeries.setDataPoints(dataPoints);
     }
 
@@ -83,10 +82,11 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
                 .flatMap(l -> ((ScatterDataset)l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
                 .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value
 
-        // Get the maximum data point Y value and subract points/2.
+        // Get the maximum data point Y value and subtract points/2.
         // The subtraction ensures that the starting data value of this data set
         // Will be just 1 above the starting value of the last data set.
-        double yVal = maxYPoint.map(DataPoint::getY).orElse(points/2.0) - (points/2);
+        final int half = points/2;
+        double yVal = maxYPoint.map(DataPoint::getY).orElse((double)half) - (half);
 
         for (int i = 0; i < points; ++i) {
             DataPoint dataPoint = new DataPoint();
@@ -94,5 +94,13 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
             dataPoint.setY((yVal + i));
             dataPoints.add(dataPoint);
         }
+    }
+
+    @Override
+    protected void setDefaultStylingProperties() {
+        dataSeries.setFill(false);
+        dataSeries.setBorderWidth(1);
+        dataSeries.setLineTension(0);
+        dataSeries.setShowLine(true);
     }
 }

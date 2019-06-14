@@ -83,4 +83,9 @@ public abstract class MockChartModel<D extends Dataset> {
      * @param dataPoints  empty list of Data Points to populate.
      */
     protected abstract void setDefaultElements(List<DataPoint> dataPoints);
+
+    /**
+     * Sets the default styling properties of the Data Series.
+     */
+    protected abstract void setDefaultStylingProperties();
 }

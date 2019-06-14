@@ -2,17 +2,17 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import com.github.mikephil.charting.data.ChartData;
-import com.github.mikephil.charting.data.DataSet;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.ChartModel;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public abstract class ChartBase<T extends Chart, D extends DataSet> extends AndroidViewComponent implements ComponentContainer {
+public abstract class ChartBase<T extends Chart, D extends ChartData> extends AndroidViewComponent implements ComponentContainer {
 
     protected T view;
+    protected D data;
 
     private String description;
     private int backgroundColor;
@@ -34,6 +34,8 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
         container.$add(this);
 
         // Set default values
+        Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
+        Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
     }
@@ -142,19 +144,4 @@ public abstract class ChartBase<T extends Chart, D extends DataSet> extends Andr
      * @return  Chart Model instance
      */
     public abstract ChartModel createChartModel();
-
-    /**
-     * Updates the Data object instance of the Chart, if there is no data on
-     * the Chart object in the first place.
-     *
-     * @param data  Data object instance to update Chart with
-     */
-    public void updateData(ChartData data) {
-        // If data is null and this method is called, that means that
-        // the Data has been updated. However, we must also make sure
-        // that there is at least 1 data set in the Data object.
-        if (view.getData() == null && data.getDataSetCount() != 0) {
-            view.setData(data); // Safe set
-        }
-    }
 }
