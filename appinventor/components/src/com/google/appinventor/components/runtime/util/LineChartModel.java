@@ -44,8 +44,8 @@ public class LineChartModel extends ChartModel<LineDataSet> {
 
         for (int i = 1; i < entries.length; i += 2) {
             try {
-                float xValue = Float.parseFloat(entries[i]);
-                float yValue = Float.parseFloat(entries[i-1]);
+                float xValue = Float.parseFloat(entries[i-1]);
+                float yValue = Float.parseFloat(entries[i]);
                 Entry entry = new Entry(xValue, yValue);
                 values.add(entry);
             } catch (NumberFormatException e) {

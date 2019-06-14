@@ -4,10 +4,12 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.pepstock.charba.client.AbstractChart;
 import org.pepstock.charba.client.Chart;
+import org.pepstock.charba.client.data.Dataset;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -49,6 +51,18 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.setWidth("100%"); // Fill root panel with Chart Widget's width
 
         initComponent(rootPanel);
+
+        // Re-attach all children MockChartData components
+        chartWidget.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent arg0) {
+                if (arg0.isAttached()) {
+                    for (MockComponent child : children) {
+                        ((MockChartData) child).addToChart(MockChart.this);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -91,6 +105,13 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
             setBackgroundColorProperty(newValue);
         }
     }
+
+    /**
+     * Creates a Chart Model instance of the proper type for this Chart.
+     *
+     * @return  New Chart Model instance.
+     */
+    public abstract MockChartModel createChartModel();
 
     /**
      * Returns the Mock Component of the Drag Source.

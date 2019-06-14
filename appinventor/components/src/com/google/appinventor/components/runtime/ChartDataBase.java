@@ -7,6 +7,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ChartModel;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {

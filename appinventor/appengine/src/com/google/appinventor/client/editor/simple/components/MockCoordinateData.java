@@ -1,7 +1,9 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.gwt.user.client.ui.InlineHTML;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MockCoordinateData extends MockChartData {
     public static final String TYPE = "CoordinateData";
