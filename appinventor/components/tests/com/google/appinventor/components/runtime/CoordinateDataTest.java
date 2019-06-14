@@ -15,6 +15,10 @@ public class CoordinateDataTest extends ChartDataBaseTest<CoordinateData> {
         chartData = new CoordinateData(chart);
     }
 
+    /**
+     * Tests that the add entry method calls the proper method in
+     * the Chart model with the correct values.
+     */
     @Test
     public void testAddEntry() {
         float x = 3;
