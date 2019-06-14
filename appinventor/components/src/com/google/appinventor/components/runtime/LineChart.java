@@ -15,7 +15,7 @@ import java.util.ArrayList;
     category = ComponentCategory.CHARTS,
     description = "A component that allows visualizing data using lines")
 @SimpleObject
-public final class LineChart extends ChartBase<com.github.mikephil.charting.charts.LineChart, LineDataSet> {
+public final class LineChart extends ChartBase<com.github.mikephil.charting.charts.LineChart, LineData> {
 
     /**
      * Creates a new Line Chart component.
@@ -26,6 +26,8 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
         super(container);
 
         view = new com.github.mikephil.charting.charts.LineChart(container.$context());
+        data = new LineData();
+        view.setData(data);
 
         initChart();
     }
@@ -37,14 +39,6 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
 
     @Override
     public ChartModel createChartModel() {
-        // Get the View's Data object instance
-        LineData data = view.getData();
-
-        // Data does not yet exist on the Chart
-        if (data == null) {
-            data = new LineData();
-        }
-
         return new LineChartModel(data);
     }
 }

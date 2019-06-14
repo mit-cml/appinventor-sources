@@ -100,7 +100,6 @@ public abstract class ChartDataBase implements Component {
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        container.updateData(chartModel.getData());
         container.Refresh();
     }
 
