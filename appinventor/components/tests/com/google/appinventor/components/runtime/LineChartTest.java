@@ -1,8 +1,10 @@
 package com.google.appinventor.components.runtime;
 
 import android.view.View;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.runtime.util.ChartModel;
+import com.google.appinventor.components.runtime.util.LineChartModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,24 +29,26 @@ public class LineChartTest extends ChartBaseTest {
     }
 
     /**
-     * Tests to make sure that when there is no data on the Chart, the created
+     * Tests that the data object is of type Line Data.
      */
-//    @Test
-//    public void testCreateChartModelNoData() {
-//        // Get current LineData object of the underlying Chart view object
-//        LineData currentData = (LineData)chart.view.getData();
-//
-//        // Create a ChartModel object instance
-//        ChartModel model = chart.createChartModel();
-//
-//        // Make sure that model data is not equal to Chart view data.
-//        // This is because the data is initially empty, so it should not
-//        // be assigned to the Chart.
-//        assertNotSame(model.getData(), currentData);
-//
-//        // Make sure that data is of correct type
-//        assertThat(model.getData(), instanceOf(LineData.class));
-//    }
+    @Test
+    public void testLineChartDataType() {
+        ChartData data = chart.data;
+
+        assertThat(data, instanceOf(LineData.class));
+    }
+
+    /**
+     * Tests that the creation of a Chart Model returns the proper
+     * object type instance with the correct Data component set to it.
+     */
+    @Test
+    public void testCreateChartModel() {
+        ChartModel model = chart.createChartModel();
+
+        assertThat(model, instanceOf(LineChartModel.class));
+        assertEquals(chart.data, model.getData());
+    }
 
     @Before
     public void setUp() {
