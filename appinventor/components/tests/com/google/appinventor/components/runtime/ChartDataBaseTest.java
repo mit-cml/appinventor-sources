@@ -10,17 +10,12 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for the ChartDataBase abstract class.
- *
- * Instantiates a CoordinateData subclass with mock dependencies.
- * The class is meant to test common functionality of the ChartData
- * component that is independent of the subclass used.
+ * Abstract class for Unit tests of ChartData components.
  */
-public class ChartDataBaseTest {
-    private ChartDataBase chartData;
-
-    private ChartBase chart;
-    private ChartModel model;
+public abstract class ChartDataBaseTest<T extends ChartDataBase> {
+    protected T chartData;
+    protected ChartBase chart;
+    protected ChartModel model;
 
     /**
      * Helper method to set up mock Chart and Model object
@@ -44,13 +39,12 @@ public class ChartDataBaseTest {
     /**
      * Sets up all the Chart components.
      *
-     * Mocks are registered (replayed) and chartData is
-     * initialized.
+     * Mocks are registered (replayed) and chartData should
+     *  be initialized on implementations.
      */
-    private void setupChartComponents() {
+    protected void setupChartComponents() {
         replay(chart);
         replay(model);
-        chartData = new CoordinateData(chart);
     }
 
     @Before
