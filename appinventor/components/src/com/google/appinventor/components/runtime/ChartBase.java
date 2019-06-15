@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
@@ -38,6 +39,9 @@ public abstract class ChartBase<T extends Chart, D extends ChartData> extends An
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+
+        // Center the Legend
+        view.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
     }
 
     @Override
