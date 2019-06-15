@@ -18,6 +18,7 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     public LineChartModel(LineData data) {
         super(data);
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
+        dataset.setDrawCircleHole(false);
         this.data.addDataSet(dataset); // Safe add
     }
 
