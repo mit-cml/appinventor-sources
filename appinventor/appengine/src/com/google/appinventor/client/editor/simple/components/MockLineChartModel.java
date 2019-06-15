@@ -82,11 +82,9 @@ public class MockLineChartModel extends MockChartModel<ScatterDataset> {
                 .flatMap(l -> ((ScatterDataset)l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
                 .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value
 
-        // Get the maximum data point Y value and subtract points/2.
-        // The subtraction ensures that the starting data value of this data set
-        // Will be just 1 above the starting value of the last data set.
-        final int half = points/2;
-        double yVal = maxYPoint.map(DataPoint::getY).orElse((double)half) - (half);
+        // Get the maximum data point Y value. We take the maximum to ensure
+        // that our newly added default data does not overlap existing lines.
+        double yVal = maxYPoint.map(DataPoint::getY).orElse(0.0);
 
         for (int i = 0; i < points; ++i) {
             DataPoint dataPoint = new DataPoint();
