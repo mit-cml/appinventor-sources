@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.pepstock.charba.client.AbstractChart;
 import org.pepstock.charba.client.Chart;
 import org.pepstock.charba.client.data.Dataset;
+import org.pepstock.charba.client.enums.Position;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -41,6 +42,7 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
         chartWidget.getOptions().setMaintainAspectRatio(false);
         chartWidget.getOptions().getTitle().setDisplay(true);
         chartWidget.getOptions().getLegend().getLabels().setBoxWidth(20);
+        chartWidget.getOptions().getLegend().setPosition(Position.BOTTOM);
 
         // Since the Mcok Chart component is not a container in a normal
         // sense (attached components should not be visible), the Chart Widget
