@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.view.View;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -22,6 +23,9 @@ public final class LineChart extends ChartBase<com.github.mikephil.charting.char
         view = new com.github.mikephil.charting.charts.LineChart(container.$context());
         data = new LineData();
         view.setData(data);
+
+        view.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
+        view.getAxisRight().setDrawLabels(false); // Disable right Y axis so there's only one
 
         initChart();
     }
