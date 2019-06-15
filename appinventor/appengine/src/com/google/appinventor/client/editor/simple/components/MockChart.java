@@ -40,6 +40,7 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
     protected void initChart() {
         chartWidget.getOptions().setMaintainAspectRatio(false);
         chartWidget.getOptions().getTitle().setDisplay(true);
+        chartWidget.getOptions().getLegend().getLabels().setBoxWidth(20);
 
         // Since the Mcok Chart component is not a container in a normal
         // sense (attached components should not be visible), the Chart Widget
