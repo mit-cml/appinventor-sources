@@ -165,7 +165,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/linestring.png", images.linestring());
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
-    bundledImages.put("images/recyclerView.png", images.recyclerViewComponent());
+    bundledImages.put("images/recyclerView.png", images.recyclerview());
 
 
 
@@ -404,6 +404,8 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockRecyclerView.TYPE)) {
+      return new MockRecyclerView(editor);   
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {

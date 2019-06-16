@@ -49,7 +49,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
    *
    * @param editor  editor of source file the component belongs to
    */
-  public MockListView(SimpleEditor editor) {
+  public MockRecyclerView(SimpleEditor editor) {
     super(editor, TYPE, images.listview());
     listViewWidget = new VerticalPanel();
     //TODO (Jose) extract magic numbers as ComponentConstants.java
