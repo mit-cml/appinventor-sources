@@ -895,6 +895,10 @@ public class YaVersion {
   // - Added SelectionColor Property
   public static final int LISTVIEW_COMPONENT_VERSION = 5;
 
+  // For RECYCLERVIEW_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int RECYCLERVIEW_COMPONENT_VERSION = 1;
+
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
