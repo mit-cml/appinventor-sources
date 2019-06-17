@@ -16,8 +16,6 @@ import android.content.pm.ResolveInfo;
 
 import android.net.Uri;
 
-import android.support.v4.content.FileProvider;
-
 import android.text.TextUtils;
 
 import android.util.Log;
@@ -38,6 +36,7 @@ import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.NougatUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.File;
@@ -475,9 +474,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       File file = new File(uri.getPath());
       if (file.isFile()) {
         Log.d(LOG_TAG, "It's a file");
-
-        String packageName = form.$context().getPackageName();
-        uri = FileProvider.getUriForFile(form.$context(), packageName + ".provider", file);
+        uri = NougatUtil.getPackageUri(form, file);
         intent = new Intent(action);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.d(LOG_TAG, "added permissions"); // adb log shows this gets printed

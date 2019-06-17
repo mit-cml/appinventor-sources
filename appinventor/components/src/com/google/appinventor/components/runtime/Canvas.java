@@ -27,12 +27,14 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -1262,6 +1264,113 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     float correctedX2 = x2 * $form().deviceDensity();
     float correctedY2 = y2 * $form().deviceDensity();
     view.canvas.drawLine(correctedX1, correctedY1, correctedX2, correctedY2, paint);
+    view.invalidate();
+  }
+
+  /**
+   * Draws a shape on the canvas.
+   * pointList should be a list contains sub-lists with two number which represents a coordinate.
+   * The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+   * When fill is true, the shape will be filled.
+   *
+   * @param pointList  A list of points, should contains sub-lists with two number which represents a coordinate.
+   *                   The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+   * @param fill  true for filled shape; false for shape outline
+   */
+  @SimpleFunction(description = 
+      "Draws a shape on the canvas. " +
+      "pointList should be a list contains sub-lists with two number which represents a coordinate. " +
+      "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
+      "When fill is true, the shape will be filled.")
+  public void DrawShape(YailList pointList, boolean fill) {
+    Path path;
+    try {
+      path = parsePath(parsePointList(pointList));
+    } catch (IllegalArgumentException e) {
+      $form().dispatchErrorOccurredEvent(this, "DrawShape", ErrorMessages.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT);
+      return;
+    }
+    path.close();
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    view.canvas.drawPath(path, p);
+    view.invalidate();
+  }
+
+  private Path parsePath(float[][] points) throws IllegalArgumentException {
+    if (points == null || points.length == 0) {
+      throw new IllegalArgumentException();
+    }
+    float scalingFactor = $form().deviceDensity();
+
+    Path path = new Path();
+    path.moveTo(points[0][0] * scalingFactor, points[0][1] * scalingFactor);
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i][0] * scalingFactor, points[i][1] * scalingFactor);
+    }
+
+    return path;
+  }
+
+  private float[][] parsePointList(YailList pointList) throws IllegalArgumentException {
+    if (pointList == null || pointList.size() == 0) {
+      throw new IllegalArgumentException();
+    }
+    float[][] points = new float[pointList.size()][2];
+    int index = 0;
+    YailList pointYailList;
+    for (Object pointObject : pointList.toArray()) {
+      if (pointObject instanceof YailList) {
+        pointYailList = (YailList) pointObject;
+        if (pointYailList.size() == 2) {
+          try {
+            points[index][0] = Float.parseFloat(pointYailList.getString(0));
+            points[index][1] = Float.parseFloat(pointYailList.getString(1));
+            index++;
+          } catch (NullPointerException e) {
+            throw new IllegalArgumentException(e.fillInStackTrace());
+          } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e.fillInStackTrace());
+          }
+        } else {
+          throw new IllegalArgumentException("length of item YailList("+ index +") is not 2");
+        }
+      } else {
+        throw new IllegalArgumentException("item("+ index +") in YailList is not a YailList");
+      }
+    }
+    return points;
+  }
+
+  /**
+   * Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
+   * Start angle is 0 when heading to the right, and increase when rotate clockwise.
+   * When useCenter is true, a sector will be drawed instead of an arc.
+   * When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
+   * 
+   * @param left   the left end of the oval
+   * @param top    the top of the oval
+   * @param right  the right end of the oval
+   * @param bottom the bottom of the oval
+   * @param startAngle the start angle of the arc, rightward as 0, clockwise as positive, in degree
+   * @param sweepAngle the sweep angle of the arc, clockwise as positive, in degree
+   * @param useCenter  fill a sector instead of just an arc (when true)
+   * @param fill  true for filled arc (or sector); false for outline only
+   */
+  @SimpleFunction(description = 
+      "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). " +
+      "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
+      "When useCenter is true, a sector will be drawed instead of an arc. " +
+      "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
+  public void DrawArc(int left, int top, int right, int bottom, 
+      float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
+    float scalingFactor = $form().deviceDensity();
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    view.canvas.drawArc(
+      new RectF(scalingFactor * left, scalingFactor * top,
+                scalingFactor * right, scalingFactor * bottom),
+      startAngle, sweepAngle, useCenter, p);
     view.invalidate();
   }
 

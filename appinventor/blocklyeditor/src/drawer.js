@@ -223,6 +223,15 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
+  //create generic event blocks
+  goog.object.forEach(componentInfo.eventDictionary, function(event, name){
+    if(!event.deprecated){
+      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
+        component_type: typeName, event_name: name, is_generic: 'true'
+      }));
+    }
+  }, this);
+
   //create generic method blocks
   goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
     if (!method.deprecated) {
@@ -432,6 +441,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  lists_join_with_separator: {xmlString:
+    '<xml>' +
+      '<block type="lists_join_with_separator">' +
+      '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
+      '</block>' +
+    '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
@@ -489,6 +504,31 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Canvas.DrawShape has fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawShape"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Canvas.DrawArc has useCenter default to FALSE and fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawArc"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG6"><block type="logic_boolean"><field name="BOOL">FALSE</field></block></value>' +
+         '<value name="ARG7"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
 

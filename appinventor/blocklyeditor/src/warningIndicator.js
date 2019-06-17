@@ -77,40 +77,40 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.svgGroup_ = Blockly.utils.createSvgElement('g',
       {'id': "indicatorWarning"}, null);
   this.warningCount_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(20,14)"},
+      {'fill': "black", 'transform':"translate(20,-1)"},
       this.svgGroup_);
   this.warningCount_.textContent = "0";
 
 
   this.iconGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyIconGroup', 'translate':"transform(0,0)"}, this.svgGroup_);
+      {'class': 'blocklyIconGroup', 'translate':"transform(0,-15)"}, this.svgGroup_);
   var iconShield = Blockly.utils.createSvgElement('path',
       {'class': 'blocklyWarningIconShield',
-       'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
-       'Q 17,15 14,15 z'},
+       'd': 'M 2,0 Q -1,0 0.5,-3 L 6.5,-13.3 Q 8,-16 9.5,-13.3 L 15.5,-3 ' +
+       'Q 17,0 14,0 z'},
       this.iconGroup_);
   this.iconMark_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
        'x': Blockly.Error.ICON_RADIUS,
-       'y': 2 * Blockly.Error.ICON_RADIUS - 3}, this.iconGroup_);
+       'y': 2 * Blockly.Error.ICON_RADIUS - 18}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
   this.errorCount_ = Blockly.utils.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(75,14)"},
+      {'fill': "black", 'transform':"translate(85,-1)"},
       this.svgGroup_);
   this.errorCount_.textContent = "0";
 
   this.iconErrorGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyIconGroup', 'transform':"translate(55,0)"}, this.svgGroup_);
+      {'class': 'blocklyIconGroup', 'transform':"translate(65,0)"}, this.svgGroup_);
   Blockly.utils.createSvgElement('circle',
       {'class': 'blocklyErrorIconOutline',
        'r': Blockly.Error.ICON_RADIUS,
        'cx': Blockly.Error.ICON_RADIUS,
-       'cy': Blockly.Error.ICON_RADIUS}, this.iconErrorGroup_);
+       'cy': Blockly.Error.ICON_RADIUS - 15}, this.iconErrorGroup_);
   Blockly.utils.createSvgElement('path',
       {'class': 'blocklyErrorIconX',
-       'd': 'M 4,4 12,12 8,8 4,12 12,4'},
+       'd': 'M 4,-11 12,-3 8,-7 4,-3 12,-11'},
                            // X fills circle vvv
        //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.iconErrorGroup_);
@@ -124,6 +124,22 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.warningToggleGroup_);
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
+  this.warningNavPrevious_ = Blockly.utils.createSvgElement('path',
+      {'fill': "#eeeeee", "d": "M 0,7 L 10,17 L 20,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+
+  this.warningNavNext_ = Blockly.utils.createSvgElement('path',
+      {'fill': "#eeeeee", "d": "M 10,-31 L 0,-21 L 20,-21 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+
+  this.errorNavPrevious_ = Blockly.utils.createSvgElement('path',
+      {'fill': "#eeeeee", "d": "M 67,7 L 77,17 L 87,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+
+  this.errorNavNext_ = Blockly.utils.createSvgElement('path',
+      {'fill': "#eeeeee", "d": "M 87,-21 L 67,-21 L 77,-31 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      this.svgGroup_);
+
   return this.svgGroup_;
 };
 
@@ -135,14 +151,26 @@ Blockly.WarningIndicator.prototype.init = function() {
   // If the document resizes, reposition the warning indicator.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.bindEvent_(this.warningToggleGroup_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.warningNavPrevious_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavPrevious);
+  Blockly.bindEvent_(this.warningNavNext_, 'click', this, Blockly.WarningIndicator.prototype.onclickWarningNavNext);
+  Blockly.bindEvent_(this.errorNavPrevious_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavPrevious);
+  Blockly.bindEvent_(this.errorNavNext_, 'click', this, Blockly.WarningIndicator.prototype.onclickErrorNavNext);
 
   // We stop propagating the mousedown event so that Blockly doesn't prevent click events in Firefox, which breaks
   // the click event handler above.
   Blockly.bindEvent_(this.warningToggleGroup_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavPrevious_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavPrevious_, 'mousedown', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavNext_, 'mousedown', this, function(e) { e.stopPropagation() });
 
   // Stopping propagation of the mousedown event breaks touch events on tablets. We register here for touchend on the
   // toggle button so that we can simulate a click event.
   Blockly.bindEvent_(this.warningToggleGroup_, 'touchend', this, Blockly.WarningIndicator.prototype.onclickWarningToggle);
+  Blockly.bindEvent_(this.warningNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.warningNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavPrevious_, 'touchend', this, function(e) { e.stopPropagation() });
+  Blockly.bindEvent_(this.errorNavNext_, 'touchend', this, function(e) { e.stopPropagation() });
 };
 
 /**
@@ -167,6 +195,10 @@ Blockly.WarningIndicator.prototype.dispose = function() {
 
   this.warningToggle_ = null;
   this.warningToggleText_ = null;
+  this.warningNavPrevious_ = null;
+  this.warningNavLeftText_ = null;
+  this.warningNavNext_ = null;
+  this.warningNavRightText_ = null;
 
 };
 
@@ -191,7 +223,6 @@ Blockly.WarningIndicator.prototype.position_ = function() {
       'translate(' + this.left_ + ',' + this.top_ + ')');
 };
 
-
 /**
  * Update the error and warning count on the indicator.
  *
@@ -199,6 +230,14 @@ Blockly.WarningIndicator.prototype.position_ = function() {
 Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
   this.errorCount_.textContent = this.workspace_.getWarningHandler().errorCount;
   this.warningCount_.textContent = this.workspace_.getWarningHandler().warningCount;
+}
+
+Blockly.WarningIndicator.prototype.updateCurrentWarningAndError = function(currentWarning, currentError) {
+  var handler = this.workspace_.getWarningHandler();
+  currentError++;  // make it 1-based
+  currentWarning++;  // make it 1-based
+  this.errorCount_.textContent = currentError + "/" + handler.errorCount;
+  this.warningCount_.textContent = currentWarning + "/" + handler.warningCount;
 }
 
 /**
@@ -219,4 +258,19 @@ Blockly.WarningIndicator.prototype.updateWarningToggleText = function() {
  */
 Blockly.WarningIndicator.prototype.onclickWarningToggle = function() {
   window.parent.BlocklyPanel_callToggleWarning();
+}
+
+Blockly.WarningIndicator.prototype.onclickWarningNavPrevious = function() {
+  this.workspace_.getWarningHandler().previousWarning();
+}
+Blockly.WarningIndicator.prototype.onclickWarningNavNext = function() {
+  this.workspace_.getWarningHandler().nextWarning();
+}
+
+
+Blockly.WarningIndicator.prototype.onclickErrorNavPrevious = function() {
+  this.workspace_.getWarningHandler().previousError();
+}
+Blockly.WarningIndicator.prototype.onclickErrorNavNext = function() {
+  this.workspace_.getWarningHandler().nextError();
 }

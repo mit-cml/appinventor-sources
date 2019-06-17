@@ -121,7 +121,7 @@ public class StorageUtil {
     }
 
     if (filePath.endsWith(".apk")) {
-      return "application/vnd.android.package-archive; charset=utf-8";
+      return "application/vnd.android.package-archive";
     }
 
     if (filePath.endsWith(".aia")) {

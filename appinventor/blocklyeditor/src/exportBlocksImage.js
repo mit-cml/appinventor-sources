@@ -181,7 +181,7 @@ goog.require('goog.Timer');
 
           var a = document.createElement('a');
           a.download = name;
-          a.target = "_blank";
+          a.target = '_self';
           if (canvas.toBlob === undefined) {
             var src = canvas.toDataURL('image/png');
             a.href = src;
@@ -221,31 +221,302 @@ Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace)
  * Get the workspace as an image URI
  *
  */
-  Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
-    var theUri;
-    var workspace = opt_workspace || Blockly.mainWorkspace;
-    var metrics = workspace.getMetrics();
-    if (metrics == null || metrics.viewHeight == 0) {
-      return null;
-    }
-    svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
-      function(uri) {
-        var image = new Image();
-        image.onload = function() {
-          var canvas = document.createElement('canvas');
-          canvas.width = image.width;
-          canvas.height = image.height;
-          var context = canvas.getContext('2d');
-          context.drawImage(image, 0, 0);
-          try {
-            theUri = canvas.toDataURL('image/png');
-          } catch (err) {
-            console.warn("Error performing canvas.toDataURL");
-            callback("");
-            return;
-          }
-          callback(theUri);
-        }
-        image.src = uri;
-      });
+Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
+  var theUri;
+  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var metrics = workspace.getMetrics();
+  if (metrics == null || metrics.viewHeight == 0) {
+    return null;
   }
+  svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
+    function(uri) {
+      var image = new Image();
+      image.onload = function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        var context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        try {
+          theUri = canvas.toDataURL('image/png');
+        } catch (err) {
+          console.warn("Error performing canvas.toDataURL");
+          callback("");
+          return;
+        }
+        callback(theUri);
+      }
+      image.src = uri;
+    });
+}
+
+/**
+ * Construct a table needed for computing PNG CRC32 fields.
+ */
+function makeCRCTable() {
+  var c;
+  var crcTable = [];
+  for(var n =0; n < 256; n++){
+    c = n;
+    for(var k =0; k < 8; k++){
+      c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+    }
+    crcTable[n] = c;
+  }
+  return crcTable;
+}
+
+/**
+ * Compute the CRC32 for the given data.
+ * @param data {Array|ArrayBuffer|Uint8Array} the array-like entity for which to compute the CRC32
+ */
+function crc32(data) {
+  var crcTable = window.crcTable || (window.crcTable = makeCRCTable());
+  var crc = 0 ^ (-1);
+
+  for (var i = 0; i < data.length; i++ ) {
+    crc = (crc >>> 8) ^ crcTable[(crc ^ data[i]) & 0xFF];
+  }
+
+  return (crc ^ (-1)) >>> 0;
+}
+
+/**
+ * The 4-byte type used to identify code chunks in the PNG file.
+ * @type {string}
+ * @const
+ * @private
+ */
+var CODE_PNG_CHUNK = 'coDe';
+
+/**
+ * PNG represents a parsed sequence of chunks from a PNG file.
+ * @constructor
+ */
+function PNG() {
+  /** @type {?PNG.Chunk[]} */
+  this.chunks = null;
+}
+
+/**
+ * PNG magic number
+ * @type {number[]}
+ * @const
+ */
+PNG.HEADER = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+/**
+ * Chunk represents the four components of a PNG file chunk.
+ * @param {number} length The length of the chunk data
+ * @param {string} type The type of the chunk
+ * @param {Uint8Array} data The chunk data
+ * @param {number} crc The CRC32 over the type + data
+ * @constructor
+ */
+PNG.Chunk = function(length, type, data, crc) {
+  this.length = length;
+  this.type = type;
+  this.data = data;
+  this.crc = crc;
+};
+
+/**
+ * Reads teh contents of the {@code blob} and parses the chunks into the PNG
+ * object. On completion, {@code callback} is called with the PNG object.
+ * @param {Blob} blob the blob representing the PNG content
+ * @param {?function(PNG)} callback the callback for completion
+ */
+PNG.prototype.readFromBlob = function(blob, callback) {
+  var reader = new FileReader();
+  var png = this;
+  reader.addEventListener('loadend', function() {
+    png.processData_(new Uint8Array(reader.result));
+    if (callback instanceof Function) callback(png);
+  });
+  reader.readAsArrayBuffer(blob);
+};
+
+/**
+ * Extracts the code chunk from the PNG, if any.
+ * @returns {?PNG.Chunk}
+ */
+PNG.prototype.getCodeChunk = function() {
+  if (!this.chunks) return null;
+  for (var i = 0; i < this.chunks.length; i++) {
+    if (this.chunks[i].type === CODE_PNG_CHUNK) {
+      return this.chunks[i];
+    }
+  }
+  return null;
+};
+
+/**
+ * Processes the data from the PNG file into its component chunks.
+ * @param {Uint8Array} data the data from the PNG file as a UInt8Array
+ * @private
+ */
+PNG.prototype.processData_ = function(data) {
+  var chunkStart = PNG.HEADER.length;
+  function decode4() {
+    var num;
+    num = data[chunkStart++];
+    num = num * 256 + data[chunkStart++];
+    num = num * 256 + data[chunkStart++];
+    num = num * 256 + data[chunkStart++];
+    return num;
+  }
+  function read4() {
+    var str = '';
+    for (var i = 0; i < 4; i++, chunkStart++) {
+      str += String.fromCharCode(data[chunkStart]);
+    }
+    return str;
+  }
+  function readData(length) {
+    return data.slice(chunkStart, chunkStart + length);
+  }
+  this.chunks = [];
+  while (chunkStart < data.length) {
+    var length = decode4();
+    var type = read4();
+    var chunkData = readData(length);
+    chunkStart += length;
+    var crc = decode4();
+    this.chunks.push(new PNG.Chunk(length, type, chunkData, crc));
+  }
+};
+
+/**
+ * Sets the contents of the code chunk.
+ * @param {string} code the block XML to embed in the PNG, as a string
+ */
+PNG.prototype.setCodeChunk = function(code) {
+  var text = new TextEncoder().encode(CODE_PNG_CHUNK + code);
+  var length = text.length - 4;
+  var crc = crc32(text);
+  text = text.slice(4);
+  for (var i = 0, chunk; (chunk = this.chunks[i]); i++) {
+    if (chunk.type === CODE_PNG_CHUNK) {
+      chunk.length = length;
+      chunk.data = text;
+      chunk.crc = crc;
+      return;
+    }
+  }
+  chunk = new PNG.Chunk(length, CODE_PNG_CHUNK, text, crc);
+  this.chunks.splice(this.chunks.length - 1, 0, chunk);
+};
+
+/**
+ * Serializes the PNG object into a Blob.
+ * @returns {Blob}
+ */
+PNG.prototype.toBlob = function() {
+  var length = PNG.HEADER.length;
+  this.chunks.forEach(function (chunk) {
+    length += chunk.length + 12;
+  });
+  var buffer = new Uint8Array(length);
+  var index = 0;
+  function write4(value) {
+    if (typeof value === 'string') {
+      var text = new TextEncoder().encode(value);
+      buffer.set(text, index);
+      index += text.length;
+    } else {
+      buffer[index+3] = value & 0xFF;
+      value >>= 8;
+      buffer[index+2] = value & 0xFF;
+      value >>= 8;
+      buffer[index+1] = value & 0xFF;
+      value >>= 8;
+      buffer[index] = value & 0xFF;
+      index += 4;
+    }
+  }
+  function writeData(data) {
+    buffer.set(data, index);
+    index += data.length;
+  }
+  writeData(PNG.HEADER);
+  this.chunks.forEach(function (chunk) {
+    write4(chunk.length);
+    write4(chunk.type);
+    writeData(chunk.data);
+    write4(chunk.crc);
+  });
+  return new Blob([buffer], {'type': 'image/png'});
+};
+
+/**
+ * Exports the block as a PNG file with the Blockly XML code included as a chunk in the PNG.
+ * @param {!Blockly.BlockSvg} block the block to export
+ */
+Blockly.exportBlockAsPng = function(block) {
+  var xml = document.createElement('xml');
+  xml.appendChild(Blockly.Xml.blockToDom(block, true));
+  var code = Blockly.Xml.domToText(xml);
+  svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
+    var img = new Image();
+    img.src = uri;
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var context = canvas.getContext('2d');
+      context.drawImage(img, 0, 0);
+
+      function download(png) {
+        png.setCodeChunk(code);
+        var blob = png.toBlob();
+        var a = document.createElement('a');
+        a.download = (block.getChildren().length === 0 ? block.type : 'blocks') + '.png';
+        a.target = '_self';
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a);
+        a.addEventListener("click", function(e) {
+          a.parentNode.removeChild(a);
+        });
+        a.click();
+      }
+
+      if (canvas.toBlob === undefined) {
+        var src = canvas.toDataURL('image/png');
+        var base64img = src.split(',')[1];
+        var decoded = window.atob(base64img);
+        var rawLength = decoded.length;
+        var buffer = new Uint8Array(new ArrayBuffer(rawLength));
+        for (var i = 0; i < rawLength; i++) {
+          buffer[i] = decoded.charCodeAt(i);
+        }
+        var blob = new Blob([buffer], {'type': 'image/png'});
+        new PNG().readFromBlob(blob, download);
+      } else {
+        canvas.toBlob(function (blob) {
+          new PNG().readFromBlob(blob, download);
+        });
+      }
+    }
+  });
+};
+
+/**
+ * Imports a block from a PNG file if the code chunk is present.
+ * @param {!Blockly.WorkspaceSvg} workspace the target workspace for the block
+ * @param {goog.math.Coordinate} xy the coordinate to place the block
+ * @param {Blob} png the blob representing the PNG file
+ */
+Blockly.importPngAsBlock = function(workspace, xy, png) {
+  new PNG().readFromBlob(png, function(png) {
+    var xmlChunk = png.getCodeChunk();
+    if (xmlChunk) {
+      var xmlText = new TextDecoder().decode(xmlChunk.data);
+      var xml = /** @type {!Element} */ Blockly.Xml.textToDom(xmlText);
+      xml = xml.firstElementChild;
+      var block = /** @type {Blockly.BlockSvg} */ Blockly.Xml.domToBlock(xml, workspace);
+      block.moveBy(xy.x, xy.y);
+      block.initSvg();
+      workspace.requestRender(block);
+    }
+  });
+};

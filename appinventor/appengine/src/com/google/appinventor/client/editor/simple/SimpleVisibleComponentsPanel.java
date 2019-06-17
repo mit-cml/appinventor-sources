@@ -92,27 +92,15 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.
-        String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
-
-        int idx = 0;
-        int width = 320;
-        int height = 505;
-
-        if (val.equals("True")) {
-          idx = 1;
-          width = drop_lst[idx][0];
-          height = drop_lst[idx][1];
+        String sizing = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
+        boolean fixed = (sizing.equals("Fixed"));
+        listboxPhoneTablet.setVisible(!fixed);
+        if (fixed) {
+          changeFormPreviewSize(0, 320, 505);
+        } else {
+          getUserSettingChangeSize();
         }
-
-        String[] parts = val.split(",");
-        if (parts.length == 3) {
-          idx = Integer.parseInt(parts[0]);
-          width = Integer.parseInt(parts[1]);
-          height = Integer.parseInt(parts[2]);
-        }
-        listboxPhoneTablet.setItemSelected(idx, true);
-        changeFormPreviewSize(idx, width, height);
       }
     };
     listboxPhoneTablet.addItem("Phone size");
@@ -131,38 +119,67 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
         changeFormPreviewSize(idx, width, height);
       }
     });
+
     phoneScreen.add(listboxPhoneTablet);
 
     initWidget(phoneScreen);
   }
 
-  private void changeFormPreviewSize(int idx, int width, int height) {
-    if (form != null) {
-      form.changePreviewSize(width, height);
-      String info = " (" + height + "," + width + ")";
-      if (idx == 0) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
-        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-      } else if (idx == 1) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
-        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+  // get width and height stored in user settings, and change the preview size.
+  private void getUserSettingChangeSize() {
+    String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
+    int idx = 0;
+    int width = 320;
+    int height = 505;
 
-      } else {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
-        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-      }
-      // change settings
+    if (val.equals("True")) {
+      idx = 1;
+      width = drop_lst[idx][0];
+      height = drop_lst[idx][1];
     }
+
+    String[] parts = val.split(",");
+    if (parts.length == 3) {
+      idx = Integer.parseInt(parts[0]);
+      width = Integer.parseInt(parts[1]);
+      height = Integer.parseInt(parts[2]);
+    }
+    listboxPhoneTablet.setItemSelected(idx, true);
+    changeFormPreviewSize(idx, width, height);
+  }
+
+  private void changeFormPreviewSize(int idx, int width, int height) {
+
+    if (form == null)
+      return;
+
+    form.changePreviewSize(width, height, idx);
+    String info = " (" + height + "," + width + ")";
+    if (idx == 0) {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
+      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
+      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+    } else if (idx == 1) {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
+      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+    } else {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
+      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
+    }
+    // change settings
   }
 
   public void enableTabletPreviewCheckBox(boolean enable){
     if (form != null){
       if (!enable){
-        form.changePreviewSize(320, 505);
-        listboxPhoneTablet.setItemSelected(0, true);
+        changeFormPreviewSize(0, 320, 505);
+        listboxPhoneTablet.setVisible(enable);
+      } else {
+        getUserSettingChangeSize();
+        listboxPhoneTablet.setVisible(enable);
       }
     }
     listboxPhoneTablet.setEnabled(enable);
