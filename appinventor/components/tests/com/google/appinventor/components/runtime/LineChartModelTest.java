@@ -5,8 +5,18 @@ import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.runtime.LineChartModel;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
 import junit.framework.Assert;
+import org.easymock.EasyMock;
+import org.easymock.IExpectationSetters;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.easymock.EasyMock.expect;
+import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
  * Unit tests for the LineChartModel class.
@@ -33,9 +43,9 @@ public class LineChartModelTest extends RobolectricTestBase {
      */
     @Test
     public void testConstructor() {
-        Assert.assertEquals(data, model.getData());
-        Assert.assertEquals(1, data.getDataSetCount());
-        Assert.assertEquals(0, data.getDataSetByIndex(0).getEntryCount());
+        assertEquals(data, model.getData());
+        assertEquals(1, data.getDataSetCount());
+        assertEquals(0, data.getDataSetByIndex(0).getEntryCount());
     }
 
     /**
@@ -46,7 +56,7 @@ public class LineChartModelTest extends RobolectricTestBase {
     public void testSetLabel() {
         String label = "Test Label Text";
         model.setLabel(label);
-        Assert.assertEquals(label, model.getDataset().getLabel());
+        assertEquals(label, model.getDataset().getLabel());
     }
 
     /**
@@ -57,7 +67,7 @@ public class LineChartModelTest extends RobolectricTestBase {
     public void testSetColor() {
         int argb = 0xFFEEDDCC;
         model.setColor(argb);
-        Assert.assertEquals(argb, model.getDataset().getColor());
+        assertEquals(argb, model.getDataset().getColor());
     }
 
     /**
@@ -67,7 +77,7 @@ public class LineChartModelTest extends RobolectricTestBase {
     @Test
     public void testAddEntry() {
         // Pre-condition: make sure there are no entries initially
-        Assert.assertEquals(0, model.getDataset().getEntryCount());
+        assertEquals(0, model.getDataset().getEntryCount());
 
         // Add an entry
         float x = 4;
@@ -75,12 +85,12 @@ public class LineChartModelTest extends RobolectricTestBase {
         model.addEntry(x, y);
 
         // Ensure that the entry has been added
-        Assert.assertEquals(1, model.getDataset().getEntryCount());
+        assertEquals(1, model.getDataset().getEntryCount());
 
         // Make sure that a correct entry has been added
         Entry entry = model.getDataset().getEntryForIndex(0);
-        Assert.assertEquals(x, entry.getX());
-        Assert.assertEquals(y, entry.getY());
+        assertEquals(x, entry.getX());
+        assertEquals(y, entry.getY());
     }
 
     /**
@@ -95,7 +105,7 @@ public class LineChartModelTest extends RobolectricTestBase {
 
         // Make sure that the method was abruptly cut because
         // of invalid entries detected.
-        Assert.assertEquals(0, model.getDataset().getEntryCount());
+        assertEquals(0, model.getDataset().getEntryCount());
     }
 
     /**
@@ -110,20 +120,20 @@ public class LineChartModelTest extends RobolectricTestBase {
         model.setElements(elements);
 
         // Make sure that 3 elements have been added
-        Assert.assertEquals(3, model.getDataset().getEntryCount());
+        assertEquals(3, model.getDataset().getEntryCount());
 
         // Verify the 3 entries
         Entry entry1 = model.getDataset().getEntryForIndex(0);
-        Assert.assertEquals(1f, entry1.getX());
-        Assert.assertEquals(2f, entry1.getY());
+        assertEquals(1f, entry1.getX());
+        assertEquals(2f, entry1.getY());
 
         Entry entry2 = model.getDataset().getEntryForIndex(1);
-        Assert.assertEquals(2f, entry2.getX());
-        Assert.assertEquals(4f, entry2.getY());
+        assertEquals(2f, entry2.getX());
+        assertEquals(4f, entry2.getY());
 
         Entry entry3 = model.getDataset().getEntryForIndex(2);
-        Assert.assertEquals(3f, entry3.getX());
-        Assert.assertEquals(1f, entry3.getY());
+        assertEquals(3f, entry3.getX());
+        assertEquals(1f, entry3.getY());
     }
 
     /**
@@ -139,11 +149,60 @@ public class LineChartModelTest extends RobolectricTestBase {
 
         // Only the first entry should be added (cut off last value
         // since pairs are accepted)
-        Assert.assertEquals(1, model.getDataset().getEntryCount());
+        assertEquals(1, model.getDataset().getEntryCount());
 
         // Make sure entry is correct
         Entry entry = model.getDataset().getEntryForIndex(0);
-        Assert.assertEquals(1f, entry.getX());
-        Assert.assertEquals(3f, entry.getY());
+        assertEquals(1f, entry.getX());
+        assertEquals(3f, entry.getY());
+    }
+
+    /**
+     * Tests to ensure that TinyDB data importing
+     * works as expected in the LineChartModel.
+     * A mock TinyDB is used with pre-defined returning
+     * of all entries.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testImportFromTinyDB() {
+        // Set up TinyDB mock and expected values
+        TinyDB tinyDB = EasyMock.createNiceMock(TinyDB.class);
+
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        // We will be adding (0, 1), (1, 2), (2, 5) and (4, 3) entries
+        map.put("0", "1");
+        map.put("1", "2");
+        map.put("2", "5");
+        map.put("4", "3");
+
+        // We need this generic cast here, otherwise EasyMock will
+        // give an error
+        expect(tinyDB.getAllValues()).andReturn((Map)map);
+        replay(tinyDB);
+
+        // Import the data from the TinyDB component
+        model.importFromTinyDB(tinyDB);
+
+        // Assert that the proper values are added
+        assertEquals(4, model.getDataset().getEntryCount());
+
+        Entry entry1 = model.getDataset().getEntryForIndex(0);
+        Entry entry2 = model.getDataset().getEntryForIndex(1);
+        Entry entry3 = model.getDataset().getEntryForIndex(2);
+        Entry entry4 = model.getDataset().getEntryForIndex(3);
+
+        assertEquals(0f, entry1.getX());
+        assertEquals(1f, entry1.getY());
+
+        assertEquals(1f, entry2.getX());
+        assertEquals(2f, entry2.getY());
+
+        assertEquals(2f, entry3.getX());
+        assertEquals(5f, entry3.getY());
+
+        assertEquals(4f, entry4.getX());
+        assertEquals(3f, entry4.getY());
     }
 }
