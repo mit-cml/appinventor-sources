@@ -96,7 +96,7 @@ public abstract class ChartDataBase implements Component {
      *
      * @param tinyDB  TinyDB component to import data from
      */
-    @SimpleFunction(description = "")
+    @SimpleFunction(description = "Imports data from a TinyDB component")
     public void ImportFromTinyDB(TinyDB tinyDB) {
         chartModel.importFromTinyDB(tinyDB);
         refreshChart();
