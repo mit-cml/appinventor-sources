@@ -203,6 +203,7 @@ public class Ode implements EntryPoint {
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
   private static final int USERADMIN = 7;
+  private static final int TRASHCAN = 8;
   private static int currentView = DESIGNER;
 
   /*
@@ -242,6 +243,7 @@ public class Ode implements EntryPoint {
   private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+  private VerticalPanel pVertPanel;
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -443,6 +445,14 @@ public class Ode implements EntryPoint {
           if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
             ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
             ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+            //shifting back to show projects
+            if(currentView==TRASHCAN)
+            {
+              HorizontalPanel projectListPanel = new HorizontalPanel();
+              projectListPanel.setWidth("100%");
+              projectListPanel.add(ProjectListBox.getProjectListBox());
+              pVertPanel.add(projectListPanel);
+            }
           }
           currentView = PROJECTS;
           getTopToolbar().updateFileMenuButtons(currentView);
@@ -460,6 +470,20 @@ public class Ode implements EntryPoint {
       // maybe take a screenshot, second argument is true so we wait for i/o to complete
       screenShotMaybe(next, true);
     }
+  }
+
+  /**
+   * Switch to the Trash tab
+   */
+  public void switchToTrash() {
+    hideTutorials();
+    //disable the start button in trash
+    currentView=TRASHCAN;
+    HorizontalPanel projectListPanel = new HorizontalPanel();
+    projectListPanel.setWidth("100%");
+    projectListPanel.add(ProjectListBox.getProjectListBox());
+    pVertPanel.remove(projectListPanel);
+
   }
 
   /**
@@ -983,7 +1007,7 @@ public class Ode implements EntryPoint {
     deckPanel.setStyleName("ode-DeckPanel");
 
     // Projects tab
-    VerticalPanel pVertPanel = new VerticalPanel() {
+    pVertPanel = new VerticalPanel() {
         /**
          * Flag to indicate the project list has been rendered at least once.
          */

@@ -21,6 +21,7 @@ import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
+
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -87,109 +88,106 @@ public class ProjectToolbar extends Toolbar {
   }
 
   private static class DeleteAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-        @Override
-        public void execute() {
-          List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-          if (selectedProjects.size() > 0) {
-            // Show one confirmation window for selected projects.
-            if (deleteConfirmation(selectedProjects)) {
-              for (Project project : selectedProjects) {
-                deleteProject(project);
-              }
-            }
-          } else {
-            // The user can select a project to resolve the
-            // error.
-            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-          }
-        }
-      });
-    }
-
-    private boolean deleteConfirmation(List<Project> projects) {
-      String message;
-      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
-      if (projects.size() == 1) {
-        if (projects.get(0).isPublished()) {
-          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
-        } else {
-          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
-        }
-      } else {
-        StringBuilder sb = new StringBuilder();
-        String separator = "";
-        for (Project project : projects) {
-          sb.append(separator).append(project.getProjectName());
-          separator = ", ";
-        }
-        String projectNames = sb.toString();
-        if(!gallerySettings.galleryEnabled()){
-          message = MESSAGES.confirmDeleteManyProjects(projectNames);
-        } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
-        }
-      }
-      return Window.confirm(message);
-    }
-
-    private void deleteProject(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      Ode ode = Ode.getInstance();
-      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-      ode.getEditorManager().closeProjectEditor(projectId);
-      if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer we
-        // need to clear the ViewerBox first.
-        ViewerBox.getViewerBox().clear();
-      }
-      if (project.isPublished()) {
-        doDeleteGalleryApp(project.getGalleryId());
-      }
-      // Make sure that we delete projects even if they are not open.
-      doDeleteProject(projectId);
-    }
-
-    private void doDeleteProject(final long projectId) {
-      Ode.getInstance().getProjectService().deleteProject(projectId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.deleteProjectError()) {
-            @Override
-            public void onSuccess(Void result) {
-              Ode.getInstance().getProjectManager().removeProject(projectId);
-              // Show a welcome dialog in case there are no
-              // projects saved.
-              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                Ode.getInstance().createNoProjectsDialog(true);
-              }
-            }
-          });
-    }
-    private void doDeleteGalleryApp(final long galleryId) {
-      Ode.getInstance().getGalleryService().deleteApp(galleryId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.galleryDeleteError()) {
-            @Override
-            public void onSuccess(Void result) {
-              // need to update gallery list
-              GalleryClient gallery = GalleryClient.getInstance();
-              gallery.appWasChanged();
-            }
-          });
-    }
-  }
-
-  /**implementing trash method*/
-  private static class TrashAction implements Command {
+//    @Override
+//    public void execute() {
+//      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+//        @Override
+//        public void execute() {
+//          List<Project> selectedProjects =
+//              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+//          if (selectedProjects.size() > 0) {
+//            // Show one confirmation window for selected projects.
+//            if (deleteConfirmation(selectedProjects)) {
+//              for (Project project : selectedProjects) {
+//                deleteProject(project);
+//              }
+//            }
+//          } else {
+//            // The user can select a project to resolve the
+//            // error.
+//            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+//          }
+//        }
+//      });
+//    }
+//
+//    private boolean deleteConfirmation(List<Project> projects) {
+//      String message;
+//      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
+//      if (projects.size() == 1) {
+//        if (projects.get(0).isPublished()) {
+//          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
+//        } else {
+//          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+//        }
+//      } else {
+//        StringBuilder sb = new StringBuilder();
+//        String separator = "";
+//        for (Project project : projects) {
+//          sb.append(separator).append(project.getProjectName());
+//          separator = ", ";
+//        }
+//        String projectNames = sb.toString();
+//        if(!gallerySettings.galleryEnabled()){
+//          message = MESSAGES.confirmDeleteManyProjects(projectNames);
+//        } else {
+//          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+//        }
+//      }
+//      return Window.confirm(message);
+//    }
+//
+//    private void deleteProject(Project project) {
+//      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+//          Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+//
+//      final long projectId = project.getProjectId();
+//
+//      Ode ode = Ode.getInstance();
+//      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
+//      ode.getEditorManager().closeProjectEditor(projectId);
+//      if (isCurrentProject) {
+//        // If we're deleting the project that is currently open in the Designer we
+//        // need to clear the ViewerBox first.
+//        ViewerBox.getViewerBox().clear();
+//      }
+//      if (project.isPublished()) {
+//        doDeleteGalleryApp(project.getGalleryId());
+//      }
+//      // Make sure that we delete projects even if they are not open.
+//      doDeleteProject(projectId);
+//    }
+//
+//    private void doDeleteProject(final long projectId) {
+//      Ode.getInstance().getProjectService().deleteProject(projectId,
+//          new OdeAsyncCallback<Void>(
+//              // failure message
+//              MESSAGES.deleteProjectError()) {
+//            @Override
+//            public void onSuccess(Void result) {
+//            Ode.getInstance().getProjectManager().removeProject(projectId);
+//              // Show a welcome dialog in case there are no
+//              // projects saved.
+//              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+//                Ode.getInstance().createNoProjectsDialog(true);
+//              }
+//            }
+//          });
+//    }
+//    private void doDeleteGalleryApp(final long galleryId) {
+//      Ode.getInstance().getGalleryService().deleteApp(galleryId,
+//          new OdeAsyncCallback<Void>(
+//              // failure message
+//              MESSAGES.galleryDeleteError()) {
+//            @Override
+//            public void onSuccess(Void result) {
+//              // need to update gallery list
+//              GalleryClient gallery = GalleryClient.getInstance();
+//              gallery.appWasChanged();
+//            }
+//          });
+//    }
+    /** delete button will ask the option to move to trash **/
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
@@ -201,7 +199,7 @@ public class ProjectToolbar extends Toolbar {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects)) {
               for (Project project : selectedProjects) {
-               moveToTrash(project);
+                moveToTrash(project);
               }
             }
           } else {
@@ -251,7 +249,7 @@ public class ProjectToolbar extends Toolbar {
       if (isCurrentProject) {
         // If we're deleting the project that is currently open in the Designer we
         // need to clear the ViewerBox first.
-        ViewerBox.getViewerBox().clear();
+        // ViewerBox.getViewerBox().clear();
       }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
@@ -268,15 +266,9 @@ public class ProjectToolbar extends Toolbar {
                 @Override
                 public void onSuccess(Void result) {
                   //Ode.getInstance().getProjectManager().removeProject(projectId);
-                  /** The trashProjectList will display here **/
+                  /** The projects marked deleted by the user will enter the trash list and disappear from project list **/
 
 
-
-                  // Show a welcome dialog in case there are no
-                  // projects saved.
-                  if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                    Ode.getInstance().createNoProjectsDialog(true);
-                  }
                 }
               });
     }
@@ -293,6 +285,28 @@ public class ProjectToolbar extends Toolbar {
                 }
               });
     }
+  }
+
+  /**implementing trash method this method will show the trashProjectList*/
+  private static class TrashAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+        @Override
+        public void execute() {
+          List<Project> deletedProjects =
+                  ProjectListBox.getProjectListBox().getProjectList().getDeletedProjects();// make a list which has deleted bit set
+           try{
+             Ode.getInstance().switchToTrash();
+          } catch (Exception e) {
+            // The user can select a project to resolve the
+            // error.
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+          }
+        }
+      });
+    }
+
   }
 
   private static class PublishOrUpdateAction implements Command {

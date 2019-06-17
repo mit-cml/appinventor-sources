@@ -64,11 +64,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private final List<Project> projects;
   private final List<Project> selectedProjects;
+  private final List<Project> deletedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
 
   private boolean projectListLoading = true;
+
 
   // UI elements
   private final Grid table;
@@ -85,6 +87,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public ProjectList() {
     projects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
+    deletedProjects = new ArrayList<Project>();
     projectWidgets = new HashMap<Project, ProjectWidgets>();
 
     sortField = SortField.DATE_MODIFIED;
@@ -369,6 +372,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     return selectedProjects;
   }
 
+  /**
+   * Returns the list of deleted projects
+   *
+   * @return the selected projects
+   */
+  public List<Project> getDeletedProjects() {
+    return deletedProjects;
+  }
+
   // ProjectManagerEventListener implementation
 
   @Override
@@ -382,16 +394,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectRemoved(Project project) {
-    //Setting the condition to check whether the projects are marked deleted or not
-
-
-
     projects.remove(project);
     projectWidgets.remove(project);
 
     refreshTable(false);
 
     selectedProjects.remove(project);
+    deletedProjects.add(project);  //added the removed projects in deleted list
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
