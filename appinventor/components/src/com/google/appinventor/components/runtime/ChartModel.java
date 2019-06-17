@@ -56,4 +56,11 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
      * @param elements String in CSV format
      */
     public abstract void setElements(String elements);
+
+    /**
+     * Adds elements to the Data Series from a specified TinyDB component
+     *
+     * @param tinyDB  TinyDB component to import data from
+     */
+    public abstract void importFromTinyDB(TinyDB tinyDB);
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     /**
@@ -65,5 +66,24 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
         });
 
         dataset.setValues(values);
+    }
+
+    @Override
+    public void importFromTinyDB(TinyDB tinyDB) {
+        Map<String, ?> map = tinyDB.getAllValues();
+
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            try {
+                String key = entry.getKey();
+                String value = (String)entry.getValue();
+
+                float x = Float.parseFloat(key);
+                float y = Float.parseFloat(value);
+
+                addEntry(x, y);
+            } catch (NumberFormatException e) {
+                // Nothing happens: Do not add value on NumberFormatException
+            }
+        }
     }
 }

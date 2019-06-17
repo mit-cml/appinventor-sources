@@ -1,9 +1,6 @@
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
@@ -90,6 +87,18 @@ public abstract class ChartDataBase implements Component {
         }
 
         chartModel.setElements(elements);
+        refreshChart();
+    }
+
+
+    /**
+     * Adds elements to the Data component from a specified TinyDB component
+     *
+     * @param tinyDB  TinyDB component to import data from
+     */
+    @SimpleFunction(description = "")
+    public void ImportFromTinyDB(TinyDB tinyDB) {
+        chartModel.importFromTinyDB(tinyDB);
         refreshChart();
     }
 
