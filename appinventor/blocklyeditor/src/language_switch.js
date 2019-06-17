@@ -83,6 +83,7 @@ Blockly.language_switch = {
       case 'tr':
         Blockly.Msg.tr.switch_blockly_language_to_tr.init();
         Blockly.Msg.tr.switch_language_to_turkish.init();
+        break;
       case 'de':
         Blockly.Msg.de.switch_blockly_language_to_de.init();
         Blockly.Msg.de.switch_language_to_german.init();
