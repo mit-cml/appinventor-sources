@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -298,5 +299,10 @@ public class Polygon extends PolygonBase implements MapPolygon {
     this.holePoints.clear();
     this.holePoints.addAll(points);
     clearGeometry();
+  }
+
+  @VisibleForTesting
+  boolean isInitialized() {
+    return initialized;
   }
 }
