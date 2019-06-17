@@ -136,6 +136,9 @@
     <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+    <copy toFile="${public.deps.dir}/CardView.jar" file="${lib.dir}/cardview/CardView.jar" />
+    <copy toFile="${public.deps.dir}/RecyclerView.jar" file="${lib.dir}/recyclerview/RecyclerView.jar" />
+    
     <copy toFile="${public.deps.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
     <copy toFile="${public.deps.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
@@ -177,6 +180,7 @@
     <copy toFile="${public.deps.dir}/support-vector-drawable.aar" file="${support.dir}/support-vector-drawable-26.1.0.aar" />
     <copy toFile="${public.deps.dir}/support-vector-drawable.jar" file="${support.dir}/support-vector-drawable-26.1.0.jar" />
     <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
+    
     <!-- END Android Support Libraries -->
     <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />

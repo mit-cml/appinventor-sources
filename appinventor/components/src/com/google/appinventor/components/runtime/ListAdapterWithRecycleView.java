@@ -21,9 +21,9 @@ import java.util.List;
 
 @SimpleObject
 @UsesLibraries(libraries ="RecyclerView.jar" + "CardView.jar")
-public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.PersonViewHolder> {
+public final class ListAdapterWithRecycleView extends RecyclerView.Adapter<ListAdapterWithRecycleView.PersonViewHolder> {
 
-    private static final String TAG = "ListAdapterWithRecyclerView";
+    private static final String TAG = "ListAdapterWithRecycleView";
 
     private String[] firstItem;
     private String[] secondItem;
@@ -31,9 +31,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     private int idFirst,idSecond;
 
-//doubt constructor with return type??
-
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second){
+    public ListAdapterWithRecycleView(Context context,String[] first,String[] second){
         this.firstItem = first;
         this.secondItem = second;
         this.context=context;
@@ -106,6 +104,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             textViewSecond=(TextView)view.findViewById(idSecond);
         }
     }
-};
+}
 
 

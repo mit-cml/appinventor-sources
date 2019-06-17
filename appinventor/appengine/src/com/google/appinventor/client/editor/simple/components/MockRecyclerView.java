@@ -126,7 +126,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
       textBoxWidget.setVisible(false);
     }
 
-    for(int i=0; i<currentList.length; i+2){
+    for(int i=0; i<currentList.length; i+=2){
       createLabelItem(i);
       createLabelPanel();
     }
