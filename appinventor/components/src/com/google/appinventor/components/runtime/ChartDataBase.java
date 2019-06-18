@@ -96,9 +96,22 @@ public abstract class ChartDataBase implements Component {
      *
      * @param tinyDB  TinyDB component to import data from
      */
-    @SimpleFunction(description = "Imports data from a TinyDB component")
+    @SimpleFunction(description = "Imports data from a TinyDB component. " +
+      "Overrides the currently available data.")
     public void ImportFromTinyDB(TinyDB tinyDB) {
         chartModel.clearEntries();
+        chartModel.importFromTinyDB(tinyDB);
+        refreshChart();
+    }
+
+    /**
+     * Adds elements to the Data component from a specified TinyDB component
+     * without overriding the current data.
+     *
+     * @param tinyDB  TinyDB component to import data from
+     */
+    @SimpleFunction(description = "Imports data from a TinyDB component without overriding data.")
+    public void AppendImportFromTinyDB(TinyDB tinyDB) {
         chartModel.importFromTinyDB(tinyDB);
         refreshChart();
     }
