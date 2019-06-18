@@ -387,6 +387,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = '값';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = '<code> 값 </ code>이 문자열이면 true를 반환합니다.';
     Blockly.Msg.LANG_CATEGORY_LISTS = '리스트';
+    Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE = '빈 리스트 만들기';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST = '리스트 만들기';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TOOLTIP = '여러 개의 항목을 가진 리스트를 만듭니다.';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = '리스트';
