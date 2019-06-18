@@ -66,12 +66,12 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
     public abstract void importFromTinyDB(TinyDB tinyDB);
 
     /**
-     * Imports data from two YailLists containing x and y values respectively
+     * Imports data from two String lists containing x and y values respectively
      *
      * @param xValues  x value List
      * @param yValues  y value List
      */
-    public abstract void importFromLists(YailList xValues, YailList yValues);
+    public abstract void importFromLists(String[] xValues, String[] yValues);
 
 
     /**

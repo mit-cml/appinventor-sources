@@ -94,7 +94,20 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     }
 
     @Override
-    public void importFromLists(YailList xValues, YailList yValues) {
+    public void importFromLists(String[] xValues, String[] yValues) {
+        // Take the minimum size, ignoring the exceeding elements
+        int minimumSize = Math.min(xValues.length, yValues.length);
 
+        // Iterate pairs
+        for (int i = 0; i < minimumSize; ++i) {
+            try {
+                float x = Float.parseFloat(xValues[i]);
+                float y = Float.parseFloat(yValues[i]);
+
+                addEntry(x, y);
+            } catch (NumberFormatException e) {
+                // Nothing happens: Do not add value on NumberFormatException
+            }
+        }
     }
 }

@@ -127,7 +127,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleFunction(description = "Imports data from x value and y value lists." +
       "Data is not overwritten.")
     public void ImportFromLists(YailList xValues, YailList yValues) {
-        chartModel.importFromLists(xValues, yValues);
+        chartModel.importFromLists(xValues.toStringArray(), yValues.toStringArray());
         refreshChart();
     }
 
