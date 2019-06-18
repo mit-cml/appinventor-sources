@@ -31,6 +31,8 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.DISABLED_USER_URL, "",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_LAST_LOCALE, "en",
+        EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override
@@ -40,8 +42,6 @@ public final class GeneralSettings extends Settings {
       // Account is disabled, show dialog box and stop further processing
       // i.e., do not open previous project.
       Ode.getInstance().disabledAccountDialog(disabledUrl);
-    } else {
-      Ode.getInstance().openPreviousProject();
     }
   }
 }

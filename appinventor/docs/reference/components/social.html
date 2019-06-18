@@ -778,114 +778,118 @@ none
   <dd>Shares a message through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the message inserted on it.</dd>
 </dl>
 
-                    <h2 id="Texting">
-                      Texting
-                    </h2>
-                    <img alt="" src="images/texting.png" />
-                    <p>
-                      A component that will, when the
-                      <code>SendMessage</code>
-                      method is called, send the text message specified in the
-                      <code>Message</code>
-                      property to the phone number specified in the
-                      <code>PhoneNumber</code>
-                      property.
-                    </p>
-                    <p>
-                      If the
-                      <code>ReceivingEnabled</code>
-                      property is set to 1 messages will <b>not</b> be received. If
-                      <code>ReceivingEnabled</code>
-                      is set to 2 messages will be received only when the application is running. Finally if
-                      <code>ReceivingEnabled</code>
-                      is set to 3, messages will be received when the application
-                      is running <b>and</b> when the application is not running
-                      they will be queued and a notification displayed to the user.
-                    </p>
-                    <p>
-                      When a message arrives, the
-                      <code>MessageReceived</code>
-                      event is raised and provides the sending number and message.
-                    </p>
-                    <p>
-                      An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
-                    </p>
-                    <p>
-                      If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher. <strong>Using this block will add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous permissions</a> that will require additional approval if your app is submitted to the Google Play Store.</strong>
-                    </p>
-                    <p>
-                      To specify the phone number (e.g., 650-555-1212), set the
-                      <code>PhoneNumber</code>
-                      property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
-                    </p>
-                    <p>
-                      Another way for an app to specify a phone number would be to include a
-                      <code>PhoneNumberPicker</code>
-                      component, which lets the users select a phone numbers from the ones stored in the the phone's contacts.
-                    </p>
+<h2 id="Texting">
+  Texting
+</h2>
+<img alt="" src="images/texting.png" />
+<p>
+  A component that will, when the
+  <code>SendMessage</code>
+  method is called, send the text message specified in the
+  <code>Message</code>
+  property to the phone number specified in the
+  <code>PhoneNumber</code>
+  property.
+</p>
+<p>
+  If the
+  <code>ReceivingEnabled</code>
+  property is set to 1 messages will <b>not</b> be received. If
+  <code>ReceivingEnabled</code>
+  is set to 2 messages will be received only when the application is running. Finally if
+  <code>ReceivingEnabled</code>
+  is set to 3, messages will be received when the application
+  is running <b>and</b> when the application is not running
+  they will be queued and a notification displayed to the user.
+</p>
+<p>
+  When a message arrives, the
+  <code>MessageReceived</code>
+  event is raised and provides the sending number and message.
+</p>
+<p>
+  An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
+</p>
+<!-- [suvam, 7-Mar-19] Updated Texting documentation regarding Google Voice -->
+<p>
+  If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice.
+  This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. 
+  The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.
+  <strong>Unfortunately, receiving no longer works in Google Voice due to changes introduced in Google Voice App.</strong>
+</p>
+<p>
+  To specify the phone number (e.g., 650-555-1212), set the
+  <code>PhoneNumber</code>
+  property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
+</p>
+<p>
+  Another way for an app to specify a phone number would be to include a
+  <code>PhoneNumberPicker</code>
+  component, which lets the users select a phone numbers from the ones stored in the the phone's contacts.
+</p>
 
-                    <h3>Properties</h3>
-                    <dl>
-                      <dt><code>GoogleVoiceEnabled</code></dt>
-                      <dd>
-                        If true, then SendMessage will attempt to send messages
-                        over Wifi using Google Voice.  This requires that the
-                        Google Voice app must be installed and set up on the phone
-                        or tablet, with a Google Voice account.  If
-                        GoogleVoiceEnabled is false, the device must have phone and
-                        texting service in order to send or receive messages with
-                        this component. Google Voice is available only in the USA, and some phone networks do not
-                        support it.
-                      </dd>
-                      <dt><code>Message</code></dt>
-                      <dd>The message that will be sent when the SendMessage method is called. The maximum length of a
-                          standard SMS message is usually 170. It may be less for languages using diacritical marks.</dd>
-                      <dt><code>PhoneNumber</code></dt>
-                      <dd>
-                        The number that the message will be sent to when the
-                        SendMessage method is called. The number is a text string
-                        with the specified digits (e.g., 6505551212).  Dashes,
-                        dots, and parentheses may be included (e.g.,
-                        (650)-555-1212) but will be ignored; spaces should not be
-                        included.
-                      </dd>
-                      <dt><code>ReceivingEnabled</code></dt>
-                      <dd>
-                        If set to 1 (OFF) no messages will be received.  If set to
-                        2 (FOREGROUND) or 3 (ALWAYS) the component will respond to
-                        messages if it is running. In the case of 2 (FOREGROUND),
-                          messages received while the app is not running are discarded.
-                          In the case of 3 (ALWAYS), messagess receive while the app is
-                          not running will show a notification.  Selecting the notification will
-                        bring up the app and signal the MessageReceived event.
-                        Messages received when the app is dormant will be queued,
-                        and so several MessageReceived events might appear when the
-                        app awakens.  As an app developer, it would be a good idea
-                        to give your users control over this property, so they can
-                        make their phones ignore text messages when your app is
-                        installed.
-                      </dd>
-                    </dl>
-                    <h3>Events</h3>
-                    <dl>
-                      <dt><code>MessageReceived(text number, text messageText)</code></dt>
-                      <dd>Event that's raised when a text message is received by
-                      the phone. <strong>Using this block will
-                      add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
-                      permissions</a> that will require additional approval if your
-                      app is submitted to the Google Play Store.</strong></dd>
-                    </dl>
-                    <h3>Methods</h3>
-                    <dl>
-                      <dt><code>SendMessage()</code></dt>
-                      <dd>Launch the phone's default text messaging app with the
-                      message and phone number prepopulated.</dd>
-                      <dt><code>SendMessageDirect()</code></dt>
-                      <dd>Send a text message. <strong>Using this block will
-                      add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
-                      permissions</a> that will require additional approval if your
-                      app is submitted to the Google Play Store.</strong></dd>
-                    </dl>
+<h3>Properties</h3>
+<dl>
+  <dt><code>GoogleVoiceEnabled</code></dt>
+  <dd>
+    If true, then SendMessage will attempt to send messages
+    over Wifi using Google Voice.  This requires that the
+    Google Voice app must be installed and set up on the phone
+    or tablet, with a Google Voice account.  If
+    GoogleVoiceEnabled is false, the device must have phone and
+    texting service in order to send or receive messages with
+    this component. Google Voice is available only in the USA, and some phone networks do not
+    support it.
+  </dd>
+  <dt><code>Message</code></dt>
+  <dd>The message that will be sent when the SendMessage method is called. The maximum length of a
+      standard SMS message is usually 170. It may be less for languages using diacritical marks.</dd>
+  <dt><code>PhoneNumber</code></dt>
+  <dd>
+    The number that the message will be sent to when the
+    SendMessage method is called. The number is a text string
+    with the specified digits (e.g., 6505551212).  Dashes,
+    dots, and parentheses may be included (e.g.,
+    (650)-555-1212) but will be ignored; spaces should not be
+    included.
+  </dd>
+  <dt><code>ReceivingEnabled</code></dt>
+  <dd>
+    If set to 1 (OFF) no messages will be received.  If set to
+    2 (FOREGROUND) or 3 (ALWAYS) the component will respond to
+    messages if it is running. In the case of 2 (FOREGROUND),
+      messages received while the app is not running are discarded.
+      In the case of 3 (ALWAYS), messagess receive while the app is
+      not running will show a notification.  Selecting the notification will
+    bring up the app and signal the MessageReceived event.
+    Messages received when the app is dormant will be queued,
+    and so several MessageReceived events might appear when the
+    app awakens.  As an app developer, it would be a good idea
+    to give your users control over this property, so they can
+    make their phones ignore text messages when your app is
+    installed.
+  </dd>
+</dl>
+<h3>Events</h3>
+<dl>
+  <dt><code>MessageReceived(text number, text messageText)</code></dt>
+  <dd>Event that's raised when a text message is received by
+  the phone. <strong>Using this block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your
+  app is submitted to the Google Play Store.</strong></dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+  <dt><code>SendMessage()</code></dt>
+  <dd>Launch the phone's default text messaging app with the
+  message and phone number prepopulated.</dd>
+  <dt><code>SendMessageDirect()</code></dt>
+  <dd>Send a text message. <strong>Using this block will
+  add <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous
+  permissions</a> that will require additional approval if your
+  app is submitted to the Google Play Store.</strong></dd>
+</dl>
 
 
 

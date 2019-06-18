@@ -13,7 +13,7 @@
   </description>
 
   <target name="all"
-          depends="CommonUtils,CommonVersion,BlocksEditorHttpConstants,CommonTestUtils">
+          depends="CommonUtils,CommonVersion,CommonTestUtils">
   </target>
 
   <target name="tests"
@@ -151,36 +151,6 @@
         <include name="${common.pkg}/version/*.java"/>
       </fileset>
   </jar>
-
-  </target>
-
-  <!-- =====================================================================
-       BlocksEditorHttpConstants: library of constants for blocks editor
-           http server.
-       ===================================================================== -->
-  <target name="BlocksEditorHttpConstants"
-          description="Generate library of constants for blocks editor http server"
-          depends="init">
-    <property name="BlocksEditorHttpConstants-class.dir" location="${class.dir}/BlocksEditorHttpConstants" />
-    <mkdir dir="${BlocksEditorHttpConstants-class.dir}" />
-
-    <ai.javac destdir="${BlocksEditorHttpConstants-class.dir}">
-      <include name="${common.pkg}/jsonp/JsonpConstants.java" />
-      <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java" />
-    </ai.javac>
-
-    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants.jar">
-      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
-    </jar>
-
-    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants-gwt.jar">
-      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
-      <fileset dir="${src.dir}">
-        <include name="${common.pkg}/jsonp/JsonpConstants.java"/>
-        <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java"/>
-        <include name="${common.pkg}/BlocksEditorHttpConstants.gwt.xml" />
-      </fileset>
-    </jar>
 
   </target>
 

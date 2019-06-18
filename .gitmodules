@@ -3,4 +3,4 @@
 	url = https://github.com/mit-cml/blockly.git
 [submodule "appinventor/lib/closure-library"]
 	path = appinventor/lib/closure-library
-	url = https://github.com/google/closure-library.git
+	url = https://github.com/mit-cml/closure-library.git

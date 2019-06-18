@@ -124,16 +124,4 @@ public final class AppInventorFeatures {
     return false;
   }
 
-  /** limitPermissions -- Remove Google defined "dangerous" permissions when
-   *                      building the MIT AI2 Companion. These include:
-   *                      android.permission.RECEIVE_SMS
-   *                      android.permission.SEND_SMS
-   *                      android.permission.PROCESS_OUTGOING_CALLS
-   *
-   * @return true to limit permissions in the Companion
-   */
-  public static boolean limitPermissions() {
-    return true;
-  }
-
 }

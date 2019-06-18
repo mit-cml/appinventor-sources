@@ -53,6 +53,7 @@ Blockly.Yail.YAIL_COMPONENT_REMOVE = "(remove-component ";
 Blockly.Yail.YAIL_COMPONENT_TYPE = "component";
 Blockly.Yail.YAIL_DEFINE = "(def ";
 Blockly.Yail.YAIL_DEFINE_EVENT = "(define-event ";
+Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT = '(define-generic-event ';
 Blockly.Yail.YAIL_DEFINE_FORM = "(define-form ";
 Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION = "(do-after-form-creation ";
 Blockly.Yail.YAIL_DOUBLE_QUOTE = "\"";
@@ -400,8 +401,12 @@ Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, co
   propsToSend.forEach(function(prop) {
     var info = type['properties'][prop];
     if (shouldSendProperty(prop, info)) {
+      var value = componentJson[prop];
+      if (!Boolean(value) && value !== '') {
+        value = info['defaultValue'];
+      }
       code.push(Blockly.Yail.getPropertySetterString(componentName, componentJson['$Type'], prop,
-        componentJson[prop] || info['defaultValue'], componentDb));
+        value, componentDb));
     }
   });
   return code;

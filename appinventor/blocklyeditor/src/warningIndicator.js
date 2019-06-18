@@ -233,8 +233,11 @@ Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
 }
 
 Blockly.WarningIndicator.prototype.updateCurrentWarningAndError = function(currentWarning, currentError) {
-  this.errorCount_.textContent = currentError + "/" + this.workspace_.getWarningHandler().errorCount;
-  this.warningCount_.textContent = currentWarning + "/" + this.workspace_.getWarningHandler().warningCount;
+  var handler = this.workspace_.getWarningHandler();
+  currentError++;  // make it 1-based
+  currentWarning++;  // make it 1-based
+  this.errorCount_.textContent = currentError + "/" + handler.errorCount;
+  this.warningCount_.textContent = currentWarning + "/" + handler.warningCount;
 }
 
 /**

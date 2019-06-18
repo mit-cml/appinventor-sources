@@ -450,8 +450,16 @@ public class YaVersion {
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 181:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 25
+  // For YOUNG_ANDROID_VERSION 182:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 26
+  // For YOUNG_ANDROID_VERSION 183:
+  // - CANVAS_COMPONENT_VERSION was incremented to 11
+  // For YOUNG_ANDROID_VERESION 184:
+  // - Added Switch
+  // For YOUNG_ANDROiD_VERSION 185:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 181;
+  public static final int YOUNG_ANDROID_VERSION = 185;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -521,8 +529,10 @@ public class YaVersion {
   // - List reverse block was added.
   // For BLOCKS_LANGUAGE_VERSION 25:
   // - List join with separator block was added.
+  // For BLOCKS_LANGUAGE_VERSION 26:
+  // - Generic event handlers were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 25;
+  public static final int BLOCKS_LANGUAGE_VERSION = 26;
 
   // ................................. Component Version Numbers ..................................
 
@@ -669,7 +679,9 @@ public class YaVersion {
   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
   // For CANVAS_COMPONENT_VERSION 10:
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
-  public static final int CANVAS_COMPONENT_VERSION = 10;
+  // For CANVAS_COMPONENT_VERSION 11:
+  // - DrawShape & DrawArc was added
+  public static final int CANVAS_COMPONENT_VERSION = 11;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1043,7 +1055,15 @@ public class YaVersion {
   // - The SavedRecording property was added.
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 2:
+  // - The UseLegacy property was added which is set to True by default.
+  // - The Stop method was added, which works only when UseLegacy
+  //   property is set to False.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
+
+  // For SWITCH_COMPONENT_VERSION 1
+  //  - Initial Version
+  public static final int SWITCH_COMPONENT_VERSION = 1;
 
   public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
 
@@ -1236,11 +1256,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.51";
+  public static final String PREFERRED_COMPANION = "2.53 or 2.53u";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.51" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.53", "2.53u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

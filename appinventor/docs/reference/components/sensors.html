@@ -668,51 +668,77 @@ none
 </dl>
 
 <h3>Methods</h3>
-none
+<p>none</p>
 
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
 <p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
 <p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>
-Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
-
+<p>Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
+<p>The emulator does not emulate sensors on all devices. Code should be tested on a physical device.</p>
 <h3>Properties</h3>
 <dl>
   <dt><code><em>Accuracy</em></code></dt>
-  <dd></dd>
+  <dd><p>The LocationSensor will be able to locate the device with a varying degree of confidence, based on the quality of satellite, cell towers, and other data used to estimate location. The Accuracy value is the radius in meters around the sensor's detected location. The device has a 68% chance to be located within this radius. More precise location detection will result in a smaller accuracy number, which allows the app to have more confidence where the device is actually located.</p>
+      <p>If the accuracy is not known, the return value is 0.0</p></dd>
   <dt><code><em>Altitude</em></code></dt>
-  <dd></dd>
+    <dd><p>Altitude of the Android device in meters, if available.</p>
+    <p>Altitude is measured from the <a target="_blank" href="https://gisgeography.com/wgs84-world-geodetic-system/">World Geodetic System 84 reference ellipsoid</a>,
+        not sea level. </p>
+    <p>Note that it is difficult for devices to accurately sense altitude. Altitude reported on a phone/tablet can
+        easily be off by 30 meters or more.</p></dd>
   <dt><code><em>AvailableProviders</em></code></dt>
-  <dd></dd>
+  <dd>List of available service providers, such as gps or network. This information is provided as a list and in text
+      form.</dd>
   <dt><code><em>CurrentAddress</em></code></dt>
-  <dd></dd>
+    <dd><p>Physical street address of the Android device from Google's map database.</p>
+    <p>The address might not always be available from the provider, and the address reported may not always be of the building where the device is located.</p>
+    <p>If Google has no address information available for a particular location, this will return No address available.</p>
+    </dd>
   <dt><code>DistanceInterval</code></dt>
-  <dd>Determines the minimum distance interval, in meters, that the sensor will try to use for sending out location updates. For example, if this is set to 5, then the sensor will fire a LocationChanged event only after 5 meters have been traversed. However, the sensor does not guarantee that an update will be received at exactly the distance interval. It may take more than 5 meters to fire an event, for instance.</dd>
+  <dd><p>Determines the minimum distance interval, in meters, that the sensor will try to use for sending out location
+      updates. For example, if this is set to 50, then the sensor will fire a LocationChanged event only after 50 meters
+      have been traversed. However, the sensor does not guarantee that an update will be received at exactly the
+      distance interval. It may take more than 5 meters to fire an event, for instance.</p>
+    <p>It is also useful to check against Accuracy when using this property. When your device is moving, the accuracy
+    of the detected location is constantly changing.</p></dd>
   <dt><code>Enabled</code></dt>
-  <dd></dd>
+  <dd>If true, the LocationSensor will attempt to read location information from GPS, WiFi location, or other means
+      available on the device. This setting does not control whether location information is actually available. Device
+      location must be enabled or disabled in the device settings.</dd>
   <dt><code><em>HasAccuracy</em></code></dt>
-  <dd></dd>
+  <dd>If true, Android device can report its accuracy level.</dd>
   <dt><code><em>HasAltitude</em></code></dt>
-  <dd></dd>
+  <dd>If true, Android device can report its altitude.</dd>
   <dt><code><em>HasLongitudeLatitude</em></code></dt>
-  <dd></dd>
+  <dd>If true, Android device can report longitude and latitude.</dd>
   <dt><code><em>Latitude</em></code></dt>
-  <dd></dd>
+  <dd>Android device latitude. This is reported in decimal degrees to five decimal places. Latitude is a value between
+  90 (north) and -90 (south), where 0 marks the Equator.</dd>
   <dt><code><em>Longitude</em></code></dt>
-  <dd></dd>
+  <dd>Android device longitude. This is reported in decimal degrees to five decimal places. Longitude is a value between
+  180 (east) and -180 (west), where 0 marks the Prime Meridian.</dd>
   <dt><code>ProviderLocked</code></dt>
-  <dd></dd>
+  <dd><p>The device will not change the service provider.</p>
+  <p>It is possible for a device to switch service providers when the current provider is unable to provide adequate location information. ProviderLocked is a Boolean value: true/false. Set to true to prevent providers from changing. Set to false to allow for automatic switching when necessary.</p></dd>
   <dt><code>ProviderName</code></dt>
-  <dd></dd>
+  <dd>The current service provider. The provider will most likely be either GPS or network.
+  </dd>
   <dt><code>TimeInterval</code></dt>
-  <dd>Determines the minimum time interval, in milliseconds, that the sensor will try to use for sending out location updates. However, location updates will only be received when the location of the phone actually changes, and use of the specified time interval is not guaranteed. For example, if 1000 is used as the time interval, location updates will never be fired sooner than 1000ms, but they may be fired anytime after.</dd>
+  <dd><p>Determines the minimum time interval, in milliseconds, that the sensor will try to use for sending out location
+      updates. However, location updates will only be received when the location of the phone actually changes, and use
+      of the specified time interval is not guaranteed. For example, if 30000 is used as the time interval, location
+      updates will never be fired sooner than 30000ms, but they may be fired anytime after.</p>
+    <p>Values smaller than 30000ms (30 seconds) are not practical for most devices. Small values may drain battery and
+    overwork the GPS.</p></dd>
 </dl>
 
 <h3>Events</h3>
 <dl>
   <dt><code>LocationChanged(number latitude, number longitude, number altitude, number speed)</code></dt>
-  <dd>Indicates that a new location has been detected.</dd>
+  <dd>Indicates that a new location has been detected. Speed is reported in meters/second. Other values match their
+  properties.</dd>
   <dt><code>StatusChanged(text provider, text status)</code></dt>
   <dd>Indicates that the status of the location provider service has changed, such as when a
  provider is lost or a new provider starts being used.</dd>

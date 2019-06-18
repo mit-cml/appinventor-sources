@@ -44,6 +44,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.UNDO = 'Undo';
     Blockly.Msg.REDO = 'Redo';
     Blockly.Msg.CLEAN_UP = 'Clean up Blocks';
+    Blockly.Msg.HIDE = 'Hide Workspace Controls';
+    Blockly.Msg.SHOW = 'Show Workspace Controls';
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
@@ -92,6 +94,9 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
     Blockly.Msg.HIDE_ALL_COMMENTS = 'Hide All Comments';
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Show All Comments';
+    Blockly.Msg.GENERICIZE_BLOCK = 'Make Generic';
+    Blockly.Msg.UNGENERICIZE_BLOCK = 'Make Specific';
+    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Download Blocks as PNG';
 
 // Variable renaming.
     Blockly.Msg.CHANGE_VALUE_TITLE = 'Change value:';
@@ -937,6 +942,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Creates a global variable and gives it the value of the attached blocks.';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'global';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = '/reference/blocks/variables.html#get';
     Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = 'get';
@@ -1035,6 +1041,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'when ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'do';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE = 'when any ';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = 'call ';
@@ -1088,6 +1095,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#ListPicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#ListPicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#ListPicker';
+
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SWITCH_HELPURL = '/reference/components/userinterface.html#Switch';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_TIMEPICKER_HELPURL = '/reference/components/userinterface.html#TimePicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_DATEPICKER_HELPURL = '/reference/components/userinterface.html#DatePicker';
@@ -1438,6 +1447,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_YOUR_CODE_IS = "Your code is";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Are you sure you want to delete all %1 of these blocks?";
@@ -1445,6 +1456,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
     Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
@@ -1460,10 +1472,15 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.TIME_DURATION = "Duration";
 
 // Connection Dialog Messages
+    Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "15 Rendezvous (please wait)";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHING = "20 Establishing Secure Connection";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "30 Secure Connection Established";
     Blockly.Msg.DIALOG_FOUND_COMPANION = "10 Found the Companion";
 
+//Blockly.Util.Dialog Messages
+    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
+    Blockly.Msg.DIALOG_SUBMIT = 'Submit';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
   }
 };
 

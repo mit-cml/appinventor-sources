@@ -1379,7 +1379,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: No blocks need to be modified to upgrade to version 10
     // The default value of TextAlignment was changed from Normal (left) to Center
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // DrawShape & DrawArc was added
+    // No blocks need to be modified to upgrade to version 11.
+    11: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1784,8 +1788,10 @@ Blockly.Versioning.AllUpgradeMaps =
     24: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 25, added Join With Separator Block
-    25: "noUpgrade"
+    25: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
+    26: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2316,7 +2322,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "SpeechRecognizer": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+    // The Stop method was added. No blocks need to be changed.
+    // The SpeechRecognizer.UseLegacy property was added.
+    2: "noUpgrade"
 
   }, // End SpeechRecognizer upgraders
 

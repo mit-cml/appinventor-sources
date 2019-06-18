@@ -155,6 +155,11 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       if(block.blockType != "event") {
         continue;
       }
+      if (block.isGeneric) {
+        map.globals.push(block);
+        continue;
+      }
+
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];  // first block we've found for this component
       }
