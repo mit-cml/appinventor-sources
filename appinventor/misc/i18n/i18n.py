@@ -157,19 +157,23 @@ def read_block_translations(lang_code):
             if line == '':
                 continue
             if is_block_comment:
-                full_line += line
+                full_line += ' ' + line
                 if line.endswith(r'*/'):
                     comment = full_line
                     is_block_comment = False
                     full_line = ''
                 continue
+            if line.startswith(r'/*') and line.endswith(r'*/'):
+                comment = line[2:][:-2].lstrip()
+                continue
+            if line.startswith(r'/*') and line.find('*/') > -1:  # Handle block comment that is only part of a line
+                line_partial_comment = line.split('*/', 1)
+                comment = line_partial_comment[0]
+                line = line_partial_comment[1].strip()
             if line.find('_HELPURL') > -1:  # HELPURL strings are not currently translated
                 continue
             if line.startswith(r'//'):
                 comment = line[2:].lstrip()
-                continue
-            if line.startswith(r'/*') and line.endswith(r'*/'):
-                comment = line[2:][:-2].lstrip()
                 continue
             if line.startswith(r'/*'):
                 full_line = line
