@@ -27,7 +27,7 @@ public class LineChartModelTest extends RobolectricTestBase {
      */
 
 
-    private com.google.appinventor.components.runtime.LineChartModel model;
+    private LineChartModel model;
     private LineData data;
 
     @Before
@@ -204,5 +204,22 @@ public class LineChartModelTest extends RobolectricTestBase {
 
         assertEquals(4f, entry4.getX());
         assertEquals(3f, entry4.getY());
+    }
+
+    /**
+     * Test to ensure that the Clear Entries method deletes
+     * all the entries from the Data Series.
+     */
+    @Test
+    public void testClearEntries() {
+        model.addEntry(4, 5);
+        model.addEntry(3, 2);
+        model.addEntry(1, 4);
+
+        assertEquals(3, model.getDataset().getEntryCount());
+
+        model.clearEntries();
+
+        assertEquals(0, model.getDataset().getEntryCount());
     }
 }
