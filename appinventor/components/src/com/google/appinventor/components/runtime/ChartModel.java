@@ -63,4 +63,11 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
      * @param tinyDB  TinyDB component to import data from
      */
     public abstract void importFromTinyDB(TinyDB tinyDB);
+
+    /**
+     * Deletes all the entries in the Data Series.
+     */
+    public void clearEntries() {
+        dataset.clear();
+    }
 }

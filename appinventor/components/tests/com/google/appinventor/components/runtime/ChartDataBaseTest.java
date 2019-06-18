@@ -147,6 +147,7 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
         TinyDB tinyDB = EasyMock.createMock(TinyDB.class);
 
         // Expect the ImportFromTinyDB method call in model
+        model.clearEntries();
         model.importFromTinyDB(tinyDB);
         setupChartComponents();
 
