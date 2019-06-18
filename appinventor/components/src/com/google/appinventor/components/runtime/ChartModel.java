@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
+import com.google.appinventor.components.runtime.util.YailList;
 
 public abstract class ChartModel<T extends DataSet, D extends ChartData> {
     protected D data;
@@ -63,6 +64,15 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
      * @param tinyDB  TinyDB component to import data from
      */
     public abstract void importFromTinyDB(TinyDB tinyDB);
+
+    /**
+     * Imports data from two YailLists containing x and y values respectively
+     *
+     * @param xValues  x value List
+     * @param yValues  y value List
+     */
+    public abstract void importFromLists(YailList xValues, YailList yValues);
+
 
     /**
      * Deletes all the entries in the Data Series.

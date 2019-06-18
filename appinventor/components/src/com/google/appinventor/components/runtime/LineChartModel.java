@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,5 +91,10 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
                 // Nothing happens: Do not add value on NumberFormatException
             }
         }
+    }
+
+    @Override
+    public void importFromLists(YailList xValues, YailList yValues) {
+
     }
 }

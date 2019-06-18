@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.YailList;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
@@ -113,6 +114,20 @@ public abstract class ChartDataBase implements Component {
     @SimpleFunction(description = "Imports data from a TinyDB component without overriding data.")
     public void AppendImportFromTinyDB(TinyDB tinyDB) {
         chartModel.importFromTinyDB(tinyDB);
+        refreshChart();
+    }
+
+    /**
+     * Adds elements to the Data component from specified x and y value
+     * YailLists. Data is not overwritten.
+     *
+     * @param xValues  x value List to add
+     * @param yValues  y value List to add
+     */
+    @SimpleFunction(description = "Imports data from x value and y value lists." +
+      "Data is not overwritten.")
+    public void ImportFromLists(YailList xValues, YailList yValues) {
+        chartModel.importFromLists(xValues, yValues);
         refreshChart();
     }
 
