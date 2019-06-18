@@ -127,13 +127,15 @@ def split(args):
                             parts[1] = ''.join(parts[1].split())
                         ode_output.write(parts[1].replace("'", "''"))
                         ode_output.write('\n\n')
-                    else:
+                    elif line.startswith('blockseditor.'):
                         parts = [part.strip() for part in line[len('blockseditor.'):].split('=', 1)]
-                        blockly_output.write('    Blockly.Msg.')
+                        blockly_output.write('    ')
                         blockly_output.write(parts[0])
                         blockly_output.write(' = ')
                         blockly_output.write(js_stringify(parts[1]))
                         blockly_output.write(';\n')
+                    else:
+                        blockly_output.write('PARSE_ERROR: ' + line)
                 blockly_output.write(blockly_footer)
 
 
@@ -155,7 +157,7 @@ def read_block_translations(lang_code):
             if line == '':
                 continue
             if line.startswith(r'//'):
-                comment = line[3:]
+                comment = line[2:].lstrip();
                 continue
             if is_block_comment:
                 full_line += line
