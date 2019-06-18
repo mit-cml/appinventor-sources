@@ -154,7 +154,8 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = '\'실행\' 영역에 있는 블록을 실행하고 결과를 반환한다. 변수에 값을 반환하기 전에 함수를 실행해야 하는 경우 유용합니다.';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = '실행/결과';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = '결과 실행';
-    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'blockeditor.Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 평가하지만 무시한다는 것을 평가하지만 무시하십시오.';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = '결과값 무시하고 실행하기';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = '평가하지만 무시한다는 것을 평가하지만 무시하십시오.';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = '연결된 코드 블록을 실행하고 반환 값을 무시합니다 (있는 경우). 반환 값을 가진 프로 시저를 호출해야하지만 유용 할 필요가없는 경우 유용합니다.';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE = '다른 스크린 열기';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME = '스크린 이름';
