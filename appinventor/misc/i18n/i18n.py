@@ -170,8 +170,6 @@ def read_block_translations(lang_code):
                 line_partial_comment = line.split('*/', 1)
                 comment = line_partial_comment[0]
                 line = line_partial_comment[1].strip()
-            if line.find('_HELPURL') > -1:  # HELPURL strings are not currently translated
-                continue
             if line.startswith(r'//'):
                 comment = line[2:].lstrip()
                 continue
@@ -191,6 +189,8 @@ def read_block_translations(lang_code):
             elif is_line_continuation:
                 line = line[1:]
                 is_line_continuation = False
+            if line.find('_HELPURL') > -1:  # HELPURL strings are not currently translated
+                continue
             full_line += line
             if full_line.endswith(';'):
                 is_line_continuation = False
