@@ -182,14 +182,18 @@ def read_block_translations(lang_code):
             if line.endswith('{'):
                 full_line = ''
                 continue
-            if line.startswith('+') or line.endswith('+'):
-                line = continuation.match(line).group(1)
+            if line.startswith('+'):
+                line = line[3:]
+                full_line = full_line[:-1]
+            if line.endswith('+'):
+                line = continuation.match(line).group(1).strip()
                 is_line_continuation = True
             elif is_line_continuation:
                 line = line[1:]
                 is_line_continuation = False
             full_line += line
             if full_line.endswith(';'):
+                is_line_continuation = False
                 match = linere.match(full_line)
                 if match is not None:
                     items.append('blockseditor.%s = %s' % (match.group(1), propescape(match.group(2))))
@@ -197,6 +201,7 @@ def read_block_translations(lang_code):
                         items.append('# Description: %s' % comment)
                         comment = None
                 full_line = ''
+
         return '\n'.join(items) + '\n'
 
 
