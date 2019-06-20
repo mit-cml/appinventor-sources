@@ -1220,7 +1220,7 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI1: No changes required
-    // The UseExternalScanner property default value was changed to false.
+    // Fallback to internal scanner if UseExternalScanner true and Barcode Scanner not found
     3: "noUpgrade"
 
   }, // End BarcodeScanner upgraders
