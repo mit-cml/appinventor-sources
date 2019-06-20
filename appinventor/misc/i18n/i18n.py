@@ -109,8 +109,8 @@ def split(args):
                             description += line
                         else:
                             description = line
-                    elif line.startswith('appengine.switchTo') or line.startswith('appengine.SwitchTo'):
-                        pass
+#                    elif line.startswith('appengine.switchTo') or line.startswith('appengine.SwitchTo'):
+#                        pass      -- Unclear why switchto lines were removed
                     elif line.startswith('appengine.'):
                         if description is not None:
                             ode_output.write(description)
@@ -220,11 +220,16 @@ def combine(args):
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
             for line in props:
-                if lastline.endswith(r'\n') or line.startswith('#') or line.strip() == '':
+                if lastline != '':
+                    line = lastline + line
+                if line.endswith('\\\n'):
+                    lastline = line[:-2] + ' '
+                elif line.startswith('#') or line.strip() == '':
                     out.write(line)
                 else:
                     out.write('appengine.')
                     out.write(line)
+                    lastline = ''
         out.write('\n# Blocks editor definitions\n')
         out.write(blockprops)
         out.close()
