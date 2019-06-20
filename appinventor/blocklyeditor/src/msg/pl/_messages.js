@@ -95,6 +95,7 @@ Blockly.Msg.pl.switch_language_to_polish = {
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = 'Kolor z podanymi komponentami czerwony, zielony, niebieski i opcjonalnie alfa';
     Blockly.Msg.LANG_CATEGORY_CONTROLS = 'Kontrola';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'Jeśli';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'Jeśli wartość jest prawdziwa, wykonaj podany kod.';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'inaczej jeśli';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = 'inaczej';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'wtedy';
