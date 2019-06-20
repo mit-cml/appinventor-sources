@@ -121,9 +121,15 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
     try {
       container.$context().startActivityForResult(intent, requestCode);
     } catch (ActivityNotFoundException e) {
-      e.printStackTrace();
-      container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
-        ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
+      if (useExternalScanner) {
+        // Repeat scanning with internal Scanner
+        useExternalScanner = false;
+        DoScan();
+      } else { // No scanner found
+        e.printStackTrace();
+        container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
+                ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
+      }
     }
   }
 
