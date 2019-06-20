@@ -11,8 +11,10 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectManager;
+import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -20,7 +22,6 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class ProjectToolbar extends Toolbar {
         new PublishOrUpdateAction()));
     //adding a new trash button
     addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
-        new TrashAction()));
+        new TrashAction(this)));
 
     updateButtons();
   }
@@ -194,7 +195,7 @@ public class ProjectToolbar extends Toolbar {
         @Override
         public void execute() {
           List<Project> selectedProjects =
-                  ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();// make a list which has deleted bit set
+                  ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
           if (selectedProjects.size() > 0) {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects)) {
@@ -265,10 +266,8 @@ public class ProjectToolbar extends Toolbar {
                       MESSAGES.deleteProjectError()) {
                 @Override
                 public void onSuccess(Void result) {
-                  //Ode.getInstance().getProjectManager().removeProject(projectId);
+                  Ode.getInstance().getProjectManager().removeProject(projectId); // removes the project from the projects list
                   /** The projects marked deleted by the user will enter the trash list and disappear from project list **/
-
-
                 }
               });
     }
@@ -287,27 +286,24 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  /**implementing trash method this method will show the trashProjectList*/
+  /**implementing trash method this method will show the trashProjectListBox*/
   private static class TrashAction implements Command {
+    ProjectToolbar parent;
+
+    public TrashAction(ProjectToolbar parent) {this.parent = parent;}
+
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
-          List<Project> deletedProjects =
-                  ProjectListBox.getProjectListBox().getProjectList().getDeletedProjects();// make a list which has deleted bit set
-           try{
-             Ode.getInstance().switchToTrash();
-          } catch (Exception e) {
-            // The user can select a project to resolve the
-            // error.
-            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-          }
+          Ode.getInstance().switchToTrash();
+          parent.setButtonEnabled(WIDGET_NAME_NEW, false);
         }
       });
     }
-
   }
+
 
   private static class PublishOrUpdateAction implements Command {
     @Override

@@ -11,21 +11,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.appinventor.client.boxes.AdminUserListBox;
-import com.google.appinventor.client.boxes.AssetListBox;
-import com.google.appinventor.client.boxes.BlockSelectorBox;
-import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
-import com.google.appinventor.client.boxes.MessagesOutputBox;
-import com.google.appinventor.client.boxes.OdeLogBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ModerationPageBox;
-import com.google.appinventor.client.boxes.GalleryListBox;
-import com.google.appinventor.client.boxes.GalleryAppBox;
-import com.google.appinventor.client.boxes.ProfileBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.boxes.*;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -244,6 +230,8 @@ public class Ode implements EntryPoint {
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
   private VerticalPanel pVertPanel;
+  private HorizontalPanel projectListPanel = new HorizontalPanel();
+  private HorizontalPanel projectListPane2= new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -448,7 +436,7 @@ public class Ode implements EntryPoint {
             //shifting back to show projects
             if(currentView==TRASHCAN)
             {
-              HorizontalPanel projectListPanel = new HorizontalPanel();
+              projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
               projectListPanel.setWidth("100%");
               projectListPanel.add(ProjectListBox.getProjectListBox());
               pVertPanel.add(projectListPanel);
@@ -479,10 +467,11 @@ public class Ode implements EntryPoint {
     hideTutorials();
     //disable the start button in trash
     currentView=TRASHCAN;
-    HorizontalPanel projectListPanel = new HorizontalPanel();
-    projectListPanel.setWidth("100%");
+    projectListPane2.setWidth("100%");
     projectListPanel.add(ProjectListBox.getProjectListBox());
+    projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
     pVertPanel.remove(projectListPanel);
+    pVertPanel.add(projectListPane2);
 
   }
 
@@ -1030,7 +1019,7 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    HorizontalPanel projectListPanel = new HorizontalPanel();
+   // HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
