@@ -611,7 +611,7 @@ public class YaVersion {
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
   // For BARCODESCANNER_COMPONENT_VERSION 3:
-  // -- UseExternalScanner property default value was changed to false
+  // -- Fallback to internal scanner if UseExternalScanner true and Barcode Scanner not found
   public static final int BARCODESCANNER_COMPONENT_VERSION = 3;
 
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 2:
