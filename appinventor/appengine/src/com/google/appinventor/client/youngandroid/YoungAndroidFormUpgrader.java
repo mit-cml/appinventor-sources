@@ -515,6 +515,8 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 2;
     }
     if (srcCompVersion < 3) {
+      // BarcodeScanner falls back to Internal Scanner if External Scanner
+      // is not found.
       srcCompVersion = 3;
     }
     return srcCompVersion;
