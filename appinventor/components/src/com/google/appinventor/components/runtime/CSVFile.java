@@ -10,8 +10,10 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import android.Manifest;
 
@@ -88,5 +90,33 @@ public class CSVFile extends AndroidNonvisibleComponent {
         // TODO: Do not use in setter (?)
         // TODO: Convert to async?
         parseCSVFromSource(sourceFile);
+    }
+
+    /**
+     * Gets the specified column's elements as a YailList.
+     *
+     * @param column  name of column
+     * @return YailList of elements in the column
+     */
+    public YailList getColumn(String column) {
+        // Get the index of the column (first row - column names)
+        int index = ((YailList)rows.getObject(0)).indexOf(column);
+
+        // Column not found
+        if (index < 0) {
+            return null;
+        }
+
+        List<String> result = new ArrayList<>();
+
+        for (int i = 1; i < rows.size(); ++i) {
+            // Get row
+            YailList list = (YailList) rows.getObject(i); // Safe cast
+
+            // index-th entry in the row is the required column value
+            result.add((String)list.get(index));
+        }
+
+        return YailList.makeList(result);
     }
 }

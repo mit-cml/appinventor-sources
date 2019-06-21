@@ -131,6 +131,30 @@ public abstract class ChartDataBase implements Component {
         refreshChart();
     }
 
+
+    /**
+     * Imports data from a CSV file component, with the specified column names.
+     *
+     * Experimental for now.
+     *
+     * @param csvFile  CSV File component to import form
+     * @param xValueColumn  x-value column name
+     * @param yValueColumn  y-value column name
+     */
+    @SimpleFunction(description = "Work in progress")
+    public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
+        // Get x and y value YailLists
+        YailList xValues = csvFile.getColumn(xValueColumn);
+        YailList yValues = csvFile.getColumn(yValueColumn);
+
+        if(xValues == null || yValues == null) {
+            return;
+        }
+
+        // Import the CSV pair to the Data Series
+        ImportFromLists(xValues, yValues);
+    }
+
     /**
      * Refreshes the Chart view object.
      */
