@@ -96,6 +96,13 @@ Blockly.Msg.pl.switch_language_to_polish = {
     Blockly.Msg.LANG_CATEGORY_CONTROLS = 'Kontrola';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'Jeśli';
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'Jeśli wartość jest prawdziwa, wykonaj podany kod.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'Jeśli wartość jest prawdziwa, wtedy wykonuje pierwszy blok instrukcji.\n' +
+      'Inaczej, wykonuje drugi blok instrukcji.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'Jeśli pierwsza wartość jest prawdziwa, wtedy wykonuje pierwszy blok instrukcji.\n' +
+      'Inaczej, jeśli druga wartość jest prawdziwa, wykonuje drugi blok instrukcji.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'Jeśli pierwsza wartość jest prawdziwa, wtedy wykonuje pierwszy blok instrukcji.\n' +
+      'Inaczej, jeśli druga wartość jest prawdziwa, wykonuje drugi blok instrukcji.\n' +
+      'Jeśli żadna z podanych wartości nie jest prawdziwa wykonuje ostatni blok instrukcji.';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'inaczej jeśli';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = 'inaczej';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'wtedy';
@@ -146,6 +153,10 @@ Blockly.Msg.pl.switch_language_to_polish = {
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'wykonaj';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'gdy';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'jeśli';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jeśli sprawdzany warunek jest prawdą,'
+      + 'zwraca wynik uruchomionego wyrażenia dołączonego do bloku \'wtedy-zwróć\';'
+      + 'inaczej zwraca wynik uruchomionego wyrażenia dołączonego do bloku \'inaczej-zwróć\';'
+      + 'w większości jedno ze zwracanych bloków wyrażeń będzie uruchomionych.';
     Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Uruchamia bloki w sekcji „wykonaj”, gdy test jest „prawdziwy”.';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'wtedy';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'inaczej';
@@ -388,6 +399,7 @@ Blockly.Msg.pl.switch_language_to_polish = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'obiekt';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Zwraca Prawdę, jeśli <code>obiekt</code> jest łańcuchem.';
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Listy';
+    Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE = 'utwórz pustą listę';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST = 'twórz listę';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TOOLTIP = 'Utwórz listę z dowolną liczbą elementów.';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'lista';
