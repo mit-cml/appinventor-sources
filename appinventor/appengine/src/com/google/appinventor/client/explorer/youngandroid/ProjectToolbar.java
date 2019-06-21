@@ -267,6 +267,7 @@ public class ProjectToolbar extends Toolbar {
                 @Override
                 public void onSuccess(Void result) {
                   Ode.getInstance().getProjectManager().removeProject(projectId); // removes the project from the projects list
+
                   /** The projects marked deleted by the user will enter the trash list and disappear from project list **/
                 }
               });

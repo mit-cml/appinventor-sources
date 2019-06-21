@@ -18,6 +18,10 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   }
 
   @Override
+  public void onDeletedProjectAdded(Project project) {
+  }
+
+  @Override
   public void onProjectRemoved(Project project) {
   }
 

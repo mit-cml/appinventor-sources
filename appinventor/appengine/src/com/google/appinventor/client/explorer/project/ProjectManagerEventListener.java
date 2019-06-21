@@ -30,6 +30,13 @@ public interface ProjectManagerEventListener {
   void onProjectAdded(Project project);
 
   /**
+   * Invoked after a project was deleted and added to the ProjectManager
+   *
+   * @param project  project added to trash list
+   */
+   void onDeletedProjectAdded(Project project);
+
+  /**
    * Invoked after a project was removed (either closed or deleted).
    *
    * @param project  project removed

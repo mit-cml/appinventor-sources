@@ -146,6 +146,7 @@ public final class ProjectManager {
   public void removeProject(long projectId) {
     Project project = projectsMap.remove(projectId);
     fireProjectRemoved(project);
+    fireDeletedProjectAdded(project);
   }
 
   /**
@@ -209,6 +210,15 @@ public final class ProjectManager {
   private void fireProjectAdded(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectAdded(project);
+    }
+  }
+
+  /*
+   * Triggers a 'project added' event to be sent to the listener on the listener list.
+   */
+  private void fireDeletedProjectAdded(Project project) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onDeletedProjectAdded(project);
     }
   }
 

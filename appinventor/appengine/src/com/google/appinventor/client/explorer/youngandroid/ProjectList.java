@@ -393,6 +393,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
+  public void onDeletedProjectAdded(Project project) {
+    projects.add(project);
+    projectWidgets.put(project, new ProjectWidgets(project));
+    if (!projectListLoading) {
+      refreshTable(true);
+    }
+  }
+
+  @Override
   public void onProjectRemoved(Project project) {
     projects.remove(project);
     projectWidgets.remove(project);
