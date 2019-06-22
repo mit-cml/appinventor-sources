@@ -164,46 +164,74 @@ public class LineChartModelTest extends RobolectricTestBase {
      * of all entries.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testImportFromTinyDB() {
+        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+            put("0", "1");
+            put("1", "2");
+            put("2", "5");
+            put("4", "3");
+        }};
+
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+           put(0f, 1f);
+           put(1f, 2f);
+           put(2f, 5f);
+           put(4f, 3f);
+        }};
+
+        testImportFromTinyDBHelper(valueMap, expectedValues);
+    }
+
+    @Test
+    public void testImportFromTinyDBEmpty() {
+
+    }
+
+    /**
+     * Helper method that sets up a mock TinyDB, calls the required method to
+     * import the values from a TinyDB component, and handles all the assertions
+     * based on the passed in arguments.
+     *
+     * Values form valueMap will be parsed sequentially in the model method, whereas
+     * the expectedValues are the values which are expected to be in the Data Series
+     * data after parsing.
+     *
+     * @param valueMap  Values that the mock TinyDB should return
+     * @param expectedValues  Values that are expected to be in the Data Series
+     */
+    @SuppressWarnings("unchecked")
+    private void testImportFromTinyDBHelper(HashMap<String, String> valueMap, HashMap<Float, Float> expectedValues) {
         // Set up TinyDB mock and expected values
         TinyDB tinyDB = EasyMock.createNiceMock(TinyDB.class);
 
-        HashMap<String, String> map = new HashMap<String, String>();
-
-        // We will be adding (0, 1), (1, 2), (2, 5) and (4, 3) entries
-        map.put("0", "1");
-        map.put("1", "2");
-        map.put("2", "5");
-        map.put("4", "3");
-
+        // Make the TinyDB get all values method to return the created map.
         // We need this generic cast here, otherwise EasyMock will
         // give an error
-        expect(tinyDB.getAllValues()).andReturn((Map)map);
+        expect(tinyDB.getAllValues()).andReturn((Map)valueMap);
         replay(tinyDB);
 
         // Import the data from the TinyDB component
         model.importFromTinyDB(tinyDB);
 
         // Assert that the proper values are added
-        assertEquals(4, model.getDataset().getEntryCount());
+        assertEquals(expectedValues.size(), model.getDataset().getEntryCount());
 
-        Entry entry1 = model.getDataset().getEntryForIndex(0);
-        Entry entry2 = model.getDataset().getEntryForIndex(1);
-        Entry entry3 = model.getDataset().getEntryForIndex(2);
-        Entry entry4 = model.getDataset().getEntryForIndex(3);
+        // Start from the first entry in the Data Series
+        int index = 0;
 
-        assertEquals(0f, entry1.getX());
-        assertEquals(1f, entry1.getY());
+        // Iterate over all the expected values
+        for (Map.Entry<Float, Float> expectedEntry : expectedValues.entrySet()) {
+            // Get the actual Entry added to the Data Series
+            Entry entry = model.getDataset().getEntryForIndex(index);
 
-        assertEquals(1f, entry2.getX());
-        assertEquals(2f, entry2.getY());
+            // Assert expxected x and y values
+            assertEquals(expectedEntry.getKey(), entry.getX());
+            assertEquals(expectedEntry.getValue(), entry.getY());
 
-        assertEquals(2f, entry3.getX());
-        assertEquals(5f, entry3.getY());
-
-        assertEquals(4f, entry4.getX());
-        assertEquals(3f, entry4.getY());
+            // Move on to the next Data Series entry
+            index++;
+        }
     }
 
     /**
