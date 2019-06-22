@@ -1,19 +1,22 @@
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.ChartData;
 import com.google.appinventor.components.annotations.*;
 import com.github.mikephil.charting.charts.Chart;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extends AndroidViewComponent {
+public abstract class ChartBase<T extends Chart, D extends ChartData> extends AndroidViewComponent implements ComponentContainer {
 
     protected T view;
     protected D data;
 
     private String description;
     private int backgroundColor;
-
 
     /**
      * Creates a new ChartBase component.
@@ -32,9 +35,48 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
         container.$add(this);
 
         // Set default values
+        Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
+        Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+
+        // Center the Legend
+        view.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
     }
+
+    @Override
+    public Activity $context() {
+        return container.$context();
+    }
+
+    @Override
+    public Form $form() {
+        return container.$form();
+    }
+
+    @Override
+    public void $add(AndroidViewComponent component) {
+        throw new UnsupportedOperationException("ChartBase.$add() called");
+    }
+
+    @Override
+    public void setChildWidth(AndroidViewComponent component, int width) {
+        throw new UnsupportedOperationException("ChartBase.setChildWidth called");
+    }
+
+    @Override
+    public void setChildHeight(AndroidViewComponent component, int height) {
+        throw new UnsupportedOperationException("ChartBase.setChildHeight called");
+    }
+
+//    /**
+//     * Getter method for the Chart view object.
+//     *
+//     * @return  Chart view casted to appropriate type
+//     */
+//    public T getChart() {
+//        return view;
+//    }
 
     /**
      * Returns the description label text of the Chart.
@@ -91,7 +133,19 @@ public abstract class ChartBase<T extends Chart, D extends ChartDataBase> extend
      * Refreshes the Chart to react to Data Set changes.
      */
     public void Refresh() {
+        // Only refresh data itself if data exists on Chart
+        if (view.getData() != null) {
+            view.getData().notifyDataChanged();
+        }
+
         view.notifyDataSetChanged();
         view.invalidate();
     }
+
+    /**
+     * Creates a new Chart Model object instance.
+     *
+     * @return  Chart Model instance
+     */
+    public abstract ChartModel createChartModel();
 }
