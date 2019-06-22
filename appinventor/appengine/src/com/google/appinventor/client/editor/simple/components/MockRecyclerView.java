@@ -1,8 +1,3 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
-// Released under the Apache License, Version 2.0
-// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
@@ -13,6 +8,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -22,11 +18,15 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public final class MockRecyclerView extends MockVisibleComponent {
 
- /**
+//public final class MockRecyclerView extends MockImageBase {
+
+  
+    /**
    * Component type name.
    */
   public static final String TYPE = "RecyclerView";
   private final VerticalPanel listViewWidget;
+  private HorizontalPanel listItemWidget;
 
   private TextBox textBoxWidget;
   private InlineLabel labelInItemFirst,labelInItemSecond;
@@ -43,15 +43,16 @@ public final class MockRecyclerView extends MockVisibleComponent {
   private String textColor;
   private String currentElements;
 
-  /**
-   * Creates a new MockListView component. It places a label inside a simplepanel which
-   * is then placed into a vertical panel
-   *
-   * @param editor  editor of source file the component belongs to
-   */
-  public MockRecyclerView(SimpleEditor editor) {
-    super(editor, TYPE, images.listview());
-    listViewWidget = new VerticalPanel();
+    /**
+     * Creates a new MockImage component.
+     *
+     * @param editor  editor of source file the component belongs to
+     */
+    public MockRecyclerView(SimpleEditor editor) {
+        super(editor, TYPE, images.recyclerview());
+
+        listViewWidget = new VerticalPanel();
+        
     //TODO (Jose) extract magic numbers as ComponentConstants.java
     listViewWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
     listViewWidget.setStylePrimaryName("ode-SimpleMockComponent");
@@ -59,15 +60,17 @@ public final class MockRecyclerView extends MockVisibleComponent {
 
     createFilterBox();
 
-    // textColor must be set before the component is initialized, because onPropertyChange
+     // textColor must be set before the component is initialized, because onPropertyChange
     // might call setSlementsFromString, which tries to set the item textcolor
     textColor  = DEFAULT_TEXT_COLOR;
 
     initComponent(listViewWidget);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
-  }
 
-  @Override
+
+    }
+
+     @Override
   public void onCreateFromPalette() {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
@@ -84,7 +87,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   }
 
 
-  /**
+   /**
    * This method is called when the show filter box is checked or unchecked.
    * Checking the showfilterbar adds a textbox in the mocklistview and
    * vice versa.
@@ -100,7 +103,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
     }
   }
 
-  private void createFilterBox() {
+    private void createFilterBox() {
     textBoxWidget = new TextBox();
     textBoxWidget.setText("Search list...");
     textBoxWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -109,10 +112,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
     listViewWidget.add(textBoxWidget);
   }
 
-  /*
-   * Sets the text to be added in the listview
-   */
-  private void setElementsFromStringProperty(String text){
+   private void setElementsFromStringProperty(String text){
     currentElements = text;
     currentList = text.split(",");
 
@@ -134,16 +134,23 @@ public final class MockRecyclerView extends MockVisibleComponent {
   }
 
   private void createLabelItem(int i) {
+   
+    listItemWidget = new HorizontalPanel();
+
     labelInItemFirst =new InlineLabel(currentList[i]);
     labelInItemSecond =new InlineLabel(currentList[i+1]);
     labelInItemFirst.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
     MockComponentsUtil.setWidgetBackgroundColor(labelInItemFirst, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(labelInItemFirst, textColor);
-  	
-  	labelInItemSecond.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
+
+    labelInItemSecond.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
     MockComponentsUtil.setWidgetBackgroundColor(labelInItemSecond, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(labelInItemSecond, textColor);
-  
+
+    listItemWidget.add(labelInItemFirst);
+    listItemWidget.add(labelInItemSecond);
+
+
   }
 
   private void createLabelPanel() {
@@ -151,34 +158,43 @@ public final class MockRecyclerView extends MockVisibleComponent {
     panelForItem.setStylePrimaryName("listViewItemStyle");
     panelForItem.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
-    panelForItem.add(labelInItemFirst);
-    panelForItem.add(labelInItemSecond);
+
+
+    //panelForItem.add(labelInItemFirst);
+    panelForItem.add(listItemWidget);
     listViewWidget.add(panelForItem);
   }
+
+
 
   // PropertyChangeListener implementation
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_LISTVIEW)) {
+   if (propertyName.equals(PROPERTY_NAME_LISTVIEW)) {
       setElementsFromStringProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_FILTER_BAR)) {
       setFilterShowBox(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
+    } 
+    else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
       if (currentList != null) {
         setElementsFromStringProperty(currentElements);
       }
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
+    }
+    
+    /* else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       textColor = newValue;
       if (currentList != null) {
         setElementsFromStringProperty(currentElements);
       }
       refreshForm();
-    }
+    }*/
   }
-}
+
+
+  }

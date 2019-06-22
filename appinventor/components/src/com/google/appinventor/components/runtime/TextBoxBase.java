@@ -39,7 +39,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   protected final EditText view;
 
   // Backing for text alignment
-  private int textAlignment;
+  private int textAlignment;  
 
   // Backing for background color
   private int backgroundColor;
