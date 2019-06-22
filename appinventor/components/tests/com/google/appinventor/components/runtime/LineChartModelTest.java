@@ -158,10 +158,8 @@ public class LineChartModelTest extends RobolectricTestBase {
     }
 
     /**
-     * Tests to ensure that TinyDB data importing
-     * works as expected in the LineChartModel.
-     * A mock TinyDB is used with pre-defined returning
-     * of all entries.
+     * Tests to ensure that TinyDB data importing works as
+     * expected in the LineChartModel.
      */
     @Test
     public void testImportFromTinyDB() {
@@ -183,9 +181,76 @@ public class LineChartModelTest extends RobolectricTestBase {
         testImportFromTinyDBHelper(valueMap, expectedValues);
     }
 
+    /**
+     * Tests to ensure that TinyDB data importing
+     * works as expected when the data is imported
+     * from an empty TinyDB component.
+     */
     @Test
     public void testImportFromTinyDBEmpty() {
+        HashMap<String, String> valueMap = new HashMap<String, String>();
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
 
+        testImportFromTinyDBHelper(valueMap, expectedValues);
+    }
+
+    /**
+     * Tests to ensure that entries imported from a TinyDB component
+     * with an invalid X value are discarded, while still parsing the
+     * entries with valid values.
+     */
+    @Test
+    public void testImportFromTinyDBInvalidX() {
+        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+            put("string", "3");
+            put("0", "5");
+        }};
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+            put(0f, 5f);
+        }};
+
+        testImportFromTinyDBHelper(valueMap, expectedValues);
+    }
+
+    /**
+     * Tests to ensure that entries imported from a TinyDB component
+     * with an invalid Y value are discarded, while still parsing the
+     * entries with valid values.
+     */
+    @Test
+    public void testImportFromTinyDBInvalidY() {
+        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+            put("1", "string");
+            put("0", "5");
+        }};
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+            put(0f, 5f);
+        }};
+
+        testImportFromTinyDBHelper(valueMap, expectedValues);
+    }
+
+    /**
+     * Tests to ensure that entries imported from a TinyDB component
+     * with invalid X and Y values are discarded, while still parsing the
+     * entries with valid values.
+     */
+    @Test
+    public void testImportFromTinyDBInvalidXY() {
+        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+            put("-1", "3");
+            put("string", "string");
+            put("0", "5");
+        }};
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+            put(-1f, 3f);
+            put(0f, 5f);
+        }};
+
+        testImportFromTinyDBHelper(valueMap, expectedValues);
     }
 
     /**
