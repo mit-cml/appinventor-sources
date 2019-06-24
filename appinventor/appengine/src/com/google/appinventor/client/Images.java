@@ -592,4 +592,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/rectangle.png")
   ImageResource rectangle();
 
+  /**
+   * Designer palette item: Magnetic Field Sensor component
+   */
+  @Source("com/google/appinventor/images/magneticSensor.png")
+  ImageResource magneticSensor();
+
 }
