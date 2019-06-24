@@ -65,14 +65,14 @@ public class MagneticFieldSensor extends AndroidNonvisibleComponent implements S
 
     @DesignerProperty(defaultValue = "True", editorType = "boolean")
     @SimpleProperty
-    public void Enabled(boolean enabled) {
-        if (enabled != enabled) {
-            enabled = enabled;
-            if (enabled) {
-                startListening();
-            } else {
-                stopListening();
-            }
+    public void Enabled(boolean localEnabled) {
+        if (enabled != localEnabled) {
+            enabled = localEnabled;
+        }
+        if (enabled) {
+            startListening();
+        } else {
+            stopListening();
         }
     }
 
