@@ -1,8 +1,8 @@
-/**
- * ©Kodular 2017 - 2019 | FOR MAKEROID ONLY AND NOT PRIVATE USE!
- * @author diego@kodular.io (Diego Barreiro)
- * @author pavitra@kodular.io (Pavitra Golchha)
- */
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2016-2019 MIT, All rights reserved
+// Copyright 2017-2019 Kodular, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
  
 package com.google.appinventor.components.runtime;
 
@@ -25,8 +25,8 @@ import java.io.UnsupportedEncodingException;
 
 @SimpleObject
 @UsesLibraries(libraries = "physicaloid.jar")
-public class MakeroidArduino extends AndroidNonvisibleComponent implements Component {
-    private static final String LOG_TAG = "Makeroid Arduino USB Serial Component";
+public class Arduino extends AndroidNonvisibleComponent implements Component {
+    private static final String LOG_TAG = "Arduino USB Serial Component";
 
     private Context context;
 
@@ -34,7 +34,7 @@ public class MakeroidArduino extends AndroidNonvisibleComponent implements Compo
 
     private int baudRate = 9600;
 
-    public MakeroidArduino(ComponentContainer container) {
+    public Arduino(ComponentContainer container) {
         super(container.$form());
         context = container.$context();
         Log.d(LOG_TAG, "Created");
