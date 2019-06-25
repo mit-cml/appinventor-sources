@@ -458,8 +458,10 @@ public class YaVersion {
   // - Added Switch
   // For YOUNG_ANDROiD_VERSION 185:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERESION 186:
+  // - Added Arduino
 
-  public static final int YOUNG_ANDROID_VERSION = 185;
+  public static final int YOUNG_ANDROID_VERSION = 186;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1225,6 +1227,9 @@ public class YaVersion {
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
+
+  //For ARDUINO_COMPONENT_VERSION: Initial Version
+  public static final int ARDUINO_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
 
