@@ -8,7 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.explorer.youngandroid.ProjectList;
+import com.google.appinventor.client.explorer.youngandroid.TrashProjectList;
 import com.google.appinventor.client.widgets.boxes.Box;
 
 
@@ -22,7 +22,7 @@ public final class TrashProjectListBox extends Box {
     private static final TrashProjectListBox INSTANCE = new TrashProjectListBox();
 
     // Deleted Project list for young android
-    private final ProjectList deletedList;
+    private final TrashProjectList trashList;
 
     /**
      * Returns the singleton deleted projects list box.
@@ -42,8 +42,8 @@ public final class TrashProjectListBox extends Box {
                 false,  // minimizable
                 false); // removable
 
-        deletedList = new ProjectList();
-        setContent(deletedList);
+        trashList = new TrashProjectList();
+        setContent(trashList);
     }
 
     /**
@@ -51,7 +51,7 @@ public final class TrashProjectListBox extends Box {
      *
      * @return  project list
      */
-    public ProjectList getTrashProjectList() {
-        return deletedList;
+    public TrashProjectList getTrashProjectList() {
+        return trashList;
     }
 }

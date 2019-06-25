@@ -35,7 +35,6 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_PUBLISH_OR_UPDATE = "PublishOrUpdate";
-  /** trash button */
   private static final String WIDGET_NAME_TRASH = "Trash";
 
   private boolean isReadOnly;
@@ -54,7 +53,6 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton(),
         new PublishOrUpdateAction()));
-    //adding a new trash button
     addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
         new TrashAction(this)));
 
@@ -188,7 +186,6 @@ public class ProjectToolbar extends Toolbar {
 //            }
 //          });
 //    }
-    /** delete button will ask the option to move to trash **/
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
@@ -287,7 +284,7 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  /**implementing trash method this method will show the trashProjectListBox*/
+  //implementing trash method this method will show the Trash Tab
   private static class TrashAction implements Command {
     ProjectToolbar parent;
 

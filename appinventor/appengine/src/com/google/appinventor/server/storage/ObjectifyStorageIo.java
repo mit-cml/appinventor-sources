@@ -751,21 +751,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public void deleteProject(final String userId, final long projectId) {
     validateGCS();
-    // setting the deleted flag as true
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData projectData = datastore.find(projectKey(projectId));
-          if (projectData != null) {
-            projectData.deleteProjectFlag = true;
-            datastore.put(projectData);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
     // blobs associated with the project
    /* final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
@@ -774,10 +759,10 @@ public class ObjectifyStorageIo implements  StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-//          // delete the UserProjectData object
-//          Key<UserData> userKey = userKey(userId);
-//          datastore.delete(userProjectKey(userKey, projectId));
-//          // delete any FileData objects associated with this project
+          // delete the UserProjectData object
+          Key<UserData> userKey = userKey(userId);
+          datastore.delete(userProjectKey(userKey, projectId));
+          // delete any FileData objects associated with this project
           }
       }, true);
       // second job deletes the project files and ProjectData in the project's
@@ -814,8 +799,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
-    }*/
-
+    }
+*/
   }
 
   @Override

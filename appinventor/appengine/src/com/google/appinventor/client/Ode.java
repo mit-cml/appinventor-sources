@@ -463,14 +463,14 @@ public class Ode implements EntryPoint {
   /**
    * Switch to the Trash tab
    */
+
   public void switchToTrash() {
     hideTutorials();
-    //disable the start button in trash
     currentView=TRASHCAN;
     projectListPane2.setWidth("100%");
-    projectListPanel.add(ProjectListBox.getProjectListBox());
+    projectListPanel.remove(ProjectListBox.getProjectListBox());
     projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
-    pVertPanel.remove(projectListPanel);
+    //pVertPanel.remove(projectListPanel);
     pVertPanel.add(projectListPane2);
 
   }

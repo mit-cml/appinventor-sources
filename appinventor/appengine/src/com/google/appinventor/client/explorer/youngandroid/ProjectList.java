@@ -64,7 +64,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private final List<Project> projects;
   private final List<Project> selectedProjects;
-  private final List<Project> deletedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
@@ -87,7 +86,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public ProjectList() {
     projects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
-    deletedProjects = new ArrayList<Project>();
     projectWidgets = new HashMap<Project, ProjectWidgets>();
 
     sortField = SortField.DATE_MODIFIED;
@@ -372,14 +370,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     return selectedProjects;
   }
 
-  /**
-   * Returns the list of deleted projects
-   *
-   * @return the selected projects
-   */
-  public List<Project> getDeletedProjects() {
-    return deletedProjects;
-  }
 
   // ProjectManagerEventListener implementation
 
@@ -393,13 +383,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
-  public void onDeletedProjectAdded(Project project) {
-    projects.add(project);
-    projectWidgets.put(project, new ProjectWidgets(project));
-    if (!projectListLoading) {
-      refreshTable(true);
-    }
-  }
+  public void onDeletedProjectAdded(Project project) {}
 
   @Override
   public void onProjectRemoved(Project project) {
@@ -409,7 +393,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshTable(false);
 
     selectedProjects.remove(project);
-    deletedProjects.add(project);  //added the removed projects in deleted list
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
