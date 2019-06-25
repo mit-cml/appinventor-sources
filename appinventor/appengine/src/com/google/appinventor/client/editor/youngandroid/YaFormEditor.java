@@ -542,10 +542,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       } catch (Exception e) {
         OdeLog.log("invalid subset string");
       }
+      // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
+      palettePanel.clearComponentsExceptExtension();
     } else {
       shownComponents = COMPONENT_DATABASE.getComponentNames();
+      palettePanel.clearComponents();
     }
-    palettePanel.clearComponents();
     for (String component : shownComponents) {
       palettePanel.addComponent(component);
     }

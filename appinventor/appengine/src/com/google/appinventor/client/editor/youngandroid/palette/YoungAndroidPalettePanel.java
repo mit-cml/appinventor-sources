@@ -432,6 +432,26 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     simplePaletteItems.clear();
   }
 
+  // Intended for use by Blocks Toolkit, which needs to be able to refresh without
+  // bothering the loaded extensions
+  public void clearComponentsExceptExtension() {
+    for (ComponentCategory category : categoryPanels.keySet()) {
+      if (!ComponentCategory.EXTENSION.equals(category)) {
+        VerticalPanel panel = categoryPanels.get(category);
+        panel.clear();
+        stackPalette.remove(panel);
+      }
+    }
+    for (PaletteHelper pal : paletteHelpers.values()) {
+      pal.clear();
+    }
+    categoryPanels.clear();
+    paletteHelpers.clear();
+    categoryOrder.clear();
+    simplePaletteItems.clear();
+  }
+
+
   @Override
   public void reloadComponents() {
     clearComponents();
