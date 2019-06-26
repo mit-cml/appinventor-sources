@@ -63,7 +63,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   Tree blockTree;
   DropDownButton dropDownButton;
   final FileUpload file = new FileUpload();
-  final PopupPanel customPopup = new PopupPanel();
+  final PopupPanel customPopup = new PopupPanel(true, true);
   boolean customPopupShowing = false;
 
   public SubsetJSONPropertyEditor() {
