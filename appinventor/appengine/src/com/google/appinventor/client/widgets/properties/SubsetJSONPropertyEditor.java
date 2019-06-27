@@ -532,7 +532,13 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       @Override
       public void onClick(Widget sender) {
         String jsonString = createJSONString();
-        saveFileNative(saveName.getText(), jsonString);
+        String saveFileText = saveName.getText();
+        if (saveFileText.length() > 0) {
+          if (!saveFileText.endsWith(".json")) {
+            saveFileText = saveFileText + ".json";
+          }
+        saveFileNative(saveFileText, jsonString);
+        }
         dialogBox.hide();
       }
     });
@@ -541,6 +547,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     dialogBox.center();
     dialogBox.show();
   }
+
 
   private void toggleChildren(TreeItem item, Boolean checked) {
     for (int i = 0; i <item.getChildCount(); ++i) {
