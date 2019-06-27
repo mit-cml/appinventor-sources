@@ -538,7 +538,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (subsetjson.length() > 0) {
       try {
         String shownComponentsStr = getShownComponents(subsetjson);
-        shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        if (shownComponentsStr.length() > 0) {
+          shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        }
       } catch (Exception e) {
         OdeLog.log("invalid subset string");
       }
