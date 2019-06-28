@@ -117,6 +117,8 @@ def split(args):
                             description = None
                         line = line[len('appengine.'):]
                         parts = [part.strip() for part in line.split(' = ', 1)]
+                        if parts.__len__() < 2:
+                            continue
                         ode_output.write(parts[0])
                         ode_output.write(' = ')
                         if parts[0].endswith('Params') or parts[0].endswith('Properties') or \
