@@ -43,20 +43,27 @@ public final class MockChart extends MockContainer {
         rootPanel.setStylePrimaryName("ode-SimpleMockComponent");
 
         initComponent(rootPanel);
+
+        // Re-attach all children MockChartData components
+        rootPanel.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent arg0) {
+                if (arg0.isAttached()) {
+                    for (MockComponent child : children) {
+                        //((MockChartData) child).addToChart(MockChart.this);
+                    }
+                }
+            }
+        });
+
     }
 
     /*
      * Sets the button's Shape property to a new value.
      */
     private void setTypeProperty(String value) {
-        int newType = Integer.parseInt(value);
-
-        if (newType == type) { // Same type specified. Do not update
-            return;
-        }
-
         // Update type
-        type = newType;
+        type = Integer.parseInt(value);
 
         // Remove the current Chart Widget from the root panel (if present)
         if (chartView != null) {
@@ -93,18 +100,6 @@ public final class MockChart extends MockContainer {
                 // Invalid argument
                 throw new IllegalArgumentException("type:" + type);
         }
-
-        // Re-attach all children MockChartData components
-//        chartWidget.addAttachHandler(new AttachEvent.Handler() {
-//            @Override
-//            public void onAttachOrDetach(AttachEvent arg0) {
-//                if (arg0.isAttached()) {
-//                    for (MockComponent child : children) {
-//                        //((MockChartData) child).addToChart(MockChart.this);
-//                    }
-//                }
-//            }
-//        });
 
         // Add the Chart Widget to the Root Panel
         rootPanel.add(chartView.getChartWidget());
@@ -148,5 +143,10 @@ public final class MockChart extends MockContainer {
         }
 
         return component;
+    }
+
+    @Override
+    protected boolean acceptableSource(DragSource source) {
+        return getComponentFromDragSource(source) instanceof MockChartData;
     }
 }
