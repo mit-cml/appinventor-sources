@@ -7,4 +7,9 @@ public class MockLineChartView extends MockChartViewBase<ScatterChart> {
         chartWidget = new ScatterChart();
         initializeDefaultSettings();
     }
+
+    @Override
+    public MockChartDataModel createDataModel() {
+        return new MockLineChartDataModel(chartWidget.getData());
+    }
 }

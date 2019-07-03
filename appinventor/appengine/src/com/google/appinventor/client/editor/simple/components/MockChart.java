@@ -50,7 +50,7 @@ public final class MockChart extends MockContainer {
             public void onAttachOrDetach(AttachEvent arg0) {
                 if (arg0.isAttached()) {
                     for (MockComponent child : children) {
-                        //((MockChartData) child).addToChart(MockChart.this);
+                        ((MockChartData) child).addToChart(MockChart.this);
                     }
                 }
             }
@@ -103,6 +103,11 @@ public final class MockChart extends MockContainer {
 
         // Add the Chart Widget to the Root Panel
         rootPanel.add(chartView.getChartWidget());
+
+        // Re-attach all children MockChartData components
+        for (MockComponent child : children) {
+            ((MockChartData) child).addToChart(MockChart.this);
+        }
     }
 
     @Override
@@ -126,6 +131,14 @@ public final class MockChart extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
         }
+    }
+
+    public MockChartDataModel createDataModel() {
+        return chartView.createDataModel();
+    }
+
+    public void refreshChart() {
+        chartView.getChartWidget().update();
     }
 
     /**

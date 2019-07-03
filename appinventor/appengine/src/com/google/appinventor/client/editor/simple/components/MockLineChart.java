@@ -26,8 +26,8 @@ public final class MockLineChart extends MockChartBase<ScatterChart> {
     }
 
     @Override
-    public MockLineChartModel createChartModel() {
-        return new MockLineChartModel(chartWidget.getData());
+    public MockLineChartDataModel createChartModel() {
+        return new MockLineChartDataModel(chartWidget.getData());
     }
 
     @Override

@@ -33,9 +33,9 @@ public class MockChartLayout extends MockLayout {
 
     @Override
     boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
-        if (source instanceof MockCoordinateData) {
+        if (source instanceof MockChartData) {
             container.addComponent(source);
-            ((MockCoordinateData)source).addToChart((MockChartBase) container);
+            ((MockChartData)source).addToChart((MockChart) container);
             return true;
         }
 

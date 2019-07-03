@@ -1,7 +1,10 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.AbstractChart;
+import org.pepstock.charba.client.data.Dataset;
 import org.pepstock.charba.client.enums.Position;
+
+import java.util.HashMap;
 
 public abstract class MockChartViewBase<C extends AbstractChart> {
     protected C chartWidget;
@@ -34,4 +37,6 @@ public abstract class MockChartViewBase<C extends AbstractChart> {
         }
         MockComponentsUtil.setWidgetBackgroundColor(chartWidget, value);
     }
+
+    public abstract MockChartDataModel createDataModel();
 }

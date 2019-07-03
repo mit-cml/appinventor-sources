@@ -12,8 +12,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     // Temporary placeholder for the Chart Data image
     private InlineHTML labelWidget;
 
-    protected MockChartModel chartModel;
-    protected MockChartBase chart;
+    protected MockChart chart;
+    protected MockChartDataModel chartDataModel;
 
     private String currentElements = "";
 
@@ -37,7 +37,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * Adds the Mock Chart Data component to the specified Mock Chart component
      * @param chart  Chart Mock component to add the data to
      */
-    public void addToChart(MockChartBase chart) {
+    public void addToChart(MockChart chart) {
         // Set widget to invisible
         labelWidget.setVisible(false);
         labelWidget.setWidth("0");
@@ -45,7 +45,7 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         // Set references for Chart view and Chart model
         this.chart = chart;
-        this.chartModel = chart.createChartModel();
+        this.chartDataModel = chart.createDataModel();
 
         // Set the properties to the Data Series
         setDataSeriesProperties();
@@ -74,7 +74,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     @Override
     public void onRemoved() {
         super.onRemoved();
-        chartModel.removeDataSeriesFromChart();
+        chartDataModel.removeDataSeriesFromChart();
         refreshChart();
     }
 
@@ -86,7 +86,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     private void setElementsFromPairsProperty(String text){
         currentElements = text;
 
-        chartModel.setElements(currentElements);
+        chartDataModel.setElements(currentElements);
     }
 
     @Override
@@ -95,15 +95,15 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         // No Chart Model exists (Data not yet added to Chart), simply
         // return from the method without processing property adding.
-        if (chartModel == null) {
+        if (chartDataModel == null) {
             return;
         }
 
         if (propertyName.equals(PROPERTY_COLOR)) {
-            chartModel.changeColor(newValue);
+            chartDataModel.changeColor(newValue);
             refreshChart();
         } else if (propertyName.equals(PROPERTY_LABEL)) {
-            chartModel.changeLabel(newValue);
+            chartDataModel.changeLabel(newValue);
             refreshChart();
         } else if (propertyName.equals(PROPERTY_PAIRS)) {
             setElementsFromPairsProperty(newValue);
@@ -115,7 +115,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * Refreshes the Chart view.
      */
     protected void refreshChart() {
-        chart.chartWidget.update();
+        chart.refreshChart();
     }
 
     /**
@@ -127,7 +127,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      */
     protected void setDataSeriesProperties() {
         setElementsFromPairsProperty(getPropertyValue(PROPERTY_PAIRS));
-        this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
-        this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
+        this.chartDataModel.changeColor(getPropertyValue(PROPERTY_COLOR));
+        this.chartDataModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
     }
 }

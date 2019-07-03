@@ -58,7 +58,7 @@ abstract class MockChartBase<C extends AbstractChart> extends MockContainer {
             public void onAttachOrDetach(AttachEvent arg0) {
                 if (arg0.isAttached()) {
                     for (MockComponent child : children) {
-                        ((MockChartData) child).addToChart(MockChartBase.this);
+                        //((MockChartData) child).addToChart(MockChartBase.this);
                     }
                 }
             }
@@ -111,7 +111,7 @@ abstract class MockChartBase<C extends AbstractChart> extends MockContainer {
      *
      * @return  New Chart Model instance.
      */
-    public abstract MockChartModel createChartModel();
+    public abstract MockChartDataModel createChartModel();
 
     /**
      * Returns the Mock Component of the Drag Source.

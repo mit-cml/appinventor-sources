@@ -9,9 +9,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class MockLineChartModel extends MockChartModel<ScatterDataset> {
+public class MockLineChartDataModel extends MockChartDataModel<ScatterDataset> {
 
-    public MockLineChartModel(Data chartData) {
+    public MockLineChartDataModel(Data chartData) {
         super(chartData);
 
         // Create the Data Series object
