@@ -309,4 +309,10 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
+
+    /**
+     * Line Chart types.
+     * TODO: Add see link
+     */
+    public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
 }
