@@ -3,9 +3,6 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.InlineHTML;
-import org.pepstock.charba.client.data.Dataset;
-
-import java.util.List;
 
 public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_COLOR = "Color";
@@ -16,7 +13,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     private InlineHTML labelWidget;
 
     protected MockChartModel chartModel;
-    protected MockChart chart;
+    protected MockChartBase chart;
 
     private String currentElements = "";
 
@@ -40,7 +37,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * Adds the Mock Chart Data component to the specified Mock Chart component
      * @param chart  Chart Mock component to add the data to
      */
-    public void addToChart(MockChart chart) {
+    public void addToChart(MockChartBase chart) {
         // Set widget to invisible
         labelWidget.setVisible(false);
         labelWidget.setWidth("0");

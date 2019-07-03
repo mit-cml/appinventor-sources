@@ -4,7 +4,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import org.pepstock.charba.client.ScatterChart;
 
-public final class MockLineChart extends MockChart<ScatterChart> {
+public final class MockLineChart extends MockChartBase<ScatterChart> {
     public static final String TYPE = "LineChart";
 
     /**

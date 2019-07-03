@@ -7,16 +7,14 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.resources.client.ImageResource;
 import org.pepstock.charba.client.AbstractChart;
-import org.pepstock.charba.client.Chart;
-import org.pepstock.charba.client.ScatterChart;
 import org.pepstock.charba.client.enums.Position;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
-public final class MockChart extends MockContainer {
-    public static final String TYPE = "Chart";
+abstract class MockChartBase<C extends AbstractChart> extends MockContainer {
+    private static final String PROPERTY_DESCRIPTION = "Description";
 
-    protected AbstractChart chartWidget;
+    protected C chartWidget;
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -26,11 +24,22 @@ public final class MockChart extends MockContainer {
      * Creates a new instance of a visible component.
      *
      * @param editor editor of source file the component belongs to
+     * @param type  type String of the component
+     * @param icon  icon of the component
      */
-    public MockChart(SimpleEditor editor) {
-        super(editor, TYPE, images.image(), new MockChartLayout());
+    protected MockChartBase(SimpleEditor editor, String type, ImageResource icon) {
+        super(editor, type, icon, new MockChartLayout());
+    }
 
-        chartWidget = new ScatterChart();
+    /**
+     * Initializes the Chart by setting predefined style settings
+     * and initializing the component itself.
+     */
+    protected void initChart() {
+        chartWidget.getOptions().setMaintainAspectRatio(false);
+        chartWidget.getOptions().getTitle().setDisplay(true);
+        chartWidget.getOptions().getLegend().getLabels().setBoxWidth(20);
+        chartWidget.getOptions().getLegend().setPosition(Position.BOTTOM);
 
         // Since the Mcok Chart component is not a container in a normal
         // sense (attached components should not be visible), the Chart Widget
@@ -49,13 +58,31 @@ public final class MockChart extends MockContainer {
             public void onAttachOrDetach(AttachEvent arg0) {
                 if (arg0.isAttached()) {
                     for (MockComponent child : children) {
-                        //((MockChartData) child).addToChart(MockChart.this);
+                        ((MockChartData) child).addToChart(MockChartBase.this);
                     }
                 }
             }
         });
     }
 
+    /**
+     * Sets the Chart's description property to a new value.
+     * @param text  new description string
+     */
+    private void setDescriptionProperty(String text) {
+        chartWidget.getOptions().getTitle().setText(text);
+    }
+
+    /*
+     * Sets the Chart's BackgroundColor property to a new value.
+     * @param text  Color string value in hex
+     */
+    private void setBackgroundColorProperty(String text) {
+        if (MockComponentsUtil.isDefaultColor(text)) {
+            text = "&HFFFFFFFF";  // white
+        }
+        MockComponentsUtil.setWidgetBackgroundColor(chartWidget, text);
+    }
 
     @Override
     public int getPreferredWidth() {
@@ -70,7 +97,21 @@ public final class MockChart extends MockContainer {
     @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
+
+        if (propertyName.equals(PROPERTY_DESCRIPTION)) {
+            setDescriptionProperty(newValue);
+            chartWidget.draw(); // Redraws (refreshes) the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
+            setBackgroundColorProperty(newValue);
+        }
     }
+
+    /**
+     * Creates a Chart Model instance of the proper type for this Chart.
+     *
+     * @return  New Chart Model instance.
+     */
+    public abstract MockChartModel createChartModel();
 
     /**
      * Returns the Mock Component of the Drag Source.
