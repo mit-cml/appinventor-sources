@@ -1,13 +1,9 @@
 package com.google.appinventor.components.runtime;
 
-import android.graphics.Color;
-import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
-
-import java.util.ArrayList;
 
 @DesignerComponent(version = 1,
     description = "A component that holds (x, y)-coordinate based data",
@@ -30,7 +26,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
     public void AddEntry(float x, float y) {
-        chartModel.addEntry(x, y);
+        chartDataModel.addEntry(x, y);
 
         // Refresh Chart with new data
         refreshChart();

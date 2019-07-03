@@ -9,7 +9,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 @SimpleObject
 public abstract class ChartDataBase implements Component {
     protected ChartBase container;
-    protected ChartModel chartModel;
+    protected ChartDataModel chartDataModel;
 
     private String label;
     private int color;
@@ -20,7 +20,7 @@ public abstract class ChartDataBase implements Component {
     protected ChartDataBase(ChartBase chartContainer) {
         this.container = chartContainer;
 
-        chartModel = chartContainer.createChartModel();
+        chartDataModel = chartContainer.createChartModel();
 
         // Set default values
         Color(Component.COLOR_BLACK);
@@ -48,7 +48,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty
     public void Color(int argb) {
         color = argb;
-        chartModel.setColor(color);
+        chartDataModel.setColor(color);
         refreshChart();
     }
 
@@ -73,7 +73,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty
     public void Label(String text) {
         this.label = text;
-        chartModel.setLabel(text);
+        chartDataModel.setLabel(text);
         refreshChart();
     }
 
@@ -89,7 +89,7 @@ public abstract class ChartDataBase implements Component {
             return;
         }
 
-        chartModel.setElements(elements);
+        chartDataModel.setElements(elements);
         refreshChart();
     }
 

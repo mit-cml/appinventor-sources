@@ -147,5 +147,5 @@ public abstract class ChartBase<T extends Chart, D extends ChartData> extends An
      *
      * @return  Chart Model instance
      */
-    public abstract ChartModel createChartModel();
+    public abstract ChartDataModel createChartModel();
 }

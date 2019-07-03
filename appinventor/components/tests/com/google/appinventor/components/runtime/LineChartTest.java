@@ -42,9 +42,9 @@ public class LineChartTest extends ChartBaseTest {
      */
     @Test
     public void testCreateChartModel() {
-        ChartModel model = chart.createChartModel();
+        ChartDataModel model = chart.createChartModel();
 
-        assertThat(model, instanceOf(LineChartModel.class));
+        assertThat(model, instanceOf(LineChartDataModel.class));
         assertEquals(chart.data, model.getData());
     }
 

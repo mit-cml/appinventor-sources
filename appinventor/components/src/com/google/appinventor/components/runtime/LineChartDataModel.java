@@ -9,13 +9,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class LineChartModel extends ChartModel<LineDataSet, LineData> {
+public class LineChartDataModel extends ChartDataModel<LineDataSet, LineData> {
     /**
-     * Initializes a new LineChartModel object instance.
+     * Initializes a new LineChartDataModel object instance.
      *
      * @param data  Line Chart Data object instance
      */
-    public LineChartModel(LineData data) {
+    public LineChartDataModel(LineData data) {
         super(data);
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
         dataset.setDrawCircleHole(false);

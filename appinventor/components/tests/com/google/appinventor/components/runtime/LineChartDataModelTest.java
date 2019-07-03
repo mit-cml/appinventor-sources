@@ -2,28 +2,26 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.google.appinventor.components.runtime.LineChartModel;
-import com.google.appinventor.components.runtime.RobolectricTestBase;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit tests for the LineChartModel class.
+ * Unit tests for the LineChartDataModel class.
  */
-public class LineChartModelTest extends RobolectricTestBase {
+public class LineChartDataModelTest extends RobolectricTestBase {
     /*
      * TBD: abstract common properties (i.e. Label & Color)
      */
 
 
-    private com.google.appinventor.components.runtime.LineChartModel model;
+    private LineChartDataModel model;
     private LineData data;
 
     @Before
     public void setup() {
         data = new LineData();
-        model = new LineChartModel(data);
+        model = new LineChartDataModel(data);
     }
 
     /**
