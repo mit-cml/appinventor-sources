@@ -101,8 +101,8 @@ public final class MockChart extends MockContainer {
                 throw new IllegalArgumentException("type:" + type);
         }
 
-        // Add the Chart Widget to the Root Panel
-        rootPanel.add(chartView.getChartWidget());
+        // Add the Chart Widget to the Root Panel (as the first widget)
+        rootPanel.insert(chartView.getChartWidget(), 0);
 
         // Re-attach all children MockChartData components
         for (MockComponent child : children) {

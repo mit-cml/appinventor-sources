@@ -42,6 +42,7 @@ public abstract class MockChartData extends MockVisibleComponent {
         labelWidget.setVisible(false);
         labelWidget.setWidth("0");
         labelWidget.setHeight("0");
+        labelWidget.setText("");
 
         // Set references for Chart view and Chart model
         this.chart = chart;
