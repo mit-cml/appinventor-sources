@@ -38,8 +38,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         Type(Component.CHART_TYPE_LINE);
         Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
-        /*BackgroundColor(Component.COLOR_DEFAULT);
-        Description("");*/
+        BackgroundColor(Component.COLOR_DEFAULT);
+        Description("");
     }
 
     @Override
@@ -106,7 +106,39 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             userVisible = false)
     public void Type(int type) {
         this.type = type;
-        // TODO: Update type
+
+        // ChartView currently exists in root layout. Remove it.
+        if (chartView != null) {
+            view.removeView(chartView.getView());
+        }
+
+        switch(type) {
+            case 0:
+                // Line Chart
+                chartView = new LineChartView(container.$context());
+                break;
+            case 1:
+                // Scatter Chart
+                chartView = new LineChartView(container.$context());
+                break;
+            case 2:
+                // Area Chart
+                chartView = new LineChartView(container.$context());
+                break;
+            case 3:
+                // Bar Chart
+                chartView = new LineChartView(container.$context());
+                break;
+            case 4:
+                // Pie Chart
+                chartView = new LineChartView(container.$context());
+                break;
+            default:
+                // Invalid argument
+                throw new IllegalArgumentException("type:" + type);
+        }
+
+        view.addView(chartView.getView(), 0);
     }
 
     /**
@@ -157,5 +189,21 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     public void BackgroundColor(int argb) {
         backgroundColor = argb;
         chartView.setBackgroundColor(argb);
+    }
+
+    /**
+     * Creates a new instance of a ChartDataModel, corresponding
+     * to the current Chart type.
+     * @return  new ChartDataModel object instance
+     */
+    public ChartDataModel createChartModel() {
+        return chartView.createChartModel();
+    }
+
+    /**
+     * Refreshes the Chart View.
+     */
+    public void refresh() {
+        chartView.Refresh();
     }
 }

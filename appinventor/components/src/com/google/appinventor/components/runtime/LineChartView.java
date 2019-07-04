@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
@@ -14,6 +15,9 @@ public class LineChartView extends ChartViewBase<LineChart, LineData> {
         chart.setData(data);
 
         initializeDefaultSettings();
+
+        chart.setLayoutParams(new ViewGroup.LayoutParams
+                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     @Override

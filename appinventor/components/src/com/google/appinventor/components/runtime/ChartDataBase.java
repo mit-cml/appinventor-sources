@@ -8,7 +8,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
-    protected ChartBase container;
+    protected Chart container;
     protected ChartDataModel chartDataModel;
 
     private String label;
@@ -17,7 +17,7 @@ public abstract class ChartDataBase implements Component {
     /**
      * Creates a new Chart Data component.
      */
-    protected ChartDataBase(ChartBase chartContainer) {
+    protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
 
         chartDataModel = chartContainer.createChartModel();
@@ -97,7 +97,7 @@ public abstract class ChartDataBase implements Component {
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        container.Refresh();
+        container.refresh();
     }
 
     @Override
