@@ -42,6 +42,7 @@ public final class MockChart extends MockContainer {
         // onto the Chart itself, rather than outside the Chart component.
         rootPanel.setStylePrimaryName("ode-SimpleMockComponent");
 
+        setTypeProperty("0");
         initComponent(rootPanel);
 
         // Re-attach all children MockChartData components
@@ -55,7 +56,6 @@ public final class MockChart extends MockContainer {
                 }
             }
         });
-
     }
 
     /*

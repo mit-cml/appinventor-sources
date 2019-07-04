@@ -2,8 +2,10 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.RelativeLayout;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 @SimpleObject
@@ -12,8 +14,12 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
         description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
 public class Chart extends AndroidViewComponent implements ComponentContainer {
-    // Backing for Chart type
+    private RelativeLayout view;
+    private ChartViewBase chartView;
+
     private int type;
+    private int backgroundColor;
+    private String description;
 
     /**
      * Creates a new Chart component.
@@ -22,11 +28,23 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      */
     public Chart(ComponentContainer container) {
         super(container);
+
+        view = new RelativeLayout(container.$context());
+
+        // Adds the view to the designated container
+        container.$add(this);
+
+        // Set default values
+        Type(Component.CHART_TYPE_LINE);
+        Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
+        Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
+        /*BackgroundColor(Component.COLOR_DEFAULT);
+        Description("");*/
     }
 
     @Override
     public View getView() {
-        return null;
+        return view;
     }
 
     @Override
@@ -89,5 +107,55 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     public void Type(int type) {
         this.type = type;
         // TODO: Update type
+    }
+
+    /**
+     * Returns the description label text of the Chart.
+     *
+     * @return  description label
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public String Description() {
+        return description;
+    }
+
+    /**
+     * Specifies the text displayed by the description label.
+     *
+     * @param text  description
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+            defaultValue = "")
+    @SimpleProperty
+    public void Description(String text) {
+        this.description = text;
+        chartView.setDescription(description);
+    }
+
+    /**
+     * Returns the chart's background color as an alpha-red-green-blue
+     * integer.
+     *
+     * @return  background RGB color with alpha
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public int BackgroundColor() {
+        return backgroundColor;
+    }
+
+    /**
+     * Specifies the chart's background color as an alpha-red-green-blue
+     * integer.
+     *
+     * @param argb  background RGB color with alpha
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+            defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
+    @SimpleProperty
+    public void BackgroundColor(int argb) {
+        backgroundColor = argb;
+        chartView.setBackgroundColor(argb);
     }
 }
