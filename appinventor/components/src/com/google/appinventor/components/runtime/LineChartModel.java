@@ -71,30 +71,6 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     }
 
     @Override
-    public void importFromTinyDB(TinyDB tinyDB) {
-        Map<String, ?> map = tinyDB.getAllValues();
-
-        for (Map.Entry<String, ?> entry : map.entrySet()) {
-            try {
-                String key = entry.getKey();
-                String value = (String)entry.getValue();
-
-                float x = Float.parseFloat(key);
-                float y = Float.parseFloat(value);
-
-                // Potential improvement here: If we are overriding data,
-                // then it is more efficient to add everything to a List,
-                // sort the list, and then set the list as the data set's
-                // entries (O(n log n)). Since addEntry uses addEntryOrdered,
-                // this loop will have O(n^2) complexity.
-                addEntry(x, y);
-            } catch (NumberFormatException e) {
-                // Nothing happens: Do not add value on NumberFormatException
-            }
-        }
-    }
-
-    @Override
     public void addEntryFromTuple(YailList tuple) {
         try {
             String xValue = tuple.getString(0);

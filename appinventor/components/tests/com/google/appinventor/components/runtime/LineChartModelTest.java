@@ -164,97 +164,97 @@ public class LineChartModelTest extends RobolectricTestBase {
      * Tests to ensure that TinyDB data importing works as
      * expected in the LineChartModel.
      */
-    @Test
-    public void testImportFromTinyDB() {
-        HashMap<String, String> valueMap = new HashMap<String, String>() {{
-            put("0", "1");
-            put("1", "2");
-            put("2", "5");
-            put("4", "3");
-        }};
-
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-           put(0f, 1f);
-           put(1f, 2f);
-           put(2f, 5f);
-           put(4f, 3f);
-        }};
-
-        testImportFromTinyDBHelper(valueMap, expectedValues);
-    }
+//    @Test
+//    public void testImportFromTinyDB() {
+//        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+//            put("0", "1");
+//            put("1", "2");
+//            put("2", "5");
+//            put("4", "3");
+//        }};
+//
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//           put(0f, 1f);
+//           put(1f, 2f);
+//           put(2f, 5f);
+//           put(4f, 3f);
+//        }};
+//
+//        testImportFromTinyDBHelper(valueMap, expectedValues);
+//    }
 
     /**
      * Tests to ensure that TinyDB data importing
      * works as expected when the data is imported
      * from an empty TinyDB component.
      */
-    @Test
-    public void testImportFromTinyDBEmpty() {
-        HashMap<String, String> valueMap = new HashMap<String, String>();
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
-
-        testImportFromTinyDBHelper(valueMap, expectedValues);
-    }
+//    @Test
+//    public void testImportFromTinyDBEmpty() {
+//        HashMap<String, String> valueMap = new HashMap<String, String>();
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
+//
+//        testImportFromTinyDBHelper(valueMap, expectedValues);
+//    }
 
     /**
      * Tests to ensure that entries imported from a TinyDB component
      * with an invalid X value are discarded, while still parsing the
      * entries with valid values.
      */
-    @Test
-    public void testImportFromTinyDBInvalidX() {
-        HashMap<String, String> valueMap = new HashMap<String, String>() {{
-            put("string", "3");
-            put("0", "5");
-        }};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(0f, 5f);
-        }};
-
-        testImportFromTinyDBHelper(valueMap, expectedValues);
-    }
+//    @Test
+//    public void testImportFromTinyDBInvalidX() {
+//        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+//            put("string", "3");
+//            put("0", "5");
+//        }};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(0f, 5f);
+//        }};
+//
+//        testImportFromTinyDBHelper(valueMap, expectedValues);
+//    }
 
     /**
      * Tests to ensure that entries imported from a TinyDB component
      * with an invalid Y value are discarded, while still parsing the
      * entries with valid values.
      */
-    @Test
-    public void testImportFromTinyDBInvalidY() {
-        HashMap<String, String> valueMap = new HashMap<String, String>() {{
-            put("1", "string");
-            put("0", "5");
-        }};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(0f, 5f);
-        }};
-
-        testImportFromTinyDBHelper(valueMap, expectedValues);
-    }
+//    @Test
+//    public void testImportFromTinyDBInvalidY() {
+//        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+//            put("1", "string");
+//            put("0", "5");
+//        }};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(0f, 5f);
+//        }};
+//
+//        testImportFromTinyDBHelper(valueMap, expectedValues);
+//    }
 
     /**
      * Tests to ensure that entries imported from a TinyDB component
      * with invalid X and Y values are discarded, while still parsing the
      * entries with valid values.
      */
-    @Test
-    public void testImportFromTinyDBInvalidXY() {
-        HashMap<String, String> valueMap = new HashMap<String, String>() {{
-            put("-1", "3");
-            put("string", "string");
-            put("0", "5");
-        }};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(-1f, 3f);
-            put(0f, 5f);
-        }};
-
-        testImportFromTinyDBHelper(valueMap, expectedValues);
-    }
+//    @Test
+//    public void testImportFromTinyDBInvalidXY() {
+//        HashMap<String, String> valueMap = new HashMap<String, String>() {{
+//            put("-1", "3");
+//            put("string", "string");
+//            put("0", "5");
+//        }};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(-1f, 3f);
+//            put(0f, 5f);
+//        }};
+//
+//        testImportFromTinyDBHelper(valueMap, expectedValues);
+//    }
 
     /**
      * Helper method that sets up a mock TinyDB, calls the required method to
@@ -269,38 +269,38 @@ public class LineChartModelTest extends RobolectricTestBase {
      * @param expectedValues  Values that are expected to be in the Data Series
      */
     @SuppressWarnings("unchecked")
-    private void testImportFromTinyDBHelper(HashMap<String, String> valueMap, HashMap<Float, Float> expectedValues) {
-        // Set up TinyDB mock and expected values
-        TinyDB tinyDB = EasyMock.createNiceMock(TinyDB.class);
-
-        // Make the TinyDB get all values method to return the created map.
-        // We need this generic cast here, otherwise EasyMock will
-        // give an error
-        expect(tinyDB.getAllValues()).andReturn((Map)valueMap);
-        replay(tinyDB);
-
-        // Import the data from the TinyDB component
-        model.importFromTinyDB(tinyDB);
-
-        // Assert that the proper values are added
-        assertEquals(expectedValues.size(), model.getDataset().getEntryCount());
-
-        // Start from the first entry in the Data Series
-        int index = 0;
-
-        // Iterate over all the expected values
-        for (Map.Entry<Float, Float> expectedEntry : expectedValues.entrySet()) {
-            // Get the actual Entry added to the Data Series
-            Entry entry = model.getDataset().getEntryForIndex(index);
-
-            // Assert expxected x and y values
-            assertEquals(expectedEntry.getKey(), entry.getX());
-            assertEquals(expectedEntry.getValue(), entry.getY());
-
-            // Move on to the next Data Series entry
-            index++;
-        }
-    }
+//    private void testImportFromTinyDBHelper(HashMap<String, String> valueMap, HashMap<Float, Float> expectedValues) {
+//        // Set up TinyDB mock and expected values
+//        TinyDB tinyDB = EasyMock.createNiceMock(TinyDB.class);
+//
+//        // Make the TinyDB get all values method to return the created map.
+//        // We need this generic cast here, otherwise EasyMock will
+//        // give an error
+//        expect(tinyDB.getAllValues()).andReturn((Map)valueMap);
+//        replay(tinyDB);
+//
+//        // Import the data from the TinyDB component
+//        model.importFromTinyDB(tinyDB);
+//
+//        // Assert that the proper values are added
+//        assertEquals(expectedValues.size(), model.getDataset().getEntryCount());
+//
+//        // Start from the first entry in the Data Series
+//        int index = 0;
+//
+//        // Iterate over all the expected values
+//        for (Map.Entry<Float, Float> expectedEntry : expectedValues.entrySet()) {
+//            // Get the actual Entry added to the Data Series
+//            Entry entry = model.getDataset().getEntryForIndex(index);
+//
+//            // Assert expxected x and y values
+//            assertEquals(expectedEntry.getKey(), entry.getX());
+//            assertEquals(expectedEntry.getValue(), entry.getY());
+//
+//            // Move on to the next Data Series entry
+//            index++;
+//        }
+//    }
 
     /**
      * Test to ensure that importing from a single-entry
