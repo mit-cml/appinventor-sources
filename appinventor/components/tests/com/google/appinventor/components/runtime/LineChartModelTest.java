@@ -4,23 +4,25 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.runtime.LineChartModel;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.YailList;
 import junit.framework.Assert;
 import org.easymock.EasyMock;
 import org.easymock.IExpectationSetters;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.easymock.EasyMock.expect;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
- * Unit tests for the LineChartModel class.
+ * Integration tests for the LineChartModel class.
  */
 public class LineChartModelTest extends RobolectricTestBase {
     /*
@@ -301,13 +303,37 @@ public class LineChartModelTest extends RobolectricTestBase {
     }
 
     /**
-     * Test to ensure that importing from two lists
-     * yields the correct entries in the Data Series.
+     * Test to ensure that importing from a single-entry
+     * pairs List adds the entry successfully.
      */
     @Test
-    public void testImportFromLists() {
-        String[] xValues = new String[] {"-2", "0", "1", "3", "5"};
-        String[] yValues = new String[] {"3", "7", "5", "4", "3"};
+    public void testImportFromListSingleEntry() {
+        ArrayList<YailList> tuples = new ArrayList<YailList>();
+        tuples.add(YailList.makeList(Arrays.asList(1f, 2f)));
+
+        YailList pairs = YailList.makeList(tuples);
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+           put(1f, 2f);
+        }};
+
+        testImportFromListHelper(pairs, expectedValues);
+    }
+
+    /**
+     * Test to ensure that importing from a pairs List containing multiple
+     * entries adds the entries successfully.
+     */
+    @Test
+    public void testImportFromListMultipleEntries() {
+        ArrayList<YailList> tuples = new ArrayList<YailList>();
+        tuples.add(YailList.makeList(Arrays.asList(-2f, 3f)));
+        tuples.add(YailList.makeList(Arrays.asList(0f, 7f)));
+        tuples.add(YailList.makeList(Arrays.asList(1f, 5f)));
+        tuples.add(YailList.makeList(Arrays.asList(3f, 4f)));
+        tuples.add(YailList.makeList(Arrays.asList(5f, 3f)));
+
+        YailList pairs = YailList.makeList(tuples);
 
         HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
             put(-2f, 3f);
@@ -317,125 +343,211 @@ public class LineChartModelTest extends RobolectricTestBase {
             put(5f, 3f);
         }};
 
-        testImportFromListsHelper(xValues, yValues, expectedValues);
+        testImportFromListHelper(pairs, expectedValues);
+    }
+
+    /**
+     * Test to ensure that importing from a larger tuple List
+     * adds entries to the Data Series successfully.
+     */
+    @Test
+    public void testImportFromListBiggerTuples() {
+        ArrayList<YailList> tuples = new ArrayList<YailList>();
+        tuples.add(YailList.makeList(Arrays.asList(-2f, 7f, 3f)));
+        tuples.add(YailList.makeList(Arrays.asList(0f, 3f, 2f)));
+        tuples.add(YailList.makeList(Arrays.asList(5f, 5f, 2f)));
+
+        YailList pairs = YailList.makeList(tuples);
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+            put(-2f, 7f);
+            put(0f, 3f);
+            put(5f, 5f);
+        }};
+
+        testImportFromListHelper(pairs, expectedValues);
+    }
+
+    /**
+     * Test to ensure that importing from an empty List does
+     * not add any new entries.
+     */
+    @Test
+    public void testImportFromListEmpty() {
+        YailList pairs = new YailList();
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
+
+        testImportFromListHelper(pairs, expectedValues);
+    }
+
+    /**
+     * Test to ensure that importing entries from a List that
+     * contains a tuple that has too few entries and a tuple
+     * that has 2 entries skips the invalidly formatted element,
+     * but imports the valid tuple.
+     */
+    @Test
+    public void testImportFromListSmallerTuple() {
+        ArrayList<YailList> tuples = new ArrayList<YailList>();
+        tuples.add(YailList.makeList(Collections.singletonList(5f)));
+        tuples.add(YailList.makeList(Arrays.asList(1f, 2f)));
+
+        YailList pairs = YailList.makeList(tuples);
+
+        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+            put(1f, 2f);
+        }};
+
+        testImportFromListHelper(pairs, expectedValues);
+    }
+
+    /**
+     * Test to ensure that importing from a pairs List containing duplicate
+     * entries (by x value, and by x and y values) successfully imports
+     * all of the entries.
+     */
+    @Test
+    public void testImportFromListDuplicates() {
+        ArrayList<YailList> tuples = new ArrayList<YailList>();
+
+        // Prepare 3 entries for import which all have the same x-value
+        final float xValue = 1f;
+        final float[] yValues = {1f, 1f, 2f};
+
+        for (float yValue : yValues) {
+            tuples.add(YailList.makeList(Arrays.asList(xValue, yValue)));
+        }
+
+        YailList pairs = YailList.makeList(tuples);
+
+        // Import the list of pairs
+        model.importFromList(pairs);
+
+        // Assert that all entries have been added successfully
+        assertEquals(tuples.size(), model.getDataset().getEntryCount());
+
+        for (int i = 0; i < yValues.length; ++i) {
+            Entry entry = model.getDataset().getEntryForIndex(i);
+            assertEquals(xValue, entry.getX());
+            assertEquals(yValues[i], entry.getY());
+        }
     }
 
     /**
      * Test to ensure that importing from empty Lists does
      * not add any new entries.
      */
-    @Test
-    public void testImportFromListsEmpty() {
-        String[] xValues = new String[] {};
-        String[] yValues = new String[] {};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
-
-    /**
-     * Test to ensure that importing from Lists that contain
-     * an invalid X entry skip the invalid entry, while importing
-     * the rest.
-     */
-    @Test
-    public void testImportFromListsInvalidX() {
-        String[] xValues = new String[] {"1", "string", "3"};
-        String[] yValues = new String[] {"4", "5", "3"};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(1f, 4f);
-            put(3f, 3f);
-        }};
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
-
-    /**
-     * Test to ensure that importing from Lists that contain
-     * an invalid Y entry skip the invalid entry, while importing
-     * the rest.
-     */
-    @Test
-    public void testImportFromListsInvalidY() {
-        String[] xValues = new String[] {"1", "5", "3"};
-        String[] yValues = new String[] {"4", "string", "2"};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(1f, 4f);
-            put(3f, 2f);
-        }};
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
-
-    /**
-     * Test to ensure that importing from Lists that contain
-     * an entry with both an invalid X and Y entry result in skipping the
-     * invalid entry, while importing the rest.
-     */
-    @Test
-    public void testImportFromListsInvalidXY() {
-        String[] xValues = new String[] {"2", "string", "3"};
-        String[] yValues = new String[] {"4", "string", "9"};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(2f, 4f);
-            put(3f, 9f);
-        }};
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
-
-    /**
-     * Test to ensure that a larger X values list results in
-     * skipping of the excess entries in the Y values list.
-     */
-    @Test
-    public void testImportFromListsXSmaller() {
-        String[] xValues = new String[] {"1", "2"};
-        String[] yValues = new String[] {"7", "3", "4"};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(1f, 7f);
-            put(2f, 3f);
-        }};
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
-
-    /**
-     * Test to ensure that a larger Y values list results in
-     * skipping of the excess entries in the X values list.
-     */
-    @Test
-    public void testImportFromListsYSmaller() {
-        String[] xValues = new String[] {"0", "5", "7", "3"};
-        String[] yValues = new String[] {"4", "3", "9"};
-
-        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-            put(0f, 4f);
-            put(5f, 3f);
-            put(7f, 9f);
-        }};
-
-        testImportFromListsHelper(xValues, yValues, expectedValues);
-    }
+//    @Test
+//    public void testImportFromListsEmpty() {
+//        String[] xValues = new String[] {};
+//        String[] yValues = new String[] {};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
+//
+//    /**
+//     * Test to ensure that importing from Lists that contain
+//     * an invalid X entry skip the invalid entry, while importing
+//     * the rest.
+//     */
+//    @Test
+//    public void testImportFromListsInvalidX() {
+//        String[] xValues = new String[] {"1", "string", "3"};
+//        String[] yValues = new String[] {"4", "5", "3"};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(1f, 4f);
+//            put(3f, 3f);
+//        }};
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
+//
+//    /**
+//     * Test to ensure that importing from Lists that contain
+//     * an invalid Y entry skip the invalid entry, while importing
+//     * the rest.
+//     */
+//    @Test
+//    public void testImportFromListsInvalidY() {
+//        String[] xValues = new String[] {"1", "5", "3"};
+//        String[] yValues = new String[] {"4", "string", "2"};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(1f, 4f);
+//            put(3f, 2f);
+//        }};
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
+//
+//    /**
+//     * Test to ensure that importing from Lists that contain
+//     * an entry with both an invalid X and Y entry result in skipping the
+//     * invalid entry, while importing the rest.
+//     */
+//    @Test
+//    public void testImportFromListsInvalidXY() {
+//        String[] xValues = new String[] {"2", "string", "3"};
+//        String[] yValues = new String[] {"4", "string", "9"};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(2f, 4f);
+//            put(3f, 9f);
+//        }};
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
+//
+//    /**
+//     * Test to ensure that a larger X values list results in
+//     * skipping of the excess entries in the Y values list.
+//     */
+//    @Test
+//    public void testImportFromListsXSmaller() {
+//        String[] xValues = new String[] {"1", "2"};
+//        String[] yValues = new String[] {"7", "3", "4"};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(1f, 7f);
+//            put(2f, 3f);
+//        }};
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
+//
+//    /**
+//     * Test to ensure that a larger Y values list results in
+//     * skipping of the excess entries in the X values list.
+//     */
+//    @Test
+//    public void testImportFromListsYSmaller() {
+//        String[] xValues = new String[] {"0", "5", "7", "3"};
+//        String[] yValues = new String[] {"4", "3", "9"};
+//
+//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
+//            put(0f, 4f);
+//            put(5f, 3f);
+//            put(7f, 9f);
+//        }};
+//
+//        testImportFromListHelper(xValues, yValues, expectedValues);
+//    }
 
     /**
      * Helper method that calls the method to import data from the
-     * specified x and y values List, and then handles the assertions
-     * for the expeccted Entry count as well as the Entry values.
+     * specified pairs List, and then handles the assertions
+     * for the expected Entry count as well as the Entry values.
      *
-     * @param xValues  X Value array to use for importing
-     * @param yValues  Y Value array to use for importing
+     * @param list  List of 2-tuples to import
      * @param expectedValues  Map of expected values in the Data Series
      */
-    private void testImportFromListsHelper(String[] xValues, String[] yValues,
+    private void testImportFromListHelper(YailList list,
                                            HashMap<Float, Float> expectedValues) {
         // Call the import from Lists method
-        model.importFromLists(xValues, yValues);
+        model.importFromList(list);
 
         // Make sure the number of entries parsed is correct
         assertEquals(expectedValues.size(), model.getDataset().getEntryCount());

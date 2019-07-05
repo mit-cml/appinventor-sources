@@ -32,6 +32,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
     public void AddEntry(float x, float y) {
+        // Create a 2-tupl1, and add the tuple to the Data Series
         YailList pair = YailList.makeList(Arrays.asList(x, y));
         chartModel.addEntryFromTuple(pair);
 

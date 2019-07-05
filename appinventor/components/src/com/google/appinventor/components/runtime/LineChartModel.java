@@ -109,7 +109,9 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
                 // Nothing happens: Do not add entry on NumberFormatException
             }
         } catch (Exception e) {
-            throw new YailRuntimeError("Invalid tuple specified!", "YailList error.");
+            // 2-tuples are invalid when null entries are present, or if
+            // the number of entries is not sufficient to form a pair.
+            // TODO: Show toast error notification
         }
     }
 }
