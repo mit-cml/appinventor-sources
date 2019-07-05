@@ -434,107 +434,92 @@ public class LineChartModelTest extends RobolectricTestBase {
     }
 
     /**
-     * Test to ensure that importing from empty Lists does
-     * not add any new entries.
+     * Test to ensure that importing from a pair containing
+     * valid values adds the entry properly.
      */
-//    @Test
-//    public void testImportFromListsEmpty() {
-//        String[] xValues = new String[] {};
-//        String[] yValues = new String[] {};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
-//
-//    /**
-//     * Test to ensure that importing from Lists that contain
-//     * an invalid X entry skip the invalid entry, while importing
-//     * the rest.
-//     */
-//    @Test
-//    public void testImportFromListsInvalidX() {
-//        String[] xValues = new String[] {"1", "string", "3"};
-//        String[] yValues = new String[] {"4", "5", "3"};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-//            put(1f, 4f);
-//            put(3f, 3f);
-//        }};
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
-//
-//    /**
-//     * Test to ensure that importing from Lists that contain
-//     * an invalid Y entry skip the invalid entry, while importing
-//     * the rest.
-//     */
-//    @Test
-//    public void testImportFromListsInvalidY() {
-//        String[] xValues = new String[] {"1", "5", "3"};
-//        String[] yValues = new String[] {"4", "string", "2"};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-//            put(1f, 4f);
-//            put(3f, 2f);
-//        }};
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
-//
-//    /**
-//     * Test to ensure that importing from Lists that contain
-//     * an entry with both an invalid X and Y entry result in skipping the
-//     * invalid entry, while importing the rest.
-//     */
-//    @Test
-//    public void testImportFromListsInvalidXY() {
-//        String[] xValues = new String[] {"2", "string", "3"};
-//        String[] yValues = new String[] {"4", "string", "9"};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-//            put(2f, 4f);
-//            put(3f, 9f);
-//        }};
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
-//
-//    /**
-//     * Test to ensure that a larger X values list results in
-//     * skipping of the excess entries in the Y values list.
-//     */
-//    @Test
-//    public void testImportFromListsXSmaller() {
-//        String[] xValues = new String[] {"1", "2"};
-//        String[] yValues = new String[] {"7", "3", "4"};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-//            put(1f, 7f);
-//            put(2f, 3f);
-//        }};
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
-//
-//    /**
-//     * Test to ensure that a larger Y values list results in
-//     * skipping of the excess entries in the X values list.
-//     */
-//    @Test
-//    public void testImportFromListsYSmaller() {
-//        String[] xValues = new String[] {"0", "5", "7", "3"};
-//        String[] yValues = new String[] {"4", "3", "9"};
-//
-//        HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-//            put(0f, 4f);
-//            put(5f, 3f);
-//            put(7f, 9f);
-//        }};
-//
-//        testImportFromListHelper(xValues, yValues, expectedValues);
-//    }
+    @Test
+    public void testAddEntryFromTuplePair() {
+        final float xValue = 3f;
+        final float yValue = 4f;
+
+        YailList tuple = YailList.makeList(Arrays.asList(xValue, yValue));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(1, model.getDataset().getEntryCount());
+
+        Entry entry = model.getDataset().getEntryForIndex(0);
+        assertEquals(xValue, entry.getX());
+        assertEquals(yValue, entry.getY());
+    }
+
+    /**
+     * Test to ensure that importing from an n-tuple adds the
+     * entry, taking the first two entries as x and y values.
+     */
+    @Test
+    public void testAddEntryFromTupleBiggerTuple() {
+        final float xValue = 1f;
+        final float yValue = 2f;
+
+        YailList tuple = YailList.makeList(Arrays.asList(xValue, yValue, 5f, 7f, 3f));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(1, model.getDataset().getEntryCount());
+
+        Entry entry = model.getDataset().getEntryForIndex(0);
+        assertEquals(xValue, entry.getX());
+        assertEquals(yValue, entry.getY());
+    }
+
+
+    /**
+     * Test to ensure that importing from a 1-tuple does
+     * not import any data (since it is an invalid entry)
+     */
+    @Test
+    public void testAddEntryFromTupleSmallerTuple() {
+        YailList tuple = YailList.makeList(Collections.singletonList(1f));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(0, model.getDataset().getEntryCount());
+    }
+
+    /**
+     * Test to ensure that importing from a tuple with
+     * an invalid X value does not add any entry.
+     */
+    @Test
+    public void testAddEntryFromTupleInvalidX() {
+        YailList tuple = YailList.makeList(Arrays.asList("String", 1f));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(0, model.getDataset().getEntryCount());
+    }
+
+    /**
+     * Test to ensure that importing from a tuple with
+     * an invalid Y value does not add any entry.
+     */
+    @Test
+    public void testAddEntryFromTupleInvalidY() {
+        YailList tuple = YailList.makeList(Arrays.asList(0f, "String"));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(0, model.getDataset().getEntryCount());
+    }
+
+    /**
+     * Test to ensure that importing from a tuple with
+     * invalid X and Y values does not add any entry.
+     */
+    @Test
+    public void testAddEntryFromTupleInvalidXY() {
+        YailList tuple = YailList.makeList(Arrays.asList("String", "String2"));
+        model.addEntryFromTuple(tuple);
+
+        assertEquals(0, model.getDataset().getEntryCount());
+    }
+
 
     /**
      * Helper method that calls the method to import data from the
