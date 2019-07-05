@@ -66,13 +66,23 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
     public abstract void importFromTinyDB(TinyDB tinyDB);
 
     /**
-     * Imports data from two String lists containing x and y values respectively
+     * Imports data from a YailList which contains nested tuples
      *
-     * @param xValues  x value List
-     * @param yValues  y value List
+     * @param list  YailList containing tuples
      */
-    public abstract void importFromLists(String[] xValues, String[] yValues);
+    public void importFromList(YailList list) {
+        // Iterate over all the tuples
+        for (int i = 0; i < list.size(); ++i) {
+            YailList tuple = (YailList)list.getObject(i);
+            addEntryFromTuple(tuple);
+        }
+    }
 
+    /**
+     * Adds an entry from a specified tuple.
+     * @param tuple  Tuple representing the entry to add
+     */
+    public abstract void addEntryFromTuple(YailList tuple);
 
     /**
      * Deletes all the entries in the Data Series.

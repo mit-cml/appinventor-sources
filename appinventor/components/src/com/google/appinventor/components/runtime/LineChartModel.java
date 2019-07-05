@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -94,20 +95,21 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     }
 
     @Override
-    public void importFromLists(String[] xValues, String[] yValues) {
-        // Take the minimum size, ignoring the exceeding elements
-        int minimumSize = Math.min(xValues.length, yValues.length);
+    public void addEntryFromTuple(YailList tuple) {
+        try {
+            String xValue = tuple.getString(0);
+            String yValue = tuple.getString(1);
 
-        // Iterate pairs
-        for (int i = 0; i < minimumSize; ++i) {
             try {
-                float x = Float.parseFloat(xValues[i]);
-                float y = Float.parseFloat(yValues[i]);
+                float x = Float.parseFloat(xValue);
+                float y = Float.parseFloat(yValue);
 
                 addEntry(x, y);
             } catch (NumberFormatException e) {
-                // Nothing happens: Do not add value on NumberFormatException
+                // Nothing happens: Do not add entry on NumberFormatException
             }
+        } catch (Exception e) {
+            throw new YailRuntimeError("Invalid tuple specified!", "YailList error.");
         }
     }
 }

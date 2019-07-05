@@ -118,16 +118,16 @@ public abstract class ChartDataBase implements Component {
     }
 
     /**
-     * Adds elements to the Data component from specified x and y value
-     * YailLists. Data is not overwritten.
+     * Adds elements to the Data component from a specified List of pairs.
      *
-     * @param xValues  x value List to add
-     * @param yValues  y value List to add
+     * TODO: Compatiblity with more than 2-tuples (mainly description wise)
+     *
+     * @param pairs  YailList of pairs (2-tuples)
      */
-    @SimpleFunction(description = "Imports data from x value and y value lists." +
+    @SimpleFunction(description = "Imports data from a list of pairs." +
       "Data is not overwritten.")
-    public void ImportFromLists(YailList xValues, YailList yValues) {
-        chartModel.importFromLists(xValues.toStringArray(), yValues.toStringArray());
+    public void ImportFromList(YailList pairs) {
+        chartModel.importFromList(pairs);
         refreshChart();
     }
 
