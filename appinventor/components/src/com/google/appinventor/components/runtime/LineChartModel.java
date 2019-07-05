@@ -25,6 +25,11 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
         this.data.addDataSet(dataset); // Safe add
     }
 
+    @Override
+    protected int getTupleSize() {
+        return 2;
+    }
+
     /**
      * Adds a (x, y) entry to the Line Data Set.
      *
@@ -40,34 +45,6 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     public void setColor(int argb) {
         super.setColor(argb);
         dataset.setCircleColor(argb);
-    }
-
-    @Override
-    public void setElements(String elements) {
-        String[] entries = elements.split(",");
-
-        List<Entry> values = new ArrayList<Entry>();
-
-        for (int i = 1; i < entries.length; i += 2) {
-            try {
-                float xValue = Float.parseFloat(entries[i-1]);
-                float yValue = Float.parseFloat(entries[i]);
-                Entry entry = new Entry(xValue, yValue);
-                values.add(entry);
-            } catch (NumberFormatException e) {
-                return; // Do not update entries; Invalid input.
-            }
-        }
-
-        // Sort the Entries by X value.
-        Collections.sort(values, new Comparator<Entry>() {
-            @Override
-            public int compare(Entry entry, Entry t1) {
-                return Float.compare(entry.getX(), t1.getX());
-            }
-        });
-
-        dataset.setValues(values);
     }
 
     @Override

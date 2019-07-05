@@ -108,7 +108,16 @@ public class LineChartModelTest extends RobolectricTestBase {
 
         // Make sure that the method was abruptly cut because
         // of invalid entries detected.
-        assertEquals(0, model.getDataset().getEntryCount());
+        assertEquals(2, model.getDataset().getEntryCount());
+
+        // Verify the 2 entries
+        Entry entry1 = model.getDataset().getEntryForIndex(0);
+        assertEquals(1f, entry1.getX());
+        assertEquals(2f, entry1.getY());
+
+        Entry entry2 = model.getDataset().getEntryForIndex(1);
+        assertEquals(3f, entry2.getX());
+        assertEquals(4f, entry2.getY());
     }
 
     /**
