@@ -132,6 +132,15 @@ public abstract class ChartDataBase implements Component {
     }
 
     /**
+     * Removes all the entries from the Data Series.
+     */
+    @SimpleFunction(description = "Clears all of the data.")
+    public void Clear() {
+        chartModel.clearEntries();
+        refreshChart();
+    }
+
+    /**
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
