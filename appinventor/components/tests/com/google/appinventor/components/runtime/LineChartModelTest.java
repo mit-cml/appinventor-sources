@@ -22,7 +22,9 @@ import static org.easymock.EasyMock.expect;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
- * Integration tests for the LineChartModel class.
+ * Unit tests for the LineChartModel class.
+ * Tests the integration with the MPAndroidChart library
+ * classes by actually operating on the Data Series objects.
  */
 public class LineChartModelTest extends RobolectricTestBase {
     /*

@@ -20,6 +20,12 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
         this.data = data;
     }
 
+    /**
+     * Returns the size of the tuples that this Data Series
+     * accepts.
+     *
+     * @return  tuple size (integer)
+     */
     protected abstract int getTupleSize();
 
     public T getDataset() {
