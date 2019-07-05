@@ -26,14 +26,6 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Adds (x, y) entry to the data set.
-     *
-     * @param x  x value
-     * @param y  y value
-     */
-    public abstract void addEntry(float x, float y);
-
-    /**
      * Changes the color of the data set.
      *
      * @param argb  new color
