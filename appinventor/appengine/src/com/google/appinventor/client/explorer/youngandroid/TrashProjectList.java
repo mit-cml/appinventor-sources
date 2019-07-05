@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -64,7 +65,6 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
 
     private final List<Project> projects;
     private final List<Project> selectedProjects;
-    private final List<Project> deletedProjects;
     private final Map<Project, ProjectWidgets> projectWidgets;
     private SortField sortField;
     private SortOrder sortOrder;
@@ -87,7 +87,6 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
     public TrashProjectList() {
         projects = new ArrayList<Project>();
         selectedProjects = new ArrayList<Project>();
-        deletedProjects = new ArrayList<Project>();
         projectWidgets = new HashMap<Project, ProjectWidgets>();
 
         sortField = SortField.DATE_MODIFIED;
@@ -241,11 +240,11 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
                     if (isChecked) {
                         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
                         selectedProjects.add(project);
-                    } else {
+                    }
+                    else {
                         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
                         selectedProjects.remove(project);
                     }
-                    Ode.getInstance().getProjectToolbar().updateButtons();
                 }
             });
 
@@ -257,7 +256,6 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
                     if (ode.screensLocked()) {
                         return;             // i/o in progress, ignore request
                     }
-                    ode.openYoungAndroidProjectInDesigner(project);
                 }
             });
             nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -372,25 +370,11 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
         return selectedProjects;
     }
 
-    /**
-     * Returns the list of deleted projects
-     *
-     * @return the selected projects
-     */
-    public List<Project> getDeletedProjects() {
-        return deletedProjects;
-    }
 
     // ProjectManagerEventListener implementation
 
     @Override
-    public void onProjectAdded(Project project) {
-//        projects.add(project);
-//        projectWidgets.put(project, new ProjectWidgets(project));
-//        if (!projectListLoading) {
-//            refreshTable(true);
-//        }
-    }
+    public void onProjectAdded(Project project) { }
 
     @Override
     public void onDeletedProjectAdded(Project project) {
@@ -402,15 +386,16 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
     }
 
     @Override
-    public void onProjectRemoved(Project project) {
-//        projects.remove(project);
-//        projectWidgets.remove(project);
-//
-//        refreshTable(false);
-//
-//        selectedProjects.remove(project);
-//        deletedProjects.add(project);  //added the removed projects in deleted list
-//        Ode.getInstance().getProjectToolbar().updateButtons();
+    public void onProjectRemoved(Project project) { }
+
+    @Override
+    public void onDeletedProjectRemoved(Project project) {
+        projects.remove(project);
+        projectWidgets.remove(project);
+
+        refreshTable(false);
+
+        selectedProjects.remove(project);
     }
 
     @Override

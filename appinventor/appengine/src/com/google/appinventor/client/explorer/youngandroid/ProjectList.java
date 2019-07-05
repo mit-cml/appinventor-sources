@@ -397,6 +397,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
+  public void onDeletedProjectRemoved(Project project) { }
+
+  @Override
   public void onProjectsLoaded() {
     projectListLoading = false;
     refreshTable(true);

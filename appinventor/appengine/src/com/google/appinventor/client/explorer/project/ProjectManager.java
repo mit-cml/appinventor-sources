@@ -25,6 +25,7 @@ import java.util.Map;
 public final class ProjectManager {
   // Map to find the project from a project ID.
   private final Map<Long, Project> projectsMap;
+  private final Map<Long, Project> deletedProjectsMap;
 
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
@@ -39,6 +40,7 @@ public final class ProjectManager {
    */
   public ProjectManager() {
     projectsMap = new HashMap<Long, Project>();
+    deletedProjectsMap = new HashMap<Long, Project>();
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
     Ode.getInstance().getProjectService().getProjectInfos(
         new OdeAsyncCallback<List<UserProject>>(
@@ -145,8 +147,20 @@ public final class ProjectManager {
    */
   public void removeProject(long projectId) {
     Project project = projectsMap.remove(projectId);
+    deletedProjectsMap.put(projectId, project);
     fireProjectRemoved(project);
     fireDeletedProjectAdded(project);
+  }
+
+  /**
+   * Removes the project from trash permanently.
+   *
+   * @param projectId project ID
+   */
+
+  public void removeDeletedProject(long projectId) {
+    Project project = deletedProjectsMap.remove(projectId);
+    fireDeletedProjectRemoved(project);
   }
 
   /**
@@ -228,6 +242,15 @@ public final class ProjectManager {
   private void fireProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectRemoved(project);
+    }
+  }
+
+  /*
+   * Triggers a 'project removed' event to be sent to the listener on the listener list.
+   */
+  private void fireDeletedProjectRemoved(Project project) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+     listener.onDeletedProjectRemoved(project);
     }
   }
 

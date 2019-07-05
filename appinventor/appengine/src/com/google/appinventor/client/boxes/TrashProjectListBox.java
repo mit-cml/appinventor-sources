@@ -34,7 +34,7 @@ public final class TrashProjectListBox extends Box {
     }
 
     /**
-     * Creates new project list box.
+     * Creates new trash project list box.
      */
     private TrashProjectListBox() {
         super(MESSAGES.trashprojectlistbox(),
@@ -47,9 +47,9 @@ public final class TrashProjectListBox extends Box {
     }
 
     /**
-     * Returns project list associated with projects explorer box.
+     * Returns trash project list associated with trash projects explorer box.
      *
-     * @return  project list
+     * @return trash project list
      */
     public TrashProjectList getTrashProjectList() {
         return trashList;

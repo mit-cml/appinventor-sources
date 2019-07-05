@@ -450,6 +450,8 @@ public class Ode implements EntryPoint {
           // the button). When the person switches to the projects list view again (here)
           // we re-enable it.
           projectToolbar.enableStartButton();
+          projectToolbar.setProjectTabButtonsVisible(true);
+          projectToolbar.setTrashTabButtonsVisible(false);
         }
       };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
@@ -470,8 +472,10 @@ public class Ode implements EntryPoint {
     projectListPane2.setWidth("100%");
     projectListPanel.remove(ProjectListBox.getProjectListBox());
     projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
-    //pVertPanel.remove(projectListPanel);
+    pVertPanel.remove(projectListPanel);
     pVertPanel.add(projectListPane2);
+    projectToolbar.setProjectTabButtonsVisible(false);
+    projectToolbar.setTrashTabButtonsVisible(true);
 
   }
 
