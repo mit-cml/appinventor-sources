@@ -3,11 +3,12 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class MockChartDataFile extends MockVisibleComponent {
+public class MockChartDataFile extends MockContainer {
     public static final String TYPE = "ChartDataFile";
 
     private static final String PROPERTY_NAME_SOURCE = "Source";
@@ -20,7 +21,7 @@ public class MockChartDataFile extends MockVisibleComponent {
      * @param editor editor of source file the component belongs to
      */
     public MockChartDataFile(SimpleEditor editor) {
-        super(editor, TYPE, images.file());
+        super(editor, TYPE, images.file(),new MockChartDataFileLayout());
 
         SimplePanel panel = new SimplePanel();
         panel.setWidth("16px");
@@ -30,6 +31,20 @@ public class MockChartDataFile extends MockVisibleComponent {
         panel.add(icon);
 
         initComponent(panel);
+
+        // Re-attach all children MockChartData components
+        panel.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent arg0) {
+                if (arg0.isAttached()) {
+                    for (MockComponent child : children) {
+                        if (child instanceof MockChartData) {
+                            ((MockChartData) child).addToChart(chart);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -75,7 +90,7 @@ public class MockChartDataFile extends MockVisibleComponent {
             public void onSuccess(String result) {
                 MockChartDataFile.this.onSelectedChange(true); // otherwise the last imported component
                 MockCoordinateData data = new MockCoordinateData(editor);
-                getContainer().addComponent(data);
+                addComponent(data);
                 data.addToChart(chart);
             }
         });

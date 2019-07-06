@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
 import android.view.View;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -12,7 +13,7 @@ import com.google.appinventor.components.common.YaVersion;
         iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class ChartDataFile implements Component {
+public class ChartDataFile extends AndroidViewComponent implements ComponentContainer {
 
     private String source = "";
     private ChartBase chartContainer;
@@ -23,6 +24,7 @@ public class ChartDataFile implements Component {
      * @param container container, component will be placed in
      */
     public ChartDataFile(ChartBase container) {
+        super(container);
         this.chartContainer = container;
     }
 
@@ -38,8 +40,47 @@ public class ChartDataFile implements Component {
         return source;
     }
 
+    public ChartBase getChartContainer() {
+        return chartContainer;
+    }
+
     @Override
-    public HandlesEventDispatching getDispatchDelegate() {
+    public Activity $context() {
+        return chartContainer.$context();
+    }
+
+    @Override
+    public Form $form() {
         return chartContainer.$form();
+    }
+
+    @Override
+    public void $add(AndroidViewComponent component) {
+        throw new UnsupportedOperationException("ChartBase.$add() called");
+    }
+
+    @Override
+    public void setChildWidth(AndroidViewComponent component, int width) {
+        throw new UnsupportedOperationException("ChartBase.setChildWidth called");
+    }
+
+    @Override
+    public void setChildHeight(AndroidViewComponent component, int height) {
+        throw new UnsupportedOperationException("ChartBase.setChildHeight called");
+    }
+
+    @Override
+    public View getView() {
+        return null;
+    }
+
+    @Override
+    public int Width() {
+        return 0;
+    }
+
+    @Override
+    public int Height() {
+        return 0;
     }
 }
