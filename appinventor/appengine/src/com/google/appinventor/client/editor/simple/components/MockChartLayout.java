@@ -39,6 +39,8 @@ public class MockChartLayout extends MockLayout {
             return true;
         } else if (source instanceof MockChartDataFile) {
             container.addComponent(source);
+            ((MockChartDataFile)source).addToChart((MockChart) container);
+            return true;
         }
 
         return false;

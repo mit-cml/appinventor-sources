@@ -26,7 +26,7 @@ public class ChartDataFile implements Component {
         this.chartContainer = container;
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_GEOJSON_TYPE)
     public void Source(String source) {
         // Only set from the designer.
         this.source = source;
