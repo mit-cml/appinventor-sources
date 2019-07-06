@@ -2,9 +2,11 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.YailList;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
@@ -90,6 +92,27 @@ public abstract class ChartDataBase implements Component {
         }
 
         chartModel.setElements(elements);
+        refreshChart();
+    }
+
+    /**
+     * Adds elements to the Data component from a specified List of tuples.
+     *
+     * @param list  YailList of tuples.
+     */
+    @SimpleFunction(description = "Imports data from a list of entries" +
+      "Data is not overwritten.")
+    public void ImportFromList(YailList list) {
+        chartModel.importFromList(list);
+        refreshChart();
+    }
+
+    /**
+     * Removes all the entries from the Data Series.
+     */
+    @SimpleFunction(description = "Clears all of the data.")
+    public void Clear() {
+        chartModel.clearEntries();
         refreshChart();
     }
 

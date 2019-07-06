@@ -3,11 +3,9 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     /**
@@ -20,6 +18,11 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
         dataset.setDrawCircleHole(false);
         this.data.addDataSet(dataset); // Safe add
+    }
+
+    @Override
+    protected int getTupleSize() {
+        return 2;
     }
 
     /**
@@ -40,30 +43,23 @@ public class LineChartModel extends ChartModel<LineDataSet, LineData> {
     }
 
     @Override
-    public void setElements(String elements) {
-        String[] entries = elements.split(",");
+    public void addEntryFromTuple(YailList tuple) {
+        try {
+            String xValue = tuple.getString(0);
+            String yValue = tuple.getString(1);
 
-        List<Entry> values = new ArrayList<Entry>();
-
-        for (int i = 1; i < entries.length; i += 2) {
             try {
-                float xValue = Float.parseFloat(entries[i-1]);
-                float yValue = Float.parseFloat(entries[i]);
-                Entry entry = new Entry(xValue, yValue);
-                values.add(entry);
+                float x = Float.parseFloat(xValue);
+                float y = Float.parseFloat(yValue);
+
+                addEntry(x, y);
             } catch (NumberFormatException e) {
-                return; // Do not update entries; Invalid input.
+                // Nothing happens: Do not add entry on NumberFormatException
             }
+        } catch (Exception e) {
+            // 2-tuples are invalid when null entries are present, or if
+            // the number of entries is not sufficient to form a pair.
+            // TODO: Show toast error notification
         }
-
-        // Sort the Entries by X value.
-        Collections.sort(values, new Comparator<Entry>() {
-            @Override
-            public int compare(Entry entry, Entry t1) {
-                return Float.compare(entry.getX(), t1.getX());
-            }
-        });
-
-        dataset.setValues(values);
     }
 }
