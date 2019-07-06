@@ -40,10 +40,6 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
         return source;
     }
 
-    public ChartBase getChartContainer() {
-        return chartContainer;
-    }
-
     @Override
     public Activity $context() {
         return chartContainer.$context();

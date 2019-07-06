@@ -20,8 +20,12 @@ public final class CoordinateData extends ChartDataBase {
     /**
      * Creates a new Coordinate Data component.
      */
-    public CoordinateData(ComponentContainer chartContainer) {
+    public CoordinateData(ChartBase chartContainer) {
         super(chartContainer);
+    }
+
+    public CoordinateData(ChartDataFile chartDataFile) {
+        super(chartDataFile);
     }
 
     /**

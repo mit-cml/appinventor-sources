@@ -19,18 +19,18 @@ public abstract class ChartDataBase implements Component {
     /**
      * Creates a new Chart Data component.
      */
-    protected ChartDataBase(ComponentContainer componentContainer) {
-        if (componentContainer instanceof ChartBase) {
-            this.container = (ChartBase)componentContainer;
-        } else if (componentContainer instanceof ChartDataFile) {
-            this.container = ((ChartDataFile)componentContainer).getChartContainer();
-        }
+    protected ChartDataBase(ChartBase chartContainer) {
+        this.container = chartContainer;
 
         chartModel = container.createChartModel();
 
         // Set default values
         Color(Component.COLOR_BLACK);
         Label("");
+    }
+
+    protected ChartDataBase(ChartDataFile chartDataFile) {
+        this((ChartBase)chartDataFile.container);
     }
 
     /**
