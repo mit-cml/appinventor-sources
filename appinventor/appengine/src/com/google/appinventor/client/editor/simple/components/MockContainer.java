@@ -257,7 +257,8 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
       // Chart Data components are only allowed on Charts, not other containers.
-      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature) && !(component instanceof MockChartData)) {
+      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
+              && !(component instanceof MockChartData) && !(component instanceof MockChartDataFile)) {
         return true;
       }
     }

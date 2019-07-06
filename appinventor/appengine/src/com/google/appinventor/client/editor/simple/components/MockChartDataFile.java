@@ -24,4 +24,21 @@ public class MockChartDataFile extends MockVisibleComponent {
 
         initComponent(panel);
     }
+
+    @Override
+    protected boolean isPropertyVisible(String propertyName) {
+        // Hide HEIGHT and WIDTH properties (not needed for Chart Data File)
+        if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
+                propertyName.equals(PROPERTY_NAME_WIDTH)) {
+            return false;
+        }
+
+        return super.isPropertyVisible(propertyName);
+    }
+
+    @Override
+    protected void onSelectedChange(boolean selected) {
+        super.onSelectedChange(selected);
+        removeStyleDependentName("selected"); // Force remove styling
+    }
 }

@@ -37,6 +37,7 @@ public final class MockLineChart extends MockChart<ScatterChart> {
 
     @Override
     protected boolean acceptableSource(DragSource source) {
-        return getComponentFromDragSource(source) instanceof MockCoordinateData;
+        MockComponent component = getComponentFromDragSource(source);
+        return (component instanceof MockCoordinateData) || (component instanceof MockChartDataFile);
     }
 }
