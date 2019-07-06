@@ -176,13 +176,4 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
   }
-
-  /**
-   * Returns all values present in the TinyDB.
-   *
-   * @return  Map of all values in the TinyDB
-   */
-  public Map<String, ?> getAllValues() {
-    return sharedPreferences.getAll();
-  }
 }

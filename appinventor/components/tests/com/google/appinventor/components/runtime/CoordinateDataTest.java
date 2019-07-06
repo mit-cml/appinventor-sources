@@ -1,6 +1,9 @@
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.verify;
@@ -25,7 +28,7 @@ public class CoordinateDataTest extends ChartDataBaseTest<CoordinateData> {
         float y = 4;
 
         // Except add entry on the model
-        model.addEntry(x, y);
+        model.addEntryFromTuple(YailList.makeList(Arrays.asList(x, y)));
         expectLastCall();
         setupChartComponents();
 

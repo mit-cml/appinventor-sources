@@ -1,6 +1,10 @@
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -91,43 +95,24 @@ public abstract class ChartDataBase implements Component {
         refreshChart();
     }
 
-
     /**
-     * Adds elements to the Data component from a specified TinyDB component
+     * Adds elements to the Data component from a specified List of tuples.
      *
-     * @param tinyDB  TinyDB component to import data from
+     * @param list  YailList of tuples.
      */
-    @SimpleFunction(description = "Imports data from a TinyDB component. " +
-      "Overrides the currently available data.")
-    public void ImportFromTinyDB(TinyDB tinyDB) {
-        chartModel.clearEntries();
-        chartModel.importFromTinyDB(tinyDB);
-        refreshChart();
-    }
-
-    /**
-     * Adds elements to the Data component from a specified TinyDB component
-     * without overriding the current data.
-     *
-     * @param tinyDB  TinyDB component to import data from
-     */
-    @SimpleFunction(description = "Imports data from a TinyDB component without overriding data.")
-    public void AppendImportFromTinyDB(TinyDB tinyDB) {
-        chartModel.importFromTinyDB(tinyDB);
-        refreshChart();
-    }
-
-    /**
-     * Adds elements to the Data component from specified x and y value
-     * YailLists. Data is not overwritten.
-     *
-     * @param xValues  x value List to add
-     * @param yValues  y value List to add
-     */
-    @SimpleFunction(description = "Imports data from x value and y value lists." +
+    @SimpleFunction(description = "Imports data from a list of entries" +
       "Data is not overwritten.")
-    public void ImportFromLists(YailList xValues, YailList yValues) {
-        chartModel.importFromLists(xValues.toStringArray(), yValues.toStringArray());
+    public void ImportFromList(YailList list) {
+        chartModel.importFromList(list);
+        refreshChart();
+    }
+
+    /**
+     * Removes all the entries from the Data Series.
+     */
+    @SimpleFunction(description = "Clears all of the data.")
+    public void Clear() {
+        chartModel.clearEntries();
         refreshChart();
     }
 

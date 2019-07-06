@@ -136,43 +136,4 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
         // Verify the method call
         verify(model);
     }
-
-    /**
-     * Tests that the ChartData's ImportFromTinyDB method
-     * calls the proper methods in the Chart model.
-     */
-    @Test
-    public void testImportFromTinyDB() {
-        // Create a mock TinyDB object
-        TinyDB tinyDB = EasyMock.createMock(TinyDB.class);
-
-        // Expect the ImportFromTinyDB method call in model
-        model.clearEntries();
-        model.importFromTinyDB(tinyDB);
-        setupChartComponents();
-
-        chartData.ImportFromTinyDB(tinyDB);
-
-        // Verify that the required methods were called
-        verify(model);
-    }
-
-    /**
-     * Tests that the ChartData's AppendImportFromTinyDB method
-     * calls the proper method in the Chart model.
-     */
-    @Test
-    public void testAppendImportFromTinyDB() {
-        // Create a mock TinyDB component
-        TinyDB tinyDB = EasyMock.createMock(TinyDB.class);
-
-        // Expect the ImportFromTinyDB method call in model
-        model.importFromTinyDB(tinyDB);
-        setupChartComponents();
-
-        chartData.AppendImportFromTinyDB(tinyDB);
-
-        // Verify that the required method was called
-        verify(model);
-    }
 }
