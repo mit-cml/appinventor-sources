@@ -57,8 +57,6 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
     /**
      * Sets the elements of the Data Series from a CSV-formatted String.
      *
-     * TODO: Optimization step: 1.Add values to list 2.Sort values 3.Set values to dataset
-     *
      * @param elements String in CSV format
      */
     public void setElements(String elements) {
@@ -68,7 +66,7 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
         // Split all the CSV entries by comma
         String[] entries = elements.split(",");
 
-        // Iterate over every tuple (by grouping them)
+        // Iterate over every tuple (by grouping entries)
         // We start from tupleSize - 1 since the (tupleSize - 1)-th
         // entry will be the last entry of the tuple.
         // The index is incremented by the tupleSize to move to the next
@@ -90,8 +88,6 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
 
     /**
      * Imports data from a YailList which contains nested tuples
-     *
-     * TODO: Optimization step: 1.Add values to list 2.Sort values 3.Set values to dataset
      *
      * @param list  YailList containing tuples
      */
