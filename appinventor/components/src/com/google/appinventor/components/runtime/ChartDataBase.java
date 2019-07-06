@@ -137,7 +137,7 @@ public abstract class ChartDataBase implements Component {
         }
 
         // Import the CSV pair to the Data Series
-        ImportFromLists(xValues, yValues);
+        //ImportFromLists(xValues, yValues);
     }
 
     /**
