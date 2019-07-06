@@ -61,7 +61,11 @@ abstract class MockChart<C extends AbstractChart> extends MockContainer {
             public void onAttachOrDetach(AttachEvent arg0) {
                 if (arg0.isAttached()) {
                     for (MockComponent child : children) {
-                        ((MockChartData) child).addToChart(MockChart.this);
+                        if (child instanceof MockChartData) {
+                            ((MockChartData) child).addToChart(MockChart.this);
+                        } else if (child instanceof MockChartDataFile) {
+                            ((MockChartDataFile) child).addToChart(MockChart.this);
+                        }
                     }
                 }
             }
