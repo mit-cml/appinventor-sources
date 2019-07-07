@@ -19,12 +19,8 @@ public abstract class ChartDataBase implements Component {
      */
     protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
-
-        chartDataModel = chartContainer.createChartModel();
-
-        // Set default values
-        Color(Component.COLOR_BLACK);
-        Label("");
+        chartContainer.addDataComponent(this);
+        initChartData();
     }
 
     /**
@@ -91,6 +87,14 @@ public abstract class ChartDataBase implements Component {
 
         chartDataModel.setElements(elements);
         refreshChart();
+    }
+
+    public void initChartData() {
+        chartDataModel = container.createChartModel();
+
+        // Set default values
+        Color(Component.COLOR_BLACK);
+        Label("");
     }
 
     /**

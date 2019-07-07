@@ -8,6 +8,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
+import java.util.HashSet;
+
 @SimpleObject
 @DesignerComponent(version = 1,
         category = ComponentCategory.CHARTS,
@@ -21,6 +23,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     private int backgroundColor;
     private String description;
 
+    private HashSet<ChartDataBase> dataComponents;
+
     /**
      * Creates a new Chart component.
      *
@@ -33,6 +37,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
 
         // Adds the view to the designated container
         container.$add(this);
+
+        dataComponents = new HashSet<ChartDataBase>();
 
         // Set default values
         Type(Component.CHART_TYPE_LINE);
@@ -139,6 +145,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         }
 
         view.addView(chartView.getView(), 0);
+
+        for (ChartDataBase dataComponent : dataComponents) {
+            dataComponent.initChartData();
+        }
     }
 
     /**
@@ -205,5 +215,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      */
     public void refresh() {
         chartView.Refresh();
+    }
+
+    public void addDataComponent(ChartDataBase dataComponent) {
+        dataComponents.add(dataComponent);
     }
 }
