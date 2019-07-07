@@ -309,4 +309,8 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
+
+  public static final String PROPERTY_TYPE_LISTVIEW_LAYOUT = "ListViewLayout";
+
+  public static final String PROPERTY_TYPE_LISTVIEW_ADD_DATA = "ListViewAddData";
 }
