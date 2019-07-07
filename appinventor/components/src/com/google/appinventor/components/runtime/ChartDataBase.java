@@ -16,6 +16,9 @@ public abstract class ChartDataBase implements Component {
     private String label;
     private int color;
 
+    private String csvXColumn;
+    private String csvYColumn;
+
     /**
      * Creates a new Chart Data component.
      */
@@ -142,6 +145,30 @@ public abstract class ChartDataBase implements Component {
 
         // Import the CSV pair to the Data Series
         //ImportFromLists(xValues, yValues);
+    }
+
+    @SimpleProperty(userVisible = false)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+            defaultValue = "")
+    public void CsvXColumn(String column) {
+        this.csvXColumn = column;
+    }
+
+    @SimpleProperty(userVisible = false)
+    public String CsvXColumn() {
+        return csvXColumn;
+    }
+
+    @SimpleProperty(userVisible = false)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+            defaultValue = "")
+    public void CsvYColumn(String column) {
+        this.csvYColumn = column;
+    }
+
+    @SimpleProperty(userVisible = false)
+    public String CsvYColumn() {
+        return csvYColumn;
     }
 
     /**

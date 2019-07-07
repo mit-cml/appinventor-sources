@@ -8,6 +8,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MockChartDataFile extends MockContainer {
     public static final String TYPE = "ChartDataFile";
 
@@ -89,9 +92,22 @@ public class MockChartDataFile extends MockContainer {
             @Override
             public void onSuccess(String result) {
                 MockChartDataFile.this.onSelectedChange(true); // otherwise the last imported component
-                MockCoordinateData data = new MockCoordinateData(editor);
-                addComponent(data);
-                data.addToChart(chart);
+
+                String[] columnNames = result.split("\n")[0].split(",");
+                String XColumn = columnNames[0];
+
+                for (String column : columnNames) {
+                    if (column.equals(XColumn)) {
+                        continue;
+                    }
+
+                    MockCoordinateData data = new MockCoordinateData(editor);
+                    addComponent(data);
+                    data.addToChart(chart);
+                    data.changeProperty("CsvXColumn", XColumn);
+                    data.changeProperty("CsvYColumn", column);
+                    data.changeProperty("Label", column);
+                }
             }
         });
     }
