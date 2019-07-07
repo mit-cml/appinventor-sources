@@ -34,6 +34,7 @@ public abstract class ChartDataBase implements Component {
 
     protected ChartDataBase(ChartDataFile chartDataFile) {
         this((ChartBase)chartDataFile.container);
+        chartDataFile.addDataComponent(this);
     }
 
     /**
