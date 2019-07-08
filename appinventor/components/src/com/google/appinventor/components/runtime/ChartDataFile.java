@@ -34,7 +34,6 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
 
     private YailList rows;
     private YailList columns;
-    private List<ChartDataBase> dataComponents;
 
     /**
      * Creates a new ChartDataFile component.
@@ -46,7 +45,6 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
         this.chartContainer = container;
 
         rows = new YailList();
-        dataComponents = new ArrayList<ChartDataBase>();
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_GEOJSON_TYPE)
@@ -65,13 +63,16 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
                         // Open asset file
                         final InputStream inputStream = $form().openAsset(filename);
 
+                        readCSV(inputStream);
+
+                        // TODO: Run asynchronously
                         // Read from the CSV file asynchronously
-                        AsynchUtil.runAsynchronously(new Runnable() {
-                            @Override
-                            public void run() {
-                                asyncReadCSV(inputStream);
-                            }
-                        });
+//                        AsynchUtil.runAsynchronously(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                asyncReadCSV(inputStream);
+//                            }
+//                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -82,7 +83,7 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
         });
     }
 
-    private void asyncReadCSV(InputStream inputStream) {
+    private void readCSV(InputStream inputStream) {
         try {
             // TODO: Taken form File.java. To be replaced to reduce redundancy.
             InputStreamReader input = new InputStreamReader(inputStream);
@@ -103,7 +104,7 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
             columns = (YailList)rows.getObject(0);
 
             // Import the data to referenced Data components
-            importData();
+            // importData();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -163,49 +164,41 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
     }
 
     /**
-     * Adds a Data component reference to the ChartDataFile
-     * @param dataComponent  Data component
-     */
-    public void addDataComponent(ChartDataBase dataComponent) {
-        dataComponents.add(dataComponent);
-    }
-
-    /**
      * Imports data to referenced Data components
      *
      * TODO: Currently this is extremely flaky due to the CsvXColumn and CsvYColumn
      * TODO: variables being uninitialized when this method gets invoked.
      */
     public void importData() {
-        for (ChartDataBase data : dataComponents) {
-            List<YailList> tuples = new ArrayList<YailList>();
-
-            int xIndex = -1;
-            String xColumn = data.CsvXColumn();
-            int yIndex = -1;
-            String yColumn = data.CsvYColumn();
-
-            for (int i = 0; i < columns.size(); ++i) {
-                String column = columns.getString(i);
-
-                if (column.equals(xColumn)) {
-                    xIndex = i;
-                } else if (column.equals(yColumn)) {
-                    yIndex = i;
-                }
-
-                if (xIndex != -1 && yIndex != -1) {
-                    break;
-                }
-            }
-
-            for (int i = 1; i < rows.size(); ++i) {
-                YailList row = (YailList)rows.getObject(i);
-                YailList tuple = YailList.makeList(Arrays.asList(row.getString(xIndex), row.getString(yIndex)));
-                tuples.add(tuple);
-            }
-
-            data.ImportFromList(YailList.makeList(tuples));
-        }
+//        for (ChartDataBase data : dataComponents) {
+//            List<YailList> tuples = new ArrayList<YailList>();
+//
+//            int xIndex = -1;
+//            String xColumn = data.CsvXColumn();
+//            int yIndex = -1;
+//            String yColumn = data.CsvYColumn();
+//
+//            for (int i = 0; i < columns.size(); ++i) {
+//                String column = columns.getString(i);
+//
+//                if (column.equals(xColumn)) {
+//                    xIndex = i;
+//                } else if (column.equals(yColumn)) {
+//                    yIndex = i;
+//                }
+//
+//                if (xIndex != -1 && yIndex != -1) {
+//                    break;
+//                }
+//            }
+//
+//            for (int i = 1; i < rows.size(); ++i) {
+//                YailList row = (YailList)rows.getObject(i);
+//                YailList tuple = YailList.makeList(Arrays.asList(row.getString(xIndex), row.getString(yIndex)));
+//                tuples.add(tuple);
+//            }
+//
+//            data.ImportFromList(YailList.makeList(tuples));
+//        }
     }
 }

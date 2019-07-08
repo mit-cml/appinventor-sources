@@ -1,11 +1,13 @@
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 @SimpleObject
@@ -16,8 +18,7 @@ public abstract class ChartDataBase implements Component {
     private String label;
     private int color;
 
-    private String csvXColumn;
-    private String csvYColumn;
+    private YailList csvColumns;
 
     /**
      * Creates a new Chart Data component.
@@ -34,7 +35,6 @@ public abstract class ChartDataBase implements Component {
 
     protected ChartDataBase(ChartDataFile chartDataFile) {
         this((ChartBase)chartDataFile.container);
-        chartDataFile.addDataComponent(this);
     }
 
     /**
@@ -149,27 +149,20 @@ public abstract class ChartDataBase implements Component {
     }
 
     @SimpleProperty(userVisible = false)
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-            defaultValue = "")
-    public void CsvXColumn(String column) {
-        this.csvXColumn = column;
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    public void CsvColumns(String columns) {
+        try {
+            this.csvColumns = CsvUtil.fromCsvRow(columns);
+
+            // Import
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @SimpleProperty(userVisible = false)
-    public String CsvXColumn() {
-        return csvXColumn;
-    }
-
-    @SimpleProperty(userVisible = false)
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-            defaultValue = "")
-    public void CsvYColumn(String column) {
-        this.csvYColumn = column;
-    }
-
-    @SimpleProperty(userVisible = false)
-    public String CsvYColumn() {
-        return csvYColumn;
+    @SimpleProperty
+    public YailList CsvColumns() {
+        return csvColumns;
     }
 
     /**

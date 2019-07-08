@@ -104,8 +104,7 @@ public class MockChartDataFile extends MockContainer {
                     MockCoordinateData data = new MockCoordinateData(editor);
                     addComponent(data);
                     data.addToChart(chart);
-                    data.changeProperty("CsvXColumn", XColumn);
-                    data.changeProperty("CsvYColumn", column);
+                    data.changeProperty("CsvColumns", XColumn + "," + column);
                     data.changeProperty("Label", column);
                 }
             }
