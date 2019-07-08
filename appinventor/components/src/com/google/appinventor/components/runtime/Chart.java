@@ -127,7 +127,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             view.removeView(chartView.getView());
         }
 
-        // Create a new Chart view based on the supplied type, and
+        // Create a new Chart view based on the supplied type
         chartView = createChartViewFromType(type);
 
         // Add the new Chart view as the first child of the root RelativeLayout

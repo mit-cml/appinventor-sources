@@ -67,67 +67,76 @@ public final class MockChart extends MockContainer {
      * @param value  new Chart type
      */
     private void setTypeProperty(String value) {
-        // TODO: Reduce method complexity.
-
         // Update type
         type = Integer.parseInt(value);
 
         // Keep track whether this is the first time that
         // the Chart view is being initialized
-        boolean initialization = (chartView == null);
+        boolean chartViewExists = (chartView != null);
 
         // Remove the current Chart Widget from the root panel (if present)
-        if (!initialization) {
+        if (chartViewExists) {
             rootPanel.remove(chartView.getChartWidget());
         }
 
-        switch(type) {
-            case 0:
-                // Line Chart
-                //chartWidget = new ScatterChart();
-                chartView = new MockLineChartView();
-                break;
-            case 1:
-                // Scatter Chart
-                //chartWidget = new ScatterChart();
-                chartView = new MockLineChartView();
-                break;
-            case 2:
-                // Area Chart
-                //chartWidget = new ScatterChart();
-                chartView = new MockLineChartView();
-                break;
-            case 3:
-                // Bar Chart
-                //chartWidget = new BarChart();
-                chartView = new MockLineChartView();
-                break;
-            case 4:
-                // Pie Chart
-                //chartWidget = new PieChart();
-                chartView = new MockLineChartView();
-                break;
-            default:
-                // Invalid argument
-                throw new IllegalArgumentException("type:" + type);
-        }
+        // Create a new Chart view based on the supplied type
+        chartView = createMockChartViewFromType(type);
 
         // Add the Chart Widget to the Root Panel (as the first widget)
         rootPanel.insert(chartView.getChartWidget(), 0);
 
-        if (!initialization) {
-            // Chart type changing requires setting back Chart-related properties
-            chartView.setBackgroundColor(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
-            chartView.setTitle(getPropertyValue(PROPERTY_NAME_DESCRIPTION));
-            chartView.getChartWidget().draw();
+        // Chart view already existed before, so the new Chart view must
+        // be reinitialized.
+        if (chartViewExists) {
+            reinitializeChart();
+        }
+    }
 
-            // Re-attach all children MockChartData components.
-            // This is needed since the properties of the MockChart
-            // are set after the Data components are attached to
-            // the Chart, and thus they need to be re-attached.
-            for (MockComponent child : children) {
-                ((MockChartData) child).addToChart(MockChart.this);
-            }
+    /**
+     * Creates and returns a new MockChartView object based on the type
+     * (integer) provided
+     * @param type  Chart type (integer representation)
+     * @return new MockChartViewBase object instance
+     */
+    private MockChartViewBase createMockChartViewFromType(int type) {
+        switch(type) {
+            case 0:
+                // Line Chart
+                return new MockLineChartView();
+            case 1:
+                // Scatter Chart
+                return new MockLineChartView();
+            case 2:
+                // Area Chart
+                return new MockLineChartView();
+            case 3:
+                // Bar Chart
+                return new MockLineChartView();
+            case 4:
+                // Pie Chart
+                return new MockLineChartView();
+            default:
+                // Invalid argument
+                throw new IllegalArgumentException("type:" + type);
+        }
+    }
+
+    /**
+     * Reinitializes the Chart view by reattaching all the Data
+     * components and setting back all the properties.
+     */
+    private void reinitializeChart() {
+        // Chart type changing requires setting back Chart-related properties
+        chartView.setBackgroundColor(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
+        chartView.setTitle(getPropertyValue(PROPERTY_NAME_DESCRIPTION));
+        chartView.getChartWidget().draw();
+
+        // Re-attach all children MockChartData components.
+        // This is needed since the properties of the MockChart
+        // are set after the Data components are attached to
+        // the Chart, and thus they need to be re-attached.
+        for (MockComponent child : children) {
+            ((MockChartData) child).addToChart(MockChart.this);
         }
     }
 
