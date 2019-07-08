@@ -16,13 +16,18 @@ import java.util.HashSet;
         description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
 public class Chart extends AndroidViewComponent implements ComponentContainer {
+    // Root layout of the Chart view. This is used to make Chart
+    // dynamic removal & adding easier.
     private RelativeLayout view;
+
+    // Underlying Chart view
     private ChartViewBase chartView;
 
     private int type;
     private int backgroundColor;
     private String description;
 
+    // Attached Data components
     private HashSet<ChartDataBase> dataComponents;
 
     /**
@@ -144,8 +149,14 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
                 throw new IllegalArgumentException("type:" + type);
         }
 
+        // Add the new Chart view as the first child of the root RelativeLayout
         view.addView(chartView.getView(), 0);
 
+        // Iterate through all attached Data Components and reinitialize them.
+        // This is needed since the Type property is registered only after all
+        // the Data components are attached to the Chart.
+        // This has no effect when the Type property is default (0), since
+        // the Data components are not attached yet, making the List empty.
         for (ChartDataBase dataComponent : dataComponents) {
             dataComponent.initChartData();
         }
@@ -217,6 +228,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         chartView.Refresh();
     }
 
+    /**
+     * Attach a Data Component to the Chart.
+     * @param dataComponent  Data component object instance to add
+     */
     public void addDataComponent(ChartDataBase dataComponent) {
         dataComponents.add(dataComponent);
     }

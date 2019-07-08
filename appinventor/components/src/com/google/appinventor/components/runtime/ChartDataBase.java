@@ -91,7 +91,14 @@ public abstract class ChartDataBase implements Component {
         refreshChart();
     }
 
+    /**
+     * Initializes the Chart Data object by setting
+     * the default properties and initializing the
+     * corresponding ChartDataModel object instance.
+     */
     public void initChartData() {
+        // Creates a ChartDataModel based on the current
+        // Chart type being used.
         chartDataModel = container.createChartModel();
 
         // Set default values
