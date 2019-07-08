@@ -21,7 +21,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     private RelativeLayout view;
 
     // Underlying Chart view
-    private ChartViewBase chartView;
+    private ChartView chartView;
 
     private int type;
     private int backgroundColor;
@@ -148,9 +148,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      *  {@link Component#CHART_TYPE_AREA},
      *  {@link Component#CHART_TYPE_BAR} or
      *  {@link Component#CHART_TYPE_PIE}
-     * @return  new ChartViewBase instance
+     * @return  new ChartView instance
      */
-    private ChartViewBase createChartViewFromType(int type) {
+    private ChartView createChartViewFromType(int type) {
         switch(type) {
             case 0:
                 // Line Chart

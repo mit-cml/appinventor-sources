@@ -2,7 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.ScatterChart;
 
-public class MockLineChartView extends MockChartViewBase<ScatterChart> {
+public class MockLineChartView extends MockChartView<ScatterChart> {
     /**
      * Creates a new MockLineChartView object instance.
      */

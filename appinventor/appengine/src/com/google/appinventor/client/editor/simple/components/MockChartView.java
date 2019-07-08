@@ -6,7 +6,7 @@ import org.pepstock.charba.client.enums.Position;
 
 import java.util.HashMap;
 
-public abstract class MockChartViewBase<C extends AbstractChart> {
+public abstract class MockChartView<C extends AbstractChart> {
     protected C chartWidget;
 
     /**

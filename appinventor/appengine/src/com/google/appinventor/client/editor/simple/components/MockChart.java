@@ -5,9 +5,6 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.resources.client.ImageResource;
-import org.pepstock.charba.client.*;
-import org.pepstock.charba.client.enums.Position;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -21,7 +18,7 @@ public final class MockChart extends MockContainer {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
     }
 
-    protected MockChartViewBase chartView;
+    protected MockChartView chartView;
 
     // Legal values for type are defined in
     // com.google.appinventor.components.runtime.Component.java.
@@ -96,9 +93,9 @@ public final class MockChart extends MockContainer {
      * Creates and returns a new MockChartView object based on the type
      * (integer) provided
      * @param type  Chart type (integer representation)
-     * @return new MockChartViewBase object instance
+     * @return new MockChartView object instance
      */
-    private MockChartViewBase createMockChartViewFromType(int type) {
+    private MockChartView createMockChartViewFromType(int type) {
         switch(type) {
             case 0:
                 // Line Chart

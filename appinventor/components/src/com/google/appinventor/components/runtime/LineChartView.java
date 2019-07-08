@@ -6,7 +6,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
 
-public class LineChartView extends ChartViewBase<LineChart, LineData> {
+public class LineChartView extends ChartView<LineChart, LineData> {
 
     /**
      * Instantiate a new LineChartView in the given context.

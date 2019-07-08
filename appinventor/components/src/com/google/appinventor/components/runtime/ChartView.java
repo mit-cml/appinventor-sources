@@ -4,7 +4,7 @@ import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
 
-public abstract class ChartViewBase<C extends Chart, D extends ChartData> {
+public abstract class ChartView<C extends Chart, D extends ChartData> {
     protected C chart;
     protected D data;
 
