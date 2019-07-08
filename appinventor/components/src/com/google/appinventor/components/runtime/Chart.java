@@ -116,58 +116,79 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             "area, bar, pie).",
             userVisible = false)
     public void Type(int type) {
-        // TODO: Reduce method complexity.
         this.type = type;
 
+        // Keep track whether a ChartView already exists,
+        // in which case it will have to be reinitialized.
+        boolean chartViewExists = (chartView != null);
+
         // ChartView currently exists in root layout. Remove it.
-        if (chartView != null) {
+        if (chartViewExists) {
             view.removeView(chartView.getView());
         }
 
-        switch(type) {
-            case 0:
-                // Line Chart
-                chartView = new LineChartView(container.$context());
-                break;
-            case 1:
-                // Scatter Chart
-                chartView = new LineChartView(container.$context());
-                break;
-            case 2:
-                // Area Chart
-                chartView = new LineChartView(container.$context());
-                break;
-            case 3:
-                // Bar Chart
-                chartView = new LineChartView(container.$context());
-                break;
-            case 4:
-                // Pie Chart
-                chartView = new LineChartView(container.$context());
-                break;
-            default:
-                // Invalid argument
-                throw new IllegalArgumentException("type:" + type);
-        }
+        // Create a new Chart view based on the supplied type, and
+        chartView = createChartViewFromType(type);
 
         // Add the new Chart view as the first child of the root RelativeLayout
         view.addView(chartView.getView(), 0);
 
-        // Non-default type requires re-attaching Data Components
-        // and changing back the properties.
-        if (type != 0) {
-            // Iterate through all attached Data Components and reinitialize them.
-            // This is needed since the Type property is registered only after all
-            // the Data components are attached to the Chart.
-            // This has no effect when the Type property is default (0), since
-            // the Data components are not attached yet, making the List empty.
-            for (ChartDataBase dataComponent : dataComponents) {
-                dataComponent.initChartData();
-            }
-
-            Description(description);
-            BackgroundColor(backgroundColor);
+        // If a ChartView already existed, then the Chart
+        // has to be reinitialized.
+        if (chartViewExists) {
+            reinitializeChart();
         }
+    }
+
+    /**
+     * Creates and returns a ChartView object based on the type
+     * (integer) provided.
+     * @param type one of {@link Component#CHART_TYPE_LINE},
+     *  {@link Component#CHART_TYPE_SCATTER},
+     *  {@link Component#CHART_TYPE_AREA},
+     *  {@link Component#CHART_TYPE_BAR} or
+     *  {@link Component#CHART_TYPE_PIE}
+     * @return  new ChartViewBase instance
+     */
+    private ChartViewBase createChartViewFromType(int type) {
+        switch(type) {
+            case 0:
+                // Line Chart
+                return new LineChartView(container.$context());
+            case 1:
+                // Scatter Chart
+                return new LineChartView(container.$context());
+            case 2:
+                // Area Chart
+                return new LineChartView(container.$context());
+            case 3:
+                // Bar Chart
+                return new LineChartView(container.$context());
+            case 4:
+                // Pie Chart
+                return new LineChartView(container.$context());
+            default:
+                // Invalid argument
+                throw new IllegalArgumentException("type:" + type);
+        }
+    }
+
+    /**
+     * Reinitializes the Chart view by reattaching all the Data
+     * components and setting back all the properties.
+     */
+    private void reinitializeChart() {
+        // Iterate through all attached Data Components and reinitialize them.
+        // This is needed since the Type property is registered only after all
+        // the Data components are attached to the Chart.
+        // This has no effect when the Type property is default (0), since
+        // the Data components are not attached yet, making the List empty.
+        for (ChartDataBase dataComponent : dataComponents) {
+            dataComponent.initChartData();
+        }
+
+        Description(description);
+        BackgroundColor(backgroundColor);
     }
 
     /**
