@@ -138,7 +138,7 @@ public final class MockChart extends MockContainer {
             chartView.setBackgroundColor(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
-            refreshChart();
+            chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
         }
     }
 
