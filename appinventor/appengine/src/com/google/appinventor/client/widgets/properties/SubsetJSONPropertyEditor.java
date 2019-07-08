@@ -413,6 +413,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     long projID = Ode.getInstance().getCurrentYoungAndroidProjectId();
     YaProjectEditor projEditor = (YaProjectEditor)Ode.getInstance().getEditorManager().getOpenProjectEditor(projID);
     Set<String> componentTypes = projEditor.getUniqueComponentTypes();
+    HashMap<String, Set<String>> componentBlockTypes = projEditor.getUniqueComponentBlockTypes();
     for (int i = 0; i < componentTree.getItemCount(); ++i) {
       TreeItem catItem = componentTree.getItem(i);
       CheckBox catCb = (CheckBox)catItem.getWidget();
@@ -421,8 +422,17 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         TreeItem compItem = catItem.getChild(j);
         CheckBox compCb = (CheckBox)compItem.getWidget();
         if (componentTypes.contains(compCb.getName())) {
-          compCb.setValue(true,true);
+          compCb.setValue(true,false);
           catCb.setValue(true, false);
+          for (int k = 0; k < compItem.getChildCount(); ++k) {
+            TreeItem compBlockItem = compItem.getChild(k);
+            CheckBox compBlockCb = (CheckBox)compBlockItem.getWidget();
+            // If the key (component name) does not exist in the HashMap at all, this should check
+            // against the null key, which is a valid key that should have no values associated with it
+            if (componentBlockTypes.containsKey(compCb.getName()) && (componentBlockTypes.get(compCb.getName())).contains(compBlockCb.getText()) ) {
+              compBlockCb.setValue(true, true);
+            }
+          }
         } else {
           compCb.setValue(false, true);
         }

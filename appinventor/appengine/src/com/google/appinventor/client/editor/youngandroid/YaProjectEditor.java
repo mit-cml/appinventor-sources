@@ -376,6 +376,17 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return types;
   }
 
+  // Returns a hash of component names with the set of all component blocks (events, methods,
+  // and properties) in use for all screens in the current project
+  public HashMap<String, Set<String>> getUniqueComponentBlockTypes() {
+    HashMap<String, Set<String>> componentBlocks = new HashMap<String, Set<String>>();
+    for (EditorSet ed : editorMap.values()) {
+      componentBlocks = ed.blocksEditor.getComponentBlockTypeSet(componentBlocks);
+    }
+    return componentBlocks;
+  }
+
+
   // Private methods
 
   private static Comparator<String> getFileIdComparator() {
