@@ -129,7 +129,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
                 break;
             case 2:
                 // Area Chart
-                chartView = new LineChartView(container.$context());
+                chartView = new AreaChartView(container.$context());
                 break;
             case 3:
                 // Bar Chart
