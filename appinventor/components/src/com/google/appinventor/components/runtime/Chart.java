@@ -116,6 +116,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             "area, bar, pie).",
             userVisible = false)
     public void Type(int type) {
+        // TODO: Reduce method complexity.
         this.type = type;
 
         // ChartView currently exists in root layout. Remove it.
@@ -152,13 +153,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         // Add the new Chart view as the first child of the root RelativeLayout
         view.addView(chartView.getView(), 0);
 
-        // Iterate through all attached Data Components and reinitialize them.
-        // This is needed since the Type property is registered only after all
-        // the Data components are attached to the Chart.
-        // This has no effect when the Type property is default (0), since
-        // the Data components are not attached yet, making the List empty.
-        for (ChartDataBase dataComponent : dataComponents) {
-            dataComponent.initChartData();
+        // Non-default type requires re-attaching Data Components
+        // and changing back the properties.
+        if (type != 0) {
+            // Iterate through all attached Data Components and reinitialize them.
+            // This is needed since the Type property is registered only after all
+            // the Data components are attached to the Chart.
+            // This has no effect when the Type property is default (0), since
+            // the Data components are not attached yet, making the List empty.
+            for (ChartDataBase dataComponent : dataComponents) {
+                dataComponent.initChartData();
+            }
+
+            Description(description);
+            BackgroundColor(backgroundColor);
         }
     }
 
