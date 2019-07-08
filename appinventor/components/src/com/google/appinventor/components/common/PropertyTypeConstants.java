@@ -312,7 +312,8 @@ public class PropertyTypeConstants {
 
     /**
      * Line Chart types.
-     * TODO: Add see link
+     * @see
+     * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor.java
      */
     public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
 }

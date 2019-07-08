@@ -11,6 +11,10 @@ import java.util.Optional;
 
 public class MockLineChartDataModel extends MockChartDataModel<ScatterDataset> {
 
+    /**
+     * Creates a new MockLineChartDataModel instance.
+     * @param chartData  Data object of the Chart View.
+     */
     public MockLineChartDataModel(Data chartData) {
         super(chartData);
 
