@@ -1,16 +1,19 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
 
-    // Temporary placeholder for the Chart Data image
-    private InlineHTML labelWidget;
+    // Represents the Chart data icon
+    private Image iconWidget;
 
     protected MockChart chart;
     protected MockChartDataModel chartDataModel;
@@ -27,10 +30,11 @@ public abstract class MockChartData extends MockVisibleComponent {
     MockChartData(SimpleEditor editor, String type, ImageResource icon) {
         super(editor, type, icon);
 
-        labelWidget = new InlineHTML();
-        labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
-        labelWidget.setText("LINE CHART DATA");
-        initComponent(labelWidget);
+        iconWidget = new Image(icon);
+        iconWidget.setHeight("100");
+        iconWidget.setWidth("60");
+
+        initComponent(iconWidget);
     }
 
     /**
@@ -38,11 +42,10 @@ public abstract class MockChartData extends MockVisibleComponent {
      * @param chart  Chart Mock component to add the data to
      */
     public void addToChart(MockChart chart) {
-        // Set widget to invisible
-        labelWidget.setVisible(false);
-        labelWidget.setWidth("0");
-        labelWidget.setHeight("0");
-        labelWidget.setText("");
+        // Hide widget (MockChartData component handled by Chart)
+        iconWidget.setVisible(false);
+        iconWidget.setHeight("0");
+        iconWidget.setWidth("0");
 
         // Set references for Chart view and Chart model
         this.chart = chart;
