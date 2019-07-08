@@ -14,7 +14,7 @@ import org.pepstock.charba.client.resources.ResourcesType;
 public final class MockChart extends MockContainer {
     public static final String TYPE = "Chart";
 
-    private static final String PROPERTY_TYPE = "Type";
+    private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
 
     static {
@@ -42,7 +42,11 @@ public final class MockChart extends MockContainer {
         // onto the Chart itself, rather than outside the Chart component.
         rootPanel.setStylePrimaryName("ode-SimpleMockComponent");
 
+        // Since default type property does not invoke the setter,
+        // initially, the Chart's type setter should be invoked
+        // with the default value.
         setTypeProperty("0");
+
         initComponent(rootPanel);
 
         // Re-attach all children MockChartData components
@@ -58,8 +62,9 @@ public final class MockChart extends MockContainer {
         });
     }
 
-    /*
-     * Sets the button's Shape property to a new value.
+    /**
+     * Sets the type of the Chart to the newly specified value.
+     * @param value  new Chart type
      */
     private void setTypeProperty(String value) {
         // Update type
@@ -104,7 +109,10 @@ public final class MockChart extends MockContainer {
         // Add the Chart Widget to the Root Panel (as the first widget)
         rootPanel.insert(chartView.getChartWidget(), 0);
 
-        // Re-attach all children MockChartData components
+        // Re-attach all children MockChartData components.
+        // This is needed since the properties of the MockChart
+        // are set after the Data components are attached to
+        // the Chart, and thus they need to be re-attached.
         for (MockComponent child : children) {
             ((MockChartData) child).addToChart(MockChart.this);
         }
@@ -124,19 +132,28 @@ public final class MockChart extends MockContainer {
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
 
-        if (propertyName.equals(PROPERTY_TYPE)) {
+        if (propertyName.equals(PROPERTY_NAME_TYPE)) {
             setTypeProperty(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
             chartView.setBackgroundColor(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
+            refreshChart();
         }
     }
 
+    /**
+     * Creates a corresponding MockChartDataModel that
+     * represents the current Chart type.
+     * @return  new MockChartDataModel instance
+     */
     public MockChartDataModel createDataModel() {
         return chartView.createDataModel();
     }
 
+    /**
+     * Refreshes the Chart view.
+     */
     public void refreshChart() {
         chartView.getChartWidget().update();
     }
