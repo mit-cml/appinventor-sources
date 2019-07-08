@@ -83,8 +83,7 @@ public final class MockChart extends MockContainer {
                 break;
             case 2:
                 // Area Chart
-                //chartWidget = new ScatterChart();
-                chartView = new MockLineChartView();
+                chartView = new MockAreaChartView();
                 break;
             case 3:
                 // Bar Chart
