@@ -77,6 +77,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_PROJECT, visible);
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
     setButtonVisible(WIDGET_NAME_DELETE_FOREVER, visible);
+    updateTrashButtons();
   }
 
   public void setProjectTabButtonsVisible(boolean visible) {
@@ -164,14 +165,14 @@ public class ProjectToolbar extends Toolbar {
 
       final long projectId = project.getProjectId();
 
-      Ode ode = Ode.getInstance();
-      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-      ode.getEditorManager().closeProjectEditor(projectId);
-      if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer we
-        // need to clear the ViewerBox first.
-        // ViewerBox.getViewerBox().clear();
-      }
+//      Ode ode = Ode.getInstance();
+//      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
+//      ode.getEditorManager().closeProjectEditor(projectId);
+//      if (isCurrentProject) {
+//        // If we're deleting the project that is currently open in the Designer we
+//        // need to clear the ViewerBox first.
+//        // ViewerBox.getViewerBox().clear();
+//      }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
       }
@@ -187,6 +188,9 @@ public class ProjectToolbar extends Toolbar {
                 @Override
                 public void onSuccess(Void result) {
                   Ode.getInstance().getProjectManager().removeProject(projectId);
+                  if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                    Ode.getInstance().createEmptyTrashDialog(true);
+                  }
                 }
               });
     }
@@ -235,40 +239,42 @@ public class ProjectToolbar extends Toolbar {
   private static class RestoreProjectAction implements Command {
         @Override
         public void execute() {
-          List<Project> deletedProjects =
+          List<Project> selectedProjects =
                   TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects();
-          if (deletedProjects.size() > 0) {
-            for (Project project : deletedProjects){
-
+          if (selectedProjects.size() > 0) {
+            for (Project project : selectedProjects){
+              restoreProject(project);
             }
           } else {
             // The user can select a project to resolve the
             // error.
-            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForRestore());
           }
         }
 
-    private void deleteProject(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-              Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+    private void restoreProject(Project project) {
+      //Tracking.trackEvent(Tracking.PROJECT_EVENT,
+             // Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
 
       final long projectId = project.getProjectId();
-      //doDeleteProject(projectId);
+      doRestoreProject(projectId);
     }
 
-    private void doDeleteProject(final long projectId) {
+    private void doRestoreProject(final long projectId) {
       Ode.getInstance().getProjectService().deleteProject(projectId,
               new OdeAsyncCallback<Void>(
                       // failure message
                       MESSAGES.deleteProjectError()) {
                 @Override
                 public void onSuccess(Void result) {
-                  Ode.getInstance().getProjectManager().removeDeletedProject(projectId);
+                  Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
+                  if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                    Ode.getInstance().createEmptyTrashDialog(true);
+                  }
                 }
               });
     }
   }
-  /** work with the check box high light*/
 
   //Deleting the projects forever from trash list
   private static class DeleteForeverProjectAction implements Command {
@@ -342,8 +348,8 @@ public class ProjectToolbar extends Toolbar {
                   Ode.getInstance().getProjectManager().removeDeletedProject(projectId);
 //                  // Show a welcome dialog in case there are no
 //                  // projects saved.
-                  if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                    Ode.getInstance().createNoProjectsDialog(true);
+                  if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                    Ode.getInstance().createEmptyTrashDialog(true);
                   }
                 }
               });
@@ -442,6 +448,18 @@ public class ProjectToolbar extends Toolbar {
         numSelectedProjects > 0);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
         numSelectedProjects > 0);
+  }
+
+  public void updateTrashButtons() {
+    TrashProjectList trashProjectList = TrashProjectListBox.getTrashProjectListBox().getTrashProjectList();
+    int numSelectedProjects = trashProjectList.getNumSelectedProjects();
+    if (isReadOnly) {           // If we are read-only, we disable all buttons
+      setButtonEnabled(WIDGET_NAME_DELETE_FOREVER, false);
+      setButtonEnabled(WIDGET_NAME_RESTORE, false);
+      return;
+    }
+    setButtonEnabled(WIDGET_NAME_DELETE_FOREVER, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
   }
 
   // If we started a project, then the start button was disabled (to avoid

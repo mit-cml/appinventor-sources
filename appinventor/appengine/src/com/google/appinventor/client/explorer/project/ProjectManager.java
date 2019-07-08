@@ -70,6 +70,17 @@ public final class ProjectManager {
     return projects;
   }
 
+  public List<Project> getDeletedProjects() {
+    List<Project> projects = new ArrayList<Project>();
+
+    for (Project project : deletedProjectsMap.values()) {
+      projects.add(project);
+    }
+
+    return projects;
+  }
+
+
   /**
    * Returns a list of the projects with the given project name prefix.
    *
@@ -162,6 +173,20 @@ public final class ProjectManager {
     Project project = deletedProjectsMap.remove(projectId);
     fireDeletedProjectRemoved(project);
   }
+
+  /**
+   * Restores the project from trash back to my projects.
+   *
+   * @param projectId project ID
+   */
+
+  public void restoreDeletedProject(long projectId) {
+    Project project=deletedProjectsMap.remove(projectId);
+    projectsMap.put(projectId, project);
+    fireDeletedProjectRemoved(project);
+    fireProjectAdded(project);
+  }
+
 
   /**
    * Handles situation when a project has been published

@@ -476,7 +476,9 @@ public class Ode implements EntryPoint {
     pVertPanel.add(projectListPane2);
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
-
+    if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
+      Ode.getInstance().createEmptyTrashDialog(true);
+    }
   }
 
   /**
@@ -669,7 +671,7 @@ public class Ode implements EntryPoint {
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
         @Override
-        public void onProjectLoaded(Project projectLoaded) {
+        public void onProjectLoaded(Project glass) {
           project.removeProjectChangeListener(this);
           openYoungAndroidProjectInDesigner(project);
         }
@@ -1643,6 +1645,60 @@ public class Ode implements EntryPoint {
 
     // Add the elements to the grids and DialogBox.
     messageGrid.setWidget(0, 0, messageChunk1);
+    messageGrid.setWidget(1, 0, messageChunk2);
+    mainGrid.setWidget(0, 0, dialogImage);
+    mainGrid.setWidget(0, 1, messageGrid);
+
+    dialogBox.setWidget(mainGrid);
+    dialogBox.center();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+
+    return dialogBox;
+  }
+
+  /**
+   * Creates a dialog box to show empty trash list message.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+
+  public DialogBox createEmptyTrashDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.createNoProjectsDialogText());
+
+    Grid mainGrid = new Grid(2, 2);
+    mainGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(0,
+            1,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(1,
+            1,
+            HasHorizontalAlignment.ALIGN_RIGHT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+    Image dialogImage = new Image(Ode.getImageBundle().codiVert());
+
+    Grid messageGrid = new Grid(2, 1);
+    messageGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_JUSTIFY,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    messageGrid.getCellFormatter().setAlignment(1,
+            0,
+            HasHorizontalAlignment.ALIGN_LEFT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+
+    Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
     messageGrid.setWidget(1, 0, messageChunk2);
     mainGrid.setWidget(0, 0, dialogImage);
     mainGrid.setWidget(0, 1, messageGrid);

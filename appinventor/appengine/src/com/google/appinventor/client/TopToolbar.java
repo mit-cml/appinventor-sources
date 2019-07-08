@@ -576,7 +576,7 @@ public class TopToolbar extends Composite {
               // Show one confirmation window for selected projects.
               if (deleteConfirmation(selectedProjects)) {
                 for (Project project : selectedProjects) {
-                  deleteProject(project);
+                  moveToTrash(project);
                 }
               }
             } else {
@@ -589,7 +589,7 @@ public class TopToolbar extends Composite {
             Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
             selectedProjects.add(currentProject);
             if (deleteConfirmation(selectedProjects)) {
-              deleteProject(currentProject);
+              moveToTrash(currentProject);
               //Add the command to stop this current project from saving
               Ode.getInstance().switchToProjectsView();
             }
@@ -606,7 +606,7 @@ public class TopToolbar extends Composite {
         if (projects.get(0).isPublished())
           message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
         else
-          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+          message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
@@ -616,7 +616,7 @@ public class TopToolbar extends Composite {
         }
         String projectNames = sb.toString();
         if(!gallerySettings.galleryEnabled()){
-          message = MESSAGES.confirmDeleteManyProjects(projectNames);
+          message = MESSAGES.confirmMoveToTrash(projectNames);
         } else {
           message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
         }
@@ -624,28 +624,20 @@ public class TopToolbar extends Composite {
       return Window.confirm(message);
     }
 
-    private void deleteProject(Project project) {
+    private void moveToTrash(Project project) {
       Tracking.trackEvent(Tracking.PROJECT_EVENT,
           Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
 
       final long projectId = project.getProjectId();
 
-      Ode ode = Ode.getInstance();
-      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-      ode.getEditorManager().closeProjectEditor(projectId);
-      if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer we
-        // need to clear the ViewerBox first.
-        ViewerBox.getViewerBox().clear();
-      }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
       }
       // Make sure that we delete projects even if they are not open.
-      doDeleteProject(projectId);
+      doMoveProjectToTrash(projectId);
     }
 
-    private void doDeleteProject(final long projectId) {
+    private void doMoveProjectToTrash(final long projectId) {
       Ode.getInstance().getProjectService().deleteProject(projectId,
           new OdeAsyncCallback<Void>(
               // failure message
@@ -656,7 +648,7 @@ public class TopToolbar extends Composite {
               // Show a welcome dialog in case there are no
               // projects saved.
               if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                Ode.getInstance().createNoProjectsDialog(true);
+                  Ode.getInstance().createEmptyTrashDialog(true);
               }
             }
           });
