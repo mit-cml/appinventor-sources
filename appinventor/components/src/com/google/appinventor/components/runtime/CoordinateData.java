@@ -4,6 +4,8 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.runtime.util.YailList;
+import java.util.Arrays;
 
 @DesignerComponent(version = 1,
     description = "A component that holds (x, y)-coordinate based data",
@@ -26,7 +28,9 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
     public void AddEntry(float x, float y) {
-        chartDataModel.addEntry(x, y);
+        // Create a 2-tuple, and add the tuple to the Data Series
+        YailList pair = YailList.makeList(Arrays.asList(x, y));
+        chartDataModel.addEntryFromTuple(pair);
 
         // Refresh Chart with new data
         refreshChart();
