@@ -19,6 +19,7 @@ public abstract class ChartDataBase implements Component {
     private int color;
 
     private YailList csvColumns;
+    private ChartDataFile dataFile;
 
     /**
      * Creates a new Chart Data component.
@@ -35,6 +36,7 @@ public abstract class ChartDataBase implements Component {
 
     protected ChartDataBase(ChartDataFile chartDataFile) {
         this((ChartBase)chartDataFile.container);
+        this.dataFile = chartDataFile;
     }
 
     /**
@@ -148,21 +150,19 @@ public abstract class ChartDataBase implements Component {
         //ImportFromLists(xValues, yValues);
     }
 
-    @SimpleProperty(userVisible = false)
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
+                userVisible = false)
     public void CsvColumns(String columns) {
         try {
             this.csvColumns = CsvUtil.fromCsvRow(columns);
-
-            // Import
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
-    }
 
-    @SimpleProperty
-    public YailList CsvColumns() {
-        return csvColumns;
+        chartModel.importFromCSV(dataFile, csvColumns);
+        refreshChart();
     }
 
     /**

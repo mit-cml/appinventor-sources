@@ -99,6 +99,33 @@ public abstract class ChartModel<T extends DataSet, D extends ChartData> {
         }
     }
 
+    public void importFromCSV(ChartDataFile dataFile, YailList columns) {
+        List<Integer> entryIndexes = new ArrayList<Integer>();
+        YailList rows = dataFile.Rows();
+        YailList csvColumns = (YailList)rows.getObject(0);
+
+        for (int i = 0; i < columns.size(); ++i) {
+            int index = csvColumns.indexOf(columns.getString(i)) - 1;
+            entryIndexes.add(index);
+        }
+
+        List<YailList> tuples = new ArrayList<YailList>();
+
+        for (int i = 1; i < rows.size(); ++i) {
+            YailList row = (YailList)rows.getObject(i);
+            ArrayList<String> tupleElements = new ArrayList<String>();
+
+            for (int j : entryIndexes) {
+                tupleElements.add(row.getString(j));
+            }
+
+            YailList tuple = YailList.makeList(tupleElements);
+            tuples.add(tuple);
+        }
+
+       importFromList(YailList.makeList(tuples));
+    }
+
     /**
      * Adds an entry from a specified tuple.
      * @param tuple  Tuple representing the entry to add

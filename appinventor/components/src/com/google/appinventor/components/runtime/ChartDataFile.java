@@ -100,7 +100,7 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
             // Parse rows from the result
             rows = CsvUtil.fromCsvTable(result);
 
-            // Store columns separately (first row indicates column maes)
+            // Store columns separately (first row indicates column names)
             columns = (YailList)rows.getObject(0);
 
             // Import the data to referenced Data components
@@ -161,44 +161,5 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
     @Override
     public int Height() {
         return 0;
-    }
-
-    /**
-     * Imports data to referenced Data components
-     *
-     * TODO: Currently this is extremely flaky due to the CsvXColumn and CsvYColumn
-     * TODO: variables being uninitialized when this method gets invoked.
-     */
-    public void importData() {
-//        for (ChartDataBase data : dataComponents) {
-//            List<YailList> tuples = new ArrayList<YailList>();
-//
-//            int xIndex = -1;
-//            String xColumn = data.CsvXColumn();
-//            int yIndex = -1;
-//            String yColumn = data.CsvYColumn();
-//
-//            for (int i = 0; i < columns.size(); ++i) {
-//                String column = columns.getString(i);
-//
-//                if (column.equals(xColumn)) {
-//                    xIndex = i;
-//                } else if (column.equals(yColumn)) {
-//                    yIndex = i;
-//                }
-//
-//                if (xIndex != -1 && yIndex != -1) {
-//                    break;
-//                }
-//            }
-//
-//            for (int i = 1; i < rows.size(); ++i) {
-//                YailList row = (YailList)rows.getObject(i);
-//                YailList tuple = YailList.makeList(Arrays.asList(row.getString(xIndex), row.getString(yIndex)));
-//                tuples.add(tuple);
-//            }
-//
-//            data.ImportFromList(YailList.makeList(tuples));
-//        }
     }
 }
