@@ -123,4 +123,7 @@ public abstract class AbstractChartTest<V extends ChartView,
      */
     @Test
     public abstract void testChartType();
+
+    @Test
+    public abstract void testCreateChartModel();
 }
