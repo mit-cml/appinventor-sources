@@ -9,8 +9,15 @@ import org.junit.Before;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
+/**
+ * Tests for the Line Chart type.
+ *
+ * The class tests Line Chart-specific functionality, interaction
+ * between the View component and the Chart component, as well as
+ * integration with the MPAndroidChart library classes.
+ */
 public class LineChartViewTest extends AbstractChartTest<LineChartView, LineChart> {
-    private final static int TYPE = 0;
+    private final static int TYPE = Component.CHART_TYPE_LINE;
 
     @Before
     public void setUp() {

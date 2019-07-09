@@ -1,7 +1,6 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.ColorDrawable;
-import android.view.View;
 import android.widget.RelativeLayout;
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -12,9 +11,13 @@ import java.util.ArrayList;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
+/**
+ * Abstract test class for the Chart class.
+ *
+ * Contains test cases for functionality independent of the Chart type.
+ */
 public abstract class AbstractChartTest<V extends ChartView,
         C extends com.github.mikephil.charting.charts.Chart> extends RobolectricTestBase {
     protected V chartView;
@@ -69,20 +72,38 @@ public abstract class AbstractChartTest<V extends ChartView,
         assertEquals(argb, drawable.getColor());
     }
 
+    /**
+     * Tests that upon changing the Chart's Type property,
+     * the current child Views of the root layout is removed,
+     * and a new one is added.
+     */
     @Test
     public void testChangeTypeReAddView() {
+        // Get the root layout of the Chart
         RelativeLayout relativeLayout = (RelativeLayout)chartComponent.getView();
 
+        // Assert that the current view is in the root layout, and
+        // the getChartView method returns the proper result.
         assertEquals(chartView, chartComponent.getChartView());
         assertEquals(chart, relativeLayout.getChildAt(0));
 
+        // Change the Type of the Chart
         chartComponent.Type(0);
 
+        // Assert that the getChartView method no longer returns
+        // the removed chartView
         assertNotSame(chartView, chartComponent.getChartView());
+
+        // Assert that the root layout only has 1 view, and it
+        // is not the old Chart view
         assertNotSame(chart, relativeLayout.getChildAt(0));
         assertEquals(1, relativeLayout.getChildCount());
     }
 
+    /**
+     * Test to ensure that upon changing the Chart's type,
+     * the necessary properties are reset.
+     */
     @Test
     public void testChangeTypeReinitializeProperties() {
         String description = "Chart Title Test";
@@ -96,34 +117,47 @@ public abstract class AbstractChartTest<V extends ChartView,
         assertEquals(argb, ((ColorDrawable)chart.getBackground()).getColor());
     }
 
+    /**
+     * Test to ensure that upon changing the Chart's Type,
+     * the attached Data components are reinitialized.
+     */
     @Test
     public void testChangeTypeReinitializeChartDataComponents() {
         ArrayList<ChartDataBase> dataComponents = new ArrayList<ChartDataBase>();
 
         for (int i = 0; i < 3; ++i) {
+            // Create a mock Data component, and expect an initChartData
+            // method call.
             ChartDataBase dataComponent = EasyMock.createMock(ChartDataBase.class);
             dataComponent.initChartData();
             expectLastCall();
             replay(dataComponent);
 
+            // Add the Data Component to the Chart
             chartComponent.addDataComponent(dataComponent);
             dataComponents.add(dataComponent);
         }
 
         chartComponent.Type(0);
 
+        // Verify initChartData() method calls for all the
+        // attached Data components.
         for (ChartDataBase dataComponent : dataComponents) {
             verify(dataComponent);
         }
     }
 
     /**
-     * Tests that the Chart's Type property sets the appropriate type
-     * for the Chart and initializes the views of the right types.
+     * Tests that the Chart's Type property initializes the
+     * views of the right types.
      */
     @Test
     public abstract void testChartType();
 
+    /**
+     * Tests that after changing the Type property, a Chart
+     * Model of the proper type is created.
+     */
     @Test
     public abstract void testCreateChartModel();
 }
