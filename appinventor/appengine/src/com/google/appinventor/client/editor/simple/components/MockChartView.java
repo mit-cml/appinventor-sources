@@ -6,9 +6,12 @@ import org.pepstock.charba.client.enums.Position;
 
 import java.util.HashMap;
 
-public abstract class MockChartViewBase<C extends AbstractChart> {
+public abstract class MockChartView<C extends AbstractChart> {
     protected C chartWidget;
 
+    /**
+     * Sets the default (mainly style) settings of the Chart view.
+     */
     protected void initializeDefaultSettings() {
         chartWidget.getOptions().setMaintainAspectRatio(false); // Fill panel
         chartWidget.getOptions().getTitle().setDisplay(true); // Display title
@@ -27,10 +30,18 @@ public abstract class MockChartViewBase<C extends AbstractChart> {
         return chartWidget;
     }
 
+    /**
+     * Changes the title of the Chart.
+     * @param text  new Title
+     */
     public void setTitle(String text) {
         chartWidget.getOptions().getTitle().setText(text);
     }
 
+    /**
+     * Changes the background color of the Chart.
+     * @param value  new background color value (in hex)
+     */
     public void setBackgroundColor(String value) {
         if (MockComponentsUtil.isDefaultColor(value)) {
             value = "&HFFFFFFFF";  // white
@@ -38,5 +49,10 @@ public abstract class MockChartViewBase<C extends AbstractChart> {
         MockComponentsUtil.setWidgetBackgroundColor(chartWidget, value);
     }
 
+    /**
+     * Creates a new MockChartDataModel object instance
+     * representative of the MockChartView type.
+     * @return  new MockChartDataModel instance
+     */
     public abstract MockChartDataModel createDataModel();
 }

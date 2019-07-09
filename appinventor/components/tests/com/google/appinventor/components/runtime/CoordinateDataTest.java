@@ -15,7 +15,7 @@ public class CoordinateDataTest extends ChartDataBaseTest<CoordinateData> {
     @Override
     protected void setupChartComponents() {
         super.setupChartComponents();
-        //chartData = new CoordinateData(chart);
+        chartData = new CoordinateData(chart);
     }
 
     /**

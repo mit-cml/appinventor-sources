@@ -6,16 +6,22 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
 
-public class LineChartView extends ChartViewBase<LineChart, LineData> {
+public class LineChartView extends ChartView<LineChart, LineData> {
 
+    /**
+     * Instantiate a new LineChartView in the given context.
+     * @param context  Context to instantiate view in
+     */
     public LineChartView(Activity context) {
         chart = new LineChart(context);
-        data = new LineData();
 
+        data = new LineData();
         chart.setData(data);
 
         initializeDefaultSettings();
 
+        // Since the Chart is stored in a RelativeLayout, settings are
+        // needed to fill the Layout.
         chart.setLayoutParams(new ViewGroup.LayoutParams
                 (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }

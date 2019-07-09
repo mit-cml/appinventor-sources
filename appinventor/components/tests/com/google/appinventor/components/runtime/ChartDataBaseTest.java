@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  */
 public abstract class ChartDataBaseTest<T extends ChartDataBase> {
     protected T chartData;
-    protected ChartBase chart;
+    protected Chart chart;
     protected ChartDataModel model;
 
     /**
@@ -25,7 +25,7 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
         // Nice mocks used here because most of the method
         // calls done via setup should not be accounted for
         // in the tests.
-        chart = EasyMock.createNiceMock(ChartBase.class);
+        chart = EasyMock.createNiceMock(Chart.class);
         model = EasyMock.createNiceMock(ChartDataModel.class);
 
         // Make the Chart return the mccked Model object instance

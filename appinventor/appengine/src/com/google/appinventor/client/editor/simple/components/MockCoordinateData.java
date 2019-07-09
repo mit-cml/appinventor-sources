@@ -14,6 +14,6 @@ public class MockCoordinateData extends MockChartData {
      * @param editor  editor of source file the component belongs to
      */
     public MockCoordinateData(SimpleEditor editor) {
-        super(editor, TYPE, images.label());
+        super(editor, TYPE, images.tinyDB());
     }
 }
