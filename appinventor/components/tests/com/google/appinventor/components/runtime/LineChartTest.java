@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * between the View component and the Chart component, as well as
  * integration with the MPAndroidChart library classes.
  */
-public class LineChartViewTest extends AbstractChartTest<LineChartView, LineChart> {
+public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
     private final static int TYPE = Component.CHART_TYPE_LINE;
 
     @Before
