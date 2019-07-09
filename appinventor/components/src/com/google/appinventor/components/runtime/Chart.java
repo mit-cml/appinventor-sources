@@ -8,6 +8,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 @SimpleObject
@@ -28,7 +29,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     private String description;
 
     // Attached Data components
-    private HashSet<ChartDataBase> dataComponents;
+    private ArrayList<ChartDataBase> dataComponents;
 
     /**
      * Creates a new Chart component.
@@ -43,7 +44,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         // Adds the view to the designated container
         container.$add(this);
 
-        dataComponents = new HashSet<ChartDataBase>();
+        dataComponents = new ArrayList<ChartDataBase>();
 
         // Set default values
         Type(Component.CHART_TYPE_LINE);
