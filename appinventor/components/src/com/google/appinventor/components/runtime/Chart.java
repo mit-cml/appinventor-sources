@@ -258,6 +258,14 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     }
 
     /**
+     * Returns the underlying Chart View object.
+     * @return  Chart View object
+     */
+    public ChartView getChartView() {
+        return chartView;
+    }
+
+    /**
      * Attach a Data Component to the Chart.
      * @param dataComponent  Data component object instance to add
      */

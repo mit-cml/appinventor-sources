@@ -13,7 +13,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
      *
      * @return  Chart object instance
      */
-    public Chart getView() {
+    public C getView() {
         return chart;
     }
 
