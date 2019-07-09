@@ -11,6 +11,7 @@ public class AreaChartDataModel extends LineChartDataModel {
     public AreaChartDataModel(LineData data) {
         super(data);
         dataset.setDrawFilled(true);
+        dataset.setFillAlpha(255);
     }
 
     @Override
