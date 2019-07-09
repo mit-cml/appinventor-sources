@@ -16,8 +16,8 @@ public class LineChartDataModel extends ChartDataModel<LineDataSet, LineData> {
     public LineChartDataModel(LineData data) {
         super(data);
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
-        dataset.setDrawCircleHole(false);
         this.data.addDataSet(dataset); // Safe add
+        setDefaultStylingProperties();
     }
 
     @Override
@@ -61,5 +61,10 @@ public class LineChartDataModel extends ChartDataModel<LineDataSet, LineData> {
             // the number of entries is not sufficient to form a pair.
             // TODO: Show toast error notification
         }
+    }
+
+    @Override
+    protected void setDefaultStylingProperties() {
+        dataset.setDrawCircleHole(false);
     }
 }

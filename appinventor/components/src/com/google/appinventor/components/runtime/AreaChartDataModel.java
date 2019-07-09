@@ -10,13 +10,18 @@ public class AreaChartDataModel extends LineChartDataModel {
      */
     public AreaChartDataModel(LineData data) {
         super(data);
-        dataset.setDrawFilled(true);
-        dataset.setFillAlpha(255);
     }
 
     @Override
     public void setColor(int argb) {
         super.setColor(argb);
         dataset.setFillColor(argb);
+    }
+
+    @Override
+    protected void setDefaultStylingProperties() {
+        super.setDefaultStylingProperties();
+        dataset.setDrawFilled(true);
+        dataset.setFillAlpha(255);
     }
 }
