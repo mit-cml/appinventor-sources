@@ -138,4 +138,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void clearEntries() {
         dataset.clear();
     }
+
+    /**
+     * Sets the default styling properties of the Data Series.
+     */
+    protected abstract void setDefaultStylingProperties();
 }

@@ -1,27 +1,17 @@
 package com.google.appinventor.components.runtime;
 
-import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.ChartData;
-import com.github.mikephil.charting.data.LineData;
 import org.junit.Before;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
-/**
- * Tests for the Line Chart type.
- *
- * The class tests Line Chart-specific functionality, interaction
- * between the View component and the Chart component, as well as
- * integration with the MPAndroidChart library classes.
- */
-public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
+public class AreaChartTest extends AbstractChartTest<AreaChartView, LineChart> {
     @Before
     public void setUp() {
         super.setUp();
 
-        chartView = (LineChartView)chartComponent.getChartView();
+        chartView = (AreaChartView)chartComponent.getChartView();
         chart = chartView.getView();
     }
 
@@ -29,19 +19,19 @@ public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
     public void testChartType() {
         assertEquals(getType(), chartComponent.Type());
         assertThat(chart, instanceOf(LineChart.class));
-        assertThat(chartView, instanceOf(LineChartView.class));
+        assertThat(chartView, instanceOf(AreaChartView.class));
     }
 
     @Override
     public void testCreateChartModel() {
         ChartDataModel model = chartComponent.createChartModel();
 
-        assertThat(model, instanceOf(LineChartDataModel.class));
+        assertThat(model, instanceOf(AreaChartDataModel.class));
         assertEquals(chart.getData(), model.getData());
     }
 
     @Override
     public int getType() {
-        return Component.CHART_TYPE_LINE;
+        return Component.CHART_TYPE_AREA;
     }
 }

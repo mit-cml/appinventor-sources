@@ -109,7 +109,7 @@ public final class MockChart extends MockContainer {
                 return new MockLineChartView();
             case 2:
                 // Area Chart
-                return new MockLineChartView();
+                return new MockAreaChartView();
             case 3:
                 // Bar Chart
                 return new MockLineChartView();
