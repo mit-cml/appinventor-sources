@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;

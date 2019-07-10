@@ -1,10 +1,15 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Log;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -13,6 +18,7 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
+    private static final String PROPERTY_NAME_SOURCE = "Source";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -23,6 +29,8 @@ public final class MockChart extends MockContainer {
     // Legal values for type are defined in
     // com.google.appinventor.components.runtime.Component.java.
     private int type;
+
+    private MockNonVisibleComponent csvSource;
 
     /**
      * Creates a new instance of a visible component.
@@ -162,6 +170,55 @@ public final class MockChart extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_SOURCE)) {
+            setCSVSourceProperty(newValue);
+        }
+    }
+
+    private void setCSVSourceProperty(String source) {
+        if (!editor.isLoadComplete()) {
+            return;
+        }
+
+        if (!editor.getComponents().containsKey(source)) {
+            return;
+        }
+
+        csvSource = (MockNonVisibleComponent)editor.getComponents().get(source);
+
+        if (csvSource.properties.hasProperty("SourceFile")) {
+            String fileSource = csvSource.properties.getPropertyValue("SourceFile");
+
+
+            long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+
+            Ode.getInstance().getProjectService().load(projectId, "assets/" + fileSource, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                    ErrorReporter.reportError(caught.getMessage());
+                }
+
+                @Override
+                public void onSuccess(String result) {
+                    MockChart.this.onSelectedChange(true); // otherwise the last imported component
+
+                    String[] columnNames = result.split("\n")[0].split(",");
+                    String XColumn = columnNames[0];
+
+                    for (String column : columnNames) {
+                        if (column.equals(XColumn)) {
+                            continue;
+                        }
+
+                        MockCoordinateData data = new MockCoordinateData(editor);
+                        addComponent(data);
+                        data.addToChart(MockChart.this);
+                        data.changeProperty("CsvColumns", XColumn + "," + column);
+                        data.changeProperty("Label", column);
+                        data.changeProperty("Source", source);
+                    }
+                }
+            });
         }
     }
 

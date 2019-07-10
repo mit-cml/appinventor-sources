@@ -242,6 +242,13 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         chartView.setBackgroundColor(argb);
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT
+            + ":com.google.appinventor.components.runtime.CSVFile")
+    @SimpleProperty(userVisible = false)
+    public void Source(CSVFile dataSource) {
+        // Designer-only property
+    }
+
     /**
      * Creates a new instance of a ChartDataModel, corresponding
      * to the current Chart type.

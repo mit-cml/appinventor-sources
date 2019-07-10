@@ -163,6 +163,13 @@ public abstract class ChartDataBase implements Component {
         refreshChart();
     }
 
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+            description = "WIP")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
+    public void Source(CSVFile dataSource) {
+        this.dataSource = dataSource;
+    }
+
     /**
      * Refreshes the Chart view object.
      */
