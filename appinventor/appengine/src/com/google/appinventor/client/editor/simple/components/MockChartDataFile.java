@@ -68,6 +68,16 @@ public class MockChartDataFile extends MockContainer {
     }
 
     @Override
+    public void onRemoved() {
+        super.onRemoved();
+
+        // Invoke onRemoved on all child components
+        for (MockComponent child : children) {
+            child.onRemoved();
+        }
+    }
+
+    @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
 
