@@ -2,7 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.LineData;
 
-public class AreaChartDataModel extends LineChartDataModel {
+public class AreaChartDataModel extends LineChartBaseDataModel {
     /**
      * Initializes a new AreaChartDataModel object instance.
      *
