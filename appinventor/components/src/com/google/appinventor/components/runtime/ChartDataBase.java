@@ -173,6 +173,13 @@ public abstract class ChartDataBase implements Component {
 
     public void importFromCSV() {
         chartDataModel.importFromCSV(dataSource, csvColumns);
+        
+        container.$context().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshChart();
+            }
+        });
     }
 
     /**

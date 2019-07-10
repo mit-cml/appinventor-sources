@@ -126,10 +126,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
                 dataComponent.importFromCSV();
             }
 
-            if (!dataComponents.isEmpty()) {
-                dataComponents.get(0).refreshChart();
-                dataComponents.clear();
-            }
+            dataComponents.clear();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -168,7 +165,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
     public void importDataComponent(ChartDataBase dataComponent) {
         if (isReadingDone()) {
             dataComponent.importFromCSV();
-            dataComponent.refreshChart();
         } else {
             dataComponents.add(dataComponent);
         }
