@@ -186,6 +186,14 @@ public final class MockChart extends MockContainer {
 
         csvSource = (MockNonVisibleComponent)editor.getComponents().get(source);
 
+        addCSVFile(csvSource);
+    }
+
+    public void addCSVFile(MockNonVisibleComponent csvSource) {
+        if (!csvSource.getType().equals("CSVFile")) {
+            return;
+        }
+
         if (csvSource.properties.hasProperty("SourceFile")) {
             String fileSource = csvSource.properties.getPropertyValue("SourceFile");
 
@@ -215,7 +223,7 @@ public final class MockChart extends MockContainer {
                         data.addToChart(MockChart.this);
                         data.changeProperty("CsvColumns", XColumn + "," + column);
                         data.changeProperty("Label", column);
-                        data.changeProperty("Source", source);
+                        data.changeProperty("Source", csvSource.getName());
                     }
                 }
             });
@@ -258,6 +266,8 @@ public final class MockChart extends MockContainer {
     @Override
     protected boolean acceptableSource(DragSource source) {
         MockComponent component = getComponentFromDragSource(source);
-        return (component instanceof MockCoordinateData) || (component instanceof MockChartDataFile);
+        return (component instanceof MockCoordinateData) || (component instanceof MockChartDataFile) ||
+                (component instanceof MockNonVisibleComponent && component.getType().equals("CSVFile")
+                 && component.getContainer() != null);
     }
 }
