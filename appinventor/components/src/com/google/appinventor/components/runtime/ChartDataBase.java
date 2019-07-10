@@ -19,7 +19,7 @@ public abstract class ChartDataBase implements Component {
     private int color;
 
     private YailList csvColumns;
-    private ChartDataFile dataFile;
+    private CSVFile dataSource;
 
     /**
      * Creates a new Chart Data component.
@@ -28,11 +28,6 @@ public abstract class ChartDataBase implements Component {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
         initChartData();
-    }
-
-    protected ChartDataBase(ChartDataFile chartDataFile) {
-        this((Chart)chartDataFile.container);
-        this.dataFile = chartDataFile;
     }
 
     /**
@@ -149,16 +144,8 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Work in progress")
     public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
-        // Get x and y value YailLists
-        YailList xValues = csvFile.getColumn(xValueColumn);
-        YailList yValues = csvFile.getColumn(yValueColumn);
-
-        if(xValues == null || yValues == null) {
-            return;
-        }
-
-        // Import the CSV pair to the Data Series
-        //ImportFromLists(xValues, yValues);
+        this.dataSource = csvFile;
+        CsvColumns(xValueColumn + "," + yValueColumn);
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
@@ -172,7 +159,7 @@ public abstract class ChartDataBase implements Component {
             return;
         }
 
-        chartDataModel.importFromCSV(dataFile, csvColumns);
+        chartDataModel.importFromCSV(dataSource, csvColumns);
         refreshChart();
     }
 

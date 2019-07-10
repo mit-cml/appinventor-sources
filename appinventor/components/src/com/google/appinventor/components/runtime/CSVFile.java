@@ -3,13 +3,13 @@ package com.google.appinventor.components.runtime;
 import android.os.Environment;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,8 +26,9 @@ import android.Manifest;
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class CSVFile extends AndroidNonvisibleComponent {
 
+    private String sourceFile = "";
     private YailList rows;
-    private String sourceFile;
+    private YailList columnNames;
 
     /**
      * Creates a new CSVFile component.
@@ -40,6 +41,33 @@ public class CSVFile extends AndroidNonvisibleComponent {
         rows = new YailList();
     }
 
+    // Reads from stored file. To be integrated
+//    private void parseCSVFromSource(final String filename) {
+//        form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
+//            @Override
+//            public void HandlePermissionResponse(String permission, boolean granted) {
+//                if (granted) {
+//                    try {
+//                        String path = Environment.getExternalStorageDirectory().getPath() + filename;;
+//
+//                        byte[] bytes = FileUtil.readFile(path);
+//                        String csvTable = new String(bytes);
+//
+//                        rows = CsvUtil.fromCsvTable(csvTable);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
+//                    }
+//                } else {
+//                    form.dispatchPermissionDeniedEvent(CSVFile.this, "ReadFrom", permission);
+//                }
+//            }
+//        });
+//    }
+
     private void parseCSVFromSource(final String filename) {
         form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
             @Override
@@ -47,18 +75,22 @@ public class CSVFile extends AndroidNonvisibleComponent {
                 if (granted) {
                     try {
                         // TODO: Establish path properly (like in File class)
-                        String path = Environment.getExternalStorageDirectory().getPath() + filename;;
 
-                        byte[] bytes = FileUtil.readFile(path);
-                        String csvTable = new String(bytes);
+                        // Open asset file
+                        final InputStream inputStream = form.openAsset(filename);
 
-                        rows = CsvUtil.fromCsvTable(csvTable);
+                        readCSV(inputStream);
+
+                        // TODO: Run asynchronously
+                        // Read from the CSV file asynchronously
+//                        AsynchUtil.runAsynchronously(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                asyncReadCSV(inputStream);
+//                            }
+//                        });
                     } catch (IOException e) {
                         e.printStackTrace();
-                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
                     }
                 } else {
                     form.dispatchPermissionDeniedEvent(CSVFile.this, "ReadFrom", permission);
@@ -67,13 +99,41 @@ public class CSVFile extends AndroidNonvisibleComponent {
         });
     }
 
+    private void readCSV(InputStream inputStream) {
+        try {
+            // TODO: Taken form File.java. To be replaced to reduce redundancy.
+            InputStreamReader input = new InputStreamReader(inputStream);
+            StringWriter output = new StringWriter();
+            char [] buffer = new char[4096];
+            int offset = 0;
+            int length = 0;
+            while ((length = input.read(buffer, offset, 4096)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            final String result = output.toString().replaceAll("\r\n", "\n");
+
+            // Parse rows from the result
+            rows = CsvUtil.fromCsvTable(result);
+
+            // Store columns separately (first row indicates column names)
+            columnNames = (YailList)rows.getObject(0);
+
+            // TODO: Notify data reading done (for async race condition)
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Rows property getter method
      *
      * @return a YailList representing the list of strings to be picked from
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    public YailList Elements() {
+    public YailList Rows() {
         return rows;
     }
 
@@ -83,12 +143,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
      * @param source  Source file name
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
     public void SourceFile(String source) {
         this.sourceFile = source;
 
         // Parse CSV after setting source
-        // TODO: Do not use in setter (?)
-        // TODO: Convert to async?
+        // TODO: Convert to async
         parseCSVFromSource(sourceFile);
     }
 

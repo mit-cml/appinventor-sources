@@ -99,7 +99,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         }
     }
 
-    public void importFromCSV(ChartDataFile dataFile, YailList columns) {
+    public void importFromCSV(CSVFile dataFile, YailList columns) {
         List<Integer> entryIndexes = new ArrayList<Integer>();
         YailList rows = dataFile.Rows();
         YailList csvColumns = (YailList)rows.getObject(0);

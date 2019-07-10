@@ -20,10 +20,6 @@ public final class CoordinateData extends ChartDataBase {
         super(chartContainer);
     }
 
-    public CoordinateData(ChartDataFile chartDataFile) {
-        super(chartDataFile);
-    }
-
     /**
      * Adds entry to the Data Series.
      *
