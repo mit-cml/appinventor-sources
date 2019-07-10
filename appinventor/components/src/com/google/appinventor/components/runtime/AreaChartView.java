@@ -2,7 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 
-public class AreaChartView extends LineChartView {
+public class AreaChartView extends LineChartViewBase {
     public AreaChartView(Activity context) {
         super(context);
 
