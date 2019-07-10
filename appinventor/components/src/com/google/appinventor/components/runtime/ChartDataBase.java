@@ -12,8 +12,8 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
-    protected ChartBase container;
-    protected ChartModel chartModel;
+    protected Chart container;
+    protected ChartDataModel chartDataModel;
 
     private String label;
     private int color;
@@ -24,18 +24,14 @@ public abstract class ChartDataBase implements Component {
     /**
      * Creates a new Chart Data component.
      */
-    protected ChartDataBase(ChartBase chartContainer) {
+    protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
-
-        chartModel = container.createChartModel();
-
-        // Set default values
-        Color(Component.COLOR_BLACK);
-        Label("");
+        chartContainer.addDataComponent(this);
+        initChartData();
     }
 
     protected ChartDataBase(ChartDataFile chartDataFile) {
-        this((ChartBase)chartDataFile.container);
+        this((Chart)chartDataFile.container);
         this.dataFile = chartDataFile;
     }
 
@@ -60,7 +56,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty
     public void Color(int argb) {
         color = argb;
-        chartModel.setColor(color);
+        chartDataModel.setColor(color);
         refreshChart();
     }
 
@@ -85,7 +81,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty
     public void Label(String text) {
         this.label = text;
-        chartModel.setLabel(text);
+        chartDataModel.setLabel(text);
         refreshChart();
     }
 
@@ -101,8 +97,23 @@ public abstract class ChartDataBase implements Component {
             return;
         }
 
-        chartModel.setElements(elements);
+        chartDataModel.setElements(elements);
         refreshChart();
+    }
+
+    /**
+     * Initializes the Chart Data object by setting
+     * the default properties and initializing the
+     * corresponding ChartDataModel object instance.
+     */
+    public void initChartData() {
+        // Creates a ChartDataModel based on the current
+        // Chart type being used.
+        chartDataModel = container.createChartModel();
+
+        // Set default values
+        Color(Component.COLOR_BLACK);
+        Label("");
     }
 
     /**
@@ -113,7 +124,7 @@ public abstract class ChartDataBase implements Component {
     @SimpleFunction(description = "Imports data from a list of entries" +
       "Data is not overwritten.")
     public void ImportFromList(YailList list) {
-        chartModel.importFromList(list);
+        chartDataModel.importFromList(list);
         refreshChart();
     }
 
@@ -122,7 +133,7 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Clears all of the data.")
     public void Clear() {
-        chartModel.clearEntries();
+        chartDataModel.clearEntries();
         refreshChart();
     }
 
@@ -161,7 +172,7 @@ public abstract class ChartDataBase implements Component {
             return;
         }
 
-        chartModel.importFromCSV(dataFile, csvColumns);
+        chartDataModel.importFromCSV(dataFile, csvColumns);
         refreshChart();
     }
 
@@ -169,7 +180,7 @@ public abstract class ChartDataBase implements Component {
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        container.Refresh();
+        container.refresh();
     }
 
     @Override

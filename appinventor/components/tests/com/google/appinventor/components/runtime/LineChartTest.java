@@ -1,56 +1,46 @@
 package com.google.appinventor.components.runtime;
 
-import android.view.View;
+import android.widget.RelativeLayout;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.LineData;
 import org.junit.Before;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
- * Integration tests for Line Charts.
+ * Tests for the Line Chart type.
  *
- * Meant to test Line Chart-specific functionality and interaction with the MPAndroidChart
- * library classes.
+ * The class tests Line Chart-specific functionality, interaction
+ * between the View component and the Chart component, as well as
+ * integration with the MPAndroidChart library classes.
  */
-public class LineChartTest extends ChartBaseTest {
-    /**
-     * Tests that the view is of type Line Chart.
-     */
-    @Test
-    public void testLineChartType() {
-        View view = chart.getView();
-
-        assertThat(view, instanceOf(com.github.mikephil.charting.charts.LineChart.class));
-    }
-
-    /**
-     * Tests that the data object is of type Line Data.
-     */
-    @Test
-    public void testLineChartDataType() {
-        ChartData data = chart.data;
-
-        assertThat(data, instanceOf(LineData.class));
-    }
-
-    /**
-     * Tests that the creation of a Chart Model returns the proper
-     * object type instance with the correct Data component set to it.
-     */
-    @Test
-    public void testCreateChartModel() {
-        ChartModel model = chart.createChartModel();
-
-        assertThat(model, instanceOf(LineChartModel.class));
-        assertEquals(chart.data, model.getData());
-    }
+public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
+    private final static int TYPE = Component.CHART_TYPE_LINE;
 
     @Before
     public void setUp() {
         super.setUp();
-        chart = new LineChart(getForm()); // Chart type does not matter, since this is an abstract class test
+
+        chartComponent.Type(TYPE);
+
+        chartView = (LineChartView)chartComponent.getChartView();
+        chart = chartView.getView();
+    }
+
+    @Override
+    public void testChartType() {
+        assertEquals(TYPE, chartComponent.Type());
+        assertThat(chart, instanceOf(LineChart.class));
+        assertThat(chartView, instanceOf(LineChartView.class));
+    }
+
+    @Override
+    public void testCreateChartModel() {
+        ChartDataModel model = chartComponent.createChartModel();
+
+        assertThat(model, instanceOf(LineChartDataModel.class));
+        assertEquals(chart.getData(), model.getData());
     }
 }

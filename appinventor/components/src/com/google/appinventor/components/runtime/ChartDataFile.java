@@ -30,7 +30,7 @@ import java.util.List;
 public class ChartDataFile extends AndroidViewComponent implements ComponentContainer {
 
     private String source = "";
-    private ChartBase chartContainer;
+    private Chart chartContainer;
 
     private YailList rows;
     private YailList columns;
@@ -40,7 +40,7 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
      *
      * @param container container, component will be placed in
      */
-    public ChartDataFile(ChartBase container) {
+    public ChartDataFile(Chart container) {
         super(container);
         this.chartContainer = container;
 
