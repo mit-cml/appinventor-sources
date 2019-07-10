@@ -18,7 +18,6 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
-    private static final String PROPERTY_NAME_SOURCE = "Source";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -170,23 +169,7 @@ public final class MockChart extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
-        } else if (propertyName.equals(PROPERTY_NAME_SOURCE)) {
-            setCSVSourceProperty(newValue);
         }
-    }
-
-    private void setCSVSourceProperty(String source) {
-        if (!editor.isLoadComplete()) {
-            return;
-        }
-
-        if (!editor.getComponents().containsKey(source)) {
-            return;
-        }
-
-        csvSource = (MockNonVisibleComponent)editor.getComponents().get(source);
-
-        addCSVFile(csvSource);
     }
 
     public void addCSVFile(MockNonVisibleComponent csvSource) {
