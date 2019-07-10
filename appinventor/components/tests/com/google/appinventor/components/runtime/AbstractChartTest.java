@@ -28,6 +28,8 @@ public abstract class AbstractChartTest<V extends ChartView,
     public void setUp() {
         super.setUp();
         chartComponent = new Chart(getForm());
+
+        chartComponent.Type(getType());
     }
 
     /**
@@ -160,4 +162,10 @@ public abstract class AbstractChartTest<V extends ChartView,
      */
     @Test
     public abstract void testCreateChartModel();
+
+    /**
+     * Returns the type of the Chart (integer representation)
+     * @return  Chart Type (integer)
+     */
+    public abstract int getType();
 }
