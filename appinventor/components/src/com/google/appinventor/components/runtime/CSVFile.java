@@ -5,6 +5,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -79,16 +80,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
                         // Open asset file
                         final InputStream inputStream = form.openAsset(filename);
 
-                        readCSV(inputStream);
-
-                        // TODO: Run asynchronously
-                        // Read from the CSV file asynchronously
-//                        AsynchUtil.runAsynchronously(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                asyncReadCSV(inputStream);
-//                            }
-//                        });
+                        AsynchUtil.runAsynchronously(new Runnable() {
+                            @Override
+                            public void run() {
+                                readCSV(inputStream);
+                            }
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -148,7 +145,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
         this.sourceFile = source;
 
         // Parse CSV after setting source
-        // TODO: Convert to async
         parseCSVFromSource(sourceFile);
     }
 

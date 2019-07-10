@@ -7,8 +7,11 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+
+import java.util.Arrays;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
@@ -145,7 +148,8 @@ public abstract class ChartDataBase implements Component {
     @SimpleFunction(description = "Work in progress")
     public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
         this.dataSource = csvFile;
-        CsvColumns(xValueColumn + "," + yValueColumn);
+        chartDataModel.importFromCSV(csvFile, YailList.makeList(Arrays.asList(xValueColumn, yValueColumn)));
+        refreshChart();
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
@@ -156,18 +160,21 @@ public abstract class ChartDataBase implements Component {
             this.csvColumns = CsvUtil.fromCsvRow(columns);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-
-        chartDataModel.importFromCSV(dataSource, csvColumns);
-        refreshChart();
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "WIP")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
-    public void Source(CSVFile dataSource) {
+    public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
+//        AsynchUtil.runAsynchronously(new Runnable() {
+//            @Override
+//            public void run() {
+//                chartDataModel.importFromCSV(dataSource, csvColumns);
+//                refreshChart();
+//            }
+//        });
     }
 
     /**
