@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,6 +89,20 @@ public class MockChartDataFile extends MockContainer {
 
     private void setSourceProperty(String text) {
         if (!editor.isLoadComplete()) {
+            return;
+        }
+
+        // Remove previous components
+        List<MockComponent> children = new ArrayList<MockComponent>(getChildren());
+
+        for (MockComponent component : children) {
+            removeComponent(component, true);
+            component.onRemoved();
+        }
+        children.clear();
+
+        // Invalid filename
+        if (text == null || text.equals("")) {
             return;
         }
 
