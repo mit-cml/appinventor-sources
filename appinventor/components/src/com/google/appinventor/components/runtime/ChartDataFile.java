@@ -47,7 +47,7 @@ public class ChartDataFile extends AndroidViewComponent implements ComponentCont
         rows = new YailList();
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_GEOJSON_TYPE)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
     public void Source(String source) {
         // Only set from the designer.
         this.source = source;
