@@ -11,10 +11,7 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import android.Manifest;
 
@@ -31,6 +28,10 @@ public class CSVFile extends AndroidNonvisibleComponent {
     private YailList rows;
     private YailList columnNames;
 
+    private boolean readingDone = false;
+
+    private ArrayList<ChartDataBase> dataComponents;
+
     /**
      * Creates a new CSVFile component.
      *
@@ -40,6 +41,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
         super(form);
 
         rows = new YailList();
+        dataComponents = new ArrayList<ChartDataBase>();
     }
 
     // Reads from stored file. To be integrated
@@ -97,6 +99,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
     }
 
     private void readCSV(InputStream inputStream) {
+        readingDone = false;
         try {
             // TODO: Taken form File.java. To be replaced to reduce redundancy.
             InputStreamReader input = new InputStreamReader(inputStream);
@@ -117,6 +120,16 @@ public class CSVFile extends AndroidNonvisibleComponent {
             columnNames = (YailList)rows.getObject(0);
 
             // TODO: Notify data reading done (for async race condition)
+            readingDone = true;
+
+            for (ChartDataBase dataComponent : dataComponents) {
+                dataComponent.importFromCSV();
+            }
+
+            if (!dataComponents.isEmpty()) {
+                dataComponents.get(0).refreshChart();
+                dataComponents.clear();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -146,6 +159,19 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
         // Parse CSV after setting source
         parseCSVFromSource(sourceFile);
+    }
+
+    public boolean isReadingDone() {
+        return readingDone;
+    }
+
+    public void importDataComponent(ChartDataBase dataComponent) {
+        if (isReadingDone()) {
+            dataComponent.importFromCSV();
+            dataComponent.refreshChart();
+        } else {
+            dataComponents.add(dataComponent);
+        }
     }
 
     /**

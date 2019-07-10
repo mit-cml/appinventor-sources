@@ -168,13 +168,11 @@ public abstract class ChartDataBase implements Component {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
-//        AsynchUtil.runAsynchronously(new Runnable() {
-//            @Override
-//            public void run() {
-//                chartDataModel.importFromCSV(dataSource, csvColumns);
-//                refreshChart();
-//            }
-//        });
+        dataSource.importDataComponent(this);
+    }
+
+    public void importFromCSV() {
+        chartDataModel.importFromCSV(dataSource, csvColumns);
     }
 
     /**
