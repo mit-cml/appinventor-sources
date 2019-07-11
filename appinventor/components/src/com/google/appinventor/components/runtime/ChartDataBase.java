@@ -147,7 +147,7 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Work in progress")
     public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
-        this.dataSource = csvFile;
+        // TODO: Race condition handling with CSVFile
         chartDataModel.importFromCSV(csvFile, YailList.makeList(Arrays.asList(xValueColumn, yValueColumn)));
         refreshChart();
     }

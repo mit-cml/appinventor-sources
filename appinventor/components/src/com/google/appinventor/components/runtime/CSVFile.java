@@ -26,6 +26,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
     private String sourceFile = "";
     private YailList rows;
+    private YailList columns;
     private YailList columnNames;
 
     private boolean readingDone = false;
@@ -41,6 +42,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
         super(form);
 
         rows = new YailList();
+        columns = new YailList();
         dataComponents = new ArrayList<ChartDataBase>();
     }
 
@@ -116,8 +118,8 @@ public class CSVFile extends AndroidNonvisibleComponent {
             // Parse rows from the result
             rows = CsvUtil.fromCsvTable(result);
 
-            // Store columns separately (first row indicates column names)
-            columnNames = (YailList)rows.getObject(0);
+            // Construct column lists from rows
+            constructColumnsFromRows();
 
             // TODO: Notify data reading done (for async race condition)
             readingDone = true;
@@ -142,6 +144,17 @@ public class CSVFile extends AndroidNonvisibleComponent {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
     public YailList Rows() {
         return rows;
+    }
+
+
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    public YailList Columns() {
+        return columns;
+    }
+
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    public YailList ColumnNames() {
+        return columnNames;
     }
 
     /**
@@ -178,23 +191,42 @@ public class CSVFile extends AndroidNonvisibleComponent {
      */
     public YailList getColumn(String column) {
         // Get the index of the column (first row - column names)
-        int index = ((YailList)rows.getObject(0)).indexOf(column);
+        int index = columnNames.indexOf(column) - 1;
 
         // Column not found
         if (index < 0) {
             return null;
         }
 
-        List<String> result = new ArrayList<>();
+        return (YailList)columns.getObject(index);
+    }
 
-        for (int i = 1; i < rows.size(); ++i) {
-            // Get row
-            YailList list = (YailList) rows.getObject(i); // Safe cast
+    private void constructColumnsFromRows() {
+        // Store columns separately (first row indicates column names)
+        columnNames = (YailList)rows.getObject(0);
 
-            // index-th entry in the row is the required column value
-            result.add((String)list.get(index));
+        int rowSize = columnNames.size();
+
+        ArrayList<YailList> columnList = new ArrayList<YailList>();
+
+        for (int i = 0; i < rowSize; ++i) {
+            columnList.add(getColumn(i));
         }
 
-        return YailList.makeList(result);
+        columns = YailList.makeList(columnList);
+    }
+
+    private YailList getColumn(int index) {
+        List<String> entries = new ArrayList<String>();
+
+        for (int i = 0; i < rows.size(); ++i) {
+            // Get row
+            YailList row = (YailList) rows.getObject(i); // Safe cast
+
+            // index-th entry in the row is the required column value
+            entries.add((row.getString(index)));
+        }
+
+        return YailList.makeList(entries);
     }
 }

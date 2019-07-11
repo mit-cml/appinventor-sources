@@ -100,23 +100,27 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     public void importFromCSV(CSVFile dataFile, YailList columns) {
-        List<Integer> entryIndexes = new ArrayList<Integer>();
         YailList rows = dataFile.Rows();
-        YailList csvColumns = (YailList)rows.getObject(0);
+
+        ArrayList<YailList> dataColumns = new ArrayList<YailList>();
 
         for (int i = 0; i < columns.size(); ++i) {
-            int index = csvColumns.indexOf(columns.getString(i)) - 1;
-            entryIndexes.add(index);
+            String columnName = columns.getString(i);
+
+            if (columnName == null || columnName.equals("")) {
+                // Default option
+            } else {
+                dataColumns.add(dataFile.getColumn(columnName));
+            }
         }
 
         List<YailList> tuples = new ArrayList<YailList>();
 
         for (int i = 1; i < rows.size(); ++i) {
-            YailList row = (YailList)rows.getObject(i);
             ArrayList<String> tupleElements = new ArrayList<String>();
 
-            for (int j : entryIndexes) {
-                tupleElements.add(row.getString(j));
+            for (YailList column : dataColumns) {
+                tupleElements.add(column.getString(i));
             }
 
             YailList tuple = YailList.makeList(tupleElements);
