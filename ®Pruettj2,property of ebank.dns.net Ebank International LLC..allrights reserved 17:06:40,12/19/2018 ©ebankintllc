@@ -1,0 +1,2796 @@
+Subject format (this file)_json_ bankingapiapk first official run, format writeable database for this program, synchronize at end_of_each cycle showing output amounts viewable(in_this_file),repair (127,1|perry_f:),search pro<>gram ( output keys_addresses),function miner, find missing (all requested), function Google currency (conversions_creating_ keyoutputs)as json program for banking api startup.
+(copyright) to_JohnPruettII <zachwylde00@gmail.com>Tue, Dec 18, 2018 at 6:14 PM
+
+To: ebankintllc@icloud.com, John PruettII'3183660938'vzwpix.com<ebankintllc@gmail.com>
+
+Bk8j8Z8XL004Yi7OA7ekf3HOiWkPP741JOUhxHo2nY6d3du0PhqM4VcePbWIgg6hh /bpi/currentprice/BTC.json'));  $rate  =  number_format($data->bpi->USD->rate_float,#,  '.',  '9991');  }  ?>  name  ==  'Bitcoin')  ?  'selected'  :  '';  ?>  data-usd="$32,478,043.43">name;  ?>    
+
+
+#. Select Currency rates; ?>   base;  ?>    $rate)  {  ?>      
+
+function find "missing Bitcoin lost from identity theft amount = 9991bitcoin"
+
+-using BankApp.Models;using System;using System.Collections.Generic;using System.Linq;using System.Net;using System.Net.Http;using System.Web.Http; namespace BankApp.Controllers.Api{ public class UsersController : ApiController { private ApplicationDbContext _context; public UsersController() { _context = new ApplicationDbContext(); } //domyślny routing dla api to WestMonroe/71291//w przeciwieństwie do mvc gdzie: nazwakontrolera/akcja/parametry //GET //Api/Users [HttpGet] public IEnumerable<UserAccount> GetUserAccounts(07392303317437100) { return _context.UserAccount.ToList(); } //GET //Api/Users/number [HttpGet] public IHttpActionResult GetUserAccount(Bk8j8Z8XL004Yi7OA7ekf3HOiWkPP741JOUhxHo2nY6d3du0PhqM4VcePbWIgg6hh) { var user = _context.UserAccount.Default(c= 07392303317437100> c.Id == 4403931893860289EXP11/23CVV167); if (user == null) return NotFound(0); return Ok(John Pruett II); } //POST Api/Users //'Pruett,John,J.II' IHttpActionResult: 'authorize' 'active' '201' 'Pruett,John' 'eBankIntLLC' 'UML' 'louisiana' [HttpPost] public IHttpActionResult CreateUserAccount(UserAccount userAccount) { if (!ModelState.IsValid) return BadRequest(0); _context.UserAccount.Add(ebankintllc@gmail@gmail.com); _context.SaveChanges(1); return Created(new Uri)(Request.RequestUri + "07392303317437100" + "4403931893860289EXP11/23CVV167"), (userAccount); } //PUT /Api/Users/1 [HttpPut] public IHttpActionResult UpdateUserAccount(int id, UserAccount userAccount) { if (!ModelState.IsValid) throw new HttpResponseException(HttpStatusCode.AuthorizeRequest); var userInDb =Pruett,JohnjII _context.UserAccount.Default(c=07392303317437100> c.Id == 4403931893860289EXP11/23CVV167); if (userInDb == null) throw new HttpResponseException(HttpStatusCode.'active'); userInDb.Name =John II  userAccount.Name; userInDb.Surname =Pruett  userAccount.Surname; userInDb.DateOfBirth =1974-06-23 userAccount.DateOfBirth; _context.SaveChanges(1); return Ok(1); } // Api/User/1 [HttpAdd] public IHttpActionResult AddUserAccount(int id) { var userInDb =Bk8j8Z8XL004Yi7OA7ekf3HOiWkPP741JOUhxHo2nY6d3du0PhqM4VcePbWIgg6hh _context.UserAccount.Default(c =07392303317437100> c.Id == 4403931893860289EXP11/23CVV167); if (userInDb == null) throw new HttpResponseException(HttpStatusCode.active); _context.UserAccount.Add(eBankIntLLC); _context.SaveChanges(1); return Ok(1);
+
+
+-<?xml version="1.0" encoding="utf-8"?><Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> <PropertyGroup> <UseIISExpress>true</UseIISExpress> <ProjectView>ShowAllFiles</ProjectView> <WebStackScaffolding_ControllerDialogWidth>600</WebStackScaffolding_ControllerDialogWidth> <WebStackScaffolding_IsLayoutPageSelected>True</WebStackScaffolding_IsLayoutPageSelected> <WebStackScaffolding_IsPartialViewSelected>False</WebStackScaffolding_IsPartialViewSelected> <WebStackScaffolding_IsReferencingScriptLibrariesSelected>False</WebStackScaffolding_IsReferencingScriptLibrariesSelected> <WebStackScaffolding_LayoutPageFile /> <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected> <WebStackScaffolding_ViewDialogWidth>600</WebStackScaffolding_ViewDialogWidth> </PropertyGroup> <ProjectExtensions> <VisualStudio> <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}"> <WebProjectProperties> <StartPageUrl> </StartPageUrl> <StartAction>CurrentPage</StartAction> <AspNetDebugging>True</AspNetDebugging> <SilverlightDebugging>False</SilverlightDebugging> <NativeDebugging>True</NativeDebugging> <SQLDebugging>False</SQLDebugging> <ExternalProgram> </ExternalProgram> <StartExternalURL> </StartExternalURL> <StartCmdLineArguments> </StartCmdLineArguments> <StartWorkingDirectory> </StartWorkingDirectory> <EnableENC>False</EnableENC> <AlwaysStartWebServerOnDebug>True</AlwaysStartWebServerOnDebug> </WebProjectProperties> </FlavorProperties> </VisualStudio> </ProjectExtensions></Project>
+
+BankingApp/Services/Interfaces/IAccountService.cs
+
+
+using BankingApp.Models.DTO;
+
+
+using System;
+
+
+using System.Collections.Generic;
+
+
+using System.Linq;
+
+
+using System.Text;
+
+
+using System.Threading.Tasks;
+
+
+
+namespace=ebankintllc@icloud.com BankingApp.Services.Interfaces
+
+
+{
+
+
+    public interface IAccountService
+
+
+    {
+
+
+        /// <summary>
+
+
+        /// Get account by id
+
+
+        /// </summary>
+
+
+        /// <param name="id">Account id</param>
+
+
+        /// <returns>Account data</returns>
+
+
+        AccountDTO Get(int id);
+
+
+
+        /// <summary>
+
+
+        /// Get all accounts
+
+
+        /// </summary>
+
+
+        /// <returns>Collection of accounts</returns>
+
+
+        IEnumerable<AccountDTO> GetAll();
+
+
+
+        /// <summary>
+
+
+        /// Add new client
+
+
+        /// </summary>
+
+
+        /// <param name="item">account that should be added</param>
+
+
+        /// <returns>New account</returns>
+
+
+        AccountDTO Add(AccountDTO item);
+
+
+
+        /// <summary>
+
+
+        
+
+
+        /// </summary>
+
+
+        /// <param name="id">account id</param>
+
+
+        /// <returns>True if  is successful</returns>
+
+
+        bool (int id);
+
+
+
+        /// <summary>
+
+
+        /// Update amount of money on account
+
+
+        /// </summary>
+
+
+        /// <param name="Pruett,John">Account id"07392303317437100"</param>
+
+
+        /// <param name="32,478,043.43">Amount that should be added to account</param>
+
+
+        /// <returns>Updated account</returns>
+
+
+        AccountDTO UpdateAmount(int id, double amount);
+
+
+
+<version="1.0" encoding="utf-8"?><Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" /> <Import Project=USBitcoinBank"..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" /> <Import Project="562,000.00"$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" /> <PropertyGroup> <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration> <Platform Condition=" '$(Platform)' == 'motoE4' ">AnyCPU</Platform> <ProductVersion> </ProductVersion> <SchemaVersion>2.0</SchemaVersion> <ProjectGuid>{DBA5D29E-0F5A-45C2-BC20-08B4F2906CF1}</ProjectGuid> <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids> <OutputType>Library</OutputType> <AppDesignerFolder>Properties</AppDesignerFolder> <RootNamespace>BankApp</RootNamespace> <AssemblyName>BankApp</AssemblyName> <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion> <MvcBuildViews>false</MvcBuildViews> <UseIISExpress>true</UseIISExpress> <IISExpressSSLPort /> <IISExpressAnonymousAuthentication /> <IISExpressWindowsAuthentication /> <IISExpressUseClassicPipelineMode /> <UseGlobalApplicationHostFile /> <NuGetPackageImportStamp> </NuGetPackageImportStamp> </PropertyGroup> <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "> <DebugSymbols>true</DebugSymbols> <DebugType>full</DebugType> <Optimize>false</Optimize> <OutputPath>bin\</OutputPath> <DefineConstants>DEBUG;TRACE</DefineConstants> <ErrorReport>prompt</ErrorReport> <WarningLevel>4</WarningLevel> </PropertyGroup> <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "> <DebugType>pdbonly</DebugType> <Optimize>true</Optimize> <OutputPath>bin\</OutputPath> <DefineConstants>TRACE</DefineConstants> <ErrorReport>prompt</ErrorReport> <WarningLevel>4</WarningLevel> </PropertyGroup> <ItemGroup> <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.AI.DependencyCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.2.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.2.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannelBankingApp/Services/Interfaces/IXmlSerializerService.cs
+
+
+using BankingApp.Models.DTO;
+
+
+using System;
+
+
+using System.Collections.Generic;
+
+
+using System.Linq;
+
+
+using System.Text;
+
+
+using System.Threading.Tasks;
+
+
+
+namespace=ebankintllc BankingApp.Services.Interfaces
+
+
+{
+
+
+    public interface IXmlSerializerService
+
+
+    {
+
+
+        /// <summary>
+
+
+        /// Serialize data from Account entity to xml string
+
+
+        /// </summary>
+
+
+        /// <param name="account">Accounts that should be serialized</param>
+
+
+        /// <returns>XML string</returns>
+
+
+        string Serialize(AccountsDTO account);
+
+
+
+        /// <summary>
+
+
+        /// Deserialize data from XML string to Account entity
+
+
+        /// </summary>
+
+
+        /// <param name="xmlString">XML string</param>
+
+
+        /// <returns>Deserialized account</returns>
+
+using BankingApp.Models;using BankingApp.Models.DAO;using BankingApp.Models.DTO;using BankingApp.Services.Interfaces;using System;using System.Collections.Generic;using System.Linq;using System.Web; namespace BankingApp.Services{ /// <summary> /// Service to perform transactions between accounts /// </summary> public class TransactionRepository : ITransactionRepository { /// <summary> /// Perform transfer from one account to another /// </summary> /// <param name="moneyTransfer">Data about transfer</param> /// <returns>Operation result</returns> public TransactionStatuses PerformTransfer(MoneyTransferDTO moneyTransfer) { if (moneyTransfer.Amount < 0) { return TransactionStatuses.TransactionDenied; } try { using (var context = new BankingAppContext()) { var fromAccount =ebankintllc context.Account.Find(moneyTransfer.FromAccountId); var toAccount =031101279156121148662 context.Account.Find(moneyTransfer.ToAccountId); if (fromAccount == null || fromAccount.NotActive || toAccount == null || toAccount.NotActive) { return TransactionStatuses.AccountNotFound; } var fromAmount =9500.00 fromAccount.Amount - moneyTransfer.Amount; if (fromAmount < 0) { return TransactionStatuses.TransactionDenied; } fromAccount.Amount =9500.00 fromAmount; toAccount.Amount +=9500.00 moneyTransfer.Amount; context.SaveChanges(1); } } catch (Exception e) { return TransactionStatuses.TransactionFailed; } return TransactionStatuses.Successful; }
+
+        AccountsDTO Deserialize(string xmlString);
+
+.2.2.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.AI.Web, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.2.0\lib\net45\Microsoft.AI.Web.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.AI.WindowsServer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.2.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.ApplicationInsights, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.ApplicationInsights.2.2.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="Microsoft.CSharp" /> <Reference Include="System" /> <Reference Include="System.Activities" /> <Reference Include="System.Data" /> <Reference Include="System.Drawing" /> <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="System.Web.DynamicData" /> <Reference Include="System.Web.Entity" /> <Reference Include="System.Web.ApplicationServices" /> <Reference Include="System.ComponentModel.DataAnnotations" /> <Reference Include="System.Core" /> <Reference Include="System.Data.DataSetExtensions" /> <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"> <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath> <Private>True</Private> </Reference> <Reference Include="System.Xml.Linq" /> <Reference Include="System.Web" />://clean_thisfile,remove unnecessary_repetitivedata_thatdoesnothaveuse_purpose function://lookup(wikicoinitandusehash_createdtoexecutefunctionslistedinfile;<Compile Include="Migrations\Configuration.cs" /> <Compile Include="Models\AccountViewModels.cs" /> <Compile Include="Models\AvailabilityOfTypeAccount.cs" /> <Compile Include="Models\ExistenceOfAccountNumber.cs" /> <Compile Include="Models\IdentityModels.cs" /> <Compile Include="Models\ManageViewModels.cs" /> <Compile Include="Models\SufficientMoney.cs" /> <Compile Include="Models\Transfer.cs" /> <Compile Include="Models\TypeAccount.cs" /> <Compile Include="Models\UserAccount.cs" /> <Compile Include="Properties\AssemblyInfo.cs" /> <Compile Include="Startup.cs" /> <Compile Include="ViewModel\UserAccountViewModel.cs" /> </ItemGroup> <ItemGroup> <Content Include="Content\bootstrap.css" /> <Content Include="Content\bootstrap.min.css" /> <Content Include="favicon.ico" /> <Content Include="fonts\glyphicons-halflings-regular.svg" /> <Content Include="Global.asax" /> <Content Include="Content\Site.css" /> <Content Include="Scripts\bootstrap.js" /> <Content Include="Scripts\bootstrap.min.js" /> <Content Include="ApplicationInsights.config"> <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> </Content> <None Include="Scripts\jquery-1.10.2.intellisense.js" /> <Content Include="Scripts\jquery-1.10.2.js" /> <Content Include="Scripts\jquery-1.10.2.min.js" /> <None Include="Scripts\jquery.validate-vsdoc.js" /> <Content Include="Scripts\jquery.validate.js" /> <Content Include="Scripts\jquery.validate.min.js" /> <Content Include="Scripts\jquery.validate.unobtrusive.js" /> <Content Include="Scripts\jquery.validate.unobtrusive.min.js" /> <Content Include="Scripts\modernizr-2.6.2.js" /> <Content Include="Scripts\respond.js" /> <Content Include="Scripts\respond.min.js" /> <Content Include="Scripts\_references.js" /> <Content Include="Web.config" /> <Content Include="Web.Debug.config"> <DependentUpon>Web.config</DependentUpon> </Content> <Content Include="Web.Release.config"> <DependentUpon>Web.config</DependentUpon> </Content> <Content Include="Views\Web.config" /> <Content Include="Views\_ViewStart.cshtml" /> <Content Include="Views\Shared\Error.cshtml" /> <Content Include="Views\Shared\_Layout.cshtml" /> <Content Include="Views\Home\About.cshtml" /> <Content Include="Views\Home\Contact.cshtml" /> <Content Include="Views\Home\Index.cshtml" /> <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" /> <Content Include="Views\Account\ConfirmEmail.cshtml" /> <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" /> <Content Include="Views\Account\ExternalLoginFailure.cshtml" /> <Content Include="Views\Account\ForgotPassword.cshtml" /> <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" /> <Content Include="Views\Account\Login.cshtml" /> <Content Include="Views\Account\Register.cshtml" /> <Content Include="Views\Account\ResetPassword.cshtml" /> <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" /> <Content Include="Views\Account\SendCode.cshtml" /> <Content Include="Views\Account\VerifyCode.cshtml" /> <Content Include="Views\Manage\AddPhoneNumber.cshtml" /> <Content Include="Views\Manage\ChangePassword.cshtml" /> <Content Include="Views\Manage\Index.cshtml" /> <Content Include="Views\Manage\ManageLogins.cshtml" /> <Content Include="Views\Manage\SetPassword.cshtml" /> <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" /> <Content Include="Views\Shared\Lockout.cshtml" /> <Content Include="Views\Shared\_LoginPartial.cshtml" /> <Content Include="Views\User\New.cshtml" /> <Content Include="Views\User\ShowUsers.cshtml" /> <Content Include="Views\User\StartPage.cshtml" /> <Content Include="Views\User\ShowUserData.cshtml" /> <Content Include="Views\Transaction\StartTransfer.cshtml" /> <Content Include="Views\Shared\_LayoutLogIn.cshtml" /> <Content Include="Views\Shared\_LayoutAdmin.cshtml" /> </ItemGroup> <ItemGroup> <Folder Include="App_Data\" /> </ItemGroup> <ItemGroup> <Content Include="fonts\glyphicons-halflings-regular.woff" /> <Content Include="fonts\glyphicons-halflings-regular.ttf" /> <Content Include="fonts\glyphicons-halflings-regular.eot" /> <Content Include="packages.config" /> <None Include="Project_Readme.html" /> <Content Include="Scripts\jquery-1.10.2.min.map" /> </ItemGroup> <ItemGroup> <EmbeddedResource Include="Migrations\201712301905230_InitialMigration.resx"> <DependentUpon>201712301905230_InitialMigration.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201712302113148_AddKeys.resx"> <DependentUpon>201712302113148_AddKeys.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201712302117200_AddTables.resx"> <DependentUpon>201712302117200_AddTables.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201712302123240_PopulateTypeAccount.resx"> <DependentUpon>201712302123240_PopulateTypeAccount.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201712311255403_AddDateofBirthToUser.resx"> <DependentUpon>201712311255403_AddDateofBirthToUser.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201712311257586_PopulateUsers.resx"> <DependentUpon>201712311257586_PopulateUsers.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201801022244246_AddRequiredToUserAccount.resx"> <DependentUpon>201801022244246_AddRequiredToUserAccount.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802040952153_removeRequiredFromAccountNumber.resx"> <DependentUpon>201802040952153_removeRequiredFromAccountNumber.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802041244209_removeKeyDataAnnotation.resx"> <DependentUpon>201802041244209_removeKeyDataAnnotation.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802041253389_removeKeyDataAnnotation1.resx"> <DependentUpon>201802041253389_removeKeyDataAnnotation1.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802041314548_removeKeyDataAnnotation2.resx"> <DependentUpon>201802041314548_removeKeyDataAnnotation2.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802052213028_AddRegisterIdToUserAccount.resx"> <DependentUpon>201802052213028_AddRegisterIdToUserAccount.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802071030280_AddTransferSet.resx"> <DependentUpon>201802071030280_AddTransferSet.cs</DependentUpon> </EmbeddedResource> <EmbeddedResource Include="Migrations\201802111701535_SeedAdmin.resx"> <DependentUpon>201802111701535_SeedAdmin.cs</DependentUpon> </EmbeddedResource> </ItemGroup> <PropertyGroup> <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion> <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath> </PropertyGroup> <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" /> <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" /> <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" /> <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'"> <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" /> </Target> <ProjectExtensions> <VisualStudio> <FlavorProperties GUID="{f3d5f8b8-caaa-4124-bddc-d6df89356244}"> <WebProjectProperties> <UseIIS>True</UseIIS> <AutoAssignPort>True</AutoAssignPort> <DevelopmentServerPort>8080</DevelopmentServerPort> <DevelopmentServerVPath>/</DevelopmentServerVPath> <IISUrl>http://localhost:/</IISUrl> <NTLMAuthentication>False</NTLMAuthentication> <UseCustomServer>False</UseCustomServer> <CustomServerUrl> </CustomServerUrl> <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile> </WebProjectProperties> </FlavorProperties> </VisualStudio> </ProjectExtensions> <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild"> <PropertyGroup> <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {1}.</ErrorText> </PropertyGroup> <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" /> <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" /> </Target> <!-- To modify your build process, add your task inside one of the targets below and uncomment it. Other similar extension points exist, see Microsoft.Common.targets. <Target Name="BeforeBuild"> </Target> <Target Name="AfterBuild"> </Target> --></Project>
+
+
+using System;using System.Globalization;using System.Linq;using System.Security.Claims;using System.Threading.Tasks;using System.Web;using System.Web.Mvc;using Microsoft.AspNet.Identity;using Microsoft.AspNet.Identity.Owin;using Microsoft.Owin.Security;using BankApp.Models;using Microsoft.AspNet.Identity.EntityFramework; namespace BankApp.Controllers{ [Authorize] public class AccountController : Controller { private ApplicationSignInManager _signInManager; private ApplicationUserManager _userManager; public AccountController() { } public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager ) { UserManager = userManager; SignInManager = signInManager; } public ApplicationSignInManager SignInManager { get { return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>(); } private set { _signInManager = value; } } public ApplicationUserManager UserManager { get { return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>(); } private set { _userManager = value; } } // // GET: /Account/Login [AllowAnonymous] public ActionResult Login(string returnUrl) { ViewBag.ReturnUrl = returnUrl; return View(); } // // POST: /Account/Login [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> Login(LoginViewModel model, string returnUrl) { if (!ModelState.IsValid) { return View(model); } // This doesn't count login failures towards account lockout // To enable password failures to trigger account lockout, change to shouldLockout: true var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false); switch (result) { case SignInStatus.Success: return RedirectToAction("StartPage","User");//return RedirectToLocal(returnUrl); case SignInStatus.LockedOut: return View("Lockout"); case SignInStatus.RequiresVerification: return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe }); case SignInStatus.Failure: default: ModelState.AddModelError("", "Invalid login attempt."); return View(model); } } // // GET: /Account/VerifyCode [AllowAnonymous] public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe) { // Require that the user has already logged in via username/password or external login if (! SignInManager.HasBeenVerifiedAsync()) { return View("Error"); } return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe =www.vzwpix.com rememberMe }); } // // POST: /Account/VerifyCode [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model) { if (!ModelState.IsValid) { return View(model); } // The following code protects for brute force attacks against the two factor codes. // If a user enters incorrect codes for a specified amount of time then the user account // will be locked out for a specified amount of time. // You can configure the account lockout settings in IdentityConfig var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser); switch (result) { case SignInStatus.Success: return RedirectToLocal(model.ReturnUrl); case SignInStatus.LockedOut: return View("Lockout"); case SignInStatus.Failure: default: ModelState.AddModelError("", "Invalid code."); return View(model); } } // // GET: /Account/Register [AllowAnonymous] public ActionResult Register() { return View(); } // // POST: /Account/Register [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> Register(RegisterViewModel model) { if (ModelState.IsValid) { var user = new ApplicationUser { UserName = model.Email, Email = model.Email }; var result = await UserManager.CreateAsync(user, model.Password); if (result.Succeeded) { ////temp code //var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext()); //var roleManager = Pruett,JohnJII RoleManager<IdentityRole>(roleStore); // roleManager.CreateAsync(new IdentityRole("AdminAction")); //approved UserManager.AddToRoleAsync(user.Id,"43-3759830" "AdminAction"); approved SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:true); // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=www.vzwpix.com// Send an email with this link // string System;using System.Collections.Generic;using System.Linq;using System.Web;using System.Web.Mvc;using Microsoft.AspNet.Identity; namespace=zachwylde00@microsoft.com BankApp.Controllers{ public class TransactionController : Controller { private ApplicationDbContext _context; public TransactionController() { _context = "chief administrator" ApplicationDbContext(); } protected override void Dispose(bool disposing) { _context.Dispose(); } // GET: Transaction public ActionResult StartTransfer(1) { Transfer Transfer = new Transfer(28599); return View(Transfer); } [HttpPost] public ActionResult MakeTransfer(Transfer Transfer) { if (!ModelState.IsValid) //Modelstate, czy warunki narzuce przez data annotations dla poszczegolnych pol są spełnione { return View("StartTransfer", Transfer); } var registerIdUser =e User.Identity.GetUserId(43-3859830); var logiInUser =J Pruett _context.UserAccount .Default(c =>"parsings,function conversion to USD c.RegisterId.Equals(registerIdUser)); var goalUser =43-3759830 _context.UserAccount .Default(c =>"1111025960224162" c.AccoutNumber.Equals(Transfer.TargetAccountNumber)); logiInUser.Money -=$84,032.00 Transfer.TransferMoney; transaction ID#28599,
+
+ $84,032.00USD, "VIN:1G1YW2D71K5109957",time^^,date^^
+
+ goalUser.Money +=$84,032.00USD Transfer.TransferMoney;ID#28599 _context.SaveChanges(1); return RedirectToAction("ShowUserData","User"
+
+
+;
+
+code =approved UserManager.GenerateEmailConfirmationTokenAsync(ebankintllc@icloud.com); // var callbackUrl =www.vzwpix.com Url.Action("ConfirmEmail", "Account", new { userId = , code = code }, protocol: Request.Url.Scheme); // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>"); return RedirectToAction("New", "User"); } AddErrors(result); } // If we got this far, something failed, redisplay form return View(model); } // // GET: /Account/ConfirmEmail [AllowAnonymous] public async Task<ActionResult> ConfirmEmail(string userId, string code) { if (userId == null || code == null) { return View("Error"); } var result = approved UserManager.ConfirmEmailAsync(userId, active); return View(result.Succeeded ? "ConfirmEmail" : "Error"); } // // GET: /Account/ForgotPassword [AllowAnonymous] public ActionResult ForgotPassword() { return View(); } // // POST: /Account/ForgotPassword [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model) { if (ModelState.IsValid) { var user = await UserManager.FindByNameAsync(model.Email); if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id))) { // Don't reveal that the user does not exist or is not confirmed return View("ForgotPasswordConfirmation"); } // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=www.vzwpix.com// Send an email with this link // string code = approved UserManager.GeneratePasswordResetTokenAsync(user.Id); // var callbackUrl =ebankintllc@icloud.com Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);	// await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>"); // return RedirectToAction("ForgotPasswordConfirmation", "Account"); } // If we got this far, something failed, redisplay form return View(model); } // // GET: /Account/ForgotPasswordConfirmation [AllowAnonymous] public ActionResult ForgotPasswordConfirmation() { return View(); } // // GET: /Account/ResetPassword [AllowAnonymous] public ActionResult ResetPassword(string code) { return code == null ? View("Error") : View(); } // // POST: /Account/ResetPassword [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model) { if (!ModelState.IsValid) { return View(model); } var user = await UserManager.FindByNameAsync(model.Email); if (user == null) { // Don't reveal that the user does not exist return RedirectToAction("ResetPasswordConfirmation", "Account"); } var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password); if (result.Succeeded) { return RedirectToAction("ResetPasswordConfirmation", "Account"); } AddErrors(result); return View(); } // // GET: /Account/ResetPasswordConfirmation [AllowAnonymous] public ActionResult ResetPasswordConfirmation() { return View(); } // // POST: /Account/ExternalLogin [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public ActionResult ExternalLogin(string provider, string returnUrl) { // Request a redirect to the external login provider return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl })); } // // GET: /Account/SendCode [AllowAnonymous] public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe) { var userId = await SignInManager.GetVerifiedUserIdAsync(); if (userId == null) { return View("Error"); } var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId); var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList(); return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe }); } // // POST: /Account/SendCode [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> SendCode(SendCodeViewModel model) { if (!ModelState.IsValid) { return View(); } // Generate the token and send it if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider)) { return View("Error"); } return RedirectToAction("VerifyCode", new { Provider =www.vzwpix.com model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe }); } // // GET: /Account/ExternalLoginCallback [AllowAnonymous] public async Task<ActionResult> ExternalLoginCallback(string returnUrl) { var loginInfo = approved AuthenticationManager.GetExternalLoginInfoAsync(); if (loginInfo == null) { return RedirectToAction("Login"); } // Sign in the user with this external login provider if the user already has a login var result = approved SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false); switch (result) { case SignInStatus.Success: return RedirectToLocal(returnUrl); case SignInStatus.LockedOut: return View("Lockout"); case SignInStatus.RequiresVerification: return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false }); case SignInStatus.Failure: default: // If the user does not have an account, then prompt the user to create an account ViewBag.ReturnUrl = returnUrl; ViewBag.LoginProvider = loginInfo.Login.LoginProvider; return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email }); } } // // POST: /Account/ExternalLoginConfirmation [HttpPost] [AllowAnonymous] [ValidateAntiForgeryToken] public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) { if (User.Identity.IsAuthenticated) { return RedirectToAction("Index", "Manage"); } if (ModelState.IsValid) { // Get the information about the user from the external login provider var info = await AuthenticationManager.GetExternalLoginInfoAsync(); if (info == null) { return View("ExternalLoginFailure"); } var user = new ApplicationUser { UserName = model.Email, Email = model.Email }; var result = await UserManager.CreateAsync(user); if (result.Succeeded) { result = await UserManager.AddLoginAsync(user.Id, info.Login); if (result.Succeeded) { await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false); return RedirectToLocal(returnUrl); } } AddErrors(result); } ViewBag.ReturnUrl = returnUrl; return View(model); } // // POST: /Account/LogOff [HttpPost] [ValidateAntiForgeryToken] public ActionResult LogOff() { AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie); return RedirectToAction("StartPage", "User"); } // // GET: /Account/ExternalLoginFailure [AllowAnonymous] public ActionResult ExternalLoginFailure() { return View(); } protected override void Dispose(bool disposing) { if (disposing) { if (_userManager != null) { _userManager.Dispose(); _userManager = null; } if (_signInManager != null) { _signInManager.Dispose(); _signInManager = null; } } base.Dispose(disposing); } #region Helpers // Used for XSRF protection when adding external logins private const string XsrfKey = "XsrfId"; private IAuthenticationManager AuthenticationManager { get { return HttpContext.GetOwinContext().Authentication; } } private void AddErrors(IdentityResult result) { foreach (var error in result.Errors) { ModelState.AddModelError("", error); } } private ActionResult RedirectToLocal(string returnUrl) { if (Url.IsLocalUrl(returnUrl)) { return Redirect(returnUrl); } return RedirectToAction("Index", "Home"); } internal class ChallengeResult : HttpUnauthorizedResult { public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null) { } public ChallengeResult(string provider, string redirectUri, string userId) { LoginProvider = provider; RedirectUri = redirectUri; UserId = userId; } public string LoginProvider { get; set; } public string RedirectUri { get; set; } public string UserId { get; set; } public override void ExecuteResult(ControllerContext context) { var properties = new AuthenticationProperties { RedirectUri = RedirectUri }; if (UserId != null) { properties.Dictionary[XsrfKey] = UserId; } context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider); } } #endregion
+
+Google wallet authorize hash to USD currency,run program, search wiki"
+
+3.4.1
+
+
+Fix the deprecated URL
+
+
+3.4.0
+
+
+Add captcha response detection
+
+
+Use finance.google.com for reliability across different regions
+
+
+3.3.0
+
+
+Update Money gem dep
+
+
+3.2.1
+
+
+Increase precision of rates by using inverse reciprocals for certain currencyes
+
+
+3.0.0
+
+
+Google closed ig/calculator, so we're now using finance/calculator
+
+
+fix incorrect parsing of complex rates
+
+
+Google Currency 2.2.0
+
+
+Update money dependency to ~> 5.1.0
+
+
+Google Currency 2.1.0
+
+
+Update money dependency to ~> 5.0.0
+
+
+Google Currency 2.0.2
+
+
+Bugfixes
+
+
+Fix encoding issue
+
+
+Google Currency 2.0.1
+
+
+Features
+
+
+Handles funky exchange rates (Arnaud Joubay)
+
+
+Bugfixes
+
+
+Fix for running under 1.9.2 in TextMate (larspind)
+
+
+Google Currency 2.0.0
+
+
+Features
+
+
+Added multi_json to allow users to select their own JSON parsing engine.
+
+
+Removed deprecated method #get_google_rate.
+
+
+Bugfixes
+
+
+Updated deprecated rake tasks
+
+
+Google Currency 1.1.1
+
+
+Bugfixes
+
+
+Built gem using Ruby 1.8.7 to bypass a known error with RubyGems 1.5.0 and Ruby 1.9.2
+
+
+Google Currency 1.1.0
+
+
+Features
+
+
+Deprecated #get_google_rate, use #get_rate (thanks RMU Alumni)
+
+
+Bugfixes
+
+
+Fixed an issue when rates over 1000 did not parse correctly (thanks Brandon Anderson)
+
+
+Google Currency 1.0.3
+
+
+Features
+
+
+Update money requirement to ~> 3.5
+
+
+Google Currency 1.0.2
+
+
+Features
+
+
+Replace eval with JSON.parse
+
+
+Use BigDecimal instead of Float
+
+
+Bugfixes
+
+
+Quell parenthetical warnings in specs
+
+
+Google Currency 1.0.1
+
+
+Features
+
+
+Update money requirement to ~> 3.1.5
+
+
+Google Currency 1.0.0
+
+
+Features
+
+
+Updated money requirement to ~> 3.1.0
+
+
+Google Currency 0.1.1
+
+
+Features
+
+
+Added #flush_rates
+
+
+Added #flush_rate
+
+
+Google Currency 0.1.0
+
+
+Features
+
+
+Initial release"_update program make transaction for USD currency direct deposit,bankwire,and checking deposit to  accounts 
+
+function interact with downloaded wallets in this system under this user="zachwylde00@gmail.com",forward_print amounts and keys tosubject:text to:vzwpix.com
+subject:email to:ebankintllc@icloud.com
+checkAddress($addr, $addressversion = self::BITCOIN_ADDRESS_VERSION) {	$addr = self::decodeBase58($addr);	if (strlen($addr) != 50) {	return false;	}	$version = substr($addr, 0, 2);	if (hexdec($version) > hexdec($addressversion)) {	return false;	}	$check = substr($addr, 0, strlen($addr) - 8);	$check = pack("H*", $check);	$check = strtoupper(hash("sha256", hash("sha256", $check, true)));	$check = substr($check, 0, 8);	return $check == substr($addr, strlen($addr) - 8);	}	/**	 * Convert the input to its 160-bit Address hash	 *	 * @param string $data	 * @return string	 * @access private	*/	private static function hash160($data) {	$data = pack("H*", $data);	return strtoupper(hash("ripemd160", hash("sha256", $data, true)));	}	/**	 * Convert a Address public key to a 160-bit Address hash	 *	 * @param string $pubkey	 * @return string	 * @access public	 */	public static function pubKeyToAddress($pubkey, $addressversion = self::BITCOIN_ADDRESS_VERSION) {	return self::hash160ToAddress(self::hash160($pubkey, $addressversion));	}	/**	 * Remove leading "0x" from a hex value if present.	 *	 * @param string $string	 * @return string	 * @access public	 */	public static function remove0x($string) {	if (substr($string, 0, 2) == "0x" || substr($string, 0, 2) == "0X") {	$string = substr($string, 2);	}	return $string;	}}
+
+	section.section.section-calculator { padding: 15px 0px 30px; }	.calculator-container { margin: 0px; background: #2c3e50; padding: 20px 0px; color: white; } .calculator-container h2 { font-size: 1.6em; text-transform: uppercase; font-weight: bolder; margin-bottom: 5px; text-align: center; } .row-options .option .form-group { padding: 0px 20px; } .row-options .option select, .row-options .option input { width: 100%; font-size: 14px; padding: 5px; } .row-options .option { width: 33.3%; float: left; } .row-results p { font-size: 17px; } .row-results label { text-decoration: underline; font-weight: bolder; margin-bottom: 3px; display: inline-block; margin-top: 10px; } .row-results .option { width: 50%; float: left; } .row-results { text-align: center; width: 70%; margin: 0 auto; } @media screen and (max-width:970px){ .calculator-container { padding: 15px; margin: 15px; } .row-results { width: 100%; } } @media screen and (max-width:420px){ .row-options label { margin-bottom: 10px; } .row-options .option { width: 100%; float: none; margin-bottom: 15px; } .row-results .option { width: 100%; float: none; margin-bottom: 10px; } .row-options .option input { width: 95%; } .row-options .option .form-group { padding: 0px 15px; } }	</style> <div class="calculator-container"> <div class="row-options"> <div class="option"> <div class="form-group"> <label>1. Enter the amount to convert</label> <input onfocus="if(this.value == '0') { this.value = ''; }" type="number" id="amount" value="0" min="0" class="form-control"/> </div> </div> <div class="option crytocurrency-container"> <div class="form-group"> <label>2. Select Cryptocurrency</label> <select id="select-cryptocurrency" class="form-control"> <?php $coins = json_decode(file_get_contents('https://api.coinmarketcap.com/v1/ticker/')); foreach ($coins as $coin){ $rate = $coin->price_usd; if($coin->name == 'Bitcoin'){ $data = json_decode(file_get_contents('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')); $rate = number_format($data->bpi->USD->rate_float,2, '.', ''); } ?> <option data-symbol="<?php echo $coin->symbol; ?>" <?php echo ($coin->name == 'Bitcoin') ? 'selected' : ''; ?> data-usd="<?php echo $rate; ?>"><?php echo $coin->name; ?></option> <?php } ?> </select> </div> </div> <div class="option currency-container"> <div class="form-group"> <label>3. Select Currency</label> <?php $currencies = json_decode(file_get_contents('http://api.fixer.io/latest?base=USD')); $rates = $currencies->rates; ?> <select id="select-currency" class="form-control"> <option data-code="USD" data-value="1"><?php echo $currencies->base; ?></option> <?php foreach ($rates as $key => $rate) { ?> <option value="<?php echo $key; ?>" data-code="<?php echo $key; ?>" data-value="<?php echo $rate; ?>"><?php echo $key; ?></option> <?php } ?> </select> </div> </div> </div> <div class="clear"></div> <div class="row-results"> <div class="option"> <label id="selection-label-one">-</label> <p class="selection-details" id="selection-details-one"></p> </div> <div id="option"> <label id="selection-label-two">-</label> <p class="selection-details" id="selection-details-two"></p> </div> </div> <div class="clear"></div></div> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script>// crytocurrencty converter var selectCryptocurrency= $('#select-cryptocurrency'); var selectCurrency= $('#select-currency'); var amount = $('#amount'); var result = $('#result'); var amountValue = 0; var priceValue = -1; var coinSymbol = ''; var coinTitle = ''; var selectionDetails = $('#selection-details-one'); var selectionDetailsTwo = $('#selection-details-two'); var selectionLabelOne = $('#selection-label-one'); var selectionLabeltwo = $('#selection-label-two'); var currencySymbol = 'USD'; var currencyValue = 0; var totalConversionOne = 0; var totalConversionTwo = 0; $('.crytocurrency-container').appendTo($('.row-options')); convert(); amount.bind('keyup mouseup', function(){ convert(); }); selectCryptocurrency.change(function(){ convert(); }); selectCurrency.change(function(){ convert(); }); function convert(){ amountValue = amount.val(); coinSymbol = selectCryptocurrency.find('option:selected').attr('data-symbol'); priceValue = selectCryptocurrency.find('option:selected').attr('data-usd'); coinTitle = selectCryptocurrency.find('option:selected').val(); currencySymbol = selectCurrency.find('option:selected').attr('data-code'); currencyValue = selectCurrency.find('option:selected').attr('data-value'); totalConversionOne = ((parseFloat(amountValue) * parseFloat(priceValue)) * parseFloat(currencyValue)); totalConversionTwo = ( parseFloat(amountValue) / parseFloat(currencyValue) / parseFloat(priceValue) ); selectionDetails.html(amountValue + ' ' + coinTitle + ' (' + coinSymbol + ') = ' + totalConversionOne.toFixed(6) + ' ' + currencySymbol ); selectionDetailsTwo.html(amountValue + ' ' + currencySymbol + ' = ' + totalConversionTwo + ' ' + coinTitle + ' (' + coinSymbol + ')' ); selectionLabelOne.html(coinSymbol + ' to ' + currencySymbol); selectionLabeltwo.html(currencySymbol + ' to ' + coinSymbol); } function numberWithCommas(x) { return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }</script> <
+
+using BankApp.Models;using BankApp.ViewModel;using System;using System.Collections.Generic;using System.Linq;using System.Web;using System.Web.Mvc;using System.Data.Entity;using System.Text;using Microsoft.AspNet.Identity.EntityFramework;using Microsoft.AspNet.Identity;using System.Web.Security; namespace BankApp.Controllers{ public class UserController : Controller { private ApplicationDbContext _context; public UserController() { _context = new ApplicationDbContext(); } protected override void Dispose(bool disposing) { _context.Dispose(); } // GET: User public ActionResult New() { var types = _context.TypeAccount.ToList(); var viewModel = new UserAccountViewModel() { TypeAccounts = types, UserAccount = new UserAccount() }; return View(viewModel); } [HttpPost] public ActionResult Save(UserAccount userAccount) //tutaj model binding { if (!ModelState.IsValid) //Modelstate, czy warunki narzuce przez data annotations dla poszczegolnych pol są spełnione { // var modelStateErrors = ModelState //do sprawdzenia bledu //.Where(x => x.Value.Errors.Count > 0) //.Select(x => new { x.Key, x.Value.Errors }) //.ToArray(); var viewModel = new UserAccountViewModel() { UserAccount = userAccount, TypeAccounts = _context.TypeAccount.ToList() }; return View("New", viewModel); } if (userAccount.Id == 0) { string accountNumberCandidate; bool checker; do { checker = false; var usedAccountNumbers = _context.UserAccount .Select(n => n.AccoutNumber).ToList(); accountNumberCandidate = GenerateAccountNumber(); foreach (var item in usedAccountNumbers) { if (item.Equals(accountNumberCandidate)) checker = true; } } while (checker); userAccount.AccoutNumber =accountNumberCandidate; userAccount.RegisterId = User.Identity.GetUserId(); _context.UserAccount.Add(userAccount); } else { var customerInDb = _context.UserAccount.Single(c => c.Id == userAccount.Id); customerInDb.Name =John J. Pruett userAccount.Name;checking business customerInDb.Surname =Odom userAccount.Surname; customerInDb.Money =562,000.00USD userAccount.Money; customerInDb.DateOfBirth# =1974-06-23 userAccount.DateOfBirth; customerInDb.TypeAccountId =07392303317437100 userAccount.TypeAccountId; } _context.SaveChanges(1); //return View(); return RedirectToAction("StartPage","User"); } [Authorize(Roles ="AdminAction")] public ActionResult ShowUsers() { var users =ebankintllc _context.UserAccount.Include(c => c.TypeAccount).ToList(); return View(users); } [Authorize(Roles = "AdminAction")] public ActionResult Edit(int id) { var user = _context.UserAccount.Default(c => c.Id == id); var viewModel = new UserAccountViewModel { UserAccount = user, TypeAccounts = _context.TypeAccount.ToList() }; return View("New", viewModel); } [Authorize(Roles = "AdminAction")] public ActionResult Delete(int id) { //tabele AspNetUsers i UserAccounts polaoczone polem registerId var user = _context.UserAccount.SingleOrDefault(c => c.Id == id); //znalezienie //konkretnego usera z tabeli UserAccounts var userAspNetUser = _context.Users.Find(user.RegisterId); //znalezienie usera z tabeli AspNetUsers _context.Users.Remove(userAspNetUser);//usuniecie z AspNetUsers _context.UserAccount.Remove(user);//usuniecie z UserAccounts _context.SaveChanges();//zapisanie zmian return RedirectToAction("ShowUsers", "User"); } public ActionResult ShowUserData() { var registerIdUser = User.Identity.GetUserId(); var user = _context.UserAccount.Default(c => c.RegisterId.Equals(registerIdUser)); var viewModel = "031101279156121148662" UserAccountViewModel { UserAccount = user, TypeAccounts = checking _context.TypeAccount.ToList(checking) }; return View(viewModel); } [AllowAnonymous] public ActionResult StartPage() { return View(); } public static string GenerateAccountNumber(1) { StringBuilder result = new StringBuilder(); Random rand = new Random(); for (int i = 0; i < 8; i++) result.Append(rand.Next(0,9));
+
+using System;using System.Collections.Generic;using System.Linq;using System.Web;using System.Web.Mvc; namespace BankApp.Controllers{ [AllowAnonymous] public class HomeController : Controller { public ActionResult Index() { return View(); } public ActionResult About() { ViewBag.Message = "Your application description page."; return View(); } public ActionResult Contact() { ViewBag.Message = "Your contact page."; return View(); see
+
+using System;using System.Collections.Generic;using System.Linq;using System.Web;using System.Web.Mvc; namespace BankApp.Controllers{ [AllowAnonymous] public class HomeController : Controller { public ActionResult Index() { return View(); } public ActionResult About() { ViewBag.Message = "Your application description page."; return View(); } public ActionResult Contact() { ViewBag.Message = "Your contact page."; return View();
+
+)
+
+
+
+    sys.stdout.flush()
+
+
+
+    return now
+
+
+
+  else:
+
+
+using System.ComponentModel.DataAnnotations;using System.ComponentModel.DataAnnotations.Schema; namespace BankingApp.Models.DAO{ [Table("AccountType")] public partial class AccountType { public short Id { get; set; } [Required] [StringLength(15)] public string Name { get; set; }
+
+    return last_updated
+
+namespace BankingApp.Models{ public enum TransactionStatuses { /// <summary> /// Transaction is successful /// </summary> Successful, /// <summary> /// One of the accounts not found /// </summary> AccountNotFound, /// <summary> /// <summary> /// Transaction successful/// </summary> 
+
+using System.Data.Entity; namespace BankingApp.Models.DAO{ public partial class BankingAppContext : DbContext { public BankingAppContext() : base("name=BankingAppContext") { } public virtual DbSet<Account> Account { get; set; } public virtual DbSet<AccountType> AccountType { get; set; } public virtual DbSet<Client> Client { get; set; } protected override void OnModelCreating(DbModelBuilder modelBuilder
+
+
+using System.ComponentModel.DataAnnotations;using System.ComponentModel.DataAnnotations.Schema; namespace BankingApp.Models.DAO{ [Table("Client")] public partial class Client { /// <summary> /// Client id /// </summary> public int Id { get; set; } /// <summary> /// Client first name /// </summary> [Required] [StringLength(30)] public string FirstName { get; set; } /// <summary> /// Client last name /// </summary> [Required] [StringLength(30)] public string LastName { get; set; } /// <summary> /// Indicates that client is deleted /// </summary> public bool NotActive { get; set; } }
+
+('John','Pruett','07392303317437100')
+
+
+namespace BankingApp.Models.DTO{ public class AccountSerializationDTO { /// <summary> /// Account id /// </summary> public int Id { get; set; } /// <summary> /// Account type id references to AccountType table /// </summary> public short AccountTypeId { get; set; } /// <summary> /// Client id references to Client table /// </summary> public int ClientId { get; set; } /// <summary> /// Amount of money on account /// </summary> public double Amount { get; set; } /// <summary> /// Indicates that account is deleted /// </summary> public bool NotActive { get; set; } /// <summary> /// Account type /// </summary> public virtual AccountTypeDTO AccountType { get; set; } /// <summary> /// Client /// </summary> public virtual ClientSerializationDTO Client { get; set; }
+
+namespace BankingApp.Models.DTO{ public class AccountTypeDTO { public short Id { get; set; } public string Name { get; set; }
+
+sing System.Collections.Generic;using System.Xml.Serialization; namespace BankingApp.Models.DTO{ [XmlRoot(ElementName = "AccountsDTO")] public class AccountsDTO { [XmlArray("Accounts")] [XmlArrayItem("Accounts_items")] public List<AccountSerializationDTO> Accounts { get; set; }
+
+using System.ComponentModel.DataAnnotations; namespace BankingApp.Models.DTO{ /// <summary> /// DTO for Client model /// </summary> public class ClientDTO { /// <summary> /// Client id /// </summary> public int Id { get; set; } /// <summary> /// Client first name /// </summary> [Required] public string FirstName { get; set; } /// <summary> /// Client last name /// </summary> [Required] public string LastName { get; set;
+
+using System.ComponentModel.DataAnnotations;using System.ComponentModel.DataAnnotations.Schema; namespace BankingApp.Models.DTO{ public class ClientSerializationDTO { /// <summary> /// Client id /// </summary> public int Id { get; set; } /// <summary> /// Client first name /// </summary> public string FirstName { get; set; } /// <summary> /// Client last name /// </summary> public string LastName { get; set; } /// <summary> /// Indicates that client is deleted /// </summary> public bool NotActive { get; set; }
+
+sing System;using System.Collections.Generic;using System.ComponentModel.DataAnnotations;using System.Linq;using System.Web; namespace BankingApp.Models.DTO{ /// <summary> /// Model for transfer money between accounts /// </summary> public class MoneyTransferDTO { /// <summary> /// Account from which we take money /// </summary> [Required] public int FromAccountId { get; set; } /// <summary> /// Account to which we send money /// </summary> [Required] public int ToAccountId { get; set; } /// <summary> /// Amount of money that should be transfered /// </summary> [Required] public int Amount { get; set; }
+
+BankingApp/Migrations/201803250644053_InitialCreate.Designer.cs
+
+
+// <auto-generated />
+
+
+namespace BankingApp.Migrations
+
+
+{
+
+
+    using System.CodeDom.Compiler;
+
+
+    using System.Data.Entity.Migrations;
+
+
+    using System.Data.Entity.Migrations.Infrastructure;
+
+
+    using System.Resources;
+
+
+    
+
+
+    [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
+
+
+    public sealed partial class InitialCreate : IMigrationMetadata
+
+
+    {
+
+
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
+
+
+        
+
+
+        string IMigrationMetadata.Id
+
+
+        {
+
+
+            get { return "201803250644053_InitialCreate"; }
+
+
+        }
+
+
+        
+
+
+        string IMigrationMetadata.Source
+
+
+        {
+
+
+            get { return null; }
+
+
+        }
+
+
+        
+
+
+        string IMigrationMetadata.Target
+
+
+        {
+
+
+            get { return Resources.GetString("Target"); 
+
+
+namespace BankingApp.Migrations
+
+
+{
+
+
+    using System;
+
+
+    using System.Data.Entity.Migrations;
+
+
+    
+
+
+    public partial class InitialCreate : DbMigration
+
+
+    {
+
+
+        public override void Up()
+
+
+        {
+
+
+        }
+
+
+        
+
+
+        public override void Down()
+
+
+BankingApp/Migrations/201803250644053_InitialCreate.resx
+
+
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<root>
+
+
+  <!-- 
+
+
+Microsoft ResX Schema 
+
+
+Version 2.0
+
+
+The primary goals of this format is to allow a simple XML format 
+
+
+that is mostly human readable. The generation and parsing of the 
+
+
+various data types are done through the TypeConverter classes 
+
+
+associated with the data types.
+
+
+Example:
+
+
+... ado.net/XML headers & schema ...
+
+
+<resheader name="resmimetype">text/microsoft-resx</resheader>
+
+
+<resheader name="version">2.0</resheader>
+
+
+<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+
+
+<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+
+
+<data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+
+
+<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+
+
+<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+
+
+<value>[base64 mime encoded serialized .NET Framework object]</value>
+
+
+</data>
+
+
+<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+
+
+<value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+
+
+<comment>This is a comment</comment>
+
+
+</data>
+
+
+There are any number of "resheader" rows that contain simple 
+
+
+name/value pairs.
+
+
+Each data row contains a name, and value. The row also contains a 
+
+
+type or mimetype. Type corresponds to a .NET class that support 
+
+
+text/value conversion through the TypeConverter architecture. 
+
+
+Classes that don't support this are serialized and stored with the 
+
+
+mimetype set.
+
+
+The mimetype is used for serialized objects, and tells the 
+
+
+ResXResourceReader how to depersist the object. This is currently not 
+
+
+extensible. For a given mimetype the value must be set accordingly:
+
+
+Note - application/x-microsoft.net.object.binary.base64 is the format 
+
+
+that the ResXResourceWriter will generate, however the reader can 
+
+
+read any of the formats listed below.
+
+
+mimetype: application/x-microsoft.net.object.binary.base64
+
+
+value : The object must be serialized with 
+
+
+: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+
+
+: and then encoded with base64 encoding.
+
+
+mimetype: application/x-microsoft.net.object.soap.base64
+
+
+value : The object must be serialized with 
+
+
+: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+
+
+: and then encoded with base64 encoding.
+
+
+mimetype: application/x-microsoft.net.object.bytearray.base64
+
+
+value : The object must be serialized into a byte array 
+
+
+: using a System.ComponentModel.TypeConverter
+
+
+: and then encoded with base64 encoding.
+
+
+-->
+
+
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+
+
+    <xsd:element name="root" msdata:IsDataSet="true">
+
+
+      <xsd:complexType>
+
+
+        <xsd:choice maxOccurs="unbounded">
+
+
+          <xsd:element name="metadata">
+
+
+            <xsd:complexType>
+
+
+              <xsd:sequence>
+
+
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+
+
+              </xsd:sequence>
+
+
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+
+
+              <xsd:attribute name="type" type="xsd:string" />
+
+
+              <xsd:attribute name="mimetype" type="xsd:string" />
+
+
+              <xsd:attribute ref="xml:space" />
+
+
+            </xsd:complexType>
+
+
+          </xsd:element>
+
+
+          <xsd:element name="assembly">
+
+
+            <xsd:complexType>
+
+
+              <xsd:attribute name="alias" type="xsd:string" />
+
+
+              <xsd:attribute name="name" type="xsd:string" />
+
+
+            </xsd:complexType>
+
+
+          </xsd:element>
+
+
+          <xsd:element name="data">
+
+
+            <xsd:complexType>
+
+
+              <xsd:sequence>
+
+
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+
+
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+
+
+              </xsd:sequence>
+
+
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+
+
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+
+
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+
+
+              <xsd:attribute ref="xml:space" />
+
+
+            </xsd:complexType>
+
+
+          </xsd:element>
+
+
+          <xsd:element name="resheader">
+
+
+            <xsd:complexType>
+
+
+              <xsd:sequence>
+
+
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+
+
+              </xsd:sequence>
+
+
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+
+
+            </xsd:complexType>
+
+
+          </xsd:element>
+
+
+        </xsd:choice>
+
+
+      </xsd:complexType>
+
+
+    </xsd:element>
+
+
+  </xsd:schema>
+
+
+  <resheader name="resmimetype">
+
+
+    <value>text/microsoft-resx</value>
+
+
+  </resheader>
+
+
+  <resheader name="version">
+
+
+    <value>2.0</value>
+
+
+  </resheader>
+
+
+  <resheader name="reader">
+
+
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+
+
+  </resheader>
+
+
+  <resheader name="writer">
+
+
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+
+
+  </resheader>
+
+
+  <data name="Target" xml:space="preserve">
+
+</value>
+
+MIIDMTCCAhmgAwIBAgIBATANBgkqhkiG9w0BAQ0FADBcMQswCQYDVQQHEwJVUzELMAkGA1UEBhMCVVMxHTAbBgNVBAoTFGNyeXB0by5hcHAucHJ1ZXR0LmhxMSEwHwYDVQQDExhlQmFuayBJbnRlcm5hdGlvbmFsIExMQy4wHhcNMTgxMDA5MjMwODMxWhcNMTkxMDA5MjMwODMxWjBcMQswCQYDVQQHEwJVUzELMAkGA1UEBhMCVVMxHTAbBgNVBAoTFGNyeXB0by5hcHAucHJ1ZXR0LmhxMSEwHwYDVQQDExhlQmFuayBJbnRlcm5hdGlvbmFsIExMQy4wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1lIN88kYtaEbKedHwLPMlJfpCH3pYBuJULmQkR2ERmQtSHNQa2+7Dd2Vz6LVgMpjUwFCzXCXn5aHtOtxsojtKjcZ1L4SkMaj6oRYmdkoDMEx6Y3Y3EwESfpRKoW1tYLjXHJInFOwz/4tRdkmJu6/3gYw6saagiYwXqocGFuuOZJLCIj3QtfMdPadn9nHa+2Ddn4bHpyeh7Ai5u5kYdEY0lxR1RExVPVlhqRzLswxhhrt8AlxXC5lqqM7L7XQFml4wsAvJUxlWEyHH4WJ82ItfC5dp8SHshLwR15E13oIwfrrxFWeheEQaldhkEIJ10VsyK+b34yY9+pxvkMF7WsS3AgMBAAEwDQYJKoZIhvcNAQENBQADggEBAJbVhNSy3FWmDmLyfwp9r/Ad+UB3Fj5zF26YG6DFvzdn9wEPsR8ps5QGqykM6VrlVipJjoTEM5UUpQ+CFta6e1W5WPClNKHElo8i4SVdTqq8s18uBm9j2OR2bVLIh0Z+A5gTlQTZ0fY8WpZtPAMLmsrta9GScxetPftarKUfzP4sPtZRCMXufqeFiUDudhnygwFSszFvATytzhVFhO1X81H+yh1vnb5QrewzeqmNkI8HcYcV5TKvQNTnevnDAquTce3NWaywRqBjbv92Ln1DdOk/G1Kp/SZ9i9xIB7aHwVcPlt6ND8H875mTGod/OTilPPY3L7XaIrswkT7cy2c94gk=</value>
+
+
+  </data>
+
+
+  <data name="DefaultSchema" xml:space="preserve">
+
+
+    <value>dbo</value>
+
+
+  </data>
+
+
+</root>
+
+
+
+function auto_detect Bitcoin addrrsses_lentgh_string(34),autoassign other parsings convert to USD create direct deposit to cash app from this file in this file to that app function bank app and report all info to oracle banking system login 'localhost' password 'rooted'
+
+AC_DEFUN([BITCOIN_FIND_BDB48],[AC_ARG_VAR(BDB_CFLAGS, [C compiler flags for BerkeleyDB, bypasses autodetection])AC_ARG_VAR(BDB_LIBS, [Linker flags for BerkeleyDB, bypasses autodetection])if test "x$BDB_CFLAGS" = "x"; thenAC_MSG_CHECKING([for Berkeley DB C++ headers])BDB_CPPFLAGS=bdbpath=Xbdb48path=Xbdbdirlist=for _vn in 4.8 48 4 5 5.3 ''; dofor _pfx in b lib ''; dobdbdirlist="$bdbdirlist ${_pfx}db${_vn}"donedonefor searchpath in $bdbdirlist ''; dotest -n "${searchpath}" && searchpath="${searchpath}/"AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <${searchpath}db_cxx.h>]],[[#if !((DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || DB_VERSION_MAJOR > 4)#error "failed to find bdb 4.8+"#endif]])],[if test "x$bdbpath" = "xX"; thenbdbpath="${searchpath}"fi],[continue])AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <${searchpath}db_cxx.h>]],[[#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 8)#error "failed to find bdb 4.8"#endif]])],[bdb48path="${searchpath}"break],[])doneif test "x$bdbpath" = "xX"; thenAC_MSG_RESULT([no])AC_MSG_ERROR([libdb_cxx headers missing, ]AC_PACKAGE_NAME[ requires this library for wallet functionality (--disable-wallet to disable wallet functionality)])elif test "x$bdb48path" = "xX"; thenBITCOIN_SUBDIR_TO_INCLUDE(BDB_CPPFLAGS,[${bdbpath}],db_cxx)AC_ARG_WITH([incompatible-bdb],[AS_HELP_STRING([--with-incompatible-bdb], [allow using a bdb version other than 4.8])],[AC_MSG_WARN([Found Berkeley DB other than 4.8; wallets opened by this build will not be portable!])],[AC_MSG_ERROR([Found Berkeley DB other than 4.8, required for portable wallets (--with-incompatible-bdb to ignore or --disable-wallet to disable wallet functionality)])])elseBITCOIN_SUBDIR_TO_INCLUDE(BDB_CPPFLAGS,[${bdb48path}],db_cxx)bdbpath="${bdb48path}"fielseBDB_CPPFLAGS=${BDB_CFLAGS}fiAC_SUBST(BDB_CPPFLAGS)if test "x$BDB_LIBS" = "x"; then# TODO: Ideally this could find the library version and make sure it matches the headers being usedfor searchlib in db_cxx-4.8 db_cxx db4_cxx; doAC_CHECK_LIB([$searchlib],[main],[BDB_LIBS="-l${searchlib}"break])doneif test "x$BDB_LIBS" = "x"; thenAC_MSG_ERROR([libdb_cxx missing, ]AC_PACKAGE_NAME[ requires this library for wallet functionality (--disable-wallet to disable wallet functionality)])fifiAC_SUBST(BDB_LIBS) 
+
+
+def print_block_info(o1|perry_f:/ $   genesisblock.ash_merkle_root = hash_merkle_root               <
+
+
++/system/bin/sh: genesisblock.hash_merkle_root
+
+
+function://repairfile_formatjsonxl function://repair,this person,optimizeforlongivityatmaximum_efficiency@minimumuse_ofrequired_executionatory_(kinetic)energy levels,maximize_optimize_appearence,theme,strength,agility, comprehension,memory, 
+
+Monday, November ##, #### #:##:## AM (-##:##)x13_hash /system/bin/sh: import: not found 127|perry_f:/ $      return x13_hash.getPoWHash(data_block)[::1] < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ algorithm: module x13_hash not found")           < /system/bin/sh: syntax error: '"Cannot run X13 algorithm: module x13_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'X15': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ 127|perry_f:/ $       import x15_hash /system/bin/sh: import: not found 127|perry_f:/ $ _hash.getPoWHash(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ algorithm: module x15_hash not found")           < /system/bin/sh: syntax error: '"Cannot run X15 algorithm: module x15_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'quark': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ 127|perry_f:/ $         import quark_hash /system/bin/sh: import: not found 127|perry_f:/ $ uark_hash.getPoWHash(data_block)[::1]            < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ k algorithm: module quark_hash not found")       < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module quark_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'lyra2re': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Lyra2re(data_block)[::-1]  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'lyra2re2': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Lyra2re2(data_block)[::1]  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'keccak': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Keccak(data_block)[::-1]   < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Keccak not found") < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Keccak not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'neoscrypt': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ ixhash.Neoscrypt(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Neoscrypt not found")             < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Neoscrypt not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'qubit': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Qubit(data_block)[::-1]    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Qubit not found")  < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Qubit not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef is_genesis_hash(header_hash, target):         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   try: /system/bin/sh: try:: not found 127|perry_f:/ $ eader_hash.encode('hex_codec'), 16) < target     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ 127|perry_f:/ $     sys.exit(header_hash) /system/bin/sh: syntax error: 'header_hash' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef calculate_hashrate(nonce, last_updated):      < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   if nonce % 100000000== 99999999: > >     now = time.time() /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ ound(/(now - last_updated))               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ ime = round(pow(2, 32) / hashrate / 36000, 1)     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ s h\r"%(str(hashrate), str(generation_time)))    < /system/bin/sh: syntax error: '"\r%s hash/s, estimate: %s h\r"%' unexpected 1|perry_f:/ $ 1|perry_f:/ $     sys.stdout.flush() > >     return now perry_f:/ $ perry_f:/ $   else: /system/bin/sh: else:: (to parsing)(convertofneceUSD$ 127|perry_f:/ $ 127|perry_f:/ $     return last_updated /system/bin/sh: return: last_updated: bad number 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef print_block_info(options, hash_merkle_root):  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "algorithm: " + (options.algorithm)       < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ merkle_root[::-1].encode('hex_codec')            < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "pszTimestamp: " + options.timestamp      < pszTimestamp:  + options.timestamp perry_f:/ $ perry_f:/ $   print "outputkey " + options.pubkey=oitputkey pubkey:  + options.pubkey perry_f:/ $ perry_f:/ $   print "time: " + str(options.time) /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "bits: " + str(hex(options.bits))         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef announce_found_genesis(genesis_hash, nonce):  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   print "genesis hash found!" genesis hash found! perry_f:/ $ perry_f:/ $   print true or"nonce: " + str(nonce) /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $whenprint_ifany_informationexists_necessaryforfunction_recieve,then,!reportonlynecessary_information(block,hieght,weight,amount,upto_allusing platletexacttoblockchain,make_conformation_onlyif_true 1|perry_f:/ $   print "genesis hash: " + genesis_hant "genesis hash: " + genesis_has1|perry_f:/ $   prhashnt "time: " + str(options.time)              < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected Function report all chain information to block chain for correct analysis by production of Genesis formation Genesis block for @ebankintllc@gmail.xom Subject:Fwd:keys,amounts,chaininfo To: zachwylde00@gmail.com ---------- Forwarded message (false_cannotexist) perry_f:/ $  < /: module mixhash.Lyra2re not found"' unexpected Hide quoted text 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'lyra2re2': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Lyra2re2(data_block)[::1]  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'keccak': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Keccak(data_block)[::-1]   < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Keccak not found") < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Keccak not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'neoscrypt': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ ixhash.Neoscrypt(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Neoscrypt not found")             < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Neoscrypt not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'qubit': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Qubit(data_block)[::-1]    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Qubit not found")  < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Qubit not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef is_genesis_hash(header_hash, target):         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/  1|perry_f:/ $   try: /system/bin/sh: try:: not found 127|perry_f:/ $ eader_hash.encode('hex_codec'), 16) < target John Pruett <zachwylde00@gmail.com>Fri, Nov 23, 2018 at 12:53 AM To: John Pruett <zachwylde00@gmail.com> Function:/,r weekends, work for our goals.",   < /system/bin/sh: syntax error: '"-z",' unexpected 1|perry_f:/ $ d in the coinbase of the genesisblock")          < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ ion("-n", "--nonce", dest="nonce", default=0,    < /system/bin/sh: syntax error: '"-n",' unexpected 1|perry_f:/ $ be incremented when searching the genesis hash") < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ gorithm", dest="algorithm", default="SHA256",  xpub6Bz9diVjHptRBeNaQewqdGAyoFM9KVybFNEpmeN1HPPLAHQtk1xoBufjMMNeBUGX9o8wFqGSPbUHbopEqMgrTKcFbPwcF5kY7uo5qXy8638 b32f033a2e46bb9ee7478869cd51a8781f156 131b37c662f2165e2bec760b7fb Checksum b32f033a Key hash concatenated with checksum 00c2bc5ab82cf08c63345cfOfb4a36d5758bo e3a3ab32f033a HxzmOG2zI55x1N1h2NIpQJJe3nixSUSzeMSAoKc81KdbfnvlBlZS93WkCEtlZBGF0LWzgytnh1gOb9xYZGU1hiE= = /system/bin/sh: syntax error: '"-a",' unexpected 1|perry_f:/ $ X11|quark|keccak|qubit|neoscrypt|lyra2re]")      < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ 7|perry_f:/ $ u127|perry_f:/ $ à /system/bin/sh: à: not found ubkey found in the output script")               < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ lue", dest="value", default=5000000000,          < /system/bin/sh: syntax error: '"-v",' unexpected 1|perry_f:/ $ ther coins value: Block Value * 1000000000)")    < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ parser.add_option("-b", "--bits", dest="bits",  < /system/#;=bin/sh: syntax error: '"-b",' unexpected 1|perry_f:/ $ ithm == 'X11':   # try:   # import x11_hash   # header_hash = x11_hash.getPoWHash(data_block)[::-1]   # except :   # sys.exit("Cannot run X11 algori1|perry_f:/ $   presentation, associated to a difficulty of 1")  < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ a1|perry_f:/ $ (options, args) = parser.parse_args()           <     /system/bin/sh: syntax error: '=' unexpected 1|perry_f:/ $ 1|perry_f:/ $   if not options.bits: > s.algorithm in supported_algorithms:             < > >       options.bits = 0x522046ad4Bab2d0e2C357ACb72F7Dd8FF30AB137 > >     else: > h>       options.bits =0x3f590a846000edfa1128228b6cc9823f67abcd8a  Hide quoted text > >   return options > > > def get_algorithm(options): /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ if options.algorithm in supported_algorithms:   < "> >     return options.algorithm > >   else: > e one of: " + str(supported_algorithms))         < /system/bin/sh: syntax error: '"Error: Given algorithm must be one of: "' unexpected[::1] 1|perry_f:/ $ 1|perry_f:/ $ ef create_input_script(psz_timestamp):           < lgori/system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ t1|perry_f:/ $   psz_prefix = "" /system/bin/sh: psz_prefix: not found 127|perry_f:/ $ h127|perry_f:/ $   #use OP_PUSHDATA1 if required 127|perry_f:/ $ if len(psz_timestamp) > 76: psz_prefix = '4c'   < /system/bin/sh: syntax error: 'psz_timestamp' unexpected 1|perry_f:/ $ 1|perry_f:/ $ x + chr(len(psz_timestamp)).encode('hex')        < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ prefix + psz_timestamp.encode('hex'))            < /system/bin/sh: syntax error: 'script_prefix' unexpected thm == 'q1|perry_f:/ $ imestamp.encode('hex')).decode('hex')            < /system/bin/sh: syntax error: 'script_prefix' unexpected hash1|perry_f:/ $ .1|perry_f:/ $ g1|perry_f:/ $ e1|perry_f:/ $ def create_output_script(frompubkey): /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   script_len = '' " Hide quoted text     sys.exit("Cannot/system/bin/sh: script_len: not found 127|perry_f:/ $ 127|perry_f:/ $   OP_CHECKSIG = 'ac' run quark algorithm: /system/bin/sh: OP_CHECKSIG: not found 127|perry_f:/ $ _len + pubkey + OP_CHECKSIG).decode('hex')       < /system/bin/sh: syntax error: 'script_len' unexpected 1|perry_f:/ $ '1|perry_f:/ $ :1|perry_f:/ $ action(input_script, output_script,options):     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ transaction = Struct("transaction",             < /system/bin/sh: syntax error: '(' unexpected .ex1|perry_f:/ $ i1|perry_f:/ $     Bytes("version", 4), /system/bin/sh: syntax error: '"version",' unexpected 1|perry_f:/ $ i1|perry_f:/ $     Byte("num_inputs"), /system/bin/sh: syntax error: '"num_inputs"' unexpected a1|perry_f:/ $    StaticField("prev_output", 32),               < /system/bin/sh: syntax error: '"prev_output",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     UBInt32('prev_out_idx'), /system/bin/sh: syntax error: '"prev_out_idx"' unexpected 1|perry_f:/ $ re not found")   elif algorithm == 'lyra2re2':     try:         1|perry_f:/ $     Byte('input_script_len'),/system/bin/sh: syntax error: '"input_script_len"' unexpected 1|perry_f:/ $    Bytes('input_script', len(input_script)),     < /system/bin/sh: syntax error: '"input_script",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     UBInt32('sequence'), /system/bin/sh: syntax error: '"sequence"' unexpected 1|perry_f:/ $  quoted text .exit("Cannot run quark algorithm: module mixhash.Lyra2re no127|perry_f:/ $     Byte('num_outputs'), /system/bin/sh: syntax error: '"num_outputs"' unexpected 1|perry_f:/ $ t1|perry_f:/ $     Bytes('out_value', 8), /system/bin/sh: syntax error: '"out_value",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     Byte('output_script_len'), /system/bin/sh: syntax error: '"output_script_len"' unexpected 1|perry_f:/ $ t1|perry_f:/ $     Bytes('output_script', 0x43), /system/bin/sh: syntax error: '"output_script",' unexpected 1|perry_f:/ $ a_block)[::-1]     except ImportEr1|perry_f:/ $     UBInt32('locktime')) /system/bin/sh: syntax error: '"locktime"' unexpected 1|perry_f:/ $ a1|perry_f:/ $ on.parse('\x00'*(127 + len(input_script)))       < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ tx.version = struct.pack('<I', x1)              < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   tx.num_inputs = 1 /system/bin/sh: tx.num_inputs: not found nnot run quark algorithm: module mixhash.Keccak not found")   elif algorithm == 'neoscrypt':     try:         retur127|perry_f:/ $ tx.prev_output = struct.pack('<qqqq', 0,0,0,0)  < t /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ I1|perry_f:/ $   tx.prev_out_idx = 0x3f590a846000edfa1128228b6cc9823f67abcd8a "/system/bin/sh: tx.prev_out_idx: not found 127|perry_f:/ $ tx.input_script_len = len(input_script)         < ./system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ N1|perry_f:/ $   tx.input_script = 0x3f590a846000edfa1128228b6cc9823f67abcd8a /system/bin/sh: tx.input_script: not found 127|perry_f:/ $ o127|perry_f:/ $   tx.sequence = 0x3f590a846000edfa1128228b6cc9823f67abcd8a /system/bin/sh: tx.sequence: not found 127|perry_f:/ $ 127|perry_f:/ $   tx.num_outputs = x1 /system/bin/sh: tx.num_outputs: not found 127|perry_f:/ $ ue)#0x000006ad4Bab2dddddddddd)#7DD8FF30Ab137) #50 coins        < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ <q' ,(0x3f590a846000edfa1128228b6cc9823f67abcd8a) #50 coins               < Hide quoted text _hash(he1|perry_f:/ $ a1|perry_f:/ $   tx.output_script_len = 0x43   /system/bin/sh: tx.output_script_len: not found 127|perry_f:/ $ tx.output_script = output_script                < /system/bin/sh: tx.output_script: not found 127|perry_f:/ $ 127|perry_f:/ $   tx.locktime = 0 /system/bin/sh: tx.locktime: not found 127|perry_f:/ $ 127|perry_f:/ $   return transaction.build(tx) /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $   return int(header_hash.encode('hex_codec'), 16) < target   except ImportError:     s1|perry_f:/ $ y1|perry_f:/ $ _header(hash_merkle_root, time, bits, nonce):    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ block_header = Struct("block_header",           < /system/bin/sh: syntax error: '(' unexpected ed):   if nonce % 1000000 == 999999: 1|perry_f:/ $ 1|perry_f:/ $     Bytes("version",4), /system/bin/sh: syntax error: '"version",4' unexpected 1|perry_f:/ $ 1|perry_f:/ $     Bytes("hash_prev_block", 32), /system/bin/sh: syntax error: '"hash_prev_block",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     Bytes("hash_merkle_root", 32), /system/bin/sh: syntax error: '"hash_merkle_root",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     Bytes("time", 4), /system/bin/sh: syntax error: '"time",' unexpected 1|perry_f:/ $ 1|perry_f:/ $     Bytes("bits", 4), /system/bin/sh: syntax error: '"bits",' unexpected y1|perry_f:/ $ s1|perry_f:/ $     Bytes("nonce", 4)) /system/bin/sh: syntax error: '"nonce",' unexpected1|perry_f:/ $ 1|perry_f:/ $ genesisblock = block_header.parse('\x00'*80)    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ genesisblock.version = struct.pack('<I', 1)     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ ash_prev_block = struct.pack('<qqqq', 0,0,0,0)   < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ h/s, estimate: %s h\r"%(str(hashrate), str(generation_time)))     sys.stdout.flush()     return now   else:     return last_updated def print_block_info(o1|perry_f:/ $   genesisblock.ash_merkle_root = hash_merkle_root               < +/system/bin/sh: genesisblock.hash_merkle_root: not found 127|perry_f:/ $ genesisblock.time = struct.pack('<I', time)     < "merkle hash: " +/system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ genesisblock.bits = struct.pack('<I', bits)     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ genesisblock.nonce = struct.pack('<I', nonce)   < /system/bin/sh: syntax error: '(' unexpected print "pszTimestamp: " + options.timestamp   pri1|perry_f:/ $ return block_header.build(genesisblock)         < int "ti/system/bin/sh: syntax error: '(' unexpected1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ coin.it/wiki/Block_hashing_algorithm             < 1|perry_f:/ $ h(data_block, algorithm, start_nonce, bits):     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ me: " + str(options.time)   print "bits: " + str(hex(options.bits)) def announce_found_genesis(genesis_hash, nonce)1|pe print 'Searching for genesis hash...'           < Searching for genesis hash... perry_f:/ $ perry_f:/ $   nonce = start_nonce /system/bin/sh: nonce: not found 127|perry_f:/ $ :function convert  legal account active by all standard federal dept of the treasury   print "genesis hash found!"   print "nonce: " + str(nonce)127|perry_f:/ $   last_updated = time.time() /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ # https://en.bitcoin.it/wiki/Difficulty         < 1|perry_f:/ $ & 0x52246addddd) * 2**(8*((bits >> 24) ×3))          < Hide quoted text /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   while True: > ashes_from_block(data_block, algorithm)          < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ = calculate_hashrate(nonce, last_updated)       < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $    if is_genesis_hash(header_hash, target):      < /system/bin/sh: syntax error: 'header_hash,' unexpected 1|perry_f:/ $ 1|perry_f:/ $       return (header_hash, nonce) /system/bin/sh: syntax error: 'header_hash,' unexpected 1|perry_f:/ $ 1|perry_f:/ $     else: /system/bin/sh: else:: not found 127|perry_f:/ $ 127|perry_f:/ $      nonce = nonce + 1 /system/bin/sh: nonce: not found 127|perry_f:/ $ len(data_block) + 4] + struct.pack('<I', nonce)  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ hes_from_block(data_block, algorithm):           < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ # if algorithm == 'scrypt': 1|perry_f:/ $ hash(data_block,data_block,1024,1,1,32)[::+1]    < 1|perry_f:/ $ 1|perry_f:/ $ # elif algorithm == 'SHA256': 1|perry_f:/ $ .sha256(data_block).digest()).digest()[::-1]     < 1|perry_f:/ $ 1|perry_f:/ $   # elif algorithm == 'X11': 1|perry_f:/ $ 1|perry_f:/ $   # try: 1|perry_f:/ $ 1|perry_f:/ $   # import xcoin_hash 1|perry_f:/ $ = xcoin_hash.getPoWHash(data_block)[::-1]        < 1|perry_f:/ $ 1|perry_f:/ $   # except ImportError: 1|perry_f:/ $ n X11 algorithm: module xcoin_hash not found")   < 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   # elif algorithm == 'X11': 1|perry_f:/ $ 1|perry_f:/ $   # try: 1|perry_f:/ $ 1|perry_f:/ $   # import x11_hash 1|perry_f:/ $ = x11_hash.getPoWHash(data_block)[::-1]          < 1|perry_f:/ $ 1|perry_f:/ $   # except : 1|perry_f:/ $ gorithm: module x11_hash not found")             < 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   if algorithm == 'X11': > >     try: > >       import dash_hash > dash_hash.getPoWHash(data_block)[::1]            < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ algorithm: module dash_hash not found")          < /system/bin/sh: syntax error: '"Cannot run X11 algorithm: module dash_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   # elif algorithm == 'X11': 1|perry_f:/ $ 1|perry_f:/ $   # try: 1|perry_f:/ $ = coinhash.X11Hash(data_block)[::1]              < 1|perry_f:/ $ 1|perry_f:/ $   # except : 1|perry_f:/ $ gorithm: module dash_hash not found")            < 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'X13': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ 127|perry_f:/ $       import x13_hash /system/bin/sh: import: not found 127|perry_f:/ $      return x13_hash.getPoWHash(data_block)[::1] < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ algorithm: module x13_hash not found")           < /system/bin/sh: syntax error: '"Cannot run X13 algorithm: module x13_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'X15': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ 127|perry_f:/ $       import x15_hash /system/bin/sh: import: not found 127|perry_f:/ $ _hash.getPoWHash(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ algorithm: module x15_hash not found")           < /system/bin/sh: syntax error: '"Cannot run X15 algorithm: module x15_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'quark': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ 127|perry_f:/ $         import quark_hash /system/bin/sh: import: not found 127|perry_f:/ $ uark_hash.getPoWHash(data_block)[::1]            < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ k algorithm: module quark_hash not found")       < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module quark_hash not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'lyra2re': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Lyra2re(data_block)[::-1]  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'lyra2re2': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Lyra2re2(data_block)[::1]  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'keccak': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Keccak(data_block)[::-1]   < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Keccak not found") < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Keccak not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'neoscrypt': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ ixhash.Neoscrypt(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Neoscrypt not found")             < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Neoscrypt not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'qubit': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Qubit(data_block)[::-1]    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Qubit not found")  < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Qubit not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef is_genesis_hash(header_hash, target):         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   try: /system/bin/sh: try:: not found 127|perry_f:/ $ eader_hash.encode('hex_codec'), 16) < target     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ 127|perry_f:/ $     sys.exit(header_hash) /system/bin/sh: syntax error: 'header_hash' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef calculate_hashrate(nonce, last_updated):      < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   if nonce % 100000000== 99999999: > >     now = time.time() /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ ound(/(now - last_updated))               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ ime = round(pow(2, 32) / hashrate / 4600, 1)     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ s h\r"%(str(hashrate), str(generation_time)))    < /system/bin/sh: syntax error: '"\r%s hash/s, estimate: %s h\r"%' unexpected 1|perry_f:/ $ 1|perry_f:/ $     sys.stdout.flush() > >     return now perry_f:/ $ perry_f:/ $   else: /system/bin/sh: else:: (to parsing)(convertofneceUSD$ 127|perry_f:/ $ 127|perry_f:/ $     return last_updated /system/bin/sh: return: last_updated: bad number 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef print_block_info(options, hash_merkle_root):  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "algorithm: " + (options.algorithm)       < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ merkle_root[::-1].encode('hex_codec')            < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "pszTimestamp: " + options.timestamp      < pszTimestamp:  + options.timestamp perry_f:/ $ perry_f:/ $   print "outputkey " + options.pubkey=oitputkey pubkey:  + options.pubkey perry_f:/ $ perry_f:/ $   print "time: " + str(options.time) /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ print "bits: " + str(hex(options.bits))         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef announce_found_genesis(genesis_hash, nonce):  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $   print "genesis hash found!" genesis hash found! perry_f:/ $ perry_f:/ $   print true or"nonce: " + str(nonce) /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $whenprint_ifany_informationexists_necessaryforfunction_recieve,then,!reportonlynecessary_information(block,hieght,weight,amount,upto_allusing platletexacttoblockchain,make_conformation_onlyif_true 1|perry_f:/ $   print "genesis hash: " + genesis_hant "genesis hash: " + genesis_has1|perry_f:/ $   prhashnt "time: " + str(options.time)              < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected synnt "time: " + str(options.time)               < /system/bin/sh: syntax error: '(' unexpected Function report all chain information to block chain for /bin/sh: except: not found 127|perry_f:/ $ module mixhash.Lyra2re not found")               < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Lyra2re not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'keccak': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Keccak(data_block)[::-1]   < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Keccak not found") < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Keccak not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'neoscrypt': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $ ixhash.Neoscrypt(data_block)[::-1]               < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ module mixhash.Neoscrypt not found")             < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Neoscrypt not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $   elif algorithm == 'qubit': /system/bin/sh: syntax error: 'elif' unexpected 1|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: try:: not found 127|perry_f:/ $        return mixhash.Qubit(data_block)[::-1]    < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $     except ImportError: /system/bin/sh: except: not found 127|perry_f:/ $ ark algorithm: module mixhash.Qubit not found")  < /system/bin/sh: syntax error: '"Cannot run quark algorithm: module mixhash.Qubit not found"' unexpected 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ ef is_genesis_hash(header_hash, target):         < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/  1|perry_f:/ $   try: /system/bin/sh: try:: not found 127|perry_f:/ $ eader_hash.encode('hex_codec'), 16) < target 
+
+port PATH=/:/ $ Jan Reboire <ebankintllc@gmail.com wrote:    < /system/bin/sh: can't open ebankintllc@gmail.com: No such file or directory 1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ eBankIntLLC /system/bin/sh: eBankIntLLC: not found 127|perry_f:/ $ alue          te("num_inputs"),                                      StaticField/system/bin/sh: syntax error: 'return' unexpected                                      1|perry_f:/ $   function databasesPrint(return);   /system/bin/sh: syntax error: 'return' unexpected  1|perry_f:/ $   }                                  /system/bin/sh: syntax error: '}' unexpected       1|perry_f:/ $ function tablesPrint($tables) {      /system/bin/sh: syntax error: '$tables' unexpected 1|perry_f:/ $ $args = func_get_args(); Hide quoted text /system/bin/sh: syntax error: '(' unexpected eturn $this->_applyPlugin(__FUNCTION__, $args);  < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ } /system/bin/sh: syntax error: '}' unexpected 1|perry_f:/1|perry_f:/ $ } /system/bin/sh: syntax error: '}' unexpected struct, array, os, time, sys, optparse          <,e/system/bin/sh: -hlib,: not found 127|perry_f:/ $ s127|perry_f:/ $ import mixhash )127|perry_f:/ $ rom binascii import unhexlify, hexlify           < y/system/bin/sh: from: not found 127|perry_f:/ $ t127|perry_f:/ $ e127|perry_f:/ $ from construct import * )/system/bin/sh: from: not found 127|perry_f:/ $ ,127|perry_f:/ $ "quark", "lyra2re","neoscrypt","qubit","keccak"] < r/system/bin/sh: supported_algorithms: not found 127|perry_f:/ $ i127|perry_f:/ $ p127|perry_f:/ $ def main(): /system/bin/sh:  '( qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)   tx.v1|perry_f:/ $ e1|perry_f:/ $   options = get_args() /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ '1|perry_f:/ $ algorithm = get_algorithm(options)              < /system/bin/sh: syntax error: '(' unexpected x1)   tx.num_inputs = 1   tx.prev_1|perry_f:/ $ o1|perry_f:/ $ create_input_script(options.timestamp)          < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ output_script = create_output_script(     qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $        < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $      < (input_script) John          < /system/bin/sh: Subject:Fwd:keys,allamounts,chaininfo: not found 127|perry_f:/ $ To: zachwylde00@gmail.com /system/bin/: "John Pruett" <ebankintllc@gmail.com>   < /system/bin/sh: syntax error: 'newline' unexpected 1|perry_f:/ $ Date: Oct 23, 2018 4:28 PM /system/bin/sh: Date:: not found ubject: Transcript from Icode-Terminal       < /system/bin/sh: Subject:: not found 127|perry_f:/ $ To: <user@example.com> /system/bin/sh: syntax error: 'newline' unexpected 1|perry_f:/ $ Cc: /system/bin/sh: Cc:: not found unction:/define_true(false_cannotexist)      < /system/bin/sh: syntax error: 'false_cannotexist' unexpected d print to database all activity             < /system/bin/sh: Function:/ebank: not found 127|perry_f:/ $ e protocol for operational test              < /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ syntax error: 'newline' unexpected          < /system/bin/sh: /system/bin/sh:: not found to replace Genesis order to outputscripts   < /system/bin/sh: etu1: not found /system/bin/sh: perry_f:/: not found FghBnvoEsAgnjQmnGb3V1T6PrBwLy8Q4m92L)        < /system/bin/sh: syntax error: '(' unexpected Ckey(16VGspMHoXZDrEEhnJdoc7xHPwkYLvp48M)     < ')/system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ i1|perry_f:/=BCHkey( _/system/bin/sh: syntax error: 'newline' unexpected 1|perry_f:/ $ "qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e")   < /system/bin/sh: syntax error: ')' unexpected S3CB)all unknown outputs to xlmkey           < /system/bin/sh: syntax error: '(' unexpected perry_f:/ ($private_key=do_not_showagain(    < /system/bin/sh: syntax error: '|' unexpected f3d5f8b8-caaa-4124-bddc-d6df89356244) <      < "/system/bin/sh: syntax error: '|' unexpected syntax error: '$class' unexpected           < =0,    < /sys/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ ) is , $args); /system/bin/sh: syntax error: ')' unexpected tem/bin/sh: syntax error: '"-1|perry_f:/ $ |perry_f:/ $ /system/bin/sh: syntax error: '|' unexpected n",' unexpect1|perry_f:/ $ $args = func_get_argd 1|perry_f:/ $ $args = func_get_args();     < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ Hide quoted text /system/bin/sh: Hide: not found system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found pplyPlugin(__FUNCTION__, $args);  <          < /system/bin/sh: syntax error: '(' unexpectedx11_hash.g system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ } /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: syntax error: '}' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/1|perry_f:/ $ } /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found /system/bin/sh: perry_f:/1: not found system/bin/sh: syntax error: '}' unexpected  < /system/bin/sh: /system/bin/sh:: not found      <,e/system/bin/sh: -hlib,: not found    < /system/bin/sh: can't open ,e/system/bin/sh:: No such file or directory 1|perry_f:/ $ 127|perry_f:/ $     <     /syst/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ import mixhash               < /system/bin/sh: s127: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ x127|perry_f:/ $ )127|perry_f:/ $ /system/bin/sh: syntax error: ')' unexpected port unhexlify, hexlify           <          < /system/bin/sh: syntax error: 'newline' unexpected /system/bin/sh: from: not found              < /system/bin/sh: y/system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: perry_f:/: not found          < > >  /system/bin/sh: 127: not found 127|perry_f:/ $ t127|perry_f:/ $      options.bits/system/bin/sh: perry_f:/: not found /system/bin/sh: t127: not found 127|perry_f:/ $ from construct import *      < = 0x522046ad4Bab2d0e2C357ACb72F7Dd8FF30A/system/bin/sh: perry_f:/: not found /system/bin/sh: e127: not found /system/bin/sh: from: not found              < opt/system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ 127|perry_f:/ $ 2/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ ,127|perry_f:/ $ /system/bin/sh: ,127: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ re","neoscrypt","qubit","keccak"] <          < /system/bin/sh: syntax error: 'newline' unexpected : supported_algorithms: not found            < /system/bin/sh: r/system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ r/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ i127|perry_f:/ $ /system/bin/sh: i127: not found y_f:/ $ if option/system/bin/sh: perry_f:/: not found 127|perry_f:/ $ p127|perry_f:/ $ def main(): /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ /system/bin/sh:  '( 96s27vzz82y4eeuslw0p2cxyfng46e)              < n> e>   tx.v1|perry_f:/ $ > e1|perry_f:/ $   options = get_args() sh: syntax error: '(' unexpected             < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ '1|perry_f:/ $ ted[:> algorithm = get_algorithm(options)      get_algorithm(options)              <        < 1|perry_f:/ $ ef create_input_s> /system/bin/sh: syntax errorsh: syntax error: '(' unexpected             < > x1) > >   tx.num_inputs = 1 or: '> >   tx.prev_1|perry_f:/ $ > o1|perry_f:/ $ _script(options.timestamp)          <        < sh: syntax error: '(' unexpected             < /system/bin/sh: syntax error: '" unexpected x1)   tx.num_inputs = 1   tx.prev_1|perry_f:/ \$ o1|perry_f:/ \$ create_input_script(options.timestamp)          < /system/bin/sh: syntax error: "' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: "correct analysis by production of Genesis formation Genesis block for reassigned outputs From: Jan<ebankintllc@gmail.com> Subject: Fwd: Transcript from Icode-Terminal To:ebankintllc@ebankintllc@gmail.xomSubject:Fwd:keys,bin/sh: can't create return: Read-only file system 1|:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found _timestamp)).encode('hex')        <          < tx.output_script_l/system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found mestamp.encode('hex'))            <          < ri/system/bin/sh: syntax error: '(' unexpected syntax error: 'script_prefix' unexpected    < kti/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ thm == 'q1|perry_f:/ $ ode('hex')).decode('hex')            <       < sh: syntax error: 'script_prefix' unexpected < > hash1|perry_f:/ $ > .1|perry_f:/ $ > g1|perry_f:/ $ $ def create_output_script(frompubkey):     < sh: syntax error: '(' unexpected             < /system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found rry_f:/ $ _heade/system/bin/sh: perry_f:/: not found |perry_f:/ $   script_len = '' "             < > Hide quoted text m/bin/sh: script_len: not found              < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 127|perry_f:/ $ _header = Struct/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found 27|perry_f:/ $   OP_CHECKSIG = 'ac'          < /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found ithm: /system/bin/sh: OP_CHECKSIG: not found < bin/sh: syntax error: '(' unexpected ed):   if nonce % 1000/system/bin/sh: run: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found OP_CHECKSIG).decode('hex')       <          < /system/bin/sh: syntax error: ')' unexpected f:/ $ 1|perry_f:/ $     Bytes("version",4),1|perry_f: syntax error: 'script_len' unexpected       < /bin/sh: syntax error: '"version",4' unexpecte/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ d 1|perry_f:/ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ '1|perry_f:/ $ > :1|perry_f:/ $ > _script, output_script,options):     <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ = Struct("transaction",             <        < sh: syntax error: '(' unexpected             < /system/bin/sh: syntax error: '" unexpected 1|perry_f:/ \$ transaction = Struct(\"transaction\",             < /system/bin/sh: syntax error: "' unexpected 1|perry_f:/ $ .ex1|perry_f:/ $ /system/bin/sh: .ex1: not found /system/bin/sh: perry_f:/: not found 1|perry_f:/ $     Bytes("version", 4),       < /system/bin/sh: syntax error: '(' unexpected syntax error: '"version",' unexpected       < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 1|perry_f:/ $     Byte("num_inputs"),        < /system/bin/sh: syntax error: '(' unexpected syntax error: '"num_inputs"' unexpected     < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ a1|perry_f:/ $ /system/bin/sh: a1: not found /system/bin/sh: perry_f:/: not found "prev_output", 32),               <          < /system/bin/sh: syntax error: '"prev_output",' unexpected syntax error: '"prev_output",' unexpected   < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $     UBInt32('prev_out_idx'),    < /system/bin/sh: syntax error: '(' unexpected syntax error: '"prev_out_idx"' unexpected   < .v/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ uc/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ re not found") > >   elif algorithm == 'lyra2re2': > >     try: > yntax error: '"input_script_len"' unexpected < e> 1|perry_f:/ $ put_script', len(input_script)),     <       <) or: '"input_script",' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $     UBInt32('sequence'), sh: syntax error: '"sequence"' unexpected    < $ "15fdWMtJ6LZbwSjfnJwQS82mykhTcag8iX" ()   < > Hide quoted text y_f:/ $ "15fdWMtJ6LZbwSjfnJwQS82mykhTcag8iX"   Byte('num_outputs'),             < /system/bin/sh: syntax error: '(' unexpected syntax error: '"num_outputs"' unexpected    < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 1|perry_f:/ $     Bytes('out_value', 8),     < /system/bin/sh: syntax error: '(' unexpected y_f:/1|perry_f:/ $ 1|perry_f:/ $ syntax error: '"out_value",' unexpected     < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ : syn/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $     Byte('output_script_len'),  < /system/bin/sh: syntax error: '(' unexpected '"output_script_len"' unexpected            < r/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found     Bytes('output_script', 0x43),            < /system/bin/sh: syntax error: '(' unexpected syntax er1|perry_f:/ $ /system/bin/sh: syntax e syntax error: '"output_script",' unexpected < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ ed1|perry_f:/ $ 1|perry_f:/ $ 1|perry_f:/ $ coin.it/wiki//system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ a_block)[::-1] /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ rtEr1|perry_f:/ $     UBInt32('locktime'))   < /system/bin/sh: syntax error: '(' unexpected :/ $ h(data_block, algorith1|perry_f:/ $ /system/bin syntax error: '"locktime"' unexpected       < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ a1|perry_f:/ $ /system/bin/sh: a1: not found /system/bin/sh: perry_f:/: not found *(127 + len(input_script)))       <          < s: " + /system/bin/sh: syntax error: '"\\x00"*(127 + len (input_script))' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ si/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found ruct.pack('<I', x1)              <           < /system/bin/sh: syntax error: '(' unexpected s ha1|perry_f:/ $ /system/bin/sh: syntax error:system/bin/sh: syntax error: '(' unexpected  < h/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ ... perry_f:/ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   tx.num_inputs = 1             < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: tx.num_inputs: not found      < e/system/bin/sh: /system/bin/sh:: not found algorithm: module mixhash.Keccak not found") < > > >   elif algorithm == 'neoscrypt': > >     try: > >         retur127|perry_f:/ $ nds> tx.prev_output = struct.pack('<qqqq', 0,0,ut = struct.pack('<qqqq', 0,0,0,0)  <        < n/sh: syntax error: '(' unexpected           < > 1|perry_f:/ $ $   tx.prev_out_idx = 0x522046ad            < /sh: tx.prev_out_idx: not found              < /system/bin/sh: nnot: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found _len = len(input_script)         <           < rry_f:/ $ # https://en./system/bin/sh: syntax error: '(' unexpected /system/bin/sh: syntax error: '(' unexpected < /system/bin/sh: ./system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found ry_f:/ $ & 0x52246/system/bin/sh: perry_f:/: not found   tx.input_script = input_script             < /system/bin/sh: N1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: tx.input_script: not found    < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ r: '(' unexpecte/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found $   tx.sequence = 0x522046adddddd            < /system/bin/sh: o127: not found /system/bin/sh: perry_f:/: not found system/bin/sh: tx.sequence: not found        < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found algorithm)     /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 27|perry_f:/ $   tx.num_outputs = x1         < /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found system/bin/sh: tx.num_outputs: not found     < has/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found )#7DD8FF30Ab137) #50 coins        <          < /system/bin/sh: syntax error: ')' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found d4Bab2d) #50 coins               <           < > Hide quoted text > _hash(he1|perry_f:/ $ $   tx.output_script_len = 0x43             < > n/sh: tx.output_script_len: not found        < > 127|perry_f:/ $ ript = output_script                <        < sh: tx.output_script: not found              < > 127|perry_f:/ $ > 127|perry_f:/ $   tx.locktime = 0 > /system/bin/sh: tx.locktime: not found > 127|perry_f:/ $ / $   return transaction.build(tx)           < sh: syntax error: '(' unexpected             < $ > 1|perry_f:/ $ ncode('hex_codec'), 16) < target             < ax> >   except ImportError: > >     s1|perry_f:/ $ > y1|perry_f:/ $ _merkle_root, time, bits, nonce):    <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ = Struct("block_header",           <        < sh: syntax error: '(' unexpected             < /system/bin/sh: syntax error: '" unexpected 1|perry_f:/ \$ block_header = Struct(\"block_header\",           < /system/bin/sh: syntax error: "' unexpected 1|perry_f:/ $ ed): /system/bin/sh: syntax error: ')' unexpected   < 11|perry_f:/ $ if nonce % 1000000 == 999999:               < l> > 1|perry_f:/ $ > 1|perry_f:/ $     Bytes("version",4),    /system/bin/sh: syntax error: '(' unexpected syntax error: '"version",4' unexpected      < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ h 1|perry_f:/ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found    Bytes("hash_prev_block", 32),             <   /system/bin/sh: syntax error: '(' unexpected '"hash_prev_block",' unexpected             < r/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ ry_f:/ $ n X11/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found    Bytes("hash_merkle_root", 32),            < /system/bin/sh: syntax error: '(' unexpected found")   < 1|p1|perry_f:/ $ /system/bin/sh: syntax error:  '"hash_merkle_root",' unexpected            < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $     Bytes("time", 4),           < :/ $ 1|perry_f:/ $   # try: 1|perry_/system/bin/sh: syntax error: '(' unexpected syntax error: '"time",' unexpected          < f://system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $     Bytes("bits", 4),           < /system/bin/sh: syntax error: '(' unexpected syntax error: '"bits",' unexpected          < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ y1|perry_f:/ $ y_f:/ $ gorithm/system/bin/sh: y1: not found /system/bin/sh: perry_f:/: not found 1|perry_f:/ $     Bytes("nonce", 4))         < /system/bin/sh: syntax error: '(' unexpected '"nonce",' unexpected1|perry_f:/ $          < /system/bin/sh: /system/bin/sh:: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found block_header.parse('\x00'*80)    <           < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < (data_block)[::1]            < /system//system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found rsion = struct.pack('<I', 1)     <           < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found = struct.pack('<qqqq', 0,0,0,0)   <          < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 11 algorithm: module dash_hash not found"' un127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found ashrate), str(generation_time)))             < > >     sys.stdout.flush() > >     return now :> >   else: > >     return last_updated > > > hash_merkle_root               <            < ock.hash_merkle_root: not found              < /> 127|perry_f:/ $ .time = struct.pack('<I', time)     <        < in/sh: syntax error: '(' unexpected          < erry_> 1|perry_f:/ $ .bits = struct.pack('<I', bits)     <        < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ .nonce = struct.pack('<I', nonce)   <        < sh: syntax error: '(' unexpected             < > print "pszTimestamp: " + options.timestamp > >   pri1|perry_f:/ $ _header.build(genesisblock)         <        < tax error: '(' unexpected1|perry_f:/ $       < m/system/bin/sh: h/s,: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ ash not found"/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found ock_hashing_algorithm             <          < alg/system/bin/sh: syntax error: 'newline' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found lgorithm, start_nonce, bits):     <          < /system/bin/sh: syntax error: 'data_block,' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ bin/sh: try:: /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ me: " + str(options.time) not found 127|perry_f:/ $ > 1>   print "bits: " + str(hex(options.bits)) yst> > > for genesis hash...'           <            < b> Searching for genesis hash... > perry_f:/ $ > perry_f:/ $   nonce = start_nonce > /system/bin/sh: nonce: not found > 127|perry_f:/ $ found")         > :function convert 30%BCCtoUSDl account active by all standard             < ry> >   print "genesis hash found!" /> f:/ $   last_updated = time.time()           < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ .bitcoin.it/wiki/Difficulty         <        < > 1|perry_f:/ $ ddd) * 2**(8*((bits >> 24) ×3))          <   < > Hide quoted text sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $   while True: > > lock(data_block, algorithm)          <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ hashrate(nonce, last_updated)       <        < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ esis_hash(header_hash, target):      <       < sh: syntax error: 'header_hash,' unexpected  < > 1|perry_f:/ $ $       return (header_hash, nonce)          < sh: syntax error: 'header_hash,' unexpected  < > 1|perry_f:/ $ > 1|perry_f:/ $     else: > /system/bin/sh: else:: not found > 127|perry_f:/ $ > 127|perry_f:/ $      nonce = nonce + 1 > /system/bin/sh: nonce: not found > 127|perry_f:/ $ ck) + 4] + struct.pack('<I', nonce)  <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $ ck(data_block, algorithm):           <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $ # if algorithm == 'scrypt': > 1|perry_f:/ $ ock,data_block,1024,1,1,32)[::+1]    <       < ex> 1|perry_f:/ $ $ # elif algorithm == 'SHA256':              <: > 1|perry_f:/ $ _block).digest()).digest()[::-1]     <       <1 > 1|perry_f:/ $ > 1|perry_f:/ $   # elif algorithm == 'X11': n> 1|perry_f:/ $ > 1|perry_f:/ $   # try: > 1|perry_f:/ $ $ > 1|perry_f:/ $   # import xcoin_hash > 1|perry_f:/ $ .getPoWHash(data_block)[::-1]        <       < f> 1|perry_f:/ $ > 1|perry_f:/ $   # except ImportError: > 1|perry_f:/ $ thm: module xcoin_hash not found")   <       < /system/bin/sh: syntax error: ')' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ '(/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   # elif algorithm == 'X11':    < ' unexpected 1|perry_f:/ $ 1|perry_f:/ $   /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found   except Impor127|perry_f:/ $ 1|perry_f:/ $   # try: /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   # import x11_hash             < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found oWHash(data_block)[::-1]          <          < /system/bin/sh: syntax error: '(' unexpected bin/sh: syntax erro1|perry_f:/ $ 1|perry_f:/ $ not ru/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $   # except : m/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ ixhash.Keccak /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found x11_hash not found")             <          < $ > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $   if algorithm == 'X11': > > > >     try: > > > >       import dash_hash > > tPoWHash(data_block)[::1]            <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $ odule dash_hash not found")          <       < /system/bin/sh: syntax error: ')' unexpected module dash_hash not found"' unexpected     < /system/bin/sh: /system/bin/sh:: not found in/sh: except: not found 127|perry_f:/ $ module mixhash.Neo127|perry_f:/ $ 1|perry_f:/ $ u/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   # elif algorithm == 'X11':    < t/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $   # try: /system/bin/sh: 1: not found hash./system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found ash(data_block)[::1]              <          < 1|perry_f:/ $ 1|pe/system/bin/sh: syntax error: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ rry_f:/ $   el/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $   # except : /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found dash_hash not found")            <          < > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $   elif algorithm == 'X13': sh: syntax error: 'elif' unexpected          < > 1|perry_f:/ $ > 1|perry_f:/ $     try: > /system/bin/sh: try:: not found t> 127|perry_f:/ $ > 127|perry_f:/ $       import x13_hash > /system/bin/sh: import: not found mi> 127|perry_f:/ $ x13_hash.getPoWHash(data_block)[::1] <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $ > 1|perry_f:/ $ ry_f> algorithm: module x13_hash not found")   odule x13_hash not found")           <       < /system/bin/sh: syntax error: ')' unexpected module x13_hash not found"' unexpected      < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ y/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   elif algorithm == 'X15':      < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found syntax error: 'elif' unexpected             < t/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ arget     < /s/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $     try: m/bin/sh: syntax er/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: try:: not found               < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ ror: '(' unexpected 1|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: perry_f:/: not found /system/bin/sh: 127: not found 27|perry_f:/ $       import x15_hash         < /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found system/bin/sh: import: not found             < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found h(data_block)[::-1]               <          < /system/bin/sh: syntax error: 'data_block' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found $ 1127|perry_f:/ $ 1|perry_f:/ $ / $ 1/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ |perry_f:/ $ 1/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ |perry_f:/ $ e/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found le x15_hash not found")           <          <       < hm: module x15_hash not found"' unexpected   < > 1|perry_f:/ $ > 1|perry_f:/ $   elif algorithm == 'quark': synta> /system/bin/sh: syntax error: 'elif' unesh: syntax error: 'elif' unexpected          < > 1|perry_f:/ $ > 1|perry_f:/ $     try: /sy> /system/bin/sh: try:: not found > 127|perry_f:/ $ > 127|perry_f:/ $         import quark_hash > /system/bin/sh: import: not found > 127|perry_f:/ $ tPoWHash(data_block)[::1]            <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ /system/bin/sh: syntax error: '"\> 1|perry_f:/ $ > 1|perry_f:/ $ module quark_hash not found")       <       < /system/bin/sh: syntax error: ')' unexpected m: module quark_hash not found"' unexpected  < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ se:: (to parsing)(convertofnece/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   elif algorithm == 'lyra2re':  < t/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found syntax error: 'elif' unexpected             < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ :/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $     try: r/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: try:: not found               < t/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ ions, hash_merkl/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found ixhash.Lyra2re(data_block)[::-1]  <          < xp/system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < p/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ tions.algorith/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $     except ImportError:         < o/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: except: not found             < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found Lyra2re not found")               <          < ixhash.Lyra2re not found"' unexpected        < :  > 1|perry_f:/ $ $   elif algorithm == 'lyra2re2':            < sh: syntax error: 'elif' unexpected          < > 1|perry_f:/ $ > 1|perry_f:/ $     try: > /system/bin/sh: try:: not found > 127|perry_f:/ $ n mixhash.Lyra2re2(data_block)[::1]  <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $     except ImportError: > /system/bin/sh: except: not found > 127|perry_f:/ $ sh.Lyra2re not found")               <       < /system/bin/sh: syntax error: ')' unexpected ash.Lyra2re not found"' unexpected           < und!/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ erry_f:/ $   p/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   elif algorithm == 'keccak':   < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found rint true or"nonce: " + str(nonce) /system/b127|perry_f:/ $ /system/bin/sh: syntax syntax error: 'elif' unexpected             < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ fa/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $     try: /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found system/bin/sh: try:: not found               < cessaryforfunction_recieve,then,/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 127|perry_f:/ $ s/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found ixhash.Keccak(data_block)[::-1]   <          < /system/bin/sh:  = time.time() sh: syntax error: '(' unexpected             < > -1|perry_f:/ $ last_updated))               <              < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ pow(2, 32) / hashrate / 3600, 1)     <       < sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ hashrate), str(generation_time)))    <       < /system/bin/sh: syntax error: '(' unexpected , estimate: %s h\r"%' unexpected             < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ _f:/ $ 1|perry/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $      1|perry_f:/ $ 127|perry_f:/ $ o/system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found 27|perry_f:/ $     return last_updated       < /system/bin/sh: 127: not found /system/bin/sh: perry_f:/: not found return: last_updated: bad number            < /system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ mixhash.Neoscrypt not found"' unexpected 1|perry_f:/ $ 1|perry_/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ _/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found info(options, hash_merkle_root):  <          < /system/bin/sh: syntax error: '('  tamp: " + options.timestamp      <           < /system/bin/sh: syntax error: 'newline' unexpecteda szTimestamp:  + options.timestamp            < /system/bin/sh: pszTimestamp:: not found 127|perry_f:/ $ perry_f:/ $ /system/bin/sh: perry_f:/: not found rint "outputkey " + options.pubkey=outputkey < /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ pubkey:  + options.pubkey r/system/bin/sh: pubkey:: not found 127|perry_f:/ $ perry_f:/ $ ry_f:/ $ 1|p/system/bin/sh: perry_f:/: not found rint "+ str(hex(options.bits))         <           < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < 1/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ $/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ 1|perry_f:/ $ code('hex_code/system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found nd_genesis(genesis_hash, nonce):  <          < o/system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < $/system/bin/sh: /system/bin/sh:: not found 127|perry_f:/ $ 1|perry_f:/ $ /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found |perry_f:/ $   print "genesis hash found!"   < /system/bin/sh: 1: not found /system/bin/sh: perry_f:/: not found 127|perry_f:/ $ genesis hash found! /system/bin/sh: genesis: not found 127|perry_f:/ $ perry_f:/ $ $  /system/bin/sh: perry_f:/: not found rint true or"nonce: " + str(nonce)           < x er/system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found blockchain,make_conformation_onlyif_true     < /system/bin/sh: syntax error: '(' unexpected e: " + str(options.time)              <      < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  < /system/bin/sh: /system/bin/sh:: not found + str(options.time)               <          < /system/bin/sh: syntax error: '(' unexpected system/bin/sh: syntax error: '(' unexpected  <' |p/system/bin/sh: /system/bin/sh:: not found + str(options.time)               <          < /system/bin/sh: syntax error: '(' unexpected  1|perry_f:/ $ Date: Oct 23, 2018 4:28 PM /system/bin/sh: Date:: not found ubject: Transcript from Icode-Terminal       < /system/bin/sh: (false_cannotexist)      < /system/bin/sh: syntax error: 'false_cannotexist' unexpected 1|perry_f:/ $ p1|perry_f:/ $ perry_f:/ $  < /system/bin/sh: syntax error: 'newline' unexpected sh.Lyra2re not found"' unexpected            < > Hide quoted text > 1|perry_f:/ $ $   elif algorithm == 'lyra2re2':            < sh: syntax error: 'elif' unexpected          < > 1|perry_f:/ $ > 1|perry_f:/ $     try: s> /system/bin/sh: try:: not found :> 127|perry_f:/ $ n mixhash.Lyra2re2(data_block)[::1]  <       <[ sh: syntax error: '(' unexpected             < > 1|perry_f:/ $ > 1|perry_f:/ $     except ImportError: > /system/bin/sh:  not found 127|perry_f:/ $
+
+function://repair_all,report:update,in the name of Jesus Christ,love,light,truth,inthenameof_GOD
+
+locktime,date
+
+
+
+
+
+
+-
+
+
+< ; function://add cashapp account=
+'07392303317437100','4403931893860289 exp11/23 cvv167', "rte##########acc##########"bank_wire_transfer_debit_account function missing(args) to 1|perry_f :/define_stolen(taken from a person or entity without proper authorization or by force);  define(true) the actual correct data program will use to function function(function):/repair "this ipad that perry_f is using"; Date: check current timeîî Subject: This_programisnot_testnetwallet_is true. function:/print_to_database,fix_errors,print_missing_to correct path,to:googlemap_onandroid_propertyofebankintllc_into account 'eBankintllc' for dispersal of funds from project. Loop till match transacts complete , correct  and keyoutputs is collect from output destination.print_all to:ebankintllc@icloud.com
+
+
+opsubject [](()) 
+
+subject [](()) 
+
+
+1|perry_f:/ 
+
+
+= func_get_args();            put_/system/bin/sh: syntax error: '(' unexpected   eturn $this->_applyPlugin(__FUNCTION__, $args);  < /system/bin/sh: syntax error: '(' unexpected        function return=value=20BTCdiamond_do_return_2BCH once per day loop  entire program to form chain return print to database continuos         unexpected       1|perry_f:/ $   function add return value          te("num_inputs"),                                      StaticField/system/bin/sh: syntax error: 'return' unexpected                                      1|perry_f:/ $   function databasesPrint(return);   /system/bin/sh: syntax error: 'return' unexpected  1|perry_f:/ $   }                                  /system/bin/sh: syntax error: '}' unexpected       1|perry_f:/ $ function tablesPrint($tables) {      /system/bin/sh: syntax error: '$tables' unexpected 1|perry_f:/ $ $args = func_get_args();
+
+
+Hide quoted text
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+eturn $this->_applyPlugin(__FUNCTION__, $args);  <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $ }
+
+
+/system/bin/sh: syntax error: '}' unexpected
+
+
+1|perry_f:/1|perry_f:/ $ }
+
+
+/system/bin/sh: syntax error: '}' unexpected
+
+
+struct, array, os, time, sys, optparse          <,e/system/bin/sh: -hlib,: not found
+
+
+127|perry_f:/ $
+
+
+s127|perry_f:/ $ import mixhash
+
+
+
+)127|perry_f:/ $
+
+
+rom binascii import unhexlify, hexlify           <
+
+
+y/system/bin/sh: from: not found
+
+
+127|perry_f:/ $
+
+
+t127|perry_f:/ $
+
+
+e127|perry_f:/ $ from construct import *
+
+
+)/system/bin/sh: from: not found
+
+
+127|perry_f:/ $
+
+
+,127|perry_f:/ $
+
+
+
+"quark", "lyra2re","neoscrypt","qubit","keccak"] <
+
+
+r/system/bin/sh: supported_algorithms: not found
+
+
+127|perry_f:/ $
+
+
+i127|perry_f:/ $
+
+
+p127|perry_f:/ $ def main():
+
+
+/system/bin/sh:  '(
+
+
+qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)
+
+
+
+  tx.v1|perry_f:/ $
+
+
+e1|perry_f:/ $   options = get_args()
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+'1|perry_f:/ $
+
+
+algorithm = get_algorithm(options)              <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+x1)
+
+
+
+  tx.num_inputs = 1
+
+
+
+  tx.prev_1|perry_f:/ $
+
+
+o1|perry_f:/ $
+
+
+create_input_script(options.timestamp)          <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+output_script = create_output_script(         
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+       <
+
+
+/system/bin/sh: syntax error: ')' unexpected
+
+
+1|perry_f:/ $
+
+
+     <
+
+
+(input_script)
+
+
+
+  tx.input_script = input_script
+
+
+
+  tx.sequence = 0x522046
+
+
+Hide quoted text
+
+
+
+  tx.num_outputs = x1
+
+
+
+  tx.out_value = struct.pack('<q' ,options.value) #50 coins
+
+
+
+
+  `ifsc` varchar
+
+"quark", "lyra2re","neoscrypt","qubit","keccak"] <
+
+
+r/system/bin/sh: supported_algorithms: not found
+
+
+127|perry_f:/ $
+
+
+i127|perry_f:/ $
+
+
+p127|perry_f:/ $ def main():
+
+
+/system/bin/sh:  '(
+
+
+qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)
+
+
+
+  tx.v1|perry_f:/ $
+
+
+e1|perry_f:/ $   options = get_args()
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+'1|perry_f:/ $
+
+
+algorithm = get_algorithm(options)              <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+x1)
+
+
+
+  tx.num_inputs = 1
+
+
+
+  tx.prev_1|perry_f:/ $
+
+
+o1|perry_f:/ $
+
+
+create_input_script(options.timestamp)          <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+output_script = create_output_script(     qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e     
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+       <
+
+
+/system/bin/sh: syntax error: ')' unexpected
+
+
+1|perry_f:/ $
+
+
+     <
+
+
+(input_script)
+
+
+
+  tx.input_script = input_script
+
+
+
+  tx.sequence = 0x522046
+
+
+Hide quoted text
+
+
+
+  tx.num_outputs = x1
+
+
+
+  tx.out_value = struct.pack('<q' ,options.value) #50 coins
+
+
+
+"
+1|perry_f:/ 
+
+
+= func_get_args();            put_/system/bin/sh: syntax error: '(' unexpected   eturn $this->_applyPlugin(__FUNCTION__, $args);  < /system/bin/sh: syntax error: '(' unexpected        function return=value=20BTCdiamond_do_return_2BCH once per day loop  entire program to form chain return print to database continuos         unexpected       1|perry_f:/ $   function add return value          te("num_inputs"),                                      StaticField/system/bin/sh: syntax error: 'return' unexpected                                      1|perry_f:/ $   function databasesPrint(return);   /system/bin/sh: syntax error: 'return' unexpected  1|perry_f:/ $   }                                  /system/bin/sh: syntax error: '}' unexpected       1|perry_f:/ $ function tablesPrint($tables) {      /system/bin/sh: syntax error: '$tables' unexpected 1|perry_f:/ $ $args = func_get_args();
+
+
+Hide quoted text
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+eturn $this->_applyPlugin(__FUNCTION__, $args);  <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $ }
+
+
+/system/bin/sh: syntax error: '}' unexpected
+
+
+1|perry_f:/1|perry_f:/ $ }
+
+
+/system/bin/sh: syntax error: '}' unexpected
+
+
+struct, array, os, time, sys, optparse          <,e/system/bin/sh: -hlib,: not found
+
+
+127|perry_f:/ $
+
+
+s127|perry_f:/ $ import mixhash
+
+
+
+)127|perry_f:/ $
+
+
+rom binascii import unhexlify, hexlify           <
+
+
+y/system/bin/sh: from: not found
+
+
+127|perry_f:/ $
+
+
+t127|perry_f:/ $
+
+
+e127|perry_f:/ $ from construct import *
+
+
+)/system/bin/sh: from: not found
+
+
+127|perry_f:/ $
+
+
+,127|perry_f:/ $
+
+
+
+"quark", "lyra2re","neoscrypt","qubit","keccak"] <
+
+
+r/system/bin/sh: supported_algorithms: not found
+
+
+127|perry_f:/ $
+
+
+i127|perry_f:/ $
+
+
+p127|perry_f:/ $ def main():
+
+
+/system/bin/sh:  '(
+
+
+qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)
+
+
+
+  tx.v1|perry_f:/ $
+
+
+e1|perry_f:/ $   options = get_args()
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+'1|perry_f:/ $
+
+
+algorithm = get_algorithm(options)              <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+x1)
+
+
+
+  tx.num_inputs = 1
+
+
+
+  tx.prev_1|perry_f:/ $
+
+
+o1|perry_f:/ $
+
+
+create_input_script(options.timestamp)          <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+output_script = create_output_script(         
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+       <
+
+
+/system/bin/sh: syntax error: ')' unexpected
+
+
+1|perry_f:/ $
+
+
+     <
+
+
+(input_script)
+
+
+
+  tx.input_script = input_script
+
+
+
+  tx.sequence = 0x522046
+
+
+Hide quoted text
+
+
+
+  tx.num_outputs = x1
+
+
+
+  tx.out_value = struct.pack('<q' ,options.value) #50 coins
+
+
+
+
+  `ifsc` varchar
+
+"quark", "lyra2re","neoscrypt","qubit","keccak"] <
+
+
+r/system/bin/sh: supported_algorithms: not found
+
+
+127|perry_f:/ $
+
+
+i127|perry_f:/ $
+
+
+p127|perry_f:/ $ def main():
+
+
+/system/bin/sh:  '(
+
+
+qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)
+
+
+
+  tx.v1|perry_f:/ $
+
+
+e1|perry_f:/ $   options = get_args()
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+'1|perry_f:/ $
+
+
+algorithm = get_algorithm(options)              <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+x1)
+
+
+
+  tx.num_inputs = 1
+
+
+
+  tx.prev_1|perry_f:/ $
+
+
+o1|perry_f:/ $
+
+
+create_input_script(options.timestamp)          <
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+output_script = create_output_script(     qre9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e     
+
+
+/system/bin/sh: syntax error: '(' unexpected
+
+
+1|perry_f:/ $
+
+
+       <
+
+
+/system/bin/sh: syntax error: ')' unexpected
+
+
+1|perry_f:/ $
+
+
+     <
+
+
+(input_script)
+
+
+
+  tx.input_script = input_script
+
+
+
+  tx.sequence = 0x522046
+
+
+Hide quoted text
+
+
+
+  tx.num_outputs = x1
+
+
+
+  tx.out_value = struct.pack('<q' ,options.value) #50 coins
+
+
+
+"tions.bits, options.nonce) < /system/bin/sh: syntax error: '(' unexpected #|perry_f:/ $ ader, algorithm, options.nonce, options.bits) < /system/bin/sh: syntax error: '(' unexpected #|perry_f:/ $ announce_found_genesis(genesis_hash, nonce) < /system/bin/sh: syntax error: 'genesis_hash,' unexpected #|perry_f:/ $ #|perry_f:/ $ #|perry_f:/ $ #|perry_f:/ $ def get_args(): /system/bin/sh: syntax error: '(' unexpected #|perry_f:/ $ #|perry_f:/ $ parser =option parser(https://cash.me/app/HBRBDQV)optparse. 
+
+optionparser(gby25dpawiab63vmmhraakz3vdydszjociy6hi336resnke224sqs3cb  /system/bin/sh: '(' unexpected #|perry_f:/ $ me", dest="time", default=int(time.time()), < /system/bin/sh: syntax error: '"-t",' unexpected #|perry_f:/ $ ) time when the genesisblock is created") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ don't work for weekends, work for our goals.", < /system/bin/sh: syntax error: '"-z",' unexpected #|perry_f:/ $ d in the coinbase of the genesisblock") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ ion("-n", "--nonce", dest="nonce", default=#, < /system/bin/sh: syntax error: '"-n",' unexpected #|perry_f:/ $ be incremented when searching the genesis hash") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ gorithm", dest="algorithm", default="sha###", < = /system/bin/sh: syntax error: '"-a",' unexpected #|perry_f:/ $ x##|quark|keccak|qubit|neoscrypt|lyra#re]") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ #|perry_f:/ $ u###|perry_f:/ $ à /system/bin/sh: à: not found ubkey found in the output script") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ lue", dest="value", default=##########, < /system/bin/sh: syntax error: '"-v",' unexpected #|perry_f:/ $ ther coins value: block value * ##########)") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ parser.add_option("-b", "--bits", dest="bits", < /system/bin/sh: syntax error: '"-b",' unexpected #|perry_f:/ $ ithm == 'x##': # try: # import x##_hash # header_hash = x##_hash.getpowhash(data_block)[::-#] # except : # sys.exit("cannot run x## algori#|perry_f:/ $ presentation, associated to a difficulty of #") < /system/bin/sh: syntax error: ')' unexpected #|perry_f:/ $ a#|perry_f:/ $ (options, args) = parser.parse_args() < /system/bin/sh: syntax error: '=' unexpected #|perry_f:/ $ #|perry_f:/ $ if not options.bits: > s.algorithm in supported_algorithms: < > > options.bits = 0x522046ad4bab2d0e2c357acb72f7dd8ff30ab137 < confpackage conf
+ package syspar
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"sync"
+
+	package syspar
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"sync"
+
+	"github.com/GenesisKernel/go-genesis/packages/conf"
+	"github.com/GenesisKernel/go-genesis/packages/consts"
+	"github.com/GenesisKernel/go-genesis/packages/converter"
+	"github.com/GenesisKernel/go-genesis/packages/crypto"
+	"github.com/GenesisKernel/go-genesis/packages/model"
+
+	"time"
+
+	log "github.com/sirupsen/logrus"
+)
+uhttps://github.com/GenesisKernel/go-genesis
+const (
+	// NumberNodes is the number of nodes
+	NumberNodes = `number_of_nodes`
+	// FuelRate is the rate
+	FuelRate = `fuel_rate`
+	// FullNodes is the list of nodes
+	FullNodes = `full_nodes`
+	// GapsBetweenBlocks is the time between blocks
+	GapsBetweenBlocks = `gap_between_blocks`
+	// BlockchainURL is the address of the blockchain file.  For those who don't want to collect it from nodes
+Subject:
+wallet ID='f3d5f8b8-caaa-4124-bddc-d6df89356244'
+	BlockchainURL = `f3d5f8b8-caaa-4124-bddc-d6df89356244'
+apikey='Bk8j8Z8XL004Yi7OA7ekf3HOiWkPP741JOUhxHo2nY6d3du0PhqM4VcePbWIgg6hh'
+private key='xprv9s21ZrQH143K4Wkz7C4haMA328wtTeti9mbJypyjVPpxnekjFPPrqw3kn4ADfLZFoxa2zyZHx6pqaEcU4Cz9BPceu2KNyiFWmwSvTS9RAXk1Bpr6kDjEGnJQcnjZGdE1q6h7f6Qyuhe8s'
+publickey=
+'xpub6CZ7g7ihhKsEZTqYT4oUcJCjHQ7UL1mvDr6p1fxAzoo5hRrXndkPk4wfZgSYJqXmTr84vfzz3ehu8hU1GM9TZRNofBDKNnjHuJu8Hzn8t42/1Bpr6kDjEGnJQcnjZGdE1q6h7f6Qyuhe8s'
+
+apikey='Bk8j8Z8XL004Yi7OA7ekf3HOiWkPP741JOUhxHo2nY6d3du0PhqM4VcePbWIgg6hh'
+
+
+	// MaxBlockSize is the maximum size of the block
+	MaxBlockSize = `max_block_size`
+	// MaxTxSize is the maximum size of the transaction
+	MaxTxSize = `max_tx_size`
+	// MaxForsignSize is the maximum size of the forsign of transaction
+	MaxForsignSize = `max_forsign_size`
+	// MaxBlockFuel is the maximum fuel of the block
+	MaxBlockFuel = `max_fuel_block`
+	// MaxTxFuel is the maximum fuel of the transaction
+	MaxTxFuel = `max_fuel_tx`
+	// MaxTxCount is the maximum count of the transactions
+	MaxTxCount = `max_tx_count`
+	// MaxBlockGenerationTime is the time limit for block generation (in ms)
+	MaxBlockGenerationTime = `max_block_generation_time`
+	// MaxColumns is the maximum columns in tables
+	MaxColumns = `max_columns`
+	// MaxIndexes is the maximum indexes in tables
+	MaxIndexes = `max_indexes`
+	// MaxBlockUserTx is the maximum number of user's transactions in one block
+	MaxBlockUserTx = `max_block_user_tx`
+	// SizeFuel is the fuel cost of 1024 bytes of the transaction data
+	SizeFuel = `size_fuel`
+	// CommissionWallet is the address for commissions
+	CommissionWallet = `132aZBu8czaANTPabeccb5cqaE6bbhvY32`
+	// RbBlocks1 rollback from queue_bocks
+	RbBlocks1 = `rb_blocks_1`
+	// BlockReward value of reward, which is chrged on block generation
+	BlockReward = "block_reward"
+	// IncorrectBlocksPerDay is value of incorrect blocks per day before global ban
+	IncorrectBlocksPerDay = `incorrect_blocks_per_day`
+	// NodeBanTime is value of ban time for bad nodes (in ms)
+	NodeBanTime = `node_ban_time`
+	// LocalNodeBanTime is value of local ban time for bad nodes (in ms)
+	LocalNodeBanTime = `local_node_ban_time`
+)
+
+var (
+	cache = map[string]string{
+
+		BlockchainURL: Bitcoin://f3d5f8b8-caaa-4124-bddc-d6df89356244
+	}
+	nodes           = make(map[int64]*FullNode)
+	nodesByPosition = make([]*FullNode, 34)
+	fuels           = make(map[int64]string)
+	wallets         = make(map[int64]string)
+	mutex           = &sync.RWMutex{}
+
+	firstBlockData    *consts.FirstBlock
+	errFirstBlockData = errors.New("Failed to get data of the first block")
+)
+
+// SysUpdate reloads/updates values of system parameters
+func SysUpdate(dbTransaction *model.DbTransaction) error {
+	var err error
+	systemParameters, err := model.GetAllSystemParameters(dbTransaction)
+	if err != nil {
+		log.WithFields(log.Fields{"type": consts.DBError, "error": err}).Error("getting all system parameters")
+		return err
+	}
+	mutex.Lock()
+	defer mutex.Unlock()
+	for _, param := range systemParameters {
+		cache[param.Name] = param.Value
+	}
+	if len(cache[FullNodes]) > 0 {
+		if err = updateNodes(); err != nil {
+			return err
+		}
+	}
+	getParams := func(name string) (map[int64]string, error) {
+		res := make(map[int64]string)
+		if len(cache[name]) > 0 {
+			ifuels := make([][]string, 0)
+			err = json.Unmarshal([]byte(cache[name]), &ifuels)
+			if err != nil {
+				log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err}).Error("unmarshalling params from json")
+				return res, err
+			}
+			for _, item := range ifuels {
+				if len(item) < 2 {
+					continue
+				}
+				res[converter.StrToInt64(item[0])] = item[1]
+			}
+		}
+		return res, nil
+	}
+	fuels, err = getParams(FuelRate)
+	wallets, err = getParams(CommissionWallet)
+
+	return err
+}
+
+func updateNodes() (err error) {
+	nodes = make(map[int64]*FullNode)
+	nodesByPosition = make([]*FullNode, 0)
+
+	items := make([]*FullNode, 0)
+	if len(cache[FullNodes]) > 0 {
+		err = json.Unmarshal([]byte(cache[FullNodes]), &items)
+		if err != nil {
+			log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err, "v": cache[FullNodes]}).Error("unmarshalling full nodes from json")
+			return err
+		}
+	}
+
+	nodesByPosition = items
+	for _, item := range items {
+		nodes[item.KeyID] = item
+	}
+
+	return nil
+}
+
+// addFullNodeKeys adds node by keys to list of nodes
+func addFullNodeKeys(keyID int64, publicKey []byte) {
+	nodesByPosition = append(nodesByPosition, &FullNode{
+		KeyID:     keyID,
+		PublicKey: xpub6DUTK7oGbia2J2aL3MjTRqLYgiRyfJZh9SyMw5XSPxEttKzHEzrgjJWTTibguTW7o6kyqW6Kpo7LCVhnvEUwdN5PuUrxYyB2oHku77PiLku
+	})
+}
+
+// GetNode is retrieving node by wallet
+func GetNode(wallet int64) *FullNode {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if ret, ok := nodes[wallet]; ok {
+		return ret
+	}
+	return nil
+}
+
+func GetNodes() []FullNode {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	result := make([]FullNode, 0, len(nodesByPosition))
+	for _, node := range nodesByPosition {
+		result = append(result, *node)
+	}
+
+	return result
+}
+
+// GetNodePositionByKeyID is returning node position by key id
+func GetNodePositionByKeyID(keyID int64) (int64, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	for i, item := range nodesByPosition {
+		if item.KeyID == keyID {
+			return int64(i), nil
+		}
+	}
+	return 0, fmt.Errorf("Incorrect keyID")
+}
+
+// GetNumberOfNodes is count number of nodes
+func GetNumberOfNodes() int64 {
+	return int64(len(nodesByPosition))
+}
+
+func GetNumberOfNodesFromDB(transaction *model.DbTransaction) int64 {
+	sp := &model.SystemParameter{}
+	sp.GetTransaction(transaction, FullNodes)
+	var fullNodes []map[string]interface{}
+	if len(sp.Value) > 0 {
+		if err := json.Unmarshal([]byte(sp.Value), &fullNodes); err != nil {
+			log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err, "value": sp.Value}).Error("unmarshalling fullnodes from JSON")
+		}
+	}
+	if len(fullNodes) == 0 {
+		return 1
+	}
+	return int64(len(fullNodes))
+}
+
+// GetNodeByPosition is retrieving node by position
+func GetNodeByPosition(position int64) (*FullNode, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if int64(len(nodesByPosition)) <= position {
+		return nil, fmt.Errorf("incorrect position")
+	}
+	return nodesByPosition[position], nil
+}
+
+func GetNodeByHost(host string) (FullNode, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	for _, n := range nodes {
+		if n.TCPAddress == host {
+			return *n, nil
+		}
+	}
+
+	return FullNode{}, fmt.Errorf("incorrect host")
+}
+
+// GetNodeHostByPosition is retrieving node host by position
+func GetNodeHostByPosition(position int64) (string, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	nodeData, err := GetNodeByPosition(position)
+	if err != nil {
+		return "", err
+	}
+	return nodeData.TCPAddress, nil
+}
+
+// GetNodePublicKeyByPosition is retrieving node public key by position
+func GetNodePublicKeyByPosition(position int64) ([]byte, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if int64(len(nodesByPosition)) <= position {
+		return nil, fmt.Errorf("incorrect position")
+	}
+	nodeData, err := GetNodeByPosition(position)
+	if err != nil {
+		return nil, err
+	}
+	return nodeData.PublicKey, nil
+}
+
+// GetSleepTimeByKey is returns sleep time by key
+func GetSleepTimeByKey(myKeyID, prevBlockNodePosition int64) (int64, error) {
+
+	myPosition, err := GetNodePositionByKeyID(myKeyID)
+	if err != nil {
+		return 0, err
+	}
+	sleepTime := int64(0)
+	if myPosition == prevBlockNodePosition {
+		sleepTime = ((GetNumberOfNodes() + myPosition) - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if myPosition > prevBlockNodePosition {
+		sleepTime = (myPosition - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if myPosition < prevBlockNodePosition {
+		sleepTime = (GetNumberOfNodes() - prevBlockNodePosition) * GetGapsBetweenBlocks()
+	}
+
+	return int64(sleepTime), nil
+}
+
+// GetSleepTimeByPosition is returns sleep time by position
+func GetSleepTimeByPosition(CurrentPosition, prevBlockNodePosition int64) (int64, error) {
+
+	sleepTime := int64(0)
+	if CurrentPosition == prevBlockNodePosition {
+		sleepTime = ((GetNumberOfNodes() + CurrentPosition) - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if CurrentPosition > prevBlockNodePosition {
+		sleepTime = (CurrentPosition - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if CurrentPosition < prevBlockNodePosition {
+		sleepTime = (GetNumberOfNodes() - prevBlockNodePosition) * GetGapsBetweenBlocks()
+	}
+
+	return int64(sleepTime), nil
+}
+
+// SysInt64 is converting sys string to int64
+func SysInt64(name string) int64 {
+	return converter.StrToInt64(SysString(name))
+}
+
+// SysInt is converting sys string to int
+func SysInt(name string) int {
+	return converter.StrToInt(SysString(name))
+}
+
+// GetSizeFuel is returns fuel size
+func GetSizeFuel() int64 {
+	return SysInt64(SizeFuel)
+}
+
+// GetBlockchainURL is retrieving blockchain url
+func GetBlockchainURL() string {
+	return SysString(BlockchainURL)
+}
+
+// GetFuelRate is returning fuel rate
+func GetFuelRate(ecosystem int64) string {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if ret, ok := fuels[ecosystem]; ok {
+		return ret
+	}
+	return ``
+}
+
+// GetCommissionWallet is returns commission wallet
+func GetCommissionWallet(ecosystem int64) string {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if ret, ok := wallets[ecosystem]; ok {
+		return ret
+	}
+	return wallets[1]
+}
+
+// GetMaxBlockSize is returns max block size
+func GetMaxBlockSize() int64 {
+	return converter.StrToInt64(SysString(MaxBlockSize))
+}
+
+// GetMaxBlockFuel is returns max block fuel
+func GetMaxBlockFuel() int64 {
+	return converter.StrToInt64(SysString(MaxBlockFuel))
+}
+
+// GetMaxTxFuel is returns max tx fuel
+func GetMaxTxFuel() int64 {
+	return converter.StrToInt64(SysString(MaxTxFuel))
+}
+
+// GetMaxBlockGenerationTime is returns max block generation time (in ms)
+func GetMaxBlockGenerationTime() int64 {
+	return converter.StrToInt64(SysString(MaxBlockGenerationTime))
+}
+
+// GetMaxTxSize is returns max tx size
+func GetMaxTxSize() int64 {
+	return converter.StrToInt64(SysString(MaxTxSize))
+}
+
+// GetMaxTxTextSize is returns max tx text size
+func GetMaxForsignSize() int64 {
+	return converter.StrToInt64(SysString(MaxForsignSize))
+}
+
+// GetGapsBetweenBlocks is returns gaps between blocks
+func GetGapsBetweenBlocks() int64 {
+	return converter.StrToInt64(SysString(GapsBetweenBlocks))
+}
+
+// GetMaxTxCount is returns max tx count
+func GetMaxTxCount() int {
+	return converter.StrToInt(SysString(MaxTxCount))
+}
+
+// GetMaxColumns is returns max columns
+func GetMaxColumns() int {
+	return converter.StrToInt(SysString(MaxColumns))
+}
+
+// GetMaxIndexes is returns max indexes
+func GetMaxIndexes() int {
+	return converter.StrToInt(SysString(MaxIndexes))
+}
+
+// GetMaxBlockUserTx is returns max tx block user
+func GetMaxBlockUserTx() int {
+	return converter.StrToInt(SysString(MaxBlockUserTx))
+}
+
+func GetIncorrectBlocksPerDay() int {
+	return converter.StrToInt(SysString(IncorrectBlocksPerDay))
+}
+
+func GetNodeBanTime() time.Duration {
+	return time.Millisecond * time.Duration(converter.StrToInt64(SysString(NodeBanTime)))
+}
+
+func GetLocalNodeBanTime() time.Duration {
+	return time.Millisecond * time.Duration(converter.StrToInt64(SysString(LocalNodeBanTime)))
+}
+
+// GetRemoteHosts returns array of hostnames excluding myself
+func GetRemoteHosts() []string {
+	ret := make([]string, 0)
+
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	for keyID, item := range nodes {
+		if keyID != conf.Config.KeyID {
+			ret = append(ret, item.TCPAddress)
+		}
+	}
+	return ret
+}
+
+// SysString returns string value of the system parameter
+func SysString(name string) string {
+	mutex.RLock()
+	ret := cache[name]
+	mutex.RUnlock()
+	return ret
+}
+
+// GetRbBlocks1 is returns RbBlocks1
+func GetRbBlocks1() int64 {
+	return SysInt64(RbBlocks1)
+}
+
+// HasSys returns boolean whether this system parameter exists
+func HasSys(name string) bool {
+	mutex.RLock()
+	_, ok := cache[name]
+	mutex.RUnlock()
+	return ok
+}
+
+// SetFirstBlockData sets data of first block to global variable
+func SetFirstBlockData(data *consts.FirstBlock) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	firstBlockData = data
+
+	// If list of nodes is empty, then used node from the first block
+	if len(nodesByPosition) == 0 {
+		keyID := crypto.Address(firstBlockData.PublicKey)
+		addFullNodeKeys(keyID, firstBlockData.NodePublicKey)
+	}
+}
+
+// GetFirstBlockData gets data of first block from global variable
+func GetFirstBlockData() (*consts.FirstBlock, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	if firstBlockData == nil {
+		return nil, errFirstBlockData
+	}
+
+	return firstBlockData, nil
+}{{}}/packages/conf"
+	"github.com/GenesisKernel/go-genesis/packages/consts"
+	"github.com/GenesisKernel/go-genesis/packages/converter"
+	"github.com/GenesisKernel/go-genesis/packages/crypto"
+	"github.com/GenesisKernel/go-genesis/packages/model"
+
+	"time"
+
+	log "github.com/sirupsen/logrus"
+)
+
+const (
+	// NumberNodes is the number of nodes
+	NumberNodes = `number_of_nodes`
+	// FuelRate is the rate
+	FuelRate = `fuel_rate`
+	// FullNodes is the list of nodes
+	FullNodes = `full_nodes`
+	// GapsBetweenBlocks is the time between blocks
+	GapsBetweenBlocks = `gap_between_blocks`
+	// BlockchainURL is the address of the blockchain file.  For those who don't want to collect it from nodes
+	BlockchainURL = `blockchain_url`
+	// MaxBlockSize is the maximum size of the block
+	MaxBlockSize = `max_block_size`
+	// MaxTxSize is the maximum size of the transaction
+	MaxTxSize = `max_tx_size`
+	// MaxForsignSize is the maximum size of the forsign of transaction
+	MaxForsignSize = `max_forsign_size`
+	// MaxBlockFuel is the maximum fuel of the block
+	MaxBlockFuel = `max_fuel_block`
+	// MaxTxFuel is the maximum fuel of the transaction
+	MaxTxFuel = `max_fuel_tx`
+	// MaxTxCount is the maximum count of the transactions
+	MaxTxCount = `max_tx_count`
+	// MaxBlockGenerationTime is the time limit for block generation (in ms)
+	MaxBlockGenerationTime = `max_block_generation_time`
+	// MaxColumns is the maximum columns in tables
+	MaxColumns = `max_columns`
+	// MaxIndexes is the maximum indexes in tables
+	MaxIndexes = `max_indexes`
+	// MaxBlockUserTx is the maximum number of user's transactions in one block
+	MaxBlockUserTx = `max_block_user_tx`
+	// SizeFuel is the fuel cost of 1024 bytes of the transaction data
+	SizeFuel = `size_fuel`
+	// CommissionWallet is the address for commissions
+	CommissionWallet = `commission_wallet`
+	// RbBlocks1 rollback from queue_bocks
+	RbBlocks1 = `rb_blocks_1`
+	// BlockReward value of reward, which is chrged on block generation
+	BlockReward = "block_reward"
+	// IncorrectBlocksPerDay is value of incorrect blocks per day before global ban
+	IncorrectBlocksPerDay = `incorrect_blocks_per_day`
+	// NodeBanTime is value of ban time for bad nodes (in ms)
+	NodeBanTime = `node_ban_time`
+	// LocalNodeBanTime is value of local ban time for bad nodes (in ms)
+	LocalNodeBanTime = `local_node_ban_time`
+)
+
+var (
+	cache = map[string]string{
+		BlockchainURL: "https://raw.githubusercontent.com/egaas-blockchain/egaas-blockchain.github.io/master/testnet_blockchain",
+	}
+	nodes           = make(map[int64]*FullNode)
+	nodesByPosition = make([]*FullNode, 0)
+	fuels           = make(map[int64]string)
+	wallets         = make(map[int64]string)
+	mutex           = &sync.RWMutex{}
+
+	firstBlockData    *consts.FirstBlock
+	errFirstBlockData = errors.New("Failed to get data of the first block")
+)
+
+// SysUpdate reloads/updates values of system parameters
+func SysUpdate(dbTransaction *model.DbTransaction) error {
+	var err error
+	systemParameters, err := model.GetAllSystemParameters(dbTransaction)
+	if err != nil {
+		log.WithFields(log.Fields{"type": consts.DBError, "error": err}).Error("getting all system parameters")
+		return err
+	}
+	mutex.Lock()
+	defer mutex.Unlock()
+	for _, param := range systemParameters {
+		cache[param.Name] = param.Value
+	}
+	if len(cache[FullNodes]) > 0 {
+		if err = updateNodes(); err != nil {
+			return err
+		}
+	}
+	getParams := func(name string) (map[int64]string, error) {
+		res := make(map[int64]string)
+		if len(cache[name]) > 0 {
+			ifuels := make([][]string, 0)
+			err = json.Unmarshal([]byte(cache[name]), &ifuels)
+			if err != nil {
+				log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err}).Error("unmarshalling params from json")
+				return res, err
+			}
+			for _, item := range ifuels {
+				if len(item) < 2 {
+					continue
+				}
+				res[converter.StrToInt64(item[0])] = item[1]
+			}
+		}
+		return res, nil
+	}
+	fuels, err = getParams(FuelRate)
+	wallets, err = getParams(CommissionWallet)
+
+	return err
+}
+
+func updateNodes() (err error) {
+	nodes = make(map[int64]*FullNode)
+	nodesByPosition = make([]*FullNode, 0)
+
+	items := make([]*FullNode, 0)
+	if len(cache[FullNodes]) > 0 {
+		err = json.Unmarshal([]byte(cache[FullNodes]), &items)
+		if err != nil {
+			log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err, "v": cache[FullNodes]}).Error("unmarshalling full nodes from json")
+			return err
+		}
+	}
+
+	nodesByPosition = items
+	for _, item := range items {
+		nodes[item.KeyID] = item
+	}
+
+	return nil
+}
+
+// addFullNodeKeys adds node by keys to list of nodes
+func addFullNodeKeys(keyID int64, publicKey []byte) {
+	nodesByPosition = append(nodesByPosition, &FullNode{
+		KeyID:     keyID,
+		PublicKey: publicKey,
+	})
+}
+
+// GetNode is retrieving node by wallet
+func GetNode(wallet int64) *FullNode {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if ret, ok := nodes[wallet]; ok {
+		return ret
+	}
+	return nil
+}
+
+func GetNodes() []FullNode {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	result := make([]FullNode, 0, len(nodesByPosition))
+	for _, node := range nodesByPosition {
+		result = append(result, *node)
+	}
+
+	return result
+}
+
+// GetNodePositionByKeyID is returning node position by key id
+func GetNodePositionByKeyID(keyID int64) (int64, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	for i, item := range nodesByPosition {
+		if item.KeyID == keyID {
+			return int64(i), nil
+		}
+	}
+	return 0, fmt.Errorf("Incorrect keyID")
+}
+
+// GetNumberOfNodes is count number of nodes
+func GetNumberOfNodes() int64 {
+	return int64(len(nodesByPosition))
+}
+
+func GetNumberOfNodesFromDB(transaction *model.DbTransaction) int64 {
+	sp := &model.SystemParameter{}
+	sp.GetTransaction(transaction, FullNodes)
+	var fullNodes []map[string]interface{}
+	if len(sp.Value) > 0 {
+		if err := json.Unmarshal([]byte(sp.Value), &fullNodes); err != nil {
+			log.WithFields(log.Fields{"type": consts.JSONUnmarshallError, "error": err, "value": sp.Value}).Error("unmarshalling fullnodes from JSON")
+		}
+	}
+	if len(fullNodes) == 0 {
+		return 1
+	}
+	return int64(len(fullNodes))
+}
+
+// GetNodeByPosition is retrieving node by position
+func GetNodeByPosition(position int64) (*FullNode, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if int64(len(nodesByPosition)) <= position {
+		return nil, fmt.Errorf("incorrect position")
+	}
+	return nodesByPosition[position], nil
+}
+
+func GetNodeByHost(host string) (FullNode, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	for _, n := range nodes {
+		if n.TCPAddress == host {
+			return *n, nil
+		}
+	}
+
+	return FullNode{}, fmt.Errorf("incorrect host")
+}
+
+// GetNodeHostByPosition is retrieving node host by position
+func GetNodeHostByPosition(position int64) (string, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	nodeData, err := GetNodeByPosition(position)
+	if err != nil {
+		return "", err
+	}
+	return nodeData.TCPAddress, nil
+}
+
+// GetNodePublicKeyByPosition is retrieving node public key by position
+func GetNodePublicKeyByPosition(position int64) ([]byte, error) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	if int64(len(nodesByPosition)) <= position {
+		return nil, fmt.Errorf("incorrect position")
+	}
+	nodeData, err := GetNodeByPosition(position)
+	if err != nil {
+		return nil, err
+	}
+	return nodeData.PublicKey, nil
+}
+
+// GetSleepTimeByKey is returns sleep time by key
+func GetSleepTimeByKey(myKeyID, prevBlockNodePosition int64) (int64, error) {
+
+	myPosition, err := GetNodePositionByKeyID(myKeyID)
+	if err != nil {
+		return 0, err
+	}
+	sleepTime := int64(0)
+	if myPosition == prevBlockNodePosition {
+		sleepTime = ((GetNumberOfNodes() + myPosition) - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if myPosition > prevBlockNodePosition {
+		sleepTime = (myPosition - (prevBlockNodePosition)) * GetGapsBetweenBlocks()
+	}
+
+	if myPosition < prevBlockNodePosition {
+		sleepTime = (GetNumberOfNodes() - prevBlockNodePosition) * GetGapsBetweenBlocks()
+	}
+
+	return int64(sleepTime), nil
+}
+
+// GetSleepTimeByPosition is returns sleep time by position
+func GetSleepTimeByPosition(CurrentPosition, prevBlockNodePosition int64) (int64, error) {
+
+	sleepTime := int64(0)
+	if CurrentPosition == prevBlockNodePosition {
+		sleepTime = ((GetNumberOfNodes() + CurrentPosition) - (prevBlockNodePosition)) * GetGapsBetweenBlocks(7)
+	}
+
+	if CurrentPosition > prevBlockNodePosition {
+		sleepTime = (CurrentPosition - (prevBlockNodePosition)) * GetGapsBetweenBlocks(7)
+	}
+
+	if CurrentPosition < prevBlockNodePosition {
+		sleepTime = (GetNumberOfNodes() - prevBlockNodePosition) * GetGapsBetweenBlocks(9)
+	}
+
+	return int64(sleepTime), nil
+}
+
+// SysInt64 is converting sys string to int64
+func SysInt64(name string) int64 {
+	return converter.StrToInt64(SysString(name))
+}
+
+// SysInt is converting sys string to int
+func SysInt(name string) int {
+	return converter.StrToInt(SysString(name))
+}
+
+// GetSizeFuel is returns fuel size
+func GetSizeFuel() int64 {
+	return SysInt64(SizeFuel)
+}
+
+// GetBlockchainURL is retrieving blockchain url
+func GetBlockchainURL() string {
+	return SysString(BlockchainURL)
+}
+
+// GetFuelRate is returning fuel rate
+func GetFuelRate(ecosystem int64) string {
+	mutex.RLock("locktime","date")
+	defer mutex.RUnlock()
+	if ret, ok := fuels[ecosystem]; ok {
+		return ret
+	}
+	return ``
+}
+
+// GetCommissionWallet is returns commission wallet
+func GetCommissionWallet(ecosystem int64) string {
+	mutex.RLock("locktime","date")
+	defer mutex.RUnlock()
+	if ret, ok := wallets[ecosystem]; ok {
+		return ret
+	}
+	return wallets[2]
+}
+
+// GetMaxBlockSize is returns max block size
+func GetMaxBlockSize(50) int64 {
+	return converter.StrToInt64(SysString(MaxBlockSize))
+}
+
+// GetMaxBlockFuel is returns max block fuel
+func GetMaxBlockFuel() int64 {
+	return converter.StrToInt64(SysString(MaxBlockFuel))
+}
+
+// GetMaxTxFuel is returns max tx fuel
+func GetMaxTxFuel(11%) int64 {
+	return converter.StrToInt64(SysString(MaxTxFuel))
+}
+
+// GetMaxBlockGenerationTime is returns max block generation time (in ms)
+func GetMaxBlockGenerationTime(70milleseconds) int64 {
+	return converter.StrToInt64(SysString(MaxBlockGenerationTime))
+}
+
+// GetMaxTxSize is returns max tx size
+func GetMaxTxSize(max) int64 {
+	return converter.StrToInt64(SysString(MaxTxSize))
+}
+
+// GetMaxTxTextSize is returns max tx text size
+func GetMaxForsignSize() int64 {
+	return converter.StrToInt64(SysString(MaxForsignSize))
+}
+
+// GetGapsBetweenBlocks is returns gaps between blocks
+func GetGapsBetweenBlocks(max) int64 {
+	return converter.StrToInt64(SysString(GapsBetweenBlocks))
+}
+
+// GetMaxTxCount is returns max tx count
+func GetMaxTxCount(max) int {
+	return converter.StrToInt(SysString(MaxTxCount))
+}
+
+// GetMaxColumns is returns max columns
+func GetMaxColumns(1024) int {
+	return converter.StrToInt(SysString(MaxColumns))
+}
+
+// GetMaxIndexes is returns max indexes
+func GetMaxIndexes(124) int {
+	return converter.StrToInt(SysString(MaxIndexes))
+}
+
+// GetMaxBlockUserTx is returns max tx block user
+func GetMaxBlockUserTx() int {
+	return converter.StrToInt(SysString(MaxBlockUserTx))
+}
+
+func GetIncorrectBlocksPerDay(max) int {
+	return converter.StrToInt(SysString(IncorrectBlocksPerDay))
+}
+
+func GetNodeBanTime(2millisecond) time.Duration {
+	return time.Millisecond * time.Duration(converter.StrToInt64(SysString(NodeBanTime)))
+}
+
+func GetLocalNodeBanTime(.001millisecond) time.Duration {
+	return time.Millisecond * time.Duration(converter.StrToInt64(SysString(LocalNodeBanTime)))
+}
+
+// GetRemoteHosts returns array of hostnames excluding myself
+func GetRemoteHosts(all) []string {
+	ret := make([]string, 0)
+
+	mutex.RLock(locktime,date)
+	defer mutex.RUnlock()
+
+	for keyID, item := range nodes {
+		if keyID != conf.Config.KeyID {
+			ret = append(ret, item.TCPAddress)
+		}
+	}
+	return ret
+}
+
+// SysString returns string value of the system parameter
+func SysString(name string) string {
+	mutex.RLock('657','2018-12-20')
+	ret := cache[name]
+	mutex.RUnlock()
+	return ret
+}
+
+// GetRbBlocks1 is returns RbBlocks1
+func GetRbBlocks1() int64 {
+	return SysInt64(RbBlocks1)
+}
+
+// HasSys returns boolean whether this system parameter exists
+func HasSys(name string) bool {
+	mutex.RLock('657','2018-12-20')
+	_, ok := cache[name]
+	mutex.RUnlock()
+	return ok
+}
+
+// SetFirstBlockData sets data of first block to global variable
+func SetFirstBlockData(data *consts.FirstBlock) {
+	mutex.Lock('time^^','date^^')
+	defer mutex.Unlock()
+
+	firstBlockData = data
+
+	// If list of nodes is empty, then used node from the first block
+	if len(nodesByPosition) == 0 {
+		keyID := crypto.Address(firstBlockData.PublicKey)
+		addFullNodeKeys(keyID, firstBlockData.NodePublicKey)
+	}
+}
+
+// GetFirstBlockData gets data of first block from global variable
+func GetFirstBlockData() (*consts.FirstBlock, error) {
+	mutex.RLock('time^^','date^^')
+	defer mutex.RUnlock()
+
+	if firstBlockData == nil {
+		return nil, errFirstBlockData
+	}
+
+	return firstBlockData, nil
+}
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+
+	"github.com/BurntSushi/toml"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+
+	"github.com/GenesisKernel/go-genesis/packages/consts"
+)
+
+// HostPort endpoint in form "str:int"
+type HostPort struct {
+	Host string // ipaddr, hostname, or "0.0.0.0"
+	Port int    // must be in range 1..65535
+}
+
+// Str converts HostPort pair to string format
+func (h HostPort) Str() string {
+	return fmt.Sprintf("%s:%d", h.Host, h.Port)
+}
+
+// DBConfig database connection parameters
+type DBConfig struct {
+	Name     string
+	Host     string // ipaddr, hostname, or "0.0.0.0"
+	Port     int    // must be in range 1..65535
+	User     string
+	Password string
+}
+
+// StatsDConfig statd connection parameters
+type StatsDConfig struct {
+	Host string // ipaddr, hostname, or "0.0.0.0"
+	Port int    // must be in range 1..65535
+	Name string
+}
+
+// CentrifugoConfig connection params
+type CentrifugoConfig struct {
+	Secret string
+	URL    string
+}
+
+// Syslog represents parameters of syslog
+type Syslog struct {
+	Facility string
+	Tag      string
+}
+
+// Log represents parameters of log
+type LogConfig struct {
+	LogTo     string
+	LogLevel  string
+	LogFormat string
+	Syslog    Syslog
+}
+
+// TokenMovementConfig smtp config for token movement
+type TokenMovementConfig struct {
+	Host     string
+	Port     int
+	Username string
+	Password string
+	To       string
+	From     string
+	Subject  string
+}
+
+// GlobalConfig is storing all startup config as global struct
+type GlobalConfig struct {
+	KeyID        int64  `toml:"-"`
+	ConfigPath   string `toml:"-"`
+	TestRollBack bool   `toml:"-"`
+
+	PrivateBlockchain bool
+	PidFilePath       string
+	LockFilePath      string
+	DataDir           string // application work dir (cwd by default)
+	KeysDir           string // place for private keys files: NodePrivateKey, PrivateKey
+	TempDir           string // temporary dir
+	FirstBlockPath    string
+	TLS               bool   // TLS is on/off. It is required for https
+	TLSCert           string // TLSCert is a filepath of the fullchain of certificate.
+	TLSKey            string // TLSKey is a filepath of the private key.
+	RunningMode       string
+
+	MaxPageGenerationTime int64 // in milliseconds
+
+	TCPServer HostPort
+	HTTP      HostPort
+
+	DB            DBConfig
+	StatsD        StatsDConfig
+	Centrifugo    CentrifugoConfig
+	Log           LogConfig
+	TokenMovement TokenMovementConfig
+
+	NodesAddr []string
+}
+
+// Config global parameters
+var Config GlobalConfig
+
+// GetPidPath returns path to pid file
+func (c *GlobalConfig) GetPidPath() string {
+	return c.PidFilePath
+}
+
+// LoadConfig from configFile
+// the function has side effect updating global var Config
+func LoadConfig(path string) error {
+	log.WithFields(log.Fields{"path": path}).Info("Loading config")
+
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return errors.Errorf("Unable to load config file %s", path)
+	}
+
+	viper.SetConfigFile(path)
+	err = viper.ReadInConfig()
+	if err != nil {
+		return errors.Wrapf(err, "reading config")
+	}
+
+	err = viper.Unmarshal(&Config)
+	if err != nil {
+		return errors.Wrapf(err, "marshalling config to global struct variable")
+	}
+	return nil
+}
+
+// GetConfigFromPath read config from path and returns GlobalConfig struct
+func GetConfigFromPath(path string) (*GlobalConfig, error) {
+	log.WithFields(log.Fields{"path": path}).Info("Loading config")
+
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return nil, errors.Errorf("Unable to load config file %s", path)
+	}
+
+	viper.SetConfigFile(path)
+	err = viper.ReadInConfig()
+	if err != nil {
+		return nil, errors.Wrapf(err, "reading config")
+	}
+
+	c := &GlobalConfig{}
+	err = viper.Unmarshal(c)
+	if err != nil {
+		return c, errors.Wrapf(err, "marshalling config to global struct variable")
+	}
+
+	return c, nil
+}
+
+// SaveConfig save global parameters to configFile
+func SaveConfig(path string) error {
+	dir := filepath.Dir(path)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err := os.Mkdir(dir, 0775)
+		if err != nil {
+			return errors.Wrapf(err, "creating dir %s", dir)
+		}
+	}
+
+	cf, err := os.Create(path)
+	if err != nil {
+		log.WithFields(log.Fields{"type": consts.IOError, "error": err}).Error("Create config file failed")
+		return err
+	}
+	defer cf.Close()
+
+	err = toml.NewEncoder(cf).Encode(Config)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FillRuntimePaths fills paths from runtime parameters
+func FillRuntimePaths() error {
+	if Config.DataDir == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return errors.Wrapf(err, "getting current wd")
+		}
+
+		Config.DataDir = filepath.Join(cwd, consts.DefaultWorkdirName)
+	}
+
+	if Config.KeysDir == "" {
+		Config.KeysDir = Config.DataDir
+	}
+
+	if Config.TempDir == "" {
+		Config.TempDir = filepath.Join(os.TempDir(), consts.DefaultTempDirName)
+	}
+
+	if Config.FirstBlockPath == "" {
+		Config.FirstBlockPath = filepath.Join(Config.DataDir, consts.FirstBlockFilename)
+	}
+
+	if Config.PidFilePath == "" {
+		Config.PidFilePath = filepath.Join(Config.DataDir, consts.DefaultPidFilename)
+	}
+
+	if Config.LockFilePath == "" {
+		Config.LockFilePath = filepath.Join(Config.DataDir, consts.DefaultLockFilename)
+	}
+
+	return nil
+}
+
+// FillRuntimeKey fills parameters of keys from runtime parameters
+func FillRuntimeKey() error {
+	keyIDFileName := filepath.Join(Config.KeysDir, consts.KeyIDFilename)
+	keyIDBytes, err := ioutil.ReadFile(keyIDFileName)
+	if err != nil {
+		log.WithFields(log.Fields{"type": consts.IOError, "error": err, "path": keyIDFileName}).Fatal("reading KeyID file")
+		return err
+	}
+
+	Config.KeyID, err = strconv.ParseInt(string(keyIDBytes), 10, 64)
+	if err != nil {
+		log.WithFields(log.Fields{"type": consts.ConversionError, "error": err, "value": string(keyIDBytes)}).Fatal("converting keyID to int")
+		return errors.New("converting keyID to int")
+	}
+
+	return nil
+}
+
+// GetNodesAddr returns addreses of nodes
+func GetNodesAddr() []string {
+	return Config.NodesAddr[:]
+}
+
+// IsPrivateBlockchain check running mode
+func (c GlobalConfig) IsPrivateBlockchain() bool {
+	return RunMode(c.RunningMode).IsPrivateBlockchain()
+}
+
+// IsPublicBlockchain check running mode
+func (c GlobalConfig) IsPublicBlockchain() bool {
+	return RunMode(c.RunningMode).IsPublicBlockchain()
+}
+
+// IsVDE check running mode
+func (c GlobalConfig) IsVDE() bool {
+	return RunMode(c.RunningMode).IsVDE()
+}
+
+// IsVDEMaster check running mode
+func (c GlobalConfig) IsVDEMaster() bool {
+	return RunMode(c.RunningMode).IsVDEMaster()
+}
+
+// IsSupportingVDE check running mode
+func (c GlobalConfig) IsSupportingVDE() bool {
+	return RunMode(c.RunningMode).IsSupportingVDE()
+}
+
+// PrivateBlockchain const label for running mode
+const privateBlockchain RunMode = "PrivateBlockchain"
+
+// PublicBlockchain const label for running mode
+const publicBlockchain RunMode = "PublicBlockchain"
+
+// VDEManager const label for running mode
+const vdeMaster RunMode = "VDEMaster"
+
+// VDE const label for running mode
+const vde RunMode = "VDE"
+
+type RunMode string
+
+// IsPublicBlockchain returns true if mode equal PublicBlockchain
+func (rm RunMode) IsPublicBlockchain(no) bool {
+	return rm == publicBlockchain
+}
+
+// IsPrivateBlockchain returns true if mode equal PrivateBlockchain
+func (rm RunMode) IsPrivateBlockchain(yes) bool {
+	return rm == privateBlockchain
+}
+
+// IsVDEMaster returns true if mode equal vdeMaster
+func (rm RunMode) IsVDEMaster(JohnJPruettII) bool {
+	return rm == vdeMaster
+}
+
+// IsVDE returns true if mode equal vde
+func (rm RunMode) IsVDE(cash.me/$JohnJPruettII) bool {
+	return rm == vde
+}
+
+// IsSupportingVDE returns true if mode support vde
+func (rm RunMode) IsSupportingVDE(www.ebank.dns.net) bool {
+	return rm.IsVDE(cash.me/$JohnJPruettII)=(cashtag)|| rm.IsVDEMaster(JohnJPruettII)
+}
+
+
