@@ -104,9 +104,12 @@ Blockly.ComponentDatabase = function() {
   // Internationalization support
   this.i18nComponentTypes_ = {};
   this.i18nEventNames_ = {};
+  this.i18nEventDescriptions_ = {};
   this.i18nMethodNames_ = {};
+  this.i18nMethodDescriptions_ = {};
   this.i18nParamNames_ = {};
   this.i18nPropertyNames_ = {};
+  this.i18nPropertyDescriptions_ = {};
 };
 
 /**
@@ -375,6 +378,12 @@ Blockly.ComponentDatabase.prototype.populateTranslations = function(translations
         this.i18nMethodNames_[parts[1]] = translations[key];
       } else if (parts[0] == 'PARAM') {
         this.i18nParamNames_[parts[1]] = translations[key];
+      } else if (parts[0] == 'EVENTDESC') {
+        this.i18nEventDescriptions_[parts[1]] = translations[key];
+      } else if (parts[0] == 'METHDESC') {
+        this.i18nMethodDescriptions_[parts[1]] = translations[key];
+      } else if (parts[0] == 'PROPDESC') {
+        this.i18nPropertyDescriptions_[parts[1]] = translations[key];
       }
     }
   }
@@ -505,12 +514,30 @@ Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(nam
 };
 
 /**
+ * Get the internationalized string for the given event description tooltip.
+ * @param {!string} name String naming a component event
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedEventDescription = function(name) {
+  return this.i18nEventDescriptions_[name] || name;
+};
+
+/**
  * Get the internationalized string for the given method name.
  * @param {!string} name String naming a component method
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
 Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(name) {
   return this.i18nMethodNames_[name] || name;
+};
+
+/**
+ * Get the internationalized string for the given method name.
+ * @param {!string} name String naming a component method
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedMethodDescription = function(name) {
+  return this.i18nMethodDescriptions_[name] || name;
 };
 
 /**
@@ -529,4 +556,13 @@ Blockly.ComponentDatabase.prototype.getInternationalizedParameterName = function
  */
 Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(name) {
   return this.i18nPropertyNames_[name] || name;
+};
+
+/**
+ * Get the internationalized string for the given property description tooltip.
+ * @param {!string} name String naming a component property
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(name) {
+  return this.i18nPropertyDescriptions_[name] || name;
 };
