@@ -24,12 +24,12 @@ import java.util.Set;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YoungAndroidComponentSelectorPropertyEditor
+public class YoungAndroidComponentSelectorPropertyEditor
     extends AdditionalChoicePropertyEditor implements FormChangeListener {
   // UI elements
   private final ListBox componentsList;
 
-  private final ListWithNone choices;
+  protected final ListWithNone choices;
 
   // The YaFormEditor associated with this property editor.
   private final YaFormEditor editor;

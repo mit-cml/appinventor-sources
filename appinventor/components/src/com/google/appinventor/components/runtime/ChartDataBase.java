@@ -165,7 +165,7 @@ public abstract class ChartDataBase implements Component {
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "WIP")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
         dataSource.importDataComponent(this);
@@ -173,7 +173,7 @@ public abstract class ChartDataBase implements Component {
 
     public void importFromCSV() {
         chartDataModel.importFromCSV(dataSource, csvColumns);
-        
+
         container.$context().runOnUiThread(new Runnable() {
             @Override
             public void run() {
