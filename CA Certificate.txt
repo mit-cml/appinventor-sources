@@ -1,0 +1,53 @@
+       Certificate Authority
+  GlobalSign Domain Validation CA..
+
+Data:
+API-V12 Transmit Receive Wireless + Applications
+
+Version:
+Secure Signature CSV-G3
+
+Signature Algorithm:
+RSA/DSA-SHA512-SHA256-SHA1
+
+Issuer: 
+ GlobalSign Domain Validation CA..
+
+Common Name:
+USBitcoinBankExchangeLLC.
+GlobalSign Domain Validation CA-SHA1-SHA256-SHA512-G3
+
+Oranization:USBitcoinBankexch.org
+GlobalSign nv-sa
+
+Organizational Unit:SSH|SSL-Secure Encoding-Root CA..
+
+Validity:
+Issued on:2/20/14
+Expires on:2/20/24
+
+Serial Number:
+04:00:00:00:00:01:44:4E:FO:3E:20
+
+Issuer: 
+GlobalSign Domain Validation CA..         
+
+Common Name:
+United StatesBitcoinBankandExchangeLLc.
+
+Organization:
+USBitcoinBank&ExchangeLLc.
+GlobalSign nv-sa
+
+Organizational Unit:
+Financial Institution-usbitcoinbankexch.org 
+Root CA..
+ 
+
+Public-Key Modulus:SHA256-SHA1-SHA512 --RSAEncoding-2048bit
+Modulus: 
+         98:1a:26:be:3a:08:c8:9a:b6:44:cb:d6:92:62:0d:4b:3d:d7:40:19:32:87:b6:83:e2:dc:34:ae:df:7b:61:28:e1:7b:65:9f:1a:87:a4:fa:64:6d:fa:78:e2:ea:92:a2:8f:fc:eb:63:54:cb:06:25:47:73:21:78:9e:17:86:41:4a:3b:6f:19:fb:d9:f3:f1:77:51:53:77:9a:da:d1:4e:d4:53:62:05:a7:b9:4c:b5:e8:f7:69:7f:9a:63:f4:56:e7:3e:7f:13:0e:3e:e6:ff:d9:c3:b3:40:80:2f:b2:cb:6a:8c:61:52:8f:cf:07:f4:5a:57:be:ca:73:fd:98:84:bb:70:2e:f1:25:b6:40:8f:c1:0a:5c:48:b5:66:4b:6c:ed:26:a1:f6:09:0f:23:bd:de:12:38:ec:22:30:59:86:39:42:bf:c5:eb:e5:7e:78:7a:c5:3a:bc:f3:1d:6a:4c:44:9d:47:70:24:9c:84:de:68:6a:96:ea:78:68:e8:ab:e9:fe:6a:50:b6:3d:f6:c6:2c:29:68:04:a6:fe:08:5b:a3:ed:26:ed:77:be:7c:49:07:aa:a5:38:00:63:d7:3b:a9:6a:61:a9:b0:9a:75:e0:49:61:ca:22:7a:8a:84:69:6a:78:94:e4:f6:08:38:bd:bc:17:09:f8:91:90:cb:e3
+Exponent: 65537 
+
+Signature Algorithm:SHA512-RSAEncoding
+         c3:bc:6b:99:ec:02:32:c6:ff:c8:b3:71:4f:eb:c1:cd:86:28:68:d5:9c:74:54:6d:60:fc:59:d7:26:de:12:e5:d9:5b:d4:9d:8d:cc:61:86:6f:93:9f:36:69:7e:dd:45:6d:d6:47:84:a7:f7:89:43:d4:11:3a:39:84:b8:dd:cd

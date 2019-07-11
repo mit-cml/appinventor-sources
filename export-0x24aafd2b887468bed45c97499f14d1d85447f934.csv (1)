@@ -1,0 +1,2 @@
+"Txhash","Blockno","UnixTimestamp","DateTime","From","To","ContractAddress","Value_IN(ETH)","Value_OUT(ETH)","CurrentValue @ $171.36/Eth","TxnFee(ETH)","TxnFee(USD)","Historical $Price/Eth","Status","ErrCode"
+"0x13b2d8c9fa2c5ab6a774ecd8786994606aa8d7c498a40de398d0c1c0aba9557f","7594708","1555630572","4/18/2019 11:36:12 PM","0x5bb47b6c5c9c3c7431f8272db3d9bd0ecf79a371","0x24aafd2b887468bed45c97499f14d1d85447f934","","0.003","0","0.51408","0.0001008","0.017273088","167.01","","",""
