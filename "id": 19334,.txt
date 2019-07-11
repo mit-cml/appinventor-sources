@@ -1,0 +1,6 @@
+ "id": 19334, "state": "valid", "dns_names: ["example.com", "www.example.com"], "not_before": "2017-07-25T19:14:00-00:00", "not_after": "2017-10-23T19:14:00-00:00", "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824", "key_type": "rsa", "cluster": "webservers", "leaf": "MIIFODCCBCCgAwIBAgISA5F2oB8pTLQ70sfSG71V+gbPMA0GCSqGSIb3DQEBCwUAME==", "chain": [ "MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/MS==", "MIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/MS==" ], }
+Retrieve a Certificate
+To retrieve a certificate, GET its URL (/api/v3/orders/ORDER_NAME/certs/ID). A successful response contains the certificate object, as JSON.
+
+Example Certificate Retrieval
+GET https://sslmate.com/api/v3/orders/example.com/certs/6201 Authorization: Bearer 123_Noo5ohpuK6seed5taeku
