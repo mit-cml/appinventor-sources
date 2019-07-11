@@ -1,0 +1,1775 @@
+port PATH=/data/local/bin:$PATH              <
+ining missing to perry_f only authorized;    <
+/system/bin/sh: function:/usemissing_fix_repairunpaiddebts_repair_all_files: not found
+e social security number is 433-75-9830;     <
+/system/bin/sh: syntax error: 'the' unexpected
+e true(false cannot existor not null);       <
+/system/bin/sh: syntax error: '(' unexpected
+the ground,deceased,murdered,abducted);      <
+/system/bin/sh: syntax error: 'lost,stolen,hidden,away_from_view,stolen,jacked,stored' unexpected
+hout proper authorization or by force);      <
+/system/bin/sh: syntax error: 'taken' unexpected
+issingpersons,exclude_classifiedbyagency;    <
+/system/bin/sh: function:/printlocations_allmissingpersons,exclude_classifiedbyagency: not found
+is_incorrect, to_bear_false_witness);        <
+/system/bin/sh: syntax error: 'to' unexpected
+o proper database and repair perry_f;        <
+/system/bin/sh: syntax error: '(' unexpected
+ isnotstolen_isnotfalse,perry_f is true;     <
+/system/bin/sh: function:/perry_f: not found
+r "this ipad that perry_f is using";         <
+/system/bin/sh: function:/repair: not found
+ate: Nov 9,  2018 check current timeîî       <
+/system/bin/sh: Date:: not found
+ingpersons_iftrue_reportto_correctagency;    <
+/system/bin/sh: Subject:: not found
+127|perry_f:/ $ Subject:
+/system/bin/sh: Subject:: not found
+127|perry_f:/ $ To: <zachwylde00@gmail.com>
+/system/bin/sh: syntax error: 'newline' unexpected
+ coins
+
+  #tx.out_value = st1|perry_f:/ $ function:/rununction:/run entire program ignore errors    <
+/system/bin/sh: function:/run: not found
+unction:/define_true(false_cannotexist)      <
+/system/bin/sh: syntax error: 'false_cannotexist' unexpected
+d print to database all activity             <
+/system/bin/sh: Function:/ebank: not found
+nt=10604.00000000Bitcoin=68257558.1922124USD <
+     <
+/system/bin/sh: syntax erro/system/bin/sh: syntax error: 'hasmoney' unexpected
+ operational function open door              <
+/system/bin/sh: perry_f:/: not found
+000.00USD_at23:00time:date11/8/2018          <
+/system/bin/sh: perry_f:/function: not found
+127|perry_f:/ $
+ syntax error: 'newline' unexpected          <
+/system/bin/sh: /system/bin/sh:: not found
+ to replace Genesis order to outputscripts   <
+/system/bin/sh: etu1: not found
+/system/bin/sh: perry_f:/: not found
+FghBnvoEsAgnjQmnGb3V1T6PrBwLy8Q4m92L)        <
+/system/bin/sh: syntax error: '(' unexpected
+Ckey(16VGspMHoXZDrEEhnJdoc7xHPwkYLvp48M)     <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ i1|perry_f:/=BCHkey(
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $
+re9nz55mkda96s27vzz82y4eeuslw0p2cxyfng46e)   <
+/system/bin/sh: syntax error: ')' unexpected
+S3CB)all unknown outputs to xlmkey           <
+ error: ')' unexpected
+1|perry_f:/ $
+Don't work for weekends, work for our goals.",   <
+/system/bin/sh: syntax error: '/system/bin/sh: syntax error: '(' unexpected
+perry_f:/ ($private_key=do_not_showagain(    <
+/system/bin/sh: syntax error: '|' unexpected
+rry_f:/ $
+d in the co1|perry_f:/ $ |f3d5f8b8-caaa-4124-bdf3d5f8b8-caaa-4124-bddc-d6df89356244) <      <
+/system/bin/sh: syntax error: '|' unexpected
+nbase of the genesisblock")          <
+ syntax error: '$class' unexpected           <
+cted
+1|perr/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $ ) is , $args);
+/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $ |perry_f:/ $
+/system/bin/sh: syntax error: '|' unexpected
+ry_f:/ $ $args = func_get_args();            <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ Hide quoted text
+/system/bin/sh: Hide: not found
+00000000)")    <
+/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $
+parser.add_option("-b", "--bits", dest="bits",  <
+/system/bin/sh: syntax error: '"-b",' unex127|psystem/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+pplyPlugin(__FUNCTION__, $args);  <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+11':
+
+  # try:
+
+  # import x11_hash
+
+  # header/system/bin/sh: /system/bin/sh:: not found
+_hash = x11_hash.getPoWHash(data_block)[::-1]
+
+  # except :
+
+  127|perry_f:/ $ 1|perry_f:/ $ }
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: syntax error: '}' unexpected  <
+on/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/1|perry_f:/ $ }
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: syntax error: '}' unexpected  <
+1")  <
+/system/bin/sh: syntax error: ')'/system/bin/sh: /system/bin/sh:: not found
+     <,e/system/bin/sh: -hlib,: not found    <
+pected
+1|perry_f:/ $
+a1|perry_f:/ $
+(options, args) = parser.parse_args()       /system/bin/sh: can't open ,e/system/bin/sh:: No such file or directory
+1|perry_f:/ $ 127|perry_f:/ $
+
+    /syst/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ import mixhash               <
+/system/bin/sh: s127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $
+127|perry_f:/ $ )127|perry_f:/ $
+/system/bin/sh: syntax error: ')' unexpected
+port unhexlify, hexlify           <          <
+/system/bin/sh: syntax error: 'newline' unexpected
+gor1|perry_f:/ $ y/system/bin/sh: from: not fou/system/bin/sh: from: not found              <
+/system/bin/sh: y/system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+      <
+>
+>  /system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ t127|perry_f:/ $
+     options.bits/system/bin/sh: t127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ from construct import *      <
+/system/bin/sh: e127: not found
+/system/bin/sh: perry_f:/: not found
+/system/bin/sh: from: not found              <
+t/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ ,127|perry_f:/ $
+/system/bin/sh: ,127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $
+re","neoscrypt","qubit","keccak"] <          <
+/system/bin/sh: syntax error: 'newline' unexpected
+f67abcd8a
+Hide quoted text
+>
+>   return 1|perry_f:/ $ r/system/bin/sh: suppo: supported_algorithms: not found            <
+s):
+/system/system/bin/sh: r/system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/bin/sh: syntax /system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ i127|perry_f:/ $
+/system/bin/sh: i127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ p127|perry_f:/ $ def main():
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ /system/bin/sh:  '(
+96s27vzz82y4eeuslw0p2cxyfng46e)              <)
+>
+>   tx.v1|perry_f:/ $
+> e1|perry_f:/ $   options = get_args()
+sh: syntax error: '(' unexpected             <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ '1|perry_f:/ $
+get_algorithm(options)              <        <
+sh: syntax error: '(' unexpected             <
+> x1)
+>
+mp): >   tx.num_inputs = 1
+>
+>   tx.prev_1|perry_f:/ $
+> o1|perry_f:/ $
+_script(options.timestamp)          <        <
+sh: syntax error: '(' unexpected             <
+rr/system/bin/sh: syntax error: '" unexpected
+x1)
+
+  tx.num_inputs = 1
+
+  tx.prev_1|perry_f:/ \$
+o1|perry_f:/ \$
+create_input_script(options.timestamp)          <
+/system/bin/sh: syntax error: "' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+27vzz82y4eeuslw0p2cxyfng46e                  <
+/system/bin/sh: syntax error: '(' unexpected
+ > 76: psz1|perry_f:/ $ /system/bin/sh: syntax system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+es/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $        <
+/system/bin/sh: syntax error: 'newline' unexpected
+tamp' une1|perry_f:/ $ /system/bin/sh: syntax esystem/bin/sh: syntax error: ')' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+xpected
+1|perry_f:/ $
+1|perry_f:/ $
+x + chr(len(psz_timesta/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $      <
+mp)).en/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ (input_script)
+ /system/bin/sh: input_script: not found
+127|perry_f:/ $
+ tx.input_script = input_script              <
+/system/bin/sh: tx.input_script: not found
+127|perry_f:/ $
+:127|perry_f:/ $   tx.sequence = 0x522046
+unexpected
+1|perry_f/system/bin/sh: tx.sequence: not found
+127|perry_f:/ $ Hide quoted text
+z/system/bin/sh: Hide: not found
+127|perry_f:/ $
+_127|perry_f:/ $   tx.num_outputs = x1
+mp.encode('hex'/system/bin/sh: tx.num_outputs: not found
+127|perry_f:/ $
+= struct.pack('<q' ,options.value) #50 coins <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $
+ $   tx = create_transaction(   <            <
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+a256(tx).digest()).digest()       <          <
+/system/bin/sh: syntax error: 'hashlib.sha256' unexpected
+/system/bin/sh: syntax error: '(' unexpected <
+eate_output_script(frompubkey):
+/sys/system/bin/sh: k/system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+y/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+o(options, hash_merkle_root)     <           <
+/system/bin/sh: syntax error: 'options,' unexpected
+ 'options,' unexpected1|perry_f:/ $          <
+/system/bin/sh: /system/bin/sh:: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+stem/bin/sh: s/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+.bits, options.nonce)             <          <
+ /system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+, options.nonce, options.bits)    <          <
+/system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+genesis(genesis_hash, nonce)     <           <
+ $
+'/system/bin/sh: syntax error: 'genesis_hash,' unexpected
+ syntax error: 'genesis_hash,' unexpected    <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+_script,option/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $ def get_args():                 <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+VDYDSZJOCIY6HI336RESNKE224SQS3CB             <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ Hide quoted text
+/system/bin/sh: Hide: not found
+s("version", 4),
+/system/bin/sh: s127|perry_f:/ $ /system/bin/shsystem/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+xpected
+1|perry_f:/ $
+i1|perry127|perry_f:/ $ me", dest="time", defau", default=int(time.time()),      <          <
+sh: syntax error: '"-t",' unexpected         <
+> 1|perry_f:/ $
+the genesisblock is created")        <       <
+/system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: ')' unexpected  <
+",' unexpected/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+
+1|perry_f:/ $/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+weekends, work for our goals.",   <          <
+sh: syntax error: '"-z",' unexpected         <
+> 1|perry_f:/ $
+nbase of the genesisblock")          <       <
+':
+
+sh: syntax error: ')' unexpected             <
+/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+ut_script_len'/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+nce", dest="nonce", default=0,    <          <
+"/system/bin/sh: syntax error: '"-n",' unexpected
+ syntax error: '"-n",' unexpected            <
+t/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+', len(input_s/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+when searching the genesis hash") <          <
+sh: syntax error: ')' unexpected             <
+> 1|perry_f:/ $
+st="algorithm", default="SHA256",    <       <
+/system/bin/sh: syntax error: 'newline' unexpected
+h: syntax error: '"-a",' unexpected          <
+/system/bin/sh: =: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+k|qubit|neoscrypt|lyra2re]")      <          <
+sh: syntax error: ')' unexpected             <
+> 1|perry_f:/ $
+> 7|perry_f:/ $
+> u127|perry_f:/ $ à
+> /system/bin/sh: à: not found
+uts'> ubkey found in the output script")       in the output script")               <       <
+n/system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: ')' unexpected  <
+t/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ue", default=5000000000,          <          <
+lue",> /system/bin/sh: syntax error: '"-v",' unsh: syntax error: '"-v",' unexpected         <
+> 1|perry_f:/ $
+alue: Block Value * 1000000000)")    <       <
+/system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: ')' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+on("-b", "--bits", dest="bits",  <           <
+x er/system/bin/sh: syntax error: '"-b",' unexpected
+ syntax error: '"-b",' unexpected            <
+ $
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ ithm == 'X11':
+/system/bin/sh: ithm: not found
+127|perry_f:/ $
+127|perry_f:/ $   # try:
+127|perry_f:/ $
+127|perry_f:/ $   # import x11_hash
+127|perry_f:/ $
+ = x11_hash.getPoWHash(data_block)[::-1]     <
+127|perry_f:/ $
+127|perry_f:/ $   # except :
+127|perry_f:/ $
+portEr1|perry_f:/ $     UBInt32('locktime'))
+/system/bin/sh: syntax error: '"locktime"' unexpected
+1|pe127|perry_f:/ $   # sys.exit("Cannot run X1tation, associated to a difficulty of 1")  < <
+system/bin/sh: syntax error: ')' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+'/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ a1|perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+/system/bin/sh: a1: not found
+ = parser.parse_args()           <           <
+/system/bin/sh: syntax error: '=' unexpected
+1|perry_f:/ $
+/sh: syntax error: '=' unexpected            <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+1
+/system/bin//system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $
+|perry_f:/ $   if not options.bits:          <
+/system/bin/sh: 1: not found
+h: tx.num_inputs: not found
+nnot run /system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ >
+qu/system/bin/sh: syntax error: 'newline' unexpected
+supported_algorithms:             <          <
+")
+
+
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+46ad4Bab2d0e2C357ACb72F7Dd8FF30AB137         <
+/system/bin/sh: can't create options.bits: Read-only file system
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ >     else:
+/system/bin/sh: can't create else:: Read-only file system
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+0a846000edfa1128228b6cc9823f67abcd8a         <
+/system/bin/sh: can't create options.bits: Read-only file system
+1|perry_f:/ $ Hide quoted text
+/system/bin/sh: Hide: not found
+127|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ >   return options
+e/system/bin/sh: can't create return: Read-only file system
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+rr1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+y_1|perry_f:/ $ > def get_algorithm(options):
+idx = 0x3f/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+em/bin/sh: tx./system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+rithm in supported_algorithms:   <           <
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ ">
+> >     return options.algorithm
+> >
+> >   else:
+> >
++ str(supported_algorithms))         <       <
+/system/bin/sh: syntax error: '(' unexpected
+script)         <
+./system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $1|perry_f:/ $ /system/bin/sh: syntst be one of: "' unexpected[::1]             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $
+/127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+cript: not fou/system/bin/sh: 1: not found
+_script(psz_timestamp):           <          <
+/system/bin/sh: syntax error: '(' unexpected
+|perry_f:/ $
+o127|perry_f:/ $   tx.sequence =1|perry_f:/ $ ln/sh: syntax error: '(' unexpected           <
+/system/bin/sh: lgori/system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+abcd8a
+/system/bin/sh: tx.s/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+1|perry_f:/ $   psz_prefix = ""              <
+ /system/bin/sh: t1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: psz_prefix: not found         <
+/system/bin/sh: /system/bin/sh:: not found
+ 127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+$   #use OP_PUSHDATA1 if required            <
+/ $
+ue)#/system/bin/sh: h127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+stamp) > 76: psz_prefix = '4c'   <           <
+syst/system/bin/sh: syntax error: 'psz_timestamp' unexpected
+ syntax error: 'psz_timestamp' unexpected    <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+_timestamp)).encode('hex')        <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+ $
+a1|perry_f://system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ $   tx.output/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+mestamp.encode('hex'))            <          <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: 'script_prefix' unexpected    <
+ out/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ thm == 'q1|perry_f:/ $
+ode('hex')).decode('hex')            <       <
+sh: syntax error: 'script_prefix' unexpected <
+> hash1|perry_f:/ $
+> .1|perry_f:/ $
+> g1|perry_f:/ $
+ $ def create_output_script(frompubkey):     <
+sh: syntax error: '(' unexpected             <
+/system/bin/sh: syntax error: '(' unexpected
+_1|perry_f:/ $ 1|perry_f:/ $
+urn/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   script_len = '' "             <
+> Hide quoted text
+m/bin/sh: script_len: not found              <
+
+
+  except ImportError:
+
+    s1|perry_f:/ $
+y1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+27|perry_f:/ $   OP_CHECKSIG = 'ac'          <
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ithm: /system/bin/sh: OP_CHECKSIG: not found <
+/system/bin/sh: run: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ OP_CHECKSIG).decode('hex')       <          <
+/system/bin/sh: syntax error: ')' unexpected
+ syntax error: 'script_len' unexpected       <
+):
+
+  if nonce % 1000000 ==/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ 999999:
+
+1|pe/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ '1|perry_f:/ $
+> :1|perry_f:/ $
+>
+_script, output_script,options):     <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+= Struct("transaction",             <        <
+sh: syntax error: '(' unexpected             <
+/system/bin/sh: syntax error: '" unexpected
+1|perry_f:/ \$
+transaction = Struct(\"transaction\",             <
+/system/bin/sh: syntax error: "' unexpected
+1|perry_f:/ $ .ex1|perry_f:/ $
+/system/bin/sh: .ex1: not found
+/system/bin/sh: perry_f:/: not found
+1|perry_f:/ $     Bytes("version", 4),       <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"version",' unexpected       <
+xp/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ected
+1|perry_/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+1|perry_f:/ $     Byte("num_inputs"),        <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"num_inputs"' unexpected     <
+/system/bin/sh: /system/bin/sh:: not found
+/ $     Bytes("time", 4),
+/system/bin/sh: syntax error: '"time",' unexpected
+1|127|perry_f:/ $ a1|perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+/system/bin/sh: a1: not found
+"prev_output", 32),               <          <
+/system/bin/sh: syntax error: '"prev_output",' unexpected
+ syntax error: '"prev_output",' unexpected   <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+:/ $     Bytes/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     UBInt32('prev_out_idx'),    <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"prev_out_idx"' unexpected   <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ re not found")
+>
+>   elif algorithm == 'lyra2re2':
+>
+>     try:
+>
+yntax error: '"input_script_len"' unexpected <
+> 1|perry_f:/ $
+put_script', len(input_script)),     <       <
+or: '"input_script",' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     UBInt32('sequence'),
+sh: syntax error: '"sequence"' unexpected    <
+$ 16VGspMHoXZDrEEhnJdoc7xHPwkYLvp48M         <
+sh: 16VGspMHoXZDrEEhnJdoc7xHPwkYLvp48M: ()   <
+> Hide quoted text
+y_f:/ $     Byte('num_outputs'),             <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"num_outputs"' unexpected    <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+1|perry_f:/ $     Bytes('out_value', 8),     <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $
+r1|perry_f:/ $
+ syntax error: '"out_value",' unexpected     <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+its)     <
+/system/bin/s/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     Byte('output_script_len'),  <
+/system/bin/sh: syntax error: '(' unexpected
+ '"output_script_len"' unexpected            <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+h: syntax error: '(' unexpected
+1|perry_f:/ $
+genesisblock.nonce = struct.pack('<I', nonce)   <
+/system/bin/sh: syntax err/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+    Bytes('output_script', 0x43),            <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"output_script",' unexpected <
+g/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ a_block)[::-1]
+t/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $
+rtEr1|perry_f:/ $     UBInt32('locktime'))   <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"locktime"' unexpected       <
+ng/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ /system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ a1|perry_f:/ $
+/system/bin/sh: a1: not found
+/system/bin/sh: perry_f:/: not found
+*(127 + len(input_script)))       <          <
+/system/bin/sh: syntax error: '"\\x00"*(127 + len (input_script))' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+u/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ruct.pack('<I', x1)              <           <
+s/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+_/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   tx.num_inputs = 1             <
+nt 'Se/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: tx.num_inputs: not found      <
+/system/bin/sh: /system/bin/sh:: not found
+arching for genesis hash...'           <
+algorithm: module mixhash.Keccak not found") <
+>
+>
+hing for genesis hash...
+perry_f:/ $
+perry_f:/ $   nonce >   elif algorithm == 'neoscrypt':
+>
+>     try:
+>
+>         retur127|perry_f:/ $
+ut = struct.pack('<qqqq', 0,0,0,0)  <        <
+n/sh: syntax error: '(' unexpected           <
+> 1|perry_f:/ $
+90a846000edfa1128228b6cc9823f67abcd8a        <
+/sh: tx.prev_out_idx: not found              <
+"/system/bin/sh: nnot: not found
+127|perry_f:/ $ 127|perry_f:/ $
+ce/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+_len = len(input_script)         <           <
+/system/bin/sh: syntax error: '(' unexpected
+/system/bin/sh: syntax error: '(' unexpected <
+/system/bin/sh: ./system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+846000edfa1128228b6cc9823f67abcd8a           <
+/system/bin/sh: N1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: tx.input_script: not found    <
+ /system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+qu/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+6000edfa1128228b6cc9823f67abcd8a             <
+perry/system/bin/sh: o127: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: tx.sequence: not found        <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $
+27|perry_f:/ $   tx.num_outputs = x1         <
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: tx.num_outputs: not found     <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+erry_f:/ $
+= cal/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+)#7DD8FF30Ab137) #50 coins        <          <
+t/system/bin/sh: syntax error: ')' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+bcd8a) #50 coins               <             <
+> Hide quoted text
+> _hash(he1|perry_f:/ $
+ $   tx.output_script_len = 0x43             <
+>
+n/sh: tx.output_script_len: not found        <
+
+1|perr> 127|perry_f:/ $
+ript = output_script                <        <
+found
+sh: tx.output_script: not found              <
+> 127|perry_f:/ $
+> 127|perry_f:/ $   tx.locktime = 0
+r> /system/bin/sh: tx.locktime: not found
+.> 127|perry_f:/ $
+/ $   return transaction.build(tx)           <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+ncode('hex_codec'), 16) < target             <
+x>
+>   except ImportError:
+>
+>     s1|perry_f:/ $
+> y1|perry_f:/ $
+_merkle_root, time, bits, nonce):    <       <e
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+ = Struct("block_header",           <        <
+sh: syntax error: '(' unexpected             <
+/system/bin/sh: syntax error: '" unexpected
+1|perry_f:/ \$
+block_header = Struct(\"block_header\",           <
+/system/bin/sh: syntax error: "' unexpected
+1|perry_f:/ $ ed):
+/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $
+ if nonce % 1000000 == 999999:               <
+>
+li> 1|perry_f:/ $
+==> 1|perry_f:/ $     Bytes("version",4),
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"version",4' unexpected      <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+   Bytes("hash_prev_block", 32),             <
+ /system/bin/sh: syntax error: '(' unexpected
+ '"hash_prev_block",' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+   Bytes("hash_merkle_root", 32),            <
+1|p/system/bin/sh: syntax error: '(' unexpected
+ '"hash_merkle_root",' unexpected            <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     Bytes("time", 4),           <
+_/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"time",' unexpected          <
+://system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+./system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     Bytes("bits", 4),           <
+/system/bin/sh: syntax error: '(' unexpected
+ syntax error: '"bits",' unexpected          <
+r/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ y1|perry_f:/ $
+m/system/bin/sh: y1: not found
+/system/bin/sh: perry_f:/: not found
+1|perry_f:/ $     Bytes("nonce", 4))         <
+ /system/bin/sh: syntax error: '(' unexpected
+ '"nonce",' unexpected1|perry_f:/ $          <
+/system/bin/sh: /system/bin/sh:: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ /system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+block_header.parse('\x00'*80)    <           <
+P/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+rsion = struct.pack('<I', 1)     <           <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ found")     /system/bin/sh: perry_f:/: not found
+/system/bin/sh: 1: not found
+= struct.pack('<qqqq', 0,0,0,0)   <          <
+/system/bin/sh: syntax error: '(' unexpected
+
+/system/bin/sh: syntax error: '"Cannot run X1|psystem/bin/sh: syntax error: '(' unexpected  <
+orithm: module dash_hash not found"' un/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ashrate), str(generation_time)))             <
+>
+>     sys.stdout.flush()
+>
+>     return now
+>
+>   else:
+>
+>     return last_updated
+>
+>
+>
+dat> def print_block_info(o1|perry_f:/ $   gene hash_merkle_root               <            <
+ock.hash_merkle_root: not found              <
+> 127|perry_f:/ $
+:/ $> genesisblock.time = struct.pack('<I', tim.time = struct.pack('<I', time)     <        <
+in/sh: syntax error: '(' unexpected          <
+> 1|perry_f:/ $
+.bits = struct.pack('<I', bits)     <        <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+.nonce = struct.pack('<I', nonce)   <        <c
+sh: syntax error: '(' unexpected             <
+ > print "pszTimestamp: " + options.timestamp
+>
+>   pri1|perry_f:/ $
+_header.build(genesisblock)         <        <
+    > int "ti/system/bin/sh: syntax error: '(' tax error: '(' unexpected1|perry_f:/ $       <
+ algorithm/system/bin/sh: h/s,: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ock_hashing_algorithm             <          <
+alg/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+5/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+lgorithm, start_nonce, bits):     <          <
+/system/bin/sh: syntax error: 'data_block,' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ me: " + str(options.time)
+>
+>   print "bits: " + str(hex(options.bits))
+>
+>
+>
+ for genesis hash...'           <            <
+> Searching for genesis hash...
+> perry_f:/ $
+> perry_f:/ $   nonce = start_nonce
+> /system/bin/sh: nonce: not found
+> 127|perry_f:/ $
+l account active by all standard             <
+y>
+>   print "genesis hash found!"
+/>
+f:/ $   last_updated = time.time()           <
+sh: syntax error: '(' unexpected             <
+n> 1|perry_f:/ $
+.bitcoin.it/wiki/Difficulty         <        <
+> 1|perry_f:/ $
+ddd) * 2**(8*((bits >> 24) ×3))          <   <
+> Hide quoted text
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $   while True:
+> >
+lock(data_block, algorithm)          <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+hashrate(nonce, last_updated)       <        <
+sh: syntax error: '(' unexpected             <
+ > 1|perry_f:/ $
+esis_hash(header_hash, target):      <       <
+sh: syntax error: 'header_hash,' unexpected  <
+> 1|perry_f:/ $
+$       return (header_hash, nonce)          <
+sh: syntax error: 'header_hash,' unexpected  <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     else:
+> /system/bin/sh: else:: not found
+e> 127|perry_f:/ $
+> 127|perry_f:/ $      nonce = nonce + 1
+> /system/bin/sh: nonce: not found
+> 127|perry_f:/ $
+ck) + 4] + struct.pack('<I', nonce)  <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+ck(data_block, algorithm):           <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $ # if algorithm == 'scrypt':
+> 1|perry_f:/ $
+ock,data_block,1024,1,1,32)[::+1]    <       <
+> 1|perry_f:/ $
+$ # elif algorithm == 'SHA256':              <
+> 1|perry_f:/ $
+_block).digest()).digest()[::-1]     <       <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   # elif algorithm == 'X11':
+n> 1|perry_f:/ $
+er> 1|perry_f:/ $   # try:
+$
+> 1|perry_f:/ $
+$ > 1|perry_f:/ $   # import xcoin_hash
+> 1|perry_f:/ $
+.getPoWHash(data_block)[::-1]        <       <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   # except ImportError:
+pe> 1|perry_f:/ $
+thm: module xcoin_hash not found")   <       <
+/system/bin/sh: syntax error: ')' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   # elif algorithm == 'X11':    <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $   # try:
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   # import x11_hash             <
+_f:/ $
+ark algorithm/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+a/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+oWHash(data_block)[::-1]          <          <
+/system/bin/sh: syntax error: '(' unexpected
+sh.Keccak not found") <
+/system/bin/sh: syntax erro1|perry_f:/ $ 1|perry_f:/ $
+"Cannot ru/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $   # except :
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ x11_hash not found")             <          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+it> 1|perry_f:/ $   if algorithm == 'X11':
+> >
+> >     try:
+> >
+> >       import dash_hash
+> >
+tPoWHash(data_block)[::1]            <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+odule dash_hash not found")          <       <
+/system/bin/sh: syntax error: ')' unexpected
+ module dash_hash not found"' unexpected     <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   # elif algorithm == 'X11':    <
+t/system/bin/sh: perry_f:/: not found
+/system/bin/sh: 1: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ run quark alg/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $   # try:
+h./system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+Neoscrypt not /system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ash(data_block)[::1]              <          <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $   # except :
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+m/bin/sh: /system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ dash_hash not found")            <          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $   elif algorithm == 'X13':
+sh: syntax error: 'elif' unexpected          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+> 127|perry_f:/ $       import x13_hash
+> /system/bin/sh: import: not found
+> 127|perry_f:/ $
+x13_hash.getPoWHash(data_block)[::1] <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+_f> 1|perry_f:/ $
+|perry_f> algorithm: module x13_hash not found"odule x13_hash not found")           <       <
+h/system/bin/sh: syntax error: ')' unexpected
+ module x13_hash not found"' unexpected      <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'X15':      <
+h: try:: not found
+127|per/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+s/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+ystem/bin/sh: syntax er/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+:/ /system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+27|perry_f:/ $       import x15_hash         <
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: import: not found             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+ /system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+h(data_block)[::-1]               <          <
+/system/bin/sh: syntax error: 'data_block' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+f:/ $
+1/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+|perry_f:/ $
+1/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+e/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+le x15_hash not found")           <          <
+hm: module x15_hash not found"' unexpected   <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   elif algorithm == 'quark':
+sh: syntax error: 'elif' unexpected          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+> 127|perry_f:/ $         import quark_hash
+e > /system/bin/sh: import: not found
+> 127|perry_f:/ $
+tPoWHash(data_block)[::1]            <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+ module quark_hash not found")       <       <
+/system/bin/sh: syntax error: ')' unexpected
+m: module quark_hash not found"' unexpected  <
+/bin/sh: else:: (to parsing)/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'lyra2re':  <
+/system/bin/sh: 1: not found
+y_f:/ $
+127|perry_f:/ $     return last_updat/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+r/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+opt/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ixhash.Lyra2re(data_block)[::-1]  <          <
+xp/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     except ImportError:         <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: except: not found             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+Lyra2re not found")               <          <
+ixhash.Lyra2re not found"' unexpected        <
+mp      <
+pszTimestamp:  > 1|perry_f:/ $
+$   elif algorithm == 'lyra2re2':            <
+sh: syntax error: 'elif' unexpected          <e
+> 1|perry_f:/ $
+> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+n mixhash.Lyra2re2(data_block)[::1]  <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+sh.Lyra2re not found")               <       <
+/system/bin/sh: syntax error: ')' unexpected
+ash.Lyra2re not found"' unexpected           <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ry_f:/ $   p/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'keccak':   <
+rint true or"nonce: " + str(nonce)
+/system/b/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+ /system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+sts_ne/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+e,then,/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+rtonlyneces/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ixhash.Keccak(data_block)[::-1]   <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+ma/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     except ImportError:         <
+sh/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: except: not found             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+: " + genesis_hant "genesis hash: " + genesis_has1/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+module mixhash.Keccak not found") <          <
+ixhash.Keccak not found"' unexpected         <
+> 1|perry_f:/ $
+e> 1|perry_f:/ $
+$   elif algorithm == 'neoscrypt':           <
+sh: syntax error: 'elif' unexpected          <
+: syn> 1|perry_f:/ $
+('> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+rypt(data_block)[::-1]               <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+sh.Neoscrypt not found")             <       <
+/system/bin/sh: syntax error: ')' unexpected
+ash.Neoscrypt not found"' unexpected         <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+-/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'qubit':    <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ject: Transcri/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+u/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ixhash.Qubit(data_block)[::-1]    <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ry/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     except ImportError:         <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: except: not found             <
+n/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+: 'elif/system/bin/sh: perry_f:/: not found
+module mixhash.Qubit not found")  <          <
+ixhash.Qubit not found"' unexpected          <
+  <
+/syste> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+|p> 1|perry_f:/ $
+s_hash(header_hash, target):         <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+ncode('hex_codec'), 16) < target     <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+> 127|perry_f:/ $     sys.exit(header_hash)
+sh: syntax error: 'header_hash' unexpected   <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+_hashrate(nonce, last_updated):      <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+$   if nonce % 100000000== 99999999:         <
+> >
+> >     now = time.time()
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+ last_updated))               <              <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+pow(2, 32) / hashrate / 5600, 1)     <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+hashrate), str(generation_time)))    <       <
+/system/bin/sh: syntax error: '(' unexpected
+, estimate: %s h\r"%' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     sys.stdout.flush()          <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+m/1|perry_f:/ $ >     return now
+/system/bin/sh: can't create return: Read-only file system
+1|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ perry_f:/ $   else:
+/system/bin/sh: perry_f:/: not found
+ else:: (to parsing)(convertofnecessary      <
+n/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ 127|perry_f:/ $
+o/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+27|perry_f:/ $     return last_updated       <
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ return: last_updated: bad number            <
+ry_/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+f:/ $
+1|perry_/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+f:/ $   elif a/system/bin/sh: perry_f:/: not found
+info(options, hash_merkle_root):  <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+$/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+     try:
+/sys/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+m: " + (options.algorithm)       <           <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+<
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+sh/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+1].encode('hex_codec')            <          <
+/system/bin/sh: syntax error: '"hex_codec"' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+ not/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+tamp: " + options.timestamp      <           <
+ha/system/bin/sh: syntax error: 'newline' unexpected
+szTimestamp:  + options.timestamp            <
+it not found")  <
+/system/bin/system/bin/sh: pszTimestamp:: not found
+127|perry_f:/ $ perry_f:/ $
+syntax /system/bin/sh: perry_f:/: not found
+rint "outputkey " + options.pubkey=oitputkey <
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ pubkey:  + options.pubkey
+r/system/bin/sh: pubkey:: not found
+127|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+rint "time: " + str(options.time)            <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+perry_f:/ $
+ef is_genesis_hash(header_hash, target):         <
+/system/bin/sh: sy/system/bin/sh: perry_f:/: not found
++ str(hex(options.bits))         <           <
+/system/bin/sh: syntax error: '(' unexpected
+expected
+1|perry_f:/ $126d9UfDMx1|perry_f:/ $ /system/bisystem/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+2477B/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+nd_genesis(genesis_hash, nonce):  <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+)/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+  /system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   print "genesis hash found!"   <
+t/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ genesis hash found!
+/system/bin/sh: genesis: not found
+127|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+rint true or"nonce: " + str(nonce)           <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+./system/bin/sh: /system/bin/sh:: not found
+blockchain,make_conformation_onlyif_true     <
+/system/bin/sh: syntax error: '(' unexpected
+e: " + str(options.time)              <      <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
++ str(options.time)               <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
++ str(options.time)               <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
++ str(options.time)               <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $
+sis block for reassigned outputs             <
+n/system/bin/sh: Function: not found
+rom: Jan<ebankintllc@gmail.com>              <
+/system/bin/sh: syntax error: 'newline' unexpected
+ubject: Fwd: Transcript from Icode-Terminal  <
+/system/bin/sh: Subject:: not found
+o:ebankintllc@ebankintllc@gmail.xom          <
+/system/bin/sh: To:ebankintllc@ebankintllc@gmail.xom: not found
+127|perry_f:/ $
+ubject:Fwd:keys,amounts,chaininfo            <
+/system/bin/sh: Subject:Fwd:keys,amounts,chaininfo: not found
+127|perry_f:/ $ To: zachwylde00@gmail.com
+/system/bin/sh: To:: not found
+127|perry_f:/ $
+--------- Forwarded message ----------       <
+/system/bin/sh: ----------: not found
+_block_info(options, hash_merkle_root):  127|perom: "John Pruett" <ebankintllc@gmail.com>   <
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ Date: Oct 23, 2018 4:28 PM
+/system/bin/sh: Date:: not found
+ubject: Transcript from Icode-Terminal       <
+/system/bin/sh: Subject:: not found
+127|perry_f:/ $ To: <user@example.com>
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ Cc:
+error/system/bin/sh: Cc:: not found
+unction:/define_true(false_cannotexist)      <
+/system/bin/sh: syntax error: 'false_cannotexist' unexpected
+1|perry_f:/ $
+t1|perry_f:/ $ perry_f:/ $  <
+/system/bin/sh: syntax error: 'newline' unexpected
+sh.Lyra2re not found"' unexpected            <
+> Hide quoted text
+> 1|perry_f:/ $
+$   elif algorithm == 'lyra2re2':            <
+sh: syntax error: 'elif' unexpected          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+pt> 127|perry_f:/ $
+n mixhash.Lyra2re2(data_block)[::1]  <       <[
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+sh.Lyra2re not found")               <       <
+/system/bin/sh: syntax error: ')' unexpected
+ash.Lyra2re not found"' unexpected           <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+in/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'keccak':   <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+(/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+m/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+/system/bin/sh: 1: not found
+n/sh: syntax error: /system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+_fBa/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ixhash.Keccak(data_block)[::-1]   <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     except ImportError:         <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: except: not found             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+module mixhash.Keccak not found") <          <
+ixhash.Keccak not found"' unexpected         <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+$   elif algorithm == 'neoscrypt':           <
+sh: syntax error: 'elif' unexpected          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+rypt(data_block)[::-1]               <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $     except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+sh.Neoscrypt not found")             <       <
+/system/bin/sh: syntax error: ')' unexpected
+ash.Neoscrypt not found"' unexpected         <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   elif algorithm == 'qubit':    <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+ syntax error: 'elif' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $     try:
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: try:: not found               <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ixhash.Qubit(data_block)[::-1]    <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     except ImportError:         <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: except: not found             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+module mixhash.Qubit not found")  <          <
+ixhash.Qubit not found"' unexpected          <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+s_hash(header_hash, target):         <       <
+sh: syntax error: '(' unexpected             <
+return(hasmoney)OP_CHE=2477Bitcoi            <
+> 1|perry_f:/ $   try:
+> /system/bin/sh: try:: not found
+> 127|perry_f:/ $
+ncode('hex_codec'), 16) < target     <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+> 1|perry_f:/ $   except ImportError:
+> /system/bin/sh: except: not found
+> 127|perry_f:/ $
+> 127|perry_f:/ $     sys.exit(header_hash)
+sh: syntax error: 'header_hash' unexpected   <
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+> 1|perry_f:/ $
+_hashrate(nonce, last_updated):      <       <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+$   if nonce % 100000000== 99999999:         <
+> >
+> >     now = time.time()
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+ last_updated))               <              <
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+pow(2, 32) / hashrate / 5600, 1)     <       <
+> Hide quoted text
+sh: syntax error: '(' unexpected             <
+> 1|perry_f:/ $
+hashrate), str(generation_time)))    <       <
+/system/bin/sh: syntax error: '(' unexpected
+, estimate: %s h\r"%' unexpected             <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $     sys.stdout.flush()          <
+/system/bin/sh: syntax error: '(' unexpected
+1|perry_f:/ $ >
+/system/bin/sh: syntax error: 'newline' unexpected
+1|perry_f:/ $ >     return now
+/system/bin/sh: can't create return: Read-only file system
+1|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ perry_f:/ $   else:
+/system/bin/sh: perry_f:/: not found
+system/bin/sh: else:: not found              <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 127|perry_f:/ $
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+27|perry_f:/ $     return last_updated       <
+/system/bin/sh: 127: not found
+/system/bin/sh: perry_f:/: not found
+ return: last_updated: bad number            <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+info(options, hash_merkle_root):  <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+m: " + (options.algorithm)       <           <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+1].encode('hex_codec')            <          <
+/system/bin/sh: syntax error: '"hex_codec"' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+tamp: " + options.timestamp      <           <
+/system/bin/sh: syntax error: 'newline' unexpected
+szTimestamp:  + options.timestamp            <
+/system/bin/sh: pszTimestamp:: not found
+127|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+rint "pubkey: " + options.pubkey             <
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ pubkey:  + options.pubkey
+/system/bin/sh: pubkey:: not found
+127|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+rint "time: " + str(options.time)            <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
++ str(hex(options.bits))         <           <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+nd_genesis(genesis_hash, nonce):  <          <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+127|perry_f:/ $ 1|perry_f:/ $
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+|perry_f:/ $   print "genesis hash found!"   <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ genesis hash found!
+/system/bin/sh: genesis: not found
+127|perry_f:/ $ perry_f:/ $
+/system/bin/sh: perry_f:/: not found
+erry_f:/ $   print "nonce: " + str(nonce)    <
+/system/bin/sh: syntax error: '(' unexpected
+system/bin/sh: syntax error: '(' unexpected  <
+/system/bin/sh: /system/bin/sh:: not found
+|perry_f:/ $printallto perry_fBankIntLLC     <
+/system/bin/sh: 1: not found
+/system/bin/sh: perry_f:/: not found
+127|perry_f:/ $ Reply
+/system/bin/sh: Reply: not found
+127|perry_f:/ $ Forward
+/system/bin/sh: Forward: not found
+127|perry_f:/ $
+127|perry_f:/ $
+127|perry_f:/ $
+127|perry_f:/ $ --
+/system/bin/sh: --: not found
+127|perry_f:/ $ eBankintllc
+/system/bin/sh: eBankintllc: not found
+127|perry_f:/ $
