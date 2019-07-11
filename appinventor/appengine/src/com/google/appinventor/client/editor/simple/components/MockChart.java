@@ -194,13 +194,9 @@ public final class MockChart extends MockContainer {
                     MockChart.this.onSelectedChange(true); // otherwise the last imported component
 
                     String[] columnNames = result.split("\n")[0].split(",");
-                    String XColumn = columnNames[0];
+                    String XColumn = "";
 
                     for (String column : columnNames) {
-                        if (column.equals(XColumn)) {
-                            continue;
-                        }
-
                         MockCoordinateData data = new MockCoordinateData(editor);
                         addComponent(data);
                         data.addToChart(MockChart.this);

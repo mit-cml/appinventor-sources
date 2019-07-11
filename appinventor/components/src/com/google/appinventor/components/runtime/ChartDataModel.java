@@ -109,6 +109,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             if (columnName == null || columnName.equals("")) {
                 // Default option
+                dataColumns.add(getDefaultColumn(rows.size()));
             } else {
                 dataColumns.add(dataFile.getColumn(columnName));
             }
@@ -147,4 +148,6 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Sets the default styling properties of the Data Series.
      */
     protected abstract void setDefaultStylingProperties();
+
+    protected abstract YailList getDefaultColumn(int size);
 }

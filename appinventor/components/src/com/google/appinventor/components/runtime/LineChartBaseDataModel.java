@@ -67,4 +67,16 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
     protected void setDefaultStylingProperties() {
         dataset.setDrawCircleHole(false);
     }
+
+
+    @Override
+    protected YailList getDefaultColumn(int size) {
+        ArrayList<Float> defaultColumn = new ArrayList<>();
+
+        for (int i = 0; i < size; ++i) {
+            defaultColumn.add((float)i);
+        }
+
+        return YailList.makeList(defaultColumn);
+    }
 }
