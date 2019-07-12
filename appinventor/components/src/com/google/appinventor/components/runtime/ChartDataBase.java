@@ -171,12 +171,15 @@ public abstract class ChartDataBase implements Component {
         dataSource.importDataComponent(this);
     }
 
-    public void importFromCSV() {
-        chartDataModel.importFromCSV(dataSource, csvColumns);
-
+    public void importFromCSVAsync() {
+        // Since this method is invoked async, and refreshing should
+        // be called right after data importing (and on the UI thread),
+        // we run this on the UI thread itself to avoid exceptions and
+        // to ensure that the data is properly added.
         container.$context().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                chartDataModel.importFromCSV(dataSource, csvColumns);
                 refreshChart();
             }
         });

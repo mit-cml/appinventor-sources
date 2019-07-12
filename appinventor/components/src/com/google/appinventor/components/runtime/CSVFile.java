@@ -125,7 +125,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
             readingDone = true;
 
             for (ChartDataBase dataComponent : dataComponents) {
-                dataComponent.importFromCSV();
+                dataComponent.importFromCSVAsync();
             }
 
             dataComponents.clear();
