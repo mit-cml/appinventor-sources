@@ -32,6 +32,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
     private boolean readingDone = false;
 
     private ArrayList<ChartDataBase> dataComponents;
+    private ArrayList<YailList> dataComponentColumns;
 
     /**
      * Creates a new CSVFile component.
@@ -44,6 +45,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
         rows = new YailList();
         columns = new YailList();
         dataComponents = new ArrayList<ChartDataBase>();
+        dataComponentColumns = new ArrayList<YailList>();
     }
 
     // Reads from stored file. To be integrated
@@ -124,11 +126,15 @@ public class CSVFile extends AndroidNonvisibleComponent {
             // TODO: Notify data reading done (for async race condition)
             readingDone = true;
 
-            for (ChartDataBase dataComponent : dataComponents) {
-                dataComponent.importFromCSVAsync();
+            for (int i = 0; i < dataComponents.size(); ++i) {
+                ChartDataBase dataComponent = dataComponents.get(i);
+                YailList columns = dataComponentColumns.get(i);
+
+                dataComponent.importFromCSVAsync(this, columns);
             }
 
             dataComponents.clear();
+            dataComponentColumns.clear();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -175,11 +181,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
         return readingDone;
     }
 
-    public void importDataComponent(ChartDataBase dataComponent) {
+    public void importDataComponent(ChartDataBase dataComponent, YailList columns) {
         if (isReadingDone()) {
-            dataComponent.importFromCSV();
+            dataComponent.importFromCSVAsync(this, columns);
         } else {
             dataComponents.add(dataComponent);
+            dataComponentColumns.add(columns);
         }
     }
 

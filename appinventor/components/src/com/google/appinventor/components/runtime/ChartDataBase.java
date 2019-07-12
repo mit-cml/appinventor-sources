@@ -147,9 +147,7 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Work in progress")
     public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
-        // TODO: Race condition handling with CSVFile
-        chartDataModel.importFromCSV(csvFile, YailList.makeList(Arrays.asList(xValueColumn, yValueColumn)));
-        refreshChart();
+        csvFile.importDataComponent(this, YailList.makeList(Arrays.asList(xValueColumn, yValueColumn)));
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
@@ -168,10 +166,10 @@ public abstract class ChartDataBase implements Component {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
-        dataSource.importDataComponent(this);
+        dataSource.importDataComponent(this, csvColumns);
     }
 
-    public void importFromCSVAsync() {
+    public void importFromCSVAsync(final CSVFile csvFile, final YailList columns) {
         // Since this method is invoked async, and refreshing should
         // be called right after data importing (and on the UI thread),
         // we run this on the UI thread itself to avoid exceptions and
@@ -179,7 +177,7 @@ public abstract class ChartDataBase implements Component {
         container.$context().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                chartDataModel.importFromCSV(dataSource, csvColumns);
+                chartDataModel.importFromCSV(csvFile, columns);
                 refreshChart();
             }
         });
