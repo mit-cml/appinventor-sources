@@ -1,71 +1,21 @@
-/*
-
-package com.google.appinventor.components.runtime;
-
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.SimpleObject;
-import android.widget.EditText;
-import android.view.View;
-
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-
-@DesignerComponent(version = YaVersion.RECYCLERVIEW_COMPONENT_VERSION,
-    description = "<p>This is a visible component that displays a list of text elements." +
-        " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
-    category = ComponentCategory.USERINTERFACE,
-    nonVisible = false,
-    iconName = "images/recyclerView.png")
-@SimpleObject
-public final class RecyclerView extends AndroidViewComponent {
-
-  protected final ComponentContainer container;
-  private EditText editText;
-
-  public RecyclerView(ComponentContainer container) {
-    super(container);
-    this.container = container;
-
-    editText = new EditText(container.$context());
-    
-    container.$add(this);
-
-};
-
-  @Override
-  public View getView() {
-    return editText;
-  }
-
-}
-
-*/
-
-
-
-
-
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
-//import android.support.v7.widget.RecyclerView;
-//
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
-//
+
+//import android.text.Spannable;
+//import android.text.SpannableString;
+//import android.text.Html;
+//import android.text.style.AbsoluteSizeSpan;
+//import android.text.style.ForegroundColorSpan;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -78,14 +28,27 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-
-
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.Manifest;
+import java.io.IOException;
+import java.util.*;
+/**
+ * RecyclerView Component. Non-Visible component to create a RecyclerView in the Screen from a series of
+ * elements added from a comma separated set of text elements. It is similar to the ListPicker
+ * component but this one is placed on screen instead of opening a new Activity.
+ * TOFO(hal): Think about generalizing this to include more than text/
+ * @author halabelson@google.com (Hal Abelson)
+ * @author osmidy@mit.edu (Olivier Midy)
+ */
 
 @DesignerComponent(version = YaVersion.RECYCLERVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that displays a list of text elements." +
@@ -96,26 +59,28 @@ import com.google.appinventor.components.runtime.util.YailList;
     iconName = "images/recyclerView.png")
 @SimpleObject
 @UsesLibraries(libraries ="RecyclerView.jar")
+@UsesPermissions(permissionNames = "android.permission.INTERNET," +
+    "android.permission.READ_EXTERNAL_STORAGE")
 public final class RecyclerView extends AndroidViewComponent{
 
-private EditText txtSearchBox;
-private ArrayAdapter<String> adapter;
-protected final ComponentContainer container;
-private final LinearLayout linearLayout;
-    
     private static final String LOG_TAG = "RecyclerView";
     
+    private EditText txtSearchBox;
+    protected final ComponentContainer container;
+    private final LinearLayout linearLayout;
     private android.support.v7.widget.RecyclerView recyclerView;
     private Context ctx;
-    
     private int selectionIndex;
     private String selection;
     private boolean showFilter = false;
     private static final boolean DEFAULT_ENABLED = false;
 
-    private YailList input;
+    private YailList inputFirst,inputSecond,inputImage;
+    private String[] strFirst,strSecond,images; 
+    private String picturePath = "";
+    private ArrayList<String>imagePathList = new ArrayList<String>();
 
-    ListAdapterWithRecyclerView listAdapterWithRecyclerView;
+    private   ListAdapterWithRecyclerView listAdapterWithRecyclerView;
 
     private int backgroundColor;
     private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
@@ -138,22 +103,23 @@ private final LinearLayout linearLayout;
     super(container);
     this.container = container;
 
-  //txtSearchBox = new EditText(container.$context());
-
    linearLayout = new LinearLayout(container.$context());
    linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-
     ctx=container.$context();
-
-    input = YailList.makeEmptyList();
+    inputFirst = YailList.makeEmptyList();
+    inputSecond = YailList.makeEmptyList();
+    inputImage = YailList.makeEmptyList();
+    //imagePathList = new ArrayList<String>();
     
   //   initialize selectionIndex which also sets selection
    
     SelectionIndex(0);
 
     recyclerView = new android.support.v7.widget.RecyclerView(container.$context());
-    
+//    android.support.v7.widget.RecyclerView.LayoutParams paramms=new android.support.v7.widget.RecyclerView.LayoutParams(android.support.v7.widget.RecyclerView.LayoutParams.MATCH_PARENT,android.support.v7.widget.RecyclerView.LayoutParams.MATCH_PARENT);
+//    recyclerView.setLayoutParams(paramms);
+
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
@@ -198,28 +164,24 @@ private final LinearLayout linearLayout;
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-  //  SelectionColor(DEFAULT_SELECTION_COLOR);
+  
+    textColor = DEFAULT_TEXT_COLOR;
+    textSize = DEFAULT_TEXT_SIZE;
+    ElementsFromStringFirst("");
+    ElementsFromStringSecond("");
 
-    //textColor = DEFAULT_TEXT_COLOR;
-   // TextColor(textColor);
-   // textSize = DEFAULT_TEXT_SIZE;
-    //TextSize(textSize);
-    ElementsFromString("");
+ //   ElementImages("");    
 
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
     container.$add(this);
-
-
-
 };
 
 @Override
   public View getView() {
     return linearLayout;
   }
-
 
 /**
   * Sets the height of the listView on the screen
@@ -248,7 +210,6 @@ private final LinearLayout linearLayout;
     }
     super.Width(width);
   }
-
 
  /**
    * Sets true or false to determine whether the search filter box is displayed in the ListView
@@ -279,37 +240,34 @@ private final LinearLayout linearLayout;
     return showFilter;
   }
 
-
-
-
-
 /**
    * Set a list of text elements to build a ListView
    * @param itemsList a YailList containing the strings to be added to the ListView
-
+*/
   @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
                 "signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList input) {
     input = ElementsUtil.elements(input, "RecyclerView");
- 
-//doubt setAdapterData() why called here
-    setAdapter(input);
+    //inputImage = ElementsUtil.elements(inputImage, "RecyclerView");
+    
+    if(imagePathList != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length ){
+    setAdapterr(strFirst,strSecond,imagePathList);
+  }
   }
 
   /**
    * Elements property getter method
    *
    * @return a YailList representing the list of strings to be picked from
-  
+  */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList Elements() {
-    return input;
+    return inputFirst;
   }
 
-
   /**
-   * Specifies the text elements of the ListView.
+   * Specifies the first text elements of the ListView.
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
   */ 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
@@ -317,45 +275,179 @@ private final LinearLayout linearLayout;
       "items separated by commas " +
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
       "list.",  category = PropertyCategory.BEHAVIOR)
-  public void ElementsFromString(String itemstring) {
-    input = ElementsUtil.elementsFromString(itemstring);
-    String[] str = input.toStringArray();
-    
-    setAdapterr(str);
+  public void ElementsFromStringFirst(String itemstring) {
+    inputFirst = ElementsUtil.elementsFromString(itemstring);
+    strFirst = inputFirst.toStringArray();
 
+   if(imagePathList != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
+    setAdapterr(strFirst,strSecond,imagePathList);
+ 
     }
 
 
   /**
-   * Sets the items of the ListView through an adapter
+   * Specifies the second text elements of the ListView.
+   * @param itemstring a string containing a comma-separated list of the strings to be picked from
+  */ 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description="The TextView elements specified as a string with the " +
+      "items separated by commas " +
+      "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
+      "list.",  category = PropertyCategory.BEHAVIOR)
+  public void ElementsFromStringSecond(String itemstring) {
+    inputSecond = ElementsUtil.elementsFromString(itemstring);
+    strSecond = inputSecond.toStringArray();
+
+    if(imagePathList != null && strFirst!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
+    setAdapterr(strFirst,strSecond,imagePathList);
+ 
+    }
+
+
+  /**
+   * Returns the path of the image's picture.
+   *
+   * @return  the path of the image's picture
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public String Picture() {
+    return picturePath;
+  }
+  /**
+   * Specifies the path of the image's picture.
+   *
+   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
+   * a path can be.
+   *
+   * @param path  the path of the image's picture
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+      defaultValue = "")
+  @SimpleProperty
+  public void Picture(String path) {
+   /* if (MediaUtil.isExternalFile(path) &&
+        container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+          new PermissionResultHandler() {
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (granted) {
+                Picture(path);
+              } else {
+                container.$form().dispatchPermissionDeniedEvent(RecyclerView.this, "Picture", permission);
+              }
+            }
+          });
+      return;
+    }
+*/
+    String imagePath = path;
+    picturePath+=path;
+    imagePathList.add(path);
+
+
+if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
+    setAdapterr(strFirst,strSecond,imagePathList);
+ 
+  }
+
+
+  /**
+   * Specifies the text elements of the ListView.
+   * @param itemstring a string containing a comma-separated list of the strings to be picked from
    
-  */
- public void setAdapterr(String[] str){
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description="The Image paths specified as a string with the " +
+      "items separated by commas " +
+      "Each word before the comma will the path of image from media in the " +
+      "list.",  category = PropertyCategory.BEHAVIOR)
+  public void ElementImages(String itemstring) {
+    inputImage = ElementsUtil.elementsFromString(itemstring);
+    images = inputImage.toStringArray();    
+        
+    if(str!=null && str.length>0)     
+    setAdapterr(str,images);
 
+    }
 
-    int size =(str.length)/2;
+  /**
+   * Sets the items of the ListView through an adapter
+   */
+ public void setAdapterr(String[] strFirst,String[] strSecond,ArrayList<String> imagePathList){
+
+  /*  int size =(str.length)/2;
     String[] first=new String[size];
     String[] second=new String[size];
+    
+    //Drawable[] third=new Drawable[size];
 
     for (int i = 0; i < str.length; i++) {
       int x=i/2;
-      if(i%2==0){first[x]=str[i];}
-      else{second[x]=str[i];}
+      if(i%2==1){second[x]=str[i];}
+      else{first[x]=str[i];}
     }
+*/
 
-    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second);
+  ArrayList<Drawable> third = new ArrayList<Drawable>();
+  for(int i=0;i<strFirst.length;i++){    
+      //third[x] = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+  try {
+      third.add(MediaUtil.getBitmapDrawable(container.$form(), imagePathList.get(i)));
+    } catch (IOException ioe) {
+      Log.e("Image", "Unable to load " + imagePathList.get(i));
+      third.add(null);
+    }    
+  //  ViewUtil.setImage(view, drawable);
+    }
+  
 
-    //ViewGroup.LayoutParams paramms=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-    //recyclerView.setLayoutParams(paramms);
-
+    //if(third.length == first.length){
+    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),strFirst,strSecond,third,textColor,textSize);
+  
     LinearLayoutManager layoutManager=new LinearLayoutManager(ctx);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(listAdapterWithRecyclerView);
+    }
+   //}
 
-  //  container.$add(this);  
- 
+   /*
+public String[] itemsToColoredText(String[] str) {
+    // TODO(hal): Generalize this so that different items could have different
+    // colors and even fonts and sizes
+    int size = str.length;
+    int displayTextSize = textSize;
+    String [] objects = new String[size];
+    for (int i = 0; i < size; i++) {
+      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
+      // YailList.ToStringArray.
+      // ListView however, does the string conversion via the adapter, so we must ensure
+      // that the adapter uses YailListElementToSring
+      //String itemString = YailList.YailListElementToString(items.get(i));
+      String itemString = str[i];
+      // Is there a more efficient way to do conversion to spannable strings that does not
+      // need to allocate new objects?
+      SpannableString chars = new SpannableString(itemString);
+      chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
+      if (!container.$form().getCompatibilityMode()) {
+        displayTextSize = (int) (textSize * container.$form().deviceDensity());
+      }
+      chars.setSpan(new AbsoluteSizeSpan(displayTextSize),0,chars.length(),0);
 
-   } 
+/*      public String stripHtml(String html) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+           return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+           return Html.fromHtml(html);
+        }
+}
+   objects[i - 1] = Html.fromHtml(chars, Html.FROM_HTML_MODE_LEGACY).toString();
+    }
+
+    return objects;
+  }
+
+*/
 
   /**
    * Selection index property getter method.
@@ -383,9 +475,9 @@ private final LinearLayout linearLayout;
       ,
       category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index){
-    selectionIndex = ElementsUtil.selectionIndex(index, input);
+    selectionIndex = ElementsUtil.selectionIndex(index, inputFirst);
     // Now, we need to change Selection to correspond to SelectionIndex.
-    selection = ElementsUtil.setSelectionFromIndex(index, input);
+    selection = ElementsUtil.setSelectionFromIndex(index, inputFirst);
   }
 
    /**
@@ -407,7 +499,7 @@ private final LinearLayout linearLayout;
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, input);
+    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, inputFirst);
   }
 
 
@@ -420,9 +512,7 @@ private final LinearLayout linearLayout;
       backgroundColor = color;
       recyclerView.setBackgroundColor(backgroundColor);
       linearLayout.setBackgroundColor(backgroundColor);
-      // Keeps background color behind list elements correct when scrolling through listView
-      //recyclerView.setCacheColorHint(backgroundColor);
-  }
+     }
 
   /**
    * Returns the listview's background color as an alpha-red-green-blue
@@ -495,7 +585,7 @@ private final LinearLayout linearLayout;
    *
    * @return background color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
-   
+   */
   @SimpleProperty(
       description = "The text color of the listview items.",
       category = PropertyCategory.APPEARANCE)
@@ -510,20 +600,20 @@ private final LinearLayout linearLayout;
    *
    * @param argb background color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
-   
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColor(int argb) {
       textColor = argb;
-      setAdapterData();
+      setAdapterr(strFirst,strSecond,imagePathList);
   }
 
   /**
    * Returns the listview's text font Size
    *
    * @return text size as an float
-   
+  */ 
   @SimpleProperty(
       description = "The text size of the listview items.",
       category = PropertyCategory.APPEARANCE)
@@ -535,31 +625,16 @@ private final LinearLayout linearLayout;
    * Specifies the ListView item's text font size
    *
    * @param integer value for font size
-   
+  */ 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_TEXT_SIZE + "")
+      defaultValue ="" + DEFAULT_TEXT_SIZE )
   @SimpleProperty
   public void TextSize(int fontSize) {
       if(fontSize>1000)
         textSize = 999;
       else
         textSize = fontSize;
-      setAdapter();
+      setAdapterr(strFirst,strSecond,imagePathList);
   }
 
-
-
-
-/*  public void setAdapterData(){
-    adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
-        itemsToColoredText());
-    view.setAdapter(adapter);
-
-    adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
-    for (int i = 0; i < adapter.getCount(); ++i) {
-      adapterCopy.insert(adapter.getItem(i), i);
-    }
-  }
-
-*/
 }
