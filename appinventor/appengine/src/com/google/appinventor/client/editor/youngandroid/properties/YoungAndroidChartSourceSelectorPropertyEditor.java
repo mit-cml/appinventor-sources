@@ -6,12 +6,12 @@ import com.google.appinventor.client.output.OdeLog;
 
 import java.util.Set;
 
-public class YoungAndroidSourceSelectorPropertyEditor extends YoungAndroidComponentSelectorPropertyEditor {
-    public YoungAndroidSourceSelectorPropertyEditor(YaFormEditor editor) {
+public class YoungAndroidChartSourceSelectorPropertyEditor extends YoungAndroidComponentSelectorPropertyEditor {
+    public YoungAndroidChartSourceSelectorPropertyEditor(YaFormEditor editor) {
         super(editor);
     }
 
-    public YoungAndroidSourceSelectorPropertyEditor(YaFormEditor editor, Set<String> componentTypes) {
+    public YoungAndroidChartSourceSelectorPropertyEditor(YaFormEditor editor, Set<String> componentTypes) {
         super(editor, componentTypes);
     }
 

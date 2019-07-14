@@ -123,7 +123,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
             // Construct column lists from rows
             constructColumnsFromRows();
 
-            // TODO: Notify data reading done (for async race condition)
             readingDone = true;
 
             for (int i = 0; i < dataComponents.size(); ++i) {
