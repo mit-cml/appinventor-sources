@@ -139,19 +139,35 @@ public abstract class ChartDataBase implements Component {
     /**
      * Imports data from a CSV file component, with the specified column names.
      *
-     * Experimental for now.
-     *
      * @param csvFile  CSV File component to import form
      * @param xValueColumn  x-value column name
      * @param yValueColumn  y-value column name
      */
-    @SimpleFunction(description = "Work in progress")
+    @SimpleFunction(description = "Imports data from the specified CSVFile component, given the names of the " +
+            "X and Y value columns. Passing in empty text for any of the column parameters will result" +
+            " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
+            " 1, and so forth.")
     public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
-        csvFile.importDataComponent(this, YailList.makeList(Arrays.asList(xValueColumn, yValueColumn)));
+        // Construct a YailList of columns from the specified parameters
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+
+        // Import the data from the CSV file with the specified columns
+        csvFile.importDataComponent(this, columns);
     }
 
+    /**
+     * Sets the CSV columns to parse data from the CSV source.
+     *
+     * TODO: Hide property in case the Source is not a CSVFile.
+     *
+     * @param columns  CSV representation of the column names (e.g. A,B will
+     *                 use A for the x values, and B for the y values)
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
+    @SimpleProperty(description="Sets the columns of the CSV file to parse data from." +
+            "The columns must be specified in a CSV format, e.g. A,B will will use " +
+            "A for the x values, and B for the y values.",
+            category = PropertyCategory.BEHAVIOR,
                 userVisible = false)
     public void CsvColumns(String columns) {
         try {
@@ -161,14 +177,32 @@ public abstract class ChartDataBase implements Component {
         }
     }
 
+    /**
+     * Sets the Data Source for the Chart data component. The data
+     * is then automatically imported.
+     *
+     * TODO: Modify description to include more data sources
+     * TODO: Support for more Data Sources (so not only limited to CSVFile)
+     * @param dataSource  Data Source to use for the Chart data.
+     */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-            description = "WIP")
+            description = "Sets the Data Source for the Data component. Accepted types " +
+                    "include CSVFiles.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
+
+        // The method is called on the CSVFile to do race condition checking.
+        // Since CSVFile reading is async, we cannot directly invoke the
+        // ChartModel's readFromCSV method.
         dataSource.importDataComponent(this, csvColumns);
     }
 
+    /**
+     * Imports data from a CSVFile component. To be called asynchronously.
+     * @param csvFile  CSVFile to read data from
+     * @param columns  Columns to read from the CSV file.
+     */
     public void importFromCSVAsync(final CSVFile csvFile, final YailList columns) {
         // Since this method is invoked async, and refreshing should
         // be called right after data importing (and on the UI thread),
