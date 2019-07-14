@@ -99,35 +99,48 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         }
     }
 
+    /**
+     * Imports data from the CSVFile from the specified list of columns.
+     *
+     * @param dataFile  CSVFile to import data from
+     * @param columns  Columns to use for data importing
+     */
     public void importFromCSV(CSVFile dataFile, YailList columns) {
-        YailList rows = dataFile.Rows();
+        // Get the size of a row (expected fixed width rows)
+        int rowSize = dataFile.Rows().size();
 
         ArrayList<YailList> dataColumns = new ArrayList<YailList>();
 
         for (int i = 0; i < columns.size(); ++i) {
+            // Get the name of the current column
             String columnName = columns.getString(i);
 
-            if (columnName == null || columnName.equals("")) {
-                // Default option
-                dataColumns.add(getDefaultValues(rows.size()));
-            } else {
+            if (columnName == null || columnName.equals("")) { // No columnName specified, use default values
+                dataColumns.add(getDefaultValues(rowSize));
+            } else { // Add the specified column from the CSV file to the columns
                 dataColumns.add(dataFile.getColumn(columnName));
             }
         }
 
         List<YailList> tuples = new ArrayList<YailList>();
 
-        for (int i = 1; i < rows.size(); ++i) {
+        // Generate tuples from the columns
+        for (int i = 1; i < rowSize; ++i) {
             ArrayList<String> tupleElements = new ArrayList<String>();
 
+            // Add entries to the tuple from all i-th values of the data columns.
             for (YailList column : dataColumns) {
                 tupleElements.add(column.getString(i));
             }
 
+            // Create the YailList tuple representation and add it to the
+            // list of tuples used.
             YailList tuple = YailList.makeList(tupleElements);
             tuples.add(tuple);
         }
 
+        // Use the generated tuple list in the importFromList method to
+        // import the data.
        importFromList(YailList.makeList(tuples));
     }
 

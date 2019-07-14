@@ -136,8 +136,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
             // Construct column lists from rows
             constructColumnsFromRows();
 
-            readingDone = true;
-
+            // Import the data to all the queued Data Components
             for (int i = 0; i < dataComponents.size(); ++i) {
                 ChartDataBase dataComponent = dataComponents.get(i);
                 YailList columns = dataComponentColumns.get(i);
@@ -145,8 +144,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
                 dataComponent.importFromCSVAsync(this, columns);
             }
 
+            // Reset queued Data Components
             dataComponents.clear();
             dataComponentColumns.clear();
+
+            // Update reading status
+            readingDone = true;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
