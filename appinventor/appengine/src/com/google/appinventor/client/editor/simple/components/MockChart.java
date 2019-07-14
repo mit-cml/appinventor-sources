@@ -29,8 +29,6 @@ public final class MockChart extends MockContainer {
     // com.google.appinventor.components.runtime.Component.java.
     private int type;
 
-    private MockNonVisibleComponent csvSource;
-
     /**
      * Creates a new instance of a visible component.
      *
@@ -172,6 +170,18 @@ public final class MockChart extends MockContainer {
         }
     }
 
+    /**
+     * Adds a new CSVFile component to the Chart, which parses
+     * the contents and creates Data components accordingly to the
+     * columns of the CSV file.
+     *
+     * For each column, a Data component is created.
+     *
+     * TODO: Multi-dimensional Chart data support
+     *
+     * @param csvSource MockNonVisible component of type CSVFile.
+     *                  If the type differs, the method simply returns.
+     */
     public void addCSVFile(MockNonVisibleComponent csvSource) {
         if (!csvSource.getType().equals("CSVFile")) {
             return;
