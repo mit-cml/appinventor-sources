@@ -70,11 +70,13 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
 
 
     @Override
-    protected YailList getDefaultColumn(int size) {
-        ArrayList<Float> defaultColumn = new ArrayList<>();
+    protected YailList getDefaultValues(int size) {
+        // Default values for LineChartBaseDataModel should be
+        // integers from 0 to N (0, 1, 2, ...)
+        ArrayList<Integer> defaultColumn = new ArrayList<>();
 
         for (int i = 0; i < size; ++i) {
-            defaultColumn.add((float)i);
+            defaultColumn.add(i);
         }
 
         return YailList.makeList(defaultColumn);

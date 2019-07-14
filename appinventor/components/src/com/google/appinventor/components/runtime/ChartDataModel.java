@@ -109,7 +109,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             if (columnName == null || columnName.equals("")) {
                 // Default option
-                dataColumns.add(getDefaultColumn(rows.size()));
+                dataColumns.add(getDefaultValues(rows.size()));
             } else {
                 dataColumns.add(dataFile.getColumn(columnName));
             }
@@ -149,5 +149,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract void setDefaultStylingProperties();
 
-    protected abstract YailList getDefaultColumn(int size);
+    /**
+     * Returns a YailList of the specified size containing the
+     * default values for the Data Series.
+     * To be used in the context of importing data from sources
+     * where the values for a certain dimension are not present
+     * (e.g. y values are present, but x values are not)
+     *
+     * @param size  Number of entries to return
+     * @return  YailList of the specified number of entries containing the default values.
+     */
+    protected abstract YailList getDefaultValues(int size);
 }
