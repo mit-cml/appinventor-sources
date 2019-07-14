@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.components.runtime.CSVFile;
 
 import java.util.Set;
 
@@ -18,8 +19,11 @@ public class YoungAndroidChartSourceSelectorPropertyEditor extends YoungAndroidC
     @Override
     public void onComponentPropertyChanged(MockComponent component,
                                            String propertyName, String propertyValue) {
-        if (property.getValue().equals(component.getName()) && propertyName.equals("SourceFile")) {
-            property.setValue("");
+        // Keep track of property changes to the SourceFile property. In the case of
+        // such a change, the Source should be un-attached (by setting the value to Hone)
+        if (property.getValue().equals(component.getName()) // Check that this is the attached component
+                && propertyName.equals("SourceFile")) { // Check for SourceFile changes
+            property.setValue(""); // Change the Source value to None
         }
     }
 }
