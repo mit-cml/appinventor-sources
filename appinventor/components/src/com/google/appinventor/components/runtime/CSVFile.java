@@ -23,14 +23,16 @@ import android.Manifest;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class CSVFile extends AndroidNonvisibleComponent {
-
     private String sourceFile = "";
+
     private YailList rows;
     private YailList columns;
-    private YailList columnNames;
+    private YailList columnNames; // Elements of the first column
 
-    private boolean readingDone = false;
+    private boolean readingDone = false; // Flag to indicate whether the async reading has finished
 
+    // Queued Chart Data components to be loaded by the CSV.
+    // The same index is used for both the component itself and the columns.
     private ArrayList<ChartDataBase> dataComponents;
     private ArrayList<YailList> dataComponentColumns;
 
@@ -75,6 +77,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
 //        });
 //    }
 
+    /**
+     * Parses the CSV contents of the provided file.
+     *
+     * @param filename  name of the file. Single slash (/) indicates Android file,
+     *                  double slash (//) indicates media file.
+     */
     private void parseCSVFromSource(final String filename) {
         form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
             @Override
@@ -102,6 +110,11 @@ public class CSVFile extends AndroidNonvisibleComponent {
         });
     }
 
+    /**
+     * Parses the CSV contents of the provided InputStream.
+     *
+     * @param inputStream  InputStream to parse CSV from.
+     */
     private void readCSV(InputStream inputStream) {
         readingDone = false;
         try {
@@ -144,31 +157,55 @@ public class CSVFile extends AndroidNonvisibleComponent {
     /**
      * Rows property getter method
      *
-     * @return a YailList representing the list of strings to be picked from
+     * @return a YailList representing the parsed rows of the CSV file.
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
+            " to the CSV file's content.")
     public YailList Rows() {
         return rows;
     }
 
 
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    /**
+     * Columns property getter method
+     *
+     * @return a YailList representing the parsed columns of the CSV file.
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
+            " to the CSV file's content.")
     public YailList Columns() {
         return columns;
     }
 
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    /**
+     * Column names property getter method.
+     * The intended use case of the method is for CSV files which contain
+     * the column names in the first row.
+     *
+     * @return  a YailList containing the elements of the first row.
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
+            " of the CSV contents.")
     public YailList ColumnNames() {
         return columnNames;
     }
 
     /**
-     * Sets the source file to parse CSV from.
+     * Sets the source file to parse CSV from, and then parses the CSV
+     * file asynchronously.
+     * The results are stored in the Columns, Rows and ColumnNames properties.
      *
      * @param source  Source file name
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Indicates source file to load data from." +
+            "Prefix the filename with / to read from a specific file on the SD card. " +
+            "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
+            "assets packaged with an application (also works for the Companion) start " +
+            "the filename with // (two slashes). If a filename does not start with a " +
+            "slash, it will be read from the applications private storage (for packaged " +
+            "apps) and from /sdcard/AppInventor/data for the Companion.")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+        defaultValue = "")
     public void SourceFile(String source) {
         this.sourceFile = source;
 
@@ -176,14 +213,29 @@ public class CSVFile extends AndroidNonvisibleComponent {
         parseCSVFromSource(sourceFile);
     }
 
+    /**
+     * Indicates whether asynchronous CSV parsing has finished.
+     *
+     * @return  true if asynchronous parsing of the CSV file has finished
+     */
     public boolean isReadingDone() {
         return readingDone;
     }
 
+    /**
+     * Imports the specified column data into a Chart Data component.
+     * If reading is not done, the importing is queued and processed
+     * after the reading has finished.
+     *
+     * @param dataComponent  Data component to import from
+     * @param columns  Columns to use for data importing
+     */
     public void importDataComponent(ChartDataBase dataComponent, YailList columns) {
         if (isReadingDone()) {
+            // Reading is done, data can be imported directly
             dataComponent.importFromCSVAsync(this, columns);
         } else {
+            // Queue data component for importing after the CSV file is parsed
             dataComponents.add(dataComponent);
             dataComponentColumns.add(columns);
         }
@@ -197,6 +249,8 @@ public class CSVFile extends AndroidNonvisibleComponent {
      */
     public YailList getColumn(String column) {
         // Get the index of the column (first row - column names)
+        // 1 is subtracted from the index since YailList indexOf
+        // returns an index that is 1-based.
         int index = columnNames.indexOf(column) - 1;
 
         // Column not found
@@ -207,12 +261,20 @@ public class CSVFile extends AndroidNonvisibleComponent {
         return (YailList)columns.getObject(index);
     }
 
+    /**
+     * Instantiates the columns list after CSV parsing to rows
+     * has been processed.
+     */
     private void constructColumnsFromRows() {
         // Store columns separately (first row indicates column names)
         columnNames = (YailList)rows.getObject(0);
 
+        // Get the size of the row. The row size
+        // indicates the number of columns.
         int rowSize = columnNames.size();
 
+        // Construct each column separately, and add it
+        // to the resulting list.
         ArrayList<YailList> columnList = new ArrayList<YailList>();
 
         for (int i = 0; i < rowSize; ++i) {
@@ -222,11 +284,18 @@ public class CSVFile extends AndroidNonvisibleComponent {
         columns = YailList.makeList(columnList);
     }
 
+    /**
+     * Constructs and returns a column from the rows, given
+     * the index of the needed column.
+     *
+     * @param index  the index of the column to construct
+     * @return  YailList column representation of the specified index
+     */
     private YailList getColumn(int index) {
         List<String> entries = new ArrayList<String>();
 
         for (int i = 0; i < rows.size(); ++i) {
-            // Get row
+            // Get the i-th row
             YailList row = (YailList) rows.getObject(i); // Safe cast
 
             // index-th entry in the row is the required column value
