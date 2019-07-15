@@ -48,23 +48,13 @@ import java.io.StringWriter;
     iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class File extends AndroidNonvisibleComponent implements Component {
-  public static final String NO_ASSETS = "No_Assets";
-  private final Activity activity;
-  private boolean isRepl = false;
-  private final int BUFFER_LENGTH = 4096;
-  private static final String LOG_TAG = "FileComponent";
-
+public class File extends FileBase {
   /**
    * Creates a new File component.
    * @param container the Form that this component is contained in.
    */
   public File(ComponentContainer container) {
     super(container.$form());
-    if (form instanceof ReplForm) { // Note: form is defined in our superclass
-      isRepl = true;
-    }
-    activity = (Activity) container.$context();
   }
 
   /**
@@ -122,43 +112,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "slash, it will be read from the applications private storage (for packaged " +
       "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
-    form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-      @Override
-      public void HandlePermissionResponse(String permission, boolean granted) {
-        if (granted) {
-          try {
-            InputStream inputStream;
-            if (fileName.startsWith("//")) {
-              inputStream = form.openAsset(fileName.substring(2));
-            } else {
-              String filepath = AbsoluteFileName(fileName);
-              Log.d(LOG_TAG, "filepath = " + filepath);
-              inputStream = FileUtil.openFile(filepath);
-            }
-
-            final InputStream asyncInputStream = inputStream;
-            AsynchUtil.runAsynchronously(new Runnable() {
-              @Override
-              public void run() {
-                AsyncRead(asyncInputStream, fileName);
-              }
-            });
-          } catch (PermissionException e) {
-            form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", e);
-          } catch (FileNotFoundException e) {
-            Log.e(LOG_TAG, "FileNotFoundException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          } catch (IOException e) {
-            Log.e(LOG_TAG, "IOException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          }
-        } else {
-          form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", permission);
-        }
-      }
-    });
+    ReadFromFile(fileName);
   }
 
 
@@ -277,20 +231,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
     });
   }
 
-  /**
-   * Replace Windows-style CRLF with Unix LF as String. This allows
-   * end-user to treat Windows text files same as Unix or Mac. In
-   * future, allowing user to choose to normalize new lines might also
-   * be nice - in case someone really wants to detect Windows-style
-   * line separators, or save a file which was read (and expect no
-   * changes in size or checksum).
-   * @param s to convert
-   */
-
-  private String normalizeNewLines(String s) {
-    return s.replaceAll("\r\n", "\n");
-  }
-
 
   /**
    * Asynchronously reads from the given file. Calls the main event thread
@@ -300,25 +240,10 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @throws FileNotFoundException
    * @throws IOException when the system cannot read the file
    */
-  private void AsyncRead(InputStream fileInput, final String fileName) {
-    InputStreamReader input = null;
+  @Override
+  protected void AsyncRead(InputStream fileInput, final String fileName) {
     try {
-      input = new InputStreamReader(fileInput);
-      StringWriter output = new StringWriter();
-      char [] buffer = new char[BUFFER_LENGTH];
-      int offset = 0;
-      int length = 0;
-      while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
-        output.write(buffer, 0, length);
-      }
-
-      // Now that we have the file as a String,
-      // normalize any line separators to avoid compatibility between Windows and Mac
-      // text files. Users can expect \n to mean a line separator regardless of how
-      // file was created. Currently only doing this for files opened locally - not files we pull
-      // from other places like URLs.
-
-      final String text = normalizeNewLines(output.toString());
+      final String text = readFromInputString(fileInput);
 
       activity.runOnUiThread(new Runnable() {
         @Override
@@ -334,14 +259,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
       Log.e(LOG_TAG, "IOException", e);
       form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
           ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
-    } finally {
-      if (input != null) {
-        try {
-          input.close();
-        } catch (IOException e) {
-          // do nothing...
-        }
-      }
     }
   }
 
@@ -366,26 +283,4 @@ public class File extends AndroidNonvisibleComponent implements Component {
     // invoke the application's "AfterFileSaved" event handler.
     EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
   }
-
-  /**
-   * Returns absolute file path.
-   *
-   * @param filename the file used to construct the file path
-   */
-  private String AbsoluteFileName(String filename) {
-    if (filename.startsWith("/")) {
-      return Environment.getExternalStorageDirectory().getPath() + filename;
-    } else {
-      java.io.File dirPath = activity.getFilesDir();
-      if (isRepl) {
-        String path = Environment.getExternalStorageDirectory().getPath() + "/AppInventor/data/";
-        dirPath = new java.io.File(path);
-        if (!dirPath.exists()) {
-          dirPath.mkdirs();           // Make sure it exists
-        }
-      }
-      return dirPath.getPath() + "/" + filename;
-    }
-  }
-
 }
