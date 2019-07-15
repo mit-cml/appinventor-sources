@@ -153,4 +153,7 @@ public interface Component {
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
 
+  static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
+  static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
+
 }

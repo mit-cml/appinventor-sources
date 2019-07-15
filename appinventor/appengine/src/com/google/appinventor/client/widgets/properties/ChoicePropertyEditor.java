@@ -100,7 +100,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
 
   /**
    * Creates a new instance of the property editor with choice names.
-   * Each choice name is treated as both the captain and the value of a choice.
+   * Each choice name is treated as both the caption and the value of a choice.
    *
    * @param choiceNames  array of choice names to choose from
    */
