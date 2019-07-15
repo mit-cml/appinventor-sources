@@ -28,7 +28,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
     private YailList columns;
     private YailList columnNames; // Elements of the first column
 
-    private Thread readThread;
+    private Thread readThread; // Async thread for parsing CSV
 
     /**
      * Creates a new CSVFile component.
@@ -194,22 +194,38 @@ public class CSVFile extends AndroidNonvisibleComponent {
         parseCSVFromSource(sourceFile);
     }
 
+    /**
+     * Waits until CSV Parsing is done by blocking the calling thread.
+     *
+     * The method should be called asynchronously to prevent freezing of
+     * the main thread.
+     */
     public void waitUntilReadingDone() {
+        // If an instance of a readThread was created prior, and it is
+        // no longer alive, that means that the parsing has been processed.
         if (readThread != null && !readThread.isAlive()) {
             return;
         }
 
+        // Check whether the screen is not yet initialized.
+        // This case needs extra handling for Chart refreshing to work
+        // properly when importing small CSV files. Otherwise, undefined
+        // behaviour is caused due to the Charts not being initialized.
         if (!form.isScreenInitialized()) {
+            // Create a Countdown Latch, which is to be released when
+            // the Screen is initialized.
             final CountDownLatch initializeLatch = new CountDownLatch(1);
 
             form.registerForOnInitialize(new OnInitializeListener() {
                 @Override
                 public void onInitialize() {
+                    // Upon initializing, release the latch
                     initializeLatch.countDown();
                 }
             });
 
             try {
+                // Wait until screen initialized (latch released)
                 initializeLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -217,6 +233,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
         }
 
         try {
+            // Wait until reading is done
             readThread.join();
         } catch (Exception e) {
             e.printStackTrace();

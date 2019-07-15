@@ -151,12 +151,15 @@ public abstract class ChartDataBase implements Component {
         // Construct a YailList of columns from the specified parameters
         final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
-        // Import the data from the CSV file with the specified columns
+        // Import the data from the CSV file with the specified columns asynchronously
         AsynchUtil.runAsynchronously(new Runnable() {
             @Override
             public void run() {
+                // Import from CSV file with the specified parameters
                 chartDataModel.importFromCSV(csvFile, columns);
 
+                // Update the UI after importing (must be done on UI
+                // thread to avoid exceptions)
                 container.$context().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

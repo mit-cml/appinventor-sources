@@ -102,10 +102,14 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     /**
      * Imports data from the CSVFile from the specified list of columns.
      *
+     * The method calls are expected to be asynchronous, and thus the
+     * method is synchronized to solve concurrency issues.
+     *
      * @param dataFile  CSVFile to import data from
      * @param columns  Columns to use for data importing
      */
     public synchronized void importFromCSV(CSVFile dataFile, YailList columns) {
+        // Block the thread until CSV parsing is done
         dataFile.waitUntilReadingDone();
 
         // Get the size of a row (expected fixed width rows)

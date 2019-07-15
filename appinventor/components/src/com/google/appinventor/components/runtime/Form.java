@@ -2650,6 +2650,10 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  /**
+   * Returns the status of the screen's initialization.
+   * @return  true if screen is initialized
+   */
   public boolean isScreenInitialized() {
     return screenInitialized;
   }
