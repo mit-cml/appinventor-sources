@@ -50,6 +50,10 @@ public interface ProjectServiceAsync {
    * @see ProjectService#deleteProject(long)
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
+  /**
+   * @see ProjectService#moveToTrashProject(long)
+   */
+  void moveToTrashProject(long projectId, AsyncCallback<Void> callback);
 
    /**
    * @see ProjectService#setGalleryid

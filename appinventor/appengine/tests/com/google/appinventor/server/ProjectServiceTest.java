@@ -250,6 +250,7 @@ public class ProjectServiceTest {
     user1Projects = projectServiceImpl.getProjects();
     assertTrue(user1Projects.length == 0);
     PowerMock.verifyAll();
+
   }
 
   @Test

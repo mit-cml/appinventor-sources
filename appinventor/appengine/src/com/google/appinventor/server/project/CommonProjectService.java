@@ -82,6 +82,16 @@ public abstract class CommonProjectService {
   }
 
   /**
+   * Moves the project to trash
+   *
+   * @param userId the user id
+   * @param projectId  project ID as received by
+   */
+  public void moveToTrashProject(String userId, long projectId) {
+    storageIo.moveToTrashProject(userId, projectId);
+  }
+
+  /**
    * Sets the project's gallery id.
    *
    * @param userId the user id

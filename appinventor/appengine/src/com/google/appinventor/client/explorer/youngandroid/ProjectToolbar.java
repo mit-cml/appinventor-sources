@@ -14,6 +14,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -165,14 +166,6 @@ public class ProjectToolbar extends Toolbar {
 
       final long projectId = project.getProjectId();
 
-//      Ode ode = Ode.getInstance();
-//      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-//      ode.getEditorManager().closeProjectEditor(projectId);
-//      if (isCurrentProject) {
-//        // If we're deleting the project that is currently open in the Designer we
-//        // need to clear the ViewerBox first.
-//        // ViewerBox.getViewerBox().clear();
-//      }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
       }
@@ -181,7 +174,8 @@ public class ProjectToolbar extends Toolbar {
     }
 
     private void doMoveProjectToTrash(final long projectId) {
-      Ode.getInstance().getProjectService().deleteProject(projectId,
+      OdeLog.log("Inside project toolbar class move to trash" + projectId);
+      Ode.getInstance().getProjectService().moveToTrashProject(projectId,
               new OdeAsyncCallback<Void>(
                       // failure message
                       MESSAGES.deleteProjectError()) {
