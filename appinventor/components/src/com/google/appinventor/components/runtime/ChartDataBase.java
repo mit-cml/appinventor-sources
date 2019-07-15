@@ -139,6 +139,8 @@ public abstract class ChartDataBase implements Component {
     /**
      * Imports data from a CSV file component, with the specified column names.
      *
+     * TODO: Support multi-dimension data components
+     *
      * @param csvFile  CSV File component to import form
      * @param xValueColumn  x-value column name
      * @param yValueColumn  y-value column name
@@ -206,12 +208,9 @@ public abstract class ChartDataBase implements Component {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
-
-        // The method is called on the CSVFile to do race condition checking.
-        // Since CSVFile reading is async, we cannot directly invoke the
-        // ChartModel's readFromCSV method.
-        //dataSource.importDataComponent(this, csvColumns);
-        ImportFromCSV(dataSource, csvColumns.getString(0), csvColumns.getString(1));
+        ImportFromCSV(dataSource,
+                csvColumns.getString(0), // X column
+                csvColumns.getString(1)); // Y column
     }
 
     /**
