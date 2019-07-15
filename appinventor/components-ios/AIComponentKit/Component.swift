@@ -40,6 +40,10 @@ public enum Color: UInt32 {
     case white = 0xFFFFFFFF
     case yellow = 0xFFFFFF00
     case `default` = 0x00000000
+  
+  public var int32: Int32 {
+    return Int32(bitPattern: self.rawValue)
+  }
 }
 
 public enum DefaultValueColor: String {

@@ -135,6 +135,7 @@
 		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
+		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
 		CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */; };
 		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
@@ -333,6 +334,7 @@
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
+		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
 		CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Matches+isNumber.swift"; sourceTree = "<group>"; };
 		CB8539242075549A009E9030 /* ClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockTests.swift; sourceTree = "<group>"; };
 		CB9660841F69BC8C009746C3 /* TinyWebDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TinyWebDB.swift; sourceTree = "<group>"; };
@@ -531,6 +533,7 @@
 				DE0FFBDA20C5C1610049A748 /* PickerBase.swift */,
 				DE0FFBDC20C5D4C20049A748 /* DateTimePickerBase.swift */,
 				DE0FFBDE20C5E9440049A748 /* Checkbox.swift */,
+				C41392912280708000DBA8C6 /* Switch.swift */,
 			);
 			name = ui;
 			sourceTree = "<group>";
@@ -1168,6 +1171,7 @@
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				DECA138720D85D8F001C6273 /* Circle.swift in Sources */,
 				06E59EAA1D92C7E800C42804 /* NetworkUtils.m in Sources */,
+				C41392922280708000DBA8C6 /* Switch.swift in Sources */,
 				DE67C49D1FCE5A8A004F0D35 /* WebViewer.swift in Sources */,
 				DE55C2E720EEA89A005ED8CB /* GeoJSONUtil.swift in Sources */,
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
