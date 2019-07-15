@@ -105,7 +105,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param dataFile  CSVFile to import data from
      * @param columns  Columns to use for data importing
      */
-    public void importFromCSV(CSVFile dataFile, YailList columns) {
+    public synchronized void importFromCSV(CSVFile dataFile, YailList columns) {
+        dataFile.waitUntilReadingDone();
+
         // Get the size of a row (expected fixed width rows)
         int rowSize = dataFile.Rows().size();
 

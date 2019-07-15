@@ -5,13 +5,12 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.CsvUtil;
-import com.google.appinventor.components.runtime.util.FileUtil;
-import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import android.Manifest;
 
@@ -23,18 +22,13 @@ import android.Manifest;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class CSVFile extends AndroidNonvisibleComponent {
-    private String sourceFile = "";
+    private String sourceFile;
 
     private YailList rows;
     private YailList columns;
     private YailList columnNames; // Elements of the first column
 
-    private boolean readingDone = false; // Flag to indicate whether the async reading has finished
-
-    // Queued Chart Data components to be loaded by the CSV.
-    // The same index is used for both the component itself and the columns.
-    private ArrayList<ChartDataBase> dataComponents;
-    private ArrayList<YailList> dataComponentColumns;
+    private Thread readThread;
 
     /**
      * Creates a new CSVFile component.
@@ -46,8 +40,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
         rows = new YailList();
         columns = new YailList();
-        dataComponents = new ArrayList<ChartDataBase>();
-        dataComponentColumns = new ArrayList<YailList>();
     }
 
     // Reads from stored file. To be integrated
@@ -94,12 +86,14 @@ public class CSVFile extends AndroidNonvisibleComponent {
                         // Open asset file
                         final InputStream inputStream = form.openAsset(filename);
 
-                        AsynchUtil.runAsynchronously(new Runnable() {
+                        readThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 readCSV(inputStream);
                             }
                         });
+
+                        readThread.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -116,7 +110,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
      * @param inputStream  InputStream to parse CSV from.
      */
     private void readCSV(InputStream inputStream) {
-        readingDone = false;
         try {
             // TODO: Taken form File.java. To be replaced to reduce redundancy.
             InputStreamReader input = new InputStreamReader(inputStream);
@@ -135,21 +128,6 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
             // Construct column lists from rows
             constructColumnsFromRows();
-
-            // Import the data to all the queued Data Components
-            for (int i = 0; i < dataComponents.size(); ++i) {
-                ChartDataBase dataComponent = dataComponents.get(i);
-                YailList columns = dataComponentColumns.get(i);
-
-                dataComponent.importFromCSVAsync(this, columns);
-            }
-
-            // Reset queued Data Components
-            dataComponents.clear();
-            dataComponentColumns.clear();
-
-            // Update reading status
-            readingDone = true;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -216,31 +194,32 @@ public class CSVFile extends AndroidNonvisibleComponent {
         parseCSVFromSource(sourceFile);
     }
 
-    /**
-     * Indicates whether asynchronous CSV parsing has finished.
-     *
-     * @return  true if asynchronous parsing of the CSV file has finished
-     */
-    public boolean isReadingDone() {
-        return readingDone;
-    }
+    public void waitUntilReadingDone() {
+        if (readThread != null && !readThread.isAlive()) {
+            return;
+        }
 
-    /**
-     * Imports the specified column data into a Chart Data component.
-     * If reading is not done, the importing is queued and processed
-     * after the reading has finished.
-     *
-     * @param dataComponent  Data component to import from
-     * @param columns  Columns to use for data importing
-     */
-    public void importDataComponent(ChartDataBase dataComponent, YailList columns) {
-        if (isReadingDone()) {
-            // Reading is done, data can be imported directly
-            dataComponent.importFromCSVAsync(this, columns);
-        } else {
-            // Queue data component for importing after the CSV file is parsed
-            dataComponents.add(dataComponent);
-            dataComponentColumns.add(columns);
+        if (!form.isScreenInitialized()) {
+            final CountDownLatch initializeLatch = new CountDownLatch(1);
+
+            form.registerForOnInitialize(new OnInitializeListener() {
+                @Override
+                public void onInitialize() {
+                    initializeLatch.countDown();
+                }
+            });
+
+            try {
+                initializeLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            readThread.join();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

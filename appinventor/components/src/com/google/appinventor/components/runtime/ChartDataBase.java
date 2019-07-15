@@ -147,12 +147,24 @@ public abstract class ChartDataBase implements Component {
             "X and Y value columns. Passing in empty text for any of the column parameters will result" +
             " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
             " 1, and so forth.")
-    public void ImportFromCSV(CSVFile csvFile, String xValueColumn, String yValueColumn) {
+    public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
         // Construct a YailList of columns from the specified parameters
-        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+        final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
         // Import the data from the CSV file with the specified columns
-        csvFile.importDataComponent(this, columns);
+        AsynchUtil.runAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.importFromCSV(csvFile, columns);
+
+                container.$context().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshChart();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -195,26 +207,8 @@ public abstract class ChartDataBase implements Component {
         // The method is called on the CSVFile to do race condition checking.
         // Since CSVFile reading is async, we cannot directly invoke the
         // ChartModel's readFromCSV method.
-        dataSource.importDataComponent(this, csvColumns);
-    }
-
-    /**
-     * Imports data from a CSVFile component. To be called asynchronously.
-     * @param csvFile  CSVFile to read data from
-     * @param columns  Columns to read from the CSV file.
-     */
-    public void importFromCSVAsync(final CSVFile csvFile, final YailList columns) {
-        // Since this method is invoked async, and refreshing should
-        // be called right after data importing (and on the UI thread),
-        // we run this on the UI thread itself to avoid exceptions and
-        // to ensure that the data is properly added.
-        container.$context().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                chartDataModel.importFromCSV(csvFile, columns);
-                refreshChart();
-            }
-        });
+        //dataSource.importDataComponent(this, csvColumns);
+        ImportFromCSV(dataSource, csvColumns.getString(0), csvColumns.getString(1));
     }
 
     /**

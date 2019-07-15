@@ -2649,4 +2649,8 @@ public class Form extends AppInventorCompatActivity
       return FileUtil.openFile(path);
     }
   }
+
+  public boolean isScreenInitialized() {
+    return screenInitialized;
+  }
 }
