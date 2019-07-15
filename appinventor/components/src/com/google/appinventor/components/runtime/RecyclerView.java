@@ -346,6 +346,8 @@ public final class RecyclerView extends AndroidViewComponent{
     picturePath+=path;
     imagePathList.add(path);
 
+    System.out.println(imagePathList.size());
+
 
 if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
     setAdapterr(strFirst,strSecond,imagePathList);
@@ -388,6 +390,8 @@ if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size(
       else{first[x]=str[i];}
     }
 */
+
+
 
   ArrayList<Drawable> third = new ArrayList<Drawable>();
   for(int i=0;i<strFirst.length;i++){    
