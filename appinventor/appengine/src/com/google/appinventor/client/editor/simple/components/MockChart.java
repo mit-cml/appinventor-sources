@@ -1,11 +1,9 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.Log;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
@@ -183,14 +181,22 @@ public final class MockChart extends MockContainer {
      *                  If the type differs, the method simply returns.
      */
     public void addCSVFile(MockNonVisibleComponent csvSource) {
+        // Check that the specified MockNonVisibleComponent is a CSVFile
         if (!csvSource.getType().equals("CSVFile")) {
             return;
         }
 
+        // Check whether the SourceFile property is present
         if (csvSource.properties.hasProperty("SourceFile")) {
+            // Get the SourceFile property
             String fileSource = csvSource.properties.getPropertyValue("SourceFile");
 
+            // Check that the SourceFile property is a valid file
+            if (fileSource == null || fileSource.equals("")) {
+                return;
+            }
 
+            // Read the media file
             long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
 
             Ode.getInstance().getProjectService().load(projectId, "assets/" + fileSource, new AsyncCallback<String>() {
@@ -201,21 +207,40 @@ public final class MockChart extends MockContainer {
 
                 @Override
                 public void onSuccess(String result) {
-                    MockChart.this.onSelectedChange(true); // otherwise the last imported component
-
-                    String[] columnNames = result.split("\n")[0].split(",");
-                    String XColumn = "";
-
-                    for (String column : columnNames) {
-                        MockCoordinateData data = new MockCoordinateData(editor);
-                        addComponent(data);
-                        data.addToChart(MockChart.this);
-                        data.changeProperty("CsvColumns", XColumn + "," + column);
-                        data.changeProperty("Label", column);
-                        data.changeProperty("Source", csvSource.getName());
-                    }
+                    // Instantiate all the data components from the result
+                    createDataComponentsFromCSV(csvSource.getName(), result);
                 }
             });
+        }
+    }
+
+    /**
+     * Creates Data components from the specified comma separated values,
+     * attaches them as children to the Chart and sets the Source property
+     * of each instantiated data component to the specified.
+     *
+     * @param source  Data source name
+     * @param csv  CSV values to parse
+     */
+    private void createDataComponentsFromCSV(String source, String csv) {
+        MockChart.this.onSelectedChange(true); // otherwise the last imported component
+
+        // TODO: Switch to CSVParser
+        String[] columnNames = csv.split("\n")[0].split(",");
+
+        String XColumn = ""; // Use default option for the XColumn
+
+        for (String column : columnNames) {
+            // Create a new MockCoordinateData component and attach it to the Chart
+            // TODO: More data component support
+            MockCoordinateData data = new MockCoordinateData(editor);
+            addComponent(data);
+            data.addToChart(MockChart.this);
+
+            // Change the properties of the instantiated data component
+            data.changeProperty("CsvColumns", XColumn + "," + column);
+            data.changeProperty("Label", column);
+            data.changeProperty("Source", source);
         }
     }
 
