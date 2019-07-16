@@ -208,14 +208,8 @@ public abstract class ChartDataBase implements Component {
                 // Import from CSV file with the specified parameters
                 chartDataModel.importFromCSV(csvFile, columns);
 
-                // Update the UI after importing (must be done on UI
-                // thread to avoid exceptions)
-                container.$context().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshChart();
-                    }
-                });
+                // Refresh the Chart after import
+                refreshChart();
             }
         });
     }
@@ -268,7 +262,13 @@ public abstract class ChartDataBase implements Component {
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        container.refresh();
+        // To avoid exceptions, refresh the Chart on the UI thread.
+        container.$context().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                container.refresh();
+            }
+        });
     }
 
     @Override
