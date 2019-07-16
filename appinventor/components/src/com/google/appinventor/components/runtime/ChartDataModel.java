@@ -102,16 +102,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     /**
      * Imports data from the CSVFile from the specified list of columns.
      *
-     * The method calls are expected to be asynchronous, and thus the
-     * method is synchronized to solve concurrency issues.
-     *
      * @param dataFile  CSVFile to import data from
      * @param columns  Columns to use for data importing
      */
-    public synchronized void importFromCSV(CSVFile dataFile, YailList columns) {
-        // Block the thread until CSV parsing is done
-        dataFile.waitUntilReadingDone();
-
+    public void importFromCSV(CSVFile dataFile, YailList columns) {
         // Get the size of a row (expected fixed width rows)
         int rowSize = dataFile.Rows().size();
 
@@ -128,14 +122,32 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             }
         }
 
+        // Import from the provided CSV columns
+        importFromCSVColumns(dataColumns, rowSize);
+    }
+
+    /**
+     * Imports data from the specified set of CSV column data and
+     * the specified number of rows.
+     *
+     * The first element is skipped, since it is assumed that it
+     * is the column name.
+     *
+     * The method calls are expected to be asynchronous, and thus the
+     * method is synchronized to solve concurrency issues.
+     *
+     * @param columns  List of fixed-width columns, each of which contain data
+     * @param rows  Number of rows in the CSV (number of elements in the columns)
+     */
+    private synchronized void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
         List<YailList> tuples = new ArrayList<YailList>();
 
         // Generate tuples from the columns
-        for (int i = 1; i < rowSize; ++i) {
+        for (int i = 1; i < rows; ++i) {
             ArrayList<String> tupleElements = new ArrayList<String>();
 
             // Add entries to the tuple from all i-th values of the data columns.
-            for (YailList column : dataColumns) {
+            for (YailList column : columns) {
                 tupleElements.add(column.getString(i));
             }
 
@@ -147,7 +159,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
         // Use the generated tuple list in the importFromList method to
         // import the data.
-       importFromList(YailList.makeList(tuples));
+        importFromList(YailList.makeList(tuples));
     }
 
     /**
