@@ -199,6 +199,8 @@ public class CSVFile extends AndroidNonvisibleComponent {
      *
      * The method should be called asynchronously to prevent freezing of
      * the main thread.
+     *
+     * TODO: This could return a value instead to prevent some async ordering issues.
      */
     public void waitUntilReadingDone() {
         try {
