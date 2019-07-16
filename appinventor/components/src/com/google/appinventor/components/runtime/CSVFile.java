@@ -9,8 +9,7 @@ import com.google.appinventor.components.runtime.util.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import android.Manifest;
 
@@ -28,7 +27,8 @@ public class CSVFile extends AndroidNonvisibleComponent {
     private YailList columns;
     private YailList columnNames; // Elements of the first column
 
-    private Thread readThread; // Async thread for parsing CSV
+    // private Thread readThread; // Async thread for parsing CSV
+    private ExecutorService threadRunner;
 
     /**
      * Creates a new CSVFile component.
@@ -40,6 +40,8 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
         rows = new YailList();
         columns = new YailList();
+
+        threadRunner = Executors.newSingleThreadExecutor();
     }
 
     // Reads from stored file. To be integrated
@@ -86,14 +88,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
                         // Open asset file
                         final InputStream inputStream = form.openAsset(filename);
 
-                        readThread = new Thread(new Runnable() {
+                        threadRunner.execute(new Runnable() {
                             @Override
                             public void run() {
                                 readCSV(inputStream);
                             }
                         });
-
-                        readThread.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -201,41 +201,10 @@ public class CSVFile extends AndroidNonvisibleComponent {
      * the main thread.
      */
     public void waitUntilReadingDone() {
-        // If an instance of a readThread was created prior, and it is
-        // no longer alive, that means that the parsing has been processed.
-        if (readThread != null && !readThread.isAlive()) {
-            return;
-        }
-
-        // Check whether the screen is not yet initialized.
-        // This case needs extra handling for Chart refreshing to work
-        // properly when importing small CSV files. Otherwise, undefined
-        // behaviour is caused due to the Charts not being initialized.
-        if (!form.isScreenInitialized()) {
-            // Create a Countdown Latch, which is to be released when
-            // the Screen is initialized.
-            final CountDownLatch initializeLatch = new CountDownLatch(1);
-
-            form.registerForOnInitialize(new OnInitializeListener() {
-                @Override
-                public void onInitialize() {
-                    // Upon initializing, release the latch
-                    initializeLatch.countDown();
-                }
-            });
-
-            try {
-                // Wait until screen initialized (latch released)
-                initializeLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         try {
-            // Wait until reading is done
-            readThread.join();
-        } catch (Exception e) {
+            threadRunner.shutdown();
+            threadRunner.awaitTermination(120, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

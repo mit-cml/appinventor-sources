@@ -9,9 +9,11 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.Arrays;
+import java.util.concurrent.*;
 
 @SimpleObject
 public abstract class ChartDataBase implements Component {
@@ -23,6 +25,9 @@ public abstract class ChartDataBase implements Component {
 
     private YailList csvColumns;
     private CSVFile dataSource;
+    private ExecutorService threadRunner;
+
+    private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
     /**
      * Creates a new Chart Data component.
@@ -31,6 +36,23 @@ public abstract class ChartDataBase implements Component {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
         initChartData();
+
+        threadRunner = Executors.newSingleThreadExecutor();
+
+        // Some properties need to be delayed in
+        chartContainer.$form().registerForOnInitialize(new OnInitializeListener() {
+            @Override
+            public void onInitialize() {
+                initialized = true;
+
+                // Data Source should only be imported after the Screen
+                // has been initialized, otherwise some exceptions may occur
+                // on small data sets with regards to Chart refreshing.
+                if (dataSource != null) {
+                    Source(dataSource);
+                }
+            }
+        });
     }
 
     /**
@@ -66,6 +88,21 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public String Label() {
+        try {
+            label = (String) threadRunner.submit(new Callable<Object>() {
+               @Override
+               public String call() {
+                   return chartDataModel.getDataset().getEntryCount() + " entries";
+               }
+            }).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
         return label;
     }
 
@@ -154,7 +191,7 @@ public abstract class ChartDataBase implements Component {
         final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
         // Import the data from the CSV file with the specified columns asynchronously
-        AsynchUtil.runAsynchronously(new Runnable() {
+        threadRunner.execute(new Runnable() {
             @Override
             public void run() {
                 // Import from CSV file with the specified parameters
@@ -208,9 +245,12 @@ public abstract class ChartDataBase implements Component {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
-        ImportFromCSV(dataSource,
-                csvColumns.getString(0), // X column
-                csvColumns.getString(1)); // Y column
+
+        if (initialized) {
+            ImportFromCSV(dataSource,
+                    csvColumns.getString(0), // X column
+                    csvColumns.getString(1)); // Y column
+        }
     }
 
     /**

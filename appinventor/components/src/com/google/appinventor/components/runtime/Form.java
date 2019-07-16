@@ -2649,12 +2649,4 @@ public class Form extends AppInventorCompatActivity
       return FileUtil.openFile(path);
     }
   }
-
-  /**
-   * Returns the status of the screen's initialization.
-   * @return  true if screen is initialized
-   */
-  public boolean isScreenInitialized() {
-    return screenInitialized;
-  }
 }
