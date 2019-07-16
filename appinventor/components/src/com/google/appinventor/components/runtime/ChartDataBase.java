@@ -168,8 +168,16 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Clears all of the data.")
     public void Clear() {
-        chartDataModel.clearEntries();
-        refreshChart();
+        // Run clear entries asynchronously in the queued Thread runner.
+        // Queuing ensures that values are cleared only after all the
+        // async reading is processed.
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.clearEntries();
+                refreshChart();
+            }
+        });
     }
 
 
@@ -194,6 +202,9 @@ public abstract class ChartDataBase implements Component {
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
+                // Block the thread until CSV parsing is done
+                csvFile.waitUntilReadingDone();
+
                 // Import from CSV file with the specified parameters
                 chartDataModel.importFromCSV(csvFile, columns);
 

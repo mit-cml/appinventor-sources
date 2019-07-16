@@ -202,9 +202,19 @@ public class CSVFile extends AndroidNonvisibleComponent {
      */
     public void waitUntilReadingDone() {
         try {
-            threadRunner.shutdown();
-            threadRunner.awaitTermination(120, TimeUnit.SECONDS);
+            // Submit an empty runnable, and wait for it
+            // to finish, which effectively waits for the
+            // tasks in the Single Threaded Runner queue
+            // to finish.
+            threadRunner.submit(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            }).get();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }
