@@ -116,7 +116,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             // Get the column element
             YailList column = (YailList)columns.getObject(i);
 
-            if (column.isEmpty()) { // Column is empty, populate it with default values
+            if (column.size() == 0) { // Column is empty, populate it with default values
                 dataColumns.add(getDefaultValues(rows));
             } else { // Add the specified CSV column to the data columns to use for importing
                 dataColumns.add(column);
