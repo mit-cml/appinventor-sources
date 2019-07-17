@@ -100,30 +100,31 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from the CSVFile from the specified list of columns.
+     * Imports data from the specified list of columns with
+     * the specified row size.
      *
-     * @param dataFile  CSVFile to import data from
-     * @param columns  Columns to use for data importing
+     * The row size is used to create a column with default
+     * values in case of an absence of data.
+     *
+     * @param columns  columns to import data from
+     * @param rows  number of rows
      */
-    public void importFromCSV(CSVFile dataFile, YailList columns) {
-        // Get the size of a row (expected fixed width rows)
-        int rowSize = dataFile.Rows().size();
-
+    public void importFromCSV(YailList columns, int rows) {
         ArrayList<YailList> dataColumns = new ArrayList<YailList>();
 
         for (int i = 0; i < columns.size(); ++i) {
-            // Get the name of the current column
-            String columnName = columns.getString(i);
+            // Get the column element
+            YailList column = (YailList)columns.getObject(i);
 
-            if (columnName == null || columnName.equals("")) { // No columnName specified, use default values
-                dataColumns.add(getDefaultValues(rowSize));
-            } else { // Add the specified column from the CSV file to the columns
-                dataColumns.add(dataFile.getColumn(columnName));
+            if (column.isEmpty()) { // Column is empty, populate it with default values
+                dataColumns.add(getDefaultValues(rows));
+            } else { // Add the specified CSV column to the data columns to use for importing
+                dataColumns.add(column);
             }
         }
 
-        // Import from the provided CSV columns
-        importFromCSVColumns(dataColumns, rowSize);
+        // Import from the finalized CSV columns.
+        importFromCSVColumns(dataColumns, rows);
     }
 
     /**
@@ -134,7 +135,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * is the column name.
      *
      * The method calls are expected to be asynchronous, and thus the
-     * method is synchronized to solve concurrency issues.
+     * method is synchronized to solve concurrency issues. The method
+     * directly handles accessing the data set, so only one thread
+     * should be able to access it at a time.
      *
      * @param columns  List of fixed-width columns, each of which contain data
      * @param rows  Number of rows in the CSV (number of elements in the columns)

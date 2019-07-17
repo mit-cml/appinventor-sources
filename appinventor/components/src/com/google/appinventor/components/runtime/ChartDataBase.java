@@ -185,26 +185,46 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         // Construct a YailList of columns from the specified parameters
         final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
-        // Import the data from the CSV file with the specified columns asynchronously
-        threadRunner.execute(new Runnable() {
+        /* The outermost thread is run to fetch the csvFile columns,
+         * which, on it's own, is a blocking operation.
+         *
+         * Two threads are needed here because a single threaded
+         * executor is used for the actual data importing, therefore
+         * there might be cases where the single threaded queue
+         * cannot catch up with the current state of the CSVFile.
+         * In order to avoid this issue, first an async thread
+         * is ran, and then the data importing is queued.
+        */
+        AsynchUtil.runAsynchronously(new Runnable() {
             @Override
             public void run() {
-                // Block the thread until CSV parsing is done
-                csvFile.waitUntilReadingDone();
+                // Get the columns from the CSVFile. The method
+                // is blocking, so it will first wait for the
+                // reading to be processed.
+                // The expected format is a (rows, columns) List.
+                YailList csvResult = csvFile.getColumns(columns);
 
-                // Import from CSV file with the specified parameters
-                chartDataModel.importFromCSV(csvFile, columns);
+                // Get the contents of the result
+                final int rowSize = (Integer)csvResult.getObject(0);
+                final YailList csvColumns = (YailList)csvResult.getObject(1);
 
-                // Refresh the Chart after import
-                refreshChart();
+                // Import the data from the CSV file with the specified columns asynchronously
+                threadRunner.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Import from CSV file with the specified parameters
+                        chartDataModel.importFromCSV(csvColumns, rowSize);
+
+                        // Refresh the Chart after import
+                        refreshChart();
+                    }
+                });
             }
         });
     }
 
     /**
      * Sets the CSV columns to parse data from the CSV source.
-     *
-     * TODO: Hide property in case the Source is not a CSVFile.
      *
      * @param columns  CSV representation of the column names (e.g. A,B will
      *                 use A for the x values, and B for the y values)

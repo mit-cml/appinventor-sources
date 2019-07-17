@@ -227,23 +227,44 @@ public class CSVFile extends AndroidNonvisibleComponent {
     }
 
     /**
-     * Waits until CSV Parsing is done by blocking the calling thread.
+     * Returns a list containing the row count of the CSV, and the
+     * requested columns.
+     *
+     * If reading is in progress, the method blocks until reading
+     * is done before returning the result.
      *
      * The method should be called asynchronously to prevent freezing of
      * the main thread.
      *
-     * TODO: This could return a value instead to prevent some async ordering issues.
+     * The row size is contained in the method to create default values for the
+     * CharDataModel in case of an absence of columns.
+     *
+     * @param columns  Columns to return (list of Strings representing column names)
+     * @return  List containing 2 elements - the row count and the list of columns
      */
-    public void waitUntilReadingDone() {
+    public YailList getColumns(final YailList columns) {
         try {
-            // Submit an empty runnable, and wait for it
-            // to finish, which effectively waits for the
-            // tasks in the Single Threaded Runner queue
-            // to finish.
-            threadRunner.submit(new Runnable() {
+            // Submit a callable which constructs the results.
+            // The callable is only executed after all the previous
+            // tasks have been completed.
+            return threadRunner.submit(new Callable<YailList>() {
                 @Override
-                public void run() {
+                public YailList call() {
+                    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
 
+                    // Iterate over the specified column names
+                    for (int i = 0; i < columns.size(); ++i) {
+                        // Get and add the specified column to the resulting columns list
+                        String columnName = columns.getString(i);
+                        YailList column = getColumn(columnName);
+                        resultingColumns.add(column);
+                    }
+
+                    // Convert result to a YailList
+                    YailList csvColumns = YailList.makeList(resultingColumns);
+
+                    // Final result contains the row size as the first element
+                    return YailList.makeList(Arrays.asList(rows.size(), csvColumns));
                 }
             }).get();
         } catch (InterruptedException e) {
@@ -251,6 +272,9 @@ public class CSVFile extends AndroidNonvisibleComponent {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
+        // Unexpected behavior: return null
+        return null;
     }
 
     /**
@@ -267,7 +291,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
         // Column not found
         if (index < 0) {
-            return null;
+            return new YailList();
         }
 
         return (YailList)columns.getObject(index);
