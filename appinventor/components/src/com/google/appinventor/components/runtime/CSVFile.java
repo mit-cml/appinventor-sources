@@ -143,7 +143,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
             " to the CSV file's content.")
     public YailList Rows() {
-        return rows;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return rows;
+            }
+        });
     }
 
 
@@ -155,7 +160,12 @@ public class CSVFile extends AndroidNonvisibleComponent {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
             " to the CSV file's content.")
     public YailList Columns() {
-        return columns;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return columns;
+            }
+        });
     }
 
     /**
@@ -168,7 +178,29 @@ public class CSVFile extends AndroidNonvisibleComponent {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
             " of the CSV contents.")
     public YailList ColumnNames() {
-        return columnNames;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return columnNames;
+            }
+        });
+    }
+
+    private YailList getCSVPropertyHelper(Callable<YailList> propertyCallable) {
+        // Since reading might be in progress, the task of
+        // getting a CSVFile property should be queued so that the
+        // thread is blocked until the reading is finished.
+        try {
+            return  threadRunner
+                    .submit(propertyCallable) // Run the callable async (and queued)
+                    .get(); // Get the property (blocks thread until previous threads finish)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return new YailList(); // Return empty list (default option)
     }
 
     /**
