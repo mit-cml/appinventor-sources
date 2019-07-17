@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component {
+public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
@@ -39,20 +39,7 @@ public abstract class ChartDataBase implements Component {
 
         threadRunner = Executors.newSingleThreadExecutor();
 
-        // Some properties need to be delayed in
-        chartContainer.$form().registerForOnInitialize(new OnInitializeListener() {
-            @Override
-            public void onInitialize() {
-                initialized = true;
-
-                // Data Source should only be imported after the Screen
-                // has been initialized, otherwise some exceptions may occur
-                // on small data sets with regards to Chart refreshing.
-                if (dataSource != null) {
-                    Source(dataSource);
-                }
-            }
-        });
+        container.$form().registerForOnInitialize(this);
     }
 
     /**
@@ -275,4 +262,25 @@ public abstract class ChartDataBase implements Component {
     public HandlesEventDispatching getDispatchDelegate() {
         return null;
     }
+
+    /**
+     * Links the Data Source component with the Data component, if
+     * the Source component has been defined earlier.
+     *
+     * The reason this is done is because otherwise exceptions
+     * are thrown if the Data is being imported before the component
+     * is fully initialized.
+     */
+    @Override
+    public void onInitialize() {
+        initialized = true;
+
+        // Data Source should only be imported after the Screen
+        // has been initialized, otherwise some exceptions may occur
+        // on small data sets with regards to Chart refreshing.
+        if (dataSource != null) {
+            Source(dataSource);
+        }
+    }
+
 }
