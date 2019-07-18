@@ -13,8 +13,8 @@ import static org.junit.Assert.*;
  */
 public abstract class ChartDataBaseTest<T extends ChartDataBase> {
     protected T chartData;
-    protected ChartBase chart;
-    protected ChartModel model;
+    protected Chart chart;
+    protected ChartDataModel model;
 
     /**
      * Helper method to set up mock Chart and Model object
@@ -25,8 +25,8 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
         // Nice mocks used here because most of the method
         // calls done via setup should not be accounted for
         // in the tests.
-        chart = EasyMock.createNiceMock(ChartBase.class);
-        model = EasyMock.createNiceMock(ChartModel.class);
+        chart = EasyMock.createNiceMock(Chart.class);
+        model = EasyMock.createNiceMock(ChartDataModel.class);
 
         // Make the Chart return the mccked Model object instance
         expect(chart.createChartModel()).andReturn(model);
@@ -60,7 +60,7 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
         setupChartComponents();
 
         assertEquals(chart, chartData.container);
-        assertEquals(model, chartData.chartModel);
+        assertEquals(model, chartData.chartDataModel);
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class ChartDataBaseTest<T extends ChartDataBase> {
 
     /**
      * Tests that the ChartData's Elements setter
-     * calls the right method of the ChartModel object.
+     * calls the right method of the ChartDataModel object.
      */
     @Test
     public void testElementsFromPairs() {

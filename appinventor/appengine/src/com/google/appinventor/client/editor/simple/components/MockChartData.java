@@ -1,22 +1,22 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
-import org.pepstock.charba.client.data.Dataset;
-
-import java.util.List;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
 
-    // Temporary placeholder for the Chart Data image
-    private InlineHTML labelWidget;
+    // Represents the Chart data icon
+    private Image iconWidget;
 
-    protected MockChartModel chartModel;
     protected MockChart chart;
+    protected MockChartDataModel chartDataModel;
 
     private String currentElements = "";
 
@@ -30,10 +30,11 @@ public abstract class MockChartData extends MockVisibleComponent {
     MockChartData(SimpleEditor editor, String type, ImageResource icon) {
         super(editor, type, icon);
 
-        labelWidget = new InlineHTML();
-        labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
-        labelWidget.setText("LINE CHART DATA");
-        initComponent(labelWidget);
+        iconWidget = new Image(icon);
+        iconWidget.setHeight("100");
+        iconWidget.setWidth("60");
+
+        initComponent(iconWidget);
     }
 
     /**
@@ -41,14 +42,14 @@ public abstract class MockChartData extends MockVisibleComponent {
      * @param chart  Chart Mock component to add the data to
      */
     public void addToChart(MockChart chart) {
-        // Set widget to invisible
-        labelWidget.setVisible(false);
-        labelWidget.setWidth("0");
-        labelWidget.setHeight("0");
+        // Hide widget (MockChartData component handled by Chart)
+        iconWidget.setVisible(false);
+        iconWidget.setHeight("0");
+        iconWidget.setWidth("0");
 
         // Set references for Chart view and Chart model
         this.chart = chart;
-        this.chartModel = chart.createChartModel();
+        this.chartDataModel = chart.createDataModel();
 
         // Set the properties to the Data Series
         setDataSeriesProperties();
@@ -77,7 +78,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     @Override
     public void onRemoved() {
         super.onRemoved();
-        chartModel.removeDataSeriesFromChart();
+        chartDataModel.removeDataSeriesFromChart();
         refreshChart();
     }
 
@@ -89,7 +90,7 @@ public abstract class MockChartData extends MockVisibleComponent {
     private void setElementsFromPairsProperty(String text){
         currentElements = text;
 
-        chartModel.setElements(currentElements);
+        chartDataModel.setElements(currentElements);
     }
 
     @Override
@@ -98,15 +99,15 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         // No Chart Model exists (Data not yet added to Chart), simply
         // return from the method without processing property adding.
-        if (chartModel == null) {
+        if (chartDataModel == null) {
             return;
         }
 
         if (propertyName.equals(PROPERTY_COLOR)) {
-            chartModel.changeColor(newValue);
+            chartDataModel.changeColor(newValue);
             refreshChart();
         } else if (propertyName.equals(PROPERTY_LABEL)) {
-            chartModel.changeLabel(newValue);
+            chartDataModel.changeLabel(newValue);
             refreshChart();
         } else if (propertyName.equals(PROPERTY_PAIRS)) {
             setElementsFromPairsProperty(newValue);
@@ -118,7 +119,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      * Refreshes the Chart view.
      */
     protected void refreshChart() {
-        chart.chartWidget.update();
+        chart.refreshChart();
     }
 
     /**
@@ -130,7 +131,7 @@ public abstract class MockChartData extends MockVisibleComponent {
      */
     protected void setDataSeriesProperties() {
         setElementsFromPairsProperty(getPropertyValue(PROPERTY_PAIRS));
-        this.chartModel.changeColor(getPropertyValue(PROPERTY_COLOR));
-        this.chartModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
+        this.chartDataModel.changeColor(getPropertyValue(PROPERTY_COLOR));
+        this.chartDataModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
     }
 }

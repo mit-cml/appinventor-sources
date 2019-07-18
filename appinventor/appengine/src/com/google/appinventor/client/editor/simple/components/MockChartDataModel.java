@@ -6,7 +6,7 @@ import org.pepstock.charba.client.data.Dataset;
 
 import java.util.List;
 
-public abstract class MockChartModel<D extends Dataset> {
+public abstract class MockChartDataModel<D extends Dataset> {
     protected D dataSeries;
     protected Data chartData;
 
@@ -16,7 +16,7 @@ public abstract class MockChartModel<D extends Dataset> {
      *
      * @param chartData  Chart Data object to link to
      */
-    protected MockChartModel(Data chartData) {
+    protected MockChartDataModel(Data chartData) {
         this.chartData = chartData;
     }
 

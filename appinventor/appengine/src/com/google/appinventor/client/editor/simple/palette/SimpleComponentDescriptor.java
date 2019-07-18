@@ -50,7 +50,7 @@ import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-import com.google.appinventor.client.editor.simple.components.MockLineChart;
+import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockCoordinateData;
 
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -458,8 +458,8 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
-    } else if (name.equals(MockLineChart.TYPE)) {
-      return new MockLineChart(editor);
+    } else if (name.equals(MockChart.TYPE)) {
+      return new MockChart(editor);
     } else if (name.equals(MockCoordinateData.TYPE)) {
       return new MockCoordinateData(editor);
     } else {

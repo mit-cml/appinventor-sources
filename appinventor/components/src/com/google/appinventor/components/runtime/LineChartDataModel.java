@@ -7,13 +7,13 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 
-public class LineChartModel extends ChartModel<LineDataSet, LineData> {
+public class LineChartDataModel extends ChartDataModel<LineDataSet, LineData> {
     /**
-     * Initializes a new LineChartModel object instance.
+     * Initializes a new LineChartDataModel object instance.
      *
      * @param data  Line Chart Data object instance
      */
-    public LineChartModel(LineData data) {
+    public LineChartDataModel(LineData data) {
         super(data);
         dataset = new LineDataSet(new ArrayList<Entry>(), "");
         dataset.setDrawCircleHole(false);

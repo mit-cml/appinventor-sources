@@ -2,13 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.google.appinventor.components.runtime.LineChartModel;
-import com.google.appinventor.components.runtime.RobolectricTestBase;
-import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailList;
-import junit.framework.Assert;
-import org.easymock.EasyMock;
-import org.easymock.IExpectationSetters;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,29 +10,24 @@ import java.util.*;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.easymock.EasyMock.expect;
-import static org.powermock.api.easymock.PowerMock.replay;
 
 /**
  * Unit tests for the LineChartModel class.
  * Tests the integration with the MPAndroidChart library
  * classes by actually operating on the Data Series objects.
  */
-public class LineChartModelTest extends RobolectricTestBase {
+public class LineChartDataModelTest extends RobolectricTestBase {
     /*
      * TBD: abstract common properties (i.e. Label & Color)
      */
 
-
-    private LineChartModel model;
+    private LineChartDataModel model;
     private LineData data;
 
     @Before
     public void setup() {
         data = new LineData();
-        model = new LineChartModel(data);
+        model = new LineChartDataModel(data);
     }
 
     /**
