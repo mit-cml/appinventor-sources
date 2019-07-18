@@ -20,17 +20,13 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import android.Manifest;
-import android.app.Activity;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 
 /**
  * A Component for working with files and directories on the device.
@@ -247,7 +243,7 @@ public class File extends FileBase {
       @Override
       public void run() {
         try {
-          final String text = readFromInputString(fileInput);
+          final String text = readFromInputStream(fileInput);
 
           activity.runOnUiThread(new Runnable() {
             @Override

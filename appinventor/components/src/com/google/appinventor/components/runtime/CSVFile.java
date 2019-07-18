@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import android.os.Environment;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -10,8 +9,6 @@ import com.google.appinventor.components.runtime.util.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-
-import android.Manifest;
 
 @DesignerComponent(version = YaVersion.FILE_COMPONENT_VERSION,
         description = "To be updated",
@@ -248,7 +245,7 @@ public class CSVFile extends FileBase {
             public void run() {
                 try {
                     // Parse InputStream to String
-                    final String result = readFromInputString(inputStream);
+                    final String result = readFromInputStream(inputStream);
 
                     // Parse rows from the result
                     rows = CsvUtil.fromCsvTable(result);

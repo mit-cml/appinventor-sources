@@ -113,7 +113,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
      * @return  Contents of the file (as a String)
      * @throws IOException  when the system cannot read the file
      */
-    public String readFromInputString(InputStream fileInput) throws IOException {
+    public String readFromInputStream(InputStream fileInput) throws IOException {
         InputStreamReader input = new InputStreamReader(fileInput);
         StringWriter output = new StringWriter();
         char [] buffer = new char[BUFFER_LENGTH];
