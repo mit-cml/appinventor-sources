@@ -161,7 +161,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
                 return new LineChartView(container.$context());
             case 2:
                 // Area Chart
-                return new LineChartView(container.$context());
+                return new AreaChartView(container.$context());
             case 3:
                 // Bar Chart
                 return new LineChartView(container.$context());

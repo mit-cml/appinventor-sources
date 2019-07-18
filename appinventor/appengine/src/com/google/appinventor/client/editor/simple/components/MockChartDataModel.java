@@ -6,6 +6,14 @@ import org.pepstock.charba.client.data.Dataset;
 
 import java.util.List;
 
+/**
+ * Chart Data Model base class.
+ *
+ * The Data Model is responsible for handling data operations
+ * of a Chart, and represents the data of a single Data Series.
+ * Individual styling and options of a single Data Series is also
+ * a responsibility of the Data Model class.
+ */
 public abstract class MockChartDataModel<D extends Dataset> {
     protected D dataSeries;
     protected Data chartData;
