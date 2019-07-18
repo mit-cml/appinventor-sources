@@ -75,21 +75,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public String Label() {
-        try {
-            label = (String) threadRunner.submit(new Callable<Object>() {
-               @Override
-               public String call() {
-                   return chartDataModel.getDataset().getEntryCount() + " entries";
-               }
-            }).get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
-
         return label;
     }
 
