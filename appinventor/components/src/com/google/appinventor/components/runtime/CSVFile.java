@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import android.os.Environment;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -11,8 +10,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import android.Manifest;
-
 @DesignerComponent(version = YaVersion.FILE_COMPONENT_VERSION,
         description = "To be updated",
         category = ComponentCategory.STORAGE,
@@ -20,7 +17,7 @@ import android.Manifest;
         iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class CSVFile extends AndroidNonvisibleComponent {
+public class CSVFile extends FileBase {
     private String sourceFile;
 
     private YailList rows;
@@ -32,107 +29,15 @@ public class CSVFile extends AndroidNonvisibleComponent {
 
     /**
      * Creates a new CSVFile component.
-     *
-     * @param form the container that this component will be placed in
+     * @param container the Form that this component is contained in.
      */
-    public CSVFile(Form form) {
-        super(form);
+    public CSVFile(ComponentContainer container) {
+        super(container);
 
         rows = new YailList();
         columns = new YailList();
 
         threadRunner = Executors.newSingleThreadExecutor();
-    }
-
-    // Reads from stored file. To be integrated
-//    private void parseCSVFromSource(final String filename) {
-//        form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-//            @Override
-//            public void HandlePermissionResponse(String permission, boolean granted) {
-//                if (granted) {
-//                    try {
-//                        String path = Environment.getExternalStorageDirectory().getPath() + filename;;
-//
-//                        byte[] bytes = FileUtil.readFile(path);
-//                        String csvTable = new String(bytes);
-//
-//                        rows = CsvUtil.fromCsvTable(csvTable);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        rows = YailList.makeList(Collections.singletonList(e.getMessage()));
-//                    }
-//                } else {
-//                    form.dispatchPermissionDeniedEvent(CSVFile.this, "ReadFrom", permission);
-//                }
-//            }
-//        });
-//    }
-
-    /**
-     * Parses the CSV contents of the provided file.
-     *
-     * @param filename  name of the file. Single slash (/) indicates Android file,
-     *                  double slash (//) indicates media file.
-     */
-    private void parseCSVFromSource(final String filename) {
-        form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-            @Override
-            public void HandlePermissionResponse(String permission, boolean granted) {
-                if (granted) {
-                    try {
-                        // TODO: Establish path properly (like in File class)
-
-                        // Open asset file
-                        final InputStream inputStream = form.openAsset(filename);
-
-                        threadRunner.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                readCSV(inputStream);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    form.dispatchPermissionDeniedEvent(CSVFile.this, "ReadFrom", permission);
-                }
-            }
-        });
-    }
-
-    /**
-     * Parses the CSV contents of the provided InputStream.
-     *
-     * @param inputStream  InputStream to parse CSV from.
-     */
-    private void readCSV(InputStream inputStream) {
-        try {
-            // TODO: Taken form File.java. To be replaced to reduce redundancy.
-            InputStreamReader input = new InputStreamReader(inputStream);
-            StringWriter output = new StringWriter();
-            char [] buffer = new char[4096];
-            int offset = 0;
-            int length = 0;
-            while ((length = input.read(buffer, offset, 4096)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-            final String result = output.toString().replaceAll("\r\n", "\n");
-
-            // Parse rows from the result
-            rows = CsvUtil.fromCsvTable(result);
-
-            // Construct column lists from rows
-            constructColumnsFromRows();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -223,7 +128,7 @@ public class CSVFile extends AndroidNonvisibleComponent {
         this.sourceFile = source;
 
         // Parse CSV after setting source
-        parseCSVFromSource(sourceFile);
+        ReadFromFile(sourceFile);
     }
 
     /**
@@ -330,5 +235,29 @@ public class CSVFile extends AndroidNonvisibleComponent {
         }
 
         return YailList.makeList(entries);
+    }
+
+    @Override
+    protected void AsyncRead(final InputStream inputStream, final String fileName) {
+        // Add runnable to the Single Thread runner to read File asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Parse InputStream to String
+                    final String result = readFromInputStream(inputStream);
+
+                    // Parse rows from the result
+                    rows = CsvUtil.fromCsvTable(result);
+
+                    // Construct column lists from rows
+                    constructColumnsFromRows();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
