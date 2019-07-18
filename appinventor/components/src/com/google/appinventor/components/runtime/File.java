@@ -242,24 +242,29 @@ public class File extends FileBase {
    */
   @Override
   protected void AsyncRead(InputStream fileInput, final String fileName) {
-    try {
-      final String text = readFromInputString(fileInput);
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          final String text = readFromInputString(fileInput);
 
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          GotText(text);
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              GotText(text);
+            }
+          });
+        } catch (FileNotFoundException e) {
+          Log.e(LOG_TAG, "FileNotFoundException", e);
+          form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+              ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
+        } catch (IOException e) {
+          Log.e(LOG_TAG, "IOException", e);
+          form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+              ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
         }
-      });
-    } catch (FileNotFoundException e) {
-      Log.e(LOG_TAG, "FileNotFoundException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "IOException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
-    }
+      }
+    });
   }
 
   /**

@@ -9,8 +9,7 @@ import com.google.appinventor.components.runtime.util.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import android.Manifest;
 
@@ -28,7 +27,8 @@ public class CSVFile extends FileBase {
     private YailList columns;
     private YailList columnNames; // Elements of the first column
 
-    private Thread readThread; // Async thread for parsing CSV
+    // private Thread readThread; // Async thread for parsing CSV
+    private ExecutorService threadRunner;
 
     /**
      * Creates a new CSVFile component.
@@ -39,6 +39,8 @@ public class CSVFile extends FileBase {
 
         rows = new YailList();
         columns = new YailList();
+
+        threadRunner = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -49,7 +51,12 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
             " to the CSV file's content.")
     public YailList Rows() {
-        return rows;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return rows;
+            }
+        });
     }
 
 
@@ -61,7 +68,12 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
             " to the CSV file's content.")
     public YailList Columns() {
-        return columns;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return columns;
+            }
+        });
     }
 
     /**
@@ -74,7 +86,29 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
             " of the CSV contents.")
     public YailList ColumnNames() {
-        return columnNames;
+        return getCSVPropertyHelper(new Callable<YailList>() {
+            @Override
+            public YailList call() throws Exception {
+                return columnNames;
+            }
+        });
+    }
+
+    private YailList getCSVPropertyHelper(Callable<YailList> propertyCallable) {
+        // Since reading might be in progress, the task of
+        // getting a CSVFile property should be queued so that the
+        // thread is blocked until the reading is finished.
+        try {
+            return  threadRunner
+                    .submit(propertyCallable) // Run the callable async (and queued)
+                    .get(); // Get the property (blocks thread until previous threads finish)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return new YailList(); // Return empty list (default option)
     }
 
     /**
@@ -101,49 +135,45 @@ public class CSVFile extends FileBase {
     }
 
     /**
-     * Waits until CSV Parsing is done by blocking the calling thread.
+     * Returns a Future object which holds the CSVFile columns at the point
+     * of invoking the method.
+     *
+     * If reading is in progress, the method blocks until reading is done
+     * before returning the result.
      *
      * The method should be called asynchronously to prevent freezing of
      * the main thread.
+     *
+     * The row size is contained in the method to create default values for the
+     * CharDataModel in case of an absence of columns.
+     *
+     * @param columns  List of columns to retrieve (String object entries expected)
+     * @return  Future object containing YailList of format (rowCount, columns)
      */
-    public void waitUntilReadingDone() {
-        // If an instance of a readThread was created prior, and it is
-        // no longer alive, that means that the parsing has been processed.
-        if (readThread != null && !readThread.isAlive()) {
-            return;
-        }
+    public Future<YailList> getColumns(final YailList columns) {
+        // Submit a callable which constructs the results.
+        // The callable is only executed after all the previous
+        // tasks have been completed.
+        return threadRunner.submit(new Callable<YailList>() {
+            @Override
+            public YailList call() {
+                ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
 
-        // Check whether the screen is not yet initialized.
-        // This case needs extra handling for Chart refreshing to work
-        // properly when importing small CSV files. Otherwise, undefined
-        // behaviour is caused due to the Charts not being initialized.
-        if (!form.isScreenInitialized()) {
-            // Create a Countdown Latch, which is to be released when
-            // the Screen is initialized.
-            final CountDownLatch initializeLatch = new CountDownLatch(1);
-
-            form.registerForOnInitialize(new OnInitializeListener() {
-                @Override
-                public void onInitialize() {
-                    // Upon initializing, release the latch
-                    initializeLatch.countDown();
+                // Iterate over the specified column names
+                for (int i = 0; i < columns.size(); ++i) {
+                    // Get and add the specified column to the resulting columns list
+                    String columnName = columns.getString(i);
+                    YailList column = getColumn(columnName);
+                    resultingColumns.add(column);
                 }
-            });
 
-            try {
-                // Wait until screen initialized (latch released)
-                initializeLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                // Convert result to a YailList
+                YailList csvColumns = YailList.makeList(resultingColumns);
+
+                // Final result contains the row size as the first element
+                return YailList.makeList(Arrays.asList(rows.size(), csvColumns));
             }
-        }
-
-        try {
-            // Wait until reading is done
-            readThread.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
@@ -160,7 +190,7 @@ public class CSVFile extends FileBase {
 
         // Column not found
         if (index < 0) {
-            return null;
+            return new YailList();
         }
 
         return (YailList)columns.getObject(index);
@@ -212,19 +242,24 @@ public class CSVFile extends FileBase {
 
     @Override
     protected void AsyncRead(InputStream inputStream, String fileName) {
-        try {
-            // Parse InputStream to String
-            final String result = readFromInputString(inputStream);
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Parse InputStream to String
+                    final String result = readFromInputString(inputStream);
 
-            // Parse rows from the result
-            rows = CsvUtil.fromCsvTable(result);
+                    // Parse rows from the result
+                    rows = CsvUtil.fromCsvTable(result);
 
-            // Construct column lists from rows
-            constructColumnsFromRows();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                    // Construct column lists from rows
+                    constructColumnsFromRows();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

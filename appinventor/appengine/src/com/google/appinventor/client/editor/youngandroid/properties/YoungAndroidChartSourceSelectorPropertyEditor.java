@@ -2,8 +2,6 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.components.runtime.CSVFile;
 
 import java.util.Set;
 

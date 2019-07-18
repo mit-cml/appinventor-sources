@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -12,6 +13,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
+    private static final String PROPERTY_CHART_SOURCE = "Source";
+    private static final String PROPERTY_CSV_COLUMNS = "CsvColumns";
 
     // Represents the Chart data icon
     private Image iconWidget;
@@ -63,7 +66,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
-                propertyName.equals(PROPERTY_NAME_WIDTH)) {
+                propertyName.equals(PROPERTY_NAME_WIDTH) ||
+                propertyName.equals(PROPERTY_CSV_COLUMNS)) {
             return false;
         }
 
@@ -94,6 +98,50 @@ public abstract class MockChartData extends MockVisibleComponent {
         chartDataModel.setElements(currentElements);
     }
 
+    /**
+     * Sets the Source property of the Chart Data component.
+     * Responsible for showing/hiding properties according to the
+     * attached Source component type.
+     *
+     * @param source  Name of the new Source component attached
+     */
+    private void setSourceProperty(String source) {
+        // Get the newly attached Source component
+        MockComponent sourceComponent = editor.getComponents().getOrDefault(source, null);
+
+        // Show the CSVColumns property only if the attached Source component is of type CSVFile
+        boolean showCSVColumns = (sourceComponent != null && sourceComponent.getType().equals("CSVFile"));
+
+        // Hide or show the CsvColumns property depending on condition
+        hideProperty(PROPERTY_CSV_COLUMNS, showCSVColumns);
+
+        // If the component is currently selected, re-select it to refresh
+        // the Properties panel.
+        if (isSelected()) {
+            onSelectedChange(true);
+        }
+    }
+
+    /**
+     * Hides or shows the specified property of the Component.
+     *
+     * @param property  Property key
+     * @param hide  will hide the property if set to true, will show it otherwise
+     */
+    private void hideProperty(String property, boolean hide) {
+        // Get the current type flags of the Property
+        int type = properties.getProperty(property).getType();
+
+        if (hide) {
+            type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
+        } else {
+            type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
+        }
+
+        // Set the new type
+        properties.getProperty(property).setType(type);
+    }
+
     @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);
@@ -113,6 +161,8 @@ public abstract class MockChartData extends MockVisibleComponent {
         } else if (propertyName.equals(PROPERTY_PAIRS)) {
             setElementsFromPairsProperty(newValue);
             refreshChart();
+        } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
+            setSourceProperty(newValue);
         }
     }
 
@@ -131,8 +181,10 @@ public abstract class MockChartData extends MockVisibleComponent {
      * the Chart.
      */
     protected void setDataSeriesProperties() {
-        setElementsFromPairsProperty(getPropertyValue(PROPERTY_PAIRS));
-        this.chartDataModel.changeColor(getPropertyValue(PROPERTY_COLOR));
-        this.chartDataModel.changeLabel(getPropertyValue(PROPERTY_LABEL));
+        // Re-set all Chart Data properties to provide effect on
+        // attached Chart component.
+        for (EditableProperty property : properties) {
+            onPropertyChange(property.getName(), property.getValue());
+        }
     }
 }

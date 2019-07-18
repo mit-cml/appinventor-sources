@@ -57,8 +57,6 @@ public final class MockChart extends MockContainer {
                     for (MockComponent child : children) {
                         if (child instanceof MockChartData) {
                             ((MockChartData) child).addToChart(MockChart.this);
-                        } else if (child instanceof MockChartDataFile) {
-                            ((MockChartDataFile) child).addToChart(MockChart.this);
                         }
                     }
                 }
@@ -280,8 +278,21 @@ public final class MockChart extends MockContainer {
     @Override
     protected boolean acceptableSource(DragSource source) {
         MockComponent component = getComponentFromDragSource(source);
-        return (component instanceof MockCoordinateData) || (component instanceof MockChartDataFile) ||
-                (component instanceof MockNonVisibleComponent && component.getType().equals("CSVFile")
-                 && component.getContainer() != null);
+
+        return (component instanceof MockCoordinateData)
+                || (isComponentAcceptableCSVFile(component));
+    }
+
+    /**
+     * Checks whether the component is an acceptable drag source for the Chart.
+     * The criterion is that the Component must be of type CSVFile and is
+     * already instantiated in a container.
+     * @param component  Component to check
+     * @return  true if the component is a CSVFile that is an acceptable source
+     */
+    private boolean isComponentAcceptableCSVFile(MockComponent component) {
+        return component instanceof MockNonVisibleComponent // CSVFile component is of instance NonVisibleComponent
+                && component.getType().equals("CSVFile") // Type must equal CSVFile
+                && component.getContainer() != null; // Component must already be in it's own container
     }
 }

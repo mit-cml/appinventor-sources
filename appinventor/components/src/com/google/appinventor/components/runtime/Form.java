@@ -901,18 +901,20 @@ public class Form extends AppInventorCompatActivity
     androidUIHandler.post(new Runnable() {
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
-          EventDispatcher.dispatchEvent(Form.this, "Initialize");
-          if (sCompatibilityMode) { // Make sure call to setLayout happens
-            Sizing("Fixed");
-          } else {
-            Sizing("Responsive");
-          }
           screenInitialized = true;
 
           //  Call all apps registered to be notified when Initialize Event is dispatched
           for (OnInitializeListener onInitializeListener : onInitializeListeners) {
             onInitializeListener.onInitialize();
           }
+
+          EventDispatcher.dispatchEvent(Form.this, "Initialize");
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
+
           if (activeForm instanceof ReplForm) { // We are the Companion
             ((ReplForm)activeForm).HandleReturnValues();
           }
@@ -2648,13 +2650,5 @@ public class Form extends AppInventorCompatActivity
     } else {
       return FileUtil.openFile(path);
     }
-  }
-
-  /**
-   * Returns the status of the screen's initialization.
-   * @return  true if screen is initialized
-   */
-  public boolean isScreenInitialized() {
-    return screenInitialized;
   }
 }

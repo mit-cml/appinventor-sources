@@ -9,12 +9,14 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.Arrays;
+import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component {
+public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
@@ -23,6 +25,9 @@ public abstract class ChartDataBase implements Component {
 
     private YailList csvColumns;
     private CSVFile dataSource;
+    private ExecutorService threadRunner;
+
+    private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
     /**
      * Creates a new Chart Data component.
@@ -31,6 +36,10 @@ public abstract class ChartDataBase implements Component {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
         initChartData();
+
+        threadRunner = Executors.newSingleThreadExecutor();
+
+        container.$form().registerForOnInitialize(this);
     }
 
     /**
@@ -66,6 +75,21 @@ public abstract class ChartDataBase implements Component {
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public String Label() {
+        try {
+            label = (String) threadRunner.submit(new Callable<Object>() {
+               @Override
+               public String call() {
+                   return chartDataModel.getDataset().getEntryCount() + " entries";
+               }
+            }).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
         return label;
     }
 
@@ -131,8 +155,16 @@ public abstract class ChartDataBase implements Component {
      */
     @SimpleFunction(description = "Clears all of the data.")
     public void Clear() {
-        chartDataModel.clearEntries();
-        refreshChart();
+        // Run clear entries asynchronously in the queued Thread runner.
+        // Queuing ensures that values are cleared only after all the
+        // async reading is processed.
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.clearEntries();
+                refreshChart();
+            }
+        });
     }
 
 
@@ -151,31 +183,49 @@ public abstract class ChartDataBase implements Component {
             " 1, and so forth.")
     public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
         // Construct a YailList of columns from the specified parameters
-        final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
-        // Import the data from the CSV file with the specified columns asynchronously
-        AsynchUtil.runAsynchronously(new Runnable() {
+        // Get the Future object representing the columns in the CSVFile component,
+        final Future<YailList> csvFileColumns = csvFile.getColumns(columns);
+
+        // Import the data from the CSV file asynchronously
+        threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                // Import from CSV file with the specified parameters
-                chartDataModel.importFromCSV(csvFile, columns);
+                YailList csvResult = null;
 
-                // Update the UI after importing (must be done on UI
-                // thread to avoid exceptions)
-                container.$context().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshChart();
-                    }
-                });
+                try {
+                    // Get the columns from the CSVFile. The retrieval of
+                    // the result is blocking, so it will first wait for
+                    // the reading to be processed.
+                    // The expected format is a (rows, columns) List.
+                    csvResult = csvFileColumns.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Undefined behavior (exceptions thrown)
+                if (csvResult == null) {
+                    return;
+                }
+
+                // Get the contents of the result
+                final int rowSize = (Integer)csvResult.getObject(0);
+                final YailList csvColumns = (YailList)csvResult.getObject(1);
+
+                // Import from CSV file with the specified parameters
+                chartDataModel.importFromCSV(csvColumns, rowSize);
+
+                // Refresh the Chart after import
+                refreshChart();
             }
         });
     }
 
     /**
      * Sets the CSV columns to parse data from the CSV source.
-     *
-     * TODO: Hide property in case the Source is not a CSVFile.
      *
      * @param columns  CSV representation of the column names (e.g. A,B will
      *                 use A for the x values, and B for the y values)
@@ -208,20 +258,50 @@ public abstract class ChartDataBase implements Component {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
-        ImportFromCSV(dataSource,
-                csvColumns.getString(0), // X column
-                csvColumns.getString(1)); // Y column
+
+        if (initialized) {
+            ImportFromCSV(dataSource,
+                    csvColumns.getString(0), // X column
+                    csvColumns.getString(1)); // Y column
+        }
     }
 
     /**
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        container.refresh();
+        // To avoid exceptions, refresh the Chart on the UI thread.
+        container.$context().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                container.refresh();
+            }
+        });
     }
 
     @Override
     public HandlesEventDispatching getDispatchDelegate() {
         return null;
     }
+
+    /**
+     * Links the Data Source component with the Data component, if
+     * the Source component has been defined earlier.
+     *
+     * The reason this is done is because otherwise exceptions
+     * are thrown if the Data is being imported before the component
+     * is fully initialized.
+     */
+    @Override
+    public void onInitialize() {
+        initialized = true;
+
+        // Data Source should only be imported after the Screen
+        // has been initialized, otherwise some exceptions may occur
+        // on small data sets with regards to Chart refreshing.
+        if (dataSource != null) {
+            Source(dataSource);
+        }
+    }
+
 }

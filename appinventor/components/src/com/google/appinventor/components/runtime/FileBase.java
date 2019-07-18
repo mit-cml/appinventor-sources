@@ -23,8 +23,6 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
     protected final Activity activity;
     protected boolean isRepl = false;
 
-    protected Thread readThread;
-
     /**
      * Creates a new FileBase component.
      * @param container the Form that this component is contained in.
@@ -54,14 +52,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
 
                         final InputStream asyncInputStream = inputStream;
 
-                        readThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                AsyncRead(asyncInputStream, fileName);
-                            }
-                        });
-
-                        readThread.start();
+                        AsyncRead(inputStream, fileName);
                     } catch (PermissionException e) {
                         form.dispatchPermissionDeniedEvent(FileBase.this, "ReadFrom", e);
                     } catch (FileNotFoundException e) {

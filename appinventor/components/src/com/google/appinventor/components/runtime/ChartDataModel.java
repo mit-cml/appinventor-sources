@@ -100,42 +100,57 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from the CSVFile from the specified list of columns.
+     * Imports data from the specified list of columns with
+     * the specified row size.
      *
-     * The method calls are expected to be asynchronous, and thus the
-     * method is synchronized to solve concurrency issues.
+     * The row size is used to create a column with default
+     * values in case of an absence of data.
      *
-     * @param dataFile  CSVFile to import data from
-     * @param columns  Columns to use for data importing
+     * @param columns  columns to import data from
+     * @param rows  number of rows
      */
-    public synchronized void importFromCSV(CSVFile dataFile, YailList columns) {
-        // Block the thread until CSV parsing is done
-        dataFile.waitUntilReadingDone();
-
-        // Get the size of a row (expected fixed width rows)
-        int rowSize = dataFile.Rows().size();
-
+    public void importFromCSV(YailList columns, int rows) {
         ArrayList<YailList> dataColumns = new ArrayList<YailList>();
 
         for (int i = 0; i < columns.size(); ++i) {
-            // Get the name of the current column
-            String columnName = columns.getString(i);
+            // Get the column element
+            YailList column = (YailList)columns.getObject(i);
 
-            if (columnName == null || columnName.equals("")) { // No columnName specified, use default values
-                dataColumns.add(getDefaultValues(rowSize));
-            } else { // Add the specified column from the CSV file to the columns
-                dataColumns.add(dataFile.getColumn(columnName));
+            if (column.size() == 0) { // Column is empty, populate it with default values
+                dataColumns.add(getDefaultValues(rows));
+            } else { // Add the specified CSV column to the data columns to use for importing
+                dataColumns.add(column);
             }
         }
 
+        // Import from the finalized CSV columns.
+        importFromCSVColumns(dataColumns, rows);
+    }
+
+    /**
+     * Imports data from the specified set of CSV column data and
+     * the specified number of rows.
+     *
+     * The first element is skipped, since it is assumed that it
+     * is the column name.
+     *
+     * The method calls are expected to be asynchronous, and thus the
+     * method is synchronized to solve concurrency issues. The method
+     * directly handles accessing the data set, so only one thread
+     * should be able to access it at a time.
+     *
+     * @param columns  List of fixed-width columns, each of which contain data
+     * @param rows  Number of rows in the CSV (number of elements in the columns)
+     */
+    private synchronized void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
         List<YailList> tuples = new ArrayList<YailList>();
 
         // Generate tuples from the columns
-        for (int i = 1; i < rowSize; ++i) {
+        for (int i = 1; i < rows; ++i) {
             ArrayList<String> tupleElements = new ArrayList<String>();
 
             // Add entries to the tuple from all i-th values of the data columns.
-            for (YailList column : dataColumns) {
+            for (YailList column : columns) {
                 tupleElements.add(column.getString(i));
             }
 
@@ -147,7 +162,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
         // Use the generated tuple list in the importFromList method to
         // import the data.
-       importFromList(YailList.makeList(tuples));
+        importFromList(YailList.makeList(tuples));
     }
 
     /**
