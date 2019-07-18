@@ -115,19 +115,25 @@ public class CSVFile extends FileBase {
      *
      * @param source  Source file name
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Indicates source file to load data from." +
-            "Prefix the filename with / to read from a specific file on the SD card. " +
-            "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
-            "assets packaged with an application (also works for the Companion) start " +
-            "the filename with // (two slashes). If a filename does not start with a " +
-            "slash, it will be read from the applications private storage (for packaged " +
-            "apps) and from /sdcard/AppInventor/data for the Companion.")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
         defaultValue = "")
     public void SourceFile(String source) {
+        ReadFile("//" + source);
+    }
+
+    @SimpleFunction(description = "Indicates source file to load data from." +
+        "Prefix the filename with / to read from a specific file on the SD card. " +
+        "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
+        "assets packaged with an application (also works for the Companion) start " +
+        "the filename with // (two slashes). If a filename does not start with a " +
+        "slash, it will be read from the applications private storage (for packaged " +
+        "apps) and from /sdcard/AppInventor/data for the Companion." +
+        "The results of the reading are stored in the Rows, Columns " +
+        "and ColumnNames properties of the component.")
+    public void ReadFile(String source) {
         this.sourceFile = source;
 
-        // Parse CSV after setting source
         ReadFromFile(sourceFile);
     }
 
