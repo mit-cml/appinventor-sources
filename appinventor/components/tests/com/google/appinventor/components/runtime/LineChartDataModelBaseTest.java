@@ -354,4 +354,148 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
 
     assertEquals(0, model.getDataset().getEntryCount());
   }
+
+  /**
+   * Test to ensure that importing two empty columns
+   * with a row count of zero does not add any new entries.
+   */
+  @Test
+  public void testImportFromCSVEmpty() {
+    final int rows = 0;
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple();
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from two empty columns with
+   * a row size greater than 1 triggers the default option, which
+   * populates values automatically starting from 1 and incrementing
+   * on each new entry.
+   */
+  @Test
+  public void testImportFromCSVEmptyDefaultOption() {
+    final int rows = 4;
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple();
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 1f));
+      add(new Entry(2f, 2f));
+      add(new Entry(3f, 3f));
+    }};
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from an x Column which is
+   * empty and a Y column which has values results in the
+   * x values to resolve to the default option (1 for first entry,
+   * 2 for second, ...)
+   */
+  @Test
+  public void testImportFromCSVEmptyColumn() {
+    final int rows = 5;
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(2f, 5f));
+      add(new Entry(3f, -3f));
+      add(new Entry(4f, 7f));
+    }};
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from columns consisting of one
+   * row does not add any new entries.
+   */
+  @Test
+  public void testImportFromCSVOneRow() {
+    final int rows = 1;
+    YailList xColumn = createTuple("X");
+    YailList yColumn = createTuple("Y");
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from columns consisting
+   * of one entry (excluding the first row) results in
+   * the correct outcome.
+   */
+  @Test
+  public void testImportFromCSVOneEntry() {
+    final int rows = 2;
+    YailList xColumn = createTuple("X", 2);
+    YailList yColumn = createTuple("Y", 4);
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(2f, 4f));
+    }};
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from columns containing
+   * many entries imports all the entries correctly.
+   */
+  @Test
+  public void testImportFromCSVManyEntries() {
+    final int rows = 6;
+    YailList xColumn = createTuple("X", 2, 3, 5, 7, 9);
+    YailList yColumn = createTuple("Y", 4, 1, 3, 6, 10);
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(2f, 4f));
+      add(new Entry(3f, 1f));
+      add(new Entry(5f, 3f));
+      add(new Entry(7f, 6f));
+      add(new Entry(9f, 10f));
+    }};
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that passing in a row size
+   * less than the size of the columns imports
+   * only those select entries.
+   */
+  @Test
+  public void testImportFromCSVLimitRows() {
+    final int rows = 2;
+    YailList xColumn = createTuple("X", 1, 4, 7, 9);
+    YailList yColumn = createTuple("Y", -2, -3, 9, 8);
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, -2f));
+    }};
+
+    model.importFromCSV(columns, rows);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
 }
