@@ -183,42 +183,43 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
             " 1, and so forth.")
     public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
         // Construct a YailList of columns from the specified parameters
-        final YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
-        /* The outermost thread is run to fetch the csvFile columns,
-         * which, on it's own, is a blocking operation.
-         *
-         * Two threads are needed here because a single threaded
-         * executor is used for the actual data importing, therefore
-         * there might be cases where the single threaded queue
-         * cannot catch up with the current state of the CSVFile.
-         * In order to avoid this issue, first an async thread
-         * is ran, and then the data importing is queued.
-        */
-        AsynchUtil.runAsynchronously(new Runnable() {
+        // Get the Future object representing the columns in the CSVFile component,
+        final Future<YailList> csvFileColumns = csvFile.getColumns(columns);
+
+        // Import the data from the CSV file asynchronously
+        threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                // Get the columns from the CSVFile. The method
-                // is blocking, so it will first wait for the
-                // reading to be processed.
-                // The expected format is a (rows, columns) List.
-                YailList csvResult = csvFile.getColumns(columns);
+                YailList csvResult = null;
+
+                try {
+                    // Get the columns from the CSVFile. The retrieval of
+                    // the result is blocking, so it will first wait for
+                    // the reading to be processed.
+                    // The expected format is a (rows, columns) List.
+                    csvResult = csvFileColumns.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Undefined behavior (exceptions thrown)
+                if (csvResult == null) {
+                    return;
+                }
 
                 // Get the contents of the result
                 final int rowSize = (Integer)csvResult.getObject(0);
                 final YailList csvColumns = (YailList)csvResult.getObject(1);
 
-                // Import the data from the CSV file with the specified columns asynchronously
-                threadRunner.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Import from CSV file with the specified parameters
-                        chartDataModel.importFromCSV(csvColumns, rowSize);
+                // Import from CSV file with the specified parameters
+                chartDataModel.importFromCSV(csvColumns, rowSize);
 
-                        // Refresh the Chart after import
-                        refreshChart();
-                    }
-                });
+                // Refresh the Chart after import
+                refreshChart();
             }
         });
     }
