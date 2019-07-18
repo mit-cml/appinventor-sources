@@ -65,7 +65,7 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
 
     @Override
     protected void setDefaultStylingProperties() {
-        dataset.setDrawCircleHole(false);
+        dataset.setDrawCircleHole(false); // Draw full circle instead of a hollow one
     }
 
 

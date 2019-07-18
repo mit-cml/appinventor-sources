@@ -4,13 +4,13 @@ import com.github.mikephil.charting.data.LineData;
 import org.junit.Before;
 
 /**
- * Unit tests for the LineChartModel class.
+ * Unit tests for the AreaChartModel class.
  */
-public class LineChartDataModelTest extends LineChartDataModelBaseTest {
+public class AreaChartDataModelTest extends LineChartDataModelBaseTest {
   @Before
   @Override
   public void setup() {
     data = new LineData();
-    model = new LineChartDataModel(data);
+    model = new AreaChartDataModel(data);
   }
 }

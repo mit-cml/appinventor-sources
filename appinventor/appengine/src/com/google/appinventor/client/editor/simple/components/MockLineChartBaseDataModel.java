@@ -9,6 +9,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Chart Data Model for Mock Line Chart based views.
+ */
 public abstract class MockLineChartBaseDataModel extends MockChartDataModel<ScatterDataset>  {
     /**
      * Creates a new MockLineChartBaseDataModel instance.
