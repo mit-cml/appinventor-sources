@@ -38,10 +38,6 @@ public class MockChartLayout extends MockLayout {
             container.addComponent(source);
             ((MockChartData)source).addToChart((MockChart) container);
             return true;
-        } else if (source instanceof MockChartDataFile) {
-            container.addComponent(source);
-            ((MockChartDataFile)source).addToChart((MockChart) container);
-            return true;
         } else if (source instanceof MockNonVisibleComponent) {
             // Checking that it is indeed a CSV File is done in the addCSVFile method.
             ((MockChart)container).addCSVFile((MockNonVisibleComponent)source);

@@ -57,8 +57,6 @@ public final class MockChart extends MockContainer {
                     for (MockComponent child : children) {
                         if (child instanceof MockChartData) {
                             ((MockChartData) child).addToChart(MockChart.this);
-                        } else if (child instanceof MockChartDataFile) {
-                            ((MockChartDataFile) child).addToChart(MockChart.this);
                         }
                     }
                 }
@@ -281,8 +279,8 @@ public final class MockChart extends MockContainer {
     protected boolean acceptableSource(DragSource source) {
         MockComponent component = getComponentFromDragSource(source);
 
-        return (component instanceof MockCoordinateData) || (component instanceof MockChartDataFile) ||
-                (isComponentAcceptableCSVFile(component));
+        return (component instanceof MockCoordinateData)
+                || (isComponentAcceptableCSVFile(component));
     }
 
     /**
