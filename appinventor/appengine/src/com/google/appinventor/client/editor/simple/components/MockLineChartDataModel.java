@@ -9,6 +9,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Chart Data Model for the Mock Line Chart view.
+ *
+ * Responsible for handling data operations on the Data
+ * of the Line Chart.
+ */
 public class MockLineChartDataModel extends MockLineChartBaseDataModel {
 
     /**

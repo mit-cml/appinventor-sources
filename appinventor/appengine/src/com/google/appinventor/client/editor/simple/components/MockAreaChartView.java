@@ -1,6 +1,14 @@
 package com.google.appinventor.client.editor.simple.components;
 
+/**
+ * Chart View for the Area Chart
+ *
+ * Responsible for the GUI of the Area Chart.
+ */
 public class MockAreaChartView extends MockLineChartViewBase {
+    /**
+     * Creates a new Mock Area Chart view instance.
+     */
     public MockAreaChartView() {
         super();
     }

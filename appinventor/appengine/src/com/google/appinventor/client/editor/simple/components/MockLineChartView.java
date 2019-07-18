@@ -1,7 +1,10 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import org.pepstock.charba.client.ScatterChart;
-
+/**
+ * Chart View for the Line Chart
+ *
+ * Responsible for the GUI of the Line Chart.
+ */
 public class MockLineChartView extends MockLineChartViewBase {
     /**
      * Creates a new MockLineChartView object instance.

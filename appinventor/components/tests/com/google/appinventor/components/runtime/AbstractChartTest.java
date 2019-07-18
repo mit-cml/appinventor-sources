@@ -29,6 +29,8 @@ public abstract class AbstractChartTest<V extends ChartView,
         super.setUp();
         chartComponent = new Chart(getForm());
 
+        // Set the corresponding Type of the Chart according
+        // to the test class in use.
         chartComponent.Type(getType());
     }
 
