@@ -188,7 +188,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
                     // Get the columns from the CSVFile. The retrieval of
                     // the result is blocking, so it will first wait for
                     // the reading to be processed.
-                    // The expected format is a (rows, columns) List.
+                    // The expected format is a (rowCount, columns) List.
                     csvResult = csvFileColumns.get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
