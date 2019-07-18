@@ -52,6 +52,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
 
                         final InputStream asyncInputStream = inputStream;
 
+                        // Read file contents asynchronously
                         AsyncRead(inputStream, fileName);
                     } catch (PermissionException e) {
                         form.dispatchPermissionDeniedEvent(FileBase.this, "ReadFrom", e);
@@ -139,5 +140,12 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
         return text;
     }
 
-    protected abstract void AsyncRead(InputStream inputStream, String fileName);
+    /**
+     * Asynchronously reads the contents of the specified Input Stream, the
+     * content of which is expected to originate from the specified filename.
+     *
+     * @param inputStream  Input Stream to read from
+     * @param fileName  name of the file from which the input stream was generated (used for error reporting)
+     */
+    protected abstract void AsyncRead(final InputStream inputStream, final String fileName);
 }

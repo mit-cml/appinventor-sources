@@ -241,7 +241,8 @@ public class File extends FileBase {
    * @throws IOException when the system cannot read the file
    */
   @Override
-  protected void AsyncRead(InputStream fileInput, final String fileName) {
+  protected void AsyncRead(final InputStream fileInput, final String fileName) {
+    // Start a thread to read file asynchronously
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {

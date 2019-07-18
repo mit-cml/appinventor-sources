@@ -241,7 +241,8 @@ public class CSVFile extends FileBase {
     }
 
     @Override
-    protected void AsyncRead(InputStream inputStream, String fileName) {
+    protected void AsyncRead(final InputStream inputStream, final String fileName) {
+        // Add runnable to the Single Thread runner to read File asynchronously
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
