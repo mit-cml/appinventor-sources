@@ -167,24 +167,14 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         });
     }
 
-
     /**
      * Imports data from a CSV file component, with the specified column names.
+     * The method is ran asynchronously.
      *
-     * TODO: Support multi-dimension data components
-     *
-     * @param csvFile  CSV File component to import form
-     * @param xValueColumn  x-value column name
-     * @param yValueColumn  y-value column name
+     * @param csvFile  CSV File component to import from
+     * @param columns  list of column names to import from
      */
-    @SimpleFunction(description = "Imports data from the specified CSVFile component, given the names of the " +
-            "X and Y value columns. Passing in empty text for any of the column parameters will result" +
-            " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
-            " 1, and so forth.")
-    public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
-        // Construct a YailList of columns from the specified parameters
-        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
-
+    protected void importFromCSVAsync(final CSVFile csvFile, YailList columns) {
         // Get the Future object representing the columns in the CSVFile component,
         final Future<YailList> csvFileColumns = csvFile.getColumns(columns);
 
@@ -260,9 +250,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         this.dataSource = dataSource;
 
         if (initialized) {
-            ImportFromCSV(dataSource,
-                    csvColumns.getString(0), // X column
-                    csvColumns.getString(1)); // Y column
+            importFromCSVAsync(dataSource, csvColumns);
         }
     }
 

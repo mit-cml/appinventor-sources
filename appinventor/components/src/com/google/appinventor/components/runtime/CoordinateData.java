@@ -35,4 +35,22 @@ public final class CoordinateData extends ChartDataBase {
         // Refresh Chart with new data
         refreshChart();
     }
+
+    /**
+     * Imports data from a CSV file component, with the specified column names.
+     *
+     * @param csvFile  CSV File component to import from
+     * @param xValueColumn  x-value column name
+     * @param yValueColumn  y-value column name
+     */
+    @SimpleFunction(description = "Imports data from the specified CSVFile component, given the names of the " +
+        "X and Y value columns. Passing in empty text for any of the column parameters will result" +
+        " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
+        " 1, and so forth.")
+    public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
+        // Construct a YailList of columns from the specified parameters
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+
+        importFromCSVAsync(csvFile, columns);
+    }
 }
