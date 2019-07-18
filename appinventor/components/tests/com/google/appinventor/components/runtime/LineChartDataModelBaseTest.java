@@ -60,18 +60,12 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
 
     model.setElements(elements);
 
-    // Make sure that the method was abruptly cut because
-    // of invalid entries detected.
-    assertEquals(2, model.getDataset().getEntryCount());
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 2f));
+      add(new Entry(3f, 4f));
+    }};
 
-    // Verify the 2 entries
-    Entry entry1 = model.getDataset().getEntryForIndex(0);
-    assertEquals(1f, entry1.getX());
-    assertEquals(2f, entry1.getY());
-
-    Entry entry2 = model.getDataset().getEntryForIndex(1);
-    assertEquals(3f, entry2.getX());
-    assertEquals(4f, entry2.getY());
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -85,21 +79,13 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
     String elements = "3, 1, 2, 4, 1, 2";
     model.setElements(elements);
 
-    // Make sure that 3 elements have been added
-    assertEquals(3, model.getDataset().getEntryCount());
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 2f));
+      add(new Entry(2f, 4f));
+      add(new Entry(3f, 1f));
+    }};
 
-    // Verify the 3 entries
-    Entry entry1 = model.getDataset().getEntryForIndex(0);
-    assertEquals(1f, entry1.getX());
-    assertEquals(2f, entry1.getY());
-
-    Entry entry2 = model.getDataset().getEntryForIndex(1);
-    assertEquals(2f, entry2.getX());
-    assertEquals(4f, entry2.getY());
-
-    Entry entry3 = model.getDataset().getEntryForIndex(2);
-    assertEquals(3f, entry3.getX());
-    assertEquals(1f, entry3.getY());
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -113,14 +99,11 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
     String elements = "1, 3, 5";
     model.setElements(elements);
 
-    // Only the first entry should be added (cut off last value
-    // since pairs are accepted)
-    assertEquals(1, model.getDataset().getEntryCount());
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+    }};
 
-    // Make sure entry is correct
-    Entry entry = model.getDataset().getEntryForIndex(0);
-    assertEquals(1f, entry.getX());
-    assertEquals(3f, entry.getY());
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -129,16 +112,19 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromListSingleEntry() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>();
-    tuples.add(YailList.makeList(Arrays.asList(1f, 2f)));
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 2f));
+    }};
 
     YailList pairs = YailList.makeList(tuples);
 
-    HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-      put(1f, 2f);
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 2f));
     }};
 
-    testImportFromListHelper(pairs, expectedValues);
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -147,24 +133,34 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromListMultipleEntries() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>();
-    tuples.add(YailList.makeList(Arrays.asList(-2f, 3f)));
-    tuples.add(YailList.makeList(Arrays.asList(0f, 7f)));
-    tuples.add(YailList.makeList(Arrays.asList(1f, 5f)));
-    tuples.add(YailList.makeList(Arrays.asList(3f, 4f)));
-    tuples.add(YailList.makeList(Arrays.asList(5f, 3f)));
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(createTuple(1f, 5f));
+      add(createTuple(3f, 4f));
+      add(createTuple(5f, 3f));
+    }};
 
     YailList pairs = YailList.makeList(tuples);
 
-    HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-      put(-2f, 3f);
-      put(0f, 7f);
-      put(1f, 5f);
-      put(3f, 4f);
-      put(5f, 3f);
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(1f, 5f));
+      add(new Entry(3f, 4f));
+      add(new Entry(5f, 3f));
     }};
 
-    testImportFromListHelper(pairs, expectedValues);
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  @Override
+  protected void assertEntriesEqual(Entry e1, Entry e2) {
+    assertEquals(e1.getX(), e2.getX());
+    assertEquals(e1.getY(), e2.getY());
+    assertEquals(e1.getClass(), e2.getClass());
   }
 
   /**
@@ -173,20 +169,23 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromListBiggerTuples() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>();
-    tuples.add(YailList.makeList(Arrays.asList(-2f, 7f, 3f)));
-    tuples.add(YailList.makeList(Arrays.asList(0f, 3f, 2f)));
-    tuples.add(YailList.makeList(Arrays.asList(5f, 5f, 2f)));
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 7f, 3f));
+      add(createTuple(0f, 3f, 2f));
+      add(createTuple(5f, 5f, 2f));
+    }};
 
     YailList pairs = YailList.makeList(tuples);
 
-    HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-      put(-2f, 7f);
-      put(0f, 3f);
-      put(5f, 5f);
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 7f));
+      add(new Entry(0f, 3f));
+      add(new Entry(5f, 5f));
     }};
 
-    testImportFromListHelper(pairs, expectedValues);
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -196,9 +195,10 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
   @Test
   public void testImportFromListEmpty() {
     YailList pairs = new YailList();
-    HashMap<Float, Float> expectedValues = new HashMap<Float, Float>();
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    testImportFromListHelper(pairs, expectedValues);
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -209,17 +209,20 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromListSmallerTuple() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>();
-    tuples.add(YailList.makeList(Collections.singletonList(5f)));
-    tuples.add(YailList.makeList(Arrays.asList(1f, 2f)));
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(5f));
+      add(createTuple(1f, 2f));
+    }};
 
     YailList pairs = YailList.makeList(tuples);
 
-    HashMap<Float, Float> expectedValues = new HashMap<Float, Float>() {{
-      put(1f, 2f);
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 2f));
     }};
 
-    testImportFromListHelper(pairs, expectedValues);
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -229,29 +232,23 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromListDuplicates() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>();
-
-    // Prepare 3 entries for import which all have the same x-value
-    final float xValue = 1f;
-    final float[] yValues = {1f, 1f, 2f};
-
-    for (float yValue : yValues) {
-      tuples.add(YailList.makeList(Arrays.asList(xValue, yValue)));
-    }
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 2f));
+    }};
 
     YailList pairs = YailList.makeList(tuples);
 
-    // Import the list of pairs
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 1f));
+      add(new Entry(1f, 1f));
+      add(new Entry(1f, 2f));
+    }};
+
+    // Import the data and assert all the entries
     model.importFromList(pairs);
-
-    // Assert that all entries have been added successfully
-    assertEquals(tuples.size(), model.getDataset().getEntryCount());
-
-    for (int i = 0; i < yValues.length; ++i) {
-      Entry entry = model.getDataset().getEntryForIndex(i);
-      assertEquals(xValue, entry.getX());
-      assertEquals(yValues[i], entry.getY());
-    }
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -263,14 +260,14 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
     final float xValue = 3f;
     final float yValue = 4f;
 
-    YailList tuple = YailList.makeList(Arrays.asList(xValue, yValue));
+    YailList tuple = createTuple(xValue, yValue);
     model.addEntryFromTuple(tuple);
 
-    assertEquals(1, model.getDataset().getEntryCount());
-
     Entry entry = model.getDataset().getEntryForIndex(0);
-    assertEquals(xValue, entry.getX());
-    assertEquals(yValue, entry.getY());
+    Entry expectedEntry = new Entry(xValue, yValue);
+
+    assertEquals(1, model.getDataset().getEntryCount());
+    assertEntriesEqual(expectedEntry, entry);
   }
 
   /**
@@ -282,14 +279,14 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
     final float xValue = 1f;
     final float yValue = 2f;
 
-    YailList tuple = YailList.makeList(Arrays.asList(xValue, yValue, 5f, 7f, 3f));
+    YailList tuple = createTuple(xValue, yValue, 5f, 7f, 3f);
     model.addEntryFromTuple(tuple);
 
-    assertEquals(1, model.getDataset().getEntryCount());
-
     Entry entry = model.getDataset().getEntryForIndex(0);
-    assertEquals(xValue, entry.getX());
-    assertEquals(yValue, entry.getY());
+    Entry expectedEntry = new Entry(xValue, yValue);
+
+    assertEquals(1, model.getDataset().getEntryCount());
+    assertEntriesEqual(expectedEntry, entry);
   }
 
 
@@ -299,7 +296,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testAddEntryFromTupleSmallerTuple() {
-    YailList tuple = YailList.makeList(Collections.singletonList(1f));
+    YailList tuple = createTuple(1f);
     model.addEntryFromTuple(tuple);
 
     assertEquals(0, model.getDataset().getEntryCount());
@@ -311,7 +308,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testAddEntryFromTupleInvalidX() {
-    YailList tuple = YailList.makeList(Arrays.asList("String", 1f));
+    YailList tuple = createTuple("String", 1f);
     model.addEntryFromTuple(tuple);
 
     assertEquals(0, model.getDataset().getEntryCount());
@@ -323,7 +320,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testAddEntryFromTupleInvalidY() {
-    YailList tuple = YailList.makeList(Arrays.asList(0f, "String"));
+    YailList tuple = createTuple(0f, "String");
     model.addEntryFromTuple(tuple);
 
     assertEquals(0, model.getDataset().getEntryCount());
@@ -335,42 +332,10 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testAddEntryFromTupleInvalidXY() {
-    YailList tuple = YailList.makeList(Arrays.asList("String", "String2"));
+    YailList tuple = createTuple("String", "String2");
     model.addEntryFromTuple(tuple);
 
     assertEquals(0, model.getDataset().getEntryCount());
-  }
-
-
-  /**
-   * Helper method that calls the method to import data from the
-   * specified pairs List, and then handles the assertions
-   * for the expected Entry count as well as the Entry values.
-   *
-   * @param list           List of 2-tuples to import
-   * @param expectedValues Map of expected values in the Data Series
-   */
-  private void testImportFromListHelper(YailList list,
-                                        HashMap<Float, Float> expectedValues) {
-    // Call the import from Lists method
-    model.importFromList(list);
-
-    // Make sure the number of entries parsed is correct
-    assertEquals(expectedValues.size(), model.getDataset().getEntryCount());
-
-    // Start from the first Data Series entry
-    int index = 0;
-
-    for (Map.Entry<Float, Float> expectedEntry : expectedValues.entrySet()) {
-      // Get the entry from the Data Series
-      Entry entry = model.getDataset().getEntryForIndex(index);
-
-      // Assert expected values
-      assertEquals(expectedEntry.getKey(), entry.getX());
-      assertEquals(expectedEntry.getValue(), entry.getY());
-
-      index++;
-    }
   }
 
   /**
