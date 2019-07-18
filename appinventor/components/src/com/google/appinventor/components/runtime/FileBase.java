@@ -35,7 +35,19 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
         activity = (Activity) container.$context();
     }
 
-    public void ReadFromFile(final String fileName) {
+  /**
+   * Establishes the file path and reads the contents of the specified File
+   * asynchronously.
+   *
+   * Filename formats:
+   * /file.txt - reads from SD card
+   * //file.txt - reads from packaged application files
+   * file.txt - application private storage (for packaged apps) or
+   * /sdcard/AppInventor/data for companion
+   *
+   * @param fileName  name of the file to read from
+   */
+  public void ReadFromFile(final String fileName) {
         form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {
