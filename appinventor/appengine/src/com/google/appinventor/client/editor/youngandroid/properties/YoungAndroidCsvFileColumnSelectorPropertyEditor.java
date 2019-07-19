@@ -1,5 +1,6 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
+import com.google.appinventor.client.editor.simple.components.CSVFileColumnChangeListener;
 import com.google.appinventor.client.editor.simple.components.FormChangeListener;
 import com.google.appinventor.client.editor.simple.components.MockCSVFile;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -19,7 +20,7 @@ import java.util.Set;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class YoungAndroidCsvFileColumnSelectorPropertyEditor
-    extends AdditionalChoicePropertyEditor {
+    extends AdditionalChoicePropertyEditor implements CSVFileColumnChangeListener {
   // UI elements
   private final ListBox columnsList;
 
@@ -130,7 +131,7 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
 
   public void changeSource(String source) {
     if (!source.equals(this.source) && csvFile != null) {
-      csvFile.removeColumnSelector(this);
+      csvFile.removeColumnChangeListener(this);
     }
 
     this.source = source;
@@ -140,7 +141,7 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     }
 
     csvFile = ((MockCSVFile)editor.getComponents().get(source));
-    csvFile.addColumnSelector(this);
+    csvFile.addColumnChageListener(this);
 
     updateColumns();
   }
@@ -166,5 +167,10 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     if (!found) {
       property.setValue("");
     }
+  }
+
+  @Override
+  public void onColumnChange() {
+    updateColumns();
   }
 }

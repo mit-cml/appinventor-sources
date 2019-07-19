@@ -10,9 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class MockCSVFile extends MockNonVisibleComponent {
   public static final String TYPE = "CSVFile";
@@ -22,7 +20,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   private List<String> columnNames;
   private List<List<String>> rows;
-  private List<YoungAndroidCsvFileColumnSelectorPropertyEditor> columnSelectors;
+  private Set<CSVFileColumnChangeListener> columnChangeListeners;
 
   private String sourceFile;
 
@@ -33,7 +31,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
   public MockCSVFile(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
 
-    columnSelectors = new ArrayList<YoungAndroidCsvFileColumnSelectorPropertyEditor>();
+    columnChangeListeners = new HashSet<CSVFileColumnChangeListener>();
   }
 
   private void setSourceFileProperty(String fileSource) {
@@ -43,6 +41,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
     // Check that the SourceFile property is a valid file
     if (fileSource == null || fileSource.equals("")) {
+      updateColumnChangeListeners();
       return;
     }
 
@@ -59,10 +58,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
       @Override
       public void onSuccess(List<List<String>> result) {
         columnNames = result.get(0);
-
-        for (YoungAndroidCsvFileColumnSelectorPropertyEditor selector : columnSelectors) {
-          selector.updateColumns();
-        }
+        updateColumnChangeListeners();
       }
     });
   }
@@ -80,13 +76,21 @@ public class MockCSVFile extends MockNonVisibleComponent {
     }
   }
 
-  public void addColumnSelector(YoungAndroidCsvFileColumnSelectorPropertyEditor selector) {
-    if (!columnSelectors.contains(selector)) {
-      columnSelectors.add(selector);
-    }
+  public void addColumnChageListener(CSVFileColumnChangeListener listener) {
+    columnChangeListeners.add(listener);
   }
 
-  public void removeColumnSelector(YoungAndroidCsvFileColumnSelectorPropertyEditor selector) {
-    columnSelectors.remove(selector);
+  public void removeColumnChangeListener(CSVFileColumnChangeListener listener) {
+    columnChangeListeners.remove(listener);
+  }
+
+  private void updateColumnChangeListeners() {
+    if (columnChangeListeners == null) {
+      return;
+    }
+
+    for (CSVFileColumnChangeListener listener : columnChangeListeners) {
+      listener.onColumnChange();
+    }
   }
 }
