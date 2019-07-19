@@ -11,6 +11,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
+import java.util.List;
+
 public final class MockChart extends MockContainer {
     public static final String TYPE = "Chart";
 
@@ -167,6 +169,14 @@ public final class MockChart extends MockContainer {
     }
 
     /**
+     * Creates Data components from the specified comma separated values,
+     * attaches them as children to the Chart and sets the Source property
+     * of each instantiated data component to the specified.
+     *
+     * @param source  Data source name
+     * @param csv  CSV values to parse
+     */
+    /**
      * Adds a new CSVFile component to the Chart, which parses
      * the contents and creates Data components accordingly to the
      * columns of the CSV file.
@@ -178,53 +188,10 @@ public final class MockChart extends MockContainer {
      * @param csvSource MockNonVisible component of type CSVFile.
      *                  If the type differs, the method simply returns.
      */
-    public void addCSVFile(MockNonVisibleComponent csvSource) {
-        // Check that the specified MockNonVisibleComponent is a CSVFile
-        if (!csvSource.getType().equals("CSVFile")) {
-            return;
-        }
-
-        // Check whether the SourceFile property is present
-        if (csvSource.properties.hasProperty("SourceFile")) {
-            // Get the SourceFile property
-            String fileSource = csvSource.properties.getPropertyValue("SourceFile");
-
-            // Check that the SourceFile property is a valid file
-            if (fileSource == null || fileSource.equals("")) {
-                return;
-            }
-
-            // Read the media file
-            long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-
-            Ode.getInstance().getProjectService().load(projectId, "assets/" + fileSource, new AsyncCallback<String>() {
-                @Override
-                public void onFailure(Throwable caught) {
-                    ErrorReporter.reportError(caught.getMessage());
-                }
-
-                @Override
-                public void onSuccess(String result) {
-                    // Instantiate all the data components from the result
-                    createDataComponentsFromCSV(csvSource.getName(), result);
-                }
-            });
-        }
-    }
-
-    /**
-     * Creates Data components from the specified comma separated values,
-     * attaches them as children to the Chart and sets the Source property
-     * of each instantiated data component to the specified.
-     *
-     * @param source  Data source name
-     * @param csv  CSV values to parse
-     */
-    private void createDataComponentsFromCSV(String source, String csv) {
+    public void addCSVFile(MockCSVFile csvSource) {
         MockChart.this.onSelectedChange(true); // otherwise the last imported component
 
-        // TODO: Switch to CSVParser
-        String[] columnNames = csv.split("\n")[0].split(",");
+        List<String> columnNames = csvSource.getColumnNames();
 
         String XColumn = ""; // Use default option for the XColumn
 
@@ -238,7 +205,7 @@ public final class MockChart extends MockContainer {
             // Change the properties of the instantiated data component
             data.changeProperty("CsvColumns", XColumn + "," + column);
             data.changeProperty("Label", column);
-            data.changeProperty("Source", source);
+            data.changeProperty("Source", csvSource.getName());
         }
     }
 
