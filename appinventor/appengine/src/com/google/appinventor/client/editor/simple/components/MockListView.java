@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.ArrayList;
 
+
 /**
  * Mock ListView component.
  *
@@ -51,10 +52,9 @@ public final class MockListView extends MockVisibleComponent {
   private String textColor;
   private String detailTextColor;
   private String currentElements;
-
   private String layout;
   private ArrayList<JSONObject> currentItems;
-
+  
   /**
    * Creates a new MockListView component. It places a label inside a simplepanel which
    * is then placed into a vertical panel

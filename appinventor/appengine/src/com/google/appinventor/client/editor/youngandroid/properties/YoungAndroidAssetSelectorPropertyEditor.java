@@ -39,9 +39,9 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
   private final ListBox assetsList;
 
   private final ListWithNone choices;
-
+  
   private final YoungAndroidAssetsFolder assetsFolder;
-
+  
   /**
    * Creates a new property editor for selecting a Young Android asset.
    *

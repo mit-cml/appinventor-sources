@@ -41,6 +41,14 @@ import android.util.Log;
 import android.Manifest;
 import java.io.IOException;
 import java.util.*;
+//
+import org.json.JSONArray;
+import org.json.JSONObject;
+//import com.google.gwt.json.client.JSONParser;
+//import com.google.gwt.json.client.JSONValue;
+//import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
+
+
 /**
  * RecyclerView Component. Non-Visible component to create a RecyclerView in the Screen from a series of
  * elements added from a comma separated set of text elements. It is similar to the ListPicker
@@ -58,7 +66,7 @@ import java.util.*;
     nonVisible = false,
     iconName = "images/recyclerView.png")
 @SimpleObject
-@UsesLibraries(libraries ="RecyclerView.jar")
+@UsesLibraries(libraries ="RecyclerView.jar, CardView.jar, CardView.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
     "android.permission.READ_EXTERNAL_STORAGE")
 public final class RecyclerView extends AndroidViewComponent{
@@ -95,6 +103,12 @@ public final class RecyclerView extends AndroidViewComponent{
     private int textSize;
     private static final int DEFAULT_TEXT_SIZE = 22;
 
+    //
+    private int layout = 4;
+    private String propertyValue;
+    private ArrayList<JSONObject> currentItems;
+
+
     /**
    * Creates a new RecyclerView component.
    * @param container  container that the component will be placed in
@@ -103,8 +117,11 @@ public final class RecyclerView extends AndroidViewComponent{
     super(container);
     this.container = container;
 
-   linearLayout = new LinearLayout(container.$context());
-   linearLayout.setOrientation(LinearLayout.VERTICAL);
+    linearLayout = new LinearLayout(container.$context());
+    linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+   //
+    currentItems = new ArrayList<>();
 
     ctx=container.$context();
     inputFirst = YailList.makeEmptyList();
@@ -249,11 +266,7 @@ public final class RecyclerView extends AndroidViewComponent{
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList input) {
     input = ElementsUtil.elements(input, "RecyclerView");
-    //inputImage = ElementsUtil.elements(inputImage, "RecyclerView");
-    
-    if(imagePathList != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length ){
-    setAdapterr(strFirst,strSecond,imagePathList);
-  }
+   setAdapterr();
   }
 
   /**
@@ -276,12 +289,10 @@ public final class RecyclerView extends AndroidViewComponent{
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
       "list.",  category = PropertyCategory.BEHAVIOR)
   public void ElementsFromStringFirst(String itemstring) {
-    inputFirst = ElementsUtil.elementsFromString(itemstring);
-    strFirst = inputFirst.toStringArray();
+    strFirst = itemstring.split(",");
 
-   if(imagePathList != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
-    setAdapterr(strFirst,strSecond,imagePathList);
- 
+   setAdapterr();
+
     }
 
 
@@ -295,13 +306,10 @@ public final class RecyclerView extends AndroidViewComponent{
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
       "list.",  category = PropertyCategory.BEHAVIOR)
   public void ElementsFromStringSecond(String itemstring) {
-    inputSecond = ElementsUtil.elementsFromString(itemstring);
-    strSecond = inputSecond.toStringArray();
+    strFirst = itemstring.split(",");
 
-    if(imagePathList != null && strFirst!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
-    setAdapterr(strFirst,strSecond,imagePathList);
- 
-    }
+   setAdapterr();
+}
 
 
   /**
@@ -342,14 +350,11 @@ public final class RecyclerView extends AndroidViewComponent{
       return;
     }
 */
-    String imagePath = path;
     picturePath+=path;
     imagePathList.add(path);
 
 
-if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size() && strFirst.length == strSecond.length )
-    setAdapterr(strFirst,strSecond,imagePathList);
- 
+setAdapterr(); 
   }
 
 
@@ -374,7 +379,7 @@ if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size(
   /**
    * Sets the items of the ListView through an adapter
    */
- public void setAdapterr(String[] strFirst,String[] strSecond,ArrayList<String> imagePathList){
+ public void setAdapterr(){
 
   /*  int size =(str.length)/2;
     String[] first=new String[size];
@@ -389,22 +394,39 @@ if(strFirst != null && strSecond!=null && strFirst.length == imagePathList.size(
     }
 */
 
-  ArrayList<Drawable> third = new ArrayList<Drawable>();
-  for(int i=0;i<strFirst.length;i++){    
-      //third[x] = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
-  try {
-      third.add(MediaUtil.getBitmapDrawable(container.$form(), imagePathList.get(i)));
+
+  //  if (strFirst != null && strSecond != null && strFirst.length == strSecond.length && imagePathList != null && imagePathList.size() > 0) {
+
+      int size = currentItems.size();
+
+    String[] first=new String[size];
+    String[] second=new String[size];
+    //String[] thirdd=new String[size];
+
+    ArrayList<Drawable> third = new ArrayList<Drawable>();
+
+    for(int i=0;i<size;i++){
+      JSONObject object = currentItems.get(i);
+      first[i]=object.has("Text1")?object.getString("Text1"):"";
+      second[i]=object.has("Text2")?object.getString("Text2"):"";
+     
+     // first[i] = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+      //second[i]=first[i];
+      //thirdd[i] = object.containsKey("Image")?object.get("Image").isString().stringValue():"None"; 
+      //String imagee=object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
+      String imagee=object.has("Image")?object.getString("Image"):"None";
+      try {
+      third.add(MediaUtil.getBitmapDrawable(container.$form(), imagee));
     } catch (IOException ioe) {
-      Log.e("Image", "Unable to load " + imagePathList.get(i));
+      Log.e("Image", "Unable to load " + imagee);
       third.add(null);
     }    
-  //  ViewUtil.setImage(view, drawable);
-    }
   
+    } 
 
     //if(third.length == first.length){
-    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),strFirst,strSecond,third,textColor,textSize);
-  
+    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize);
+//}  
     LinearLayoutManager layoutManager=new LinearLayoutManager(ctx);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(listAdapterWithRecyclerView);
@@ -606,7 +628,7 @@ public String[] itemsToColoredText(String[] str) {
   @SimpleProperty
   public void TextColor(int argb) {
       textColor = argb;
-      setAdapterr(strFirst,strSecond,imagePathList);
+      setAdapterr();
   }
 
   /**
@@ -634,7 +656,40 @@ public String[] itemsToColoredText(String[] str) {
         textSize = 999;
       else
         textSize = fontSize;
-      setAdapterr(strFirst,strSecond,imagePathList);
+      setAdapterr();
   }
 
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String AddData() {
+    return propertyValue;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public void AddData(String propertyValue){
+    this.propertyValue = propertyValue;
+    if(propertyValue != null && propertyValue != "") {
+      JSONArray arr = new JSONArray(propertyValue);
+      for(int i = 0; i < arr.length(); ++i) {
+        currentItems.add(i, arr.getJSONObject(i));
+      }
+    }
+
+    setAdapterr();
+  }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
+      defaultValue = Component.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
+  @SimpleProperty(userVisible = false)
+  public void ListViewLayout(int value) {
+    layout = value;
+   // setAdapterData();
+  }
+
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public int ListViewLayout() {
+    return layout;
+  }
 }
+
+

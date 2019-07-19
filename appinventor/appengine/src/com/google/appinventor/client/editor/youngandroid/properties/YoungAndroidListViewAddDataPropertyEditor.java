@@ -5,10 +5,17 @@
 
 package com.google.appinventor.client.editor.youngandroid.properties;
 
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.cell.client.TextInputCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -37,10 +44,13 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   private ArrayList<JSONObject> ITEMS;
   private ArrayList<JSONObject> ITEMSCopy;
 
-  public YoungAndroidListViewAddDataPropertyEditor() {
+  private YaFormEditor editor;
+
+  public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {
     ITEMS = new ArrayList<>();
     ITEMSCopy = new ArrayList<>();
     addData = new Button("Click to Add/Delete Data");
+    this.editor = editor;
 
     createButton();
   }
@@ -102,15 +112,15 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       return column;
     }
 
-    Column<JSONObject, String> createTextBoxes(final String columnValue) {
+    Column<JSONObject, String> createTextBoxes(final String columnKey) {
       Column<JSONObject, String> column = new Column<JSONObject, String>(new TextInputCell()) {
         @Override
         public String getValue(JSONObject jsonObject) {
-          if(jsonObject.containsKey(columnValue)) {
-            JSONString stringVal = (JSONString)jsonObject.get(columnValue);
+          if(jsonObject.containsKey(columnKey)) {
+            JSONString stringVal = (JSONString)jsonObject.get(columnKey);
             return (stringVal.stringValue());
           } else {
-            jsonObject.put(columnValue, new JSONString(""));
+            jsonObject.put(columnKey, new JSONString(""));
             return "";
           }
         }
@@ -118,7 +128,38 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
         @Override
         public void update(int i, JSONObject jsonObject, String s) {
-          jsonObject.put(columnValue, new JSONString(s));
+          jsonObject.put(columnKey, new JSONString(s));
+        }
+      });
+      return column;
+    }
+
+    Column<JSONObject, String> createImageSelectionBoxes(final String columnKey) {
+      Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
+      YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+      ArrayList<String> choices = new ArrayList<>();
+      choices.add(0, "None");
+      if (assetsFolder != null) {
+        for (ProjectNode node : assetsFolder.getChildren()) {
+          choices.add(node.getName());
+        }
+      }
+      Column<JSONObject, String> column = new Column<JSONObject, String>(new SelectionCell(choices)) {
+        @Override
+        public String getValue(JSONObject jsonObject) {
+          if(jsonObject.containsKey(columnKey)) {
+            JSONString stringVal = (JSONString)jsonObject.get(columnKey);
+            return (stringVal.stringValue());
+          } else {
+            jsonObject.put(columnKey, new JSONString(""));
+            return "";
+          }
+        }
+      };
+      column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
+        @Override
+        public void update(int i, JSONObject jsonObject, String s) {
+          jsonObject.put(columnKey, new JSONString(s));
         }
       });
       return column;
@@ -148,9 +189,16 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       if (layoutValue.equals("0")) {
         table.addColumn(createTextBoxes("Text1"), "Text1");
-      } else if (layoutValue.equals("1")) {
+      } else if (layoutValue.equals("1") || layoutValue.equals("2")) {
         table.addColumn(createTextBoxes("Text1"), "Text1");
         table.addColumn(createTextBoxes("Text2"), "Text2");
+      } else if(layoutValue.equals("3")) {
+        table.addColumn(createTextBoxes("Text1"), "Text1");
+        table.addColumn(createImageSelectionBoxes("Image"), "Image");
+      } else if(layoutValue.equals("4")) {
+        table.addColumn(createTextBoxes("Text1"), "Text1");
+        table.addColumn(createTextBoxes("Text2"), "Text2");
+        table.addColumn(createImageSelectionBoxes("Image"), "Image");
       }
 
       table.addColumn(createDeleteButton());
@@ -161,9 +209,16 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
           JSONObject data = new JSONObject();
           if(layoutValue.equals("0")) {
             data.put("Text1", new JSONString(""));
-          } else if(layoutValue.equals("1")) {
+          } else if(layoutValue.equals("1") || layoutValue.equals("2")) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
+          } else if(layoutValue.equals("3")) {
+            data.put("Text1", new JSONString(""));
+            data.put("Image", new JSONString(""));
+          } else if(layoutValue.equals("4")) {
+            data.put("Text1", new JSONString(""));
+            data.put("Text2", new JSONString(""));
+            data.put("Image", new JSONString(""));
           }
           ITEMSCopy.add(data);
           table.setRowData(ITEMSCopy);
@@ -176,8 +231,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
           ITEMS.clear();
           for(int i = 0; i < ITEMSCopy.size(); ++i) {
             JSONObject obj = ITEMSCopy.get(i);
-            if(layoutValue.equals("0") && obj.containsKey("Text2")) {
+            if((layoutValue.equals("0") || layoutValue.equals("3")) && obj.containsKey("Text2")) {
               obj.put("Text2", null);
+            }
+            if((layoutValue.equals("1") || layoutValue.equals("2")) && obj.containsKey("Image")) {
+              obj.put("Image", null);
             }
             rows.set(i, obj);
             ITEMS.add(i, obj);

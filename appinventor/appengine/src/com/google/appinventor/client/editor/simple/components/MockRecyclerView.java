@@ -8,6 +8,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -19,6 +20,14 @@ import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+//
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
+import java.util.ArrayList;
+
 
 /**
  * Mock RecyclerView component.
@@ -36,6 +45,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   protected static final String PROPERTY_NAME_RECYCLERVIEW_FIRST = "ElementsFromStringFirst";
   protected static final String PROPERTY_NAME_RECYCLERVIEW_SECOND = "ElementsFromStringSecond";
   private final VerticalPanel listViewWidget;
+  private final VerticalPanel listViewWidgets;
   private HorizontalPanel listItemWidget;
 
   // Widget for showing the image.
@@ -60,7 +70,10 @@ public final class MockRecyclerView extends MockVisibleComponent {
   private String currentElementsFirst="";
   private String currentElementsSecond="";
   private String currentImage="";
-
+//
+  private String layout="4";
+  private ArrayList<JSONObject> currentItems;
+  private HorizontalPanel horizontalItemPanel;
     /**
      * Creates a new MockImage component.
      *
@@ -75,13 +88,26 @@ public final class MockRecyclerView extends MockVisibleComponent {
     listViewWidget.setStylePrimaryName("ode-SimpleMockComponent");
     listViewWidget.setStyleName("listViewComponentStyle", true);
 
+
+    listViewWidgets = new VerticalPanel();
+    //TODO (Jose) extract magic numbers as ComponentConstants.java
+    listViewWidgets.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
+    listViewWidgets.setStylePrimaryName("ode-SimpleMockComponent");
+    listViewWidgets.setStyleName("listViewComponentStyle", true);
+
+  //  YoungAndroidListViewAddDataPropertyEditor editor =
+    //    (YoungAndroidListViewAddDataPropertyEditor) properties.getProperty(PROPERTY_NAME_LISTVIEW_ADD_DATA).getEditor();
+   // editor.setLayout(layout);
+
+    currentItems = new ArrayList<>();
+
     createFilterBox();
 
      // textColor must be set before the component is initialized, because onPropertyChange
     // might call setSlementsFromString, which tries to set the item textcolor
     textColor  = DEFAULT_TEXT_COLOR;
 
-    initComponent(listViewWidget);
+    initComponent(listViewWidgets);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
 
 
@@ -133,20 +159,8 @@ public final class MockRecyclerView extends MockVisibleComponent {
     currentElementsFirst = text;
     currentListFirst = text.split(",");
 
-    listViewWidget.clear();
-    createFilterBox();
+    setItems();  
 
-    if (filterShowing) {
-      textBoxWidget.setVisible(true);
-    }
-    else {
-      textBoxWidget.setVisible(false);
-    }
-
-  if(currentImage!="" && currentElementsSecond!=""){
-  //if(currentList.length==2*currentImageList.length)  
-  setItems(currentListFirst,currentListSecond,currentImageList);  
-}
   }
 
   private void setElementsFromStringSecondProperty(String text){
@@ -162,12 +176,8 @@ public final class MockRecyclerView extends MockVisibleComponent {
     else {
       textBoxWidget.setVisible(false);
     }
+   setItems();  
 
-  if(currentImage!="" && currentElementsFirst!=""){
- 
-  //if(currentList.length==2*currentImageList.length)  
-  setItems(currentListFirst,currentListSecond,currentImageList);  
-}
   }
 
   private void addNewPicture(String stringImage){
@@ -185,23 +195,28 @@ public final class MockRecyclerView extends MockVisibleComponent {
    currentImageList = currentImage.split(",");
    listViewWidget.clear();
   
-  if(currentElementsFirst!="" && currentElementsSecond != ""){
- 
-  //if(currentList.length==2*currentImageList.length)  
-  setItems(currentListFirst,currentListSecond,currentImageList);  
-}
+  setItems();  
+
 }
 
-  private void setItems(String[] currentListFirst,String[] currentListSecond, String[] currentImageList){
-   
+  private void setItems(){
 
-    if(currentListFirst.length == currentImageList.length && currentListFirst.length == currentListSecond.length){
-    for(int i=0;i<currentListFirst.length;i++){
-      createLabelItem(i);
-      createImageItem(i);
-      createLabelPanel();
+    // TODO: Handle multiple images in Picture property
+    if(currentImageList !=null && currentImageList.length > 0 && currentListFirst.length == currentListSecond.length) {
+      listViewWidget.clear();
+      createFilterBox();
+
+      if (filterShowing) {
+        textBoxWidget.setVisible(true);
+      } else {
+        textBoxWidget.setVisible(false);
+      }
+      for (int i = 0; i < currentListFirst.length; i++) {
+        createLabelItem(i);
+        createImageItem(0);
+        createLabelPanel();
+      }
     }
-  }
   }
 
   private void createLabelItem(int i) {
@@ -265,13 +280,127 @@ public final class MockRecyclerView extends MockVisibleComponent {
     panelForItem.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
     ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
 
-
     //panelForItem.add(labelInItemFirst);
     panelForItem.add(image);
     panelForItem.add(listItemWidget);
     listViewWidget.add(panelForItem);
   }
 
+  private void displayOnDesigner(String value) {
+    currentItems.clear();
+    JSONValue jsonValue = (value.isEmpty() || value.equals("")) ? null : JSONParser.parseStrict(value);
+    if(jsonValue != null) {
+      JSONArray array = jsonValue.isArray();
+      for(int i = 0; i < array.size(); ++i) {
+        JSONObject jsonObject = array.get(i).isObject();
+        currentItems.add(i, jsonObject);
+      }
+      if(!currentItems.isEmpty()) {
+        createLabelItems(currentItems);
+      }
+    }
+  }
+
+
+  private void createLabelItems(ArrayList<JSONObject> arrayList) {
+    listViewWidgets.clear();
+    createFilterBox();
+
+    if (filterShowing) {
+      textBoxWidget.setVisible(true);
+    } else {
+      textBoxWidget.setVisible(false);
+    }
+
+    for(int i = 0; i < arrayList.size(); ++i) {
+      JSONObject object = arrayList.get(i);
+      /*if (layout.equals("0")) {
+        verticalItemPanel = new VerticalPanel();
+        verticalItemPanel.setStylePrimaryName("listViewItemStyle");
+        verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+       ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        listViewWidget.add(verticalItemPanel);
+      } else if(layout.equals("1")) {
+        verticalItemPanel = new VerticalPanel();
+        verticalItemPanel.setStylePrimaryName("listViewItemStyle");
+        verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text2, detailTextColor));
+        listViewWidget.add(verticalItemPanel);
+      } else if(layout.equals("2")) {
+        horizontalItemPanel = new HorizontalPanel();
+        horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
+        horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+       ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        InlineLabel label1 = createInlineLabel(text1, textColor);
+        label1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        InlineLabel label2 = createInlineLabel(text2, detailTextCoslor);
+        label2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+//        horizontalItemPanel.setCellWidth(label1, "150px");
+//        horizontalItemPanel.setCellWidth(label2, "150px");
+        horizontalItemPanel.add(label1);
+        horizontalItemPanel.add(label2);
+//        horizontalItemPanel.setCellHorizontalAlignment(label1, HasHorizontalAlignment.ALIGN_LEFT);
+//        horizontalItemPanel.setCellHorizontalAlignment(label2, HasHorizontalAlignment.ALIGN_RIGHT);
+        listViewWidget.add(horizontalItemPanel);
+      } else */
+      //if (layout.equals("3")) {
+        horizontalItemPanel = new HorizontalPanel();
+        horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
+        horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
+        horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
+        horizontalItemPanel.add(createInlineLabel(text1, textColor));
+        horizontalItemPanel.add(createInlineLabel(text2, textColor));
+        listViewWidgets.add(horizontalItemPanel);
+      //}
+    }
+  }
+
+  private InlineLabel createInlineLabel(String value, String color) {
+    InlineLabel label = new InlineLabel(value);
+    //label.setSize("50%==", heightValue);
+    MockComponentsUtil.setWidgetBackgroundColor(label, backgroundColor);
+    MockComponentsUtil.setWidgetTextColor(label, color);
+    return label;
+  }
+
+
+  private Image createImage(String imageName, String widthValue, String heightValue) {
+      Image image = new Image();
+      String url = convertImagePropertyValueToUrl(imageName);
+      if (url == null) {
+          // text was not recognized as an asset. Just display the icon for this type of component.
+          image.setUrl(getIconImage().getUrl());
+      } else {
+          image.setUrl(url);
+          image.setSize(widthValue, heightValue);
+      }
+
+
+      return image;
+  }
+
+private void updateLayoutType(String value) {
+    layout = value;
+    YoungAndroidListViewAddDataPropertyEditor editor =
+        (YoungAndroidListViewAddDataPropertyEditor) properties.getProperty(PROPERTY_NAME_LISTVIEW_ADD_DATA).getEditor();
+    editor.setLayout(layout);
+ //   if(!currentItems.isEmpty()) {
+ //     createLabelItem(currentItems);
+ //   }
+  }
   // PropertyChangeListener implementation
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
@@ -315,6 +444,23 @@ public final class MockRecyclerView extends MockVisibleComponent {
       refreshForm();
     }else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_IMAGES)) {
      addNewPicture(newValue); // setUrl() triggers onLoad
+    }else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
+    // addNewPicture(newValue); // setUrl() triggers onLoad
+      displayOnDesigner(newValue);
+      if (currentListFirst != null) {
+        setElementsFromStringFirstProperty(currentElementsFirst);
+      }
+      if (currentListSecond != null) {
+        setElementsFromStringSecondProperty(currentElementsSecond);
+      }
+      if (currentImageList != null) {
+        setElementImagesProperty(currentImage);
+      }
+      refreshForm();
+    
+    }else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_LAYOUT)) {
+      updateLayoutType(newValue);
+      refreshForm();
     }
   }
 

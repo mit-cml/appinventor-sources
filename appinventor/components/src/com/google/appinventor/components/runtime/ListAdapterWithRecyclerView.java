@@ -64,7 +64,17 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
         ViewCompat.setElevation(relativeLayout, 20);
        
-       // CardView cardView = new CardView(context);
+       //CardView cardView = new CardView(context);
+       CardView cardView=new CardView(context);
+        cardView.setUseCompatPadding(true);
+        cardView.setContentPadding(30, 30, 30, 0);
+        cardView.setPreventCornerOverlap(true);
+        //cardView.setCardBackgroundColor(Color.WHITE);
+        cardView.setCardElevation(2.1f);
+        cardView.setRadius(0);
+        cardView.setMaxCardElevation(3f);
+
+
         TextView textViewFirst=new TextView(context);
         TextView textViewSecond=new TextView(context);
         ImageView imageView = new ImageView(context);
@@ -101,6 +111,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
         LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1);
         layoutParamsImage.setMargins(5,5,5,5);
+        //imageView.getLayoutParams().height = 20;
+        //imageView.getLayoutParams().width = 20;
         imageView.setLayoutParams(layoutParamsImage);
 
         RelativeLayout.LayoutParams params1=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -109,15 +121,24 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         textViewFirst.setLayoutParams(layoutParams1);
         textViewSecond.setLayoutParams(layoutParams2);
 
-        textViewFirst.setTextSize(20);
-        textViewSecond.setTextSize(20);
+        textViewFirst.setTextSize(textSize);
+        textViewSecond.setTextSize(textSize);
+
+
+        textViewFirst.setTextColor(textColor);
+        textViewSecond.setTextColor(textColor);
 
         linearLayout1.addView(imageView);
         linearLayout1.addView(linearLayout2);
-        relativeLayout.addView(linearLayout1);
-        relativeLayout.setLayoutParams(params1);
+       // relativeLayout.addView(linearLayout1);
+       // relativeLayout.setLayoutParams(params1);
+        //cardView.addView(imageView);
+        //cardView.addView(linearLayout2);
+        cardView.addView(linearLayout1);
+        cardView.setLayoutParams(params1);
+        
 
-        return new RvViewHolder(relativeLayout);
+        return new RvViewHolder(cardView);
 
  }
 
@@ -128,9 +149,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         //    String path = images[position];
             Drawable drawable = images.get(position);   
             ViewUtil.setImage(holder.imageVieww, drawable);
-
-
-
 
             holder.textViewFirst.setText(first);
             holder.textViewSecond.setText(second);
