@@ -99,7 +99,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      * @param elements  Comma-separated values of Chart entries alternating between x and y values.
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
+                    userVisible = false)
     public void ElementsFromPairs(String elements) {
         // Base case:  nothing to add
         if (elements.equals("")) {
