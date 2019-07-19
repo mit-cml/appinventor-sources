@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileColumnSelectorPropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -18,10 +19,10 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   private static final int MAX_ROWS = 10; // The maximum rows to save in the CSV File
   private static final String PROPERTY_NAME_SOURCE_FILE = "SourceFile";
-  private static final String PROPERTY_NAME_COLUMN_NAMES = "ColumnNames";
 
   private List<String> columnNames;
   private List<List<String>> rows;
+  private List<YoungAndroidCsvFileColumnSelectorPropertyEditor> columnSelectors;
 
   private String sourceFile;
 
@@ -31,13 +32,14 @@ public class MockCSVFile extends MockNonVisibleComponent {
    */
   public MockCSVFile(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
+
+    columnSelectors = new ArrayList<YoungAndroidCsvFileColumnSelectorPropertyEditor>();
   }
 
   private void setSourceFileProperty(String fileSource) {
     this.sourceFile = fileSource;
 
     columnNames = new ArrayList<String>();
-    changeProperty(PROPERTY_NAME_COLUMN_NAMES, "");
 
     // Check that the SourceFile property is a valid file
     if (fileSource == null || fileSource.equals("")) {
@@ -57,7 +59,10 @@ public class MockCSVFile extends MockNonVisibleComponent {
       @Override
       public void onSuccess(List<List<String>> result) {
         columnNames = result.get(0);
-        changeProperty(PROPERTY_NAME_COLUMN_NAMES, columnNames.toString());
+
+        for (YoungAndroidCsvFileColumnSelectorPropertyEditor selector : columnSelectors) {
+          selector.updateColumns();
+        }
       }
     });
   }
@@ -73,5 +78,15 @@ public class MockCSVFile extends MockNonVisibleComponent {
     if (propertyName.equals(PROPERTY_NAME_SOURCE_FILE)) {
       setSourceFileProperty(newValue);
     }
+  }
+
+  public void addColumnSelector(YoungAndroidCsvFileColumnSelectorPropertyEditor selector) {
+    if (!columnSelectors.contains(selector)) {
+      columnSelectors.add(selector);
+    }
+  }
+
+  public void removeColumnSelector(YoungAndroidCsvFileColumnSelectorPropertyEditor selector) {
+    columnSelectors.remove(selector);
   }
 }

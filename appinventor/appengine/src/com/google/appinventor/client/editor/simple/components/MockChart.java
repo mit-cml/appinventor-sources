@@ -205,7 +205,6 @@ public final class MockChart extends MockContainer {
             // Change the properties of the instantiated data component
             data.changeProperty("CsvXColumn", XColumn);
             data.changeProperty("CsvYColumn", column);
-            data.changeProperty("CsvColumns", XColumn + "," + column);
             data.changeProperty("Label", column);
             data.changeProperty("Source", csvSource.getName());
         }

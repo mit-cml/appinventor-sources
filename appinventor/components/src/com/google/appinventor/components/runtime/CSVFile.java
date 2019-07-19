@@ -82,7 +82,6 @@ public class CSVFile extends FileBase {
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
             " of the CSV contents.")
-    @DesignerProperty
     public YailList ColumnNames() {
         return getCSVPropertyHelper(new Callable<YailList>() {
             @Override

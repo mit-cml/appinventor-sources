@@ -23,7 +23,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     private String label;
     private int color;
 
-    private YailList csvColumns;
+    protected String csvXColumn = "";
+    protected String csvYColumn = "";
+
     private CSVFile dataSource;
     private ExecutorService threadRunner;
 
@@ -200,43 +202,33 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     }
 
     /**
-     * Sets the CSV columns to parse data from the CSV source.
+     * Sets the CSV column to parse data from the CSV source for the x values.
      *
-     * @param columns  CSV representation of the column names (e.g. A,B will
-     *                 use A for the x values, and B for the y values)
+     * @param column  name of the column for the x values
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="Sets the columns of the CSV file to parse data from." +
-            "The columns must be specified in a CSV format, e.g. A,B will will use " +
-            "A for the x values, and B for the y values.",
-            category = PropertyCategory.BEHAVIOR,
-                userVisible = false)
-    public void CsvColumns(String columns) {
-        try {
-            this.csvColumns = CsvUtil.fromCsvRow(columns);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    // TODO: JavaDoc
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
-    @SimpleProperty(description="TODO",
+    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the x values." +
+        "If a column is not specified, default values for the x values will be generated instead.",
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
     public void CsvXColumn(String column) {
-        // TODO: Implement
+        this.csvXColumn = column;
     }
 
-    // TODO: JavaDoc
+    /**
+     * Sets the CSV column to parse data from the CSV source for the y values.
+     *
+     * @param column  name of the column for the y values
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
-    @SimpleProperty(description="TODO",
+    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the y values." +
+        "If a column is not specified, default values for the y values will be generated instead.",
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
     public void CsvYColumn(String column) {
-        // TODO: Implement
+        this.csvYColumn = column;
     }
+
 
     /**
      * Sets the Data Source for the Chart data component. The data
@@ -254,9 +246,18 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         this.dataSource = dataSource;
 
         if (initialized) {
-            importFromCSVAsync(dataSource, csvColumns);
+            importFromAttachedCSVSource(dataSource);
         }
     }
+
+    /**
+     * Imports data from the local CSV column variables and the
+     * attached CSVFile component.
+     *
+     * Declared abstract since subclasses might have different
+     * dimensions.
+     */
+    protected abstract void importFromAttachedCSVSource(final CSVFile dataSource);
 
     /**
      * Refreshes the Chart view object.

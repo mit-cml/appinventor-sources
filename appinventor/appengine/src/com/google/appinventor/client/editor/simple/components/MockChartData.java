@@ -15,7 +15,6 @@ public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
-    private static final String PROPERTY_CSV_COLUMNS = "CsvColumns";
     private static final String PROPERTY_CSV_X_COLUMN = "CsvXColumn";
     private static final String PROPERTY_CSV_Y_COLUMN = "CsvYColumn";
 
@@ -70,7 +69,6 @@ public abstract class MockChartData extends MockVisibleComponent {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
-                propertyName.equals(PROPERTY_CSV_COLUMNS) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
                 propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
             return false;
@@ -118,7 +116,6 @@ public abstract class MockChartData extends MockVisibleComponent {
         boolean showCSVColumns = (sourceComponent != null && sourceComponent.getType().equals("CSVFile"));
 
         // Hide or show the CsvColumns property depending on condition
-        hideProperty(PROPERTY_CSV_COLUMNS, showCSVColumns);
         hideProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
         hideProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
