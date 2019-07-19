@@ -13,9 +13,11 @@ import java.util.List;
 public class MockCSVFile extends MockNonVisibleComponent {
   public static final String TYPE = "CSVFile";
 
+  private static final int MAX_ROWS = 10; // The maximum rows to save in the CSV File
   private static final String PROPERTY_NAME_SOURCE_FILE = "SourceFile";
 
   private List<String> columnNames;
+  private List<List<String>> rows;
 
   /**
    * Creates a new instance of a CSVFile component whose icon is
@@ -55,8 +57,6 @@ public class MockCSVFile extends MockNonVisibleComponent {
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-
-    OdeLog.log(propertyName + " " + newValue);
 
     if (propertyName.equals(PROPERTY_NAME_SOURCE_FILE)) {
       setSourceFileProperty(newValue);
