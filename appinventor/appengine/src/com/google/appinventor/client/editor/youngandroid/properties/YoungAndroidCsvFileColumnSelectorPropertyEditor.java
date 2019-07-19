@@ -22,7 +22,7 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
   // UI elements
   private final ListBox columnsList;
 
-  protected final ListWithNone choices;
+  protected ListWithNone choices;
 
   // The YaFormEditor associated with this property editor.
   private final YaFormEditor editor;
@@ -42,27 +42,7 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     selectorPanel.add(columnsList);
     selectorPanel.setWidth("100%");
 
-    choices = new ListWithNone(MESSAGES.noneCaption(), new ListWithNone.ListBoxWrapper() {
-      @Override
-      public void addItem(String item) {
-        columnsList.addItem(item);
-      }
-
-      @Override
-      public String getItem(int index) {
-        return columnsList.getItemText(index);
-      }
-
-      @Override
-      public void removeItem(int index) {
-        columnsList.removeItem(index);
-      }
-
-      @Override
-      public void setSelectedIndex(int index) {
-        columnsList.setSelectedIndex(index);
-      }
-    });
+    initializeChoices();
 
     // At this point, the editor hasn't finished loading.
     // Use a DeferredCommand to finish the initialization after the editor has finished loading.
@@ -125,11 +105,53 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     return true;
   }
 
+  private void initializeChoices() {
+    columnsList.clear();
+
+    choices = new ListWithNone(MESSAGES.noneCaption(), new ListWithNone.ListBoxWrapper() {
+      @Override
+      public void addItem(String item) {
+        columnsList.addItem(item);
+      }
+
+      @Override
+      public String getItem(int index) {
+        return columnsList.getItemText(index);
+      }
+
+      @Override
+      public void removeItem(int index) {
+        columnsList.removeItem(index);
+      }
+
+      @Override
+      public void setSelectedIndex(int index) {
+        columnsList.setSelectedIndex(index);
+      }
+    });
+  }
+
   public void changeSource(String source) {
     List<String> columns = ((MockCSVFile)editor.getComponents().get(source)).getColumnNames();
 
+    initializeChoices();
+
+    if (columns == null) {
+      return;
+    }
+
+    boolean found = false;
+
     for (String column : columns) {
+      if (!found) {
+        found = property.getValue().equals(column);
+      }
+
       choices.addItem(column);
+    }
+
+    if (!found) {
+      property.setValue("");
     }
   }
 }
