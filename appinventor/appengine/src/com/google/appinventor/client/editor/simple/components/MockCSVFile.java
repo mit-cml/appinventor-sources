@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileColumnSelectorPropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
@@ -50,8 +51,6 @@ public class MockCSVFile extends MockNonVisibleComponent {
     // Read the media file
     long projectId = editor.getProjectId();
 
-    ErrorReporter.reportInfo(MESSAGES.csvFileReadingMessage(sourceFile, this.getName()));
-
     Ode.getInstance().getProjectService().loadDataFile(projectId, "assets/" + fileSource,
         new AsyncCallback<List<List<String>>>() {
       @Override
@@ -67,6 +66,8 @@ public class MockCSVFile extends MockNonVisibleComponent {
         ErrorReporter.hide();
       }
     });
+
+    ErrorReporter.reportInfo(MESSAGES.csvFileReadingMessage(sourceFile, this.getName()));
   }
 
   public List<String> getColumnNames() {
