@@ -6,7 +6,9 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,9 +17,11 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   private static final int MAX_ROWS = 10; // The maximum rows to save in the CSV File
   private static final String PROPERTY_NAME_SOURCE_FILE = "SourceFile";
+  private static final String PROPERTY_NAME_COLUMN_NAMES = "ColumnNames";
 
   private List<String> columnNames;
   private List<List<String>> rows;
+  private String sourceFile;
 
   /**
    * Creates a new instance of a CSVFile component whose icon is
@@ -28,6 +32,11 @@ public class MockCSVFile extends MockNonVisibleComponent {
   }
 
   private void setSourceFileProperty(String fileSource) {
+    this.sourceFile = fileSource;
+
+    columnNames = new ArrayList<String>();
+    changeProperty(PROPERTY_NAME_COLUMN_NAMES, "");
+
     // Check that the SourceFile property is a valid file
     if (fileSource == null || fileSource.equals("")) {
       return;
@@ -46,6 +55,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
       public void onSuccess(String result) {
         // TODO: Switch to CSVParser
         columnNames = Arrays.asList(result.split("\n")[0].split(","));
+        changeProperty(PROPERTY_NAME_COLUMN_NAMES, columnNames.toString());
       }
     });
   }

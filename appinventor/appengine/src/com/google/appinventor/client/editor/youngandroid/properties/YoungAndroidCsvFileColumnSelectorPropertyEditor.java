@@ -4,6 +4,7 @@ import com.google.appinventor.client.editor.simple.components.FormChangeListener
 import com.google.appinventor.client.editor.simple.components.MockCSVFile;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -18,7 +19,7 @@ import java.util.Set;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class YoungAndroidCsvFileColumnSelectorPropertyEditor
-    extends AdditionalChoicePropertyEditor {
+    extends AdditionalChoicePropertyEditor implements FormChangeListener {
   // UI elements
   private final ListBox columnsList;
 
@@ -26,6 +27,8 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
 
   // The YaFormEditor associated with this property editor.
   private final YaFormEditor editor;
+
+  private String source;
 
   /**
    * Creates a new property editor for selecting a component.
@@ -62,6 +65,9 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
   }
 
   private void finishInitialization() {
+    // Add a FormChangeListener so we'll know when components are added/removed/renamed.
+    editor.getForm().addFormChangeListener(this);
+
     // Fill choices with the components.
 //    for (MockComponent component : editor.getComponents().values()) {
 //      if (componentTypes == null || componentTypes.contains(component.getType())) {
@@ -132,11 +138,13 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
   }
 
   public void changeSource(String source) {
+    this.source = source;
+
     List<String> columns = ((MockCSVFile)editor.getComponents().get(source)).getColumnNames();
 
     initializeChoices();
 
-    if (columns == null) {
+    if (columns == null || columns.isEmpty()) {
       return;
     }
 
@@ -153,5 +161,32 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     if (!found) {
       property.setValue("");
     }
+  }
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getName().equals(source) && propertyName.equals("ColumnNames")) {
+      changeSource(source);
+    }
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }
