@@ -219,6 +219,25 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         }
     }
 
+
+    // TODO: JavaDoc
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
+    @SimpleProperty(description="TODO",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void CsvXColumn(String column) {
+        // TODO: Implement
+    }
+
+    // TODO: JavaDoc
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
+    @SimpleProperty(description="TODO",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void CsvYColumn(String column) {
+        // TODO: Implement
+    }
+
     /**
      * Sets the Data Source for the Chart data component. The data
      * is then automatically imported.

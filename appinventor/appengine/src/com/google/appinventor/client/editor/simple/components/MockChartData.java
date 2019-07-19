@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileColumnSelectorPropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
@@ -15,6 +16,8 @@ public abstract class MockChartData extends MockVisibleComponent {
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
     private static final String PROPERTY_CSV_COLUMNS = "CsvColumns";
+    private static final String PROPERTY_CSV_X_COLUMN = "CsvXColumn";
+    private static final String PROPERTY_CSV_Y_COLUMN = "CsvYColumn";
 
     // Represents the Chart data icon
     private Image iconWidget;
@@ -67,7 +70,9 @@ public abstract class MockChartData extends MockVisibleComponent {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
-                propertyName.equals(PROPERTY_CSV_COLUMNS)) {
+                propertyName.equals(PROPERTY_CSV_COLUMNS) ||
+                propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
+                propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
             return false;
         }
 
@@ -114,6 +119,21 @@ public abstract class MockChartData extends MockVisibleComponent {
 
         // Hide or show the CsvColumns property depending on condition
         hideProperty(PROPERTY_CSV_COLUMNS, showCSVColumns);
+        hideProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
+        hideProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
+
+        if (showCSVColumns) {
+            YoungAndroidCsvFileColumnSelectorPropertyEditor xEditor =
+                (YoungAndroidCsvFileColumnSelectorPropertyEditor)
+                    properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
+
+            YoungAndroidCsvFileColumnSelectorPropertyEditor yEditor =
+                (YoungAndroidCsvFileColumnSelectorPropertyEditor)
+                    properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
+
+            xEditor.changeSource(source);
+            yEditor.changeSource(source);
+        }
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel.
