@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public abstract class MockChartData extends MockVisibleComponent {
+public abstract class MockChartData extends MockVisibleComponent implements CSVFileColumnChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
@@ -128,8 +128,8 @@ public abstract class MockChartData extends MockVisibleComponent {
                 (YoungAndroidCsvFileColumnSelectorPropertyEditor)
                     properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
-            xEditor.changeSource(source);
-            yEditor.changeSource(source);
+            xEditor.changeSource((MockCSVFile)sourceComponent);
+            yEditor.changeSource((MockCSVFile)sourceComponent);
         }
 
         // If the component is currently selected, re-select it to refresh
@@ -203,5 +203,10 @@ public abstract class MockChartData extends MockVisibleComponent {
         for (EditableProperty property : properties) {
             onPropertyChange(property.getName(), property.getValue());
         }
+    }
+
+    @Override
+    public void onColumnChange() {
+
     }
 }

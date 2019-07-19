@@ -29,7 +29,6 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
   // The YaFormEditor associated with this property editor.
   private final YaFormEditor editor;
 
-  private String source;
   private MockCSVFile csvFile;
 
   /**
@@ -129,18 +128,16 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
     });
   }
 
-  public void changeSource(String source) {
-    if (!source.equals(this.source) && csvFile != null) {
+  public void changeSource(MockCSVFile source) {
+    if (csvFile != null) {
       csvFile.removeColumnChangeListener(this);
     }
 
-    this.source = source;
-
-    if (source.equals("")) {
+    if (source == null) {
       return;
     }
 
-    csvFile = ((MockCSVFile)editor.getComponents().get(source));
+    csvFile = source;
     csvFile.addColumnChageListener(this);
 
     updateColumns();
