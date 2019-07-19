@@ -249,7 +249,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
                     "include CSVFiles.")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
 

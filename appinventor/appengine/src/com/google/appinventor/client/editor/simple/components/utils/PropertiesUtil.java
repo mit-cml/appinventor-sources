@@ -242,11 +242,6 @@ public class PropertiesUtil {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE)) {
       return new YoungAndroidChartTypeChoicePropertyEditor();
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
-      return new YoungAndroidChartSourceSelectorPropertyEditor(editor,
-              // Pass the set of component types that will be shown in the property editor,
-              // in this case, just "BluetoothClient".
-              Collections.singleton("CSVFile"));
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN)) {
       return new YoungAndroidCsvFileColumnSelectorPropertyEditor(editor);
     } else {

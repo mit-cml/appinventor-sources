@@ -317,7 +317,5 @@ public class PropertyTypeConstants {
      */
     public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
 
-    public static final String PROPERTY_TYPE_CHART_DATA_SOURCE = "chart_data_source";
-
     public static final String PROPERTY_TYPE_CSV_COLUMN = "csv_file_column";
 }
