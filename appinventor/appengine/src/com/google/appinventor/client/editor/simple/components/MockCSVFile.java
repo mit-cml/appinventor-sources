@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.*;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 public class MockCSVFile extends MockNonVisibleComponent {
   public static final String TYPE = "CSVFile";
 
@@ -48,6 +50,8 @@ public class MockCSVFile extends MockNonVisibleComponent {
     // Read the media file
     long projectId = editor.getProjectId();
 
+    ErrorReporter.reportInfo(MESSAGES.csvFileReadingMessage(sourceFile, this.getName()));
+
     Ode.getInstance().getProjectService().loadDataFile(projectId, "assets/" + fileSource,
         new AsyncCallback<List<List<String>>>() {
       @Override
@@ -60,6 +64,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
         rows = result;
         columnNames = result.get(0);
         updateColumnChangeListeners();
+        ErrorReporter.hide();
       }
     });
   }
