@@ -4,6 +4,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -21,6 +22,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   private List<String> columnNames;
   private List<List<String>> rows;
+
   private String sourceFile;
 
   /**
@@ -43,7 +45,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
     }
 
     // Read the media file
-    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    long projectId = editor.getProjectId();
 
     Ode.getInstance().getProjectService().load(projectId, "assets/" + fileSource, new AsyncCallback<String>() {
       @Override
