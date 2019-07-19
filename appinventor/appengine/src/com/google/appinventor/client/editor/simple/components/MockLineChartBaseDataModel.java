@@ -107,4 +107,37 @@ public abstract class MockLineChartBaseDataModel extends MockChartDataModel<Scat
         dataSeries.setLineTension(0);
         dataSeries.setShowLine(true);
     }
+
+    @Override
+    public void setElementsFromCSV(List<List<String>> rows, List<String> columns) {
+        List<String> columnNames = rows.get(0);
+
+        StringBuilder elementStringBuilder = new StringBuilder();
+        List<Integer> indexes = new ArrayList<Integer>();
+
+        for (String column : columns) {
+            int index = columnNames.indexOf(column);
+            indexes.add(index);
+        }
+
+        for (int i = 1; i < rows.size(); ++i) {
+            List<String> row = rows.get(i);
+
+            for (int j = 0; j < indexes.size(); ++j) {
+                int index = indexes.get(j);
+
+                if (index < 0) {
+                    elementStringBuilder.append(i);
+                } else {
+                    elementStringBuilder.append(row.get(index));
+                }
+
+                if (i != rows.size() - 1 || j != indexes.size() - 1) {
+                    elementStringBuilder.append(",");
+                }
+            }
+        }
+
+        setElements(elementStringBuilder.toString());
+    }
 }

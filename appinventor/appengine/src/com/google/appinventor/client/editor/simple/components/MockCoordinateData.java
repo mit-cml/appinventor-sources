@@ -16,4 +16,18 @@ public class MockCoordinateData extends MockChartData {
     public MockCoordinateData(SimpleEditor editor) {
         super(editor, TYPE, images.tinyDB());
     }
+
+    @Override
+    public void onColumnChange() {
+        if (!(dataSource instanceof MockCSVFile)) {
+            return;
+        }
+
+        List<List<String>> rows = ((MockCSVFile)(dataSource)).getRows();
+
+        List<String> columns = Arrays.asList(csvXColumn, csvYColumn);
+        chartDataModel.setElementsFromCSV(rows, columns);
+
+        refreshChart();
+    }
 }

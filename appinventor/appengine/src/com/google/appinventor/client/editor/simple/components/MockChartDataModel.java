@@ -96,4 +96,6 @@ public abstract class MockChartDataModel<D extends Dataset> {
      * Sets the default styling properties of the Data Series.
      */
     protected abstract void setDefaultStylingProperties();
+
+    public abstract void setElementsFromCSV(List<List<String>> rows, List<String> columns);
 }

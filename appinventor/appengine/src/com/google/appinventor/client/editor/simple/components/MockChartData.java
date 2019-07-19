@@ -23,6 +23,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
 
     protected MockChart chart;
     protected MockChartDataModel chartDataModel;
+    protected MockComponent dataSource;
+
+    protected String csvXColumn = "";
+    protected String csvYColumn = "";
 
     private String currentElements = "";
 
@@ -110,10 +114,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      */
     private void setSourceProperty(String source) {
         // Get the newly attached Source component
-        MockComponent sourceComponent = editor.getComponents().getOrDefault(source, null);
+        dataSource = editor.getComponents().getOrDefault(source, null);
 
         // Show the CSVColumns property only if the attached Source component is of type CSVFile
-        boolean showCSVColumns = (sourceComponent != null && sourceComponent.getType().equals("CSVFile"));
+        boolean showCSVColumns = (dataSource != null && dataSource.getType().equals("CSVFile"));
 
         // Hide or show the CsvColumns property depending on condition
         hideProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
@@ -128,8 +132,11 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
                 (YoungAndroidCsvFileColumnSelectorPropertyEditor)
                     properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
-            xEditor.changeSource((MockCSVFile)sourceComponent);
-            yEditor.changeSource((MockCSVFile)sourceComponent);
+            xEditor.changeSource((MockCSVFile)dataSource);
+            yEditor.changeSource((MockCSVFile)dataSource);
+
+            ((MockCSVFile)dataSource).addColumnChageListener(this);
+            onColumnChange();
         }
 
         // If the component is currently selected, re-select it to refresh
@@ -137,6 +144,16 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         if (isSelected()) {
             onSelectedChange(true);
         }
+    }
+
+    private void setCSVXColumnProperty(String column) {
+        this.csvXColumn = column;
+        onColumnChange();
+    }
+
+    private void setCSVYColumnProperty(String column) {
+        this.csvYColumn = column;
+        onColumnChange();
     }
 
     /**
@@ -180,6 +197,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             refreshChart();
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_CSV_X_COLUMN)) {
+            setCSVXColumnProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
+            setCSVYColumnProperty(newValue);
         }
     }
 
@@ -203,10 +224,5 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         for (EditableProperty property : properties) {
             onPropertyChange(property.getName(), property.getValue());
         }
-    }
-
-    @Override
-    public void onColumnChange() {
-
     }
 }

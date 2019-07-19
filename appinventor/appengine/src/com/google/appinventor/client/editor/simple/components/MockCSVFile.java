@@ -57,6 +57,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
       @Override
       public void onSuccess(List<List<String>> result) {
+        rows = result;
         columnNames = result.get(0);
         updateColumnChangeListeners();
       }
@@ -65,6 +66,10 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   public List<String> getColumnNames() {
     return columnNames;
+  }
+
+  public List<List<String>> getRows() {
+    return rows;
   }
 
   @Override
