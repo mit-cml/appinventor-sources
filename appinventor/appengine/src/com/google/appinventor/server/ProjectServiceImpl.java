@@ -16,6 +16,7 @@ import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.util.CsvParser;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -42,6 +43,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -343,6 +345,27 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  @Override
+  public List<List<String>> loadDataFile(long projectId, String fileId) {
+    String result = load(projectId, fileId);
+
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
+    CsvParser csvParser = new CsvParser(inputStream);
+
+    List<List<String>> csvRows = new ArrayList<List<String>>();
+
+    for (int i = 0; i <= 10; ++i) {
+      if (!csvParser.hasNext()) {
+        break;
+      }
+
+      List<String> row = csvParser.next();
+      csvRows.add(row);
+    }
+
+    return csvRows;
   }
 
   /**

@@ -47,16 +47,16 @@ public class MockCSVFile extends MockNonVisibleComponent {
     // Read the media file
     long projectId = editor.getProjectId();
 
-    Ode.getInstance().getProjectService().load(projectId, "assets/" + fileSource, new AsyncCallback<String>() {
+    Ode.getInstance().getProjectService().loadDataFile(projectId, "assets/" + fileSource,
+        new AsyncCallback<List<List<String>>>() {
       @Override
       public void onFailure(Throwable caught) {
         ErrorReporter.reportError(caught.getMessage());
       }
 
       @Override
-      public void onSuccess(String result) {
-        // TODO: Switch to CSVParser
-        columnNames = Arrays.asList(result.split("\n")[0].split(","));
+      public void onSuccess(List<List<String>> result) {
+        columnNames = result.get(0);
         changeProperty(PROPERTY_NAME_COLUMN_NAMES, columnNames.toString());
       }
     });
