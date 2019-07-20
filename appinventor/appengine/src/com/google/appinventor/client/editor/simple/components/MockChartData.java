@@ -1,13 +1,10 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvColumnSelectorProperty;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
-
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
@@ -159,12 +156,12 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         hideProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
         if (showCSVColumns) {
-            YoungAndroidCsvFileSelectorPropertyEditor xEditor =
-                (YoungAndroidCsvFileSelectorPropertyEditor)
+            YoungAndroidCsvColumnSelectorProperty xEditor =
+                (YoungAndroidCsvColumnSelectorProperty)
                     properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
 
-            YoungAndroidCsvFileSelectorPropertyEditor yEditor =
-                (YoungAndroidCsvFileSelectorPropertyEditor)
+            YoungAndroidCsvColumnSelectorProperty yEditor =
+                (YoungAndroidCsvColumnSelectorProperty)
                     properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
             xEditor.changeSource((MockCSVFile)dataSource);
