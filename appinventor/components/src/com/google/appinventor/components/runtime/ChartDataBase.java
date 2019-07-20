@@ -20,6 +20,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
+    // Properties used in Designer to import from CSV.
+    // Represents the names of the columns to use
+    // for the X and the Y values.
     protected String csvXColumn = "";
     protected String csvYColumn = "";
 
@@ -29,9 +32,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     private CSVFile dataSource;
     private String elements;
 
-    private ExecutorService threadRunner;
-
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
+    private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     /**
      * Creates a new Chart Data component.
@@ -106,6 +108,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     public void ElementsFromPairs(String elements) {
         this.elements = elements;
 
+        // If the specified String is empty, ignore import.
+        // If the Data component is not initialized, then ignore
+        // the importing (because if there is a Source property specified,
+        // ElementsFromPairs should not take effect to prevent data overriding)
         if (elements.equals("") || !initialized) {
             return;
         }
@@ -249,6 +255,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
 
+        // The data should only be imported after the Data component
+        // is initialize,d otherwise exceptions may be caused in case
+        // of very small data files.
         if (initialized) {
             importFromAttachedCSVSource(dataSource);
         }
@@ -299,6 +308,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         if (dataSource != null) {
             Source(dataSource);
         } else {
+            // If no Source is specified, the ElementsFromPairs
+            // property can be set instead. Otherwise, this is not
+            // set to prevent data overriding.
             ElementsFromPairs(elements);
         }
     }
