@@ -20,13 +20,15 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
-    private String label;
-    private int color;
-
     protected String csvXColumn = "";
     protected String csvYColumn = "";
 
+    private String label;
+    private int color;
+
     private CSVFile dataSource;
+    private String elements;
+
     private ExecutorService threadRunner;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
@@ -102,8 +104,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
                     userVisible = false)
     public void ElementsFromPairs(String elements) {
-        // Base case:  nothing to add
-        if (elements.equals("")) {
+        this.elements = elements;
+
+        if (elements.equals("") || !initialized) {
             return;
         }
 
@@ -295,6 +298,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         // on small data sets with regards to Chart refreshing.
         if (dataSource != null) {
             Source(dataSource);
+        } else {
+            ElementsFromPairs(elements);
         }
     }
 

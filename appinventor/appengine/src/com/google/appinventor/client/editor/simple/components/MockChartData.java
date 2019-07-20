@@ -116,6 +116,36 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 
+        // Hide ELements from Pairs property if a Data Source has been set
+        hideProperty(PROPERTY_PAIRS, (dataSource == null));
+
+        // Handle CSV-related property responses
+        handleCSVPropertySetting();
+
+        // If the Data Source is now null, set back the
+        // currentElements property
+        if (dataSource == null) {
+            onPropertyChange(PROPERTY_PAIRS, currentElements);
+        }
+
+        // If the component is currently selected, re-select it to refresh
+        // the Properties panel.
+        if (isSelected()) {
+            onSelectedChange(true);
+        }
+    }
+
+    private void setCSVXColumnProperty(String column) {
+        this.csvXColumn = column;
+        onColumnChange();
+    }
+
+    private void setCSVYColumnProperty(String column) {
+        this.csvYColumn = column;
+        onColumnChange();
+    }
+
+    private void handleCSVPropertySetting() {
         // Show the CSVColumns property only if the attached Source component is of type CSVFile
         boolean showCSVColumns = (dataSource != null && dataSource.getType().equals("CSVFile"));
 
@@ -138,22 +168,6 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             ((MockCSVFile)dataSource).addColumnChageListener(this);
             onColumnChange();
         }
-
-        // If the component is currently selected, re-select it to refresh
-        // the Properties panel.
-        if (isSelected()) {
-            onSelectedChange(true);
-        }
-    }
-
-    private void setCSVXColumnProperty(String column) {
-        this.csvXColumn = column;
-        onColumnChange();
-    }
-
-    private void setCSVYColumnProperty(String column) {
-        this.csvYColumn = column;
-        onColumnChange();
     }
 
     /**
