@@ -180,7 +180,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             xEditor.changeSource((MockCSVFile)dataSource);
             yEditor.changeSource((MockCSVFile)dataSource);
 
-            ((MockCSVFile)dataSource).addColumnChageListener(this);
+            ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
             onColumnsChange((MockCSVFile)dataSource);
         }
     }

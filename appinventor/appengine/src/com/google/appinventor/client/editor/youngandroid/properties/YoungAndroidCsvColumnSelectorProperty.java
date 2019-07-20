@@ -145,7 +145,7 @@ public class YoungAndroidCsvColumnSelectorProperty
     // Check if a CSVFile source exists, and if it does,
     // de-attach this selector from it.
     if (csvFile != null) {
-      csvFile.removeColumnChangeListener(this);
+      csvFile.removeCSVFileChangeListener(this);
     }
 
     // Update the csvFile source
@@ -153,7 +153,7 @@ public class YoungAndroidCsvColumnSelectorProperty
 
     if (csvFile != null) {
       // Register to listen for the CsvFile column change events
-      csvFile.addColumnChageListener(this);
+      csvFile.addCSVFileChangeListener(this);
 
       // Update the columns of the selector
       updateColumns();
