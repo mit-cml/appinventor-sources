@@ -110,39 +110,55 @@ public abstract class MockLineChartBaseDataModel extends MockChartDataModel<Scat
 
     @Override
     public void setElementsFromCSVRows(List<List<String>> rows, List<String> columns) {
+        // TODO: Refactor for more reusability
+
+        // No rows specified; Set elements to default values
         if (rows == null || rows.isEmpty()) {
             setElements("");
             return;
         }
 
+        // First row is interpreted as the CSV column names
         List<String> columnNames = rows.get(0);
 
-        StringBuilder elementStringBuilder = new StringBuilder();
-        List<Integer> indexes = new ArrayList<Integer>();
+        StringBuilder elementStringBuilder = new StringBuilder(); // Used for constructing CSV-formatted elements
+        List<Integer> indexes = new ArrayList<Integer>(); // Keep track of indexes representing column names
 
+        // Iterate through the parameter specified for the columns to parse
         for (String column : columns) {
+            // Get & store the index of the column
             int index = columnNames.indexOf(column);
             indexes.add(index);
         }
 
+        // Iterate through all the rows (except the first, which is the columnNames)
+        // The loop constructs a String of CSV values in format x1,y1,x2,y2,...,xn,yn
         for (int i = 1; i < rows.size(); ++i) {
             List<String> row = rows.get(i);
 
+            // Iterate through all the indexes (or columns, in other words)
             for (int j = 0; j < indexes.size(); ++j) {
+                // Get the index
                 int index = indexes.get(j);
 
-                if (index < 0) {
+                if (index < 0) { // Column not found
+                    // Use default value (just the i-th index)
                     elementStringBuilder.append(i);
-                } else {
+                } else { // Column found
+                    // The index represents the column to use from
+                    // the current row. Fetch the value and add it to the
+                    // result.
                     elementStringBuilder.append(row.get(index));
                 }
 
+                // Add a comma unless it is the very last entry
                 if (i != rows.size() - 1 || j != indexes.size() - 1) {
                     elementStringBuilder.append(",");
                 }
             }
         }
 
+        // Pass the constructed result to parse via CSV
         setElements(elementStringBuilder.toString());
     }
 }

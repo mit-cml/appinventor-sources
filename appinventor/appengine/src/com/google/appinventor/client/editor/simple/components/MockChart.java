@@ -176,8 +176,6 @@ public final class MockChart extends MockContainer {
      * @param csvSource  MockCSVFile component to instantiate components from
      */
     public void addCSVFile(MockCSVFile csvSource) {
-        MockChart.this.onSelectedChange(true); // otherwise the last imported component
-
         List<String> columnNames = csvSource.getColumnNames();
 
         for (String column : columnNames) {

@@ -21,6 +21,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
 
+    // Properties for selecting the CSVFile source columns to import from
     protected String csvXColumn = "";
     protected String csvYColumn = "";
 
@@ -131,11 +132,23 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         }
     }
 
+    /**
+     * Sets the CSV X Column property of the Chart Data component.
+     * After setting the property, the CSV data is then re-imported
+     * (if possible)
+     * @param column  new column name
+     */
     private void setCSVXColumnProperty(String column) {
         this.csvXColumn = column;
         updateCSVData();
     }
 
+    /**
+     * Sets the CSV Y Column property of the Chart Data component.
+     * After setting the property, the CSV data is then re-imported
+     * (if possible)
+     * @param column  new column name
+     */
     private void setCSVYColumnProperty(String column) {
         this.csvYColumn = column;
         updateCSVData();
