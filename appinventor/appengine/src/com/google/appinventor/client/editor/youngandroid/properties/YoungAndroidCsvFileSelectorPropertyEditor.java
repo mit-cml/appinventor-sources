@@ -1,26 +1,21 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import com.google.appinventor.client.editor.simple.components.CSVFileColumnChangeListener;
-import com.google.appinventor.client.editor.simple.components.FormChangeListener;
+import com.google.appinventor.client.editor.simple.components.CSVFileChangeListener;
 import com.google.appinventor.client.editor.simple.components.MockCSVFile;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-public class YoungAndroidCsvFileColumnSelectorPropertyEditor
-    extends AdditionalChoicePropertyEditor implements CSVFileColumnChangeListener {
+public class YoungAndroidCsvFileSelectorPropertyEditor
+    extends AdditionalChoicePropertyEditor implements CSVFileChangeListener {
   // UI elements
   private final ListBox columnsList;
 
@@ -36,7 +31,7 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
    *
    * @param editor the editor that this property editor belongs to
    */
-  public YoungAndroidCsvFileColumnSelectorPropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidCsvFileSelectorPropertyEditor(final YaFormEditor editor) {
     this.editor = editor;
 
     VerticalPanel selectorPanel = new VerticalPanel();
@@ -167,7 +162,11 @@ public class YoungAndroidCsvFileColumnSelectorPropertyEditor
   }
 
   @Override
-  public void onColumnChange() {
+  public void onColumnsChange(MockCSVFile csvFile) {
+    if (!this.csvFile.equals(csvFile)) {
+      return;
+    }
+
     updateColumns();
   }
 }

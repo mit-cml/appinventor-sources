@@ -2,14 +2,9 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileColumnSelectorPropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.*;
 
@@ -23,7 +18,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
   private List<String> columnNames;
   private List<List<String>> rows;
-  private Set<CSVFileColumnChangeListener> columnChangeListeners;
+  private Set<CSVFileChangeListener> columnChangeListeners;
 
   private String sourceFile;
 
@@ -34,7 +29,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
   public MockCSVFile(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
 
-    columnChangeListeners = new HashSet<CSVFileColumnChangeListener>();
+    columnChangeListeners = new HashSet<CSVFileChangeListener>();
   }
 
   private void setSourceFileProperty(String fileSource) {
@@ -87,11 +82,11 @@ public class MockCSVFile extends MockNonVisibleComponent {
     }
   }
 
-  public void addColumnChageListener(CSVFileColumnChangeListener listener) {
+  public void addColumnChageListener(CSVFileChangeListener listener) {
     columnChangeListeners.add(listener);
   }
 
-  public void removeColumnChangeListener(CSVFileColumnChangeListener listener) {
+  public void removeColumnChangeListener(CSVFileChangeListener listener) {
     columnChangeListeners.remove(listener);
   }
 
@@ -100,8 +95,8 @@ public class MockCSVFile extends MockNonVisibleComponent {
       return;
     }
 
-    for (CSVFileColumnChangeListener listener : columnChangeListeners) {
-      listener.onColumnChange();
+    for (CSVFileChangeListener listener : columnChangeListeners) {
+      listener.onColumnsChange(this);
     }
   }
 }

@@ -1,16 +1,15 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileColumnSelectorPropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileSelectorPropertyEditor;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineHTML;
-import com.google.gwt.user.client.ui.SimplePanel;
 
-public abstract class MockChartData extends MockVisibleComponent implements CSVFileColumnChangeListener {
+import java.util.Arrays;
+import java.util.List;
+
+public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
@@ -137,36 +136,42 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
 
     private void setCSVXColumnProperty(String column) {
         this.csvXColumn = column;
-        onColumnChange();
+        updateCSVData();
     }
 
     private void setCSVYColumnProperty(String column) {
         this.csvYColumn = column;
-        onColumnChange();
+        updateCSVData();
     }
+
+    /**
+     * Re-imports data into the Chart from the attached CSVFile source
+     * based on the current CSV column properties.
+     */
+    protected abstract void updateCSVData();
 
     private void handleCSVPropertySetting() {
         // Show the CSVColumns property only if the attached Source component is of type CSVFile
-        boolean showCSVColumns = (dataSource != null && dataSource.getType().equals("CSVFile"));
+        boolean showCSVColumns = (dataSource instanceof MockCSVFile);
 
         // Hide or show the CsvColumns property depending on condition
         hideProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
         hideProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
         if (showCSVColumns) {
-            YoungAndroidCsvFileColumnSelectorPropertyEditor xEditor =
-                (YoungAndroidCsvFileColumnSelectorPropertyEditor)
+            YoungAndroidCsvFileSelectorPropertyEditor xEditor =
+                (YoungAndroidCsvFileSelectorPropertyEditor)
                     properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
 
-            YoungAndroidCsvFileColumnSelectorPropertyEditor yEditor =
-                (YoungAndroidCsvFileColumnSelectorPropertyEditor)
+            YoungAndroidCsvFileSelectorPropertyEditor yEditor =
+                (YoungAndroidCsvFileSelectorPropertyEditor)
                     properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
             xEditor.changeSource((MockCSVFile)dataSource);
             yEditor.changeSource((MockCSVFile)dataSource);
 
             ((MockCSVFile)dataSource).addColumnChageListener(this);
-            onColumnChange();
+            onColumnsChange((MockCSVFile)dataSource);
         }
     }
 
@@ -238,5 +243,14 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         for (EditableProperty property : properties) {
             onPropertyChange(property.getName(), property.getValue());
         }
+    }
+
+    @Override
+    public void onColumnsChange(MockCSVFile csvFile) {
+        if (!dataSource.equals(csvFile)) {
+            return;
+        }
+
+        updateCSVData();
     }
 }

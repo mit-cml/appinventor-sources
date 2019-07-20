@@ -18,7 +18,7 @@ public class MockCoordinateData extends MockChartData {
     }
 
     @Override
-    public void onColumnChange() {
+    protected void updateCSVData() {
         if (!(dataSource instanceof MockCSVFile)) {
             return;
         }
