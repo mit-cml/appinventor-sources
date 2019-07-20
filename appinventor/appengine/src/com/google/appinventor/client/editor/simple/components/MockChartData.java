@@ -160,6 +160,17 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      */
     protected abstract void updateCSVData();
 
+    /**
+     * Handles properties with regards to a CSV source upon
+     * changing the Data Source of the Data component.
+     *
+     * The method shows/hides the CSV X and Y Column properties
+     * depending on the attached Source (if it's a CSVFile, then
+     * the properties will be shown, and hidden otherwise)
+     * If the properties are shown, the Column selectors
+     * are updated to track the new data source, and the
+     * data in the Data Series is updated.
+     */
     private void handleCSVPropertySetting() {
         // Show the CSVColumns property only if the attached Source component is of type CSVFile
         boolean showCSVColumns = (dataSource instanceof MockCSVFile);
@@ -169,6 +180,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         showProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
         if (showCSVColumns) {
+            // Get the Column property selectors
             YoungAndroidCsvColumnSelectorProperty xEditor =
                 (YoungAndroidCsvColumnSelectorProperty)
                     properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
@@ -177,10 +189,14 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
                 (YoungAndroidCsvColumnSelectorProperty)
                     properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
+            // Update the Source of the column selectors
             xEditor.changeSource((MockCSVFile)dataSource);
             yEditor.changeSource((MockCSVFile)dataSource);
 
+            // Add the current Data component as a CSVFileChangeListener to the CSVFile
             ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
+
+            // Update the data of the Data component to represent the CSVFile
             onColumnsChange((MockCSVFile)dataSource);
         }
     }
