@@ -169,31 +169,16 @@ public final class MockChart extends MockContainer {
     }
 
     /**
-     * Creates Data components from the specified comma separated values,
-     * attaches them as children to the Chart and sets the Source property
-     * of each instantiated data component to the specified.
+     * Creates Data components from the contents of the specified MockCSVFile component.
+     * The Data components are then attached as children to the Chart and the Source property
+     * of each individual Data component is set accordingly.
      *
-     * @param source  Data source name
-     * @param csv  CSV values to parse
-     */
-    /**
-     * Adds a new CSVFile component to the Chart, which parses
-     * the contents and creates Data components accordingly to the
-     * columns of the CSV file.
-     *
-     * For each column, a Data component is created.
-     *
-     * TODO: Multi-dimensional Chart data support
-     *
-     * @param csvSource MockNonVisible component of type CSVFile.
-     *                  If the type differs, the method simply returns.
+     * @param csvSource  MockCSVFile component to instantiate components from
      */
     public void addCSVFile(MockCSVFile csvSource) {
         MockChart.this.onSelectedChange(true); // otherwise the last imported component
 
         List<String> columnNames = csvSource.getColumnNames();
-
-        String XColumn = ""; // Use default option for the XColumn
 
         for (String column : columnNames) {
             // Create a new MockCoordinateData component and attach it to the Chart
@@ -203,7 +188,6 @@ public final class MockChart extends MockContainer {
             data.addToChart(MockChart.this);
 
             // Change the properties of the instantiated data component
-            data.changeProperty("CsvXColumn", XColumn);
             data.changeProperty("CsvYColumn", column);
             data.changeProperty("Label", column);
             data.changeProperty("Source", csvSource.getName());
