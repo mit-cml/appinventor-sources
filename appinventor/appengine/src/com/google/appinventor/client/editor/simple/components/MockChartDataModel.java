@@ -97,5 +97,14 @@ public abstract class MockChartDataModel<D extends Dataset> {
      */
     protected abstract void setDefaultStylingProperties();
 
-    public abstract void setElementsFromCSV(List<List<String>> rows, List<String> columns);
+    /**
+     * Sets the elements of the Data Series from the specified CSV rows.
+     *
+     * The first row is expected to contain the column names of the
+     * CSV rows.
+     *
+     * @param rows  Rows to parse data from (List of Lists of Strings)
+     * @param columns List of columns to use for parsing (List of names)
+     */
+    public abstract void setElementsFromCSVRows(List<List<String>> rows, List<String> columns);
 }

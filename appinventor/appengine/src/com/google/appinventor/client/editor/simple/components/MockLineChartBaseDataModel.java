@@ -109,7 +109,7 @@ public abstract class MockLineChartBaseDataModel extends MockChartDataModel<Scat
     }
 
     @Override
-    public void setElementsFromCSV(List<List<String>> rows, List<String> columns) {
+    public void setElementsFromCSVRows(List<List<String>> rows, List<String> columns) {
         if (rows == null || rows.isEmpty()) {
             setElements("");
             return;

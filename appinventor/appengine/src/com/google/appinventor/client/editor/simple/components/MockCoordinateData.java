@@ -26,7 +26,7 @@ public class MockCoordinateData extends MockChartData {
         List<List<String>> rows = ((MockCSVFile)(dataSource)).getRows();
 
         List<String> columns = Arrays.asList(csvXColumn, csvYColumn);
-        chartDataModel.setElementsFromCSV(rows, columns);
+        chartDataModel.setElementsFromCSVRows(rows, columns);
 
         refreshChart();
     }

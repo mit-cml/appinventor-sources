@@ -347,20 +347,38 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
   }
 
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * Expected format is CSV.
+   *
+   * TODO: Support JSON
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed rows (each row is a List of Strings)
+   */
   @Override
   public List<List<String>> loadDataFile(long projectId, String fileId) {
+    final int MAX_ROWS = 10; // Parse a maximum of 10 rows
+
+    // Load the contents of the specified file
     String result = load(projectId, fileId);
 
+    // Construct an InputStream and a CSVParser for the contents of the file
     ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
     CsvParser csvParser = new CsvParser(inputStream);
 
     List<List<String>> csvRows = new ArrayList<List<String>>();
 
-    for (int i = 0; i <= 10; ++i) {
-      if (!csvParser.hasNext()) {
+    for (int i = 0; i <= MAX_ROWS; ++i) {
+      if (!csvParser.hasNext()) { // No more rows exist; break
         break;
       }
 
+      // Parse next row and add it to the resulting rows
       List<String> row = csvParser.next();
       csvRows.add(row);
     }
