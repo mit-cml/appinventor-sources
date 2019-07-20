@@ -67,7 +67,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
       }
     });
 
-    ErrorReporter.reportInfo(MESSAGES.csvFileReadingMessage(sourceFile, this.getName()));
+    ErrorReporter.reportInfo(MESSAGES.csvParsingMessage(sourceFile, this.getName()));
   }
 
   public List<String> getColumnNames() {
