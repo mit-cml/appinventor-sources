@@ -114,7 +114,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         dataSource = editor.getComponents().getOrDefault(source, null);
 
         // Hide ELements from Pairs property if a Data Source has been set
-        hideProperty(PROPERTY_PAIRS, (dataSource == null));
+        showProperty(PROPERTY_PAIRS, (dataSource == null));
 
         // Handle CSV-related property responses
         handleCSVPropertySetting();
@@ -165,8 +165,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         boolean showCSVColumns = (dataSource instanceof MockCSVFile);
 
         // Hide or show the CsvColumns property depending on condition
-        hideProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
-        hideProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
+        showProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
+        showProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
         if (showCSVColumns) {
             YoungAndroidCsvColumnSelectorProperty xEditor =
@@ -189,13 +189,13 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * Hides or shows the specified property of the Component.
      *
      * @param property  Property key
-     * @param hide  will hide the property if set to true, will show it otherwise
+     * @param show  will show the property if set to true, will hide it otherwise
      */
-    private void hideProperty(String property, boolean hide) {
+    private void showProperty(String property, boolean show) {
         // Get the current type flags of the Property
         int type = properties.getProperty(property).getType();
 
-        if (hide) {
+        if (show) {
             type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
         } else {
             type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
