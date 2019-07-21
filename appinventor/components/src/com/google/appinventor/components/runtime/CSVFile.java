@@ -91,6 +91,13 @@ public class CSVFile extends FileBase {
         });
     }
 
+    /**
+     * Helper method for retrieving YailList properties using blocking
+     * calls. Used for Rows, Columns and ColumnNames properties.
+     *
+     * @param propertyCallable  Callable that returns the required YailList property
+     * @return  YailList property
+     */
     private YailList getCSVPropertyHelper(Callable<YailList> propertyCallable) {
         // Since reading might be in progress, the task of
         // getting a CSVFile property should be queued so that the
@@ -138,7 +145,7 @@ public class CSVFile extends FileBase {
     public void ReadFile(String source) {
         this.sourceFile = source;
 
-        ReadFromFile(sourceFile);
+        readFromFile(sourceFile);
     }
 
     /**

@@ -47,7 +47,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    *
    * @param fileName  name of the file to read from
    */
-  public void ReadFromFile(final String fileName) {
+  protected void readFromFile(final String fileName) {
         form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {

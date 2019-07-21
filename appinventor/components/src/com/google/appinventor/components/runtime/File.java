@@ -108,7 +108,7 @@ public class File extends FileBase {
       "slash, it will be read from the applications private storage (for packaged " +
       "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
-    ReadFromFile(fileName);
+    readFromFile(fileName);
   }
 
 
