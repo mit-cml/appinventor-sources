@@ -120,8 +120,11 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         handleCSVPropertySetting();
 
         // If the Data Source is now null, set back the
-        // currentElements property
-        if (dataSource == null) {
+        // currentElements property. An additional check
+        // is required to check whether the Data component is
+        // attached (prevents some exceptions with regards to
+        // removing the CSVFile component)
+        if (dataSource == null && isAttached()) {
             onPropertyChange(PROPERTY_PAIRS, currentElements);
         }
 
