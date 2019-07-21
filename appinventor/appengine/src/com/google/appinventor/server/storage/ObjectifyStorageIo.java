@@ -752,16 +752,16 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public void moveToTrashProject(final String userId, final long projectId) {
     validateGCS();
-    final List<String> trashProjectsList = new ArrayList<String>();
+    final Result<String> trashProjectsList = new Result<>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           ProjectData projectData = datastore.find(projectKey(projectId));
           if (projectData != null) {
-              trashProjectsList.add(projectData.name);
-              projectData.projectMovedToTrashFlag=true;
-              datastore.put(projectData);
+             trashProjectsList.t=projectData.name;
+             projectData.projectMovedToTrashFlag=true;
+             datastore.put(trashProjectsList);
           }
         }
       }, true);
