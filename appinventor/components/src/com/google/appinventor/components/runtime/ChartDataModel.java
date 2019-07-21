@@ -28,6 +28,14 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract int getTupleSize();
 
+    /**
+     * Returns the Data Series of the Data Model.
+     * The method is made synchronized to avoid concurrent
+     * access between threads, which can cause exceptions
+     * if multiple threads try to modify the Dataset object
+     * at the same time.
+     * @return  Data Series object of the Data model
+     */
     public synchronized T getDataset() {
         return dataset;
     }
