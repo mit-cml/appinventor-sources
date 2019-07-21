@@ -112,7 +112,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         // If the Data component is not initialized, then ignore
         // the importing (because if there is a Source property specified,
         // ElementsFromPairs should not take effect to prevent data overriding)
-        if (elements.equals("") || !initialized) {
+        if (elements == null || elements.equals("") || !initialized) {
             return;
         }
 

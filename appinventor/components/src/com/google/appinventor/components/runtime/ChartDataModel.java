@@ -28,7 +28,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract int getTupleSize();
 
-    public T getDataset() {
+    public synchronized T getDataset() {
         return dataset;
     }
 
@@ -42,7 +42,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param argb  new color
      */
     public void setColor(int argb) {
-        dataset.setColor(argb);
+        getDataset().setColor(argb);
     }
 
     /**
@@ -51,7 +51,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param text  new label text
      */
     public void setLabel(String text) {
-        dataset.setLabel(text);
+        getDataset().setLabel(text);
     }
 
     /**
@@ -134,15 +134,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * The first element is skipped, since it is assumed that it
      * is the column name.
      *
-     * The method calls are expected to be asynchronous, and thus the
-     * method is synchronized to solve concurrency issues. The method
-     * directly handles accessing the data set, so only one thread
-     * should be able to access it at a time.
-     *
      * @param columns  List of fixed-width columns, each of which contain data
      * @param rows  Number of rows in the CSV (number of elements in the columns)
      */
-    private synchronized void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
+    private void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
         List<YailList> tuples = new ArrayList<YailList>();
 
         // Generate tuples from the columns
@@ -175,7 +170,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Deletes all the entries in the Data Series.
      */
     public void clearEntries() {
-        dataset.clear();
+        getDataset().clear();
     }
 
     /**
