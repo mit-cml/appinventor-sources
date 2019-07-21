@@ -101,7 +101,7 @@ public class StoredData {
        // the id of the gallery app that was copied for remix
 
     //adding a boolean variable to mark deleted project
-    boolean projectMovedToTrashFlag;
+    boolean deleteProjectFlag;
   }
 
   // Project properties specific to the user

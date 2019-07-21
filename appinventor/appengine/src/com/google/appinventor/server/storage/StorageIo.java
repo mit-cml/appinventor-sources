@@ -185,14 +185,6 @@ public interface  StorageIo {
   void deleteProject(String userId, long projectId);
 
   /**
-   *Moves the project to trash
-   *
-   * @param userId user ID
-   * @param projectId project ID
-   */
-  void moveToTrashProject(String userId, long projectId);
-
-  /**
    * Returns an array with the user's projects.
    *
    * @param userId  user ID

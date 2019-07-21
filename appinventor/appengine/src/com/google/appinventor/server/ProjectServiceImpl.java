@@ -208,16 +208,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
   }
 
-    /**
-     * Moves the project to trash.
-     * @param projectId  project ID
-     */
-    @Override
-    public void moveToTrashProject(long projectId) {
-        final String userId = userInfoProvider.getUserId();
-        getProjectRpcImpl(userId, projectId).moveToTrashProject(userId, projectId);
-    }
-
  /**
    * On publish this sets the project's gallery id
    * @param projectId  project ID

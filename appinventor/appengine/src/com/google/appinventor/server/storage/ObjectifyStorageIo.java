@@ -715,8 +715,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       // clear addedFiles in case we end up here more than once
       addedFiles.clear();
       throw CrashReport.createAndLogError(LOG, null,
-
-              collectUserProjectErrorInfo(userId, projectId.t), e);
+          collectUserProjectErrorInfo(userId, projectId.t), e);
       }
     }
     return projectId.t;
@@ -748,6 +747,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     return file;
   }
 
+<<<<<<< HEAD
   //to store project marked deleted in trash can
   @Override
   public void moveToTrashProject(final String userId, final long projectId) {
@@ -771,12 +771,14 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+=======
+>>>>>>> parent of e4e3cc20... The backend code for move to trash still in progress
   //new delete project function to set the deleted flag bit and store the project data
   @Override
   public void deleteProject(final String userId, final long projectId) {
     validateGCS();
     // blobs associated with the project
-    final List<String> blobKeys = new ArrayList<String>();
+   /* final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
     try {
       // first job deletes the UserProjectData in the user's entity group
@@ -824,6 +826,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
+*/
   }
 
   @Override
