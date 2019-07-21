@@ -19,6 +19,7 @@ import java.util.concurrent.*;
 public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
+    protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     // Properties used in Designer to import from CSV.
     // Represents the names of the columns to use
@@ -33,7 +34,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     private String elements;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
-    private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     /**
      * Creates a new Chart Data component.

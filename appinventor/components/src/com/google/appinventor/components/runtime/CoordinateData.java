@@ -20,15 +20,6 @@ public final class CoordinateData extends ChartDataBase {
         super(chartContainer);
     }
 
-    @Override
-    protected void importFromAttachedCSVSource(final CSVFile dataSource) {
-        // Construct a pair of columns from the X and Y column properties
-        YailList columns = YailList.makeList(Arrays.asList(csvXColumn, csvYColumn));
-
-        // Import from the CSV data source with the column properties
-        importFromCSVAsync(dataSource, columns);
-    }
-
     /**
      * Adds entry to the Data Series.
      *
@@ -36,13 +27,27 @@ public final class CoordinateData extends ChartDataBase {
      * @param y - y value of entry
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
-    public void AddEntry(float x, float y) {
-        // Create a 2-tuple, and add the tuple to the Data Series
-        YailList pair = YailList.makeList(Arrays.asList(x, y));
-        chartDataModel.addEntryFromTuple(pair);
+    public void AddEntry(final float x, final float y) {
+        // Entry should be added via the Thread Runner asynchronously
+        // to guarantee the order of data adding (e.g. CSV data
+        // adding could be happening when this method is called,
+        // so the task should be queued in the single Thread Runner)
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Create a 2-tuple, and add the tuple to the Data Series
+                YailList pair = YailList.makeList(Arrays.asList(x, y));
+                chartDataModel.addEntryFromTuple(pair);
 
-        // Refresh Chart with new data
-        refreshChart();
+                // Refresh Chart with new data
+                refreshChart();
+            }
+        });
+    }
+
+    @Override
+    protected void importFromAttachedCSVSource(final CSVFile dataSource) {
+        ImportFromCSV(dataSource, csvXColumn, csvYColumn);
     }
 
     /**
