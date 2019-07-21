@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
+import com.google.appinventor.client.editor.simple.components.MockCSVFile;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockSwitch;
@@ -382,6 +383,10 @@ public final class SimpleComponentDescriptor {
         return new MockFusionTablesControl(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
+      } else if (name.equals(MockCSVFile.TYPE)) {
+        return new MockCSVFile(editor, name,
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,

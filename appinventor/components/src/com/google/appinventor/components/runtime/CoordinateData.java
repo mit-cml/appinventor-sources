@@ -20,6 +20,15 @@ public final class CoordinateData extends ChartDataBase {
         super(chartContainer);
     }
 
+    @Override
+    protected void importFromAttachedCSVSource(final CSVFile dataSource) {
+        // Construct a pair of columns from the X and Y column properties
+        YailList columns = YailList.makeList(Arrays.asList(csvXColumn, csvYColumn));
+
+        // Import from the CSV data source with the column properties
+        importFromCSVAsync(dataSource, columns);
+    }
+
     /**
      * Adds entry to the Data Series.
      *

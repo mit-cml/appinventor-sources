@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvColumnSelectorProperty;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDefaultURLPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
@@ -42,7 +43,6 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartSourceSelectorPropertyEditor;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.properties.Property;
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
@@ -273,11 +273,8 @@ public class PropertiesUtil {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE)) {
       return new YoungAndroidChartTypeChoicePropertyEditor();
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
-      return new YoungAndroidChartSourceSelectorPropertyEditor(editor,
-              // Pass the set of component types that will be shown in the property editor,
-              // in this case, just "BluetoothClient".
-              Collections.singleton("CSVFile"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN)) {
+      return new YoungAndroidCsvColumnSelectorProperty(editor);
     } else {
       return new TextPropertyEditor();
     }

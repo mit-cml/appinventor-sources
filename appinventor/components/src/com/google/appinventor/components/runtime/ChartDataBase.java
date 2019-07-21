@@ -20,14 +20,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
+    // Properties used in Designer to import from CSV.
+    // Represents the names of the columns to use
+    // for the X and the Y values.
+    protected String csvXColumn = "";
+    protected String csvYColumn = "";
+
     private String label;
     private int color;
 
-    private YailList csvColumns;
     private CSVFile dataSource;
-    private ExecutorService threadRunner;
+    private String elements;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
+    private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     /**
      * Creates a new Chart Data component.
@@ -75,21 +81,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public String Label() {
-        try {
-            label = (String) threadRunner.submit(new Callable<Object>() {
-               @Override
-               public String call() {
-                   return chartDataModel.getDataset().getEntryCount() + " entries";
-               }
-            }).get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
-
         return label;
     }
 
@@ -112,10 +103,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      * @param elements  Comma-separated values of Chart entries alternating between x and y values.
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
+                    userVisible = false)
     public void ElementsFromPairs(String elements) {
-        // Base case:  nothing to add
-        if (elements.equals("")) {
+        this.elements = elements;
+
+        // If the specified String is empty, ignore import.
+        // If the Data component is not initialized, then ignore
+        // the importing (because if there is a Source property specified,
+        // ElementsFromPairs should not take effect to prevent data overriding)
+        if (elements.equals("") || !initialized) {
             return;
         }
 
@@ -215,24 +212,33 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     }
 
     /**
-     * Sets the CSV columns to parse data from the CSV source.
+     * Sets the CSV column to parse data from the CSV source for the x values.
      *
-     * @param columns  CSV representation of the column names (e.g. A,B will
-     *                 use A for the x values, and B for the y values)
+     * @param column  name of the column for the x values
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="Sets the columns of the CSV file to parse data from." +
-            "The columns must be specified in a CSV format, e.g. A,B will will use " +
-            "A for the x values, and B for the y values.",
-            category = PropertyCategory.BEHAVIOR,
-                userVisible = false)
-    public void CsvColumns(String columns) {
-        try {
-            this.csvColumns = CsvUtil.fromCsvRow(columns);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
+    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the x values." +
+        "If a column is not specified, default values for the x values will be generated instead.",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void CsvXColumn(String column) {
+        this.csvXColumn = column;
     }
+
+    /**
+     * Sets the CSV column to parse data from the CSV source for the y values.
+     *
+     * @param column  name of the column for the y values
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
+    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the y values." +
+        "If a column is not specified, default values for the y values will be generated instead.",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void CsvYColumn(String column) {
+        this.csvYColumn = column;
+    }
+
 
     /**
      * Sets the Data Source for the Chart data component. The data
@@ -245,14 +251,26 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
                     "include CSVFiles.")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
     public void Source(final CSVFile dataSource) {
         this.dataSource = dataSource;
 
+        // The data should only be imported after the Data component
+        // is initialize,d otherwise exceptions may be caused in case
+        // of very small data files.
         if (initialized) {
-            importFromCSVAsync(dataSource, csvColumns);
+            importFromAttachedCSVSource(dataSource);
         }
     }
+
+    /**
+     * Imports data from the local CSV column variables and the
+     * attached CSVFile component.
+     *
+     * Declared abstract since subclasses might have different
+     * dimensions.
+     */
+    protected abstract void importFromAttachedCSVSource(final CSVFile dataSource);
 
     /**
      * Refreshes the Chart view object.
@@ -289,6 +307,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         // on small data sets with regards to Chart refreshing.
         if (dataSource != null) {
             Source(dataSource);
+        } else {
+            // If no Source is specified, the ElementsFromPairs
+            // property can be set instead. Otherwise, this is not
+            // set to prevent data overriding.
+            ElementsFromPairs(elements);
         }
     }
 

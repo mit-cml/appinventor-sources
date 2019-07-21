@@ -16,6 +16,7 @@ import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.util.CsvParser;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -42,6 +43,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -343,6 +345,45 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * Expected format is CSV.
+   *
+   * TODO: Support JSON
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed rows (each row is a List of Strings)
+   */
+  @Override
+  public List<List<String>> loadDataFile(long projectId, String fileId) {
+    final int MAX_ROWS = 10; // Parse a maximum of 10 rows
+
+    // Load the contents of the specified file
+    String result = load(projectId, fileId);
+
+    // Construct an InputStream and a CSVParser for the contents of the file
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
+    CsvParser csvParser = new CsvParser(inputStream);
+
+    List<List<String>> csvRows = new ArrayList<List<String>>();
+
+    for (int i = 0; i <= MAX_ROWS; ++i) {
+      if (!csvParser.hasNext()) { // No more rows exist; break
+        break;
+      }
+
+      // Parse next row and add it to the resulting rows
+      List<String> row = csvParser.next();
+      csvRows.add(row);
+    }
+
+    return csvRows;
   }
 
   /**
