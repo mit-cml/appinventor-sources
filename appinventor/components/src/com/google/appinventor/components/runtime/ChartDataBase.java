@@ -142,9 +142,15 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      */
     @SimpleFunction(description = "Imports data from a list of entries" +
       "Data is not overwritten.")
-    public void ImportFromList(YailList list) {
-        chartDataModel.importFromList(list);
-        refreshChart();
+    public void ImportFromList(final YailList list) {
+        // Import the specified data asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.importFromList(list);
+                refreshChart();
+            }
+        });
     }
 
     /**
