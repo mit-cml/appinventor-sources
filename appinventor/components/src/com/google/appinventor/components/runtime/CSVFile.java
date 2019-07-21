@@ -119,6 +119,10 @@ public class CSVFile extends FileBase {
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
         defaultValue = "")
     public void SourceFile(String source) {
+        // The SourceFile property is only set from the Designer, so the
+        // only possibility is a media file. Since media file paths are
+        // distinguished by double slashes at the beginning, they need
+        // to be added.
         ReadFile("//" + source);
     }
 

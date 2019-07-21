@@ -68,6 +68,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     @Override
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
+        // CSV Column Properties should be hidden by default (and shown when
+        // Source changes to CSVFile)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
