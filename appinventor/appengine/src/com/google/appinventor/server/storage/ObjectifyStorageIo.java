@@ -747,32 +747,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     return file;
   }
 
-<<<<<<< HEAD
-  //to store project marked deleted in trash can
-  @Override
-  public void moveToTrashProject(final String userId, final long projectId) {
-    validateGCS();
-    final Result<String> trashProjectsList = new Result<>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData projectData = datastore.find(projectKey(projectId));
-          if (projectData != null) {
-             trashProjectsList.t=projectData.name;
-             projectData.projectMovedToTrashFlag=true;
-             datastore.put(trashProjectsList);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-              collectUserProjectErrorInfo(userId, projectId), e);
-    }
-  }
-
-=======
->>>>>>> parent of e4e3cc20... The backend code for move to trash still in progress
   //new delete project function to set the deleted flag bit and store the project data
   @Override
   public void deleteProject(final String userId, final long projectId) {

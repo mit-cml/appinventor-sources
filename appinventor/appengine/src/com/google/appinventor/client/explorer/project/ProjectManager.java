@@ -43,16 +43,16 @@ public final class ProjectManager {
     deletedProjectsMap = new HashMap<Long, Project>();
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
     Ode.getInstance().getProjectService().getProjectInfos(
-        new OdeAsyncCallback<List<UserProject>>(
-        MESSAGES.projectInformationRetrievalError()) {
-      @Override
-      public void onSuccess(List<UserProject> projectInfos) {
-        for (UserProject projectInfo : projectInfos) {
-          addProject(projectInfo);
-        }
-        fireProjectsLoaded();
-      }
-    });
+            new OdeAsyncCallback<List<UserProject>>(
+                    MESSAGES.projectInformationRetrievalError()) {
+              @Override
+              public void onSuccess(List<UserProject> projectInfos) {
+                for (UserProject projectInfo : projectInfos) {
+                  addProject(projectInfo);
+                }
+                fireProjectsLoaded();
+              }
+            });
   }
 
   /**
@@ -69,6 +69,17 @@ public final class ProjectManager {
 
     return projects;
   }
+
+  public List<Project> getDeletedProjects() {
+    List<Project> projects = new ArrayList<Project>();
+
+    for (Project project : deletedProjectsMap.values()) {
+      projects.add(project);
+    }
+
+    return projects;
+  }
+
 
   /**
    * Returns a list of the projects with the given project name prefix.
@@ -164,6 +175,20 @@ public final class ProjectManager {
   }
 
   /**
+   * Restores the project from trash back to my projects.
+   *
+   * @param projectId project ID
+   */
+
+  public void restoreDeletedProject(long projectId) {
+    Project project=deletedProjectsMap.remove(projectId);
+    projectsMap.put(projectId, project);
+    fireDeletedProjectRemoved(project);
+    fireProjectAdded(project);
+  }
+
+
+  /**
    * Handles situation when a project has been published
    *
    * @param projectId project ID
@@ -175,7 +200,7 @@ public final class ProjectManager {
     projectsMap.put(projectId, project);
     fireProjectPublishedOrUnpublished();
   }
-    /**
+  /**
    * Handles situation when a project has been published
    *
    * @param projectId project ID
@@ -250,7 +275,7 @@ public final class ProjectManager {
    */
   private void fireDeletedProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-     listener.onDeletedProjectRemoved(project);
+      listener.onDeletedProjectRemoved(project);
     }
   }
 
