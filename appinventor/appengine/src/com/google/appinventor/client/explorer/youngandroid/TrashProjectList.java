@@ -245,7 +245,6 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
                         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
                         selectedProjects.remove(project);
                     }
-                    Ode.getInstance().getProjectToolbar().updateTrashButtons();
                 }
             });
 
@@ -341,7 +340,7 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
             row++;
         }
 
-        Ode.getInstance().getProjectToolbar().updateTrashButtons();
+        Ode.getInstance().getProjectToolbar().updateButtons();
     }
 
     /**
@@ -397,7 +396,6 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
         refreshTable(false);
 
         selectedProjects.remove(project);
-        Ode.getInstance().getProjectToolbar().updateTrashButtons();
     }
 
     @Override
