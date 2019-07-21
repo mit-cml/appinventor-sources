@@ -166,7 +166,10 @@ public class ProjectToolbar extends Toolbar {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 581f4788... Finish with the Designer Part of implementing trash can
       Ode ode = Ode.getInstance();
       boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
       ode.getEditorManager().closeProjectEditor(projectId);
@@ -175,6 +178,7 @@ public class ProjectToolbar extends Toolbar {
         // need to clear the ViewerBox first.
         // ViewerBox.getViewerBox().clear();
       }
+<<<<<<< HEAD
 >>>>>>> parent of 581f4788... Finish with the Designer Part of implementing trash can
 =======
 //      Ode ode = Ode.getInstance();
@@ -186,6 +190,8 @@ public class ProjectToolbar extends Toolbar {
 //        // ViewerBox.getViewerBox().clear();
 //      }
 >>>>>>> parent of e4e3cc20... The backend code for move to trash still in progress
+=======
+>>>>>>> parent of 581f4788... Finish with the Designer Part of implementing trash can
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
       }
