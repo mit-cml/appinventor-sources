@@ -5,6 +5,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
+import org.powermock.api.easymock.annotation.Mock;
 
 public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
@@ -112,6 +113,12 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param source  Name of the new Source component attached
      */
     private void setSourceProperty(String source) {
+        // If a Data Source was previously assigned and is of type CSVFile,
+        // de-attach this Data component from it
+        if (dataSource instanceof MockCSVFile) {
+            ((MockCSVFile)dataSource).removeCSVFileChangeListener(this);
+        }
+
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 

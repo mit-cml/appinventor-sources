@@ -34,7 +34,7 @@ public class YoungAndroidCsvColumnSelectorProperty
   private MockCSVFile csvFile; // Associated source MockCSVFile
 
   /**
-   * Creates a new property editor for selecting a component.
+   * Creates a new property editor for selecting a column.
    *
    * @param editor the editor that this property editor belongs to
    */
@@ -98,7 +98,7 @@ public class YoungAndroidCsvColumnSelectorProperty
   protected boolean okAction() {
     int selected = columnsList.getSelectedIndex();
     if (selected == -1) {
-      Window.alert(MESSAGES.noComponentSelected());
+      Window.alert(MESSAGES.noColumnSelected());
       return false;
     }
     property.setValue(choices.getValueAtIndex(selected));
