@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
@@ -41,9 +42,10 @@ public class MockCSVFile extends MockNonVisibleComponent {
    */
   private void setSourceFileProperty(String fileSource) {
     // Update the source file property & reset the
-    // columnNames property
+    // columnNames and rows property
     this.sourceFile = fileSource;
     columnNames = new ArrayList<String>();
+    rows = new ArrayList<List<String>>();
 
     // Update CSVFileChangeListeners to notify that
     // the columns list is (at least temporarily) empty
@@ -68,6 +70,13 @@ public class MockCSVFile extends MockNonVisibleComponent {
       public void onSuccess(List<List<String>> result) {
         // Update rows & columnNames properties
         rows = result;
+
+        if (result.isEmpty()) {
+          ErrorReporter.reportError(MESSAGES.emptyFileError());
+          return;
+        }
+
+        // First row should contain the column names
         columnNames = result.get(0);
 
         // Notify CSVFileChangeListeners of the changes
