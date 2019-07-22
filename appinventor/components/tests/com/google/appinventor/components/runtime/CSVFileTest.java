@@ -13,6 +13,9 @@ import java.util.concurrent.ExecutionException;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
+/**
+ * Tests for the CSVFile component.
+ */
 public class CSVFileTest extends FileTestBase {
   protected CSVFile csvFile;
 
@@ -146,9 +149,7 @@ public class CSVFileTest extends FileTestBase {
    */
   @Test
   public void testReadFileInternal() {
-    grantFilePermissions();
-    writeTempFile(TARGET_FILE_READ, DATA, false);
-    csvFile.ReadFile(TARGET_FILE_READ);
+    testWriteAndReadFile(TARGET_FILE_READ, DATA, false);
 
     YailList expected = expectedValues2Rows();
     assertEquals(expected, csvFile.Rows());
@@ -163,12 +164,26 @@ public class CSVFileTest extends FileTestBase {
    */
   @Test
   public void testReadFileExternal() {
-    grantFilePermissions();
-    writeTempFile(TARGET_FILE_READ, DATA, true);
-    csvFile.ReadFile("/" + TARGET_FILE_READ);
+    testWriteAndReadFile("/" + TARGET_FILE_READ, DATA, true);
 
     YailList expected = expectedValues2Rows();
     assertEquals(expected, csvFile.Rows());
+  }
+
+  /**
+   * Test to ensure that reading a file containing a single row
+   * behaves correctly and sets the properties accordingly
+   */
+  @Test
+  public void testReadOneRow() {
+    testWriteAndReadFile(TARGET_FILE_READ, "Y", false);
+
+    YailList expectedColumnNames = YailList.makeList(Collections.singletonList("Y"));
+    YailList expectedList = YailList.makeList(Collections.singletonList(expectedColumnNames));
+
+    assertEquals(expectedColumnNames, csvFile.ColumnNames());
+    assertEquals(expectedList, csvFile.Rows());
+    assertEquals(expectedList, csvFile.Columns());
   }
 
   /**
@@ -301,6 +316,8 @@ public class CSVFileTest extends FileTestBase {
     testGetColumnsHelper(expected, columns);
   }
 
+  /// Helper methods
+
   /**
    * Helper method to assert the expected and the resulting values of the
    * getColumns method
@@ -329,6 +346,20 @@ public class CSVFileTest extends FileTestBase {
   private void loadTestCSVFile() {
     grantFilePermissions();
     csvFile.ReadFile("//" + TARGET_FILE);
+  }
+
+  /**
+   * Helper method to write the specified data to the target file, and then
+   * read the file in the CSVFile component.
+   *
+   * @param targetFile  Path to the file to read
+   * @param data  Data to write
+   * @param external  Write to external storage?
+   */
+  private void testWriteAndReadFile(String targetFile, String data, boolean external) {
+    grantFilePermissions();
+    writeTempFile(targetFile, data, external);
+    csvFile.ReadFile(targetFile);
   }
 
   /**
