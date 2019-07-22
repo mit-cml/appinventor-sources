@@ -89,7 +89,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     @Override
     public void onRemoved() {
         super.onRemoved();
-        chartDataModel.removeDataSeriesFromChart();
+        setSourceProperty(""); // Unset the Source property to remove listener references
+        chartDataModel.removeDataSeriesFromChart(); // Remove the Data Series from the Chart
         refreshChart();
     }
 
@@ -128,11 +129,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         handleCSVPropertySetting();
 
         // If the Data Source is now null, set back the
-        // currentElements property. An additional check
-        // is required to check whether the Data component is
-        // attached (prevents some exceptions with regards to
-        // removing the CSVFile component)
-        if (dataSource == null && isAttached()) {
+        // currentElements property.
+        if (dataSource == null) {
             onPropertyChange(PROPERTY_PAIRS, currentElements);
         }
 
@@ -190,20 +188,20 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         showProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
         showProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
 
+        // Get the Column property selectors
+        YoungAndroidCsvColumnSelectorProperty xEditor =
+            (YoungAndroidCsvColumnSelectorProperty)
+                properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
+
+        YoungAndroidCsvColumnSelectorProperty yEditor =
+            (YoungAndroidCsvColumnSelectorProperty)
+                properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
+
+        // Update the Source of the column selectors
+        xEditor.changeSource((MockCSVFile)dataSource);
+        yEditor.changeSource((MockCSVFile)dataSource);
+
         if (showCSVColumns) {
-            // Get the Column property selectors
-            YoungAndroidCsvColumnSelectorProperty xEditor =
-                (YoungAndroidCsvColumnSelectorProperty)
-                    properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
-
-            YoungAndroidCsvColumnSelectorProperty yEditor =
-                (YoungAndroidCsvColumnSelectorProperty)
-                    properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
-
-            // Update the Source of the column selectors
-            xEditor.changeSource((MockCSVFile)dataSource);
-            yEditor.changeSource((MockCSVFile)dataSource);
-
             // Add the current Data component as a CSVFileChangeListener to the CSVFile
             ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
 

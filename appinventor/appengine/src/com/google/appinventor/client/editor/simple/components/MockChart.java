@@ -11,6 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
+import java.util.Iterator;
 import java.util.List;
 
 public final class MockChart extends MockContainer {
@@ -64,6 +65,18 @@ public final class MockChart extends MockContainer {
                 }
             }
         });
+    }
+
+    @Override
+    public void delete() {
+        // Fully remove all attached Data components before
+        // removing the Chart component
+        for (int i = children.size() - 1; i >= 0; --i) {
+            MockComponent child = children.get(i);
+            child.delete();
+        }
+
+        super.delete();
     }
 
     /**
