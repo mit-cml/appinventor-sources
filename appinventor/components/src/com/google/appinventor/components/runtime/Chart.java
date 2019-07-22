@@ -153,20 +153,15 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      */
     private ChartView createChartViewFromType(int type) {
         switch(type) {
-            case 0:
-                // Line Chart
+            case Component.CHART_TYPE_LINE:
                 return new LineChartView(container.$context());
-            case 1:
-                // Scatter Chart
-                return new LineChartView(container.$context());
-            case 2:
-                // Area Chart
+            case Component.CHART_TYPE_SCATTER:
+                return new ScatterChartView(container.$context());
+            case Component.CHART_TYPE_AREA:
                 return new AreaChartView(container.$context());
-            case 3:
-                // Bar Chart
+            case Component.CHART_TYPE_BAR:
                 return new LineChartView(container.$context());
-            case 4:
-                // Pie Chart
+            case Component.CHART_TYPE_PIE:
                 return new LineChartView(container.$context());
             default:
                 // Invalid argument
