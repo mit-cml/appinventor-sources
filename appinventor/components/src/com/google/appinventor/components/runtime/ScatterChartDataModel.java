@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
@@ -27,6 +28,6 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
 
   @Override
   protected void setDefaultStylingProperties() {
-
+    getDataset().setScatterShape(ScatterChart.ScatterShape.CIRCLE);
   }
 }
