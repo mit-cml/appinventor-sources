@@ -118,6 +118,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param rows  number of rows
      */
     public void importFromCSV(YailList columns, int rows) {
+        // Initially, the final column List is created (empty
+        // column Lists should be populated with default values)
         ArrayList<YailList> dataColumns = new ArrayList<YailList>();
 
         for (int i = 0; i < columns.size(); ++i) {
@@ -152,7 +154,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         for (int i = 1; i < rows; ++i) {
             ArrayList<String> tupleElements = new ArrayList<String>();
 
-            // Add entries to the tuple from all i-th values of the data columns.
+            // Add entries to the tuple from all i-th values (i-th row)
+            // of the data columns.
             for (YailList column : columns) {
                 tupleElements.add(column.getString(i));
             }

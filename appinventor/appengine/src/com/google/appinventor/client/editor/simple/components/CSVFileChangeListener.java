@@ -7,8 +7,10 @@ package com.google.appinventor.client.editor.simple.components;
  * interface to receive events when the Source file of the CSVFile
  * is changed, and the columns are changed as a result.
  *
- * Triggering events on property change for the Source are not
- * sufficient, since columns change happens asynchronously.
+ * The columns/rows of the MockCSVFile change asynchronously,
+ * therefore this listener is intended to be used to notify
+ * all the attached listeners after asynchronous reading
+ * finishes.
  */
 public interface CSVFileChangeListener {
   /**

@@ -121,7 +121,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 
-        // Hide ELements from Pairs property if a Data Source has been set
+        // Hide Elements from Pairs property if a Data Source has been set
         showProperty(PROPERTY_PAIRS, (dataSource == null));
 
         // Handle CSV-related property responses

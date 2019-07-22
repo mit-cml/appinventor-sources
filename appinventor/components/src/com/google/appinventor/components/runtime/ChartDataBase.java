@@ -262,7 +262,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         this.dataSource = dataSource;
 
         // The data should only be imported after the Data component
-        // is initialize,d otherwise exceptions may be caused in case
+        // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
             importFromAttachedCSVSource(dataSource);

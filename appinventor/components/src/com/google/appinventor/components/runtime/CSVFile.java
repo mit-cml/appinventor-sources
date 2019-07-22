@@ -24,8 +24,7 @@ public class CSVFile extends FileBase {
     private YailList columns;
     private YailList columnNames; // Elements of the first column
 
-    // private Thread readThread; // Async thread for parsing CSV
-    private ExecutorService threadRunner;
+    private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     /**
      * Creates a new CSVFile component.

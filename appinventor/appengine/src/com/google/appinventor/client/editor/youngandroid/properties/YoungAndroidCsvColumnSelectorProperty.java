@@ -142,8 +142,8 @@ public class YoungAndroidCsvColumnSelectorProperty
    * @param source  new MockCSVFile source
    */
   public void changeSource(MockCSVFile source) {
-    // Check if a CSVFile source exists, and if it does,
-    // de-attach this selector from it.
+    // Check if a CSVFile source is currently referenced by the
+    // selector, and if it is, de-attach this selector from it.
     if (csvFile != null) {
       csvFile.removeCSVFileChangeListener(this);
     }
@@ -190,7 +190,7 @@ public class YoungAndroidCsvColumnSelectorProperty
       choices.addItem(column);
     }
 
-    // Current property value not found, set to None
+    // Current property value not found in the new columns, set to None
     if (!found) {
       property.setValue("");
     }
