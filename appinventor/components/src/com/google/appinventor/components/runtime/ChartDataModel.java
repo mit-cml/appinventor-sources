@@ -28,7 +28,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract int getTupleSize();
 
-    public T getDataset() {
+    /**
+     * Returns the Data Series of the Data Model.
+     * The method is made synchronized to avoid concurrent
+     * access between threads, which can cause exceptions
+     * if multiple threads try to modify the Dataset object
+     * at the same time.
+     * @return  Data Series object of the Data model
+     */
+    public synchronized T getDataset() {
         return dataset;
     }
 
@@ -42,7 +50,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param argb  new color
      */
     public void setColor(int argb) {
-        dataset.setColor(argb);
+        getDataset().setColor(argb);
     }
 
     /**
@@ -51,7 +59,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param text  new label text
      */
     public void setLabel(String text) {
-        dataset.setLabel(text);
+        getDataset().setLabel(text);
     }
 
     /**
@@ -100,6 +108,90 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Imports data from the specified list of columns with
+     * the specified row size.
+     *
+     * The row size is used to create a column with default
+     * values in case of an absence of data.
+     *
+     * @param columns  columns to import data from
+     */
+    public void importFromCSV(YailList columns) {
+        if (columns == null) {
+            return;
+        }
+
+        // Establish the row count of the specified columns
+        int rows = 0;
+
+        for (int i = 0; i < columns.size(); ++i) {
+            YailList column = (YailList)columns.getObject(i);
+
+            if (column.size() != 0) {
+                rows = column.size();
+                break;
+            }
+        }
+
+        if (rows == 0) {
+            // No rows exist. Do nothing.
+            return;
+        }
+
+        // Initially, the final column List is created (empty
+        // column Lists should be populated with default values)
+        ArrayList<YailList> dataColumns = new ArrayList<YailList>();
+
+        for (int i = 0; i < columns.size(); ++i) {
+            // Get the column element
+            YailList column = (YailList)columns.getObject(i);
+
+            if (column.size() == 0) { // Column is empty, populate it with default values
+                dataColumns.add(getDefaultValues(rows));
+            } else { // Add the specified CSV column to the data columns to use for importing
+                dataColumns.add(column);
+            }
+        }
+
+        // Import from the finalized CSV columns.
+        importFromCSVColumns(dataColumns, rows);
+    }
+
+    /**
+     * Imports data from the specified set of CSV column data and
+     * the specified number of rows.
+     *
+     * The first element is skipped, since it is assumed that it
+     * is the column name.
+     *
+     * @param columns  List of fixed-width columns, each of which contain data
+     * @param rows  Number of rows in the CSV (number of elements in the columns)
+     */
+    private void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
+        List<YailList> tuples = new ArrayList<YailList>();
+
+        // Generate tuples from the columns
+        for (int i = 1; i < rows; ++i) {
+            ArrayList<String> tupleElements = new ArrayList<String>();
+
+            // Add entries to the tuple from all i-th values (i-th row)
+            // of the data columns.
+            for (YailList column : columns) {
+                tupleElements.add(column.getString(i));
+            }
+
+            // Create the YailList tuple representation and add it to the
+            // list of tuples used.
+            YailList tuple = YailList.makeList(tupleElements);
+            tuples.add(tuple);
+        }
+
+        // Use the generated tuple list in the importFromList method to
+        // import the data.
+        importFromList(YailList.makeList(tuples));
+    }
+
+    /**
      * Adds an entry from a specified tuple.
      * @param tuple  Tuple representing the entry to add
      */
@@ -109,11 +201,23 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Deletes all the entries in the Data Series.
      */
     public void clearEntries() {
-        dataset.clear();
+        getDataset().clear();
     }
 
     /**
      * Sets the default styling properties of the Data Series.
      */
     protected abstract void setDefaultStylingProperties();
+
+    /**
+     * Returns a YailList of the specified size containing the
+     * default values for the Data Series.
+     * To be used in the context of importing data from sources
+     * where the values for a certain dimension are not present
+     * (e.g. y values are present, but x values are not)
+     *
+     * @param size  Number of entries to return
+     * @return  YailList of the specified number of entries containing the default values.
+     */
+    protected abstract YailList getDefaultValues(int size);
 }

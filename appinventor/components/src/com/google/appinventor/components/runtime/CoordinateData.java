@@ -27,12 +27,44 @@ public final class CoordinateData extends ChartDataBase {
      * @param y - y value of entry
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
-    public void AddEntry(float x, float y) {
-        // Create a 2-tuple, and add the tuple to the Data Series
-        YailList pair = YailList.makeList(Arrays.asList(x, y));
-        chartDataModel.addEntryFromTuple(pair);
+    public void AddEntry(final float x, final float y) {
+        // Entry should be added via the Thread Runner asynchronously
+        // to guarantee the order of data adding (e.g. CSV data
+        // adding could be happening when this method is called,
+        // so the task should be queued in the single Thread Runner)
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Create a 2-tuple, and add the tuple to the Data Series
+                YailList pair = YailList.makeList(Arrays.asList(x, y));
+                chartDataModel.addEntryFromTuple(pair);
 
-        // Refresh Chart with new data
-        refreshChart();
+                // Refresh Chart with new data
+                refreshChart();
+            }
+        });
+    }
+
+    @Override
+    protected void importFromLocalCSVSource(final CSVFile dataSource) {
+        ImportFromCSV(dataSource, csvXColumn, csvYColumn);
+    }
+
+    /**
+     * Imports data from a CSV file component, with the specified column names.
+     *
+     * @param csvFile  CSV File component to import from
+     * @param xValueColumn  x-value column name
+     * @param yValueColumn  y-value column name
+     */
+    @SimpleFunction(description = "Imports data from the specified CSVFile component, given the names of the " +
+        "X and Y value columns. Passing in empty text for any of the column parameters will result" +
+        " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
+        " 1, and so forth.")
+    public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
+        // Construct a YailList of columns from the specified parameters
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+
+        importFromCSVAsync(csvFile, columns);
     }
 }

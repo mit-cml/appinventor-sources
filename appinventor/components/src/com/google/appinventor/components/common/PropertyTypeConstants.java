@@ -310,10 +310,17 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
 
-    /**
-     * Line Chart types.
-     * @see
-     * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor.java
-     */
-    public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
+  /**
+   * Line Chart types.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor.java
+   */
+  public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
+
+  /**
+   * CSVFile columns
+   * @see
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileSelectorPropertyEditor.java
+   */
+  public static final String PROPERTY_TYPE_CSV_COLUMN = "csv_file_column";
 }

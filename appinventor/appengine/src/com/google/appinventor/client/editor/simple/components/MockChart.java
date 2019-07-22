@@ -1,12 +1,18 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
+
+import java.util.Iterator;
+import java.util.List;
 
 public final class MockChart extends MockContainer {
     public static final String TYPE = "Chart";
@@ -52,11 +58,25 @@ public final class MockChart extends MockContainer {
             public void onAttachOrDetach(AttachEvent arg0) {
                 if (arg0.isAttached()) {
                     for (MockComponent child : children) {
-                        ((MockChartData) child).addToChart(MockChart.this);
+                        if (child instanceof MockChartData) {
+                            ((MockChartData) child).addToChart(MockChart.this);
+                        }
                     }
                 }
             }
         });
+    }
+
+    @Override
+    public void delete() {
+        // Fully remove all attached Data components before
+        // removing the Chart component
+        for (int i = children.size() - 1; i >= 0; --i) {
+            MockComponent child = children.get(i);
+            child.delete();
+        }
+
+        super.delete();
     }
 
     /**
@@ -162,6 +182,30 @@ public final class MockChart extends MockContainer {
     }
 
     /**
+     * Creates Data components from the contents of the specified MockCSVFile component.
+     * The Data components are then attached as children to the Chart and the Source property
+     * of each individual Data component is set accordingly.
+     *
+     * @param csvSource  MockCSVFile component to instantiate components from
+     */
+    public void addCSVFile(MockCSVFile csvSource) {
+        List<String> columnNames = csvSource.getColumnNames();
+
+        for (String column : columnNames) {
+            // Create a new MockCoordinateData component and attach it to the Chart
+            // TODO: More data component support
+            MockCoordinateData data = new MockCoordinateData(editor);
+            addComponent(data);
+            data.addToChart(MockChart.this);
+
+            // Change the properties of the instantiated data component
+            data.changeProperty("CsvYColumn", column);
+            data.changeProperty("Label", column);
+            data.changeProperty("Source", csvSource.getName());
+        }
+    }
+
+    /**
      * Creates a corresponding MockChartDataModel that
      * represents the current Chart type.
      * @return  new MockChartDataModel instance
@@ -196,6 +240,21 @@ public final class MockChart extends MockContainer {
 
     @Override
     protected boolean acceptableSource(DragSource source) {
-        return getComponentFromDragSource(source) instanceof MockChartData;
+        MockComponent component = getComponentFromDragSource(source);
+
+        return (component instanceof MockCoordinateData)
+                || (isComponentAcceptableCSVFile(component));
+    }
+
+    /**
+     * Checks whether the component is an acceptable CSVFile drag source for the Chart.
+     * The criterion is that the Component must be of type CSVFile and is
+     * already instantiated in a container.
+     * @param component  Component to check
+     * @return  true if the component is a CSVFile that is an acceptable source
+     */
+    private boolean isComponentAcceptableCSVFile(MockComponent component) {
+        return component instanceof MockCSVFile
+                && component.getContainer() != null; // CSVFile must already be in it's own container
     }
 }

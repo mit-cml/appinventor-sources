@@ -33,13 +33,13 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
      */
     public void addEntry(float x, float y) {
         Entry entry = new Entry(x, y);
-        dataset.addEntryOrdered(entry);
+        getDataset().addEntryOrdered(entry);
     }
 
     @Override
     public void setColor(int argb) {
         super.setColor(argb);
-        dataset.setCircleColor(argb);
+        getDataset().setCircleColor(argb);
     }
 
     @Override
@@ -65,6 +65,20 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
 
     @Override
     protected void setDefaultStylingProperties() {
-        dataset.setDrawCircleHole(false); // Draw full circle instead of a hollow one
+        getDataset().setDrawCircleHole(false); // Draw full circle instead of a hollow one
+    }
+
+
+    @Override
+    protected YailList getDefaultValues(int size) {
+        // Default values for LineChartBaseDataModel should be
+        // integers from 0 to N (0, 1, 2, ...)
+        ArrayList<Integer> defaultValues = new ArrayList<>();
+
+        for (int i = 0; i < size; ++i) {
+            defaultValues.add(i);
+        }
+
+        return YailList.makeList(defaultValues);
     }
 }
