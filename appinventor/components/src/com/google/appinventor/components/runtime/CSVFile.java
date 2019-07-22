@@ -35,6 +35,7 @@ public class CSVFile extends FileBase {
 
         rows = new YailList();
         columns = new YailList();
+        columnNames = new YailList();
 
         threadRunner = Executors.newSingleThreadExecutor();
     }
