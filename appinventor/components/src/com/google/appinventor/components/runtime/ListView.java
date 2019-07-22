@@ -29,9 +29,12 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ArrayAdapterSingleText;
-import com.google.appinventor.components.runtime.util.ArrayAdapterTwoText;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageSingleText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageTwoText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterSingleText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoTextLinear;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -89,6 +92,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textSize;
   private int detailTextSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
+
+  private int imageWidth;
+  private int imageHeight;
+  private static final int DEFAULT_IMAGE_WIDTH = 200;
 
   private int layout;
   private String propertyValue;
@@ -173,6 +180,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     detailTextSize = DEFAULT_TEXT_SIZE;
     TextSize(textSize);
     DetailTextSize(detailTextSize);
+    imageWidth = DEFAULT_IMAGE_WIDTH;
+    imageHeight = DEFAULT_IMAGE_WIDTH;
+    ImageWidth(imageWidth);
+    ImageHeight(imageHeight);
     ElementsFromString("");
 
     listViewLayout.addView(txtSearchBox);
@@ -287,14 +298,30 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void setAdapterData(){
     if(!currentItems.isEmpty()) {
       if(layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        ArrayAdapterSingleText adapterSingleText = new ArrayAdapterSingleText(textSize, textColor, container, currentItems);
+        ListViewArrayAdapterSingleText adapterSingleText = new ListViewArrayAdapterSingleText(textSize, textColor,
+            container, currentItems);
         itemAdapter = adapterSingleText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_1);
       } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
-        ArrayAdapterTwoText adapterTwoText = new ArrayAdapterTwoText(textSize, detailTextSize, textColor, detailTextColor,
-            container, currentItems);
+        ListViewArrayAdapterTwoText adapterTwoText = new ListViewArrayAdapterTwoText(textSize, detailTextSize,
+            textColor, detailTextColor, container, currentItems);
         itemAdapter = adapterTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_2);
+      } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+        ListViewArrayAdapterTwoTextLinear adapterTwoTextLinear = new ListViewArrayAdapterTwoTextLinear(textSize,
+            detailTextSize, textColor, detailTextColor, container, currentItems);
+        itemAdapter = adapterTwoTextLinear.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
+      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
+        ListViewArrayAdapterImageSingleText adapterImageSingleText = new ListViewArrayAdapterImageSingleText(textSize,
+            textColor, imageWidth, imageHeight, container, currentItems);
+        itemAdapter = adapterImageSingleText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
+      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+        ListViewArrayAdapterImageTwoText adapterImageTwoText = new ListViewArrayAdapterImageTwoText(textSize,
+            detailTextSize, textColor, detailTextColor, imageWidth, imageHeight, container, currentItems);
+        itemAdapter = adapterImageTwoText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
       }
       view.setAdapter(itemAdapter);
       for(int i = 0; i < itemAdapter.getCount(); ++i) {
@@ -617,8 +644,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return text size as an float
    */
   @SimpleProperty(
-          description = "The detailText size of the listview items.",
-          category = PropertyCategory.APPEARANCE)
+      description = "The detailText size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
   public int DetailTextSize() {
     return detailTextSize;
   }
@@ -629,7 +656,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param integer value for font size
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-          defaultValue = DEFAULT_TEXT_SIZE + "")
+      defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void DetailTextSize(int fontSize) {
     if(fontSize>1000)
@@ -639,17 +666,47 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     setAdapterData();
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
-      defaultValue = Component.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
-  @SimpleProperty(userVisible = false)
-  public void ListViewLayout(int value) {
-    layout = value;
+  @SimpleProperty(
+      description = "The image width of the listview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageWidth() {
+    return imageWidth;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageWidth(int width) {
+    imageWidth = width;
+    setAdapterData();
+  }
+
+  @SimpleProperty(
+      description = "The image height of the listview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageHeight() {
+    return imageHeight;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageHeight(int height) {
+    imageHeight = height;
     setAdapterData();
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
   public int ListViewLayout() {
     return layout;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
+      defaultValue = Component.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
+  @SimpleProperty(userVisible = false)
+  public void ListViewLayout(int value) {
+    layout = value;
+    setAdapterData();
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
