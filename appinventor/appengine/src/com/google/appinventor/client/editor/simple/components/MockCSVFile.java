@@ -45,11 +45,12 @@ public class MockCSVFile extends MockNonVisibleComponent {
     this.sourceFile = fileSource;
     columnNames = new ArrayList<String>();
 
+    // Update CSVFileChangeListeners to notify that
+    // the columns list is (at least temporarily) empty
+    updateCSVFileChangeListeners();
+
     // Check that the SourceFile property is a valid file
     if (fileSource == null || fileSource.equals("")) {
-      // Invalid source file property: update CSVFileChangeListeners
-      // to notify of the change (columnNames now empty)
-      updateCSVFileChangeListeners();
       return;
     }
 
