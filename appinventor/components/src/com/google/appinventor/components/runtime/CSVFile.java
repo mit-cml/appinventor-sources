@@ -47,6 +47,12 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
             " to the CSV file's content.")
     public YailList Rows() {
+        // Wrap the property in a callable to return asynchronously.
+        // By running this callable in the thread runner, we ensure
+        // that the rows property is returned after the previous
+        // reading tasks are finished.
+        // We cannot simply pass in the property since the
+        // property has to be non-final (it may change)
         return getCSVPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
@@ -64,6 +70,12 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
             " to the CSV file's content.")
     public YailList Columns() {
+        // Wrap the property in a callable to return asynchronously.
+        // By running this callable in the thread runner, we ensure
+        // that the rows property is returned after the previous
+        // reading tasks are finished.
+        // We cannot simply pass in the property since the
+        // property has to be non-final (it may change)
         return getCSVPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
@@ -82,6 +94,12 @@ public class CSVFile extends FileBase {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
             " of the CSV contents.")
     public YailList ColumnNames() {
+        // Wrap the property in a callable to return asynchronously.
+        // By running this callable in the thread runner, we ensure
+        // that the rows property is returned after the previous
+        // reading tasks are finished.
+        // We cannot simply pass in the property since the
+        // property has to be non-final (it may change)
         return getCSVPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
