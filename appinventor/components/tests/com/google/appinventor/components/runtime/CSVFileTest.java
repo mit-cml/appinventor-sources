@@ -27,6 +27,10 @@ public class CSVFileTest extends FileTestBase {
     csvFile = new CSVFile(getForm());
   }
 
+  /**
+   * Test to ensure that instantiating a CSVFile component sets the
+   * proper default properties.
+   */
   @Test
   public void testDefaults() {
     YailList emptyList = new YailList();
@@ -36,6 +40,11 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(emptyList, csvFile.ColumnNames());
   }
 
+  /**
+   * Test to ensure that the ColumnNames property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished.
+   */
   @Test
   public void testGetColumnNames() {
     ArrayList<String> expectedValues = new ArrayList<String>() {{
@@ -56,6 +65,11 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, columnNames);
   }
 
+  /**
+   * Test to ensure that the Rows property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished.
+   */
   @Test
   public void testGetRows() {
     ArrayList<YailList> expectedValues = new ArrayList<YailList>() {{
@@ -77,6 +91,11 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, rows);
   }
 
+  /**
+   * Test to ensure that the Columns property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished.
+   */
   @Test
   public void testGetColumns() {
     ArrayList<YailList> expectedValues = new ArrayList<YailList>() {{
@@ -97,6 +116,12 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, columns);
   }
 
+  /**
+   * Test to ensure that setting the Source File property
+   * properly reads the specified file from the media path
+   * and populates the CSVFile with the correct properties
+   * (only Rows is checked for simplicity)
+   */
   @Test
   public void testSetSourceFile() {
     // Assert that rows are empty initially
@@ -112,6 +137,13 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, csvFile.Rows());
   }
 
+  /**
+   * Test to ensure that reading a file using a
+   * relative path (no slash) correctly reads a
+   * file from the correct directory and populates
+   * the CSVFile with the appropriate properties
+   * (only Rows is checked for simplicity)
+   */
   @Test
   public void testReadFileInternal() {
     grantFilePermissions();
@@ -122,6 +154,13 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, csvFile.Rows());
   }
 
+  /**
+   * Test to ensure that reading a file using
+   * an absolute path (single slash) correctly
+   * reads the file from the correct directory and
+   * populates the CSVFile with the appropriate properties
+   * (only Rows is checked for simplicity)
+   */
   @Test
   public void testReadFileExternal() {
     grantFilePermissions();
@@ -132,6 +171,10 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, csvFile.Rows());
   }
 
+  /**
+   * Test to ensure that using the getColumn method with
+   * an existing column name returns the appropriate column.
+   */
   @Test
   public void testGetColumnValid() {
     final String column = "Y";
@@ -147,6 +190,10 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, result);
   }
 
+  /**
+   * Test to ensure that using the getColumn method with
+   * a non-existing column name returns an empty YailList.
+   */
   @Test
   public void testGetColumnNonExistent() {
     final String column = "Random";
@@ -161,6 +208,10 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, result);
   }
 
+  /**
+   * Test to ensure that using the getColumn method with
+   * an empty String as the name returns an empty YailList.
+   */
   @Test
   public void testGetColumnEmpty() {
     final String column = "";
@@ -175,6 +226,10 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, result);
   }
 
+  /**
+   * Test to ensure that using the getColumn method with
+   * null as the parameter returns an empty YailList.
+   */
   @Test
   public void testGetColumnNull() {
     final String column = null;
@@ -189,6 +244,10 @@ public class CSVFileTest extends FileTestBase {
     assertEquals(expected, result);
   }
 
+  /**
+   * Test to ensure that using the getColumns method
+   * with an empty YailList returns an empty YailList.
+   */
   @Test
   public void testGetColumnsEmpty() {
     YailList columns = new YailList();
@@ -196,55 +255,59 @@ public class CSVFileTest extends FileTestBase {
     loadTestCSVFile();
 
     YailList expected = new YailList();
-    YailList result = null;
 
-    try {
-      result = csvFile.getColumns(columns).get();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      fail("Exception thrown!");
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-      fail("Exception thrown!");
-    }
-
-    assertEquals(expected, result);
+    // Use the helper method to assert the result
+    testGetColumnsHelper(expected, columns);
   }
 
+  /**
+   * Test to ensure that using the getColumns method
+   * with a list of a single (valid) value returns
+   * a List of columns containing that single column.
+   */
   @Test
   public void testGetSingleColumn() {
+    // Construct the argument containing a single column
     YailList columns = YailList.makeList(Collections.singleton("Z"));
 
     loadTestCSVFile();
 
+    // Construct the expected value
     YailList xColumn = (YailList)csvFile.Columns().getObject(2);
     YailList expected = YailList.makeList(Collections.singletonList(xColumn));
 
-    YailList result = null;
-
-    try {
-      result = csvFile.getColumns(columns).get();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      fail("Exception thrown!");
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-      fail("Exception thrown!");
-    }
-
-    assertEquals(expected, result);
+    // Use the helper to assert the result
+    testGetColumnsHelper(expected, columns);
   }
 
+  /**
+   * Test to ensure that using the getColumns method
+   * with a list of a two (valid) columns returns
+   * a List of columns containing those two columns.
+   */
   @Test
   public void testGetTwoColumns() {
+    // Construct the argument with 2 columns
     YailList columns = YailList.makeList(Arrays.asList("X", "Z"));
 
     loadTestCSVFile();
 
+    // Construct the expected value
     YailList xColumn = (YailList) csvFile.Columns().getObject(0);
     YailList zColumn = (YailList) csvFile.Columns().getObject(2);
-
     YailList expected = YailList.makeList(Arrays.asList(xColumn, zColumn));
+
+    // Use the helper to assert the result
+    testGetColumnsHelper(expected, columns);
+  }
+
+  /**
+   * Helper method to assert the expected and the resulting values of the
+   * getColumns method
+   * @param expected  Expected value
+   * @param columns  List of columns argument
+   */
+  private void testGetColumnsHelper(YailList expected, YailList columns) {
     YailList result = null;
 
     try {
