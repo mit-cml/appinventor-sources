@@ -21,6 +21,6 @@ public class ScatterChartView extends PointChartView<ScatterChart, ScatterData> 
 
   @Override
   public ChartDataModel createChartModel() {
-    return null;
+    return new ScatterChartDataModel(data);
   }
 }
