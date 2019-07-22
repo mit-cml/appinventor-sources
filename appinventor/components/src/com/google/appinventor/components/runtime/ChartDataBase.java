@@ -195,17 +195,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
                     e.printStackTrace();
                 }
 
-                // Undefined behavior (exceptions thrown)
-                if (csvResult == null) {
-                    return;
-                }
-
-                // Get the contents of the result
-                final int rowSize = (Integer)csvResult.getObject(0);
-                final YailList csvColumns = (YailList)csvResult.getObject(1);
-
                 // Import from CSV file with the specified parameters
-                chartDataModel.importFromCSV(csvColumns, rowSize);
+                chartDataModel.importFromCSV(csvResult);
 
                 // Refresh the Chart after import
                 refreshChart();

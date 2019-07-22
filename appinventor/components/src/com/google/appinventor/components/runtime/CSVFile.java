@@ -186,11 +186,9 @@ public class CSVFile extends FileBase {
                     resultingColumns.add(column);
                 }
 
-                // Convert result to a YailList
+                // Convert result to a YailList and return it
                 YailList csvColumns = YailList.makeList(resultingColumns);
-
-                // Final result contains the row size as the first element
-                return YailList.makeList(Arrays.asList(rows.size(), csvColumns));
+                return csvColumns;
             }
         });
     }

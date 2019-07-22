@@ -115,9 +115,29 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * values in case of an absence of data.
      *
      * @param columns  columns to import data from
-     * @param rows  number of rows
      */
-    public void importFromCSV(YailList columns, int rows) {
+    public void importFromCSV(YailList columns) {
+        if (columns == null) {
+            return;
+        }
+
+        // Establish the row count of the specified columns
+        int rows = 0;
+
+        for (int i = 0; i < columns.size(); ++i) {
+            YailList column = (YailList)columns.getObject(i);
+
+            if (column.size() != 0) {
+                rows = column.size();
+                break;
+            }
+        }
+
+        if (rows == 0) {
+            // No rows exist. Do nothing.
+            return;
+        }
+
         // Initially, the final column List is created (empty
         // column Lists should be populated with default values)
         ArrayList<YailList> dataColumns = new ArrayList<YailList>();

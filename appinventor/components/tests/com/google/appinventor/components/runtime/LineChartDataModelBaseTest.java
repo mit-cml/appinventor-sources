@@ -361,14 +361,13 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVEmpty() {
-    final int rows = 0;
     YailList xColumn = createTuple();
     YailList yColumn = createTuple();
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -380,18 +379,13 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVEmptyDefaultOption() {
-    final int rows = 4;
     YailList xColumn = createTuple();
     YailList yColumn = createTuple();
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 1f));
-      add(new Entry(2f, 2f));
-      add(new Entry(3f, 3f));
-    }};
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -403,7 +397,6 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVEmptyColumn() {
-    final int rows = 5;
     YailList xColumn = createTuple();
     YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
@@ -415,7 +408,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
       add(new Entry(4f, 7f));
     }};
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -425,14 +418,13 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVOneRow() {
-    final int rows = 1;
     YailList xColumn = createTuple("X");
     YailList yColumn = createTuple("Y");
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -443,7 +435,6 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVOneEntry() {
-    final int rows = 2;
     YailList xColumn = createTuple("X", 2);
     YailList yColumn = createTuple("Y", 4);
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
@@ -452,7 +443,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
       add(new Entry(2f, 4f));
     }};
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -462,7 +453,6 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
    */
   @Test
   public void testImportFromCSVManyEntries() {
-    final int rows = 6;
     YailList xColumn = createTuple("X", 2, 3, 5, 7, 9);
     YailList yColumn = createTuple("Y", 4, 1, 3, 6, 10);
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
@@ -475,27 +465,27 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
       add(new Entry(9f, 10f));
     }};
 
-    model.importFromCSV(columns, rows);
+    model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-  /**
-   * Test to ensure that passing in a row size
-   * less than the size of the columns imports
-   * only those select entries.
-   */
-  @Test
-  public void testImportFromCSVLimitRows() {
-    final int rows = 2;
-    YailList xColumn = createTuple("X", 1, 4, 7, 9);
-    YailList yColumn = createTuple("Y", -2, -3, 9, 8);
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, -2f));
-    }};
-
-    model.importFromCSV(columns, rows);
-    assertExpectedEntriesHelper(expectedEntries);
-  }
+//  /**
+//   * Test to ensure that passing in a row size
+//   * less than the size of the columns imports
+//   * only those select entries.
+//   */
+//  @Test
+//  public void testImportFromCSVLimitRows() {
+//    final int rows = 2;
+//    YailList xColumn = createTuple("X", 1, 4, 7, 9);
+//    YailList yColumn = createTuple("Y", -2, -3, 9, 8);
+//    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+//
+//    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+//      add(new Entry(1f, -2f));
+//    }};
+//
+//    model.importFromCSV(columns);
+//    assertExpectedEntriesHelper(expectedEntries);
+//  }
 }
