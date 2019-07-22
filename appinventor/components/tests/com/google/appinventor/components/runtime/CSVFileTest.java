@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
@@ -185,6 +186,77 @@ public class CSVFileTest extends FileTestBase {
 
     // Assert result equals to expected value
     YailList result = csvFile.getColumn(column);
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetColumnsEmpty() {
+    YailList columns = new YailList();
+
+    loadTestCSVFile();
+
+    YailList expected = new YailList();
+    YailList result = null;
+
+    try {
+      result = csvFile.getColumns(columns).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    }
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetSingleColumn() {
+    YailList columns = YailList.makeList(Collections.singleton("Z"));
+
+    loadTestCSVFile();
+
+    YailList xColumn = (YailList)csvFile.Columns().getObject(2);
+    YailList expected = YailList.makeList(Collections.singletonList(xColumn));
+
+    YailList result = null;
+
+    try {
+      result = csvFile.getColumns(columns).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    }
+
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetTwoColumns() {
+    YailList columns = YailList.makeList(Arrays.asList("X", "Z"));
+
+    loadTestCSVFile();
+
+    YailList xColumn = (YailList) csvFile.Columns().getObject(0);
+    YailList zColumn = (YailList) csvFile.Columns().getObject(2);
+
+    YailList expected = YailList.makeList(Arrays.asList(xColumn, zColumn));
+    YailList result = null;
+
+    try {
+      result = csvFile.getColumns(columns).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      fail("Exception thrown!");
+    }
+
     assertEquals(expected, result);
   }
 
