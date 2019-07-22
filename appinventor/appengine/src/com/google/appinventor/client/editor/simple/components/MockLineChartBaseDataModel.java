@@ -111,6 +111,7 @@ public abstract class MockLineChartBaseDataModel extends MockChartDataModel<Scat
     @Override
     public void setElementsFromCSVRows(List<List<String>> rows, List<String> columns) {
         // TODO: Refactor for more reusability
+        // TODO: SetElements to default when all columns empty
 
         // No rows specified; Set elements to default values
         if (rows == null || rows.isEmpty()) {
