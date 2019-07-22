@@ -1,18 +1,14 @@
 package com.google.appinventor.components.runtime;
 
-import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.Arrays;
 import java.util.concurrent.*;
 
 @SimpleObject
@@ -265,7 +261,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
-            importFromAttachedCSVSource(dataSource);
+            importFromLocalCSVSource(dataSource);
         }
     }
 
@@ -276,7 +272,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      * Declared abstract since subclasses might have different
      * dimensions.
      */
-    protected abstract void importFromAttachedCSVSource(final CSVFile dataSource);
+    protected abstract void importFromLocalCSVSource(final CSVFile dataSource);
 
     /**
      * Refreshes the Chart view object.

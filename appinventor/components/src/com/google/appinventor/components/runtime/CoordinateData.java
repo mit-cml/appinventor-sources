@@ -46,7 +46,7 @@ public final class CoordinateData extends ChartDataBase {
     }
 
     @Override
-    protected void importFromAttachedCSVSource(final CSVFile dataSource) {
+    protected void importFromLocalCSVSource(final CSVFile dataSource) {
         ImportFromCSV(dataSource, csvXColumn, csvYColumn);
     }
 
