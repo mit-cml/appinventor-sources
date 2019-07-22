@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
@@ -128,6 +129,63 @@ public class CSVFileTest extends FileTestBase {
 
     YailList expected = expectedValues2Rows();
     assertEquals(expected, csvFile.Rows());
+  }
+
+  @Test
+  public void testGetColumnValid() {
+    final String column = "Y";
+
+    // Load the test CSV file
+    loadTestCSVFile();
+
+    // The Y column is the 2nd column of the test CSV data
+    YailList expected = (YailList) csvFile.Columns().getObject(1);
+
+    // Assert result equals to expected value
+    YailList result = csvFile.getColumn(column);
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetColumnNonExistent() {
+    final String column = "Random";
+
+    // Load the test CSV file
+    loadTestCSVFile();
+
+    YailList expected = new YailList();
+
+    // Assert result equals to expected value
+    YailList result = csvFile.getColumn(column);
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetColumnEmpty() {
+    final String column = "";
+
+    // Load the test CSV file
+    loadTestCSVFile();
+
+    YailList expected = new YailList();
+
+    // Assert result equals to expected value
+    YailList result = csvFile.getColumn(column);
+    assertEquals(expected, result);
+  }
+
+  @Test
+  public void testGetColumnNull() {
+    final String column = null;
+
+    // Load the test CSV file
+    loadTestCSVFile();
+
+    YailList expected = new YailList();
+
+    // Assert result equals to expected value
+    YailList result = csvFile.getColumn(column);
+    assertEquals(expected, result);
   }
 
   /**
