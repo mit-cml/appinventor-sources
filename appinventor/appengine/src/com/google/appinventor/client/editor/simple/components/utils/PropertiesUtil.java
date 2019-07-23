@@ -62,7 +62,9 @@ import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -275,6 +277,12 @@ public class PropertiesUtil {
       return new YoungAndroidChartTypeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN)) {
       return new YoungAndroidCsvColumnSelectorProperty(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
+      HashSet<String> componentSet = new HashSet<String>() {{
+        add("CSVFile");
+      }};
+
+      return new YoungAndroidComponentSelectorPropertyEditor(editor, componentSet);
     } else {
       return new TextPropertyEditor();
     }

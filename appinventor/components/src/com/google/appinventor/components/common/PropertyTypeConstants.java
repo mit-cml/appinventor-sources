@@ -323,4 +323,6 @@ public class PropertyTypeConstants {
    *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileSelectorPropertyEditor.java
    */
   public static final String PROPERTY_TYPE_CSV_COLUMN = "csv_file_column";
+
+  public static final String PROPERTY_TYPE_CHART_DATA_SOURCE = "chart_data_source";
 }

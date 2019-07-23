@@ -26,7 +26,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     private String label;
     private int color;
 
-    private CSVFile dataSource;
+    private ChartDataSource dataSource;
     private String elements;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
@@ -175,7 +175,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      */
     protected void importFromCSVAsync(final CSVFile csvFile, YailList columns) {
         // Get the Future object representing the columns in the CSVFile component,
-        final Future<YailList> csvFileColumns = csvFile.getColumns(columns);
+        final Future<YailList> csvFileColumns = csvFile.getDataValue(columns);
 
         // Import the data from the CSV file asynchronously
         threadRunner.execute(new Runnable() {
@@ -244,15 +244,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
                     "include CSVFiles.")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
-    public void Source(final CSVFile dataSource) {
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
+    public void Source(ChartDataSource dataSource) {
         this.dataSource = dataSource;
 
         // The data should only be imported after the Data component
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
-            importFromLocalCSVSource(dataSource);
+            if (dataSource instanceof CSVFile) {
+                importFromLocalCSVSource((CSVFile)dataSource);
+            }
         }
     }
 
