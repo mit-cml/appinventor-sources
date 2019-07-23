@@ -20,6 +20,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Adapter class to populate ListView with an image and single line of text
+ */
 public class ListViewArrayAdapterImageSingleText {
   private int textSize, textColor, imageWidth, imageHeight;
   private ComponentContainer container;
@@ -37,6 +40,11 @@ public class ListViewArrayAdapterImageSingleText {
     this.filterCurrentItems = new ArrayList<>(currentItems);
   }
 
+  /**
+   * method to create view for each row of ListView
+   *
+   * @return parent container containing imageView and textView
+   */
   private View createView() {
     LinearLayout linearLayout = new LinearLayout(container.$context());
     linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -85,6 +93,9 @@ public class ListViewArrayAdapterImageSingleText {
         return view;
       }
 
+      /*
+       * overriding getFilter() method to implement search functionality for the custom layout of ListView
+       */
       @Override
       public Filter getFilter() {
         Filter filter = new Filter() {

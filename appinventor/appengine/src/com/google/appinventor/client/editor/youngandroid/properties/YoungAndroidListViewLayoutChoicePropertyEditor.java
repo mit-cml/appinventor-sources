@@ -9,6 +9,9 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * ListViewLayout property editor. A dropdown for selecting type of layout.
+ */
 public class YoungAndroidListViewLayoutChoicePropertyEditor extends ChoicePropertyEditor {
     // ListView layout choices
     private static final Choice[] layout = new Choice[] {

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -55,7 +55,10 @@ public final class MockListView extends MockVisibleComponent {
   private String detailTextColor;
   private String currentElements;
 
+  // variable to store the layout type for listview
   private String layout;
+
+  // list to store data to be inflated in listview
   private ArrayList<JSONObject> currentItems;
 
   /**
@@ -91,7 +94,7 @@ public final class MockListView extends MockVisibleComponent {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
-  /*
+  /**
    * Sets the listview's BackgroundColor property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
@@ -128,7 +131,7 @@ public final class MockListView extends MockVisibleComponent {
     listViewWidget.add(textBoxWidget);
   }
 
-  /*
+  /**
    * Sets the text to be added in the listview
    */
   private void setElementsFromStringProperty(String text){
@@ -168,6 +171,9 @@ public final class MockListView extends MockVisibleComponent {
     listViewWidget.add(panelForItem);
   }
 
+  /**
+   * update the layout type of the listview
+   */
   private void updateLayoutType(String value) {
     layout = value;
     YoungAndroidListViewAddDataPropertyEditor editor =
@@ -178,6 +184,9 @@ public final class MockListView extends MockVisibleComponent {
     }
   }
 
+  /**
+   * reads JSONString and convert it to JSONObject for each row and add it to ArrayList
+   */
   private void displayOnDesigner(String value) {
     currentItems.clear();
     JSONValue jsonValue = (value.isEmpty() || value.equals("")) ? null : JSONParser.parseStrict(value);
@@ -193,6 +202,9 @@ public final class MockListView extends MockVisibleComponent {
     }
   }
 
+  /**
+   * creates view of each row item in the designer according to the type of layout
+   */
   private void createLabelItem(ArrayList<JSONObject> arrayList) {
     listViewWidget.clear();
     createFilterBox();
@@ -265,6 +277,12 @@ public final class MockListView extends MockVisibleComponent {
     }
   }
 
+  /**
+   * retrieves an image from media to diaplay in designer
+   * @param imageName name of the image to be displayed for the row
+   * @param widthValue width of the image
+   * @param heightValue height of the image
+   */
   private Image createImage(String imageName, String widthValue, String heightValue) {
       Image image = new Image();
       String url = convertImagePropertyValueToUrl(imageName);
@@ -280,6 +298,11 @@ public final class MockListView extends MockVisibleComponent {
       return image;
   }
 
+  /**
+   * creates label for a text element of a row in designer
+   * @param value text to be displayed
+   * @param color color of the text
+   */
   private InlineLabel createInlineLabel(String value, String color) {
     InlineLabel label = new InlineLabel(value);
     MockComponentsUtil.setWidgetBackgroundColor(label, backgroundColor);
@@ -330,6 +353,11 @@ public final class MockListView extends MockVisibleComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
       displayOnDesigner(newValue);
+
+      /* checks if data is present in ElementsFromStringProperty too
+       * and hence populate the listview with its data when data from
+       * AddData property is cleared
+       */
       if(currentList != null) {
         setElementsFromStringProperty(currentElements);
       }

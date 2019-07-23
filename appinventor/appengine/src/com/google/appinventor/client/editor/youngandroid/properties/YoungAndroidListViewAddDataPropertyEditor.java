@@ -36,6 +36,11 @@ import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.ArrayList;
 
+/**
+ * AddData property in the ListView component. It is used to add/delete data
+ * for different layout types of ListView.
+ */
+
 public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
   private Button addData;
@@ -74,20 +79,27 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       public void onClick(ClickEvent clickEvent) {
         ClickHandle ch = new ClickHandle(layout);
         ch.center();
+        ch.setStylePrimaryName("ode-DialogBox");
         ch.show();
       }
     });
     initWidget(addData);
   }
 
+  /**
+   * set layout type of ListView so as to display contents AddData dialog box accordingly
+   */
   public void setLayout(String layout) {
     this.layout = layout;
   }
 
+  /**
+   * class to display data table and add/delete data for AddData property
+   */
   class ClickHandle extends DialogBox {
     VerticalPanel verticalPanel;
     HorizontalPanel actionButtons;
-    Button add, ok, cancel;
+    Button add, save, cancel;
     CellTable<JSONObject> table;
     JSONArray rows;
 
@@ -134,7 +146,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       return column;
     }
 
-    Column<JSONObject, String> createImageSelectionBoxes(final String columnKey) {
+    Column<JSONObject, String> createImageSelectionDropDown(final String columnKey) {
       Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
       YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
       ArrayList<String> choices = new ArrayList<>();
@@ -174,7 +186,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       table = new CellTable<>();
       rows = new JSONArray();
       add  = new Button("Click to Add Row Data");
-      ok = new Button("OK");
+      save = new Button("SAVE");
       cancel = new Button("CANCEL");
 
       setText("Add Data to the ListView");
@@ -187,6 +199,9 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       table.setEmptyTableWidget(new Label("No row data available yet!"));
       model.addDataDisplay(table);
 
+      /*
+       * create table columns and type of each column according to the type of ListView layout
+       */
       if (layoutValue.equals("0")) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
       } else if (layoutValue.equals("1") || layoutValue.equals("2")) {
@@ -194,11 +209,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         table.addColumn(createTextBoxes("Text2"), "DetailText");
       } else if(layoutValue.equals("3")) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
-        table.addColumn(createImageSelectionBoxes("Image"), "Image");
+        table.addColumn(createImageSelectionDropDown("Image"), "Image");
       } else if(layoutValue.equals("4")) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
         table.addColumn(createTextBoxes("Text2"), "DetailText");
-        table.addColumn(createImageSelectionBoxes("Image"), "Image");
+        table.addColumn(createImageSelectionDropDown("Image"), "Image");
       }
 
       table.addColumn(createDeleteButton());
@@ -206,6 +221,9 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       add.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
+          /*
+           * creates a row with default data for the corresponding layout type
+           */
           JSONObject data = new JSONObject();
           if(layoutValue.equals("0")) {
             data.put("Text1", new JSONString(""));
@@ -225,7 +243,10 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         }
       });
 
-      ok.addClickHandler(new ClickHandler() {
+      /*
+       * save the data for the corresponding layout type
+       */
+      save.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
           ITEMS.clear();
@@ -245,6 +266,9 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         }
       });
 
+      /*
+       * discards changes in the data for the corresponding layout type
+       */
       cancel.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
@@ -255,7 +279,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       verticalPanel.add(table);
       verticalPanel.add(add);
-      actionButtons.add(ok);
+      actionButtons.add(save);
       actionButtons.add(cancel);
       actionButtons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       verticalPanel.add(actionButtons);

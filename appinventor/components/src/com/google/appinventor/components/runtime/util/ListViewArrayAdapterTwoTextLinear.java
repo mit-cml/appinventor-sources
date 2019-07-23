@@ -17,6 +17,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter class to populate ListView with two lines of text in a single main line
+ */
 public class ListViewArrayAdapterTwoTextLinear {
 
   private int textSize, detailTextSize, textColor, detailTextColor;
@@ -35,6 +38,11 @@ public class ListViewArrayAdapterTwoTextLinear {
     this.filterCurrentItems = new ArrayList<>(currentItems);
   }
 
+  /**
+   * method to create view for each row of ListView
+   *
+   * @return parent container containing two textViews
+   */
   private View createView(){
     LinearLayout linearLayout = new LinearLayout(container.$context());
     linearLayout.setId(1);
@@ -79,6 +87,10 @@ public class ListViewArrayAdapterTwoTextLinear {
 
         return view;
       }
+
+      /*
+       * overriding getFilter() method to implement search functionality for the custom layout of ListView
+       */
       @Override
       public Filter getFilter() {
         Filter filter = new Filter() {

@@ -15,6 +15,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter class to populate ListView with single line of text
+ */
 public class ListViewArrayAdapterSingleText {
 
   private int textSize, textColor;
@@ -50,6 +53,9 @@ public class ListViewArrayAdapterSingleText {
         return view;
       }
 
+      /*
+       * overriding getFilter() method to implement search functionality for the custom layout of ListView
+       */
       @Override
       public Filter getFilter() {
         Filter filter = new Filter() {

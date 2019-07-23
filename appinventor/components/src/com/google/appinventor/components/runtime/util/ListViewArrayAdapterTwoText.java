@@ -15,6 +15,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter class to populate ListView with two lines of text
+ */
 public class ListViewArrayAdapterTwoText {
 
   private int textSize, detailTextSize, textColor, detailTextColor;
@@ -59,6 +62,9 @@ public class ListViewArrayAdapterTwoText {
         return view;
       }
 
+      /*
+       * overriding getFilter() method to implement search functionality for the custom layout of ListView
+       */
       @Override
       public Filter getFilter() {
         Filter filter = new Filter() {
