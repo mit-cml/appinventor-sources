@@ -174,11 +174,11 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             return;
         }
 
-        // Get the rows of the MockCSVFile (safe cast)
-        List<List<String>> rows = ((MockCSVFile)(dataSource)).getRows();
+        // Get the columns from the MockCSVFile using the local CSV Column properties (safe cast)
+        List<List<String>> columns = ((MockCSVFile)(dataSource)).getColumns(csvColumns);
 
-        // Parse CSV from the retrieved rows and the local column properties
-        chartDataModel.setElementsFromCSVRows(rows, csvColumns);
+        // Import the CSV data to the Data Series
+        chartDataModel.setElementsFromCSVRows(columns);
         refreshChart();
     }
 

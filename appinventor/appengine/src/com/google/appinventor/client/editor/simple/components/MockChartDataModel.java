@@ -116,6 +116,8 @@ public abstract class MockChartDataModel<D extends Dataset> {
             // Add the tuple to the Data Model
             addEntryFromTuple(tuple);
         }
+
+        postImportAction();
     }
 
     /**
@@ -135,10 +137,43 @@ public abstract class MockChartDataModel<D extends Dataset> {
      * The first row is expected to contain the column names of the
      * CSV rows.
      *
-     * @param rows  Rows to parse data from (List of Lists of Strings)
-     * @param columns List of columns to use for parsing (List of names)
+     * @param columns List of columns to import from
      */
-    public abstract void setElementsFromCSVRows(List<List<String>> rows, List<String> columns);
+    public void setElementsFromCSVRows(List<List<String>> columns) {
+        // Clear the current entries
+        clearEntries();
+
+        int rows = 0;
+
+        for (int i = 0; i < columns.size(); ++i) {
+            int columnSize = columns.get(i).size();
+
+            if (columnSize > 0) {
+                rows = columnSize;
+                break;
+            }
+        }
+
+        // Iterate through all the rows (except the first, which is the columnNames)
+        // The loop constructs a String of CSV values in format x1,y1,x2,y2,...,xn,yn
+        for (int i = 1; i < rows; ++i) {
+            String[] tuple = new String[getTupleSize()];
+
+            for (int j = 0; j < columns.size(); ++j) {
+                List<String> column = columns.get(j);
+
+                if (column.size() == 0) {
+                    tuple[j] = getDefaultTupleEntry(i);
+                } else {
+                    tuple[j] = column.get(i);
+                }
+            }
+
+            addEntryFromTuple(tuple);
+        }
+
+        postImportAction();
+    }
 
     /**
      * Adds an entry to the Data Model from the specified tuple (List of Strings),
@@ -147,7 +182,11 @@ public abstract class MockChartDataModel<D extends Dataset> {
      */
     public abstract void addEntryFromTuple(String... tuple);
 
+    protected abstract String getDefaultTupleEntry(int index);
+
     public abstract void clearEntries();
+
+    protected abstract void postImportAction();
 
     /**
      * Returns the size of the tuples that this Data Series

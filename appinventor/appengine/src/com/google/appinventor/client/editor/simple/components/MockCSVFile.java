@@ -110,6 +110,36 @@ public class MockCSVFile extends MockNonVisibleComponent {
     return rows;
   }
 
+  public List<List<String>> getColumns(List<String> columns) {
+    ArrayList<List<String>> csvColumns = new ArrayList<List<String>>();
+
+    for (int i = 0; i < columns.size(); ++i) {
+      String column = columns.get(i);
+      int index = columnNames.indexOf(column);
+
+      List<String> csvColumn = getColumn(index);
+
+      csvColumns.add(csvColumn);
+    }
+
+    return csvColumns;
+  }
+
+  private List<String> getColumn(int index) {
+    List<String> column = new ArrayList<String>();
+
+    if (index < 0) {
+      return column;
+    }
+
+    for (int i = 1; i < rows.size(); ++i) {
+      String entry = rows.get(i).get(index);
+      column.add(entry);
+    }
+
+    return column;
+  }
+
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);

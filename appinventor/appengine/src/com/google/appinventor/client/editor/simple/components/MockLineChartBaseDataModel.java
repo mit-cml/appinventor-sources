@@ -26,9 +26,7 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
     }
 
     @Override
-    public void setElements(String elements) {
-        super.setElements(elements);
-
+    protected void postImportAction() {
         // No data points generated, fallback to default option.
         if (dataSeries.getDataPoints().isEmpty()) {
             setDefaultElements();
