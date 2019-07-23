@@ -6,6 +6,8 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
+import java.util.List;
+
 public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
@@ -22,8 +24,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockComponent dataSource;
 
     // Properties for selecting the CSVFile source columns to import from
-    protected String csvXColumn = "";
-    protected String csvYColumn = "";
+    protected List<String> csvColumns;
 
     private String currentElements = "";
 
@@ -148,7 +149,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param column  new column name
      */
     private void setCSVXColumnProperty(String column) {
-        this.csvXColumn = column;
+        csvColumns.set(0, column);
         updateCSVData();
     }
 
@@ -159,7 +160,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param column  new column name
      */
     private void setCSVYColumnProperty(String column) {
-        this.csvYColumn = column;
+        csvColumns.set(1, column);
         updateCSVData();
     }
 
@@ -167,7 +168,19 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * Re-imports data into the Chart from the attached CSVFile source
      * based on the current CSV column properties.
      */
-    protected abstract void updateCSVData();
+    protected void updateCSVData() {
+        // DataSource is not of instance MockCSVFile. Ignore event call
+        if (!(dataSource instanceof MockCSVFile)) {
+            return;
+        }
+
+        // Get the rows of the MockCSVFile (safe cast)
+        List<List<String>> rows = ((MockCSVFile)(dataSource)).getRows();
+
+        // Parse CSV from the retrieved rows and the local column properties
+        chartDataModel.setElementsFromCSVRows(rows, csvColumns);
+        refreshChart();
+    }
 
     /**
      * Handles properties with regards to a CSV source upon
