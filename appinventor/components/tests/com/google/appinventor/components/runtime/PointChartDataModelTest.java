@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -14,7 +15,10 @@ import static junit.framework.Assert.assertEquals;
 /**
  * Base class for Line Chart based Data Model tests.
  */
-public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<LineChartBaseDataModel, LineData> {
+public abstract class PointChartDataModelTest
+    <M extends PointChartDataModel,
+    D extends ChartData>
+    extends ChartDataModelBaseTest<M, D> {
   /**
    * Test to ensure that the constructor properly instantiates an
    * empty data set, and that the reference of the passed in data
@@ -76,7 +80,7 @@ public abstract class LineChartDataModelBaseTest extends ChartDataModelBaseTest<
   public void testSetElementsEven() {
     // We are adding (3, 1), (2, 4), (1, 2)
     // End result should be ordered by X value.
-    String elements = "3, 1, 2, 4, 1, 2";
+    String elements = "1, 2, 2, 4, 3, 1";
     model.setElements(elements);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{

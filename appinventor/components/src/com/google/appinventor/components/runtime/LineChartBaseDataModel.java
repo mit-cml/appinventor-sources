@@ -7,7 +7,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 
-public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet, LineData>  {
+public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDataSet, LineData>  {
     /**
      * Initializes a new LineChartBaseDataModel object instance.
      *
@@ -20,17 +20,13 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
         setDefaultStylingProperties();
     }
 
-    @Override
-    protected int getTupleSize() {
-        return 2;
-    }
-
     /**
      * Adds a (x, y) entry to the Line Data Set.
      *
      * @param x  x value
      * @param y  y value
      */
+    @Override
     public void addEntry(float x, float y) {
         Entry entry = new Entry(x, y);
         getDataset().addEntryOrdered(entry);
@@ -43,42 +39,7 @@ public abstract class LineChartBaseDataModel extends ChartDataModel<LineDataSet,
     }
 
     @Override
-    public void addEntryFromTuple(YailList tuple) {
-        try {
-            String xValue = tuple.getString(0);
-            String yValue = tuple.getString(1);
-
-            try {
-                float x = Float.parseFloat(xValue);
-                float y = Float.parseFloat(yValue);
-
-                addEntry(x, y);
-            } catch (NumberFormatException e) {
-                // Nothing happens: Do not add entry on NumberFormatException
-            }
-        } catch (Exception e) {
-            // 2-tuples are invalid when null entries are present, or if
-            // the number of entries is not sufficient to form a pair.
-            // TODO: Show toast error notification
-        }
-    }
-
-    @Override
     protected void setDefaultStylingProperties() {
         getDataset().setDrawCircleHole(false); // Draw full circle instead of a hollow one
-    }
-
-
-    @Override
-    protected YailList getDefaultValues(int size) {
-        // Default values for LineChartBaseDataModel should be
-        // integers from 0 to N (0, 1, 2, ...)
-        ArrayList<Integer> defaultValues = new ArrayList<>();
-
-        for (int i = 0; i < size; ++i) {
-            defaultValues.add(i);
-        }
-
-        return YailList.makeList(defaultValues);
     }
 }

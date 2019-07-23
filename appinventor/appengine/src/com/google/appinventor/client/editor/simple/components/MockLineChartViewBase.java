@@ -5,16 +5,11 @@ import org.pepstock.charba.client.ScatterChart;
 /**
  * Chart View base class for Line Chart based Charts
  */
-public abstract class MockLineChartViewBase extends MockChartView<ScatterChart> {
+public abstract class MockLineChartViewBase extends MockPointChartView {
     /**
      * Creates a new MockLineChartViewBase object instance.
      */
     protected MockLineChartViewBase() {
-        // A ScatterChart widget is used to allow
-        // arbitrary insertions of (x, y) points and
-        // automatic generation of the X axis labels
-        // (as well as automatic scaling)
-        chartWidget = new ScatterChart();
-        initializeDefaultSettings();
+        super();
     }
 }
