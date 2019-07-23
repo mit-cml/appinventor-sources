@@ -152,14 +152,4 @@ public interface Component {
 
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
-
-
-  /*
-   * Chart Types
-   */
-  static final int CHART_TYPE_LINE = 0;
-  static final int CHART_TYPE_SCATTER = 1;
-  static final int CHART_TYPE_AREA = 2;
-  static final int CHART_TYPE_BAR = 3;
-  static final int CHART_TYPE_PIE = 4;
 }

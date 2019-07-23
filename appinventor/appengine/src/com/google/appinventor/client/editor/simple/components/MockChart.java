@@ -27,7 +27,7 @@ public final class MockChart extends MockContainer {
     protected MockChartView chartView;
 
     // Legal values for type are defined in
-    // com.google.appinventor.components.runtime.Component.java.
+    // com.google.appinventor.components.common.ComponentConstants.java.
     private int type;
 
     /**
@@ -117,20 +117,15 @@ public final class MockChart extends MockContainer {
      */
     private MockChartView createMockChartViewFromType(int type) {
         switch(type) {
-            case 0:
-                // Line Chart
+            case ComponentConstants.CHART_TYPE_LINE:
                 return new MockLineChartView();
-            case 1:
-                // Scatter Chart
+            case ComponentConstants.CHART_TYPE_SCATTER:
                 return new MockScatterChartView();
-            case 2:
-                // Area Chart
+            case ComponentConstants.CHART_TYPE_AREA:
                 return new MockAreaChartView();
-            case 3:
-                // Bar Chart
+            case ComponentConstants.CHART_TYPE_BAR:
                 return new MockLineChartView();
-            case 4:
-                // Pie Chart
+            case ComponentConstants.CHART_TYPE_PIE:
                 return new MockLineChartView();
             default:
                 // Invalid argument

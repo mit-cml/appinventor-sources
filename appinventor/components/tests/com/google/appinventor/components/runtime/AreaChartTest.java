@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.google.appinventor.components.common.ComponentConstants;
 import org.junit.Before;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -32,6 +33,6 @@ public class AreaChartTest extends AbstractChartTest<AreaChartView, LineChart> {
 
     @Override
     public int getType() {
-        return Component.CHART_TYPE_AREA;
+        return ComponentConstants.CHART_TYPE_AREA;
     }
 }

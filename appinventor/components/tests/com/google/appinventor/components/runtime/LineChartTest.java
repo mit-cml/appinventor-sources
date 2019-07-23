@@ -1,9 +1,7 @@
 package com.google.appinventor.components.runtime;
 
-import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.ChartData;
-import com.github.mikephil.charting.data.LineData;
+import com.google.appinventor.components.common.ComponentConstants;
 import org.junit.Before;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -42,6 +40,6 @@ public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
 
     @Override
     public int getType() {
-        return Component.CHART_TYPE_LINE;
+        return ComponentConstants.CHART_TYPE_LINE;
     }
 }

@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.ScatterChart;
+import com.google.appinventor.components.common.ComponentConstants;
 import org.junit.Before;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -33,6 +34,6 @@ public class ScatterChartTest extends AbstractChartTest<ScatterChartView, Scatte
 
   @Override
   public int getType() {
-    return Component.CHART_TYPE_SCATTER;
+    return ComponentConstants.CHART_TYPE_SCATTER;
   }
 }
