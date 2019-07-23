@@ -2,12 +2,9 @@ package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.DataPoint;
-import org.pepstock.charba.client.data.ScatterDataset;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Chart Data Model for Mock Line Chart based views.
@@ -20,7 +17,6 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
     public MockLineChartBaseDataModel(Data chartData) {
         super(chartData);
     }
-
     @Override
     protected void setDefaultStylingProperties() {
         dataSeries.setFill(false);
@@ -31,29 +27,11 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
 
     @Override
     public void setElements(String elements) {
-        // TODO: Abstract away in MockPointChartDataModel
-        String[] entries = elements.split(",");
-
-        // Create new list of Data Points
-        ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-
-        // Since entries come in pairs, we add 2 on each iteration.
-        // Beginning from i = 1 instead of 0 to prevent out of bounds
-        // accesses.
-        for (int i = 1; i < entries.length; i += 2) {
-            try {
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.setX(Double.parseDouble(entries[i-1]));
-                dataPoint.setY(Double.parseDouble(entries[i]));
-                dataPoints.add(dataPoint);
-            } catch (NumberFormatException e) {
-                return; // Wrong input. Do not update entries.
-            }
-        }
+        super.setElements(elements);
 
         // No data points generated, fallback to default option.
-        if (dataPoints.isEmpty()) {
-            setDefaultElements(dataPoints);
+        if (dataSeries.getDataPoints().isEmpty()) {
+            setDefaultElements();
         } else {
             // Since we are dealing with a Scatter Data Series, sorting
             // is a must, because otherwise, the Chart will not look representative.
@@ -61,10 +39,7 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
             // value to be continuous on the Line Chart, rather than
             // going outside the Chart, which would happen since we
             // are using a Scatter Chart.
-            dataPoints.sort(Comparator.comparingDouble(DataPoint::getX));
+            dataSeries.getDataPoints().sort(Comparator.comparingDouble(DataPoint::getX));
         }
-
-        // Set the generated data points to the Data Series
-        dataSeries.setDataPoints(dataPoints);
     }
 }

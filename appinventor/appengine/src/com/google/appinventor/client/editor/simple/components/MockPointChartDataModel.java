@@ -39,7 +39,7 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
   }
 
   @Override
-  protected void setDefaultElements(List<DataPoint> dataPoints) {
+  protected void setDefaultElements() {
     final int points = 4; // Number of points to add
 
     // TBD: Might change this in the future.
@@ -55,10 +55,7 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
     double yVal = maxYPoint.map(DataPoint::getY).orElse(0.0);
 
     for (int i = 0; i < points; ++i) {
-      DataPoint dataPoint = new DataPoint();
-      dataPoint.setX(i+1);
-      dataPoint.setY((yVal + i));
-      dataPoints.add(dataPoint);
+      addEntryFromTuple(i + 1.0, yVal + i);
     }
   }
 
@@ -115,5 +112,39 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
 
     // Pass the constructed result to parse via CSV
     setElements(elementStringBuilder.toString());
+  }
+
+  @Override
+  public void addEntryFromTuple(String... tuple) {
+    try {
+      double xValue = Double.parseDouble(tuple[0]);
+      double yValue = Double.parseDouble(tuple[1]);
+
+      addEntryFromTuple(xValue, yValue);
+    } catch (NumberFormatException e) {
+      // Wrong input. Do nothing.
+    }
+  }
+
+  public void addEntryFromTuple(Double... tuple) {
+    DataPoint dataPoint = new DataPoint();
+    dataPoint.setX(tuple[0]);
+    dataPoint.setY(tuple[1]);
+
+    if (dataSeries.getDataPoints().size() == 0) {
+      dataSeries.setDataPoints(dataPoint);
+    } else {
+      dataSeries.getDataPoints().add(dataPoint);
+    }
+  }
+
+  @Override
+  protected int getTupleSize() {
+    return 2;
+  }
+
+  @Override
+  public void clearEntries() {
+    dataSeries.getDataPoints().clear();
   }
 }
