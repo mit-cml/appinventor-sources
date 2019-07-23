@@ -101,7 +101,7 @@ public abstract class MockChartDataModel<D extends Dataset> {
                Therefore if the last index is greater than the entries length,
                the tuple group is invalid and the method should return. */
             if (i + tupleSize - 1 >= entries.length) {
-                return;
+                break;
             }
 
             // Create an array having the capacity to hold a tuple
