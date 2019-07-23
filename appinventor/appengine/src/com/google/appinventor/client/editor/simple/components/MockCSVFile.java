@@ -117,7 +117,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
    * an empty List.
    *
    * @param columns  List of columns to get
-   * @return  Li st of columns (a column is a List of Strings)
+   * @return  List of columns (a column is a List of Strings)
    */
   public List<List<String>> getColumns(List<String> columns) {
     ArrayList<List<String>> csvColumns = new ArrayList<List<String>>();
@@ -140,7 +140,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
    * @return  List of Strings representing the column
    * */
   private List<String> getColumn(int index) {
-    // TODO: Room for optimization by instantiating columns post-read
+    // TODO: Room for optimization by storing columns locally post-read
     List<String> column = new ArrayList<String>();
 
     // If index is invalid, return empty List

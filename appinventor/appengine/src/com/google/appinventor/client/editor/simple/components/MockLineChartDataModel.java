@@ -25,4 +25,10 @@ public class MockLineChartDataModel extends MockLineChartBaseDataModel {
     public MockLineChartDataModel(Data chartData) {
         super(chartData);
     }
+
+//    @Override
+//    protected void setDefaultStylingProperties() {
+//        super.setDefaultStylingProperties();
+//        dataSeries.setFill(false);
+//    }
 }

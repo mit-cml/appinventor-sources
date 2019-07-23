@@ -17,6 +17,13 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
     super(data);
   }
 
+  /**
+   * Adds an entry to the Data Series from the specified
+   * x and y values.
+   *
+   * @param x  x value of the entry
+   * @param y  y value of the entry
+   */
   public abstract void addEntry(float x, float y);
 
   @Override

@@ -17,9 +17,9 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
     public MockLineChartBaseDataModel(Data chartData) {
         super(chartData);
     }
+
     @Override
     protected void setDefaultStylingProperties() {
-        dataSeries.setFill(false);
         dataSeries.setBorderWidth(1);
         dataSeries.setLineTension(0);
         dataSeries.setShowLine(true);
