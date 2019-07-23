@@ -47,7 +47,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         dataComponents = new ArrayList<ChartDataBase>();
 
         // Set default values
-        Type(Component.CHART_TYPE_LINE);
+        Type(ComponentConstants.CHART_TYPE_LINE);
         Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
@@ -87,11 +87,11 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     /**
      * Returns the type of the Chart.
      *
-     * @return  one of {@link Component#CHART_TYPE_LINE},
-     *          {@link Component#CHART_TYPE_SCATTER},
-     *          {@link Component#CHART_TYPE_AREA},
-     *          {@link Component#CHART_TYPE_BAR} or
-     *          {@link Component#CHART_TYPE_PIE}
+     * @return  one of {@link ComponentConstants#CHART_TYPE_LINE},
+     *          {@link ComponentConstants#CHART_TYPE_SCATTER},
+     *          {@link ComponentConstants#CHART_TYPE_AREA},
+     *          {@link ComponentConstants#CHART_TYPE_BAR} or
+     *          {@link ComponentConstants#CHART_TYPE_PIE}
      */
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR,
@@ -103,16 +103,16 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     /**
      * Specifies the type of the Chart. This does not check that the argument is a legal value.
      *
-     * @param type one of {@link Component#CHART_TYPE_LINE},
-     *  {@link Component#CHART_TYPE_SCATTER},
-     *  {@link Component#CHART_TYPE_AREA},
-     *  {@link Component#CHART_TYPE_BAR} or
-     *  {@link Component#CHART_TYPE_PIE}
+     * @param type one of {@link ComponentConstants#CHART_TYPE_LINE},
+     *  {@link ComponentConstants#CHART_TYPE_SCATTER},
+     *  {@link ComponentConstants#CHART_TYPE_AREA},
+     *  {@link ComponentConstants#CHART_TYPE_BAR} or
+     *  {@link ComponentConstants#CHART_TYPE_PIE}
      *
      * @throws IllegalArgumentException if shape is not a legal value.
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
-            defaultValue = Component.CHART_TYPE_LINE + "")
+            defaultValue = ComponentConstants.CHART_TYPE_LINE + "")
     @SimpleProperty(description = "Specifies the chart's type (line, scatter," +
             "area, bar, pie).",
             userVisible = false)
@@ -144,24 +144,24 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     /**
      * Creates and returns a ChartView object based on the type
      * (integer) provided.
-     * @param type one of {@link Component#CHART_TYPE_LINE},
-     *  {@link Component#CHART_TYPE_SCATTER},
-     *  {@link Component#CHART_TYPE_AREA},
-     *  {@link Component#CHART_TYPE_BAR} or
-     *  {@link Component#CHART_TYPE_PIE}
+     * @param type one of {@link ComponentConstants#CHART_TYPE_LINE},
+     *  {@link ComponentConstants#CHART_TYPE_SCATTER},
+     *  {@link ComponentConstants#CHART_TYPE_AREA},
+     *  {@link ComponentConstants#CHART_TYPE_BAR} or
+     *  {@link ComponentConstants#CHART_TYPE_PIE}
      * @return  new ChartView instance
      */
     private ChartView createChartViewFromType(int type) {
         switch(type) {
-            case Component.CHART_TYPE_LINE:
+            case ComponentConstants.CHART_TYPE_LINE:
                 return new LineChartView(container.$context());
-            case Component.CHART_TYPE_SCATTER:
+            case ComponentConstants.CHART_TYPE_SCATTER:
                 return new ScatterChartView(container.$context());
-            case Component.CHART_TYPE_AREA:
+            case ComponentConstants.CHART_TYPE_AREA:
                 return new AreaChartView(container.$context());
-            case Component.CHART_TYPE_BAR:
+            case ComponentConstants.CHART_TYPE_BAR:
                 return new LineChartView(container.$context());
-            case Component.CHART_TYPE_PIE:
+            case ComponentConstants.CHART_TYPE_PIE:
                 return new LineChartView(container.$context());
             default:
                 // Invalid argument

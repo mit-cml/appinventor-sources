@@ -103,5 +103,13 @@ public class ComponentConstants {
   public static final int RECTANGLE_PREFERRED_WIDTH = 50;
   public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
 
+  /**
+   * Chart Components
+   */
+  public static final int CHART_TYPE_LINE = 0;
+  public static final int CHART_TYPE_SCATTER = 1;
+  public static final int CHART_TYPE_AREA = 2;
+  public static final int CHART_TYPE_BAR = 3;
+  public static final int CHART_TYPE_PIE = 4;
 }
 

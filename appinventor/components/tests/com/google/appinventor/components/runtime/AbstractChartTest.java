@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.ColorDrawable;
 import android.widget.RelativeLayout;
+import com.google.appinventor.components.common.ComponentConstants;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public abstract class AbstractChartTest<V extends ChartView,
     public void testChartConstructorDefaultProperties() {
         Chart defaultChart = new Chart(getForm());
 
-        assertEquals(Component.CHART_TYPE_LINE, defaultChart.Type());
+        assertEquals(ComponentConstants.CHART_TYPE_LINE, defaultChart.Type());
         assertEquals(Component.COLOR_DEFAULT, defaultChart.BackgroundColor());
         assertEquals("", defaultChart.Description());
         assertTrue(defaultChart.getView().isEnabled());
