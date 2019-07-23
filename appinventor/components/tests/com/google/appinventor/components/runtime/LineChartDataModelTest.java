@@ -6,7 +6,8 @@ import org.junit.Before;
 /**
  * Unit tests for the LineChartModel class.
  */
-public class LineChartDataModelTest extends LineChartDataModelBaseTest {
+public class LineChartDataModelTest
+    extends PointChartDataModelTest<LineChartDataModel, LineData> {
   @Before
   @Override
   public void setup() {

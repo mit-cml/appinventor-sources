@@ -6,7 +6,8 @@ import org.junit.Before;
 /**
  * Unit tests for the AreaChartModel class.
  */
-public class AreaChartDataModelTest extends LineChartDataModelBaseTest {
+public class AreaChartDataModelTest
+    extends PointChartDataModelTest<AreaChartDataModel, LineData> {
   @Before
   @Override
   public void setup() {
