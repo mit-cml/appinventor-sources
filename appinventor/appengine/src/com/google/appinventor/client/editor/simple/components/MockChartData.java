@@ -6,6 +6,8 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
+import java.util.List;
+
 public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
@@ -21,9 +23,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
 
-    // Properties for selecting the CSVFile source columns to import from
-    protected String csvXColumn = "";
-    protected String csvYColumn = "";
+    // Stores the CSVColumn properties (in order) to import from
+    protected List<String> csvColumns;
 
     private String currentElements = "";
 
@@ -148,7 +149,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param column  new column name
      */
     private void setCSVXColumnProperty(String column) {
-        this.csvXColumn = column;
+        // The X column is the first element of the csvColumns list
+        csvColumns.set(0, column);
         updateCSVData();
     }
 
@@ -159,15 +161,28 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param column  new column name
      */
     private void setCSVYColumnProperty(String column) {
-        this.csvYColumn = column;
+        // The Y column is the second element of the csvColumns list
+        csvColumns.set(1, column);
         updateCSVData();
     }
 
     /**
-     * Re-imports data into the Chart from the attached CSVFile source
+     * Imports data into the Chart from the attached CSVFile source
      * based on the current CSV column properties.
      */
-    protected abstract void updateCSVData();
+    protected void updateCSVData() {
+        // DataSource is not of instance MockCSVFile. Ignore event call
+        if (!(dataSource instanceof MockCSVFile)) {
+            return;
+        }
+
+        // Get the columns from the MockCSVFile using the local CSV Column properties (safe cast)
+        List<List<String>> columns = ((MockCSVFile)(dataSource)).getColumns(csvColumns);
+
+        // Import the CSV data to the Data Series
+        chartDataModel.setElementsFromCSVColumns(columns);
+        refreshChart();
+    }
 
     /**
      * Handles properties with regards to a CSV source upon

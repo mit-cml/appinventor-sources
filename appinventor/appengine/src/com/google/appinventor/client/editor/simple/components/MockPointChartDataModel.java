@@ -39,7 +39,7 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
   }
 
   @Override
-  protected void setDefaultElements(List<DataPoint> dataPoints) {
+  protected void setDefaultElements() {
     final int points = 4; // Number of points to add
 
     // TBD: Might change this in the future.
@@ -55,65 +55,70 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
     double yVal = maxYPoint.map(DataPoint::getY).orElse(0.0);
 
     for (int i = 0; i < points; ++i) {
-      DataPoint dataPoint = new DataPoint();
-      dataPoint.setX(i+1);
-      dataPoint.setY((yVal + i));
-      dataPoints.add(dataPoint);
+      // Construct the x and y values based on the index
+      double xValue = i + 1;
+      double yValue = yVal + i;
+
+      // Add an entry based on the constructed values
+      addEntryFromTuple(xValue, yValue);
     }
   }
 
   @Override
-  public void setElementsFromCSVRows(List<List<String>> rows, List<String> columns) {
-    // TODO: Refactor for more reusability
-    // TODO: SetElements to default when all columns empty
+  public void addEntryFromTuple(String... tuple) {
+    try {
+      // Parse x and y values
+      double xValue = Double.parseDouble(tuple[0]);
+      double yValue = Double.parseDouble(tuple[1]);
 
-    // No rows specified; Set elements to default values
-    if (rows == null || rows.isEmpty()) {
-      setElements("");
-      return;
+      // Add an entry from the parsed values
+      addEntryFromTuple(xValue, yValue);
+    } catch (NumberFormatException e) {
+      // Wrong input. Do nothing.
     }
+  }
 
-    // First row is interpreted as the CSV column names
-    List<String> columnNames = rows.get(0);
+  /**
+   * Adds an entry to the Data Series from the specified tuple.
+   *
+   * The tuple is expected to have at least 2 entries. All subsequent
+   * values are ignored.
+   *
+   * @param tuple  tuple (array of doubles)
+   */
+  public void addEntryFromTuple(Double... tuple) {
+    // Construct the data point
+    DataPoint dataPoint = new DataPoint();
+    dataPoint.setX(tuple[0]);
+    dataPoint.setY(tuple[1]);
 
-    StringBuilder elementStringBuilder = new StringBuilder(); // Used for constructing CSV-formatted elements
-    List<Integer> indexes = new ArrayList<Integer>(); // Keep track of indexes representing column names
-
-    // Iterate through the parameter specified for the columns to parse
-    for (String column : columns) {
-      // Get & store the index of the column
-      int index = columnNames.indexOf(column);
-      indexes.add(index);
+    // Due to the nature of the library used, if the data points
+    // list is empty, the data point has to be set to the Data Series.
+    // Accessing it directly will return a copy (rather than a reference)
+    // of the data points list. However, once a data point is set, the
+    // getDataPoints method will return the reference, which can then be
+    // altered.
+    if (dataSeries.getDataPoints().size() == 0) {
+      dataSeries.setDataPoints(dataPoint);
+    } else {
+      dataSeries.getDataPoints().add(dataPoint);
     }
+  }
 
-    // Iterate through all the rows (except the first, which is the columnNames)
-    // The loop constructs a String of CSV values in format x1,y1,x2,y2,...,xn,yn
-    for (int i = 1; i < rows.size(); ++i) {
-      List<String> row = rows.get(i);
+  @Override
+  public String getDefaultTupleEntry(int index) {
+    // For Point-based Charts, the default tuple entry is simply the
+    // current index.
+    return index + "";
+  }
 
-      // Iterate through all the indexes (or columns, in other words)
-      for (int j = 0; j < indexes.size(); ++j) {
-        // Get the index
-        int index = indexes.get(j);
+  @Override
+  protected int getTupleSize() {
+    return 2;
+  }
 
-        if (index < 0) { // Column not found
-          // Use default value (just the i-th index)
-          elementStringBuilder.append(i);
-        } else { // Column found
-          // The index represents the column to use from
-          // the current row. Fetch the value and add it to the
-          // result.
-          elementStringBuilder.append(row.get(index));
-        }
-
-        // Add a comma unless it is the very last entry
-        if (i != rows.size() - 1 || j != indexes.size() - 1) {
-          elementStringBuilder.append(",");
-        }
-      }
-    }
-
-    // Pass the constructed result to parse via CSV
-    setElements(elementStringBuilder.toString());
+  @Override
+  public void clearEntries() {
+    dataSeries.getDataPoints().clear();
   }
 }

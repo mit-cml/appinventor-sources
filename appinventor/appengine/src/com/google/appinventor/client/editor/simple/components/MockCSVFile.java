@@ -110,6 +110,57 @@ public class MockCSVFile extends MockNonVisibleComponent {
     return rows;
   }
 
+  /**
+   * Returns a List of the specified columns.
+   *
+   * If a column is not found, it is substituted by
+   * an empty List.
+   *
+   * @param columns  List of columns to get
+   * @return  Li st of columns (a column is a List of Strings)
+   */
+  public List<List<String>> getColumns(List<String> columns) {
+    ArrayList<List<String>> csvColumns = new ArrayList<List<String>>();
+
+    for (String column : columns) {
+      // Get the index of the column and get the column itself
+      int index = columnNames.indexOf(column);
+      List<String> csvColumn = getColumn(index);
+
+      // Add the column to the result
+      csvColumns.add(csvColumn);
+    }
+
+    return csvColumns;
+  }
+
+  /**
+   * Gets the column in the specified index
+   * @param index  index of the column
+   * @return  List of Strings representing the column
+   * */
+  private List<String> getColumn(int index) {
+    // TODO: Room for optimization by instantiating columns post-read
+    List<String> column = new ArrayList<String>();
+
+    // If index is invalid, return empty List
+    if (index < 0) {
+      return column;
+    }
+
+    // Iterate through all the rows
+    for (int i = 0; i < rows.size(); ++i) {
+      // i represents the current row, while index
+      // represents the column index.
+      String entry = rows.get(i).get(index);
+
+      // Add the entry to the result
+      column.add(entry);
+    }
+
+    return column;
+  }
+
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
