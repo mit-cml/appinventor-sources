@@ -16,6 +16,10 @@ public class MockCoordinateData extends MockChartData {
      */
     public MockCoordinateData(SimpleEditor editor) {
         super(editor, TYPE, images.tinyDB());
+
+        // Initialize csvColumns to default values.
+        // Since CoordinateData consists of 2 entries,
+        // the List is initialized with 2 entries.
         csvColumns = Arrays.asList("", "");
     }
 }

@@ -1,7 +1,6 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.DataPoint;
 import org.pepstock.charba.client.data.Dataset;
 
 import java.util.List;
@@ -117,7 +116,8 @@ public abstract class MockChartDataModel<D extends Dataset> {
             addEntryFromTuple(tuple);
         }
 
-        postImportAction();
+        // Perform the defined action after data import
+        postDataImportAction();
     }
 
     /**
@@ -132,22 +132,21 @@ public abstract class MockChartDataModel<D extends Dataset> {
     protected abstract void setDefaultStylingProperties();
 
     /**
-     * Sets the elements of the Data Series from the specified CSV rows.
-     *
-     * The first row is expected to contain the column names of the
-     * CSV rows.
+     * Sets the elements of the Data Series from the specified CSV columns.
      *
      * @param columns List of columns to import from
      */
-    public void setElementsFromCSVRows(List<List<String>> columns) {
+    public void setElementsFromCSVColumns(List<List<String>> columns) {
         // Clear the current entries
         clearEntries();
 
+        // Initially, the row size of the columns has to be determined
         int rows = 0;
 
         for (int i = 0; i < columns.size(); ++i) {
             int columnSize = columns.get(i).size();
 
+            // Non-empty column found, break here
             if (columnSize > 0) {
                 rows = columnSize;
                 break;
@@ -155,24 +154,28 @@ public abstract class MockChartDataModel<D extends Dataset> {
         }
 
         // Iterate through all the rows (except the first, which is the columnNames)
-        // The loop constructs a String of CSV values in format x1,y1,x2,y2,...,xn,yn
         for (int i = 1; i < rows; ++i) {
+            // Create an array that can hold all the tuple entries
             String[] tuple = new String[getTupleSize()];
 
-            for (int j = 0; j < columns.size(); ++j) {
+            // Iterate through all the columns.
+            // Column size is the same as the tuple size
+            for (int j = 0; j < getTupleSize(); ++j) {
                 List<String> column = columns.get(j);
 
-                if (column.size() == 0) {
+                if (column.size() == 0) { // Empty column; Use default value
                     tuple[j] = getDefaultTupleEntry(i);
-                } else {
+                } else { // Use the column's value
                     tuple[j] = column.get(i);
                 }
             }
 
+            // Add the constructed tuple as an entry to the Data Model
             addEntryFromTuple(tuple);
         }
 
-        postImportAction();
+        // Perform the defined action after data import
+        postDataImportAction();
     }
 
     /**
@@ -182,11 +185,29 @@ public abstract class MockChartDataModel<D extends Dataset> {
      */
     public abstract void addEntryFromTuple(String... tuple);
 
+    /**
+     * Returns the default entry to use for the specified index value.
+     * To be used when data is not present, and a default value substitute
+     * has to be used.
+     *
+     * @param index  index to create a default entry for
+     * @return  default entry (String)
+     */
     protected abstract String getDefaultTupleEntry(int index);
 
+    /**
+     * Clears all the entries in the Data Series.
+     */
     public abstract void clearEntries();
 
-    protected abstract void postImportAction();
+    /**
+     * Action performed after data importing.
+     * To be called after each data importing method.
+     *
+     * The most common example of such action is setting
+     * default elements in case no data is present.
+     */
+    protected abstract void postDataImportAction();
 
     /**
      * Returns the size of the tuples that this Data Series

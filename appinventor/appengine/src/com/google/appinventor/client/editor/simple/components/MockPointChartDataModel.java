@@ -55,27 +55,49 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
     double yVal = maxYPoint.map(DataPoint::getY).orElse(0.0);
 
     for (int i = 0; i < points; ++i) {
-      addEntryFromTuple(i + 1.0, yVal + i);
+      // Construct the x and y values based on the index
+      double xValue = i + 1;
+      double yValue = yVal + i;
+
+      // Add an entry based on the constructed values
+      addEntryFromTuple(xValue, yValue);
     }
   }
 
   @Override
   public void addEntryFromTuple(String... tuple) {
     try {
+      // Parse x and y values
       double xValue = Double.parseDouble(tuple[0]);
       double yValue = Double.parseDouble(tuple[1]);
 
+      // Add an entry from the parsed values
       addEntryFromTuple(xValue, yValue);
     } catch (NumberFormatException e) {
       // Wrong input. Do nothing.
     }
   }
 
+  /**
+   * Adds an entry to the Data Series from the specified tuple.
+   *
+   * The tuple is expected to have at least 2 entries. All subsequent
+   * values are ignored.
+   *
+   * @param tuple  tuple (array of doubles)
+   */
   public void addEntryFromTuple(Double... tuple) {
+    // Construct the data point
     DataPoint dataPoint = new DataPoint();
     dataPoint.setX(tuple[0]);
     dataPoint.setY(tuple[1]);
 
+    // Due to the nature of the library used, if the data points
+    // list is empty, the data point has to be set to the Data Series.
+    // Accessing it directly will return a copy (rather than a reference)
+    // of the data points list. However, once a data point is set, the
+    // getDataPoints method will return the reference, which can then be
+    // altered.
     if (dataSeries.getDataPoints().size() == 0) {
       dataSeries.setDataPoints(dataPoint);
     } else {
@@ -85,6 +107,8 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
 
   @Override
   public String getDefaultTupleEntry(int index) {
+    // For Point-based Charts, the default tuple entry is simply the
+    // current index.
     return index + "";
   }
 
