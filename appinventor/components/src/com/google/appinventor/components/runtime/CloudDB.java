@@ -52,8 +52,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLContext;
@@ -99,7 +101,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
 
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener {
+  OnClearListener, OnDestroyListener, ChartDataSource<String, Future<YailList>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -237,6 +239,38 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private final List<storedValue> storeQueue = Collections.synchronizedList(new ArrayList());
 
   private ConnectivityManager cm;
+
+  @Override
+  public Future<YailList> getDataValue(String key) {
+    return background.submit(new Callable<YailList>() {
+      @Override
+      public YailList call() {
+        AtomicReference<Object> valueReference = getValue(key, new YailList());
+
+        if (!(valueReference instanceof List)) {
+          return new YailList();
+        }
+
+        List list = (List)valueReference.get();
+
+        // Create an array which will hold the resulting parsed values
+        ArrayList<YailList> resultValues = new ArrayList<YailList>();
+
+        // Iterate over all the objects in the List
+        for (Object object : list) {
+          // Object is of type List (nested List)
+          if (object instanceof List) {
+            // Convert the List to a YailList, and then add the List to the resulting values
+            YailList entryList = YailList.makeList((List)object);
+            resultValues.add(entryList);
+          }
+        }
+
+        // Convert the resulting values to a YailList, and return it
+        return YailList.makeList(resultValues);
+      }
+    });
+  }
 
   private static class storedValue {
     private String tag;
@@ -715,7 +749,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     if (DEBUG) {
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
     }
-    final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
     SQLiteDatabase db = null;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -726,37 +759,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       // or the JSON representation of valueIfTagNotThere
       background.submit(new Runnable() {
           public void run() {
-            Jedis jedis = getJedis();
-            try {
-              if (DEBUG) {
-                Log.d(LOG_TAG,"about to call jedis.get()");
-              }
-              String returnValue = jedis.get(projectID + ":" + tag);
-              if (DEBUG) {
-                Log.d(LOG_TAG, "finished call jedis.get()");
-              }
-              if (returnValue != null) {
-                String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
-                if(val != null) value.set(val);
-                else value.set(returnValue);
-              }
-              else {
-                if (DEBUG) {
-                  Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
-                }
-                value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
-              }
-            } catch (JSONException e) {
-              CloudDBError("JSON conversion error for " + tag);
-              return;
-            } catch (NullPointerException e) {
-              CloudDBError("System Error getting tag " + tag);
-              flushJedis(true);
-              return;
-            } catch (JedisException e) {
-              Log.e(LOG_TAG, "Exception in GetValue", e);
-              CloudDBError(e.getMessage());
-              flushJedis(true);
+            final AtomicReference<Object> value = getValue(tag, valueIfTagNotThere);
+
+            if (value == null) {
               return;
             }
 
@@ -776,6 +781,46 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       }
       CloudDBError("Cannot fetch variables while off-line.");
     }
+  }
+
+  private AtomicReference<Object> getValue(final String tag, final Object valueIfTagNotThere) {
+    AtomicReference<Object> value = new AtomicReference<Object>();
+
+    Jedis jedis = getJedis();
+    try {
+      if (DEBUG) {
+        Log.d(LOG_TAG,"about to call jedis.get()");
+      }
+      String returnValue = jedis.get(projectID + ":" + tag);
+      if (DEBUG) {
+        Log.d(LOG_TAG, "finished call jedis.get()");
+      }
+      if (returnValue != null) {
+        String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
+        if(val != null) value.set(val);
+        else value.set(returnValue);
+      }
+      else {
+        if (DEBUG) {
+          Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
+        }
+        value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+      }
+    } catch (JSONException e) {
+      CloudDBError("JSON conversion error for " + tag);
+      return null;
+    } catch (NullPointerException e) {
+      CloudDBError("System Error getting tag " + tag);
+      flushJedis(true);
+      return null;
+    } catch (JedisException e) {
+      Log.e(LOG_TAG, "Exception in GetValue", e);
+      CloudDBError(e.getMessage());
+      flushJedis(true);
+      return null;
+    }
+
+    return value;
   }
 
   @SimpleFunction(description = "returns True if we are on the network and will likely " +

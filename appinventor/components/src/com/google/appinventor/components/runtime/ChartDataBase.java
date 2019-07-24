@@ -285,6 +285,34 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     }
 
     /**
+     * TO BE FILLED
+     */
+    @SimpleFunction(description = "Imports data from the specified CloudDB component, given the names of the " +
+        "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
+        "Data component.")
+    public void ImportFromCloudDB(final CloudDB cloudDB, final String value) {
+        // Get the Future YailList object from the CloudDB data
+        final Future<YailList> list = cloudDB.getDataValue(value);
+
+        threadRunner.submit(new Runnable() {
+            @Override
+            public void run() {
+                YailList listValue;
+
+                try {
+                    listValue = list.get();
+                    chartDataModel.importFromList(listValue);
+                    refreshChart();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
