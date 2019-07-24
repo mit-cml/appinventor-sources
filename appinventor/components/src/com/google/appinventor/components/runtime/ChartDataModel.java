@@ -102,16 +102,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void importFromList(YailList list) {
         // Iterate over all the tuples
         for (int i = 0; i < list.size(); ++i) {
-            YailList tuple = new YailList();
-
-            Object listObject = list.getObject(i);
-
-            if (listObject instanceof YailList) {
-                tuple = (YailList)listObject;
-            } else if (listObject instanceof List) {
-                tuple = YailList.makeList((List)listObject);
-            }
-
+            YailList tuple = (YailList)list.getObject(i);
             addEntryFromTuple(tuple);
         }
     }
