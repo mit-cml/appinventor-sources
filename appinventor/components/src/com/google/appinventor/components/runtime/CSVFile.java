@@ -17,7 +17,7 @@ import java.util.concurrent.*;
         iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class CSVFile extends FileBase {
+public class CSVFile extends FileBase implements ChartDataSource<YailList, Future<YailList>> {
     private String sourceFile;
 
     private YailList rows;
@@ -154,46 +154,6 @@ public class CSVFile extends FileBase {
     }
 
     /**
-     * Returns a Future object which holds the CSVFile columns at the point
-     * of invoking the method.
-     *
-     * If reading is in progress, the method blocks until reading is done
-     * before returning the result.
-     *
-     * The method should be called asynchronously to prevent freezing of
-     * the main thread.
-     *
-     * The row size is contained in the method to create default values for the
-     * CharDataModel in case of an absence of columns.
-     *
-     * @param columns  List of columns to retrieve (String object entries expected)
-     * @return  Future object containing YailList of format (rowCount, columns)
-     */
-    public Future<YailList> getColumns(final YailList columns) {
-        // Submit a callable which constructs the results.
-        // The callable is only executed after all the previous
-        // tasks have been completed.
-        return threadRunner.submit(new Callable<YailList>() {
-            @Override
-            public YailList call() {
-                ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
-
-                // Iterate over the specified column names
-                for (int i = 0; i < columns.size(); ++i) {
-                    // Get and add the specified column to the resulting columns list
-                    String columnName = columns.getString(i);
-                    YailList column = getColumn(columnName);
-                    resultingColumns.add(column);
-                }
-
-                // Convert result to a YailList and return it
-                YailList csvColumns = YailList.makeList(resultingColumns);
-                return csvColumns;
-            }
-        });
-    }
-
-    /**
      * Gets the specified column's elements as a YailList.
      *
      * @param column  name of column
@@ -277,6 +237,47 @@ public class CSVFile extends FileBase {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        });
+    }
+
+    /**
+     * Returns a Future object which holds the CSVFile columns at the point
+     * of invoking the method.
+     *
+     * If reading is in progress, the method blocks until reading is done
+     * before returning the result.
+     *
+     * The method should be called asynchronously to prevent freezing of
+     * the main thread.
+     *
+     * The row size is contained in the method to create default values for the
+     * CharDataModel in case of an absence of columns.
+     *
+     * @param columns  List of columns to retrieve (String object entries expected)
+     * @return  Future object containing YailList of format (rowCount, columns)
+     */
+    @Override
+    public Future<YailList> getDataValue(final YailList columns) {
+        // Submit a callable which constructs the results.
+        // The callable is only executed after all the previous
+        // tasks have been completed.
+        return threadRunner.submit(new Callable<YailList>() {
+            @Override
+            public YailList call() {
+                ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+
+                // Iterate over the specified column names
+                for (int i = 0; i < columns.size(); ++i) {
+                    // Get and add the specified column to the resulting columns list
+                    String columnName = columns.getString(i);
+                    YailList column = getColumn(columnName);
+                    resultingColumns.add(column);
+                }
+
+                // Convert result to a YailList and return it
+                YailList csvColumns = YailList.makeList(resultingColumns);
+                return csvColumns;
             }
         });
     }

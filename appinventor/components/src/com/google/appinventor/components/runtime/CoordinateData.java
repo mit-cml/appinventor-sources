@@ -5,6 +5,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.runtime.util.YailList;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @DesignerComponent(version = 1,
@@ -18,6 +20,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     public CoordinateData(Chart chartContainer) {
         super(chartContainer);
+        csvColumns = Arrays.asList("", ""); // Construct default csvColumns list with 2 entries
     }
 
     /**
@@ -43,11 +46,6 @@ public final class CoordinateData extends ChartDataBase {
                 refreshChart();
             }
         });
-    }
-
-    @Override
-    protected void importFromLocalCSVSource(final CSVFile dataSource) {
-        ImportFromCSV(dataSource, csvXColumn, csvYColumn);
     }
 
     /**
