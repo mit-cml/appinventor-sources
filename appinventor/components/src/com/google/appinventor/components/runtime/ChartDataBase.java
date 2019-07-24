@@ -9,6 +9,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -267,12 +268,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
         "Data component.")
     public void ImportFromTinyDB(TinyDB tinyDB, String value) {
-        Object dbValue = tinyDB.GetValue(value, new YailList());
+        Object dbValue = tinyDB.GetValue(value, new ArrayList<String>());
 
-        System.out.println(dbValue.getClass().getName() + "???????????????????");
-
-        if (dbValue instanceof YailList) {
-            ImportFromList((YailList)dbValue);
+        if (dbValue instanceof List) {
+            YailList importValue = YailList.makeList((List)dbValue);
+            ImportFromList(importValue);
         }
     }
 
