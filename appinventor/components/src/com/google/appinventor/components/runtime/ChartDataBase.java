@@ -24,6 +24,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     // where each index corresponds to a single dimension.
     protected List<String> csvColumns;
 
+    protected String dataSourceValue;
+
     private String label;
     private int color;
 
@@ -235,6 +237,14 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         csvColumns.set(1, column);
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description="TO BE FILLED",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void DataSourceValue(String value) {
+        this.dataSourceValue = value;
+    }
+
 
     /**
      * Sets the Data Source for the Chart data component. The data
@@ -257,6 +267,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         if (initialized) {
             if (dataSource instanceof CSVFile) {
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
+            } else if (dataSource instanceof TinyDB) {
+                ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
             }
         }
     }

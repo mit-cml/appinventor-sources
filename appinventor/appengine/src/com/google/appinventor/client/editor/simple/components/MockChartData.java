@@ -13,6 +13,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
+    private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
     private static final String PROPERTY_CSV_X_COLUMN = "CsvXColumn";
     private static final String PROPERTY_CSV_Y_COLUMN = "CsvYColumn";
 
@@ -22,6 +23,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChart chart;
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
+
+    protected String dataSourceValue;
 
     // Stores the CSVColumn properties (in order) to import from
     protected List<String> csvColumns;
@@ -74,7 +77,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
-                propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
+                propertyName.equals(PROPERTY_CSV_Y_COLUMN) ||
+                propertyName.equals(PROPERTY_CHART_SOURCE_VALUE)) {
             return false;
         }
 
@@ -134,6 +138,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         if (dataSource == null) {
             onPropertyChange(PROPERTY_PAIRS, currentElements);
         }
+
+        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
+        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
+        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel.
@@ -212,16 +220,19 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             (YoungAndroidCsvColumnSelectorProperty)
                 properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
-        // Update the Source of the column selectors
-        xEditor.changeSource((MockCSVFile)dataSource);
-        yEditor.changeSource((MockCSVFile)dataSource);
-
         if (showCSVColumns) {
             // Add the current Data component as a CSVFileChangeListener to the CSVFile
             ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
 
             // Update the data of the Data component to represent the CSVFile
             onColumnsChange((MockCSVFile)dataSource);
+
+            // Update the Source of the column selectors
+            xEditor.changeSource((MockCSVFile)dataSource);
+            yEditor.changeSource((MockCSVFile)dataSource);
+        } else {
+            xEditor.changeSource(null);
+            yEditor.changeSource(null);
         }
     }
 

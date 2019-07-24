@@ -280,6 +280,7 @@ public class PropertiesUtil {
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
       HashSet<String> componentSet = new HashSet<String>() {{
         add("CSVFile");
+        add("TinyDB");
       }};
 
       return new YoungAndroidComponentSelectorPropertyEditor(editor, componentSet);
