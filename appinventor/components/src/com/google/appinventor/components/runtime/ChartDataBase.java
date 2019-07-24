@@ -261,6 +261,22 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     }
 
     /**
+     * TO BE FILLED
+     */
+    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the names of the " +
+        "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
+        "Data component.")
+    public void ImportFromTinyDB(TinyDB tinyDB, String value) {
+        Object dbValue = tinyDB.GetValue(value, new YailList());
+
+        System.out.println(dbValue.getClass().getName() + "???????????????????");
+
+        if (dbValue instanceof YailList) {
+            ImportFromList((YailList)dbValue);
+        }
+    }
+
+    /**
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
