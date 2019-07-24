@@ -46,6 +46,8 @@ public interface ProjectServiceAsync {
    */
   void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
 
+  void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
+
   /**
    * @see ProjectService#deleteProject(long)
    */

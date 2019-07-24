@@ -33,6 +33,10 @@ public class UserProject implements IsSerializable {
    * The attribution ID.
    */
   private long attributionId;
+  /**
+   * The attribution ID.
+   */
+  private boolean projectMovedToTrashFlag;
 
   /**
    * The date the project was created expressed in milliseconds since
@@ -69,7 +73,7 @@ public class UserProject implements IsSerializable {
    * @param creationDate the creation date
    * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
@@ -77,6 +81,7 @@ public class UserProject implements IsSerializable {
     this.modificationDate = creationDate;
     this.galleryId = galleryId;
     this.attributionId = attributionId;
+    this.projectMovedToTrashFlag=projectMovedToTrashFlag;
   }
 
   /**
@@ -91,7 +96,7 @@ public class UserProject implements IsSerializable {
    * @param attributionId attribution id
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long galleryId, long attributionId) {
+      long modificationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
@@ -99,6 +104,7 @@ public class UserProject implements IsSerializable {
     this.modificationDate = modificationDate;
     this.galleryId = galleryId;
     this.attributionId = attributionId;
+    this.projectMovedToTrashFlag= projectMovedToTrashFlag;
   }
 
   /**
@@ -158,6 +164,13 @@ public class UserProject implements IsSerializable {
   }
   public void setGalleryId(long galleryId) {
     this.galleryId = galleryId;
+  }
+
+  public void setProjectInTrashFlag(boolean projectMovedToTrashFlag) {
+    this.projectMovedToTrashFlag=projectMovedToTrashFlag;
+  }
+  public boolean getProjectInTrashFlag() {
+    return projectMovedToTrashFlag;
   }
 
   @Override

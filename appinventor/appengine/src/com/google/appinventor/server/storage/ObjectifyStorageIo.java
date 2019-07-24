@@ -948,7 +948,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.galleryId,
-          projectData.t.attributionId);
+          projectData.t.attributionId, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -981,7 +981,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
             projectData.dateModified, projectData.galleryId,
-            projectData.attributionId));
+            projectData.attributionId, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }

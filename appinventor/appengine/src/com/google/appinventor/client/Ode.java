@@ -19,10 +19,7 @@ import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
-import com.google.appinventor.client.explorer.project.ProjectManager;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.project.*;
 import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
@@ -171,6 +168,7 @@ public class Ode implements EntryPoint {
 
   // Collection of projects
   private ProjectManager projectManager;
+  private TrashProjectManager trashProjectManager;
 
   // Collection of editors
   private EditorManager editorManager;
@@ -477,7 +475,7 @@ public class Ode implements EntryPoint {
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
     if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
-      Ode.getInstance().createEmptyTrashDialog(true);
+        Ode.getInstance().createEmptyTrashDialog(true);
     }
   }
 
@@ -844,6 +842,7 @@ public class Ode implements EntryPoint {
             // Initialize project and editor managers
             // The project manager loads the user's projects asynchronously
             projectManager = new ProjectManager();
+            trashProjectManager=new TrashProjectManager();
             projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
               @Override
               public void onProjectsLoaded() {
@@ -1285,6 +1284,10 @@ public class Ode implements EntryPoint {
    */
   public ProjectManager getProjectManager() {
     return projectManager;
+  }
+
+  public TrashProjectManager getTrashProjectManager() {
+    return trashProjectManager;
   }
 
   /**

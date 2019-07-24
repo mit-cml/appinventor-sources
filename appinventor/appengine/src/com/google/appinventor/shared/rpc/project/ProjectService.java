@@ -78,7 +78,7 @@ public interface ProjectService extends RemoteService {
    * @param projectId  project ID
    */
   void deleteProject(long projectId);
-
+  UserProject moveToTrash(long projectId);
   /**
    * On publish this sets the project's gallery id
    * @param projectId  project ID

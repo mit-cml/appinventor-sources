@@ -13,6 +13,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -375,11 +376,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectAdded(Project project) {
-    projects.add(project);
+    if(!project.getProjectInTrashFlag())
+    { projects.add(project);
     projectWidgets.put(project, new ProjectWidgets(project));
     if (!projectListLoading) {
       refreshTable(true);
-    }
+    }}
   }
 
   @Override

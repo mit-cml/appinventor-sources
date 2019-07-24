@@ -14,11 +14,13 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -163,16 +165,8 @@ public class ProjectToolbar extends Toolbar {
             Tracking.trackEvent(Tracking.PROJECT_EVENT,
                     Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
 
-            final long projectId = project.getProjectId();
+           final long projectId = project.getProjectId();
 
-//      Ode ode = Ode.getInstance();
-//      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-//      ode.getEditorManager().closeProjectEditor(projectId);
-//      if (isCurrentProject) {
-//        // If we're deleting the project that is currently open in the Designer we
-//        // need to clear the ViewerBox first.
-//        // ViewerBox.getViewerBox().clear();
-//      }
             if (project.isPublished()) {
                 doDeleteGalleryApp(project.getGalleryId());
             }
@@ -181,18 +175,21 @@ public class ProjectToolbar extends Toolbar {
         }
 
         private void doMoveProjectToTrash(final long projectId) {
-            Ode.getInstance().getProjectService().deleteProject(projectId,
-                    new OdeAsyncCallback<Void>(
+            Ode.getInstance().getProjectService().moveToTrash(projectId,
+                    new OdeAsyncCallback<UserProject>(
                             // failure message
                             MESSAGES.deleteProjectError()) {
                         @Override
-                        public void onSuccess(Void result) {
+                        public void onSuccess(UserProject project) {
+                            if(project.getProjectId()== projectId){
                             Ode.getInstance().getProjectManager().removeProject(projectId);
+                            Ode.getInstance().getTrashProjectManager().addDeletedProject(project);
                             if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                                 Ode.getInstance().createEmptyTrashDialog(true);
-                            }
+                            }}
                         }
                     });
+
         }
         private void doDeleteGalleryApp(final long galleryId) {
             Ode.getInstance().getGalleryService().deleteApp(galleryId,
@@ -255,8 +252,8 @@ public class ProjectToolbar extends Toolbar {
         private void restoreProject(Project project) {
             //Tracking.trackEvent(Tracking.PROJECT_EVENT,
             // Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+            final long projectId=project.getProjectId();
 
-            final long projectId = project.getProjectId();
             doRestoreProject(projectId);
         }
 
@@ -273,6 +270,7 @@ public class ProjectToolbar extends Toolbar {
                             }
                         }
                     });
+
         }
     }
 

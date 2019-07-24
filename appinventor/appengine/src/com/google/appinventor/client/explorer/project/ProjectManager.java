@@ -9,6 +9,7 @@ package com.google.appinventor.client.explorer.project;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
@@ -48,7 +49,7 @@ public final class ProjectManager {
               @Override
               public void onSuccess(List<UserProject> projectInfos) {
                 for (UserProject projectInfo : projectInfos) {
-                  addProject(projectInfo);
+                    if(!projectInfo.getProjectInTrashFlag()){addProject(projectInfo);}
                 }
                 fireProjectsLoaded();
               }
@@ -159,8 +160,9 @@ public final class ProjectManager {
   public void removeProject(long projectId) {
     Project project = projectsMap.remove(projectId);
     deletedProjectsMap.put(projectId, project);
+    project.setProjectInTrashFlag(true);
     fireProjectRemoved(project);
-    fireDeletedProjectAdded(project);
+   // fireDeletedProjectAdded(project);
   }
 
   /**
@@ -183,6 +185,7 @@ public final class ProjectManager {
   public void restoreDeletedProject(long projectId) {
     Project project=deletedProjectsMap.remove(projectId);
     projectsMap.put(projectId, project);
+    project.setProjectInTrashFlag(false);
     fireDeletedProjectRemoved(project);
     fireProjectAdded(project);
   }

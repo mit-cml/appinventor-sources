@@ -154,6 +154,13 @@ public final class Project {
     }
     return true;
   }
+
+  public void setProjectInTrashFlag(boolean flag){ projectInfo.setProjectInTrashFlag(flag);}
+
+  public boolean getProjectInTrashFlag() {
+   return projectInfo.getProjectInTrashFlag();
+  }
+
   public long getGalleryId() {
     return projectInfo.getGalleryId();
   }

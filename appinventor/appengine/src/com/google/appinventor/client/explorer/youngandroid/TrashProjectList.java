@@ -13,6 +13,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -111,7 +112,7 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
         initWidget(panel);
 
         // It is important to listen to project manager events as soon as possible.
-        Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+        Ode.getInstance().getTrashProjectManager().addTrashProjectManagerEventListener(this);
 
         gallery = GalleryClient.getInstance();
     }
