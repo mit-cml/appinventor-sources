@@ -241,17 +241,19 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private ConnectivityManager cm;
 
   @Override
-  public Future<YailList> getDataValue(String key) {
+  public Future<YailList> getDataValue(final String key) {
     return background.submit(new Callable<YailList>() {
       @Override
       public YailList call() {
         AtomicReference<Object> valueReference = getValue(key, new YailList());
 
-        if (!(valueReference instanceof List)) {
+        Object value = JsonUtil.getObjectFromJson((String)valueReference.get());
+
+        if (!(value instanceof List)) {
           return new YailList();
         }
 
-        List list = (List)valueReference.get();
+        List list = (List)value;
 
         // Create an array which will hold the resulting parsed values
         ArrayList<YailList> resultValues = new ArrayList<YailList>();
