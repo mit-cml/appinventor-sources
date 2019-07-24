@@ -73,7 +73,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
 //
   private String layout="4";
   private ArrayList<JSONObject> currentItems;
-  private HorizontalPanel horizontalItemPanel;
+  //private HorizontalPanel horizontalItemPanel;
     /**
      * Creates a new MockImage component.
      *
@@ -305,7 +305,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   private void createLabelItems(ArrayList<JSONObject> arrayList) {
     listViewWidgets.clear();
     createFilterBox();
-
+    
     if (filterShowing) {
       textBoxWidget.setVisible(true);
     } else {
@@ -352,6 +352,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         listViewWidget.add(horizontalItemPanel);
       } else */
       //if (layout.equals("3")) {
+     /*   VerticalPanel textBoxPanel = new VerticalPanel();
         horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -361,10 +362,75 @@ public final class MockRecyclerView extends MockVisibleComponent {
         String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
         horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
-        horizontalItemPanel.add(createInlineLabel(text1, textColor));
-        horizontalItemPanel.add(createInlineLabel(text2, textColor));
+        textBoxPanel.add(createInlineLabel(text1, textColor));
+        textBoxPanel.add(createInlineLabel(text2, textColor));
+        //horizontalItemPanel.add(createInlineLabel(text1, textColor));
+        //horizontalItemPanel.add(createInlineLabel(text2, textColor));
+        horizontalItemPanel.add(textBoxPanel);
         listViewWidgets.add(horizontalItemPanel);
+      */
+
       //}
+
+      if (layout.equals("0")) {
+       VerticalPanel verticalItemPanel = new VerticalPanel();
+        verticalItemPanel.setStylePrimaryName("listViewItemStyle");
+        verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+       ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        listViewWidgets.add(verticalItemPanel);
+      } else if(layout.equals("1")) {
+       VerticalPanel verticalItemPanel = new VerticalPanel();
+        verticalItemPanel.setStylePrimaryName("listViewItemStyle");
+        verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text2, textColor));
+        listViewWidgets.add(verticalItemPanel);
+      } else if(layout.equals("2")) {
+       HorizontalPanel horizontalItemPanel = new HorizontalPanel();
+        horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
+        horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+       ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        InlineLabel label1 = createInlineLabel(text1, textColor);
+        InlineLabel label2 = createInlineLabel(text2, textColor);
+        horizontalItemPanel.add(label1);
+        horizontalItemPanel.add(label2);
+        listViewWidgets.add(horizontalItemPanel);
+      } else if (layout.equals("3")) {
+       HorizontalPanel horizontalItemPanel = new HorizontalPanel();
+        horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
+        horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
+        horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
+        horizontalItemPanel.add(createInlineLabel(text1, textColor));
+        listViewWidgets.add(horizontalItemPanel);
+      } else if(layout.equals("4")) {
+       HorizontalPanel horizontalItemPanel = new HorizontalPanel();
+        horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
+        horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
+       VerticalPanel verticalItemPanel = new VerticalPanel();
+        String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
+        String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
+        String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
+        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text2, textColor));
+        horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
+        ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
+        horizontalItemPanel.add(verticalItemPanel);
+        listViewWidgets.add(horizontalItemPanel);
+      }
+
+
     }
   }
 
@@ -432,6 +498,7 @@ private void updateLayoutType(String value) {
     }
      else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       textColor = newValue;
+      createLabelItems(currentItems);
       if (currentListFirst != null) {
         setElementsFromStringFirstProperty(currentElementsFirst);
       }

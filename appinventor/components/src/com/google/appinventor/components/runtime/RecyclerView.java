@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 
 //import android.text.Spannable;
+
 //import android.text.SpannableString;
 //import android.text.Html;
 //import android.text.style.AbsoluteSizeSpan;
@@ -104,7 +105,7 @@ public final class RecyclerView extends AndroidViewComponent{
     private static final int DEFAULT_TEXT_SIZE = 22;
 
     //
-    private int layout = 4;
+    private int layout;
     private String propertyValue;
     private ArrayList<JSONObject> currentItems;
 
@@ -397,36 +398,60 @@ setAdapterr();
 
   //  if (strFirst != null && strSecond != null && strFirst.length == strSecond.length && imagePathList != null && imagePathList.size() > 0) {
 
-      int size = currentItems.size();
+    int size = currentItems.size();
 
     String[] first=new String[size];
     String[] second=new String[size];
-    //String[] thirdd=new String[size];
-
+    
     ArrayList<Drawable> third = new ArrayList<Drawable>();
-
+    System.out.println(layout);
+    if(layout==0){
+    for(int i=0;i<size;i++){
+      JSONObject object = currentItems.get(i);
+      first[i]=object.has("Text1")?object.getString("Text1"):"";   
+    } 
+    }else if(layout==1){
+    for(int i=0;i<size;i++){
+      JSONObject object = currentItems.get(i);
+      first[i]=object.has("Text1")?object.getString("Text1"):"";
+      second[i]=object.has("Text2")?object.getString("Text2"):"";    
+    } 
+    }else if(layout==2){
+    for(int i=0;i<size;i++){
+      JSONObject object = currentItems.get(i);
+      first[i]=object.has("Text1")?object.getString("Text1"):"";
+      second[i]=object.has("Text2")?object.getString("Text2"):"";
+    } 
+    }else if(layout==3){
+    for(int i=0;i<size;i++){
+      JSONObject object = currentItems.get(i);
+      first[i]=object.has("Text1")?object.getString("Text1"):"";
+     
+      String imagee=object.has("Image")?object.getString("Image"):"None";
+        try {
+        third.add(MediaUtil.getBitmapDrawable(container.$form(), imagee));
+        } catch (IOException ioe) {
+        Log.e("Image", "Unable to load " + imagee);
+        third.add(null);
+        }    
+    } 
+    }else if(layout==4){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";
      
-     // first[i] = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
-      //second[i]=first[i];
-      //thirdd[i] = object.containsKey("Image")?object.get("Image").isString().stringValue():"None"; 
-      //String imagee=object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
       String imagee=object.has("Image")?object.getString("Image"):"None";
-      try {
-      third.add(MediaUtil.getBitmapDrawable(container.$form(), imagee));
-    } catch (IOException ioe) {
-      Log.e("Image", "Unable to load " + imagee);
-      third.add(null);
-    }    
-  
+        try {
+        third.add(MediaUtil.getBitmapDrawable(container.$form(), imagee));
+        } catch (IOException ioe) {
+        Log.e("Image", "Unable to load " + imagee);
+        third.add(null);
+        }    
     } 
-
-    //if(third.length == first.length){
-    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize);
-//}  
+    }
+    
+    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout);  
     LinearLayoutManager layoutManager=new LinearLayoutManager(ctx);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(listAdapterWithRecyclerView);
@@ -683,7 +708,7 @@ public String[] itemsToColoredText(String[] str) {
   @SimpleProperty(userVisible = false)
   public void ListViewLayout(int value) {
     layout = value;
-   // setAdapterData();
+    setAdapterr();
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
