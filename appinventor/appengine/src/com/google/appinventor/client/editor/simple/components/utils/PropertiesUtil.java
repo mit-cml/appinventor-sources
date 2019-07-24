@@ -278,6 +278,8 @@ public class PropertiesUtil {
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN)) {
       return new YoungAndroidCsvColumnSelectorProperty(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
+      // Construct a HashSet of acceptable Chart Data Source components
+      // TODO: Create reference HashSet variable for this instead?
       HashSet<String> componentSet = new HashSet<String>() {{
         add("CSVFile");
       }};
