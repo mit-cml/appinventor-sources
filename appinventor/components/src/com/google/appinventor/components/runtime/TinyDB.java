@@ -73,6 +73,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   private Context context;  // this was a local in constructor and final not private
 
   private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
   /**
    * Creates a new TinyDB component.
@@ -91,13 +92,18 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
 
-    // TODO: Detach listeners upon namespace change? (but keep OnSharedPreferencesChangeListener)
-    sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+    if (sharedPreferenceChangeListener != null) {
+      sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+    }
+
+    sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
       @Override
       public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         notifyDataSourceObservers(key, GetValue(key, null));
       }
-    });
+    };
+
+    sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
   }
 
   @SimpleProperty(description = "Namespace for storing data.")
@@ -166,6 +172,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    */
   @SimpleFunction
   public void ClearAll() {
+    // TODO: ClearAll should notify observers
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
@@ -185,6 +192,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   @Override
   public void onDelete() {
+    // TODO: OnDelete should also notify observers (?)
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
