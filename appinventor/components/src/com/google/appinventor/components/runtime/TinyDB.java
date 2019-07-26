@@ -25,6 +25,7 @@ import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONException;
 
 /**
@@ -59,7 +60,8 @@ import org.json.JSONException;
     iconName = "images/tinyDB.png")
 
 @SimpleObject
-public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable {
+public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable,
+    ChartDataSource<String, List> {
 
   public static final String DEFAULT_NAMESPACE="TinyDB1";
 
@@ -175,5 +177,27 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
+  }
+
+  /**
+   * Returns the specified List object identified by the key. If the
+   * value is not a List object, or it does not exist, an empty List
+   * is returned.
+   *
+   * @param key  Key of the value to retrieve
+   * @return  value as a List object, or empty List if not applicable
+   */
+  @Override
+  public List getDataValue(String key) {
+    // Get the value from the TinyDB data with the specified key
+    Object value = GetValue(key, new ArrayList());
+
+    // Check if value is of type List, and return it if that is the case.
+    if (value instanceof List) {
+      return (List)value;
+    }
+
+    // Default option (could not parse data): return empty ArrayList
+    return new ArrayList();
   }
 }
