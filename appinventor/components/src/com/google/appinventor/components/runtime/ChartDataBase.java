@@ -269,6 +269,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
                 ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
+            } else if (dataSource instanceof CloudDB) {
+                ImportFromCloudDB((CloudDB)dataSource, dataSourceValue);
             }
         }
     }

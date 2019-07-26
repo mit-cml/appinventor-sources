@@ -281,6 +281,7 @@ public class PropertiesUtil {
       HashSet<String> componentSet = new HashSet<String>() {{
         add("CSVFile");
         add("TinyDB");
+        add("CloudDB");
       }};
 
       return new YoungAndroidComponentSelectorPropertyEditor(editor, componentSet);
