@@ -61,7 +61,7 @@ import org.json.JSONException;
 
 @SimpleObject
 public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable,
-    ChartDataSource<String, YailList> {
+    ChartDataSource<String, List> {
 
   public static final String DEFAULT_NAMESPACE="TinyDB1";
 
@@ -180,50 +180,24 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   /**
-   * Returns a YailList object containing the nested tuples of the specified
-   * value, if applicable.
-   *
-   * The value (identified by the key) is expected to be a YailList containing
-   * nested YailLists. Due to the nature of TinyDB storing YailLists as ArrayLists,
-   * the object is first checked whether it is an ArrayList, and then all it's
-   * entries are parsed individually.
-   *
-   * Values of the wrong format in the List are ignored. In case of the value
-   * being referenced being in the improper format, simply an empty YailList
+   * Returns the specified List object identified by the key. If the
+   * value is not a List object, or it does not exist, an empty List
    * is returned.
    *
    * @param key  Key of the value to retrieve
-   * @return  YailList representing the tuples of the value
+   * @return  value as a List object, or empty List if not applicable
    */
   @Override
-  public YailList getDataValue(String key) {
+  public List getDataValue(String key) {
     // Get the value from the TinyDB data with the specified key
-    Object value = GetValue(key, new ArrayList<String>());
+    Object value = GetValue(key, new ArrayList());
 
-    // Check if value is of type List (YailLists are stored as
-    // ArrayLists in TinyDB's data)
+    // Check if value is of type List, and return it if that is the case.
     if (value instanceof List) {
-      // Convert the value to a List (safe cast)
-      List list = (List)value;
-
-      // Create an array which will hold the resulting parsed values
-      ArrayList<YailList> resultValues = new ArrayList<YailList>();
-
-      // Iterate over all the objects in the List
-      for (Object object : list) {
-        // Object is of type List (nested List)
-        if (object instanceof List) {
-          // Convert the List to a YailList, and then add the List to the resulting values
-          YailList entryList = YailList.makeList((List)object);
-          resultValues.add(entryList);
-        }
-      }
-
-      // Convert the resulting values to a YailList, and return it
-      return YailList.makeList(resultValues);
+      return (List)value;
     }
 
-    // Default option (could not parse data): return empty YailList
-    return new YailList();
+    // Default option (could not parse data): return empty ArrayList
+    return new ArrayList();
   }
 }
