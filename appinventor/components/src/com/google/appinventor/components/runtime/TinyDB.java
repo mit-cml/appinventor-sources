@@ -90,6 +90,13 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   public void Namespace(String namespace) {
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
+
+    sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+      @Override
+      public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        notifyDataSourceObservers(key, GetValue(key, null));
+      }
+    });
   }
 
   @SimpleProperty(description = "Namespace for storing data.")
@@ -215,9 +222,9 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @Override
-  public void notifyDataSourceObservers(String key, Object oldValue, Object newValue) {
+  public void notifyDataSourceObservers(String key, Object newValue) {
     for (ChartDataBase dataComponent : dataSourceObservers) {
-      dataComponent.onDataSourceValueChange(this, key, oldValue, newValue);
+      dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }
 }

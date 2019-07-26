@@ -269,6 +269,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
                 ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
+                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
             }
         }
     }
@@ -336,7 +337,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onDataSourceValueChange(ChartDataSource component, String key, Object oldValue, Object newValue) {
+    public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
         // The calling component is not the observed data source or value; Ignore.
         if (!component.equals(dataSource) || !key.equals(dataSourceValue)) {
             return;
@@ -345,9 +346,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                if (oldValue instanceof List) {
-                    chartDataModel.removeValues((List)oldValue);
-                }
+                // TODO: Remove old values
 
                 if (newValue instanceof List) {
                     chartDataModel.importFromList((List)newValue);
