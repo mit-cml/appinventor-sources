@@ -101,7 +101,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
 
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener, ChartDataSource<String, Future<YailList>> {
+  OnClearListener, OnDestroyListener, ChartDataSource<String, Future<List>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -241,35 +241,19 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private ConnectivityManager cm;
 
   @Override
-  public Future<YailList> getDataValue(final String key) {
-    return background.submit(new Callable<YailList>() {
+  public Future<List> getDataValue(final String key) {
+    return background.submit(new Callable<List>() {
       @Override
-      public YailList call() {
+      public List call() {
         AtomicReference<Object> valueReference = getValue(key, new YailList());
 
         Object value = JsonUtil.getObjectFromJson((String)valueReference.get());
 
-        if (!(value instanceof List)) {
-          return new YailList();
+        if (value instanceof List) {
+          return (List)value;
         }
 
-        List list = (List)value;
-
-        // Create an array which will hold the resulting parsed values
-        ArrayList<YailList> resultValues = new ArrayList<YailList>();
-
-        // Iterate over all the objects in the List
-        for (Object object : list) {
-          // Object is of type List (nested List)
-          if (object instanceof List) {
-            // Convert the List to a YailList, and then add the List to the resulting values
-            YailList entryList = YailList.makeList((List)object);
-            resultValues.add(entryList);
-          }
-        }
-
-        // Convert the resulting values to a YailList, and return it
-        return YailList.makeList(resultValues);
+        return new ArrayList();
       }
     });
   }

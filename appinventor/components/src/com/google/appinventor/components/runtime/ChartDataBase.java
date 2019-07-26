@@ -302,12 +302,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         "Data component.")
     public void ImportFromCloudDB(final CloudDB cloudDB, final String value) {
         // Get the Future YailList object from the CloudDB data
-        final Future<YailList> list = cloudDB.getDataValue(value);
+        final Future<List> list = cloudDB.getDataValue(value);
 
         threadRunner.submit(new Runnable() {
             @Override
             public void run() {
-                YailList listValue;
+                List listValue;
 
                 try {
                     listValue = list.get();
