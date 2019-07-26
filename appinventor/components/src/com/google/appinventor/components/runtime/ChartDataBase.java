@@ -34,6 +34,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
+    private Object currentDataSourceValue;
+
     /**
      * Creates a new Chart Data component.
      */
@@ -346,7 +348,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                // TODO: Remove old values
+                if (currentDataSourceValue instanceof List) {
+                    chartDataModel.removeValues((List)currentDataSourceValue);
+                }
+
+                currentDataSourceValue = newValue;
 
                 if (newValue instanceof List) {
                     chartDataModel.importFromList((List)newValue);

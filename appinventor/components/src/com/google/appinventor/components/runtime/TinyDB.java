@@ -91,6 +91,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
 
+    // TODO: Detach listeners upon namespace change? (but keep OnSharedPreferencesChangeListener)
     sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
       @Override
       public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
