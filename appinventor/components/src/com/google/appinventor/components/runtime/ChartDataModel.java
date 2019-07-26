@@ -125,6 +125,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         }
     }
 
+    public void removeValues(List values) {
+        for (Object entry : values) {
+            if (entry instanceof List) {
+                YailList tuple = YailList.makeList((List)entry);
+                removeEntryFromTuple(tuple);
+            }
+        }
+    }
+
     /**
      * Imports data from the specified list of columns with
      * the specified row size.

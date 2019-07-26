@@ -345,7 +345,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                // Remove old values
+                chartDataModel.removeValues(oldValue);
 
                 chartDataModel.importFromList(newValue);
 
