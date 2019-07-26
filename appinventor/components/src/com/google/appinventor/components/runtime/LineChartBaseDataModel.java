@@ -23,51 +23,47 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
         setDefaultStylingProperties();
     }
 
-    /**
-     * Adds a (x, y) entry to the Line Data Set.
-     *
-     * @param x  x value
-     * @param y  y value
-     */
     @Override
-    public void addEntry(float x, float y) {
-        Entry entry = new Entry(x, y);
+    public void addEntryFromTuple(YailList tuple) {
+        Entry entry = getEntryFromTuple(tuple);
 
-        /* TODO: The commented out line should be used, however, it breaks in certain cases.
-           When this is fixed in MPAndroidChart, this method should use the commented method instead
-           of the current implementation.
-           See: https://github.com/PhilJay/MPAndroidChart/issues/4616
-        */
-        // getDataset().addEntryOrdered(entry);
+        if (entry != null) {
+            /* TODO: The commented out line should be used, however, it breaks in certain cases.
+               When this is fixed in MPAndroidChart, this method should use the commented method instead
+               of the current implementation.
+               See: https://github.com/PhilJay/MPAndroidChart/issues/4616
+            */
+            // getDataset().addEntryOrdered(entry);
 
 
-        // In Line Chart based data series, the data is already pre-sorted.
-        // We can thus run binary search by comparing with the x value, and
-        // using an x+1 value to find the insertion point
-        int index = Collections.binarySearch(getDataset().getValues(), // Use the list of entries
-            entry, // Search for the same x value as the entry to be added
-            new EntryXComparator()); // Compare by x value
+            // In Line Chart based data series, the data is already pre-sorted.
+            // We can thus run binary search by comparing with the x value, and
+            // using an x+1 value to find the insertion point
+            int index = Collections.binarySearch(getDataset().getValues(), // Use the list of entries
+                entry, // Search for the same x value as the entry to be added
+                new EntryXComparator()); // Compare by x value
 
-        // Value not found: insertion point can be derived from it
-        if (index < 0) {
-            // result is (-(insertion point) - 1)
-            index = -index - 1;
-        } else {
-            // Get the entry count of the Data Set
-            int entryCount = getDataset().getValues().size();
+            // Value not found: insertion point can be derived from it
+            if (index < 0) {
+                // result is (-(insertion point) - 1)
+                index = -index - 1;
+            } else {
+                // Get the entry count of the Data Set
+                int entryCount = getDataset().getValues().size();
 
-            // Iterate until an entry with a differing (higher) x value is found (this
-            // is where the value should be inserted)
-            // The reason for a loop is to pass through all the duplicate entries.
-            while (index < entryCount && getDataset().getEntryForIndex(index).getX() == x) {
-                index++;
+                // Iterate until an entry with a differing (higher) x value is found (this
+                // is where the value should be inserted)
+                // The reason for a loop is to pass through all the duplicate entries.
+                while (index < entryCount && getDataset().getEntryForIndex(index).getX() == entry.getX()) {
+                    index++;
+                }
             }
-        }
 
-        // Since we are adding a value manually to the specified index, we
-        // must call notifyDataSetChanged manually here.
-        getDataset().getValues().add(index, entry);
-        getDataset().notifyDataSetChanged();
+            // Since we are adding a value manually to the specified index, we
+            // must call notifyDataSetChanged manually here.
+            getDataset().getValues().add(index, entry);
+            getDataset().notifyDataSetChanged();
+        }
     }
 
     @Override

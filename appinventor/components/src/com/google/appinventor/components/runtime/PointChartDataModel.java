@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleDataSet;
+import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -17,22 +18,13 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
     super(data);
   }
 
-  /**
-   * Adds an entry to the Data Series from the specified
-   * x and y values.
-   *
-   * @param x  x value of the entry
-   * @param y  y value of the entry
-   */
-  public abstract void addEntry(float x, float y);
-
   @Override
   protected int getTupleSize() {
     return 2;
   }
 
   @Override
-  public void addEntryFromTuple(YailList tuple) {
+  public Entry getEntryFromTuple(YailList tuple) {
     try {
       String xValue = tuple.getString(0);
       String yValue = tuple.getString(1);
@@ -41,7 +33,7 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
         float x = Float.parseFloat(xValue);
         float y = Float.parseFloat(yValue);
 
-        addEntry(x, y);
+        return new Entry(x, y);
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
       }
@@ -50,6 +42,39 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
       // the number of entries is not sufficient to form a pair.
       // TODO: Show toast error notification
     }
+
+    return null;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void removeEntryFromTuple(YailList tuple) {
+    Entry entry = getEntryFromTuple(tuple);
+
+    if (entry != null) {
+      // TODO: The commented line should be used instead. However, the library does not (yet) implement
+      // TODO: equals methods in it's entries as of yet, so the below method fails.
+      // dataset.removeEntry(entry);
+
+      int index = findEntryIndex(entry);
+
+      if (index >= 0) {
+        dataset.removeEntry(index);
+      }
+    }
+  }
+
+  @Override
+  protected int findEntryIndex(Entry entry) {
+    for (int i = 0; i < dataset.getValues().size(); ++i) {
+      Entry currentEntry = dataset.getEntryForIndex(i);
+
+      if (currentEntry.equalTo(entry)) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 
   @Override

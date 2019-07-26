@@ -45,6 +45,31 @@ public final class CoordinateData extends ChartDataBase {
         });
     }
 
+    /**
+     * Removes an entry from the Data Series.
+     *
+     * @param x - x value of entry
+     * @param y - y value of entry
+     */
+    @SimpleFunction(description = "Removes an (x, y) point from the Coordinate Data, if it exists.")
+    public void RemoveEntry(final float x, final float y) {
+        // Entry should be added via the Thread Runner asynchronously
+        // to guarantee the order of data adding (e.g. CSV data
+        // adding could be happening when this method is called,
+        // so the task should be queued in the single Thread Runner)
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Create a 2-tuple, and add the tuple to the Data Series
+                YailList pair = YailList.makeList(Arrays.asList(x, y));
+                chartDataModel.removeEntryFromTuple(pair);
+
+                // Refresh Chart with new data
+                refreshChart();
+            }
+        });
+    }
+
     @Override
     protected void importFromLocalCSVSource(final CSVFile dataSource) {
         ImportFromCSV(dataSource, csvXColumn, csvYColumn);
