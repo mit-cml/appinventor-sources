@@ -46,6 +46,7 @@ public abstract class PointChartDataModelTest
     model.addEntry(x, y);
 
     // Ensure that the entry has been added
+    // Ensure that the entry has been added
     assertEquals(1, model.getDataset().getEntryCount());
 
     // Make sure that a correct entry has been added
@@ -78,7 +79,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testSetElementsEven() {
-    // We are adding (3, 1), (2, 4), (1, 2)
+    // We are adding (1, 2), (2, 4), (3, 1)
     // End result should be ordered by X value.
     String elements = "1, 2, 2, 4, 3, 1";
     model.setElements(elements);
