@@ -168,7 +168,6 @@ public class Ode implements EntryPoint {
 
   // Collection of projects
   private ProjectManager projectManager;
-  private TrashProjectManager trashProjectManager;
 
   // Collection of editors
   private EditorManager editorManager;
@@ -466,6 +465,10 @@ public class Ode implements EntryPoint {
 
   public void switchToTrash() {
     hideTutorials();
+    if(currentView!=TRASHCAN){
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
+    }
     currentView=TRASHCAN;
     projectListPane2.setWidth("100%");
     projectListPanel.remove(ProjectListBox.getProjectListBox());
@@ -842,7 +845,6 @@ public class Ode implements EntryPoint {
             // Initialize project and editor managers
             // The project manager loads the user's projects asynchronously
             projectManager = new ProjectManager();
-            trashProjectManager=new TrashProjectManager();
             projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
               @Override
               public void onProjectsLoaded() {
@@ -1284,10 +1286,6 @@ public class Ode implements EntryPoint {
    */
   public ProjectManager getProjectManager() {
     return projectManager;
-  }
-
-  public TrashProjectManager getTrashProjectManager() {
-    return trashProjectManager;
   }
 
   /**

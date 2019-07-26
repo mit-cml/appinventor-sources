@@ -112,7 +112,7 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
         initWidget(panel);
 
         // It is important to listen to project manager events as soon as possible.
-        Ode.getInstance().getTrashProjectManager().addTrashProjectManagerEventListener(this);
+        Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
 
         gallery = GalleryClient.getInstance();
     }

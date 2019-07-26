@@ -49,7 +49,8 @@ public final class ProjectManager {
               @Override
               public void onSuccess(List<UserProject> projectInfos) {
                 for (UserProject projectInfo : projectInfos) {
-                    if(!projectInfo.getProjectInTrashFlag()){addProject(projectInfo);}
+                    if(!projectInfo.getProjectMovedToTrashFlag()){addProject(projectInfo);}
+                    else{addDeletedProject(projectInfo);}
                 }
                 fireProjectsLoaded();
               }
@@ -153,16 +154,25 @@ public final class ProjectManager {
   }
 
   /**
+   * Adds a deleted project to this project manager.
+   *
+   * @param projectInfo information about the project
+   * @return deleted project
+   */
+  public void addDeletedProject(UserProject projectInfo) {
+    Project project= new Project(projectInfo);
+    deletedProjectsMap.put(projectInfo.getProjectId(), project);
+    fireDeletedProjectAdded(project);
+  }
+
+  /**
    * Removes the given project.
    *
    * @param projectId project ID
    */
   public void removeProject(long projectId) {
     Project project = projectsMap.remove(projectId);
-    deletedProjectsMap.put(projectId, project);
-    project.setProjectInTrashFlag(true);
     fireProjectRemoved(project);
-   // fireDeletedProjectAdded(project);
   }
 
   /**
@@ -185,7 +195,6 @@ public final class ProjectManager {
   public void restoreDeletedProject(long projectId) {
     Project project=deletedProjectsMap.remove(projectId);
     projectsMap.put(projectId, project);
-    project.setProjectInTrashFlag(false);
     fireDeletedProjectRemoved(project);
     fireProjectAdded(project);
   }

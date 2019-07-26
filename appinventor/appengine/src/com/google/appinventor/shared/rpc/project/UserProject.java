@@ -166,10 +166,7 @@ public class UserProject implements IsSerializable {
     this.galleryId = galleryId;
   }
 
-  public void setProjectInTrashFlag(boolean projectMovedToTrashFlag) {
-    this.projectMovedToTrashFlag=projectMovedToTrashFlag;
-  }
-  public boolean getProjectInTrashFlag() {
+  public boolean getProjectMovedToTrashFlag() {
     return projectMovedToTrashFlag;
   }
 

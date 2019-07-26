@@ -747,12 +747,11 @@ public class ObjectifyStorageIo implements  StorageIo {
     return file;
   }
 
-  //new delete project function to set the deleted flag bit and store the project data
   @Override
   public void deleteProject(final String userId, final long projectId) {
     validateGCS();
     // blobs associated with the project
-   /* final List<String> blobKeys = new ArrayList<String>();
+    final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
     try {
       // first job deletes the UserProjectData in the user's entity group
@@ -800,7 +799,24 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-*/
+  }
+
+  @Override
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.projectMovedToTrashFlag = flag;
+            datastore.put(projectData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
   }
 
   @Override

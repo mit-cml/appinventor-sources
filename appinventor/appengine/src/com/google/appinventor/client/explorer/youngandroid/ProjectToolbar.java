@@ -178,12 +178,12 @@ public class ProjectToolbar extends Toolbar {
             Ode.getInstance().getProjectService().moveToTrash(projectId,
                     new OdeAsyncCallback<UserProject>(
                             // failure message
-                            MESSAGES.deleteProjectError()) {
+                            MESSAGES.moveToTrashProjectError()) {
                         @Override
                         public void onSuccess(UserProject project) {
                             if(project.getProjectId()== projectId){
                             Ode.getInstance().getProjectManager().removeProject(projectId);
-                            Ode.getInstance().getTrashProjectManager().addDeletedProject(project);
+                            Ode.getInstance().getProjectManager().addDeletedProject(project);
                             if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                                 Ode.getInstance().createEmptyTrashDialog(true);
                             }}
@@ -258,19 +258,19 @@ public class ProjectToolbar extends Toolbar {
         }
 
         private void doRestoreProject(final long projectId) {
-            Ode.getInstance().getProjectService().deleteProject(projectId,
-                    new OdeAsyncCallback<Void>(
+            Ode.getInstance().getProjectService().restoreProject(projectId,
+                    new OdeAsyncCallback<UserProject>(
                             // failure message
-                            MESSAGES.deleteProjectError()) {
+                            MESSAGES.restoreProjectError()) {
                         @Override
-                        public void onSuccess(Void result) {
-                            Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
-                            if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                                Ode.getInstance().createEmptyTrashDialog(true);
-                            }
+                        public void onSuccess(UserProject project) {
+                            if(project.getProjectId()== projectId){
+                                Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
+                                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                                    Ode.getInstance().createEmptyTrashDialog(true);
+                                }}
                         }
                     });
-
         }
     }
 

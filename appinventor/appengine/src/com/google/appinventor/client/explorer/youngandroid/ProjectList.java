@@ -376,12 +376,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectAdded(Project project) {
-    if(!project.getProjectInTrashFlag())
-    { projects.add(project);
+    projects.add(project);
     projectWidgets.put(project, new ProjectWidgets(project));
     if (!projectListLoading) {
       refreshTable(true);
-    }}
+    }
   }
 
   @Override
