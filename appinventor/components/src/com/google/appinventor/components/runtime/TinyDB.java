@@ -5,6 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.ChartData;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,6 +20,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +63,7 @@ import org.json.JSONException;
 
 @SimpleObject
 public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable,
-    ChartDataSource<String, List> {
+    ObservableChartDataSource<String, List> {
 
   public static final String DEFAULT_NAMESPACE="TinyDB1";
 
@@ -70,6 +72,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   private Context context;  // this was a local in constructor and final not private
 
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new TinyDB component.
@@ -199,5 +202,22 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
     // Default option (could not parse data): return empty ArrayList
     return new ArrayList();
+  }
+
+  @Override
+  public void addDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataSourceObservers(String key, Object oldValue, Object newValue) {
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, key, oldValue, newValue);
+    }
   }
 }

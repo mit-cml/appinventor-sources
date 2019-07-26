@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceListListener {
+public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
     protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
@@ -336,18 +336,22 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onValueChange(ChartDataSource component, final List oldValue, final List newValue) {
-        // The calling component is not the observed data source; Ignore.
-        if (!component.equals(dataSource)) {
+    public void onDataSourceValueChange(ChartDataSource component, String key, Object oldValue, Object newValue) {
+        // The calling component is not the observed data source or value; Ignore.
+        if (!component.equals(dataSource) || !key.equals(dataSourceValue)) {
             return;
         }
 
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                chartDataModel.removeValues(oldValue);
+                if (oldValue instanceof List) {
+                    chartDataModel.removeValues((List)oldValue);
+                }
 
-                chartDataModel.importFromList(newValue);
+                if (newValue instanceof List) {
+                    chartDataModel.importFromList((List)newValue);
+                }
 
                 refreshChart();
             }
