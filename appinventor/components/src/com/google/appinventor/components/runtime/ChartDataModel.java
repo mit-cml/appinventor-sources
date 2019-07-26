@@ -205,6 +205,18 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public abstract void removeEntryFromTuple(YailList tuple);
 
+    /**
+     * Checks whether an entry exists in the Data Series,
+     *
+     * @param tuple  Tuple representing the entry to look for
+     * @return  true if the Entry exists, false otherwise
+     */
+    public boolean doesEntryExist(YailList tuple) {
+        Entry entry = getEntryFromTuple(tuple);
+        int index = findEntryIndex(entry);
+
+        return index >= 0;
+    }
 
     /**
      * Creates an Entry from the specified tuple.
