@@ -108,6 +108,23 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Imports data from a generic List object which contains nested tuples
+     *
+     * @param list  List containing tuples
+     */
+    public void importFromList(List list) {
+        // Iterate over all the tuples
+        for (int i = 0; i < list.size(); ++i) {
+            Object entry = list.get(i);
+
+            if (entry instanceof List) {
+                YailList tuple = YailList.makeList((List)entry);
+                addEntryFromTuple(tuple);
+            }
+        }
+    }
+
+    /**
      * Imports data from the specified list of columns with
      * the specified row size.
      *

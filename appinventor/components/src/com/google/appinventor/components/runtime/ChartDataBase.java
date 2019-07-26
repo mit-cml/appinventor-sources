@@ -282,8 +282,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
         "Data component.")
     public void ImportFromTinyDB(final TinyDB tinyDB, final String value) {
-        YailList list = tinyDB.getDataValue(value); // Get the YailList value from the TinyDB data
-        ImportFromList(list); // Import from the retrieved list (async)
+        final List list = tinyDB.getDataValue(value); // Get the YailList value from the TinyDB data
+
+        // Import the specified data asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.importFromList(list);
+                refreshChart();
+            }
+        });
     }
 
     /**
