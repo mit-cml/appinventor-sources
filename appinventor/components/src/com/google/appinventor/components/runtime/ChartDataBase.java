@@ -342,7 +342,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     @Override
     public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
         // The calling component is not the observed data source or value; Ignore.
-        if (!component.equals(dataSource) || !key.equals(dataSourceValue)) {
+        if (!component.equals(dataSource) || (key != null && !key.equals(dataSourceValue))) {
             return;
         }
 

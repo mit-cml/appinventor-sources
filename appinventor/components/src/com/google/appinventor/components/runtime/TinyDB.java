@@ -172,10 +172,10 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    */
   @SimpleFunction
   public void ClearAll() {
-    // TODO: ClearAll should notify observers
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
+    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
@@ -192,10 +192,10 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   @Override
   public void onDelete() {
-    // TODO: OnDelete should also notify observers (?)
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
+    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
