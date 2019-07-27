@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -95,31 +96,46 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from a YailList which contains nested tuples
-     *
-     * @param list  YailList containing tuples
-     */
-    public void importFromList(YailList list) {
-        // Iterate over all the tuples
-        for (int i = 0; i < list.size(); ++i) {
-            YailList tuple = (YailList)list.getObject(i);
-            addEntryFromTuple(tuple);
-        }
-    }
-
-    /**
-     * Imports data from a generic List object which contains nested tuples
+     * Imports data from a List object.
+     * Valid tuple entries are imported, and the invalid entries are ignored.
      *
      * @param list  List containing tuples
      */
     public void importFromList(List list) {
-        // Iterate over all the tuples
-        for (int i = 0; i < list.size(); ++i) {
-            Object entry = list.get(i);
+      // Iterate over all the entries of the List
+      for (Object entry : list) {
+        YailList tuple = null;
 
+        if (entry instanceof YailList) {
+          // Convert entry to YailList
+          tuple = (YailList) entry;
+        } else if (entry instanceof List) {
+          // List has to be converted to a YailList
+          tuple = YailList.makeList((List) entry);
+        }
+
+        // Entry could be parsed to a YailList; Attempt importing from
+        // the constructed tuple.
+        if (tuple != null) {
+          addEntryFromTuple(tuple);
+        }
+      }
+    }
+
+    /**
+     * Removes the specified List of values, which are expected to be tuples.
+     * Invalid entries are ignored.
+     *
+     * @param values  List of values to remove
+     */
+    public void removeValues(List values) {
+        // Iterate all the entries of the generic List)
+        for (Object entry : values) {
+            // Entry is a List; Possibly a tuple
             if (entry instanceof List) {
+                // Create a tuple from the entry, and attempt to remove it
                 YailList tuple = YailList.makeList((List)entry);
-                addEntryFromTuple(tuple);
+                removeEntryFromTuple(tuple);
             }
         }
     }
@@ -213,6 +229,46 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param tuple  Tuple representing the entry to add
      */
     public abstract void addEntryFromTuple(YailList tuple);
+
+    /**
+     * Removes an entry from the Data Series from the specified
+     * tuple (provided the entry exists)
+     * @param tuple  Tuple representing the entry to remove
+     */
+    public abstract void removeEntryFromTuple(YailList tuple);
+
+    /**
+     * Checks whether an entry exists in the Data Series,
+     *
+     * @param tuple  Tuple representing the entry to look for
+     * @return  true if the Entry exists, false otherwise
+     */
+    public boolean doesEntryExist(YailList tuple) {
+        Entry entry = getEntryFromTuple(tuple);
+        int index = findEntryIndex(entry);
+
+        return index >= 0;
+    }
+
+    /**
+     * Creates an Entry from the specified tuple.
+     *
+     * @param tuple  Tuple representing the entry to create
+     * @return  new Entry object instance representing the specified tuple
+     */
+    public abstract Entry getEntryFromTuple(YailList tuple);
+
+    /**
+     * Finds the index of the specified Entry in the Data Series.
+     * Returns -1 if the Entry does not exist.
+     *
+     * TODO: Primarily used due to equals not implemented in MPAndroidChart (needed for specific operations)
+     * TODO: In the future, this method will probably become obsolete if it ever gets fixed (post-v3.1.0).
+     *
+     * @param entry  Entry to find
+     * @return  index of the entry, or -1 if entry is not found
+     */
+    protected abstract int findEntryIndex(Entry entry);
 
     /**
      * Deletes all the entries in the Data Series.

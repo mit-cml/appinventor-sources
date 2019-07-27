@@ -5,6 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.ChartData;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,6 +20,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +63,7 @@ import org.json.JSONException;
 
 @SimpleObject
 public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable,
-    ChartDataSource<String, List> {
+    ObservableChartDataSource<String, List> {
 
   public static final String DEFAULT_NAMESPACE="TinyDB1";
 
@@ -70,6 +72,11 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   private Context context;  // this was a local in constructor and final not private
 
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
+  // SharedPreferences listener used to notify observers
+  private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
   /**
    * Creates a new TinyDB component.
@@ -87,6 +94,23 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   public void Namespace(String namespace) {
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
+
+    // SharedPreferences listener currently exists; Unregister it
+    if (sharedPreferenceChangeListener != null) {
+      sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+    }
+
+    // Create a new SharedPreferences change listener
+    sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+      @Override
+      public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Upon value change, notify the observers with the key and the value
+        notifyDataSourceObservers(key, GetValue(key, null));
+      }
+    };
+
+    // Register the SharedPreferences change listener
+    sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
   }
 
   @SimpleProperty(description = "Namespace for storing data.")
@@ -158,6 +182,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
+    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
@@ -177,6 +202,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
+    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
@@ -199,5 +225,23 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
     // Default option (could not parse data): return empty ArrayList
     return new ArrayList();
+  }
+
+  @Override
+  public void addDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataSourceObservers(String key, Object newValue) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, key, newValue);
+    }
   }
 }

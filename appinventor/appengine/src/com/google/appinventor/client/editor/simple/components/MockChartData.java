@@ -24,8 +24,6 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
 
-    protected String dataSourceValue;
-
     // Stores the CSVColumn properties (in order) to import from
     protected List<String> csvColumns;
 
@@ -72,8 +70,9 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     @Override
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
-        // CSV Column Properties should be hidden by default (and shown when
-        // Source changes to CSVFile)
+        // Chart Source related properties should be hidden by default,
+        // as they are only shown upon certain conditions (e.g. CSVColumn
+        // properties are only shown when the Source component is a CSVFile)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
@@ -127,21 +126,13 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 
-        // Hide Elements from Pairs property if a Data Source has been set
-        showProperty(PROPERTY_PAIRS, (dataSource == null));
-
-        // Handle CSV-related property responses
-        handleCSVPropertySetting();
+        changeSourcePropertiesVisibility();
 
         // If the Data Source is now null, set back the
         // currentElements property.
         if (dataSource == null) {
             onPropertyChange(PROPERTY_PAIRS, currentElements);
         }
-
-        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
-        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
-        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel.
@@ -190,6 +181,22 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Import the CSV data to the Data Series
         chartDataModel.setElementsFromCSVColumns(columns);
         refreshChart();
+    }
+
+    /**
+     * Changes the visibilities of Chart Data Source related properties according
+     * to the current attached Data Source.
+     */
+    private void changeSourcePropertiesVisibility() {
+        // Hide Elements from Pairs property if a Data Source has been set
+        showProperty(PROPERTY_PAIRS, (dataSource == null));
+
+        // Handle CSV-related property responses
+        handleCSVPropertySetting();
+
+        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
+        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
+        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
     }
 
     /**
