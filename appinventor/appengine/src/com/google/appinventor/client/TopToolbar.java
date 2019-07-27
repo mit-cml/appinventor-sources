@@ -39,6 +39,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -638,21 +639,22 @@ public class TopToolbar extends Composite {
     }
 
     private void doMoveProjectToTrash(final long projectId) {
-      Ode.getInstance().getProjectService().deleteProject(projectId,
-              new OdeAsyncCallback<Void>(
+      Ode.getInstance().getProjectService().moveToTrash(projectId,
+              new OdeAsyncCallback<UserProject>(
                       // failure message
-                      MESSAGES.deleteProjectError()) {
+                      MESSAGES.moveToTrashProjectError()) {
                 @Override
-                public void onSuccess(Void result) {
-                  Ode.getInstance().getProjectManager().removeProject(projectId);
-                  // Show a welcome dialog in case there are no
-                  // projects saved.
-                  if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                    Ode.getInstance().createEmptyTrashDialog(true);
-                  }
+                public void onSuccess(UserProject project) {
+                  if(project.getProjectId()== projectId){
+                    Ode.getInstance().getProjectManager().removeProject(projectId);
+                    Ode.getInstance().getProjectManager().addDeletedProject(project);
+                    if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                      Ode.getInstance().createEmptyTrashDialog(true);
+                    }}
                 }
               });
     }
+
     private void doDeleteGalleryApp(final long galleryId) {
       Ode.getInstance().getGalleryService().deleteApp(galleryId,
               new OdeAsyncCallback<Void>(
