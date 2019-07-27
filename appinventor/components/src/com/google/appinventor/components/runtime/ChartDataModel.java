@@ -6,6 +6,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
@@ -238,15 +239,19 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public abstract void removeEntryFromTuple(YailList tuple);
 
     /**
-     * Checks whether an entry exists in the Data Series,
+     * Checks whether an entry exists in the Data Series.
      *
      * @param tuple  Tuple representing the entry to look for
      * @return  true if the Entry exists, false otherwise
      */
     public boolean doesEntryExist(YailList tuple) {
+        // Construct the entry from the specified tuple
         Entry entry = getEntryFromTuple(tuple);
+
+        // Get the index of the entry
         int index = findEntryIndex(entry);
 
+        // Entry exists only if index is non-negative
         return index >= 0;
     }
 

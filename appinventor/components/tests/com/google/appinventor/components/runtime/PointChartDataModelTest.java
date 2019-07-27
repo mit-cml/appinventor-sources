@@ -46,7 +46,6 @@ public abstract class PointChartDataModelTest
     model.addEntry(x, y);
 
     // Ensure that the entry has been added
-    // Ensure that the entry has been added
     assertEquals(1, model.getDataset().getEntryCount());
 
     // Make sure that a correct entry has been added

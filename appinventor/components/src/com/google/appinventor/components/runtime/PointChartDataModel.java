@@ -3,9 +3,11 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleDataSet;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
     D extends BarLineScatterCandleBubbleData> extends ChartDataModel<T, D>{
@@ -49,6 +51,7 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
   @Override
   @SuppressWarnings("unchecked")
   public void removeEntryFromTuple(YailList tuple) {
+    // Construct an entry from the specified tuple
     Entry entry = getEntryFromTuple(tuple);
 
     if (entry != null) {
@@ -56,20 +59,26 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
       // TODO: equals methods in it's entries as of yet, so the below method fails.
       // dataset.removeEntry(entry);
 
+      // Get the index of the entry
       int index = findEntryIndex(entry);
 
+      // Entry exists; remove it
       if (index >= 0) {
-        dataset.removeEntry(index);
+        getDataset().removeEntry(index);
       }
     }
   }
 
   @Override
   protected int findEntryIndex(Entry entry) {
-    for (int i = 0; i < dataset.getValues().size(); ++i) {
-      Entry currentEntry = dataset.getEntryForIndex(i);
+    for (int i = 0; i < getDataset().getValues().size(); ++i) {
+      Entry currentEntry = getDataset().getEntryForIndex(i);
 
+      // Check whether the current entry is equal to the
+      // specified entry. Note that (in v3.1.0), equals()
+      // does not yield the same result.
       if (currentEntry.equalTo(entry)) {
+        // Entry matched; Return
         return i;
       }
     }
