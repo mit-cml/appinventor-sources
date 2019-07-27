@@ -72,7 +72,10 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   private Context context;  // this was a local in constructor and final not private
 
+  // Set of observers
   private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
+  // SharedPreferences listener used to notify observers
   private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
   /**
@@ -92,17 +95,21 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     this.namespace = namespace;
     sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
 
+    // SharedPreferences listener currently exists; Unregister it
     if (sharedPreferenceChangeListener != null) {
       sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 
+    // Create a new SharedPreferences change listener
     sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
       @Override
       public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Upon value change, notify the observers with the key and the value
         notifyDataSourceObservers(key, GetValue(key, null));
       }
     };
 
+    // Register the SharedPreferences change listener
     sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
   }
 
@@ -232,6 +239,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
 
   @Override
   public void notifyDataSourceObservers(String key, Object newValue) {
+    // Notify each Chart Data observer component of the Data value change
     for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onDataSourceValueChange(this, key, newValue);
     }
