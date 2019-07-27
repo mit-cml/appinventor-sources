@@ -294,7 +294,22 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 // Update the Data Source value with the retrieved value
                 onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
             } else if (dataSource instanceof CloudDB) {
-                ImportFromCloudDB((CloudDB)dataSource, dataSourceValue);
+                // TODO: Refactor for efficiency (non-blocking?)
+
+                // Update current Data Source value
+                try {
+                    currentDataSourceValue = ((CloudDB)dataSource).getDataValue(dataSourceValue).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Add this Data Component as an observer to the ObservableChartDataSource object
+                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+
+                // Update the Data Source value with the retrieved value
+                onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
             }
         }
     }

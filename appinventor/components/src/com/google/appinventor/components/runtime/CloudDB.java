@@ -50,6 +50,7 @@ import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -101,7 +102,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
 
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener, ChartDataSource<String, Future<List>> {
+  OnClearListener, OnDestroyListener, ObservableChartDataSource<String, Future<List>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -240,6 +241,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
   private ConnectivityManager cm;
 
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
   @Override
   public Future<List> getDataValue(final String key) {
     return background.submit(new Callable<List>() {
@@ -256,6 +260,24 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         return new ArrayList();
       }
     });
+  }
+
+  @Override
+  public void addDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataSourceObservers(String key, Object newValue) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, key, newValue);
+    }
   }
 
   private static class storedValue {
@@ -1074,6 +1096,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
     }
     final Object finalTagValue = tagValue;
+
+    // Notify all the Data Source observers
+    notifyDataSourceObservers(tag, value);
 
     androidUIHandler.post(new Runnable() {
       public void run() {
