@@ -125,9 +125,18 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         }
     }
 
+    /**
+     * Removes the specified List of values, which are expected to be tuples.
+     * Invalid entries are ignored.
+     *
+     * @param values  List of values to remove
+     */
     public void removeValues(List values) {
+        // Iterate all the entries of the generic List)
         for (Object entry : values) {
+            // Entry is a List; Possibly a tuple
             if (entry instanceof List) {
+                // Create a tuple from the entry, and attempt to remove it
                 YailList tuple = YailList.makeList((List)entry);
                 removeEntryFromTuple(tuple);
             }

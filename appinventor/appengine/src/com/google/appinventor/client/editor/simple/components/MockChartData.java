@@ -24,8 +24,6 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
 
-    protected String dataSourceValue;
-
     // Stores the CSVColumn properties (in order) to import from
     protected List<String> csvColumns;
 
@@ -72,8 +70,9 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     @Override
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
-        // CSV Column Properties should be hidden by default (and shown when
-        // Source changes to CSVFile)
+        // Chart Source related properties should be hidden by default,
+        // as they are only shown upon certain conditions (e.g. CSVColumn
+        // properties are only shown when the Source component is a CSVFile)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||

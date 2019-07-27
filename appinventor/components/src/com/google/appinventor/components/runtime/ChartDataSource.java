@@ -12,7 +12,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
  * @param <V>  value (returned data type)
  */
 @SimpleObject
-@DesignerComponent(version = 0)
+@DesignerComponent(version = 0) // This is required to prevent cast crashes
 public interface ChartDataSource<K, V> {
   /**
    * Gets the specified data value
