@@ -96,33 +96,30 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from a YailList which contains nested tuples
-     *
-     * @param list  YailList containing tuples
-     */
-    public void importFromList(YailList list) {
-        // Iterate over all the tuples
-        for (int i = 0; i < list.size(); ++i) {
-            YailList tuple = (YailList)list.getObject(i);
-            addEntryFromTuple(tuple);
-        }
-    }
-
-    /**
-     * Imports data from a generic List object which contains nested tuples
+     * Imports data from a List object.
+     * Valid tuple entries are imported, and the invalid entries are ignored.
      *
      * @param list  List containing tuples
      */
     public void importFromList(List list) {
-        // Iterate over all the tuples
-        for (int i = 0; i < list.size(); ++i) {
-            Object entry = list.get(i);
+      // Iterate over all the entries of the List
+      for (Object entry : list) {
+        YailList tuple = null;
 
-            if (entry instanceof List) {
-                YailList tuple = YailList.makeList((List)entry);
-                addEntryFromTuple(tuple);
-            }
+        if (entry instanceof YailList) {
+          // Convert entry to YailList
+          tuple = (YailList) entry;
+        } else if (entry instanceof List) {
+          // List has to be converted to a YailList
+          tuple = YailList.makeList((List) entry);
         }
+
+        // Entry could be parsed to a YailList; Attempt importing from
+        // the constructed tuple.
+        if (tuple != null) {
+          addEntryFromTuple(tuple);
+        }
+      }
     }
 
     /**

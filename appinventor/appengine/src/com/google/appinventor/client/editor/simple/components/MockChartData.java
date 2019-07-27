@@ -126,21 +126,13 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 
-        // Hide Elements from Pairs property if a Data Source has been set
-        showProperty(PROPERTY_PAIRS, (dataSource == null));
-
-        // Handle CSV-related property responses
-        handleCSVPropertySetting();
+        changeSourcePropertiesVisibility();
 
         // If the Data Source is now null, set back the
         // currentElements property.
         if (dataSource == null) {
             onPropertyChange(PROPERTY_PAIRS, currentElements);
         }
-
-        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
-        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
-        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel.
@@ -189,6 +181,22 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Import the CSV data to the Data Series
         chartDataModel.setElementsFromCSVColumns(columns);
         refreshChart();
+    }
+
+    /**
+     * Changes the visibilities of Chart Data Source related properties according
+     * to the current attached Data Source.
+     */
+    private void changeSourcePropertiesVisibility() {
+        // Hide Elements from Pairs property if a Data Source has been set
+        showProperty(PROPERTY_PAIRS, (dataSource == null));
+
+        // Handle CSV-related property responses
+        handleCSVPropertySetting();
+
+        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
+        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
+        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
     }
 
     /**
