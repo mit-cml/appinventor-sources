@@ -29,10 +29,14 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
   @Override
   public Entry getEntryFromTuple(YailList tuple) {
     try {
+      // Tuple is expected to have at least 2 entries.
+      // The first entry is assumed to be the x value, and
+      // the second is assumed to be the y value.
       String xValue = tuple.getString(0);
       String yValue = tuple.getString(1);
 
       try {
+        // Attempt to parse the x and y value String representations
         float x = Float.parseFloat(xValue);
         float y = Float.parseFloat(yValue);
 

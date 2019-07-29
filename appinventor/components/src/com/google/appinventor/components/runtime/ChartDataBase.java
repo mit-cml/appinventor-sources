@@ -16,7 +16,14 @@ import java.util.concurrent.*;
 public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
-    protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
+
+    /* Used to queue & execute asynchronous tasks while ensuring
+     * order of method execution (ExecutorService should be a Single Thread runner)
+     * In the case of methods which return values and where
+     * the result depends on the state of the data, blocking get
+     * calls are used to ensure that all the previous async tasks
+     * finish before the data is returned. */
+    protected ExecutorService threadRunner;
 
     // Properties used in Designer to import from CSV.
     // Represents the names of the columns to use,
@@ -260,16 +267,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         }
     }
 
-    @SimpleFunction
+    /**
+     * Returns the entries of the Data Series the x values of which match
+     * the provided value
+     * @param x  x value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
+        "A single entry is represented as a List of values of the entry.")
     public YailList GetEntriesWithXValue(final float x) {
-      // Queue find entries task to run asynchronously
       try {
-        // Use the blocking get() method to retrieve the value (after
-        // all the other tasks are finished)
         return threadRunner.submit(new Callable<YailList>() {
           @Override
           public YailList call() {
-            // Retrieve all the entries with the specified x value
+            // Use X Value as criterion to filter entries
             return chartDataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
           }
         }).get();
@@ -283,16 +294,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
       return new YailList();
     }
 
-    @SimpleFunction
+    /**
+     * Returns the entries of the Data Series the y values of which match
+     * the provided value
+     * @param y  y value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
+        "A single entry is represented as a List of values of the entry.")
     public YailList GetEntriesWithYValue(final float y) {
-      // Queue find entries task to run asynchronously
       try {
-        // Use the blocking get() method to retrieve the value (after
-        // all the other tasks are finished)
         return threadRunner.submit(new Callable<YailList>() {
           @Override
           public YailList call() {
-            // Retrieve all the entries with the specified y value
+            // Use YValue as criterion to filter entries
             return chartDataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
           }
         }).get();
@@ -305,12 +320,14 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
       return new YailList();
     }
 
-    @SimpleFunction
+    /**
+     * Returns all the entries of the Data Series.
+     * @return  YailList of all the entries of the Data Series
+     */
+    @SimpleFunction(description = "Returns all the entries of the Data Series." +
+        "A single entry is represented as a List of values of the entry.")
     public YailList GetAllEntries() {
-        // Queue find entries task to run asynchronously
         try {
-            // Use the blocking get() method to retrieve the value (after
-            // all the other tasks are finished)
             return threadRunner.submit(new Callable<YailList>() {
                 @Override
                 public YailList call() {

@@ -247,7 +247,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         for (Object dataValue : getDataset().getValues()) {
             Entry entry = (Entry) dataValue;
 
+            // Check whether the provided criterion & value combination are satisfied
+            // according to the current Entry
             if (isEntryCriterionSatisfied(entry, criterion, value)) {
+                // Criterion satisfied; Add enttry to resulting List
                 entries.add(getTupleFromEntry(entry));
             }
         }
@@ -277,15 +280,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         boolean criterionSatisfied = false;
 
         switch (criterion) {
-            case All:
-                criterionSatisfied = true; // always true, since we are returning all values
+            case All: // Criterion satisfied no matter the value, since all entries should be returned
+                criterionSatisfied = true;
                 break;
 
-            case XValue:
+            case XValue: // Criterion satisfied based on x value match with the value
                 criterionSatisfied = (entry.getX() == value);
                 break;
 
-            case YValue:
+            case YValue: // Criterion satisfied based on y value match with the value
                 criterionSatisfied = (entry.getY() == value);
                 break;
         }
