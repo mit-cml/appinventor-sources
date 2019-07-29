@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Base class for Line Chart based Data Model tests.
@@ -35,24 +37,24 @@ public abstract class PointChartDataModelTest
    * Tests whether an entry is correctly added to the Data Set
    * upon calling the add entry method with x and y coordinates.
    */
-  @Test
-  public void testAddEntry() {
-    // Pre-condition: make sure there are no entries initially
-    assertEquals(0, model.getDataset().getEntryCount());
-
-    // Add an entry
-    float x = 4;
-    float y = 5;
-    model.addEntry(x, y);
-
-    // Ensure that the entry has been added
-    assertEquals(1, model.getDataset().getEntryCount());
-
-    // Make sure that a correct entry has been added
-    Entry entry = model.getDataset().getEntryForIndex(0);
-    assertEquals(x, entry.getX());
-    assertEquals(y, entry.getY());
-  }
+//  @Test
+//  public void testAddEntry() {
+//    // Pre-condition: make sure there are no entries initially
+//    assertEquals(0, model.getDataset().getEntryCount());
+//
+//    // Add an entry
+//    float x = 4;
+//    float y = 5;
+//    model.addEntry(x, y);
+//
+//    // Ensure that the entry has been added
+//    assertEquals(1, model.getDataset().getEntryCount());
+//
+//    // Make sure that a correct entry has been added
+//    Entry entry = model.getDataset().getEntryForIndex(0);
+//    assertEquals(x, entry.getX());
+//    assertEquals(y, entry.getY());
+//  }
 
   /**
    * Tests to ensure that Data Series entries are not changed
@@ -348,9 +350,9 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testClearEntries() {
-    model.addEntry(4, 5);
-    model.addEntry(3, 2);
-    model.addEntry(1, 4);
+    model.addEntryFromTuple(createTuple(4f, 5f));
+    model.addEntryFromTuple(createTuple(3f, 2f));
+    model.addEntryFromTuple(createTuple(1f, 4f));
 
     assertEquals(3, model.getDataset().getEntryCount());
 
@@ -472,6 +474,168 @@ public abstract class PointChartDataModelTest
     model.importFromCSV(columns);
     assertExpectedEntriesHelper(expectedEntries);
   }
+
+  /**
+   * Test to ensure that deleting an entry by providing an
+   * existing tuple from the Data Series properly deletes it.
+   */
+  @Test
+  public void testRemoveFromTupleExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(2f, 7f));
+      add(createTuple(4f, 5f)); // The entry to be deleted
+      add(createTuple(7f, 4f));
+      add(createTuple(11f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(2f, 7f));
+      add(new Entry(7f, 4f));
+      add(new Entry(11f, 3f));
+    }};
+
+    YailList deleteTuple = createTuple(4f, 5f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting an entry of which a duplicate
+   * exists only deletes the first found entry.
+   */
+  @Test
+  public void testRemoveFromTupleMultipleEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 2f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 1f));
+      add(new Entry(1f, 2f));
+    }};
+
+    YailList deleteTuple = createTuple(1f, 1f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting from a tuple that does not
+   * exist in the Data Series does not delete any entries.
+   */
+  @Test
+  public void testRemoveFromTupleNonExistant() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(2f, 4f));
+      add(createTuple(5f, 9f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(2f, 4f));
+      add(new Entry(5f, 9f));
+    }};
+
+    YailList deleteTuple = createTuple(7f, 2f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting from an invalid tuple
+   * does not remove any entries.
+   */
+  @Test
+  public void testRemoveFromTupleInvalid() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(5f, 2f));
+    }};
+
+    YailList deleteTuple = createTuple(5f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  @Test
+  public void testDoesEntryExistExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(7f, 3f);
+
+    model.importFromList(pairs);
+    assertTrue(model.doesEntryExist(searchTuple));
+  }
+
+  @Test
+  public void testDoesEntryExistDoesNotExist() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(9f, 1f);
+
+    model.importFromList(pairs);
+    assertFalse(model.doesEntryExist(searchTuple));
+  }
+
+  @Test
+  public void testDoesEntryExistInvalid() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(9f);
+
+    model.importFromList(pairs);
+    assertFalse(model.doesEntryExist(searchTuple));
+  }
+
+
 
 //  /**
 //   * Test to ensure that passing in a row size

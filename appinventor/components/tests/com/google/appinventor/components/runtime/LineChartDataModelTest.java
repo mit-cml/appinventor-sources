@@ -53,7 +53,7 @@ public class LineChartDataModelTest
 
     // Import the data and assert all the entries
     model.importFromList(pairs);
-    model.addEntry(1f, 6f); // Should be inserted after all the entries that have x value 1
+    model.addEntryFromTuple(createTuple(1f, 6f)); // Should be inserted after all the entries that have x value 1
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -98,7 +98,7 @@ public class LineChartDataModelTest
 
     // Import the data and assert all the entries
     model.importFromList(pairs);
-    model.addEntry(4f, -15f); // Should be inserted after all the entries that have x value 4
+    model.addEntryFromTuple(createTuple(4f, -15f)); // Should be inserted after all the entries that have x value 4
     assertExpectedEntriesHelper(expectedEntries);
   }
 
