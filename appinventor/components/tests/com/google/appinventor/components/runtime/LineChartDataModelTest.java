@@ -103,6 +103,54 @@ public class LineChartDataModelTest
   }
 
   /**
+   * Test to ensure that adding an entry to a Data Series of a duplicate
+   * x value inserts it after all the other x-value entries.
+   * This method tests the case where the middle element does not have
+   * the same x value as the entry to be inserted (and the entries are on the left
+   * side of the List).
+   */
+  @Test
+  public void testAddEntryMatchLeft() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-3f, 0f));
+      add(createTuple(-3f, 2f));
+      add(createTuple(-3f, 3f));
+      add(createTuple(-3f, 4f));
+      add(createTuple(5f, -3f));
+      add(createTuple(5f, 1f));
+      add(createTuple(6f, 6f));
+      add(createTuple(7f, 7f));
+      add(createTuple(10f, 9f));
+      add(createTuple(11f, -7f));
+      add(createTuple(17f, 10f));
+      add(createTuple(21f, 1f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-3f, 0f));
+      add(new Entry(-3f, 2f));
+      add(new Entry(-3f, 3f));
+      add(new Entry(-3f, 4f));
+      add(new Entry(-3f, -1f)); // This will be the entry that we will insert
+      add(new Entry(5f, -3f));
+      add(new Entry(5f, 1f));
+      add(new Entry(6f, 6f));
+      add(new Entry(7f, 7f));
+      add(new Entry(10f, 9f));
+      add(new Entry(11f, -7f));
+      add(new Entry(17f, 10f));
+      add(new Entry(21f, 1f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.addEntryFromTuple(createTuple(-3f, -1f)); // Should be inserted after all the entries that have x value 4
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
    * Test to ensure that adding various entries out of order results
    * in a sorted Data Series post-adding.
    *
@@ -160,7 +208,7 @@ public class LineChartDataModelTest
       add(new Entry(5f, 11f));
       add(new Entry(9f, 15f));
       add(new Entry(11f, 16f));
-      add(new Entry(15f, 1f));
+      add(new Entry(15f, 1f)); // This will be the entry that we will insert
     }};
 
     // Import the data and assert all the entries
@@ -189,7 +237,7 @@ public class LineChartDataModelTest
     YailList pairs = YailList.makeList(tuples);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-7f, 1f));
+      add(new Entry(-7f, 1f)); // This will be the entry that we will insert
       add(new Entry(-4f, 5f));
       add(new Entry(-1f, 2f));
       add(new Entry(3f, 1f));
