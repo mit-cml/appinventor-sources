@@ -309,13 +309,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        // To avoid exceptions, refresh the Chart on the UI thread.
-        container.$context().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                container.refresh();
-            }
-        });
+        container.refresh();
     }
 
     @Override
