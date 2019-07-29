@@ -14,6 +14,14 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected T dataset;
 
     /**
+     * Enum used to specify the criterion to use for entry filtering/comparing.
+     */
+    public enum EntryCriterion {
+        XValue,
+        YValue;
+    }
+
+    /**
      * Initializes a new ChartDataModel object instance.
      *
      * @param data  Chart data instance
@@ -256,12 +264,66 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Finds and returns all the entries by the specified criterion and value.
+     *
+     * The entries are returned as tuple (YailList) representations.
+     *
+     * @param value  value to use for comparison
+     * @param criterion  criterion to use for comparison
+     * @return  YailList of entries represented as tuples matching the specified conditions
+     */
+    public YailList findEntriesByCriterion(float value, EntryCriterion criterion) {
+        List<YailList> entries = new ArrayList<YailList>();
+
+        for (Object dataValue : getDataset().getValues()) {
+            Entry entry = (Entry) dataValue;
+
+            if (isEntryCriterionSatisfied(entry, criterion, value)) {
+                entries.add(getTupleFromEntry(entry));
+            }
+        }
+
+        return YailList.makeList(entries);
+    }
+
+    /**
+     * Check whether the entry matches the specified criterion.
+     *
+     * @param entry  entry to check against
+     * @param criterion  criterion to check with (e.g. x value)
+     * @param value  value to use for comparison
+     * @return  true if the entry matches the criterion
+     */
+    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, float value) {
+        boolean criterionSatisfied = false;
+
+        switch (criterion) {
+            case XValue:
+                criterionSatisfied = (entry.getX() == value);
+                break;
+
+            case YValue:
+                criterionSatisfied = (entry.getY() == value);
+                break;
+        }
+
+        return criterionSatisfied;
+    }
+
+    /**
      * Creates an Entry from the specified tuple.
      *
      * @param tuple  Tuple representing the entry to create
      * @return  new Entry object instance representing the specified tuple
      */
     public abstract Entry getEntryFromTuple(YailList tuple);
+
+    /**
+     * Returns a YailList tuple representation of the specfied entry
+     * @param entry  Entry to convert to tuple
+     * @return  tuple (YailList) representation of the Entry
+     */
+    public abstract YailList getTupleFromEntry(Entry entry);
 
     /**
      * Finds the index of the specified Entry in the Data Series.
