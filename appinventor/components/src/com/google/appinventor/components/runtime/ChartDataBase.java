@@ -9,6 +9,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
@@ -18,15 +19,14 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     // Properties used in Designer to import from CSV.
-    // Represents the names of the columns to use
-    // for the X and the Y values.
-    protected String csvXColumn = "";
-    protected String csvYColumn = "";
+    // Represents the names of the columns to use,
+    // where each index corresponds to a single dimension.
+    protected List<String> csvColumns;
 
     private String label;
     private int color;
 
-    private CSVFile dataSource;
+    private ChartDataSource dataSource;
     private String elements;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
@@ -175,7 +175,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
      */
     protected void importFromCSVAsync(final CSVFile csvFile, YailList columns) {
         // Get the Future object representing the columns in the CSVFile component,
-        final Future<YailList> csvFileColumns = csvFile.getColumns(columns);
+        final Future<YailList> csvFileColumns = csvFile.getDataValue(columns);
 
         // Import the data from the CSV file asynchronously
         threadRunner.execute(new Runnable() {
@@ -215,7 +215,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
     public void CsvXColumn(String column) {
-        this.csvXColumn = column;
+        // The first element represents the x entries
+        csvColumns.set(0, column);
     }
 
     /**
@@ -229,7 +230,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
     public void CsvYColumn(String column) {
-        this.csvYColumn = column;
+        // The second element represents the y entries
+        csvColumns.set(1, column);
     }
 
 
@@ -244,15 +246,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
                     "include CSVFiles.")
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.CSVFile")
-    public void Source(final CSVFile dataSource) {
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
+    public void Source(ChartDataSource dataSource) {
         this.dataSource = dataSource;
 
         // The data should only be imported after the Data component
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
-            importFromLocalCSVSource(dataSource);
+            if (dataSource instanceof CSVFile) {
+                importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
+            }
         }
     }
 
@@ -300,15 +304,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
 
       return new YailList();
     }
-
-    /**
-     * Imports data from the local CSV column variables and the
-     * attached CSVFile component.
-     *
-     * Declared abstract since subclasses might have different
-     * dimensions.
-     */
-    protected abstract void importFromLocalCSVSource(final CSVFile dataSource);
 
     /**
      * Refreshes the Chart view object.
