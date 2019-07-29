@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -647,7 +648,347 @@ public abstract class PointChartDataModelTest
     assertFalse(model.doesEntryExist(searchTuple));
   }
 
+  /**
+   * Test to ensure that specifying an existing Entry to the findEntryIndex
+   * method returns the correct index.
+   */
+  @Test
+  public void testFindEntryIndexExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+      add(createTuple(9f, 1f));
+    }};
 
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(7f, 3f);
+    final int expectedIndex = 2;
+
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that specifying an existing Entry (of which there are duplicates)
+   * to the findEntryIndex method  returns the first found entry's index.
+   */
+  @Test
+  public void testFindEntryIndexExistsMultiple() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(1f, 2f));
+      add(createTuple(2f, 1f));
+      add(createTuple(2f, 3f));
+      add(createTuple(2f, 3f));
+      add(createTuple(3f, 4f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(2f, 3f);
+    final int expectedIndex = 3;
+
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that specifying a non-existent entry returns a negative
+   * index (denoting entry not found)
+   */
+  @Test
+  public void testFindEntryIndexDoesNotExist() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+      add(createTuple(9f, 1f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(11f, 1f);
+    final int expectedIndex = -1;
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns an empty List when no entries exist.
+   */
+  @Test
+  public void testGetEntriesAsTuplesEmpty() {
+    final YailList expected = new YailList();
+    YailList result = model.getEntriesAsTuples();
+
+    assertEquals(expected, result);
+  }
+
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns a List containing a single entry when only
+   * one entry exists.
+   */
+  @Test
+  public void testGetEntriesAsTuplesSingleEntry() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+    }};
+
+    YailList expected = YailList.makeList(tuples);
+    model.importFromList(expected);
+
+    YailList result =  model.getEntriesAsTuples();
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns a List containing all the entries (in
+   * case of multiple entries existing)
+   */
+  @Test
+  public void testGetEntriesAsTuplesMultipleEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 4f));
+      add(createTuple(5f, 2f));
+    }};
+
+    YailList expected = YailList.makeList(tuples);
+    model.importFromList(expected);
+
+    YailList result =  model.getEntriesAsTuples();
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * All EntryCriterion returns true using a seemingly arbitrary value.
+   */
+  @Test
+  public void testCriterionSatisfiedAll() {
+    Entry entry = new Entry(1f, 3f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.All;
+    final float value = 5f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and a matching x value returns true.
+   */
+  @Test
+  public void testCriterionSatisfiedXMatch() {
+    Entry entry = new Entry(1f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final float value = 1f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and a non-matching x value returns false.
+   */
+  @Test
+  public void testCriterionSatisfiedXNoMatch() {
+    Entry entry = new Entry(5f, 2f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final float value = 2f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertFalse(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * Y Value criterion and a matching y value returns true.
+   */
+  @Test
+  public void testCriterionSatisfiedYMatch() {
+    Entry entry = new Entry(2f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final float value = 4f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * Y Value criterion and a non-matching y value returns false.
+   */
+  @Test
+  public void testCriterionSatisfiedYNoMatch() {
+    Entry entry = new Entry(7f, 15f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final float value = 14f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertFalse(result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there is only a single match returns the correct result.
+   */
+  @Test
+  public void testFindEntriesByCriterionSingleMatch() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 4f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 12f));
+      add(createTuple(8f, 10f));
+      add(createTuple(12f, 15f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    ArrayList<YailList> expectedTuples = new ArrayList<YailList>() {{
+      add(createTuple(8f, 10f));
+    }};
+
+    YailList expected = YailList.makeList(expectedTuples);
+    final float value = 8f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there are multiple matches returns the correct result.
+   */
+  @Test
+  public void testFindEntriesByCriterionMultipleMatches() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 3f));
+      add(createTuple(7f, 5f));
+      add(createTuple(8f, 1f));
+      add(createTuple(12f, 4f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    ArrayList<YailList> expectedTuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(8f, 1f));
+    }};
+
+    YailList expected = YailList.makeList(expectedTuples);
+    final float value = 1f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there is no match returns an empty list.
+   */
+  @Test
+  public void testFindEntriesByCriterionNoMatches() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(5f, 1f));
+      add(createTuple(9f, 3f));
+      add(createTuple(12f, 5f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    YailList expected = new YailList();
+
+    final float value = 4f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting a Tuple from an Entry object
+   * returns the correct result.
+   */
+  @Test
+  public void testGetTupleFromEntry() {
+    Entry entry = new Entry(2f, 3f);
+
+    YailList expected = createTuple(2f, 3f);
+    YailList result = model.getTupleFromEntry(entry);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting an Entry from a Tuple
+   * returns the correct result.
+   */
+  @Test
+  public void testGetEntryFromTuple() {
+    YailList tuple = createTuple(3f, 4f);
+
+    Entry expected = new Entry(3f, 4f);
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected.getX(), result.getX());
+    assertEquals(expected.getY(), result.getY());
+  }
+
+  /**
+   * Test to ensure that attempting to get an Entry from a
+   * Tuple that is too small returns a null value.
+   */
+  @Test
+  public void testGetEntryFromTupleTooSmall() {
+    YailList tuple = createTuple(1f);
+
+    Entry expected = null;
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting an entry from a
+   * Tuple that is too large results in a constructed
+   * Entry from the first 2 values.
+   */
+  @Test
+  public void testGetEntryFromTupleTooLarge() {
+    YailList tuple = createTuple(4f, 1f, 2f, 7f);
+
+    Entry expected = new Entry(4f, 1f);
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected.getX(), result.getX());
+    assertEquals(expected.getY(), result.getY());
+  }
 
 //  /**
 //   * Test to ensure that passing in a row size
