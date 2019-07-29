@@ -131,6 +131,22 @@ public final class ProjectManager {
   }
 
   /**
+   * Returns the trash project for the given project name.
+   *
+   * @param name  trash project name
+   * @return  the corresponding project or {@code null}
+   */
+  public Project getTrashProject(String name) {
+    for (Project project : deletedProjectsMap.values()) {
+      if (project.getProjectName().equals(name)) {
+        return project;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the project for the given project ID.
    *
    * @param projectId project ID
