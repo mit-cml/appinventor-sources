@@ -587,6 +587,10 @@ public abstract class PointChartDataModelTest
     assertExpectedEntriesHelper(expectedEntries);
   }
 
+  /**
+   * Test to ensure that querying for an entry that exists
+   * returns true for the DoesEntryExists method.
+   */
   @Test
   public void testDoesEntryExistExists() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
@@ -603,6 +607,10 @@ public abstract class PointChartDataModelTest
     assertTrue(model.doesEntryExist(searchTuple));
   }
 
+  /**
+   * Test to ensure that querying for an entry that does not exist
+   * returns false for the DoesEntryExists method.
+   */
   @Test
   public void testDoesEntryExistDoesNotExist() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
@@ -619,6 +627,10 @@ public abstract class PointChartDataModelTest
     assertFalse(model.doesEntryExist(searchTuple));
   }
 
+  /**
+   * Test to ensure that querying for an invalid entry (wrong tuple)
+   * returns false for the DoesEntryExist method
+   */
   @Test
   public void testDoesEntryExistInvalid() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
