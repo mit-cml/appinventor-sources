@@ -17,6 +17,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Enum used to specify the criterion to use for entry filtering/comparing.
      */
     public enum EntryCriterion {
+        All, // Return all entries
         XValue,
         YValue;
     }
@@ -255,6 +256,16 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Returns all the entries of the Data Series in the form of tuples (YailLists)
+     *
+     * @return  YailList of all entries represented as tuples
+     */
+    public YailList getEntriesAsTuples() {
+        // Use the All criterion to get all the Entries
+        return findEntriesByCriterion(0f, EntryCriterion.All);
+    }
+
+    /**
      * Check whether the entry matches the specified criterion.
      *
      * @param entry  entry to check against
@@ -266,6 +277,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         boolean criterionSatisfied = false;
 
         switch (criterion) {
+            case All:
+                criterionSatisfied = true; // always true, since we are returning all values
+                break;
+
             case XValue:
                 criterionSatisfied = (entry.getX() == value);
                 break;

@@ -305,6 +305,27 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
       return new YailList();
     }
 
+    @SimpleFunction
+    public YailList GetAllEntries() {
+        // Queue find entries task to run asynchronously
+        try {
+            // Use the blocking get() method to retrieve the value (after
+            // all the other tasks are finished)
+            return threadRunner.submit(new Callable<YailList>() {
+                @Override
+                public YailList call() {
+                    return chartDataModel.getEntriesAsTuples();
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return new YailList();
+    }
+
     /**
      * Refreshes the Chart view object.
      */
