@@ -7,6 +7,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
@@ -46,6 +47,14 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
     }
 
     return null;
+  }
+
+  @Override
+  public YailList getTupleFromEntry(Entry entry) {
+    // Create a list with the X and Y values of the entry, and
+    // convert the generic List to a YailList
+    List tupleEntries = Arrays.asList(entry.getX(), entry.getY());
+    return YailList.makeList(tupleEntries);
   }
 
   @Override

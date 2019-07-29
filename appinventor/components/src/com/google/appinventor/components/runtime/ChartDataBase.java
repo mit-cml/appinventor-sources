@@ -256,6 +256,51 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         }
     }
 
+    @SimpleFunction
+    public YailList GetEntriesWithXValue(final float x) {
+      // Queue find entries task to run asynchronously
+      try {
+        // Use the blocking get() method to retrieve the value (after
+        // all the other tasks are finished)
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Retrieve all the entries with the specified x value
+            return chartDataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      // Undefined behavior: return emtpy List
+      return new YailList();
+    }
+
+    @SimpleFunction
+    public YailList GetEntriesWithYValue(final float y) {
+      // Queue find entries task to run asynchronously
+      try {
+        // Use the blocking get() method to retrieve the value (after
+        // all the other tasks are finished)
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Retrieve all the entries with the specified y value
+            return chartDataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      return new YailList();
+    }
+
     /**
      * Imports data from the local CSV column variables and the
      * attached CSVFile component.
