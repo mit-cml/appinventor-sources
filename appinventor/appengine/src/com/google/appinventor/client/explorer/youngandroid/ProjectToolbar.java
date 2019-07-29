@@ -163,13 +163,10 @@ public class ProjectToolbar extends Toolbar {
 
         private void moveToTrash(Project project) {
             Tracking.trackEvent(Tracking.PROJECT_EVENT,
-                    Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+                    Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, project.getProjectName());
 
            final long projectId = project.getProjectId();
 
-            if (project.isPublished()) {
-                doDeleteGalleryApp(project.getGalleryId());
-            }
             // Make sure that we delete projects even if they are not open.
             doMoveProjectToTrash(projectId);
         }
@@ -186,23 +183,10 @@ public class ProjectToolbar extends Toolbar {
                             Ode.getInstance().getProjectManager().addDeletedProject(project);
                             if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                                 Ode.getInstance().createEmptyTrashDialog(true);
-                            }}
+                            }
                         }
-                    });
-
-        }
-        private void doDeleteGalleryApp(final long galleryId) {
-            Ode.getInstance().getGalleryService().deleteApp(galleryId,
-                    new OdeAsyncCallback<Void>(
-                            // failure message
-                            MESSAGES.galleryDeleteError()) {
-                        @Override
-                        public void onSuccess(Void result) {
-                            // need to update gallery list
-                            GalleryClient gallery = GalleryClient.getInstance();
-                            gallery.appWasChanged();
-                        }
-                    });
+                    }
+            });
         }
     }
 
@@ -250,28 +234,30 @@ public class ProjectToolbar extends Toolbar {
         }
 
         private void restoreProject(Project project) {
-            //Tracking.trackEvent(Tracking.PROJECT_EVENT,
-            // Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
-            final long projectId=project.getProjectId();
+            Tracking.trackEvent(Tracking.PROJECT_EVENT,
+                    Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, project.getProjectName());
+
+            final long projectId = project.getProjectId();
 
             doRestoreProject(projectId);
         }
 
         private void doRestoreProject(final long projectId) {
-            Ode.getInstance().getProjectService().restoreProject(projectId,
-                    new OdeAsyncCallback<UserProject>(
-                            // failure message
-                            MESSAGES.restoreProjectError()) {
-                        @Override
-                        public void onSuccess(UserProject project) {
-                            if(project.getProjectId()== projectId){
-                                Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
-                                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                                    Ode.getInstance().createEmptyTrashDialog(true);
-                                }}
-                        }
-                    });
-        }
+           Ode.getInstance().getProjectService().restoreProject(projectId,
+                   new OdeAsyncCallback<UserProject>(
+                           // failure message
+                           MESSAGES.restoreProjectError()) {
+                       @Override
+                       public void onSuccess(UserProject project) {
+                           if(project.getProjectId()== projectId){
+                               Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
+                               if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                                   Ode.getInstance().createEmptyTrashDialog(true);
+                               }
+                           }
+                       }
+                   });
+         }
     }
 
     //Deleting the projects forever from trash list
@@ -344,14 +330,15 @@ public class ProjectToolbar extends Toolbar {
                         @Override
                         public void onSuccess(Void result) {
                             Ode.getInstance().getProjectManager().removeDeletedProject(projectId);
-//                  // Show a welcome dialog in case there are no
-//                  // projects saved.
+                            // Show a welcome dialog in case there are no
+                            // projects saved.
                             if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                                 Ode.getInstance().createEmptyTrashDialog(true);
                             }
                         }
                     });
-        }
+         }
+
         private void doDeleteGalleryApp(final long galleryId) {
             Ode.getInstance().getGalleryService().deleteApp(galleryId,
                     new OdeAsyncCallback<Void>(
