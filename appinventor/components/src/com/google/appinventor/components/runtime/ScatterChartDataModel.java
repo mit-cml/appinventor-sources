@@ -4,6 +4,7 @@ import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 
@@ -21,9 +22,14 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
   }
 
   @Override
-  public void addEntry(float x, float y) {
-    Entry entry = new Entry(x, y);
-    getDataset().addEntry(entry);
+  public void addEntryFromTuple(YailList tuple) {
+    // Construct an entry from the prvoided tuple
+    Entry entry = getEntryFromTuple(tuple);
+
+    // If entry constructed successfully, add it to the Data Series
+    if (entry != null) {
+      getDataset().addEntry(entry);
+    }
   }
 
   @Override

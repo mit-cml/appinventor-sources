@@ -8,6 +8,8 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 @DesignerComponent(version = 1,
     description = "A component that holds (x, y)-coordinate based data",
@@ -46,6 +48,60 @@ public final class CoordinateData extends ChartDataBase {
                 refreshChart();
             }
         });
+    }
+
+    /**
+     * Removes an entry from the Data Series.
+     *
+     * @param x - x value of entry
+     * @param y - y value of entry
+     */
+    @SimpleFunction(description = "Removes the first matching (x, y) point from the " +
+        "Coordinate Data, if it exists.")
+    public void RemoveEntry(final float x, final float y) {
+        // Entry should be deleted via the Thread Runner asynchronously
+        // to guarantee the order of data adding (e.g. CSV data
+        // adding could be happening when this method is called,
+        // so the task should be queued in the single Thread Runner)
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Create a 2-tuple, and remove the tuple from the Data Series
+                YailList pair = YailList.makeList(Arrays.asList(x, y));
+                chartDataModel.removeEntryFromTuple(pair);
+
+                // Refresh Chart with new data
+                refreshChart();
+            }
+        });
+    }
+
+    /**
+     * Checks whether an Entry exists in the Data Series.
+     *
+     * @param x - x value of entry
+     * @param y - y value of entry
+     */
+    @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data." +
+        "Returns true if the Entry exists, and false otherwise.")
+    public boolean DoesEntryExist(final float x, final float y) {
+        try {
+            return threadRunner.submit(new Callable<Boolean>() {
+                @Override
+                public Boolean call() {
+                    // Create a 2-tuple, and check whether the entry exists
+                    YailList pair = YailList.makeList(Arrays.asList(x, y));
+                    return chartDataModel.doesEntryExist(pair);
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // Exceptions thrown (behavior undefined): Assume entry not found
+        return false;
     }
 
     /**

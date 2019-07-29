@@ -2,14 +2,25 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
+
+    /**
+     * Enum used to specify the criterion to use for entry filtering/comparing.
+     */
+    public enum EntryCriterion {
+        All, // Return all entries
+        XValue,
+        YValue;
+    }
 
     /**
      * Initializes a new ChartDataModel object instance.
@@ -196,6 +207,121 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param tuple  Tuple representing the entry to add
      */
     public abstract void addEntryFromTuple(YailList tuple);
+
+    /**
+     * Removes an entry from the Data Series from the specified
+     * tuple (provided the entry exists)
+     * @param tuple  Tuple representing the entry to remove
+     */
+    public abstract void removeEntryFromTuple(YailList tuple);
+
+    /**
+     * Checks whether an entry exists in the Data Series.
+     *
+     * @param tuple  Tuple representing the entry to look for
+     * @return  true if the Entry exists, false otherwise
+     */
+    public boolean doesEntryExist(YailList tuple) {
+        // Construct the entry from the specified tuple
+        Entry entry = getEntryFromTuple(tuple);
+
+        // Get the index of the entry
+        int index = findEntryIndex(entry);
+
+        // Entry exists only if index is non-negative
+        return index >= 0;
+    }
+
+    /**
+     * Finds and returns all the entries by the specified criterion and value.
+     *
+     * The entries are returned as tuple (YailList) representations.
+     *
+     * @param value  value to use for comparison
+     * @param criterion  criterion to use for comparison
+     * @return  YailList of entries represented as tuples matching the specified conditions
+     */
+    public YailList findEntriesByCriterion(float value, EntryCriterion criterion) {
+        List<YailList> entries = new ArrayList<YailList>();
+
+        for (Object dataValue : getDataset().getValues()) {
+            Entry entry = (Entry) dataValue;
+
+            // Check whether the provided criterion & value combination are satisfied
+            // according to the current Entry
+            if (isEntryCriterionSatisfied(entry, criterion, value)) {
+                // Criterion satisfied; Add enttry to resulting List
+                entries.add(getTupleFromEntry(entry));
+            }
+        }
+
+        return YailList.makeList(entries);
+    }
+
+    /**
+     * Returns all the entries of the Data Series in the form of tuples (YailLists)
+     *
+     * @return  YailList of all entries represented as tuples
+     */
+    public YailList getEntriesAsTuples() {
+        // Use the All criterion to get all the Entries
+        return findEntriesByCriterion(0f, EntryCriterion.All);
+    }
+
+    /**
+     * Check whether the entry matches the specified criterion.
+     *
+     * @param entry  entry to check against
+     * @param criterion  criterion to check with (e.g. x value)
+     * @param value  value to use for comparison
+     * @return  true if the entry matches the criterion
+     */
+    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, float value) {
+        boolean criterionSatisfied = false;
+
+        switch (criterion) {
+            case All: // Criterion satisfied no matter the value, since all entries should be returned
+                criterionSatisfied = true;
+                break;
+
+            case XValue: // Criterion satisfied based on x value match with the value
+                criterionSatisfied = (entry.getX() == value);
+                break;
+
+            case YValue: // Criterion satisfied based on y value match with the value
+                criterionSatisfied = (entry.getY() == value);
+                break;
+        }
+
+        return criterionSatisfied;
+    }
+
+    /**
+     * Creates an Entry from the specified tuple.
+     *
+     * @param tuple  Tuple representing the entry to create
+     * @return  new Entry object instance representing the specified tuple
+     */
+    public abstract Entry getEntryFromTuple(YailList tuple);
+
+    /**
+     * Returns a YailList tuple representation of the specfied entry
+     * @param entry  Entry to convert to tuple
+     * @return  tuple (YailList) representation of the Entry
+     */
+    public abstract YailList getTupleFromEntry(Entry entry);
+
+    /**
+     * Finds the index of the specified Entry in the Data Series.
+     * Returns -1 if the Entry does not exist.
+     *
+     * TODO: Primarily used due to equals not implemented in MPAndroidChart (needed for specific operations)
+     * TODO: In the future, this method will probably become obsolete if it ever gets fixed (post-v3.1.0).
+     *
+     * @param entry  Entry to find
+     * @return  index of the entry, or -1 if entry is not found
+     */
+    protected abstract int findEntryIndex(Entry entry);
 
     /**
      * Deletes all the entries in the Data Series.
