@@ -40,8 +40,13 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private int color;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
-    private Object currentDataSourceValue; // Currently imported observed Data Source value
-    private String elements;
+
+    // Currently imported observed Data Source value. This has to be
+    // kept track of in order to remove old entries whenever the
+    // value is updated.
+    private Object currentDataSourceValue;
+
+    private String elements; // Elements Designer property
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
@@ -500,5 +505,4 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             }
         });
     }
-
 }
