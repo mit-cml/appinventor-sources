@@ -1,18 +1,12 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
-import java.util.Iterator;
 import java.util.List;
 
 public final class MockChart extends MockContainer {
