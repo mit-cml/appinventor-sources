@@ -904,12 +904,13 @@ public class Form extends AppInventorCompatActivity
           }
           screenInitialized = true;
 
-          EventDispatcher.dispatchEvent(Form.this, "Initialize");
-
           //  Call all apps registered to be notified when Initialize Event is dispatched
           for (OnInitializeListener onInitializeListener : onInitializeListeners) {
             onInitializeListener.onInitialize();
           }
+
+          EventDispatcher.dispatchEvent(Form.this, "Initialize");
+
           if (activeForm instanceof ReplForm) { // We are the Companion
             ((ReplForm)activeForm).HandleReturnValues();
           }
