@@ -13,6 +13,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
+    private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
     private static final String PROPERTY_CSV_X_COLUMN = "CsvXColumn";
     private static final String PROPERTY_CSV_Y_COLUMN = "CsvYColumn";
 
@@ -69,12 +70,14 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     @Override
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
-        // CSV Column Properties should be hidden by default (and shown when
-        // Source changes to CSVFile)
+        // Chart Source related properties should be hidden by default,
+        // as they are only shown upon certain conditions (e.g. CSVColumn
+        // properties are only shown when the Source component is a CSVFile)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
-                propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
+                propertyName.equals(PROPERTY_CSV_Y_COLUMN) ||
+                propertyName.equals(PROPERTY_CHART_SOURCE_VALUE)) {
             return false;
         }
 
@@ -123,11 +126,7 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Get the newly attached Source component
         dataSource = editor.getComponents().getOrDefault(source, null);
 
-        // Hide Elements from Pairs property if a Data Source has been set
-        showProperty(PROPERTY_PAIRS, (dataSource == null));
-
-        // Handle CSV-related property responses
-        handleCSVPropertySetting();
+        changeSourcePropertiesVisibility();
 
         // If the Data Source is now null, set back the
         // currentElements property.
@@ -185,6 +184,22 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     }
 
     /**
+     * Changes the visibilities of Chart Data Source related properties according
+     * to the current attached Data Source.
+     */
+    private void changeSourcePropertiesVisibility() {
+        // Hide Elements from Pairs property if a Data Source has been set
+        showProperty(PROPERTY_PAIRS, (dataSource == null));
+
+        // Handle CSV-related property responses
+        handleCSVPropertySetting();
+
+        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
+        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
+        showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
+    }
+
+    /**
      * Handles properties with regards to a CSV source upon
      * changing the Data Source of the Data component.
      *
@@ -212,16 +227,21 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             (YoungAndroidCsvColumnSelectorProperty)
                 properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
 
-        // Update the Source of the column selectors
-        xEditor.changeSource((MockCSVFile)dataSource);
-        yEditor.changeSource((MockCSVFile)dataSource);
-
         if (showCSVColumns) {
             // Add the current Data component as a CSVFileChangeListener to the CSVFile
             ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
 
             // Update the data of the Data component to represent the CSVFile
             onColumnsChange((MockCSVFile)dataSource);
+
+            // Update the Source of the column selectors
+            xEditor.changeSource((MockCSVFile)dataSource);
+            yEditor.changeSource((MockCSVFile)dataSource);
+        } else {
+            // Remove data sources from the property editors (since Data Source
+            // is not a CSVFile)
+            xEditor.changeSource(null);
+            yEditor.changeSource(null);
         }
     }
 

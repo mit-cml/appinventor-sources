@@ -9,11 +9,12 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnInitializeListener {
+public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
@@ -30,10 +31,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
     // where each index corresponds to a single dimension.
     protected List<String> csvColumns;
 
+    // Property used in Designer to import from a Data Source.
+    // Represents the key value of the value to use from the
+    // attached Data Source.
+    protected String dataSourceValue;
+
     private String label;
     private int color;
 
-    private ChartDataSource dataSource;
+    private ChartDataSource dataSource; // Attached Chart Data Source
+    private Object currentDataSourceValue; // Currently imported observed Data Source value
     private String elements;
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
@@ -241,6 +248,25 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         csvColumns.set(1, column);
     }
 
+    /**
+     * Sets the Data Source key identifier for the value to import from the
+     * attached Data Source.
+     *
+     * An example is the tag of the TinyDB component, which identifies the value.
+     *
+     * The property is a Designer-only property, to be changed after setting the
+     * Source component of the Chart Data component.
+     * @param value  new (key) value
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description="Sets the value identifier for the data value to import from the " +
+        "attached Data Source.",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
+    public void DataSourceValue(String value) {
+        this.dataSourceValue = value;
+    }
+
 
     /**
      * Sets the Data Source for the Chart data component. The data
@@ -263,6 +289,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
         if (initialized) {
             if (dataSource instanceof CSVFile) {
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
+            } else if (dataSource instanceof TinyDB) {
+                // TODO: Refactor this to be more general
+
+                // Update current Data Source value
+                currentDataSourceValue = ((TinyDB)dataSource).getDataValue(dataSourceValue);
+
+                // Add this Data Component as an observer to the ObservableChartDataSource object
+                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+
+                // Update the Data Source value with the retrieved value
+                onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
             }
         }
     }
@@ -342,6 +379,28 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
 
         return new YailList();
     }
+  
+    /**
+     * Imports data from the specified TinyDB component with the provided tag identifier.
+     *
+     * @param tinyDB  TinyDB component to import from
+     * @param tag  the identifier of the value to import
+     */
+    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the names of the " +
+        "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
+        "Data component.")
+    public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
+        final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
+
+        // Import the specified data asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.importFromList(list);
+                refreshChart();
+            }
+        });
+    }
 
     /**
      * Refreshes the Chart view object.
@@ -378,6 +437,51 @@ public abstract class ChartDataBase implements Component, OnInitializeListener {
             // set to prevent data overriding.
             ElementsFromPairs(elements);
         }
+    }
+
+    /**
+     * Event called when the value of the observed ChartDataSource component changes.
+     *
+     * If the key matches the dataSourceValue of the Data Component, the specified
+     * new value is processed and imported, while the old data part of the Data
+     * Source is removed.
+     *
+     * A key value of null is interpreted as a change of all the values, so it would
+     * change the imported data.
+     *
+     * @param component  component that triggered the event
+     * @param key  key of the value that changed
+     * @param newValue  the new value of the observed value
+     */
+    @Override
+    public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
+        if (!component.equals(dataSource) // Calling component is not the attached Data Source. TODO: Un-observe?
+            || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
+            return;
+        }
+
+        // Run data operations asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Old value originating from the Data Source exists and is of type List
+                if (currentDataSourceValue instanceof List) {
+                    // Remove the old values
+                    chartDataModel.removeValues((List)currentDataSourceValue);
+                }
+
+                // Update current Data Source value
+                currentDataSourceValue = newValue;
+
+                // New value is a List; Import the value
+                if (newValue instanceof List) {
+                    chartDataModel.importFromList((List)newValue);
+                }
+
+                // Refresh the Chart view
+                refreshChart();
+            }
+        });
     }
 
 }

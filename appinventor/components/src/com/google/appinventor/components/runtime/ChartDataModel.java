@@ -106,15 +106,47 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from a YailList which contains nested tuples
+     * Imports data from a List object.
+     * Valid tuple entries are imported, and the invalid entries are ignored.
      *
-     * @param list  YailList containing tuples
+     * @param list  List containing tuples
      */
-    public void importFromList(YailList list) {
-        // Iterate over all the tuples
-        for (int i = 0; i < list.size(); ++i) {
-            YailList tuple = (YailList)list.getObject(i);
-            addEntryFromTuple(tuple);
+    public void importFromList(List list) {
+      // Iterate over all the entries of the List
+      for (Object entry : list) {
+        YailList tuple = null;
+
+        if (entry instanceof YailList) {
+          // Convert entry to YailList
+          tuple = (YailList) entry;
+        } else if (entry instanceof List) {
+          // List has to be converted to a YailList
+          tuple = YailList.makeList((List) entry);
+        }
+
+        // Entry could be parsed to a YailList; Attempt importing from
+        // the constructed tuple.
+        if (tuple != null) {
+          addEntryFromTuple(tuple);
+        }
+      }
+    }
+
+    /**
+     * Removes the specified List of values, which are expected to be tuples.
+     * Invalid entries are ignored.
+     *
+     * @param values  List of values to remove
+     */
+    public void removeValues(List values) {
+        // Iterate all the entries of the generic List)
+        for (Object entry : values) {
+            // Entry is a List; Possibly a tuple
+            if (entry instanceof List) {
+                // Create a tuple from the entry, and attempt to remove it
+                YailList tuple = YailList.makeList((List)entry);
+                removeEntryFromTuple(tuple);
+            }
         }
     }
 
