@@ -17,6 +17,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Enum used to specify the criterion to use for entry filtering/comparing.
      */
     public enum EntryCriterion {
+        All, // Return all entries
         XValue,
         YValue;
     }
@@ -278,12 +279,25 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         for (Object dataValue : getDataset().getValues()) {
             Entry entry = (Entry) dataValue;
 
+            // Check whether the provided criterion & value combination are satisfied
+            // according to the current Entry
             if (isEntryCriterionSatisfied(entry, criterion, value)) {
+                // Criterion satisfied; Add enttry to resulting List
                 entries.add(getTupleFromEntry(entry));
             }
         }
 
         return YailList.makeList(entries);
+    }
+
+    /**
+     * Returns all the entries of the Data Series in the form of tuples (YailLists)
+     *
+     * @return  YailList of all entries represented as tuples
+     */
+    public YailList getEntriesAsTuples() {
+        // Use the All criterion to get all the Entries
+        return findEntriesByCriterion(0f, EntryCriterion.All);
     }
 
     /**
@@ -298,11 +312,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         boolean criterionSatisfied = false;
 
         switch (criterion) {
-            case XValue:
+            case All: // Criterion satisfied no matter the value, since all entries should be returned
+                criterionSatisfied = true;
+                break;
+
+            case XValue: // Criterion satisfied based on x value match with the value
                 criterionSatisfied = (entry.getX() == value);
                 break;
 
-            case YValue:
+            case YValue: // Criterion satisfied based on y value match with the value
                 criterionSatisfied = (entry.getY() == value);
                 break;
         }
