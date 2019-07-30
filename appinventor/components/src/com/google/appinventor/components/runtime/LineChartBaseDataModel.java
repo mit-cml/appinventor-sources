@@ -62,7 +62,6 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
             // Since we are adding a value manually to the specified index, we
             // must call notifyDataSetChanged manually here.
             getDataset().getValues().add(index, entry);
-            getDataset().notifyDataSetChanged();
         }
     }
 

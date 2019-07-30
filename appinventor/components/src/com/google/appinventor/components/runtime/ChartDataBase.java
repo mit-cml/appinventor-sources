@@ -287,19 +287,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
+          if (dataSource instanceof ObservableChartDataSource) {
+            // Add this Data Component as an observer to the ObservableChartDataSource object
+            ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+
+            // No Data Source Value specified; Do not proceed with importing data
+            if (dataSourceValue == null) {
+                return;
+            }
+          }
+
             if (dataSource instanceof CSVFile) {
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
-                // TODO: Refactor this to be more general
-
-                // Update current Data Source value
-                currentDataSourceValue = ((TinyDB)dataSource).getDataValue(dataSourceValue);
-
-                // Add this Data Component as an observer to the ObservableChartDataSource object
-                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
-
-                // Update the Data Source value with the retrieved value
-                onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
+              ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
             }
         }
     }
@@ -379,7 +380,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
         return new YailList();
     }
-  
+
     /**
      * Imports data from the specified TinyDB component with the provided tag identifier.
      *
@@ -391,6 +392,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         "Data component.")
     public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
         final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
+
+        if (tinyDB == dataSource // The TinyDB component is the attached Data Source
+            && tag.equals(dataSourceValue)) { // Check whether the tag matches the observed Data Source value
+          // Update the current Data Source value
+          currentDataSourceValue = list;
+        }
 
         // Import the specified data asynchronously
         threadRunner.execute(new Runnable() {
@@ -406,6 +413,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
+        // In case of the LineChartBaseDataModel being used, the Data Set
+        // of the model has to manually notify the changes (since entries
+        // are added directly to the Data Set in the case of the
+        // LineChartBase Data Model
+        // TODO: In case the addEntryOrdered method is ever used instead,
+        // TODO: this line could then be removed.
+        if (chartDataModel instanceof LineChartBaseDataModel) {
+            chartDataModel.getDataset().notifyDataSetChanged();
+        }
+
         container.refresh();
     }
 
