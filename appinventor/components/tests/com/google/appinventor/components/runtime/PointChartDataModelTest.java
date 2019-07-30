@@ -990,6 +990,102 @@ public abstract class PointChartDataModelTest
     assertEquals(expected.getY(), result.getY());
   }
 
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple YailList entries imports
+   * all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericList() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(createTuple(1f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(1f, 5f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple List (instead of YailList)
+   * entries imports all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericListEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(Arrays.asList(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing invalid entries does not import the
+   * invalid entries, but imports the valid entries in the List.
+   */
+  @Test
+  public void testImportFromListInvalidEntries() {
+    ArrayList<Object> tuples = new ArrayList<Object>() {{
+      add(Collections.singletonList(-2f));
+      add(Arrays.asList(0f, 7f));
+      add("test-string");
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 7f));
+      add(new Entry(3f, 1f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a List containing
+   * mixed entries (both generic List and YailList)
+   * imports all of them.
+   */
+  @Test
+  public void testImportFromListMixedEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
 //  /**
 //   * Test to ensure that passing in a row size
 //   * less than the size of the columns imports
