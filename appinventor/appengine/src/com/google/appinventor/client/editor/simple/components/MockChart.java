@@ -4,6 +4,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.logical.shared.AttachEvent;
@@ -51,20 +52,23 @@ public final class MockChart extends MockContainer {
         setTypeProperty("0");
 
         initComponent(rootPanel);
+    }
 
-        // Re-attach all children MockChartData components
-        rootPanel.addAttachHandler(new AttachEvent.Handler() {
-            @Override
-            public void onAttachOrDetach(AttachEvent arg0) {
-                if (arg0.isAttached()) {
-                    for (MockComponent child : children) {
-                        if (child instanceof MockChartData) {
-                            ((MockChartData) child).addToChart(MockChart.this);
-                        }
-                    }
+    @Override
+    protected void onAttach() {
+        // The MockChart component has not been attached yet
+        if (!isAttached()) {
+            // Attach all children MockComponents
+            for (MockComponent child : children) {
+                if (child instanceof MockChartData) {
+                    // Re-add Data Components to the Mock Chart
+                    ((MockChartData) child).addToChart(MockChart.this);
                 }
             }
-        });
+        }
+
+        // This will set isAttached to true
+        super.onAttach();
     }
 
     @Override
