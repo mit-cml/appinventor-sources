@@ -328,7 +328,7 @@ public class CSVFileTest extends FileTestBase {
     YailList result = null;
 
     try {
-      result = csvFile.getColumns(columns).get();
+      result = csvFile.getDataValue(columns).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
       fail("Exception thrown!");

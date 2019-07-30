@@ -100,6 +100,7 @@ public final class CoordinateData extends ChartDataBase {
             e.printStackTrace();
         }
 
+        // Exceptions thrown (behavior undefined): Assume entry not found
         return false;
     }
 

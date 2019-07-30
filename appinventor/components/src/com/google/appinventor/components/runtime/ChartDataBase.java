@@ -17,7 +17,14 @@ import java.util.concurrent.*;
 public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
-    protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
+
+    /* Used to queue & execute asynchronous tasks while ensuring
+     * order of method execution (ExecutorService should be a Single Thread runner)
+     * In the case of methods which return values and where
+     * the result depends on the state of the data, blocking get
+     * calls are used to ensure that all the previous async tasks
+     * finish before the data is returned. */
+    protected ExecutorService threadRunner;
 
     // Properties used in Designer to import from CSV.
     // Represents the names of the columns to use,
@@ -298,6 +305,82 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
+     * Returns the entries of the Data Series the x values of which match
+     * the provided value
+     * @param x  x value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetEntriesWithXValue(final float x) {
+      try {
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Use X Value as criterion to filter entries
+            return chartDataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      // Undefined behavior: return emtpy List
+      return new YailList();
+    }
+
+    /**
+     * Returns the entries of the Data Series the y values of which match
+     * the provided value
+     * @param y  y value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetEntriesWithYValue(final float y) {
+      try {
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Use YValue as criterion to filter entries
+            return chartDataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      return new YailList();
+    }
+
+    /**
+     * Returns all the entries of the Data Series.
+     * @return  YailList of all the entries of the Data Series
+     */
+    @SimpleFunction(description = "Returns all the entries of the Data Series." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetAllEntries() {
+        try {
+            return threadRunner.submit(new Callable<YailList>() {
+                @Override
+                public YailList call() {
+                    return chartDataModel.getEntriesAsTuples();
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return new YailList();
+    }
+  
+    /**
      * Imports data from the specified TinyDB component with the provided tag identifier.
      *
      * @param tinyDB  TinyDB component to import from
@@ -323,13 +406,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        // To avoid exceptions, refresh the Chart on the UI thread.
-        container.$context().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                container.refresh();
-            }
-        });
+        container.refresh();
     }
 
     @Override
