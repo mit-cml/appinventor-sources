@@ -317,6 +317,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SoundRecorder")) {
         srcCompVersion = upgradeSoundRecorderProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("SpeechRecognizer")) {
+        srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
@@ -1299,6 +1302,17 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The SoundRecorder.RecordFile property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeSpeechRecognizerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SpeechRecognizer.UseLegacy property was added.
+      // The Stop method was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }

@@ -456,8 +456,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 11
   // For YOUNG_ANDROID_VERESION 184:
   // - Added Switch
+  // For YOUNG_ANDROiD_VERSION 185:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 184;
+  public static final int YOUNG_ANDROID_VERSION = 185;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1051,7 +1053,11 @@ public class YaVersion {
   // - The SavedRecording property was added.
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 2:
+  // - The UseLegacy property was added which is set to True by default.
+  // - The Stop method was added, which works only when UseLegacy
+  //   property is set to False.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
