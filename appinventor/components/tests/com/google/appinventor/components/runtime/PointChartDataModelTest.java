@@ -990,6 +990,305 @@ public abstract class PointChartDataModelTest
     assertEquals(expected.getY(), result.getY());
   }
 
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple YailList entries imports
+   * all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericList() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(createTuple(1f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(1f, 5f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple List (instead of YailList)
+   * entries imports all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericListEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(Arrays.asList(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing invalid entries does not import the
+   * invalid entries, but imports the valid entries in the List.
+   */
+  @Test
+  public void testImportFromListInvalidEntries() {
+    ArrayList<Object> tuples = new ArrayList<Object>() {{
+      add(Collections.singletonList(-2f));
+      add(Arrays.asList(0f, 7f));
+      add("test-string");
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 7f));
+      add(new Entry(3f, 1f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a List containing
+   * mixed entries (both generic List and YailList)
+   * imports all of them.
+   */
+  @Test
+  public void testImportFromListMixedEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with an empty List does not remove any entries.
+   */
+  @Test
+  public void testRemoveValuesEmpty() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, -1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 7f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, -1f));
+      add(new Entry(3f, 1f));
+      add(new Entry(5f, 7f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries from empty List
+    List<YailList> removeEntries = new ArrayList<YailList>();
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a single entry removes the entry.
+   */
+  @Test
+  public void testRemoveValuesSingleValue() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, -1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 7f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, -1f));
+      add(new Entry(5f, 7f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a multiple values removes all the appropriate values.
+   */
+  @Test
+  public void testRemoveValuesMultipleValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 2f));
+      add(createTuple(5f, 4f));
+      add(createTuple(6f, 8f));
+      add(createTuple(9f, 2f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(5f, 4f));
+      add(new Entry(6f, 8f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(0f, 1f));
+      add(Arrays.asList(3f, 2f));
+      add(Arrays.asList(9f, 2f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a List that contains entries that do not exist
+   * in the Data Series does not do anything with
+   * the removed entries, but removes the existing
+   * ones in between.
+   */
+  @Test
+  public void testRemoveValuesNonExistentValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 2f));
+      add(createTuple(6f, 8f));
+      add(createTuple(9f, 2f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 1f));
+      add(new Entry(1f, 3f));
+      add(new Entry(3f, 2f));
+      add(new Entry(6f, 8f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(1f, 5f)); // Does not exist
+      add(Arrays.asList(10f, 5f)); // Does not exist
+      add(Arrays.asList(9f, 2f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a List containing invalid entries does not
+   * process the invalid entries, but processes the
+   * valid ones.
+   */
+  @Test
+  public void testRemoveValuesInvalidEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 10f));
+      add(createTuple(9f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(1f, 10f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<Object> removeEntries = new ArrayList<Object>() {{
+      add(Arrays.asList(9f, 5f));
+      add(Collections.singletonList(1f)); // tuple too small
+      add("test-string"); // invalid entry
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with YailList entries removes the entries properly.
+   */
+  @Test
+  public void testRemoveValuesYailListEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 10f));
+      add(createTuple(9f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(1f, 10f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<Object> removeEntries = new ArrayList<Object>() {{
+      add(createTuple(9f, 5f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
 //  /**
 //   * Test to ensure that passing in a row size
 //   * less than the size of the columns imports

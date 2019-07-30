@@ -141,12 +141,18 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void removeValues(List values) {
         // Iterate all the entries of the generic List)
         for (Object entry : values) {
+            YailList tuple = null;
+
             // Entry is a List; Possibly a tuple
-            if (entry instanceof List) {
-                // Create a tuple from the entry, and attempt to remove it
-                YailList tuple = YailList.makeList((List)entry);
-                removeEntryFromTuple(tuple);
+            if (entry instanceof YailList) {
+                tuple = (YailList) entry;
+            } else if (entry instanceof List) {
+                // Create a tuple from the entry
+                tuple = YailList.makeList((List)entry);
             }
+
+            // Attempt to remove entry
+            removeEntryFromTuple(tuple);
         }
     }
 
