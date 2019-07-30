@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -11,6 +12,8 @@ import java.util.*;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Base class for Line Chart based Data Model tests.
@@ -35,25 +38,24 @@ public abstract class PointChartDataModelTest
    * Tests whether an entry is correctly added to the Data Set
    * upon calling the add entry method with x and y coordinates.
    */
-  @Test
-  public void testAddEntry() {
-    // Pre-condition: make sure there are no entries initially
-    assertEquals(0, model.getDataset().getEntryCount());
-
-    // Add an entry
-    float x = 4;
-    float y = 5;
-    model.addEntry(x, y);
-
-    // Ensure that the entry has been added
-    // Ensure that the entry has been added
-    assertEquals(1, model.getDataset().getEntryCount());
-
-    // Make sure that a correct entry has been added
-    Entry entry = model.getDataset().getEntryForIndex(0);
-    assertEquals(x, entry.getX());
-    assertEquals(y, entry.getY());
-  }
+//  @Test
+//  public void testAddEntry() {
+//    // Pre-condition: make sure there are no entries initially
+//    assertEquals(0, model.getDataset().getEntryCount());
+//
+//    // Add an entry
+//    float x = 4;
+//    float y = 5;
+//    model.addEntry(x, y);
+//
+//    // Ensure that the entry has been added
+//    assertEquals(1, model.getDataset().getEntryCount());
+//
+//    // Make sure that a correct entry has been added
+//    Entry entry = model.getDataset().getEntryForIndex(0);
+//    assertEquals(x, entry.getX());
+//    assertEquals(y, entry.getY());
+//  }
 
   /**
    * Tests to ensure that Data Series entries are not changed
@@ -349,9 +351,9 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testClearEntries() {
-    model.addEntry(4, 5);
-    model.addEntry(3, 2);
-    model.addEntry(1, 4);
+    model.addEntryFromTuple(createTuple(4f, 5f));
+    model.addEntryFromTuple(createTuple(3f, 2f));
+    model.addEntryFromTuple(createTuple(1f, 4f));
 
     assertEquals(3, model.getDataset().getEntryCount());
 
@@ -471,6 +473,819 @@ public abstract class PointChartDataModelTest
     }};
 
     model.importFromCSV(columns);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting an entry by providing an
+   * existing tuple from the Data Series properly deletes it.
+   */
+  @Test
+  public void testRemoveFromTupleExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(2f, 7f));
+      add(createTuple(4f, 5f)); // The entry to be deleted
+      add(createTuple(7f, 4f));
+      add(createTuple(11f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(2f, 7f));
+      add(new Entry(7f, 4f));
+      add(new Entry(11f, 3f));
+    }};
+
+    YailList deleteTuple = createTuple(4f, 5f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting an entry of which a duplicate
+   * exists only deletes the first found entry.
+   */
+  @Test
+  public void testRemoveFromTupleMultipleEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 2f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 1f));
+      add(new Entry(1f, 2f));
+    }};
+
+    YailList deleteTuple = createTuple(1f, 1f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting from a tuple that does not
+   * exist in the Data Series does not delete any entries.
+   */
+  @Test
+  public void testRemoveFromTupleNonExistant() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(2f, 4f));
+      add(createTuple(5f, 9f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(2f, 4f));
+      add(new Entry(5f, 9f));
+    }};
+
+    YailList deleteTuple = createTuple(7f, 2f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that deleting from an invalid tuple
+   * does not remove any entries.
+   */
+  @Test
+  public void testRemoveFromTupleInvalid() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(5f, 2f));
+    }};
+
+    YailList deleteTuple = createTuple(5f);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that querying for an entry that exists
+   * returns true for the DoesEntryExists method.
+   */
+  @Test
+  public void testDoesEntryExistExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(7f, 3f);
+
+    model.importFromList(pairs);
+    assertTrue(model.doesEntryExist(searchTuple));
+  }
+
+  /**
+   * Test to ensure that querying for an entry that does not exist
+   * returns false for the DoesEntryExists method.
+   */
+  @Test
+  public void testDoesEntryExistDoesNotExist() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(9f, 1f);
+
+    model.importFromList(pairs);
+    assertFalse(model.doesEntryExist(searchTuple));
+  }
+
+  /**
+   * Test to ensure that querying for an invalid entry (wrong tuple)
+   * returns false for the DoesEntryExist method
+   */
+  @Test
+  public void testDoesEntryExistInvalid() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+
+    YailList searchTuple = createTuple(9f);
+
+    model.importFromList(pairs);
+    assertFalse(model.doesEntryExist(searchTuple));
+  }
+
+  /**
+   * Test to ensure that specifying an existing Entry to the findEntryIndex
+   * method returns the correct index.
+   */
+  @Test
+  public void testFindEntryIndexExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+      add(createTuple(9f, 1f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(7f, 3f);
+    final int expectedIndex = 2;
+
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that specifying an existing Entry (of which there are duplicates)
+   * to the findEntryIndex method  returns the first found entry's index.
+   */
+  @Test
+  public void testFindEntryIndexExistsMultiple() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(1f, 2f));
+      add(createTuple(2f, 1f));
+      add(createTuple(2f, 3f));
+      add(createTuple(2f, 3f));
+      add(createTuple(3f, 4f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(2f, 3f);
+    final int expectedIndex = 3;
+
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that specifying a non-existent entry returns a negative
+   * index (denoting entry not found)
+   */
+  @Test
+  public void testFindEntryIndexDoesNotExist() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 3f));
+      add(createTuple(9f, 1f));
+    }};
+
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    Entry searchEntry = new Entry(11f, 1f);
+    final int expectedIndex = -1;
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns an empty List when no entries exist.
+   */
+  @Test
+  public void testGetEntriesAsTuplesEmpty() {
+    final YailList expected = new YailList();
+    YailList result = model.getEntriesAsTuples();
+
+    assertEquals(expected, result);
+  }
+
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns a List containing a single entry when only
+   * one entry exists.
+   */
+  @Test
+  public void testGetEntriesAsTuplesSingleEntry() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+    }};
+
+    YailList expected = YailList.makeList(tuples);
+    model.importFromList(expected);
+
+    YailList result =  model.getEntriesAsTuples();
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that the getEntriesAsTuples method
+   * returns a List containing all the entries (in
+   * case of multiple entries existing)
+   */
+  @Test
+  public void testGetEntriesAsTuplesMultipleEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 4f));
+      add(createTuple(5f, 2f));
+    }};
+
+    YailList expected = YailList.makeList(tuples);
+    model.importFromList(expected);
+
+    YailList result =  model.getEntriesAsTuples();
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * All EntryCriterion returns true using a seemingly arbitrary value.
+   */
+  @Test
+  public void testCriterionSatisfiedAll() {
+    Entry entry = new Entry(1f, 3f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.All;
+    final float value = 5f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and a matching x value returns true.
+   */
+  @Test
+  public void testCriterionSatisfiedXMatch() {
+    Entry entry = new Entry(1f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final float value = 1f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and a non-matching x value returns false.
+   */
+  @Test
+  public void testCriterionSatisfiedXNoMatch() {
+    Entry entry = new Entry(5f, 2f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final float value = 2f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertFalse(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * Y Value criterion and a matching y value returns true.
+   */
+  @Test
+  public void testCriterionSatisfiedYMatch() {
+    Entry entry = new Entry(2f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final float value = 4f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertTrue(result);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * Y Value criterion and a non-matching y value returns false.
+   */
+  @Test
+  public void testCriterionSatisfiedYNoMatch() {
+    Entry entry = new Entry(7f, 15f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+    final float value = 14f;
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+
+    assertFalse(result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there is only a single match returns the correct result.
+   */
+  @Test
+  public void testFindEntriesByCriterionSingleMatch() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 4f));
+      add(createTuple(5f, 2f));
+      add(createTuple(7f, 12f));
+      add(createTuple(8f, 10f));
+      add(createTuple(12f, 15f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    ArrayList<YailList> expectedTuples = new ArrayList<YailList>() {{
+      add(createTuple(8f, 10f));
+    }};
+
+    YailList expected = YailList.makeList(expectedTuples);
+    final float value = 8f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there are multiple matches returns the correct result.
+   */
+  @Test
+  public void testFindEntriesByCriterionMultipleMatches() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 3f));
+      add(createTuple(7f, 5f));
+      add(createTuple(8f, 1f));
+      add(createTuple(12f, 4f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    ArrayList<YailList> expectedTuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(8f, 1f));
+    }};
+
+    YailList expected = YailList.makeList(expectedTuples);
+    final float value = 1f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting entries by a specified criterion and value
+   * when there is no match returns an empty list.
+   */
+  @Test
+  public void testFindEntriesByCriterionNoMatches() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(5f, 1f));
+      add(createTuple(9f, 3f));
+      add(createTuple(12f, 5f));
+    }};
+
+    model.importFromList(YailList.makeList(tuples));
+
+    YailList expected = new YailList();
+
+    final float value = 4f;
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
+
+    YailList result = model.findEntriesByCriterion(value, criterion);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting a Tuple from an Entry object
+   * returns the correct result.
+   */
+  @Test
+  public void testGetTupleFromEntry() {
+    Entry entry = new Entry(2f, 3f);
+
+    YailList expected = createTuple(2f, 3f);
+    YailList result = model.getTupleFromEntry(entry);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting an Entry from a Tuple
+   * returns the correct result.
+   */
+  @Test
+  public void testGetEntryFromTuple() {
+    YailList tuple = createTuple(3f, 4f);
+
+    Entry expected = new Entry(3f, 4f);
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected.getX(), result.getX());
+    assertEquals(expected.getY(), result.getY());
+  }
+
+  /**
+   * Test to ensure that attempting to get an Entry from a
+   * Tuple that is too small returns a null value.
+   */
+  @Test
+  public void testGetEntryFromTupleTooSmall() {
+    YailList tuple = createTuple(1f);
+
+    Entry expected = null;
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test to ensure that getting an entry from a
+   * Tuple that is too large results in a constructed
+   * Entry from the first 2 values.
+   */
+  @Test
+  public void testGetEntryFromTupleTooLarge() {
+    YailList tuple = createTuple(4f, 1f, 2f, 7f);
+
+    Entry expected = new Entry(4f, 1f);
+    Entry result = model.getEntryFromTuple(tuple);
+
+    assertEquals(expected.getX(), result.getX());
+    assertEquals(expected.getY(), result.getY());
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple YailList entries imports
+   * all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericList() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(createTuple(1f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(1f, 5f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple List (instead of YailList)
+   * entries imports all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericListEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(Arrays.asList(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing invalid entries does not import the
+   * invalid entries, but imports the valid entries in the List.
+   */
+  @Test
+  public void testImportFromListInvalidEntries() {
+    ArrayList<Object> tuples = new ArrayList<Object>() {{
+      add(Collections.singletonList(-2f));
+      add(Arrays.asList(0f, 7f));
+      add("test-string");
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 7f));
+      add(new Entry(3f, 1f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a List containing
+   * mixed entries (both generic List and YailList)
+   * imports all of them.
+   */
+  @Test
+  public void testImportFromListMixedEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(-2f, 3f));
+      add(new Entry(0f, 7f));
+      add(new Entry(5f, 4f));
+    }};
+
+    // Import the data and assert all the entries
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with an empty List does not remove any entries.
+   */
+  @Test
+  public void testRemoveValuesEmpty() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, -1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 7f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, -1f));
+      add(new Entry(3f, 1f));
+      add(new Entry(5f, 7f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries from empty List
+    List<YailList> removeEntries = new ArrayList<YailList>();
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a single entry removes the entry.
+   */
+  @Test
+  public void testRemoveValuesSingleValue() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, -1f));
+      add(createTuple(3f, 1f));
+      add(createTuple(5f, 7f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, -1f));
+      add(new Entry(5f, 7f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a multiple values removes all the appropriate values.
+   */
+  @Test
+  public void testRemoveValuesMultipleValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 2f));
+      add(createTuple(5f, 4f));
+      add(createTuple(6f, 8f));
+      add(createTuple(9f, 2f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+      add(new Entry(5f, 4f));
+      add(new Entry(6f, 8f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(0f, 1f));
+      add(Arrays.asList(3f, 2f));
+      add(Arrays.asList(9f, 2f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a List that contains entries that do not exist
+   * in the Data Series does not do anything with
+   * the removed entries, but removes the existing
+   * ones in between.
+   */
+  @Test
+  public void testRemoveValuesNonExistentValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 2f));
+      add(createTuple(6f, 8f));
+      add(createTuple(9f, 2f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 1f));
+      add(new Entry(1f, 3f));
+      add(new Entry(3f, 2f));
+      add(new Entry(6f, 8f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(1f, 5f)); // Does not exist
+      add(Arrays.asList(10f, 5f)); // Does not exist
+      add(Arrays.asList(9f, 2f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with a List containing invalid entries does not
+   * process the invalid entries, but processes the
+   * valid ones.
+   */
+  @Test
+  public void testRemoveValuesInvalidEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 10f));
+      add(createTuple(9f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(1f, 10f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<Object> removeEntries = new ArrayList<Object>() {{
+      add(Arrays.asList(9f, 5f));
+      add(Collections.singletonList(1f)); // tuple too small
+      add("test-string"); // invalid entry
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that invoking the removeValues method
+   * with YailList entries removes the entries properly.
+   */
+  @Test
+  public void testRemoveValuesYailListEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 10f));
+      add(createTuple(9f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(0f, 3f));
+      add(new Entry(1f, 10f));
+    }};
+
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    List<Object> removeEntries = new ArrayList<Object>() {{
+      add(createTuple(9f, 5f));
+    }};
+
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
     assertExpectedEntriesHelper(expectedEntries);
   }
 

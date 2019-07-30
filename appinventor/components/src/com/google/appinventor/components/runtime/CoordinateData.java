@@ -50,14 +50,14 @@ public final class CoordinateData extends ChartDataBase {
         });
     }
 
-
     /**
      * Removes an entry from the Data Series.
      *
      * @param x - x value of entry
      * @param y - y value of entry
      */
-    @SimpleFunction(description = "Removes an (x, y) point from the Coordinate Data, if it exists.")
+    @SimpleFunction(description = "Removes the first matching (x, y) point from the " +
+        "Coordinate Data, if it exists.")
     public void RemoveEntry(final float x, final float y) {
         // Entry should be deleted via the Thread Runner asynchronously
         // to guarantee the order of data adding (e.g. CSV data
@@ -100,6 +100,7 @@ public final class CoordinateData extends ChartDataBase {
             e.printStackTrace();
         }
 
+        // Exceptions thrown (behavior undefined): Assume entry not found
         return false;
     }
 

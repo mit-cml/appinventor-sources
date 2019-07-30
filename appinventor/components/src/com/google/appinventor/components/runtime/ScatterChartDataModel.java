@@ -23,13 +23,13 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
 
   @Override
   public void addEntryFromTuple(YailList tuple) {
+    // Construct an entry from the prvoided tuple
     Entry entry = getEntryFromTuple(tuple);
 
-    if (entry == null) {
-      return;
+    // If entry constructed successfully, add it to the Data Series
+    if (entry != null) {
+      getDataset().addEntry(entry);
     }
-
-    getDataset().addEntry(entry);
   }
 
   @Override

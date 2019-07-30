@@ -17,7 +17,14 @@ import java.util.concurrent.*;
 public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
-    protected ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
+
+    /* Used to queue & execute asynchronous tasks while ensuring
+     * order of method execution (ExecutorService should be a Single Thread runner)
+     * In the case of methods which return values and where
+     * the result depends on the state of the data, blocking get
+     * calls are used to ensure that all the previous async tasks
+     * finish before the data is returned. */
+    protected ExecutorService threadRunner;
 
     // Properties used in Designer to import from CSV.
     // Represents the names of the columns to use,
@@ -33,8 +40,13 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private int color;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
-    private Object currentDataSourceValue; // Currently imported observed Data Source value
-    private String elements;
+
+    // Currently imported observed Data Source value. This has to be
+    // kept track of in order to remove old entries whenever the
+    // value is updated.
+    private Object currentDataSourceValue;
+
+    private String elements; // Elements Designer property
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
@@ -280,38 +292,98 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
+          if (dataSource instanceof ObservableChartDataSource) {
+            // Add this Data Component as an observer to the ObservableChartDataSource object
+            ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+
+            // No Data Source Value specified; Do not proceed with importing data
+            if (dataSourceValue == null) {
+                return;
+            }
+          }
+
             if (dataSource instanceof CSVFile) {
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
-                // TODO: Refactor this to be more general
-
-                // Update current Data Source value
-                currentDataSourceValue = ((TinyDB)dataSource).getDataValue(dataSourceValue);
-
-                // Add this Data Component as an observer to the ObservableChartDataSource object
-                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
-
-                // Update the Data Source value with the retrieved value
-                onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
-            } else if (dataSource instanceof CloudDB) {
-                // TODO: Refactor for efficiency (non-blocking?)
-
-                // Update current Data Source value
-                try {
-                    currentDataSourceValue = ((CloudDB)dataSource).getDataValue(dataSourceValue).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                // Add this Data Component as an observer to the ObservableChartDataSource object
-                ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
-
-                // Update the Data Source value with the retrieved value
-                onDataSourceValueChange(dataSource, dataSourceValue, currentDataSourceValue);
+              ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
             }
         }
+    }
+
+    /**
+     * Returns the entries of the Data Series the x values of which match
+     * the provided value
+     * @param x  x value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetEntriesWithXValue(final float x) {
+      try {
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Use X Value as criterion to filter entries
+            return chartDataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      // Undefined behavior: return emtpy List
+      return new YailList();
+    }
+
+    /**
+     * Returns the entries of the Data Series the y values of which match
+     * the provided value
+     * @param y  y value to search for
+     * @return  YailList of entries (represented as tuples)
+     */
+    @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetEntriesWithYValue(final float y) {
+      try {
+        return threadRunner.submit(new Callable<YailList>() {
+          @Override
+          public YailList call() {
+            // Use YValue as criterion to filter entries
+            return chartDataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
+          }
+        }).get();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+
+      return new YailList();
+    }
+
+    /**
+     * Returns all the entries of the Data Series.
+     * @return  YailList of all the entries of the Data Series
+     */
+    @SimpleFunction(description = "Returns all the entries of the Data Series." +
+        "A single entry is represented as a List of values of the entry.")
+    public YailList GetAllEntries() {
+        try {
+            return threadRunner.submit(new Callable<YailList>() {
+                @Override
+                public YailList call() {
+                    return chartDataModel.getEntriesAsTuples();
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return new YailList();
     }
 
     /**
@@ -325,6 +397,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         "Data component.")
     public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
         final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
+
+        if (tinyDB == dataSource // The TinyDB component is the attached Data Source
+            && tag.equals(dataSourceValue)) { // Check whether the tag matches the observed Data Source value
+          // Update the current Data Source value
+          currentDataSourceValue = list;
+        }
 
         // Import the specified data asynchronously
         threadRunner.execute(new Runnable() {
@@ -368,13 +446,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        // To avoid exceptions, refresh the Chart on the UI thread.
-        container.$context().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                container.refresh();
-            }
-        });
+        // In case of the LineChartBaseDataModel being used, the Data Set
+        // of the model has to manually notify the changes (since entries
+        // are added directly to the Data Set in the case of the
+        // LineChartBase Data Model
+        // TODO: In case the addEntryOrdered method is ever used instead,
+        // TODO: this line could then be removed.
+        if (chartDataModel instanceof LineChartBaseDataModel) {
+            chartDataModel.getDataset().notifyDataSetChanged();
+        }
+
+        container.refresh();
     }
 
     @Override
@@ -451,5 +533,4 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             }
         });
     }
-
 }

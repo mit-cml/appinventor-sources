@@ -238,6 +238,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             xEditor.changeSource((MockCSVFile)dataSource);
             yEditor.changeSource((MockCSVFile)dataSource);
         } else {
+            // Remove data sources from the property editors (since Data Source
+            // is not a CSVFile)
             xEditor.changeSource(null);
             yEditor.changeSource(null);
         }

@@ -1,17 +1,12 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
-import java.util.Iterator;
 import java.util.List;
 
 public final class MockChart extends MockContainer {
@@ -29,6 +24,11 @@ public final class MockChart extends MockContainer {
     // Legal values for type are defined in
     // com.google.appinventor.components.common.ComponentConstants.java.
     private int type;
+
+    // Keep track whether the children of the Mock Chart have been
+    // reattached. The reattachment has to happen only once, since the Data
+    // Series are part of the Chart object itself.
+    private boolean childrenReattached = false;
 
     /**
      * Creates a new instance of a visible component.
@@ -51,20 +51,26 @@ public final class MockChart extends MockContainer {
         setTypeProperty("0");
 
         initComponent(rootPanel);
+    }
 
-        // Re-attach all children MockChartData components
-        rootPanel.addAttachHandler(new AttachEvent.Handler() {
-            @Override
-            public void onAttachOrDetach(AttachEvent arg0) {
-                if (arg0.isAttached()) {
-                    for (MockComponent child : children) {
-                        if (child instanceof MockChartData) {
-                            ((MockChartData) child).addToChart(MockChart.this);
-                        }
-                    }
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+
+        // The Children of the Mock Chart have not yet been attached
+        // (this happens upon initializing the Chart which has child components)
+        if (!childrenReattached) {
+            // Attach all children MockComponents
+            for (MockComponent child : children) {
+                if (child instanceof MockChartData) {
+                    // Re-add Data Components to the Mock Chart
+                    ((MockChartData) child).addToChart(MockChart.this);
                 }
             }
-        });
+
+            // Update the state of children to reattached
+            childrenReattached = true;
+        }
     }
 
     @Override
