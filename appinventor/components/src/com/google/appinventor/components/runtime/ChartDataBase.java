@@ -306,6 +306,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
               ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
+            } else if (dataSource instanceof CloudDB) {
+                ImportFromCloudDB((CloudDB)dataSource, dataSourceValue);
             }
         }
     }
@@ -398,11 +400,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
         final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
 
-        if (tinyDB == dataSource // The TinyDB component is the attached Data Source
-            && tag.equals(dataSourceValue)) { // Check whether the tag matches the observed Data Source value
-          // Update the current Data Source value
-          currentDataSourceValue = list;
-        }
+        // Update the current Data Source value (if appropriate)
+        updateCurrentDataSourceValue(tinyDB, tag, currentDataSourceValue);
 
         // Import the specified data asynchronously
         threadRunner.execute(new Runnable() {
@@ -431,6 +430,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
                 try {
                     listValue = list.get();
+
+                    // Update the current Data Source value (if appropriate)
+                    updateCurrentDataSourceValue(cloudDB, value, currentDataSourceValue);
+
                     chartDataModel.importFromList(listValue);
                     refreshChart();
                 } catch (InterruptedException e) {
@@ -532,5 +535,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 refreshChart();
             }
         });
+    }
+
+    /**
+     * Updates the current observed Data Source value if the source and key matches
+     * the attached Data Source & value
+     * @param source  Source component
+     * @param key  Key of the updated value
+     * @param newValue  The updated value
+     */
+    private void updateCurrentDataSourceValue(ObservableChartDataSource source, Object key, Object newValue) {
+        if (source == dataSource // The source must be the same as the attached source
+            && key != null // The key must be non-null
+            && key.equals(dataSourceValue)) { // The key should equal the local key
+            currentDataSourceValue = newValue;
+        }
     }
 }
