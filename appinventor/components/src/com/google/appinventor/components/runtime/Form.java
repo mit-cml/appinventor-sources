@@ -1884,6 +1884,15 @@ public class Form extends AppInventorCompatActivity
     // project properties file
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "A JSON string representing the subset for the screen")
+  public void BlocksToolkit(String json) {
+    // We don't actually do anything. This property is stored in the
+    // project properties file
+  }
+
   /**
    * Display a new form.
    *

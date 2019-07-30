@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
@@ -213,6 +214,7 @@ public final class MockForm extends MockContainer {
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
+  private static final String PROPERTY_NAME_BLOCK_SUBSET = "BlocksToolkit";
   private static final String PROPERTY_NAME_ACTIONBAR = "ActionBar";
   private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
@@ -491,6 +493,10 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
+    if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {
+      return editor.isScreen1();
+    }
+
     if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
       return false;
     }
@@ -634,6 +640,19 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, asJson);
+    }
+  }
+
+  private void setBlockSubsetProperty(String asJson) {
+    //This property applies to the application and is only visible on Screen1. When we load a form that is
+    //not Screen1, this method will be called with the default value for SubsetJson (""). We need to ignore that. 
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
+      if (editor.isLoadComplete()) {
+        ((YaFormEditor)editor).reloadComponentPalette(asJson);
+      }
     }
   }
 
@@ -976,6 +995,8 @@ public final class MockForm extends MockContainer {
       setShowListsAsJsonProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {
+      setBlockSubsetProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
       setActionBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
@@ -1041,6 +1062,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, 
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

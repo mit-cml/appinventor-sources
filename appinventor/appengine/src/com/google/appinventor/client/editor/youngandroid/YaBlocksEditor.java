@@ -38,7 +38,12 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -317,7 +322,7 @@ public final class YaBlocksEditor extends FileEditor
 
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
-    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
+    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(form);
     items[1] = form.buildComponentsTree();
     items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);
     sourceStructureExplorer.updateTree(items, itemToSelect);
@@ -334,6 +339,56 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public String getRawFileContent() {
     return blocksArea.getBlocksContent();
+  }
+
+  public Set<String> getBlockTypeSet() {
+    Set<String> blockTypes = new HashSet<String>();
+    String xmlString = blocksArea.getBlocksContent();
+    Document blockDoc = XMLParser.parse(xmlString);
+    NodeList blockElements = blockDoc.getElementsByTagName("block");
+    for (int i = 0; i < blockElements.getLength(); ++i) {
+      Element blockElem = (Element) blockElements.item(i);
+      blockTypes.add(blockElem.getAttribute("type"));
+    }
+    return blockTypes;
+  }
+
+  // This creates a hash of sets. The key is the name of a blocktype. The set is the names of
+  // component blocks (events, methods, and properties) that are used in the current project.
+  // The method takes the a hash of sets as an input so that it may be called multiple times
+  // for separate screens, creating the set of component blocks used through the entire project.
+  // TODO: Examine refactor with XPATH
+  public HashMap<String, Set<String>> getComponentBlockTypeSet(HashMap<String, Set<String>> componentBlocks) {
+    String xmlString = blocksArea.getBlocksContent();
+    Document blockDoc = XMLParser.parse(xmlString);
+    NodeList blockElements = blockDoc.getElementsByTagName("block");
+    for (int i = 0; i < blockElements.getLength(); ++i) {
+      Element blockElem = (Element) blockElements.item(i);
+      String blockType = blockElem.getAttribute("type");
+      if (blockType == "component_event") {
+        Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
+        String component_type = mutElem.getAttribute("component_type");
+        String event_name = mutElem.getAttribute("event_name");
+        Set blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
+        blockTypes.add(event_name);
+        componentBlocks.put(component_type, blockTypes);
+      } else if (blockType == "component_method") {
+        Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
+        String component_type = mutElem.getAttribute("component_type");
+        String method_name = mutElem.getAttribute("method_name");
+        Set blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
+        blockTypes.add(method_name);
+        componentBlocks.put(component_type, blockTypes);
+      } else if (blockType == "component_set_get") {
+        Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
+        String component_type = mutElem.getAttribute("component_type");
+        String property_name = mutElem.getAttribute("property_name");
+        Set blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
+        blockTypes.add(property_name);
+        componentBlocks.put(component_type, blockTypes);
+      }
+    }
+    return componentBlocks;
   }
 
   public FileDescriptorWithContent getYail() throws YailGenerationException {
@@ -376,6 +431,17 @@ public final class YaBlocksEditor extends FileEditor
       YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
       //get type name from form editor
       return blocksEditor.myFormEditor.getComponentInstanceTypeName(instanceName);
+  }
+
+  public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName){
+      //use form name to get blocks editor
+      YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
+      Map<String, MockComponent> componentMap = blocksEditor.myFormEditor.getComponents();
+      for (String key : componentMap.keySet()) {
+        OdeLog.log(key);
+      }
+      MockComponent mockComponent = componentMap.get(instanceName);
+      return mockComponent.getPropertyValue(propertyName);
   }
 
   public void addComponent(String typeName, String instanceName, String uuid) {
@@ -642,4 +708,5 @@ public final class YaBlocksEditor extends FileEditor
       Blockly.ReplMgr.loadExtensions();
     }
   }-*/;
+
 }

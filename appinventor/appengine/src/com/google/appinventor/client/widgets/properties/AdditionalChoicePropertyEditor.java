@@ -30,7 +30,7 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
 
   // UI elements
   private final TextBox summary;
-  private PopupPanel popup;
+  protected PopupPanel popup;
 
   /**
    * Creates a new additional choice dialog.
@@ -75,11 +75,14 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
     buttonPanel.add(cancelButton);
     buttonPanel.add(okButton);
     buttonPanel.setWidth("100%");
-    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    buttonPanel.setVerticalAlignment(HorizontalPanel.ALIGN_BOTTOM);
 
     VerticalPanel contentPanel = new VerticalPanel();
+    panel.setHeight("100%");
     contentPanel.add(panel);
     contentPanel.add(buttonPanel);
+    contentPanel.setCellHeight(buttonPanel, (cancelButton.getOffsetHeight() + 10) + "px");
 
     popup = new PopupPanel(false, true);
     popup.setAutoHideEnabled(true);

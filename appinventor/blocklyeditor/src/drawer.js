@@ -23,6 +23,8 @@ goog.require('Blockly.Flyout');
 goog.require('Blockly.Options');
 goog.require('goog.object');
 
+goog.require('bd.toolbox.ctr');
+
 // Some block drawers need to be initialized after all the javascript source is loaded because they
 // use utility functions that may not yet be defined at the time their source is read in. They
 // can do this by adding a field to Blockly.DrawerInit whose value is their initialization function.
@@ -35,7 +37,11 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
     opt_options = opt_options || {};
     this.options = new Blockly.Options(opt_options);
   }
-  this.options.languageTree = Blockly.Drawer.buildTree_();
+
+  //this.options.languageTree = Blockly.Drawer.buildTree_();
+  //this.options.blockInfoArray = Blockly.Drawer.createBlockInfoArray_();
+  this.options.blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
+
   this.workspace_ = parentWorkspace;
   this.flyout_ = new Blockly.Flyout(this.options);
   var flyoutGroup = this.flyout_.createDom('g'),
@@ -81,6 +87,209 @@ Blockly.Drawer.buildTree_ = function() {
   return tree;
 };
 
+Blockly.Drawer.createSubsetBlockInfoArray_ = function() {
+  console.log("HELLO creating subset block info array here");
+  try {
+    console.log("trying to set subset string");
+    var subsetJsonString;
+    var formName = Blockly.mainWorkspace.formName;
+    var screenName = formName.split("_")[1];
+    if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
+      subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
+    } else {
+      subsetJsonString = JSON.stringify(window.reactGetSubsetString());
+    }  
+    console.log("subsetJsonString");
+    console.log(subsetJsonString);
+    var subsetArray = JSON.parse(subsetJsonString);
+    console.log("subsetArray");
+    console.log(subsetArray);
+    var subsetBlockArray = subsetArray["shownBlockTypes"];
+    var drawerTypes = ["Logic", "Control", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"];
+    var fullBlockArray = Blockly.Drawer.createBlockInfoArray_();
+    var blockArray = {};
+    for (var key in subsetBlockArray) {
+      if (key != 'ComponentBlocks') {
+        var typeName = "cat_" + key;
+        blockArray[typeName] = subsetBlockArray[key];
+      }
+    }
+    console.log(blockArray);
+    return blockArray;
+  } catch (err) {
+    console.log(err);
+    return Blockly.Drawer.createBlockInfoArray_();
+  }
+};
+
+/**
+ * [Janice, 1/23/2017] 
+ * Creates a dictionary mapping each category to an array of blocks 
+ * in that category. The blocks are in JSON format, and this array
+ * structure makes it easier to customize/manipulate block objects.
+ * Note: procedures_callreturn and procedures_callnoreturn are under
+ * 'list' property, not 'type'.
+ */
+Blockly.Drawer.createBlockInfoArray_ = function() {
+  var blockArray = {
+    "cat_Logic": [
+      {type:"logic_boolean", fieldNameToValue:{"BOOL":"TRUE"}},
+      {type:"logic_boolean", fieldNameToValue:{"BOOL":"FALSE"}},
+      {type:"logic_negate"},
+      {type:"logic_compare",fieldNameToValue:{"OP":"EQ"}},
+      {type:"logic_operation", fieldNameToValue:{"OP":"AND"}},
+      {type:"logic_operation",fieldNameToValue:{"OP":"OR"}}
+    ],
+    "cat_Control": [
+      {type:"controls_if"},
+      {type:"controls_forRange", input:{
+        "START":{inputType:"value",blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"1"}}},
+        "END":{inputType:"value",blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"5"}}},
+        "STEP":{inputType:"value",blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"1"}}}
+      }},
+      {type:"controls_forEach"},
+      {type:"controls_while"},
+      {type:"controls_choose"},
+      {type:"controls_do_then_return"},
+      {type:"controls_eval_but_ignore"},
+      {type:"controls_openAnotherScreen"},
+      {type:"controls_openAnotherScreenWithStartValue"},
+      {type:"controls_getStartValue"},
+      {type:"controls_closeScreen"},
+      {type:"controls_closeScreenWithValue"},
+      {type:"controls_closeApplication"},
+      {type:"controls_getPlainStartText"},
+      {type:"controls_closeScreenWithPlainText"}
+    ],
+    "cat_Math": [
+      {type:"math_number"},
+      {type:"math_compare"},
+      {type:"math_add"},
+      {type:"math_subtract"},
+      {type:"math_multiply"},
+      {type:"math_division"},
+      {type:"math_power"},
+      {type:"math_random_int", input:{
+        "FROM":{inputType:"value", blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"1"}}},
+        "TO":{inputType:"value", blockInfo:{type:"math_number", fieldNameToValue:{"NUM":"100"}}}
+      }},
+      {type:"math_random_float"},
+      {type:"math_random_set_seed"},
+      {type:"math_on_list"},
+      {type:"math_single"},
+      {type:"math_abs"},
+      {type:"math_neg"},
+      {type:"math_round"},
+      {type:"math_ceiling"},
+      {type:"math_floor"},
+      {type:"math_divide"},
+      {type:"math_trig"},
+      {type:"math_cos"},
+      {type:"math_tan"},
+      {type:"math_atan2"},
+      {type:"math_convert_angles"},
+      {type:"math_format_as_decimal"},
+      {type:"math_is_a_number"},
+      {type:"math_convert_number"}
+    ],
+    "cat_Text": [
+      {type:"text"},
+      {type:"text_join"},
+      {type:"text_length"},
+      {type:"text_isEmpty"},
+      {type:"text_compare"},
+      {type:"text_trim"},
+      {type:"text_changeCase"},
+      {type:"text_starts_at"},
+      {type:"text_contains"},
+      {type:"text_split"},
+      {type:"text_split_at_spaces"},
+      {type:"text_segment"},
+      {type:"text_replace_all"},
+      {type:"obfuscated_text"}
+    ],
+    "cat_Lists": [
+      {type:"lists_create_with", mutatorNameToValue:{"items":"0"}},
+      {type:"lists_create_with"},
+      {type:"lists_add_items"},
+      {type:"lists_is_in"},
+      {type:"lists_length"},
+      {type:"lists_is_empty"},
+      {type:"lists_pick_random_item"},
+      {type:"lists_position_in"},
+      {type:"lists_select_item"},
+      {type:"lists_insert_item"},
+      {type:"lists_replace_item"},
+      {type:"lists_remove_item"},
+      {type:"lists_append_list"},
+      {type:"lists_copy"},
+      {type:"lists_is_list"},
+      {type:"lists_to_csv_row"},
+      {type:"lists_to_csv_table"},
+      {type:"lists_from_csv_row"},
+      {type:"lists_from_csv_table"},
+      {type:"lists_lookup_in_pairs", input:{
+        "NOTFOUND":{inputType:"value", blockInfo:{type:"text", fieldNameToValue:{"TEXT":"not found"}}}
+      }}
+    ],
+    "cat_Colors": [
+      {type:"color_black"},
+      {type:"color_white"},
+      {type:"color_red"},
+      {type:"color_pink"},
+      {type:"color_orange"},
+      {type:"color_yellow"},
+      {type:"color_green"},
+      {type:"color_cyan"},
+      {type:"color_blue"},
+      {type:"color_magenta"},
+      {type:"color_light_gray"},
+      {type:"color_gray"},
+      {type:"color_dark_gray"},
+      {type:"color_make_color", input:{
+        "COLORLIST":{inputType:"value", blockInfo:{
+          mutatorNameToValue:{"items":"3"},
+          type:"lists_create_with", input:{
+            "ADD0":{inputType:"value", blockInfo:{type:"math_number", fieldNameToValue:{"NUM":"255"}}},
+            "ADD1":{inputType:"value", blockInfo:{type:"math_number", fieldNameToValue:{"NUM":"0"}}},
+            "ADD2":{inputType:"value", blockInfo:{type:"math_number", fieldNameToValue:{"NUM":"0"}}}
+          }
+        }}
+      }},
+      {type:"color_split_color"}
+    ],
+    "cat_Variables": [
+      {type:"global_declaration"},
+      {type:"lexical_variable_get"},
+      {type:"lexical_variable_set"},
+      {type:"local_declaration_statement"},
+      {type:"local_declaration_expression"}
+    ],
+    "cat_Procedures": [
+      {type:"procedures_defnoreturn"},
+      {type:"procedures_defreturn"},
+      {list:"procedures_callnoreturn"},
+      {list:"procedures_callreturn"}
+    ]
+  };
+  return blockArray;
+};
+
+/**
+ * [Janice, 1/23/2017]
+ * Turn JSON object with block information into XML string
+ * Combines bd.toolbox.ctr.blockInfoToBlockObject and
+ *  bd.toolbox.ctr.blockObjectToXMLArray into one function
+ * @param blockInfo - JSON object
+ * @returns XMLString
+ */
+Blockly.Drawer.blockInfoToXML = function(blockInfo) {
+  var blockObj = bd.toolbox.ctr.blockInfoToBlockObject(blockInfo);
+  var blockXMLString = bd.toolbox.ctr.blockObjectToXML(blockObj);
+  return blockXMLString;
+};
+
+
 /**
  * Show the contents of the built-in drawer named drawerName. drawerName
  * should be one of Blockly.Msg.VARIABLE_CATEGORY,
@@ -89,26 +298,31 @@ Blockly.Drawer.buildTree_ = function() {
  */
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
-  var blockSet = this.options.languageTree[drawerName];
-  if(drawerName == "cat_Procedures") {
-    var newBlockSet = [];
-    for(var i=0;i<blockSet.length;i++) {
-      if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
-           && this.workspace_.getProcedureDatabase().voidProcedures == 0)
-         &&
-         !(blockSet[i] == "procedures_callreturn" // Include callreturn only if at least one defreturn declaration
-           && this.workspace_.getProcedureDatabase().returnProcedures == 0)){
-        newBlockSet.push(blockSet[i]);
+  //var blockInfoArray = this.options.blockInfoArray;
+  var blockInfoArray = Blockly.Drawer.createSubsetBlockInfoArray_();
+  var drawerArray = blockInfoArray[drawerName];
+
+  // if (!blockSet) {
+  //   throw "no such drawer: " + drawerName;
+  // }
+
+  if (drawerArray) {
+    //var xmlList = this.blockListToXMLArray(blockSet);
+    var xmlList = [];
+
+    for (var i = 0; i < drawerArray.length; i++) {
+      if (drawerArray[i].list == "procedures_callnoreturn" || drawerArray[i].list == "procedures_callreturn") {
+        var returnBool = (drawerArray[i].list == "procedures_callreturn");
+        var callerArray = Blockly.Drawer.procedureCallersBlockArray(returnBool);
+        for (var k = 0; k < callerArray.length; k++) {
+          xmlList.push(Blockly.Drawer.blockInfoToXML(callerArray[k]));
+        }
+      } else {
+        xmlList.push(Blockly.Drawer.blockInfoToXML(drawerArray[i]));
       }
     }
-    blockSet = newBlockSet;
+    this.flyout_.show(xmlList);
   }
-
-  if (!blockSet) {
-    throw "no such drawer: " + drawerName;
-  }
-  var xmlList = this.blockListToXMLArray(blockSet);
-  this.flyout_.show(xmlList);
 };
 
 /**
@@ -178,44 +392,131 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var typeName = instanceRecord.typeName;
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
-  //create event blocks
-  goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
-    if (event.deprecated != 'true') {
-      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
-        'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
-      }));
-    }
-  }, this);
+  // I attempt to do properties
+  var instanceName = instanceRecord.name;
 
-  //create non-generic method blocks
-  goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
-    if (method.deprecated != 'true') {
-      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
-        'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
-      }));
-    }
-  }, this);
 
-  //for each property
-  goog.object.forEach(componentInfo.properties, function(property, name) {
-    if (property.deprecated != 'true') {
-      var params = {'component_type': typeName, 'instance_name': instanceRecord.name,
-                    'property_name': name};
-      if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
-        params['set_or_get'] = 'get';
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+  var formName = Blockly.mainWorkspace.formName;
+  var screenName = formName.split("_")[1];
+  var subsetJsonString;
+  if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
+    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
+  } else {
+    subsetJsonString = JSON.stringify(window.reactGetSubsetString());
+  }
+  var subsetArray = [];
+  var subsetBlocks = [];
+  console.log("Subset json string");
+  console.log(subsetJsonString);
+
+  if (subsetJsonString.length > 0) {
+    subsetArray = JSON.parse(subsetJsonString);
+    console.log("subsetArray");
+    console.log(subsetArray);
+    var subsetBlockArray = subsetArray["shownBlockTypes"]["ComponentBlocks"][typeName];
+    console.log("subsetBlockArray");
+    console.log(subsetBlockArray);
+    if (subsetBlockArray != undefined) {
+      for (var i = 0; i < subsetBlockArray.length; i++) {
+        var obj = subsetBlockArray[i];
+        obj['mutatorNameToValue']['instance_name'] = instanceRecord.name;
+        obj['fieldNameToValue']['COMPONENT_SELECTOR'] = instanceRecord.name;
+        console.log("added obj");
+        console.log(obj);
+        var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
+        xmlArray.push(xml);
       }
-      if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
-        params['set_or_get'] = 'set';
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-      }
+      //create component literal block
+      var obj = {type: "component_component_block"};
+      var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+      obj['mutatorNameToValue'] = mutatorAttributes;
+      var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
+      //console.log(xml);
+      xmlArray.push(xml);
+
+    } else {
+      //create event blocks
+      goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
+        if (event.deprecated != 'true') {
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
+            'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
+          }));
+        }
+      }, this);
+
+      //create non-generic method blocks
+      goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
+        if (method.deprecated != 'true') {
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
+            'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
+          }));
+        }
+      }, this);
+
+      //for each property
+      goog.object.forEach(componentInfo.properties, function(property, name) {
+        if (property.deprecated != 'true') {
+          var params = {'component_type': typeName, 'instance_name': instanceRecord.name,
+                        'property_name': name};
+          if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
+            params['set_or_get'] = 'get';
+            Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+          }
+          if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
+            params['set_or_get'] = 'set';
+            Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+          }
+        }
+      }, this);
+
+      //create component literal block
+      var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
     }
-  }, this);
+  } else {
 
-  //create component literal block
-  var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
-  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
+    console.log("Using default blocks because no JSON specified");
+    //create event blocks
+      goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
+        if (event.deprecated != 'true') {
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
+            'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
+          }));
+        }
+      }, this);
 
+      //create non-generic method blocks
+      goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
+        if (method.deprecated != 'true') {
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
+            'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
+          }));
+        }
+      }, this);
+
+      //for each property
+      goog.object.forEach(componentInfo.properties, function(property, name) {
+        if (property.deprecated != 'true') {
+          var params = {'component_type': typeName, 'instance_name': instanceRecord.name,
+                        'property_name': name};
+          if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
+            params['set_or_get'] = 'get';
+            Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+          }
+          if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
+            params['set_or_get'] = 'set';
+            Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+          }
+        }
+      }, this);
+
+      //create component literal block
+      var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
+  }
+
+  console.log("XML Array");
+  console.log(xmlArray);
   return xmlArray;
 };
 
@@ -296,6 +597,58 @@ Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
   xmlString += '></mutation>';
   return xmlString;
 };
+
+/** 
+ * [Janice, 1/24/2017]
+ * Adapted from procedureCallersXMLString
+ * Creates array of procedure call blocks - one call block for each procedure 
+ * declaration in main workspace.
+ *
+ * @param returnsValue (bool): true if procedure returns, false if no return
+ * @return blockArray (array): JSON object array of procedure call blocks
+ */
+Blockly.Drawer.procedureCallersBlockArray = function(returnsValue, proc_name) {
+  var decls = Blockly.AIProcedure.getProcedureDeclarationBlocks(returnsValue);
+  var blockArray = [];
+  // Used for typeblock
+  if (proc_name) {
+    for (var j = 0; j < decls.length; j++) {
+      if (decls[j].getFieldValue('NAME').toLocaleLowerCase() == proc_name) {
+        blockArray.push(Blockly.Drawer.proceduresBlockInfo(decls[j]))
+        break;
+      }
+    }
+  }
+  // Used for showBuiltin
+  else {
+    // sort decls lexicographically by procedure name
+    decls.sort(Blockly.Drawer.compareDeclarationsByName);
+    for (var j = 0; j < decls.length; j++) {
+      blockArray.push(Blockly.Drawer.procedureBlockInfo(decls[j]));
+    }
+  }
+  return blockArray;
+};
+
+/** 
+ * [Janice, 1/24/2017] 
+ * Creates JSON object for the procedure caller block associated with 
+ * the given procedure declaration block
+ *
+ * @param procBlock (object): procedure declaration block
+ * @return blockInfo (object): JSON representation of procedure's caller block
+ */
+Blockly.Drawer.procedureBlockInfo = function(procBlock) {
+  var declType = procBlock.type;
+  var callerType = (declType == 'procedures_defreturn') ? 'procedures_callreturn' : 'procedures_callnoreturn';
+  var blockInfo = {
+    type: callerType,
+    mutatorNameToValue: {"name":procBlock.getFieldValue('NAME')},
+    fieldNameToValue: {"PROCNAME":procBlock.getFieldValue('NAME')}
+  }
+  return blockInfo;
+}
+
 
 // [lyn, 10/22/13] return an XML string including one procedure caller for each procedure declaration
 // in main workspace.
