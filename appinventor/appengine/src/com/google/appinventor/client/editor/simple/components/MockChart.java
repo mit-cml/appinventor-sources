@@ -31,6 +31,11 @@ public final class MockChart extends MockContainer {
     // com.google.appinventor.components.common.ComponentConstants.java.
     private int type;
 
+    // Keep track whether the children of the Mock Chart have been
+    // reattached. The reattachment has to happen only once, since the Data
+    // Series are part of the Chart object itself.
+    private boolean childrenReattached = false;
+
     /**
      * Creates a new instance of a visible component.
      *
@@ -56,8 +61,11 @@ public final class MockChart extends MockContainer {
 
     @Override
     protected void onAttach() {
-        // The MockChart component has not been attached yet
-        if (!isAttached()) {
+        super.onAttach();
+
+        // The Children of the Mock Chart have not yet been attached
+        // (this happens upon initializing the Chart which has child components)
+        if (!childrenReattached) {
             // Attach all children MockComponents
             for (MockComponent child : children) {
                 if (child instanceof MockChartData) {
@@ -65,10 +73,10 @@ public final class MockChart extends MockContainer {
                     ((MockChartData) child).addToChart(MockChart.this);
                 }
             }
-        }
 
-        // This will set isAttached to true
-        super.onAttach();
+            // Update the state of children to reattached
+            childrenReattached = true;
+        }
     }
 
     @Override
