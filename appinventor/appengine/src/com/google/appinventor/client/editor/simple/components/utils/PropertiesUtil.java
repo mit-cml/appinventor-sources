@@ -86,6 +86,7 @@ public class PropertiesUtil {
     add("CSVFile");
     add("TinyDB");
     add("CloudDB");
+    add("AccelerometerSensor");
   }};
 
 
