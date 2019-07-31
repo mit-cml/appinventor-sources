@@ -401,7 +401,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
 
         // Update the current Data Source value (if appropriate)
-        updateCurrentDataSourceValue(tinyDB, tag, currentDataSourceValue);
+        updateCurrentDataSourceValue(tinyDB, tag, list);
 
         // Import the specified data asynchronously
         threadRunner.execute(new Runnable() {
@@ -432,7 +432,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     listValue = list.get();
 
                     // Update the current Data Source value (if appropriate)
-                    updateCurrentDataSourceValue(cloudDB, value, currentDataSourceValue);
+                    updateCurrentDataSourceValue(cloudDB, value, listValue);
 
                     chartDataModel.importFromList(listValue);
                     refreshChart();
@@ -508,7 +508,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @Override
     public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
-        if (!component.equals(dataSource) // Calling component is not the attached Data Source. TODO: Un-observe?
+        if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
         }
