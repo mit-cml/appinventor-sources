@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.data.Data;
+import org.pepstock.charba.client.data.Labels;
 import org.pepstock.charba.client.data.PieDataset;
 
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
@@ -42,7 +43,22 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   public void addEntryFromTuple(String... tuple) {
+    try {
+      String x = tuple[0];
+      Double y = Double.parseDouble(tuple[1]);
 
+      // Add data entry
+      if (dataSeries.getData().size() == 0) {
+        dataSeries.setData(y);
+      } else {
+        dataSeries.getData().add(y);
+      }
+
+      // Add entry label (legend entry)
+      chartData.getLabels().add(x);
+    } catch (NumberFormatException e) {
+      // Wrong input. Do nothing.
+    }
   }
 
   @Override
@@ -52,12 +68,17 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   public void clearEntries() {
-
+    dataSeries.getData().clear();
+    chartData.setLabels("");
+    chartData.getLabels().remove(0);
   }
 
   @Override
   protected void postDataImportAction() {
-
+    // No data points generated, fallback to default option.
+    if (dataSeries.getData().isEmpty()) {
+      setDefaultElements();
+    }
   }
 
   @Override
