@@ -244,42 +244,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   // Set of observers
   private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
-  @Override
-  public Future<List> getDataValue(final String key) {
-    return background.submit(new Callable<List>() {
-      @Override
-      public List call() {
-        AtomicReference<Object> valueReference = getValue(key, new YailList());
-
-        Object value = JsonUtil.getObjectFromJson((String)valueReference.get());
-
-        if (value instanceof List) {
-          return (List)value;
-        }
-
-        return new ArrayList();
-      }
-    });
-  }
-
-  @Override
-  public void addDataSourceObserver(ChartDataBase dataComponent) {
-    dataSourceObservers.add(dataComponent);
-  }
-
-  @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
-    dataSourceObservers.remove(dataComponent);
-  }
-
-  @Override
-  public void notifyDataSourceObservers(String key, Object newValue) {
-    // Notify each Chart Data observer component of the Data value change
-    for (ChartDataBase dataComponent : dataSourceObservers) {
-      dataComponent.onDataSourceValueChange(this, key, newValue);
-    }
-  }
-
   private static class storedValue {
     private String tag;
     private JSONArray  valueList;
@@ -767,9 +731,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       // or the JSON representation of valueIfTagNotThere
       background.submit(new Runnable() {
           public void run() {
-            final AtomicReference<Object> value = getValue(tag, valueIfTagNotThere);
+            final AtomicReference<Object> value = getValueByTag(tag, valueIfTagNotThere);
 
-            if (value == null) {
+            // Value stored is null; Return
+            if (value.get() == null) {
               return;
             }
 
@@ -791,7 +756,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
-  private AtomicReference<Object> getValue(final String tag, final Object valueIfTagNotThere) {
+  /**
+   * Gets the specified value from the underlying Redis database, or
+   * returns the specified value if the tag is not present.
+   *
+   * The value is returned as an AtomicReference, and will contain
+   * a null value in case of exceptions.
+   *
+   * @param tag  tag of the value to get
+   * @param valueIfTagNotThere  value to set to the reference if tag is not present
+   * @return  AtomicReference containing the indicated value
+   */
+  private AtomicReference<Object> getValueByTag(final String tag, final Object valueIfTagNotThere) {
     AtomicReference<Object> value = new AtomicReference<Object>();
 
     Jedis jedis = getJedis();
@@ -816,16 +792,16 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       }
     } catch (JSONException e) {
       CloudDBError("JSON conversion error for " + tag);
-      return null;
+      value.set(null);
     } catch (NullPointerException e) {
       CloudDBError("System Error getting tag " + tag);
       flushJedis(true);
-      return null;
+      value.set(null);
     } catch (JedisException e) {
       Log.e(LOG_TAG, "Exception in GetValue", e);
       CloudDBError(e.getMessage());
       flushJedis(true);
-      return null;
+      value.set(null);
     }
 
     return value;
@@ -1370,6 +1346,61 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     } catch (Exception e) {
       Log.e(LOG_TAG, "Getting System Certificates", e);
       return new X509Certificate[0];
+    }
+  }
+
+  /**
+   * Returns the specified List object identified by the key as a Future object.
+   * If the value is not a List object, or it does not exist, an empty List
+   * is returned.
+   *
+   * The return type being a Future object ensures that the data is
+   * retrieved from the database asynchronously.
+   *
+   * @param key  Key of the value to retrieve
+   * @return  Future object holding the value as a List object, or empty List if not applicable
+   */
+  @Override
+  public Future<List> getDataValue(final String key) {
+    return background.submit(new Callable<List>() {
+      @Override
+      public List call() {
+        // Get the value identified by the tag (key) or an empty
+        // YailList if not present
+        AtomicReference<Object> valueReference = getValueByTag(key, new YailList());
+
+        // Conver the value to a String
+        String valueString = (String) valueReference.get();
+
+        // Parse the value from JSON
+        Object value = JsonUtil.getObjectFromJson(valueString);
+
+        // Value is a List object; Convert and return it
+        if (value instanceof List) {
+          return (List)value;
+        }
+
+        // Return empty list otherwise
+        return new ArrayList();
+      }
+    });
+  }
+
+  @Override
+  public void addDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataSourceObservers(String key, Object newValue) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }
 }

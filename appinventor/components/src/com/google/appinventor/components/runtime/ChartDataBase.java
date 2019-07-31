@@ -394,7 +394,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param tinyDB  TinyDB component to import from
      * @param tag  the identifier of the value to import
      */
-    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the names of the " +
+    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the tag of the " +
         "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
         "Data component.")
     public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
@@ -414,26 +414,32 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
-     * TO BE FILLED
+     * Imports data from the specified CloudDB component with the provided tag identifier.
+     *
+     * @param cloudDB  CloudDB component to import from
+     * @param tag  the identifier of the value to import
      */
-    @SimpleFunction(description = "Imports data from the specified CloudDB component, given the names of the " +
+    @SimpleFunction(description = "Imports data from the specified CloudDB component, given the tag of the " +
         "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
         "Data component.")
-    public void ImportFromCloudDB(final CloudDB cloudDB, final String value) {
+    public void ImportFromCloudDB(final CloudDB cloudDB, final String tag) {
         // Get the Future YailList object from the CloudDB data
-        final Future<List> list = cloudDB.getDataValue(value);
+        final Future<List> list = cloudDB.getDataValue(tag);
 
+        // Import data asynchronously
         threadRunner.submit(new Runnable() {
             @Override
             public void run() {
                 final List listValue;
 
                 try {
+                    // Get the value from the Future object
                     listValue = list.get();
 
                     // Update the current Data Source value (if appropriate)
-                    updateCurrentDataSourceValue(cloudDB, value, listValue);
+                    updateCurrentDataSourceValue(cloudDB, tag, listValue);
 
+                    // Import the data and refresh the Chart
                     chartDataModel.importFromList(listValue);
                     refreshChart();
                 } catch (InterruptedException e) {
