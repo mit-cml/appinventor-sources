@@ -10,6 +10,6 @@ public class MockPieChartView extends MockChartView<PieChart> {
 
   @Override
   public MockChartDataModel createDataModel() {
-    return new MockLineChartDataModel(chartWidget.getData());
+    return new MockPieChartDataModel(chartWidget.getData());
   }
 }

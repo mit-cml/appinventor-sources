@@ -132,7 +132,7 @@ public final class MockChart extends MockContainer {
             case ComponentConstants.CHART_TYPE_BAR:
                 return new MockLineChartView();
             case ComponentConstants.CHART_TYPE_PIE:
-                return new MockLineChartView();
+                return new MockPieChartView();
             default:
                 // Invalid argument
                 throw new IllegalArgumentException("type:" + type);
