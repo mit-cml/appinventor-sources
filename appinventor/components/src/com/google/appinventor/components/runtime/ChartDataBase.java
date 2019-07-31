@@ -427,7 +427,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         final Future<List> list = cloudDB.getDataValue(tag);
 
         // Import data asynchronously
-        threadRunner.submit(new Runnable() {
+        threadRunner.execute(new Runnable() {
             @Override
             public void run() {
                 final List listValue;

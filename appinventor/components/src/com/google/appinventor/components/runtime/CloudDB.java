@@ -1370,7 +1370,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         // YailList if not present
         AtomicReference<Object> valueReference = getValueByTag(key, new YailList());
 
-        // Conver the value to a String
+        // Get the value as a String
         String valueString = (String) valueReference.get();
 
         // Parse the value from JSON
