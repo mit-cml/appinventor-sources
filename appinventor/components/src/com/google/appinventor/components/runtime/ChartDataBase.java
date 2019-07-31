@@ -306,6 +306,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
             } else if (dataSource instanceof TinyDB) {
               ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
+            } else if (dataSource instanceof CloudDB) {
+                ImportFromCloudDB((CloudDB)dataSource, dataSourceValue);
             }
         }
     }
@@ -392,17 +394,14 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param tinyDB  TinyDB component to import from
      * @param tag  the identifier of the value to import
      */
-    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the names of the " +
+    @SimpleFunction(description = "Imports data from the specified TinyDB component, given the tag of the " +
         "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
         "Data component.")
     public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
         final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
 
-        if (tinyDB == dataSource // The TinyDB component is the attached Data Source
-            && tag.equals(dataSourceValue)) { // Check whether the tag matches the observed Data Source value
-          // Update the current Data Source value
-          currentDataSourceValue = list;
-        }
+        // Update the current Data Source value (if appropriate)
+        updateCurrentDataSourceValue(tinyDB, tag, list);
 
         // Import the specified data asynchronously
         threadRunner.execute(new Runnable() {
@@ -410,6 +409,44 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             public void run() {
                 chartDataModel.importFromList(list);
                 refreshChart();
+            }
+        });
+    }
+
+    /**
+     * Imports data from the specified CloudDB component with the provided tag identifier.
+     *
+     * @param cloudDB  CloudDB component to import from
+     * @param tag  the identifier of the value to import
+     */
+    @SimpleFunction(description = "Imports data from the specified CloudDB component, given the tag of the " +
+        "value to use. The value is expected to be a YailList consisting of entries compatible with the " +
+        "Data component.")
+    public void ImportFromCloudDB(final CloudDB cloudDB, final String tag) {
+        // Get the Future YailList object from the CloudDB data
+        final Future<List> list = cloudDB.getDataValue(tag);
+
+        // Import data asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List listValue;
+
+                try {
+                    // Get the value from the Future object
+                    listValue = list.get();
+
+                    // Update the current Data Source value (if appropriate)
+                    updateCurrentDataSourceValue(cloudDB, tag, listValue);
+
+                    // Import the data and refresh the Chart
+                    chartDataModel.importFromList(listValue);
+                    refreshChart();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -477,7 +514,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @Override
     public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
-        if (!component.equals(dataSource) // Calling component is not the attached Data Source. TODO: Un-observe?
+        if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
         }
@@ -504,5 +541,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 refreshChart();
             }
         });
+    }
+
+    /**
+     * Updates the current observed Data Source value if the source and key matches
+     * the attached Data Source & value
+     * @param source  Source component
+     * @param key  Key of the updated value
+     * @param newValue  The updated value
+     */
+    private void updateCurrentDataSourceValue(ObservableChartDataSource source, Object key, Object newValue) {
+        if (source == dataSource // The source must be the same as the attached source
+            && key != null // The key must be non-null
+            && key.equals(dataSourceValue)) { // The key should equal the local key
+            currentDataSourceValue = newValue;
+        }
     }
 }

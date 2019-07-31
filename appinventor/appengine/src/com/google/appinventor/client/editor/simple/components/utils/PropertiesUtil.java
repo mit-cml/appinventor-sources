@@ -85,6 +85,7 @@ public class PropertiesUtil {
   private static final HashSet<String> CHART_DATA_SOURCES = new HashSet<String>() {{
     add("CSVFile");
     add("TinyDB");
+    add("CloudDB");
   }};
 
 
