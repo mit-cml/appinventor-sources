@@ -984,13 +984,14 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    */
   @SimpleFunction(description = "Remove the tag from CloudDB")
   public void ClearTag(final String tag) {
-    // TODO: Notify Chart Data observers of the clear
     checkProjectIDNotBlank();
     background.submit(new Runnable() {
         public void run() {
           try {
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
+            // Notify all the Data Source observers of the change
+            notifyDataSourceObservers(tag, null);
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
