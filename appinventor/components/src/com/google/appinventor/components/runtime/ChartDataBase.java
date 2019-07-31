@@ -426,7 +426,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         threadRunner.submit(new Runnable() {
             @Override
             public void run() {
-                List listValue;
+                final List listValue;
 
                 try {
                     listValue = list.get();
