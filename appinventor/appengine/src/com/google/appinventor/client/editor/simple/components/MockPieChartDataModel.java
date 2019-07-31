@@ -26,6 +26,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   public void changeColor(String color) {
+    // TODO: Make color affect all entries in the Data Series
     color = getHexColor(color);
     dataSeries.setBackgroundColor(color);
     dataSeries.setBorderColor(color);
@@ -33,7 +34,16 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   protected void setDefaultElements() {
+    final int values = 3; // Number of values to add
 
+    for (int i = 0; i < values; ++i) {
+      // Construct the x and y values based on the index
+      double xValue = i + 1;
+      double yValue = i + 1;
+
+      // Add an entry based on the constructed values
+      addEntryFromTuple(xValue + "", yValue + "");
+    }
   }
 
   @Override
@@ -63,12 +73,16 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   protected String getDefaultTupleEntry(int index) {
+    // TODO: Set default entry to global index (based
+    // TODO: on # of data series present)
     return index + "";
   }
 
   @Override
   public void clearEntries() {
     dataSeries.getData().clear();
+
+    // TODO: Tailor for multiple Data Series
     chartData.setLabels("");
     chartData.getLabels().remove(0);
   }
