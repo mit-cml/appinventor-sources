@@ -59,6 +59,11 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     pieCharts.add(pieChart);
     rootView.addView(pieChart);
 
+    // TODO: 1.Create hole ring in previous Pie Chart
+    // TODO: 2.Alter ring sizes in previous Pie Charts
+    // TODO: 3.Set new width & height for new Pie Chart
+    // TODO: 4.Set default settings for inner Pie Chart
+
     // Match height & width of parent
     // TODO: Alter width & height accordingly
     pieChart.setLayoutParams(new RelativeLayout.LayoutParams
@@ -66,5 +71,29 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
     // Return a new Pie Chart Data model
     return new PieChartDataModel(pieChart, new PieData());
+  }
+
+  @Override
+  public synchronized void Refresh() {
+    // Refresh each Pie Chart (ring) individually
+    for (final PieChart pieChart : pieCharts) {
+      // Notify the Data component of data changes (needs to be called
+      // when Datasets get changed directly)
+      pieChart.getData().notifyDataChanged();
+
+      // Notify the Chart of Data changes (needs to be called
+      // when Data objects get changed directly)
+      pieChart.notifyDataSetChanged();
+
+      // Invalidate the Chart on the UI thread (via the Handler)
+      // The invalidate method should only be invoked on the UI thread
+      // to prevent exceptions.
+      uiHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          pieChart.invalidate();
+        }
+      });
+    }
   }
 }

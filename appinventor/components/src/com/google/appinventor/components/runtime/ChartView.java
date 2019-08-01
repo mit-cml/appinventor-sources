@@ -10,6 +10,8 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     protected C chart;
     protected D data;
 
+    protected Handler uiHandler = new Handler();
+
     /**
      * Returns the underlying view holding all the necessary Chart Views.
      * The reason this does not return the Chart view straight away is
@@ -34,8 +36,6 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     public void setDescription(String text) {
         chart.getDescription().setText(text);
     }
-
-    private Handler uiHandler = new Handler();
 
     /**
      * Refreshes the Chart to react to Data Set changes.
