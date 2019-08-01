@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -41,36 +42,59 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   @Override
   public ChartDataModel createChartModel() {
-    PieChart pieChart;
-
-    if (pieCharts.isEmpty()) { // No Pie Charts have been added yet
-      pieChart = chart; // Set Pie Chart to root Pie Chart
-    } else {
-      pieChart = new PieChart(activity); // Create a new Pie Chart
-    }
-
-    // Default settings
-    // TODO: Move to separate method
-    pieChart.setHoleRadius(0);
-    pieChart.setTransparentCircleRadius(0);
-
-    // Add the Pie Chart (ring) to the Pie Charts List and
-    // to the root layout
-    pieCharts.add(pieChart);
-    rootView.addView(pieChart);
-
-    // TODO: 1.Create hole ring in previous Pie Chart
-    // TODO: 2.Alter ring sizes in previous Pie Charts
-    // TODO: 3.Set new width & height for new Pie Chart
-    // TODO: 4.Set default settings for inner Pie Chart
-
-    // Match height & width of parent
-    // TODO: Alter width & height accordingly
-    pieChart.setLayoutParams(new RelativeLayout.LayoutParams
-        (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    PieChart pieChart = createPieChartRing();
 
     // Return a new Pie Chart Data model
     return new PieChartDataModel(pieChart, new PieData());
+  }
+
+  /**
+   * Creates, initializes & attaches a new Pie Chart ring to add to the
+   * Pie Chart root view.
+   *
+   * To be called upon creating a new PieChartDataModel.
+   * @return  created Pie Chart instance
+   */
+  private PieChart createPieChartRing() {
+    PieChart pieChart;
+
+    if (pieCharts.isEmpty()) { // No Pie Charts have been added yet (root Pie Chart)
+      pieChart = chart; // Set Pie Chart to root Pie Chart
+    } else { // Inner Pie Chart
+      pieChart = new PieChart(activity); // Create a new Pie Chart
+      pieChart.getDescription().setEnabled(false); // Hide description
+      pieChart.getLegend().setEnabled(false); // Hide legend
+    };
+
+    // Set the corresponding properties of the Pie Chart view
+    // to the newly created Pie Chart
+    setPieChartProperties(pieChart);
+
+    // Create RelativeLayout params with MATCH_PARENT height and width and
+    // CENTER_IN_PARENT property set to true. A future method call will
+    // adjust all the necessary widths & heights.
+    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+        (ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
+    params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+    pieChart.setLayoutParams(params);
+
+    pieCharts.add(pieChart); // Add new Pie Chart (ring) to the Pie Charts List
+    rootView.addView(pieChart); // Add new Pie Chart (ring) to the root View
+
+    // Return the newly constructed Pie Chart
+    return pieChart;
+  }
+
+  /**
+   * Sets the mutually defined styling proeprties to the specified Pie
+   * Chart. This method allows having consistency between all the
+   * instantiated Pie Chart rings.
+   * @param chart  Pie Chart to apply styling settings to
+   */
+  private void setPieChartProperties(PieChart chart) {
+    chart.setHoleRadius(0);
+    chart.setTransparentCircleRadius(0);
   }
 
   @Override
