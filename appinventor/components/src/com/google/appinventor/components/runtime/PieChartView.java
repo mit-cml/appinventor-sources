@@ -33,6 +33,12 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
+
+    // The Legend must be drawn inside to prevent inner rings from
+    // being misaligned on the main Pie Chart. The Legend is then aligned
+    // LEFT to cause less overlap with the Pie Chart slices.
+    chart.getLegend().setDrawInside(true);
+    chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
   }
 
   @Override
@@ -65,11 +71,8 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     } else { // Inner Pie Chart
       pieChart = new PieChart(activity); // Create a new Pie Chart
       pieChart.getDescription().setEnabled(false); // Hide description
+      pieChart.getLegend().setEnabled(false); // Hide legend
     };
-
-    // TODO: Temporarily disable. There is a problem with the Legend which shifts
-    // TODO: the inner Pie Charts down.
-    pieChart.getLegend().setEnabled(false);
 
     // Set the corresponding properties of the Pie Chart view
     // to the newly created Pie Chart
