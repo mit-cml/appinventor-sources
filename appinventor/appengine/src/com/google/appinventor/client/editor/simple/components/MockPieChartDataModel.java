@@ -11,7 +11,10 @@ import java.util.List;
 
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   private List<String> colors = new ArrayList<String>();
+  private List<String> labels = new ArrayList<String>();
   private String color = "";
+
+  private MockPieChartView view;
 
   /**
    * Creates a new Mock Pie Chart Model object instance, linking it with
@@ -19,8 +22,10 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
    *
    * @param chartData Chart Data object to link to
    */
-  public MockPieChartDataModel(Data chartData) {
+  public MockPieChartDataModel(Data chartData, MockPieChartView view) {
     super(chartData);
+
+    this.view = view;
 
     // Create the Data Series object
     dataSeries = new PieDataset();
@@ -85,7 +90,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
       }
 
       // Add entry label (legend entry)
-      chartData.getLabels().add(x);
+      labels.add(x);
     } catch (NumberFormatException e) {
       // Wrong input. Do nothing.
     }
@@ -99,10 +104,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   @Override
   public void clearEntries() {
     dataSeries.getData().clear();
-
-    // TODO: Tailor for multiple Data Series
-     chartData.setLabels("");
-     chartData.getLabels().remove(0);
+    labels.clear();
   }
 
   @Override
@@ -118,5 +120,15 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   @Override
   protected int getTupleSize() {
     return 2;
+  }
+
+  public List<String> getLabels() {
+    return labels;
+  }
+
+  @Override
+  public void removeDataSeriesFromChart() {
+    view.removeDataModel(this);
+    super.removeDataSeriesFromChart();
   }
 }
