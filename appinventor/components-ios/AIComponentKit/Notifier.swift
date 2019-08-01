@@ -330,32 +330,6 @@ open class Notifier: NonvisibleComponent {
       }
       _activeAlert?.show(animated: true)
     }
-
-//    let dialog = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-//    let btn1Action = UIAlertAction(title: button1text, style: .default) { (action: UIAlertAction) in
-//      self.performSelector(onMainThread: #selector(self.AfterChoosing(_:)), with: button1text, waitUntilDone: false)
-//    }
-//    dialog.addAction(btn1Action)
-//    let btn2Action = UIAlertAction(title: button2text, style: .default) { (action: UIAlertAction) in
-//      self.performSelector(onMainThread: #selector(self.AfterChoosing(_:)), with: button2text, waitUntilDone: false)
-//    }
-//    dialog.addAction(btn2Action)
-//    if (cancelable) {
-//      let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (action: UIAlertAction) in
-//        self.performSelector(onMainThread: #selector(self.AfterChoosing(_:)), with: "", waitUntilDone: false)
-//      }
-//      dialog.addAction(cancelAction)
-//    }
-//    if UIDevice.current.userInterfaceIdiom == .pad {
-//      dialog.modalPresentationStyle = .popover
-//      dialog.isModalInPopover = !cancelable
-//      if let popover = dialog.popoverPresentationController {
-//        popover.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
-//        popover.sourceView = _form.view
-//        popover.sourceRect = _form.view.bounds
-//      }
-//    }
-//    _form.present(dialog, animated: true)
   }
 
   @objc open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
@@ -366,21 +340,10 @@ open class Notifier: NonvisibleComponent {
       _activeAlert?.stack.addArrangedSubview(button)
       _activeAlert?.show(animated: true)
     }
+  }
 
-//    let dialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//    let okAction = UIAlertAction(title: buttonText, style: .default) { (action: UIAlertAction) in }
-//    dialog.addAction(okAction)
-//    dialog.preferredAction = okAction
-//    if UIDevice.current.userInterfaceIdiom == .pad {
-//      dialog.modalPresentationStyle = .popover
-//      dialog.isModalInPopover = true
-//      if let popover = dialog.popoverPresentationController {
-//        popover.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
-//        popover.sourceView = _form.view
-//        popover.sourceRect = _form.view.bounds
-//      }
-//    }
-//    _form.present(dialog, animated: true)
+  @objc open func ShowPasswordDialog(_ message: String, _ title: String, _ cancelable: Bool) {
+    showTextInputDialog(message: message, title: title, cancelable: cancelable, maskInput: true)
   }
 
   @objc open func ShowProgressDialog(_ message: String, _ title: String) {
@@ -389,78 +352,50 @@ open class Notifier: NonvisibleComponent {
     spinner.startAnimating()
     alert.stack.addArrangedSubview(spinner)
     alert.show(animated: true)
-
-//    let dialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//
-//    let customView = UIViewController()
-//    let spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-//    spinner.startAnimating()
-//    customView.view.addSubview(spinner)
-//    spinner.centerXAnchor.constraint(equalTo: customView.view.centerXAnchor).isActive = true
-//    spinner.centerYAnchor.constraint(equalTo: customView.view.centerYAnchor).isActive = true
-//    dialog.setValue(customView, forKey: "contentViewController")
-//
-//    _form.present(dialog, animated: true)
   }
 
   @objc open func ShowTextDialog(_ message: String, _ title: String, _ cancelable: Bool) {
-    if _activeAlert == nil {
-      _activeAlert = CustomAlertView(title: title, message: message)
-      let actions = UIStackView()
-      actions.axis = .horizontal
-      actions.alignment = .center
-      actions.distribution = .fillEqually
-      actions.spacing = 0
-      let text = UITextField(frame: .zero)
-      text.borderStyle = .bezel
-      _activeAlert?.stack.addArrangedSubview(text)
+    showTextInputDialog(message: message, title: title, cancelable: cancelable)
+  }
 
-      let button = makeButton("OK", with: text, action: #selector(afterTextInput(sender:)), shouldSize: false)
-      var height = button.intrinsicContentSize.height
-      button.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+  private func showTextInputDialog(message: String, title: String, cancelable: Bool, maskInput: Bool = false) {
+    guard _activeAlert == nil else { return }
 
-      if cancelable {
-        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(afterTextInput(sender:)), shouldSize: false)
-        height = max(button.intrinsicContentSize.height, height)
-        cancel.frame.size.height = height
-        actions.addArrangedSubview(cancel)
-        makeBorder(for: actions, vertical: true)
-      }
+    _activeAlert = CustomAlertView(title: title, message: message)
 
-      makeBorder(for: actions, vertical: false)
-//      let topBorder = UIView()
-//      topBorder.translatesAutoresizingMaskIntoConstraints = false
-//      topBorder.layer.borderWidth = 1
-//      topBorder.layer.borderColor = UIColor.lightGray.cgColor
-//      actions.addSubview(topBorder)
-//      topBorder.leftAnchor.constraint(equalTo: actions.leftAnchor, constant: -10).isActive = true
-//      topBorder.rightAnchor.constraint(equalTo: actions.rightAnchor, constant: 10).isActive = true
-//      topBorder.topAnchor.constraint(equalTo: actions.topAnchor, constant: -2).isActive = true
-//      topBorder.heightAnchor.constraint(equalToConstant: 1).isActive = true
+    let actions = UIStackView()
+    actions.axis = .horizontal
+    actions.alignment = .center
+    actions.distribution = .fillEqually
+    actions.spacing = 0
 
-      button.frame.size.height = height
-      actions.addArrangedSubview(button)
+    let text = UITextField(frame: .zero)
+    text.borderStyle = .bezel
+    text.isSecureTextEntry = maskInput
 
-      _activeAlert?.stack.addArrangedSubview(actions)
-      _activeAlert?.show(animated: true) { completed in
-        text.becomeFirstResponder()
-      }
+    _activeAlert?.stack.addArrangedSubview(text)
+
+    let button = makeButton("OK", with: text, action: #selector(afterTextInput(sender:)), shouldSize: false)
+    var height = button.intrinsicContentSize.height
+    button.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+
+    if cancelable {
+      let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(afterTextInput(sender:)), shouldSize: false)
+      height = max(button.intrinsicContentSize.height, height)
+      cancel.frame.size.height = height
+      actions.addArrangedSubview(cancel)
+      makeBorder(for: actions, vertical: true)
     }
 
-//    let dialog = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//    dialog.addTextField { (textbox: UITextField) in }
-//    let okAction = UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction) in
-//      self.performSelector(onMainThread: #selector(self.AfterTextInput(_:)), with: dialog.textFields?[0].text, waitUntilDone: false)
-//    }
-//    dialog.addAction(okAction)
-//    dialog.preferredAction = okAction
-//    if cancelable {
-//      let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (action: UIAlertAction) in
-//        self.performSelector(onMainThread: #selector(self.AfterTextInput(_:)), with: "", waitUntilDone: false)
-//      }
-//      dialog.addAction(cancelAction)
-//    }
-//    _form.present(dialog, animated: true)
+    makeBorder(for: actions, vertical: false)
+
+    button.frame.size.height = height
+    actions.addArrangedSubview(button)
+
+    _activeAlert?.stack.addArrangedSubview(actions)
+    _activeAlert?.show(animated: true) { completed in
+      text.becomeFirstResponder()
+    }
   }
 
   fileprivate func makeBorder(for parent: UIView, vertical: Bool) {
