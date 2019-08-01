@@ -50,15 +50,16 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   protected void setDefaultElements() {
     final int values = 3; // Number of values to add
 
-    // Get the index of the Data Series to use for default entries
-    int index = chartData.getDatasets().indexOf(this.dataSeries);
+    // Get the index of the Data Series to use for default entries, and
+    // multiply it by the number of values to use to create an offset
+    int indexOffset = chartData.getDatasets().indexOf(this.dataSeries) * values;
 
     for (int i = 0; i < values; ++i) {
       // Construct the x and y values based on the data series
-      // index and the loop index. This allows to differentiate
+      // index offset and the loop index. This allows to differentiate
       // the default entries of each individual Data Series.
-      double xValue = index + i + 1;
-      double yValue = index + i + 1;
+      double xValue = indexOffset + i + 1;
+      double yValue = indexOffset + i + 1;
 
       // Add an entry based on the constructed values
       addEntryFromTuple(xValue + "", yValue + "");
@@ -100,8 +101,8 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
     dataSeries.getData().clear();
 
     // TODO: Tailor for multiple Data Series
-    chartData.setLabels("");
-    chartData.getLabels().remove(0);
+     chartData.setLabels("");
+     chartData.getLabels().remove(0);
   }
 
   @Override
