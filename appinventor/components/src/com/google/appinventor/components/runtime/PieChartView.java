@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -17,6 +18,8 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   private RelativeLayout rootView;
   private List<PieChart> pieCharts = new ArrayList<PieChart>();
   private Activity activity;
+
+  private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
 
   public PieChartView(Activity context) {
     // Instantiate the Root View layout and the Root Chart
@@ -39,6 +42,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // LEFT to cause less overlap with the Pie Chart slices.
     chart.getLegend().setDrawInside(true);
     chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+    chart.getLegend().setCustom(legendEntries);
   }
 
   @Override
@@ -53,7 +57,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     PieChart pieChart = createPieChartRing();
 
     // Return a new Pie Chart Data model
-    return new PieChartDataModel(pieChart, new PieData());
+    return new PieChartDataModel(this, pieChart, new PieData());
   }
 
   /**
@@ -173,5 +177,15 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       // Refresh Chart to register changes
       pieChart.invalidate();
     }
+  }
+
+  public void addLegendEntry(LegendEntry entry) {
+    legendEntries.add(entry);
+    pieCharts.get(0).getLegend().setCustom(legendEntries);
+  }
+
+  public void removeLegendEntry(LegendEntry entry) {
+    legendEntries.remove(entry);
+    pieCharts.get(0).getLegend().setCustom(legendEntries);
   }
 }

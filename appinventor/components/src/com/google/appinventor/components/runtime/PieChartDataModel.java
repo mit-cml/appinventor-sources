@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
+  private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
+  private PieChartView view;
 
   /**
    * Initializes a new PieChartDataModel object instance.
@@ -22,12 +25,13 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
    * @param chart  Chart to link Data Model
    * @param data Chart data instance
    */
-  protected PieChartDataModel(PieChart chart, PieData data) {
+  protected PieChartDataModel(PieChartView view, PieChart chart, PieData data) {
     super(data);
     dataset = new PieDataSet(new ArrayList<PieEntry>(), "");
     this.data.addDataSet(dataset);
     chart.setData(data);
     setDefaultStylingProperties();
+    this.view = view;
   }
 
   @Override
@@ -42,13 +46,30 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
     PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
     dataset.addEntry(entry);
 
-    // TODO: Add Legend entry
+    LegendEntry legendEntry = new LegendEntry();
+    legendEntry.label = tuple.getString(0);
+    legendEntry.formColor = dataset.getColors().get(dataset.getColors().size() - 1);
+
+    legendEntries.add(legendEntry);
+    view.addLegendEntry(legendEntry);
   }
 
   @Override
   public void removeEntryFromTuple(YailList tuple) {
-    super.removeEntryFromTuple(tuple);
-    // TODO: Remove legend entry
+    // Construct an entry from the specified tuple
+    Entry entry = getEntryFromTuple(tuple);
+
+    if (entry != null) {
+      // Get the index of the entry
+      int index = findEntryIndex(entry);
+
+      // Entry exists; remove it
+      if (index >= 0) {
+        getDataset().removeEntry(index);
+        LegendEntry removedEntry = legendEntries.remove(index);
+        view.removeLegendEntry(removedEntry);
+      }
+    }
   }
 
   @Override
