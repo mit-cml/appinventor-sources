@@ -162,7 +162,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             case ComponentConstants.CHART_TYPE_BAR:
                 return new LineChartView(container.$context());
             case ComponentConstants.CHART_TYPE_PIE:
-                return new LineChartView(container.$context());
+                return new PieChartView(container.$context());
             default:
                 // Invalid argument
                 throw new IllegalArgumentException("type:" + type);
