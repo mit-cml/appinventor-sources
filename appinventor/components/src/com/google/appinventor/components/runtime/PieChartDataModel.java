@@ -47,7 +47,7 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   public void removeEntryFromTuple(YailList tuple) {
-    // TODO: Remove entry
+    super.removeEntryFromTuple(tuple);
     // TODO: Remove legend entry
   }
 

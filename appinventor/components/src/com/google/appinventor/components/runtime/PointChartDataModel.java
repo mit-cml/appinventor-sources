@@ -62,27 +62,6 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void removeEntryFromTuple(YailList tuple) {
-    // Construct an entry from the specified tuple
-    Entry entry = getEntryFromTuple(tuple);
-
-    if (entry != null) {
-      // TODO: The commented line should be used instead. However, the library does not (yet) implement
-      // TODO: equals methods in it's entries as of yet, so the below method fails.
-      // dataset.removeEntry(entry);
-
-      // Get the index of the entry
-      int index = findEntryIndex(entry);
-
-      // Entry exists; remove it
-      if (index >= 0) {
-        getDataset().removeEntry(index);
-      }
-    }
-  }
-
-  @Override
   protected YailList getDefaultValues(int size) {
     // Default values for LineChartBaseDataModel should be
     // integers from 0 to N (0, 1, 2, ...)

@@ -251,7 +251,24 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * tuple (provided the entry exists)
      * @param tuple  Tuple representing the entry to remove
      */
-    public abstract void removeEntryFromTuple(YailList tuple);
+    public void removeEntryFromTuple(YailList tuple) {
+        // Construct an entry from the specified tuple
+        Entry entry = getEntryFromTuple(tuple);
+
+        if (entry != null) {
+            // TODO: The commented line should be used instead. However, the library does not (yet) implement
+            // TODO: equals methods in it's entries as of yet, so the below method fails.
+            // dataset.removeEntry(entry);
+
+            // Get the index of the entry
+            int index = findEntryIndex(entry);
+
+            // Entry exists; remove it
+            if (index >= 0) {
+                getDataset().removeEntry(index);
+            }
+        }
+    }
 
     /**
      * Checks whether an entry exists in the Data Series.
