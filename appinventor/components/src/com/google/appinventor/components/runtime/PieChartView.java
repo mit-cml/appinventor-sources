@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.PieData;
 
 import java.util.ArrayList;
@@ -63,8 +65,11 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     } else { // Inner Pie Chart
       pieChart = new PieChart(activity); // Create a new Pie Chart
       pieChart.getDescription().setEnabled(false); // Hide description
-      pieChart.getLegend().setEnabled(false); // Hide legend
     };
+
+    // TODO: Temporarily disable. There is a problem with the Legend which shifts
+    // TODO: the inner Pie Charts down.
+    pieChart.getLegend().setEnabled(false);
 
     // Set the corresponding properties of the Pie Chart view
     // to the newly created Pie Chart
@@ -118,6 +123,52 @@ public class PieChartView extends ChartView<PieChart, PieData> {
           pieChart.invalidate();
         }
       });
+    }
+  }
+
+  /**
+   * Resizes all the inner Pie Charts according to the
+   * total count of Pie Charts.
+   */
+  public void resizePieRings() {
+    // Store width and height of last Pie Chart (since getHeight() and
+    // getWidth() will not return the needed result instantly)
+    int lastWidth = 0;
+    int lastHeight = 0;
+
+    for (int i = 0; i < pieCharts.size(); ++i) {
+      PieChart pieChart = pieCharts.get(i);
+
+      // Pie Chart non-last: expand radius
+      if (i != pieCharts.size() - 1) {
+        // TODO: Find generalized formula for radius factor
+        pieChart.setTransparentCircleRadius(80);
+        pieChart.setHoleRadius(80);
+      }
+
+      // FP on i != 0 always false
+      if (i != 0) { // Inner Chart
+        // Get the RelativeLayout parameters of the Pie Chart
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)(pieChart.getLayoutParams());
+
+        // Compute new width & height
+        // TODO: Find generalized formula for reduction factor
+        lastWidth = (int)(lastWidth * 0.8f);
+        lastHeight = (int)(lastHeight * 0.8f);
+
+        // Set width & height of the Pie Chart, and update the Layout parameters
+        // of the Chart
+        params.width = lastWidth;
+        params.height = lastHeight;
+        pieChart.setLayoutParams(params);
+      } else { // Root Chart
+        // Set last height & width
+        lastHeight = pieChart.getHeight();
+        lastWidth = pieChart.getWidth();
+      }
+
+      // Refresh Chart to register changes
+      pieChart.invalidate();
     }
   }
 }

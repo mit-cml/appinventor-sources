@@ -7,6 +7,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.HashSet;
         category = ComponentCategory.CHARTS,
         description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public class Chart extends AndroidViewComponent implements ComponentContainer {
+public class Chart extends AndroidViewComponent implements ComponentContainer, OnInitializeListener {
     // Root layout of the Chart view. This is used to make Chart
     // dynamic removal & adding easier.
     private RelativeLayout view;
@@ -52,6 +53,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+
+        // Register onInitialize event of the Chart
+        $form().registerForOnInitialize(this);
     }
 
     @Override
@@ -267,5 +271,18 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      */
     public void addDataComponent(ChartDataBase dataComponent) {
         dataComponents.add(dataComponent);
+    }
+
+    @Override
+    public void onInitialize() {
+        // If the Chart View is of type PieChartView, the
+        // resizePieRings method has to be called to change
+        // the sizing of the inner Pie Charts. The reason
+        // why this is done in this onInitialize event is
+        // because the getHeight() and getWidth() methods only
+        // return results after the Form has been initialized.
+        if (chartView instanceof PieChartView) {
+            ((PieChartView)chartView).resizePieRings();
+        }
     }
 }
