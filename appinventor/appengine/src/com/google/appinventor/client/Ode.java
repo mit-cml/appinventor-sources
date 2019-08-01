@@ -448,6 +448,7 @@ public class Ode implements EntryPoint {
         // we re-enable it.
         projectToolbar.enableStartButton();
         projectToolbar.setProjectTabButtonsVisible(true);
+        projectToolbar.setPublishOrUpdateButtonVisible(true);
         projectToolbar.setTrashTabButtonsVisible(false);
       }
     };
@@ -476,6 +477,7 @@ public class Ode implements EntryPoint {
     pVertPanel.remove(projectListPanel);
     pVertPanel.add(projectListPane2);
     projectToolbar.setProjectTabButtonsVisible(false);
+    projectToolbar.setPublishOrUpdateButtonVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
     if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
         Ode.getInstance().createEmptyTrashDialog(true);

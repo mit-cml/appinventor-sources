@@ -605,7 +605,7 @@ public class TopToolbar extends Composite {
       GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
         if (projects.get(0).isPublished())
-          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
+          message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
         else
           message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
       } else {
