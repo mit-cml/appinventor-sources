@@ -2189,38 +2189,10 @@ public class Form extends AppInventorCompatActivity
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
-    // add the menu items
-    // Comment out the next line if we don't want the exit button
-    addExitButtonToMenu(menu);
-    addAboutInfoToMenu(menu);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
     }
     return true;
-  }
-
-  public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Stop this application")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showExitApplicationNotification();
-        return true;
-      }
-    });
-    stopApplicationItem.setIcon(android.R.drawable.ic_notification_clear_all);
-  }
-
-  public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
-    "About this application")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showAboutApplicationNotification();
-        return true;
-      }
-    });
-    aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
   @Override
@@ -2233,7 +2205,7 @@ public class Form extends AppInventorCompatActivity
     return false;
   }
 
-  private void showExitApplicationNotification() {
+  public void showExitApplicationNotification() {
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
         "the application to use it again.";
@@ -2261,7 +2233,7 @@ public class Form extends AppInventorCompatActivity
     yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
-  private void showAboutApplicationNotification() {
+  public void showAboutApplicationNotification() {
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message

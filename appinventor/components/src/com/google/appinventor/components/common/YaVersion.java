@@ -925,6 +925,14 @@ public class YaVersion {
   // - The ShowShadow property was removed
   public static final int MARKER_COMPONENT_VERSION = 2;
 
+  // For MENU_COMPONENT_VERSION 1:
+  // - Initial Menu implementation using Android Menu
+  public static final int MENU_COMPONENT_VERSION = 1;
+
+  // For MENUITEM_COMPONENT_VERSION 1:
+  // - Initial MenuItem implementation using Android MenuItem
+  public static final int MENUITEM_COMPONENT_VERSION = 1;
+
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
