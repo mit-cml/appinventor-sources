@@ -1,11 +1,21 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.output.OdeLog;
 import org.pepstock.charba.client.IsChart;
 import org.pepstock.charba.client.PieChart;
 import org.pepstock.charba.client.callbacks.LegendLabelsCallback;
 import org.pepstock.charba.client.callbacks.TooltipCustomCallback;
+import org.pepstock.charba.client.callbacks.TooltipFilterCallback;
+import org.pepstock.charba.client.callbacks.TooltipItemSortCallback;
+import org.pepstock.charba.client.callbacks.TooltipLabelCallback;
+import org.pepstock.charba.client.colors.ColorBuilder;
+import org.pepstock.charba.client.colors.IsColor;
 import org.pepstock.charba.client.data.PieDataset;
+import org.pepstock.charba.client.enums.InteractionMode;
 import org.pepstock.charba.client.items.LegendLabelItem;
+import org.pepstock.charba.client.items.TooltipBodyItem;
+import org.pepstock.charba.client.items.TooltipItem;
+import org.pepstock.charba.client.items.TooltipLabelColor;
 import org.pepstock.charba.client.items.TooltipModel;
 
 import java.util.ArrayList;
@@ -27,6 +37,11 @@ public class MockPieChartView extends MockChartView<PieChart> {
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
+
+    // TODO: Set tooltips to display X value as well (needs additional logic with labels)
+    // Can be accomplished by:
+    // chartWidget.getOptions().getTooltips().getCallbacks().setLabelCallback();
+    chartWidget.getOptions().getTooltips().setMode(InteractionMode.Y);
 
     // Create a custom Legend generator for the Pie Chart
     chartWidget.getOptions().getLegend()
