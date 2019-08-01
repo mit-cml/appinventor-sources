@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.os.Handler;
+import android.view.View;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
@@ -10,13 +11,13 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     protected D data;
 
     /**
-     * Returns the underlying Chart view.
-     *
-     * @return  Chart object instance
+     * Returns the underlying view holding all the necessary Chart Views.
+     * The reason this does not return the Chart view straight away is
+     * due to some Charts having more than one view (e.g. Pie Chart
+     * with rings)
+     * @return  Chart view
      */
-    public C getView() {
-        return chart;
-    }
+    public abstract View getView();
 
     /**
      * Sets the background color of the Chart.
