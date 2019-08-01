@@ -8,6 +8,8 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
@@ -35,36 +37,63 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   public void addEntryFromTuple(YailList tuple) {
+    PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
+    dataset.addEntry(entry);
 
+    // TODO: Add Legend entry
   }
 
   @Override
   public void removeEntryFromTuple(YailList tuple) {
-
+    // TODO: Remove entry
+    // TODO: Remove legend entry
   }
 
   @Override
   public Entry getEntryFromTuple(YailList tuple) {
-    return new PieEntry(1);
+    try {
+      // Tuple is expected to have at least 2 entries.
+      // The first entry is assumed to be the x value, and
+      // the second is assumed to be the y value.
+      String xValue = tuple.getString(0);
+      String yValue = tuple.getString(1);
+
+      try {
+        // Attempt to parse the y value String representation
+        float y = Float.parseFloat(yValue);
+
+        return new PieEntry(y , xValue);
+      } catch (NumberFormatException e) {
+        // Nothing happens: Do not add entry on NumberFormatException
+      }
+    } catch (Exception e) {
+      // 2-tuples are invalid when null entries are present, or if
+      // the number of entries is not sufficient to form a pair.
+      // TODO: Show toast error notification
+    }
+
+    return null;
   }
 
   @Override
   public YailList getTupleFromEntry(Entry entry) {
-    return new YailList();
-  }
+    // Cast Entry to PieEntry (safe cast)
+    PieEntry pieEntry = (PieEntry) entry;
 
-  @Override
-  protected int findEntryIndex(Entry entry) {
-    return 0;
+    // Create a list with the X and Y values of the entry, and
+    // convert the generic List to a YailList
+    List tupleEntries = Arrays.asList(pieEntry.getLabel(), pieEntry.getY());
+    return YailList.makeList(tupleEntries);
   }
 
   @Override
   protected void setDefaultStylingProperties() {
-
+    dataset.setSliceSpace(5f);
   }
 
   @Override
   protected YailList getDefaultValues(int size) {
+    // TODO: Return default values
     return new YailList();
   }
 }

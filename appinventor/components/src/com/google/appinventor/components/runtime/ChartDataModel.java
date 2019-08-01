@@ -359,7 +359,21 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param entry  Entry to find
      * @return  index of the entry, or -1 if entry is not found
      */
-    protected abstract int findEntryIndex(Entry entry);
+    protected int findEntryIndex(Entry entry) {
+        for (int i = 0; i < getDataset().getValues().size(); ++i) {
+            Entry currentEntry = getDataset().getEntryForIndex(i);
+
+            // Check whether the current entry is equal to the
+            // specified entry. Note that (in v3.1.0), equals()
+            // does not yield the same result.
+            if (currentEntry.equalTo(entry)) {
+                // Entry matched; Return
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     /**
      * Deletes all the entries in the Data Series.

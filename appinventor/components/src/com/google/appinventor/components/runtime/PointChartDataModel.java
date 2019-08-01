@@ -83,23 +83,6 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
   }
 
   @Override
-  protected int findEntryIndex(Entry entry) {
-    for (int i = 0; i < getDataset().getValues().size(); ++i) {
-      Entry currentEntry = getDataset().getEntryForIndex(i);
-
-      // Check whether the current entry is equal to the
-      // specified entry. Note that (in v3.1.0), equals()
-      // does not yield the same result.
-      if (currentEntry.equalTo(entry)) {
-        // Entry matched; Return
-        return i;
-      }
-    }
-
-    return -1;
-  }
-
-  @Override
   protected YailList getDefaultValues(int size) {
     // Default values for LineChartBaseDataModel should be
     // integers from 0 to N (0, 1, 2, ...)
