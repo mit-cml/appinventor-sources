@@ -98,6 +98,14 @@ public interface Images extends Resources {
    @Source("com/google/appinventor/images/accelerometersensor.png")
    ImageResource accelerometersensor();
 
+   /**
+    * Designer palette item: lightsensor component
+    * <p>
+    * Source: https://feathericons.com/
+    */
+   @Source("com/google/appinventor/images/lightsensor.png")
+   ImageResource lightsensor();
+
   /**
    * Designer palette item: barcode scanner component
    */
