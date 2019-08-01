@@ -50,10 +50,15 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   protected void setDefaultElements() {
     final int values = 3; // Number of values to add
 
+    // Get the index of the Data Series to use for default entries
+    int index = chartData.getDatasets().indexOf(this.dataSeries);
+
     for (int i = 0; i < values; ++i) {
-      // Construct the x and y values based on the index
-      double xValue = i + 1;
-      double yValue = i + 1;
+      // Construct the x and y values based on the data series
+      // index and the loop index. This allows to differentiate
+      // the default entries of each individual Data Series.
+      double xValue = index + i + 1;
+      double yValue = index + i + 1;
 
       // Add an entry based on the constructed values
       addEntryFromTuple(xValue + "", yValue + "");
@@ -87,8 +92,6 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   protected String getDefaultTupleEntry(int index) {
-    // TODO: Set default entry to global index (based
-    // TODO: on # of data series present)
     return index + "";
   }
 
