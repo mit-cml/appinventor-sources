@@ -1,10 +1,18 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.output.OdeLog;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.Labels;
 import org.pepstock.charba.client.data.PieDataset;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
+  private List<String> colors = new ArrayList<String>();
+  private String color = "";
+
   /**
    * Creates a new Mock Pie Chart Model object instance, linking it with
    * the Data object of a specific Chart.
@@ -26,10 +34,16 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   public void changeColor(String color) {
-    // TODO: Make color affect all entries in the Data Series
+    this.color = color;
     color = getHexColor(color);
-    dataSeries.setBackgroundColor(color);
-    dataSeries.setBorderColor(color);
+
+    colors.clear();
+
+    for (int i = 0; i < dataSeries.getData().size(); ++i) {
+      colors.add(color);
+    }
+
+    dataSeries.setBackgroundColor(colors.toArray(new String[0]));
   }
 
   @Override
@@ -93,6 +107,8 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
     if (dataSeries.getData().isEmpty()) {
       setDefaultElements();
     }
+
+    changeColor(this.color);
   }
 
   @Override
