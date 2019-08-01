@@ -37,6 +37,8 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   public void addEntryFromTuple(YailList tuple) {
+    // Construct a PieEntry from the specified tuple and add it to
+    // the Data Series.
     PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
     dataset.addEntry(entry);
 
@@ -62,7 +64,9 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
         // Attempt to parse the y value String representation
         float y = Float.parseFloat(yValue);
 
-        return new PieEntry(y , xValue);
+        // The y value is the first argument,
+        // the x value is the second (label)
+        return new PieEntry(y, xValue);
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
       }
@@ -88,6 +92,7 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   protected void setDefaultStylingProperties() {
+    // Set spacing between each slice
     dataset.setSliceSpace(5f);
   }
 
