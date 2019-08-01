@@ -782,7 +782,7 @@ public abstract class PointChartDataModelTest
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.All;
     final float value = 5f;
 
-    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
 
     assertTrue(result);
   }
@@ -797,7 +797,7 @@ public abstract class PointChartDataModelTest
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
     final float value = 1f;
 
-    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
 
     assertTrue(result);
   }
@@ -812,7 +812,7 @@ public abstract class PointChartDataModelTest
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
     final float value = 2f;
 
-    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
 
     assertFalse(result);
   }
@@ -827,7 +827,7 @@ public abstract class PointChartDataModelTest
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
     final float value = 4f;
 
-    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
 
     assertTrue(result);
   }
@@ -842,7 +842,7 @@ public abstract class PointChartDataModelTest
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
     final float value = 14f;
 
-    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
 
     assertFalse(result);
   }
@@ -872,7 +872,7 @@ public abstract class PointChartDataModelTest
     final float value = 8f;
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
 
-    YailList result = model.findEntriesByCriterion(value, criterion);
+    YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);
   }
 
@@ -903,7 +903,7 @@ public abstract class PointChartDataModelTest
     final float value = 1f;
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
 
-    YailList result = model.findEntriesByCriterion(value, criterion);
+    YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);
   }
 
@@ -927,7 +927,7 @@ public abstract class PointChartDataModelTest
     final float value = 4f;
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
 
-    YailList result = model.findEntriesByCriterion(value, criterion);
+    YailList result = model.findEntriesByCriterion(value + "", criterion);
     assertEquals(expected, result);
   }
 

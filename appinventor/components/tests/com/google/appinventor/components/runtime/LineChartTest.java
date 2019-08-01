@@ -20,7 +20,7 @@ public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
         super.setUp();
 
         chartView = (LineChartView)chartComponent.getChartView();
-        chart = chartView.getView();
+        chart = (LineChart) chartView.getView();
     }
 
     @Override

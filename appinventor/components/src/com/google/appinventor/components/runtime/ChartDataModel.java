@@ -296,7 +296,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param criterion  criterion to use for comparison
      * @return  YailList of entries represented as tuples matching the specified conditions
      */
-    public YailList findEntriesByCriterion(float value, EntryCriterion criterion) {
+    public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
         List<YailList> entries = new ArrayList<YailList>();
 
         for (Object dataValue : getDataset().getValues()) {
@@ -320,7 +320,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public YailList getEntriesAsTuples() {
         // Use the All criterion to get all the Entries
-        return findEntriesByCriterion(0f, EntryCriterion.All);
+        return findEntriesByCriterion("0", EntryCriterion.All);
     }
 
     /**
@@ -331,7 +331,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param value  value to use for comparison
      * @return  true if the entry matches the criterion
      */
-    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, float value) {
+    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, String value) {
         boolean criterionSatisfied = false;
 
         switch (criterion) {
@@ -340,11 +340,21 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                 break;
 
             case XValue: // Criterion satisfied based on x value match with the value
-                criterionSatisfied = (entry.getX() == value);
+                try {
+                    float xValue = Float.parseFloat(value);
+                    criterionSatisfied = (entry.getX() == xValue);
+                } catch (NumberFormatException e) {
+                    // Do nothing (value already false)
+                }
                 break;
 
             case YValue: // Criterion satisfied based on y value match with the value
-                criterionSatisfied = (entry.getY() == value);
+                try {
+                    float yValue = Float.parseFloat(value);
+                    criterionSatisfied = (entry.getY() == yValue);
+                } catch (NumberFormatException e) {
+                    // Do nothing (value already false)
+                }
                 break;
         }
 

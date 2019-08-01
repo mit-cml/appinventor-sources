@@ -320,7 +320,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
         "A single entry is represented as a List of values of the entry.")
-    public YailList GetEntriesWithXValue(final float x) {
+    public YailList GetEntriesWithXValue(final String x) {
       try {
         return threadRunner.submit(new Callable<YailList>() {
           @Override
@@ -347,7 +347,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
         "A single entry is represented as a List of values of the entry.")
-    public YailList GetEntriesWithYValue(final float y) {
+    public YailList GetEntriesWithYValue(final String y) {
       try {
         return threadRunner.submit(new Callable<YailList>() {
           @Override
