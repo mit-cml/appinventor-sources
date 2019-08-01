@@ -59,7 +59,6 @@ public class LightSensor extends AndroidNonvisibleComponent
   private float lux;
 
   private int accuracy;
-  private int sensitivity;
 
   private final SensorManager sensorManager;
 
@@ -100,7 +99,7 @@ public class LightSensor extends AndroidNonvisibleComponent
   @SimpleEvent
   public void LightChanged(float lux) {
     this.lux = lux;
-    EventDispatcher.dispatchEvent(this, "LuxChanged", lux);
+    EventDispatcher.dispatchEvent(this, "LightChanged", lux);
   }
 
   /**
@@ -177,7 +176,7 @@ public class LightSensor extends AndroidNonvisibleComponent
   // SensorListener implementation
   @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
-      if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
+    if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
       accuracy = sensorEvent.accuracy;
       final float[] values = sensorEvent.values;
       LightChanged(values[0]);
