@@ -827,7 +827,11 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
-          out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+          if (isForEmulator) {
+            out.write("  <uses-feature android:name=\"android.hardware.wifi\" android:required=\"false\" />\n"); // We actually require wifi
+          } else {
+            out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+          }
       }
 
       int minSdk = Integer.parseInt((project.getMinSdk() == null) ? DEFAULT_MIN_SDK : project.getMinSdk());
