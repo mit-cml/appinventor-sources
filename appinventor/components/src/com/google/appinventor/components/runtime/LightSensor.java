@@ -14,12 +14,9 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -52,26 +49,23 @@ public class LightSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
   // Logging and Debugging
-  private final static String LOG_TAG = "LightSensor";
-  private final static boolean DEBUG = true;
+  private static final String LOG_TAG = "LightSensor";
+  private static final boolean DEBUG = true;
 
   // Backing for sensor values
-  private float lux;
+  private AveragingBuffer buffer;
+  private static final int BUFFER_SIZE = 10;
 
   private int accuracy;
 
   private final SensorManager sensorManager;
 
   private final WindowManager windowManager;
-  private final Resources resources;
 
   // Indicates whether the sensor should generate events
   private boolean enabled;
 
   private Sensor sensor;
-
-  // Used to launch Runnables on the UI Thread after a delay
-  private final Handler androidUIHandler;
 
   /**
    * Creates a new LightSensor component.
@@ -84,11 +78,10 @@ public class LightSensor extends AndroidNonvisibleComponent
     form.registerForOnStop(this);
 
     enabled = true;
-    resources = container.$context().getResources();
     windowManager = (WindowManager) container.$context().getSystemService(Context.WINDOW_SERVICE);
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-    androidUIHandler = new Handler();
+    buffer = new AveragingBuffer(BUFFER_SIZE);
     startListening();
   }
 
@@ -98,7 +91,6 @@ public class LightSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void LightChanged(float lux) {
-    this.lux = lux;
     EventDispatcher.dispatchEvent(this, "LightChanged", lux);
   }
 
@@ -170,7 +162,7 @@ public class LightSensor extends AndroidNonvisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public float Lux() {
-      return lux;
+      return buffer.getAverage();
   }
 
   // SensorListener implementation
@@ -179,6 +171,7 @@ public class LightSensor extends AndroidNonvisibleComponent
     if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
       accuracy = sensorEvent.accuracy;
       final float[] values = sensorEvent.values;
+      buffer.insert(values[0]);
       LightChanged(values[0]);
     }
   }
@@ -205,6 +198,37 @@ public class LightSensor extends AndroidNonvisibleComponent
   public void onDelete() {
     if (enabled) {
       stopListening();
+    }
+  }
+
+  private class AveragingBuffer {
+    private Float[] data;
+    private int next;
+
+    private AveragingBuffer(int size) {
+      data = new Float[size];
+      next = 0;
+    }
+
+    private void insert(Float datum) {
+      data[next++] = datum;
+      if (next == data.length) {
+        next = 0;
+      }
+    }
+
+    private float getAverage() {
+      double sum = 0;
+      int count = 0;
+
+      for (int i = 0; i < data.length; i++) {
+        if (data[i] != null) {
+          sum += data[i];
+          count++;
+        }
+      }
+
+      return (float) (count == 0 ? sum : sum / count);
     }
   }
 }
