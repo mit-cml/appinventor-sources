@@ -397,7 +397,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
 
 
   var formName = Blockly.mainWorkspace.formName;
-  var screenName = formName.split("_", 1)[1];
+  var screenName = formName.split("_", 2)[1];
   var subsetJsonString;
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
     subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
