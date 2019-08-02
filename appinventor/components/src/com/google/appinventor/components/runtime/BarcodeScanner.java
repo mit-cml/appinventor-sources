@@ -58,7 +58,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   private static final String LOCAL_SCAN = "com.google.zxing.client.android.AppInvCaptureActivity";
   private static final String SCANNER_RESULT_NAME = "SCAN_RESULT";
   private String result = "";
-  private boolean useExternalScanner = false;
+  private boolean useExternalScanner = true;
   private final ComponentContainer container;
   private boolean havePermission = false; // Do we have CAMERA permission?
 
@@ -177,7 +177,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
    *                            false to use internal copy of ZXing.
    *
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False", alwaysSend = true)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty()
   public void UseExternalScanner(boolean useExternalScanner) {
     this.useExternalScanner = useExternalScanner;
