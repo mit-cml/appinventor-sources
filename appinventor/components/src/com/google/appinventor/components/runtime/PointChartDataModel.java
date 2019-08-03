@@ -63,7 +63,7 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
 
   @Override
   protected YailList getDefaultValues(int size) {
-    // Default values for LineChartBaseDataModel should be
+    // Default values for Point Chart Data Models should be
     // integers from 0 to N (0, 1, 2, ...)
     ArrayList<Integer> defaultValues = new ArrayList<>();
 
