@@ -138,13 +138,12 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     int lastWidth = 0;
     int lastHeight = 0;
 
-    float reductionFactor = 1f / pieCharts.size();
+    float reductionFactor = (0.75f + pieHoleRadius/100f) / pieCharts.size();
     float radius = (100f - pieHoleRadius);
+    float newRadius = 100f - radius * reductionFactor;
 
     for (int i = 0; i < pieCharts.size(); ++i) {
       PieChart pieChart = pieCharts.get(i);
-
-      float newRadius = 100f - radius * reductionFactor;
 
       // Pie Chart non-last: expand radius
       if (i != pieCharts.size() - 1) {
@@ -152,8 +151,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         pieChart.setHoleRadius(newRadius);
         pieChart.setDrawHoleEnabled(true);
       } else {
-        pieChart.setTransparentCircleRadius(pieHoleRadius);
-        pieChart.setHoleRadius(pieHoleRadius);
+        float setRadius = pieHoleRadius * (1f + Math.abs(newRadius - pieHoleRadius) / 100f);
+        pieChart.setTransparentCircleRadius(setRadius);
+        pieChart.setHoleRadius(setRadius);
 
         if (pieHoleRadius == 0) {
           pieChart.setDrawHoleEnabled(false);
