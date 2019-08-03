@@ -119,7 +119,17 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   protected YailList getDefaultValues(int size) {
-    return new YailList();
+    // Default values for PieChartBaseDataModel should be
+    // integers from 0 to N (0, 1, 2, ...)
+    // TODO: This could be updated in the future to return Strings
+    // TODO: such as "Entry 1", "Entry 2", ... for x and 1,2,3,...,N for y
+    ArrayList<Integer> defaultValues = new ArrayList<>();
+
+    for (int i = 0; i < size; ++i) {
+      defaultValues.add(i);
+    }
+
+    return YailList.makeList(defaultValues);
   }
 
   public void setColors(YailList colors) {
