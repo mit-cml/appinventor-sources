@@ -38,6 +38,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     private String label;
     private int color;
+    private YailList colors;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
 
@@ -72,6 +73,31 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             category = PropertyCategory.APPEARANCE)
     public int Color() {
         return color;
+    }
+
+    @SimpleProperty(
+        category = PropertyCategory.APPEARANCE
+    )
+    public YailList Colors() {
+        return colors;
+    }
+
+    /**
+     * Specifies the data series colors as a list of alpha-red-green-blue integers.
+     *
+     * @param argb  array of argb values
+     */
+    @SimpleProperty
+    public void Colors(YailList argb) {
+        colors = argb;
+
+        if (chartDataModel instanceof PieChartDataModel) {
+            ((PieChartDataModel)chartDataModel).setColors(argb);
+        } else if (!argb.isEmpty()) {
+            // TODO: Set colors from first color
+        }
+
+        refreshChart();
     }
 
     /**

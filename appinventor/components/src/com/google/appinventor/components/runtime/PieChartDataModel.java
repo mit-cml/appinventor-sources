@@ -48,7 +48,7 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
     LegendEntry legendEntry = new LegendEntry();
     legendEntry.label = tuple.getString(0);
-    legendEntry.formColor = dataset.getColors().get(dataset.getColors().size() - 1);
+    legendEntry.formColor = dataset.getColors().get((dataset.getEntryCount() - 1) % dataset.getColors().size());
 
     legendEntries.add(legendEntry);
     view.addLegendEntry(legendEntry);
@@ -119,7 +119,28 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   protected YailList getDefaultValues(int size) {
-    // TODO: Return default values
     return new YailList();
+  }
+
+  public void setColors(YailList colors) {
+    List<Integer> resultColors = new ArrayList<Integer>();
+
+    for (int i = 0; i < colors.size(); ++i) {
+      String color = colors.getString(i);
+
+      try {
+        int colorValue = Integer.parseInt(color);
+        resultColors.add(colorValue);
+      } catch (NumberFormatException e) {
+        // Skip invalid entry
+      }
+    }
+
+    dataset.setColors(resultColors);
+
+    for (int i = 0; i < legendEntries.size(); ++i) {
+      int index = i % dataset.getColors().size();
+      legendEntries.get(i).formColor = dataset.getColors().get(index);
+    }
   }
 }
