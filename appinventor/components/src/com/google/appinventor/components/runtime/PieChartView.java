@@ -1,13 +1,10 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.PieData;
 
@@ -18,6 +15,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   private RelativeLayout rootView;
   private List<PieChart> pieCharts = new ArrayList<PieChart>();
   private Activity activity;
+  private int pieHoleRadius = 0;
 
   private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
 
@@ -103,8 +101,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * @param chart  Pie Chart to apply styling settings to
    */
   private void setPieChartProperties(PieChart chart) {
-    chart.setHoleRadius(0);
-    chart.setTransparentCircleRadius(0);
     chart.setDrawEntryLabels(false);
   }
 
@@ -150,6 +146,14 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         // TODO: Find generalized formula for radius factor
         pieChart.setTransparentCircleRadius(80);
         pieChart.setHoleRadius(80);
+        pieChart.setDrawHoleEnabled(true);
+      } else {
+        pieChart.setTransparentCircleRadius(pieHoleRadius);
+        pieChart.setHoleRadius(pieHoleRadius);
+
+        if (pieHoleRadius == 0) {
+          pieChart.setDrawHoleEnabled(false);
+        }
       }
 
       // FP on i != 0 always false
@@ -191,5 +195,10 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   public void removeLegendEntry(LegendEntry entry) {
     legendEntries.remove(entry);
     pieCharts.get(0).getLegend().setCustom(legendEntries);
+  }
+
+  public void setPieRadius(int percent) {
+    this.pieHoleRadius = 100 - percent;
+    resizePieRings();
   }
 }

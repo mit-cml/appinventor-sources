@@ -29,6 +29,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
 
+    private int pieRadius = 0;
+
     // Attached Data components
     private ArrayList<ChartDataBase> dataComponents;
 
@@ -241,6 +243,19 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         chartView.setBackgroundColor(argb);
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+                defaultValue = "0")
+    @SimpleProperty
+    public void PieeRadius(int percent) {
+        this.pieRadius = percent;
+
+        // Only set the value if the Chart View is a
+        // Pie Chart View; Otherwise take no action.
+        if (chartView instanceof PieChartView) {
+            ((PieChartView)chartView).setPieRadius(percent);
+        }
+    }
+
     /**
      * Creates a new instance of a ChartDataModel, corresponding
      * to the current Chart type.
@@ -281,8 +296,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         // why this is done in this onInitialize event is
         // because the getHeight() and getWidth() methods only
         // return results after the Form has been initialized.
+        // Since resizePieRings is invoked by the setter of the
+        // Pie radius, it is called instead.
         if (chartView instanceof PieChartView) {
-            ((PieChartView)chartView).resizePieRings();
+            ((PieChartView)chartView).setPieRadius(pieRadius);
             chartView.Refresh();
         }
     }
