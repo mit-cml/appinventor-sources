@@ -14,6 +14,7 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
+    private static final String PROPERTY_NAME_PIE_RADIUS = "PieRadius";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -115,6 +116,18 @@ public final class MockChart extends MockContainer {
         }
     }
 
+    private void changeChartPropertyVisibilities() {
+        boolean showPieChartProperties = chartView instanceof MockPieChartView;
+
+        showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);
+
+        // If the component is currently selected, re-select it to refresh
+        // the Properties panel.
+        if (getContainer() != null && isSelected()) {
+            onSelectedChange(true);
+        }
+    }
+
     /**
      * Creates and returns a new MockChartView object based on the type
      * (integer) provided
@@ -174,11 +187,18 @@ public final class MockChart extends MockContainer {
 
         if (propertyName.equals(PROPERTY_NAME_TYPE)) {
             setTypeProperty(newValue);
+            changeChartPropertyVisibilities();
         } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
             chartView.setBackgroundColor(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
+            if (chartView instanceof MockPieChartView) {
+                int value = Integer.parseInt(newValue);
+                ((MockPieChartView)chartView).setPieRadius(value);
+                chartView.getChartWidget().draw(); // Radius changing requires re-drawing the Chart
+            }
         }
     }
 
@@ -257,5 +277,14 @@ public final class MockChart extends MockContainer {
     private boolean isComponentAcceptableCSVFile(MockComponent component) {
         return component instanceof MockCSVFile
                 && component.getContainer() != null; // CSVFile must already be in it's own container
+    }
+
+    @Override
+    protected boolean isPropertyVisible(String propertyName) {
+        if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
+            return false;
+        }
+
+        return super.isPropertyVisible(propertyName);
     }
 }

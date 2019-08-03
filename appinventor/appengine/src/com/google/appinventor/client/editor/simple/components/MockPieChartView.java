@@ -176,4 +176,9 @@ public class MockPieChartView extends MockChartView<PieChart> {
   public void removeDataModel(MockPieChartDataModel model) {
     dataModels.remove(model);
   }
+
+  public void setPieRadius(int percent) {
+    int cutoutPercentage = 100 - percent;
+    chartWidget.getOptions().setCutoutPercentage(cutoutPercentage);
+  }
 }

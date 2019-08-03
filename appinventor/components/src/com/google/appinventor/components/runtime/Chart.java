@@ -246,7 +246,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
                 defaultValue = "0")
     @SimpleProperty
-    public void PieeRadius(int percent) {
+    public void PieRadius(int percent) {
         this.pieRadius = percent;
 
         // Only set the value if the Chart View is a
