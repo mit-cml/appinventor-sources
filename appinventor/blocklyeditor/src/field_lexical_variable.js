@@ -332,7 +332,7 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
  */
 Blockly.FieldLexicalVariable.dropdownCreate = function() {
   var variableList = this.getNamesInScope(); // [lyn, 11/10/12] Get all global, parameter, and local names
-  return variableList.length == 0 ? [" ", " "] : variableList;
+  return variableList.length == 0 ? [[" ", " "]] : variableList;
 };
 
 /**
