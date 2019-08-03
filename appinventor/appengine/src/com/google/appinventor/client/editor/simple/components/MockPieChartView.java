@@ -70,7 +70,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
       }
 
       @Override
-      public TooltipLabelColor onLabelColor(IsChart chart, TooltipItem item) {0
+      public TooltipLabelColor onLabelColor(IsChart chart, TooltipItem item) {
         TooltipLabelColor color = new TooltipLabelColor();
 
         // Get the Data Series & entry indexes
