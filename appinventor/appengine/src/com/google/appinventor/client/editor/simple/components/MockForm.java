@@ -310,10 +310,11 @@ public final class MockForm extends MockContainer {
     idxPhoneSize = idx;
 
     setPhoneStyle();
-    if (landscape)
+    if (landscape) {
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
-    else
+    } else {
       resizePanel(width, height);
+    }
   }
 
   private void setPhoneStyle() {
@@ -457,20 +458,20 @@ public final class MockForm extends MockContainer {
         return false;
       }
 
-      case PROPERTY_NAME_ICON:
       // The Icon property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_VNAME:
+      case PROPERTY_NAME_ICON:
       // The VersionName property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_VCODE:
+      case PROPERTY_NAME_VNAME:
       // The VersionCode property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_SIZING:
+      case PROPERTY_NAME_VCODE:
       // The Sizing property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_ANAME:
+      case PROPERTY_NAME_SIZING:
       // The AppName property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
+      case PROPERTY_NAME_ANAME:
       // The ShowListsAsJson property actually applies to the application and is only visible on Screen1.
-      case PROPERTY_NAME_TUTORIAL_URL:
+      case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
       // The TutorialURL property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_TUTORIAL_URL:
       case PROPERTY_NAME_BLOCK_SUBSET:
       case PROPERTY_NAME_PRIMARY_COLOR:
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
