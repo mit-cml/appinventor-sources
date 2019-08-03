@@ -138,14 +138,18 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     int lastWidth = 0;
     int lastHeight = 0;
 
+    float reductionFactor = 1f / pieCharts.size();
+    float radius = (100f - pieHoleRadius);
+
     for (int i = 0; i < pieCharts.size(); ++i) {
       PieChart pieChart = pieCharts.get(i);
 
+      float newRadius = 100f - radius * reductionFactor;
+
       // Pie Chart non-last: expand radius
       if (i != pieCharts.size() - 1) {
-        // TODO: Find generalized formula for radius factor
-        pieChart.setTransparentCircleRadius(80);
-        pieChart.setHoleRadius(80);
+        pieChart.setTransparentCircleRadius(newRadius);
+        pieChart.setHoleRadius(newRadius);
         pieChart.setDrawHoleEnabled(true);
       } else {
         pieChart.setTransparentCircleRadius(pieHoleRadius);
@@ -161,10 +165,11 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         // Get the RelativeLayout parameters of the Pie Chart
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)(pieChart.getLayoutParams());
 
+        float scalingFactor = (newRadius)/100f;
+
         // Compute new width & height
-        // TODO: Find generalized formula for reduction factor
-        lastWidth = (int)(lastWidth * 0.8f);
-        lastHeight = (int)(lastHeight * 0.8f);
+        lastWidth = (int)(lastWidth * scalingFactor);
+        lastHeight = (int)(lastHeight * scalingFactor);
 
         // Set width & height of the Pie Chart, and update the Layout parameters
         // of the Chart
