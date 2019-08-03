@@ -12,6 +12,8 @@ import org.pepstock.charba.client.colors.ColorBuilder;
 import org.pepstock.charba.client.colors.IsColor;
 import org.pepstock.charba.client.data.PieDataset;
 import org.pepstock.charba.client.enums.InteractionMode;
+import org.pepstock.charba.client.events.LegendClickEvent;
+import org.pepstock.charba.client.events.LegendClickEventHandler;
 import org.pepstock.charba.client.items.LegendLabelItem;
 import org.pepstock.charba.client.items.TooltipBodyItem;
 import org.pepstock.charba.client.items.TooltipItem;
@@ -41,7 +43,19 @@ public class MockPieChartView extends MockChartView<PieChart> {
     // TODO: Set tooltips to display X value as well (needs additional logic with labels)
     // Can be accomplished by:
     // chartWidget.getOptions().getTooltips().getCallbacks().setLabelCallback();
-    chartWidget.getOptions().getTooltips().setMode(InteractionMode.Y);
+
+    // Disable the Legend Click event which hides a data series (by setting
+    // an empty event handler). The reason this is done is because the
+    // click handler hides values across all the Datasets.
+    // TODO: In the future, perhaps a solution could be devised to implement
+    // TODO: altered logic to hide individual values. Alternatively, this
+    // TODO: feature could be disabled on all Charts for consistency, or simply kept as is.
+    chartWidget.addHandler(new LegendClickEventHandler() {
+      @Override
+      public void onClick(LegendClickEvent event) {
+        // Do nothing
+      }
+    }, LegendClickEvent.TYPE);
 
     // Create a custom Legend generator for the Pie Chart
     chartWidget.getOptions().getLegend()
