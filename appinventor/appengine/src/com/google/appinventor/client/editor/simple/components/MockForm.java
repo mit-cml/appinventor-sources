@@ -516,13 +516,12 @@ public final class MockForm extends MockContainer {
         screenWidth = LANDSCAPE_WIDTH;
         screenHeight = LANDSCAPE_HEIGHT;
         landscape = true;
-        setPhoneStyle();
       } else {
         screenWidth = PORTRAIT_WIDTH;
         screenHeight = PORTRAIT_HEIGHT;
         landscape = false;
-        setPhoneStyle();
       }
+      setPhoneStyle();
       usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
       resizePanel(screenWidth, screenHeight);
 
