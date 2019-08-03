@@ -283,6 +283,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         // return results after the Form has been initialized.
         if (chartView instanceof PieChartView) {
             ((PieChartView)chartView).resizePieRings();
+            chartView.Refresh();
         }
     }
 }

@@ -105,6 +105,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   private void setPieChartProperties(PieChart chart) {
     chart.setHoleRadius(0);
     chart.setTransparentCircleRadius(0);
+    chart.setDrawEntryLabels(false);
   }
 
   @Override
@@ -179,9 +180,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       // TODO: This could be improved in the future to (perhaps) dynamically
       // TODO: adjust the bottom offset.
       pieChart.setExtraBottomOffset(7);
-
-      // Refresh Chart to register changes
-      pieChart.invalidate();
     }
   }
 

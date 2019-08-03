@@ -114,7 +114,7 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
   @Override
   protected void setDefaultStylingProperties() {
     // Set spacing between each slice
-    dataset.setSliceSpace(5f);
+    dataset.setSliceSpace(3);
   }
 
   @Override
