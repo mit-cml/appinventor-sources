@@ -41,7 +41,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // being misaligned on the main Pie Chart. The Legend is then aligned
     // LEFT to cause less overlap with the Pie Chart slices.
     chart.getLegend().setDrawInside(true);
-    chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
     chart.getLegend().setCustom(legendEntries);
   }
 
@@ -173,6 +172,13 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         lastHeight = pieChart.getHeight();
         lastWidth = pieChart.getWidth();
       }
+
+      // Since the Legend is drawn inside, an offset is needed
+      // so that the rings of the Pie Chart do not overlap with the
+      // Legend.
+      // TODO: This could be improved in the future to (perhaps) dynamically
+      // TODO: adjust the bottom offset.
+      pieChart.setExtraBottomOffset(5);
 
       // Refresh Chart to register changes
       pieChart.invalidate();
