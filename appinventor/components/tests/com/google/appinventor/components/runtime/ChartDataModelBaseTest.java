@@ -26,6 +26,18 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
   public abstract void setup();
 
   /**
+   * Test to ensure that the constructor properly instantiates an
+   * empty data set, and that the reference of the passed in data
+   * object instance is not broken.
+   */
+  @Test
+  public void testConstructor() {
+    assertEquals(data, model.getData());
+    assertEquals(1, data.getDataSetCount());
+    assertEquals(0, data.getDataSetByIndex(0).getEntryCount());
+  }
+
+  /**
    * Tests whether the setLabel method correctly changes the label
    * of the Data Series.
    */
