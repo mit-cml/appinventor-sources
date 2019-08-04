@@ -384,7 +384,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void addTimeEntry(YailList tuple) {
         // If the entry count of the Data Series entries exceeds
         // the maximum allowed time entries, then remove the first one
-        if (getDataset().getEntryCount() > maximumTimeEntries) {
+        if (getDataset().getEntryCount() >= maximumTimeEntries) {
             getDataset().removeFirst();
         }
 

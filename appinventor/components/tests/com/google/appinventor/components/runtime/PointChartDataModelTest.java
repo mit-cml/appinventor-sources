@@ -1332,7 +1332,7 @@ public abstract class PointChartDataModelTest
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(new Entry(4f, 2f));
-      add(new Entry(51f, 1f));
+      add(new Entry(5f, 1f));
       add(new Entry(6f, 7f));
       add(new Entry(7f, 1f));
       add(new Entry(8f, 5f));
