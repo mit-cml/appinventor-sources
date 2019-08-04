@@ -362,6 +362,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             case YValue: // Criterion satisfied based on y value match with the value
                 try {
+                    // Y value is always a float, therefore the String value has to
+                    // be parsed.
                     float yValue = Float.parseFloat(value);
                     criterionSatisfied = (entry.getY() == yValue);
                 } catch (NumberFormatException e) {
@@ -467,5 +469,19 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract YailList getDefaultValues(int size);
 
+    /**
+     * Checks equality between two entries.
+     *
+     * TODO: REMARK
+     * TODO: The reason why this method is needed is due to the equals()
+     * TODO: and equalTo() methods not being implemented fully to fit
+     * TODO: the requirements of the comparison done in the models.
+     * TODO: equalTo() does not check label equality (for Pie Charts)
+     * TODO: and equals() checks memory references instead of values.
+     *
+     * @param e1  first Entry to compare
+     * @param e2  second Entry to compare
+     * @return  true if the entries are equal
+     */
     protected abstract boolean areEntriesEqual(Entry e1, Entry e2);
 }

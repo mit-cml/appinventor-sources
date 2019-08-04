@@ -208,14 +208,19 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
   @Override
   protected boolean areEntriesEqual(Entry e1, Entry e2) {
+    // To avoid (unlikely) cast exceptions, check that
+    // both the entries are of instance PieEntry, and return
+    // false if that is not the case.
+    // TODO: Add Entry as a generic?
     if (!(e1 instanceof PieEntry && e2 instanceof PieEntry)) {
       return false;
     }
 
+    // Cast entries to PieEntries to be able to compare labels
     PieEntry p1 = (PieEntry) e1;
     PieEntry p2 = (PieEntry) e2;
 
-    return p1.getLabel().equals(p2.getLabel())
-        && p1.getY() == p2.getY();
+    return p1.getLabel().equals(p2.getLabel()) // x value comparison
+        && p1.getY() == p2.getY(); // y value comparison
   }
 }
