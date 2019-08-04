@@ -23,7 +23,7 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
    */
   @Test
   public void testSetElementsInvalid() {
-    String elements = "1, 2, 3, 4, A, B";
+    String elements = "1.0,2.0,3.0,4.0,A,B";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(1f, 2f));
@@ -39,7 +39,7 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
    */
   @Test
   public void testSetElementsEven() {
-    String elements = "1, 2, 2, 4, 3, 1";
+    String elements = "1.0,2.0,2.0,4.0,3.0,1.0";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(1f, 2f));
@@ -57,7 +57,7 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
    */
   @Test
   public void testSetElementsOdd() {
-    String elements = "1, 3, 5";
+    String elements = "1.0,3.0,5.0";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(1f, 3f));
@@ -366,27 +366,6 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
   }
 
   /**
-   * Test to ensure that importing from an x Column which is
-   * empty and a Y column which has values results in the
-   * x values to resolve to the default option (1 for first entry,
-   * 2 for second, ...)
-   */
-  @Test
-  public void testImportFromCSVEmptyColumn() {
-    YailList xColumn = createTuple();
-    YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 3f));
-      add(createEntry(2f, 5f));
-      add(createEntry(3f, -3f));
-      add(createEntry(4f, 7f));
-    }};
-
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
-  }
-
-  /**
    * Test to ensure that importing from columns consisting of one
    * row does not add any new entries.
    */
@@ -407,8 +386,8 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
    */
   @Test
   public void testImportFromCSVOneEntry() {
-    YailList xColumn = createTuple("X", 2);
-    YailList yColumn = createTuple("Y", 4);
+    YailList xColumn = createTuple("X", 2f);
+    YailList yColumn = createTuple("Y", 4f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(2f, 4f));
@@ -423,8 +402,8 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
    */
   @Test
   public void testImportFromCSVManyEntries() {
-    YailList xColumn = createTuple("X", 2, 3, 5, 7, 9);
-    YailList yColumn = createTuple("Y", 4, 1, 3, 6, 10);
+    YailList xColumn = createTuple("X", 2f, 3f, 5f, 7f, 9f);
+    YailList yColumn = createTuple("Y", 4f, 1f, 3f, 6f, 10f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(2f, 4f));
@@ -993,9 +972,9 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
 
     // Remove entries
     List<List> removeEntries = new ArrayList<List>() {{
-      add(Arrays.asList(1f, 5f)); // Does not exist
-      add(Arrays.asList(10f, 5f)); // Does not exist
-      add(Arrays.asList(9f, 2f));
+      add(createTuple(1f, 5f)); // Does not exist
+      add(createTuple(10f, 5f)); // Does not exist
+      add(createTuple(9f, 2f));
     }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);

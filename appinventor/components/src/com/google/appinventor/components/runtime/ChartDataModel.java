@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -347,7 +348,13 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             case XValue: // Criterion satisfied based on x value match with the value
                 try {
                     float xValue = Float.parseFloat(value);
-                    criterionSatisfied = (entry.getX() == xValue);
+
+                    if (entry instanceof PieEntry) {
+                        PieEntry pieEntry = (PieEntry) entry;
+                        criterionSatisfied = pieEntry.getLabel().equals(xValue + "");
+                    } else {
+                        criterionSatisfied = (entry.getX() == xValue);
+                    }
                 } catch (NumberFormatException e) {
                     // Do nothing (value already false)
                 }
@@ -398,7 +405,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             // Check whether the current entry is equal to the
             // specified entry. Note that (in v3.1.0), equals()
             // does not yield the same result.
-            if (currentEntry.equalTo(entry)) {
+            if (areEntriesEqual(currentEntry, entry)) {
                 // Entry matched; Return
                 return i;
             }
@@ -459,4 +466,6 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  YailList of the specified number of entries containing the default values.
      */
     protected abstract YailList getDefaultValues(int size);
+
+    protected abstract boolean areEntriesEqual(Entry e1, Entry e2);
 }

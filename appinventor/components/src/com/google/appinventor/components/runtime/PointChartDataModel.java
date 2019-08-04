@@ -73,4 +73,9 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
 
     return YailList.makeList(defaultValues);
   }
+
+  @Override
+  protected boolean areEntriesEqual(Entry e1, Entry e2) {
+    return e1.equalTo(e2);
+  }
 }

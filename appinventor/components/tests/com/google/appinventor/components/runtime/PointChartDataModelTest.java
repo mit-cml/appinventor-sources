@@ -46,6 +46,27 @@ public abstract class PointChartDataModelTest
     assertEquals(0, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test to ensure that importing from an x Column which is
+   * empty and a Y column which has values results in the
+   * x values to resolve to the default option (1 for first entry,
+   * 2 for second, ...)
+   */
+  @Test
+  public void testImportFromCSVEmptyColumn() {
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 5f));
+      add(createEntry(3f, -3f));
+      add(createEntry(4f, 7f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
   @Override
   protected Entry createEntry(Object... entries) {
     float x = (float) entries[0];

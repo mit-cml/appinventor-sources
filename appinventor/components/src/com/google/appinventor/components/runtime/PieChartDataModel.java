@@ -205,4 +205,17 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
       legendEntries.get(i).formColor = getDataset().getColors().get(index);
     }
   }
+
+  @Override
+  protected boolean areEntriesEqual(Entry e1, Entry e2) {
+    if (!(e1 instanceof PieEntry && e2 instanceof PieEntry)) {
+      return false;
+    }
+
+    PieEntry p1 = (PieEntry) e1;
+    PieEntry p2 = (PieEntry) e2;
+
+    return p1.getLabel().equals(p2.getLabel())
+        && p1.getY() == p2.getY();
+  }
 }
