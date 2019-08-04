@@ -13,6 +13,12 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
 
+    // Limit the maximum allowed real-time data entries
+    // Since real-time data comes in fast, the case of
+    // multi-data source input is unhandled since it's
+    // better to avoid it.
+    private static final int MAXIMUM_TIME_ENTRIES = 200;
+
     /**
      * Enum used to specify the criterion to use for entry filtering/comparing.
      */
@@ -366,6 +372,19 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public void clearEntries() {
         getDataset().clear();
+    }
+
+    public void addTimeEntry(YailList tuple) {
+        // If the entry count of the Data Series entries exceeds
+        // the maximum allowed time entries, then remove the first one
+        if (getDataset().getEntryCount() > MAXIMUM_TIME_ENTRIES) {
+            getDataset().removeFirst();
+        }
+
+        // Add entry from the specified tuple
+        // TODO: Support for multi-dimensional case (currently tuples always consist
+        // TODO: of two elements)
+        addEntryFromTuple(tuple);
     }
 
     /**

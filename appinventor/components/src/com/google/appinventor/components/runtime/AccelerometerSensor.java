@@ -232,6 +232,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
 
+    // Notify the Data Source observers with the updated values
     notifyDataSourceObservers("X", xAccel);
     notifyDataSourceObservers("Y", yAccel);
     notifyDataSourceObservers("Z", zAccel);
@@ -515,6 +516,8 @@ public int getDeviceDefaultOrientation() {
 
   @Override
   public Float getDataValue(String key) {
+    // TODO: Add documentation for X, Y and Z Data Source value names
+
     switch (key) {
       case "X":
         return xAccel;
