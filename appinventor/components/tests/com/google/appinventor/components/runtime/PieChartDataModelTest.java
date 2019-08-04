@@ -34,6 +34,29 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
+
+  /**
+   * Test to ensure that importing from a pair containing
+   * valid values with an x value being a String label
+   * adds the entry properly.
+   */
+  @Test
+  public void testAddEntryFromTupleLabel() {
+    final String xValue = "Entry";
+    final float yValue = 25f;
+
+    YailList tuple = createTuple(xValue, yValue);
+    model.addEntryFromTuple(tuple);
+
+    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry expectedEntry = createEntry(xValue, yValue);
+
+    assertEquals(1, model.getDataset().getEntryCount());
+    assertEntriesEqual(expectedEntry, entry);
+
+    // TODO: Test LegendEntry addition
+  }
+
   @Override
   public void setup() {
     chartView = new PieChartView(getForm());
