@@ -254,7 +254,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
      * TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
      * @param percent  Percentage of the Pie Chart radius to fill
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS,
                 defaultValue = "100")
     @SimpleProperty(userVisible = false)
     public void PieRadius(int percent) {

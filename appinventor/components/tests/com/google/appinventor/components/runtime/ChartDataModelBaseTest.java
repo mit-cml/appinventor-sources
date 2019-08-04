@@ -122,6 +122,14 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
     assertEquals(expectedIndex, result);
   }
 
+  protected void getEntriesAsTuplesHelper(List<YailList> tuples) {
+    YailList expected = YailList.makeList(tuples);
+    model.importFromList(expected);
+
+    YailList result =  model.getEntriesAsTuples();
+    assertEquals(expected, result);
+  }
+
   /**
    * Helper method that asserts whether the specified two entries are equal.
    * This is needed because the MPAndroidChart library's equal method checks

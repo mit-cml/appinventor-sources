@@ -316,6 +316,14 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * @param percent  percentage of the radius to fill.
    */
   public void setPieRadius(int percent) {
+    // Disallow setting percentage that does not fall
+    // in the range [0, 100]
+    if (percent > 100) {
+      percent = 100;
+    } else if (percent < 0) {
+      percent = 0;
+    }
+
     // Calculate the radius of the hole of the Pie Charts
     this.pieHoleRadius = 100 - percent;
 
