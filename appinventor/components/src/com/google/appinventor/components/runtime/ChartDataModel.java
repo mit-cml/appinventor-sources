@@ -374,6 +374,14 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         getDataset().clear();
     }
 
+    /**
+     * Adds the specified entry as a time entry to the Data Series.
+     *
+     * The method handles additional logic for removing excess values
+     * if the count exceeds the threshold.
+     *
+     * @param tuple  tuple representing the time entry
+     */
     public void addTimeEntry(YailList tuple) {
         // If the entry count of the Data Series entries exceeds
         // the maximum allowed time entries, then remove the first one
