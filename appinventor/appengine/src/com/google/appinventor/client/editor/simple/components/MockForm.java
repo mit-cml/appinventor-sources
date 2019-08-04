@@ -309,12 +309,10 @@ public final class MockForm extends MockContainer {
 
     idxPhoneSize = idx;
 
+    setPhoneStyle();
     if (landscape) {
-      setPhoneStyle();
       resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
-    }
-   else {
-      setPhoneStyle();
+    } else {
       resizePanel(width, height);
     }
   }
@@ -453,71 +451,39 @@ public final class MockForm extends MockContainer {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||
-        propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-      return false;
-    }
+    switch (propertyName) {
+      case PROPERTY_NAME_WIDTH:
+      case PROPERTY_NAME_HEIGHT:
+      case PROPERTY_NAME_ACTIONBAR: {
+        return false;
+      }
 
-    if (propertyName.equals(PROPERTY_NAME_ICON)) {
       // The Icon property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_VNAME)) {
+      case PROPERTY_NAME_ICON:
       // The VersionName property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_VCODE)) {
+      case PROPERTY_NAME_VNAME:
       // The VersionCode property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_SIZING)) {
+      case PROPERTY_NAME_VCODE:
       // The Sizing property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_ANAME)) {
+      case PROPERTY_NAME_SIZING:
       // The AppName property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
+      case PROPERTY_NAME_ANAME:
       // The ShowListsAsJson property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
+      case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
       // The TutorialURL property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
+      case PROPERTY_NAME_TUTORIAL_URL:
+      case PROPERTY_NAME_BLOCK_SUBSET:
+      case PROPERTY_NAME_PRIMARY_COLOR:
+      case PROPERTY_NAME_PRIMARY_COLOR_DARK:
+      case PROPERTY_NAME_ACCENT_COLOR:
+      case PROPERTY_NAME_THEME: {
+        return editor.isScreen1();
+      }
 
-    if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {
-      return editor.isScreen1();
+      default: {
+        return super.isPropertyVisible(propertyName);
+      }
     }
-
-    if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
-      return false;
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_THEME)) {
-      return editor.isScreen1();
-    }
-
-    return super.isPropertyVisible(propertyName);
   }
 
   /*
@@ -551,13 +517,12 @@ public final class MockForm extends MockContainer {
         screenWidth = LANDSCAPE_WIDTH;
         screenHeight = LANDSCAPE_HEIGHT;
         landscape = true;
-        setPhoneStyle();
       } else {
         screenWidth = PORTRAIT_WIDTH;
         screenHeight = PORTRAIT_HEIGHT;
         landscape = false;
-        setPhoneStyle();
       }
+      setPhoneStyle();
       usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
       resizePanel(screenWidth, screenHeight);
 
