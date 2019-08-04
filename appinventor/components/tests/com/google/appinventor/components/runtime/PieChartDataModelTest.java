@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataModel, PieData> {
   private PieChartView chartView;
@@ -41,7 +43,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
    * adds the entry properly.
    */
   @Test
-  public void testAddEntryFromTupleLabel() {
+  public void testAddEntryFromTupleXLabel() {
     final String xValue = "Entry";
     final float yValue = 25f;
 
@@ -55,6 +57,45 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     assertEntriesEqual(expectedEntry, entry);
 
     // TODO: Test LegendEntry addition
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x and y values returns true via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesEqual() {
+    Entry entry1 = createEntry("Entry", 12f);
+    Entry entry2 = createEntry("Entry", 12f);
+
+    assertTrue(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x but different y values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualY() {
+    Entry entry1 = createEntry("Entry", 12f);
+    Entry entry2 = createEntry("Entry", 15f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same y but different x values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualX() {
+    Entry entry1 = createEntry("Entry", 10f);
+    Entry entry2 = createEntry("Entry 2", 10f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
   }
 
   @Override
