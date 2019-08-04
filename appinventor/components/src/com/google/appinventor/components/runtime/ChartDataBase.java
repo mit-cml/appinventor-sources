@@ -304,6 +304,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             if (dataSourceValue == null) {
                 return;
             }
+
+            // After changing the Real Time Chart Data Source, the
+            // the t value should be reset.
+            if (dataSource instanceof RealTimeChartDataSource) {
+                t = 1;
+            }
           }
 
             if (dataSource instanceof CSVFile) {
@@ -547,6 +553,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // Data Source value key
         if (key.equals(dataSourceValue)) {
             // Construct and add tuple with t value and the data value
+            // Note: The value is (and should) be imported non-asynchronously
+            // to prevent tearing when using multiple data series. Otherwise
+            // there can be more race conditions between two data series as
+            // well as some tearing.
             YailList tuple = YailList.makeList(Arrays.asList(t, value));
             chartDataModel.addTimeEntry(tuple);
 
