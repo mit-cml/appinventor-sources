@@ -11,18 +11,39 @@ import com.github.mikephil.charting.data.PieData;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that handles the GUI, initialization and managing of all
+ * Data Series for the Pie Chart.
+ *
+ * Since MPAndroidChart (in v3.1.0) does not support concentric
+ * rings, an implementation was done using multiple Pie Chart
+ * views by stacking them on top of another to create concentric
+ * Pie Charts. Due to this difference from other Chart types,
+ * this View behaves differently since each individual Pie Chart
+ * ring has to be managed manually.
+ */
 public class PieChartView extends ChartView<PieChart, PieData> {
-  private RelativeLayout rootView;
-  private List<PieChart> pieCharts = new ArrayList<PieChart>();
-  private Activity activity;
+  private RelativeLayout rootView; // Root view to store all the Pie Chart views
+  private List<PieChart> pieCharts = new ArrayList<PieChart>(); // List to store all the Pie Chart views
+  private Activity activity; // Activity of the Screen (needed to initialize Pie Chart views)
+
   private int pieHoleRadius = 0;
 
+  // Due to MPAndroidChart's custom Legend setting taking an array as input,
+  // the Legend Entries have to be reset on adding/removal, thus a List
+  // is kept to keep track of the Legend Entries. This list keeps track
+  // of Legend Entries across all Pie Chart rings.
   private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
 
+  /**
+   * Creates a new Pie Chart view instance which manages
+   * all the Pie Chart rings.
+   * @param context  Activity context where the view should be initialized in
+   */
   public PieChartView(Activity context) {
     // Instantiate the Root View layout and the Root Chart
     rootView = new RelativeLayout(context);
-    chart = new PieChart(context);
+    chart = new PieChart(context); // the Chart instance represents the root Pie Chart
 
     // Store the activity variable locally
     this.activity = context;
@@ -38,6 +59,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // The Legend must be drawn inside to prevent inner rings from
     // being misaligned on the main Pie Chart.
     chart.getLegend().setDrawInside(true);
+
+    // Override the default entries of the Legend by
+    // setting them to the local Legend Entries list
     chart.getLegend().setCustom(legendEntries);
   }
 
@@ -50,9 +74,11 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   @Override
   public ChartDataModel createChartModel() {
+    // Create and add an inner Pie Chart ring
     PieChart pieChart = createPieChartRing();
 
-    // Return a new Pie Chart Data model
+    // Return a new Pie Chart Data model linking it to
+    // the created Pie Chart ring
     return new PieChartDataModel(this, pieChart, new PieData());
   }
 
@@ -192,18 +218,36 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     }
   }
 
+  /**
+   * Adds a new Legend Entry to the Legend of the Pie Chart view.
+   * @param entry  Legend Entry to add
+   */
   public void addLegendEntry(LegendEntry entry) {
-    legendEntries.add(entry);
-    pieCharts.get(0).getLegend().setCustom(legendEntries);
+    legendEntries.add(entry); // Add the Legend Entry to local reference List
+    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
   }
 
+  /**
+   * Removes the specified Legend Entry from the Legend of the Pie Chart view
+   * @param entry  Legend Entry to remove
+   */
   public void removeLegendEntry(LegendEntry entry) {
-    legendEntries.remove(entry);
-    pieCharts.get(0).getLegend().setCustom(legendEntries);
+    legendEntries.remove(entry); // Remove the Legend Entry from local reference list
+    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
   }
 
+  /**
+   * Sets the radius of the Pie Chart (in percentage)
+   *
+   * E.g. 100% - full Pie Chart, 50% - donut
+   *
+   * @param percent  percentage of the radius to fill.
+   */
   public void setPieRadius(int percent) {
+    // Calculate the radius of the hole of the Pie Charts
     this.pieHoleRadius = 100 - percent;
+
+    // Resize Pie Chart rings accordingly
     resizePieRings();
   }
 }

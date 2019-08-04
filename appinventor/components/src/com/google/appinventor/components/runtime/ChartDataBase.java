@@ -79,15 +79,23 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         return color;
     }
 
+    /**
+     * Returns the Chart's colors as a List
+     * @return  List of colors
+     */
     @SimpleProperty(
         category = PropertyCategory.APPEARANCE
     )
     public YailList Colors() {
+        // TODO: Add support for other Chart types (not just Pie Chart)
         return colors;
     }
 
     /**
      * Specifies the data series colors as a list of alpha-red-green-blue integers.
+     *
+     * TODO: Perhaps a Designer property selector could be devised here to select
+     * TODO: the colors of the Chart.
      *
      * @param argb  array of argb values
      */
@@ -95,10 +103,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     public void Colors(YailList argb) {
         colors = argb;
 
+        // TODO: Add support for other Chart types
         if (chartDataModel instanceof PieChartDataModel) {
             ((PieChartDataModel)chartDataModel).setColors(argb);
-        } else if (!argb.isEmpty()) {
-            // TODO: Set colors from first color
         }
 
         refreshChart();

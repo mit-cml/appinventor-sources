@@ -29,7 +29,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
 
-    private int pieRadius = 0;
+    private int pieRadius;
 
     // Attached Data components
     private ArrayList<ChartDataBase> dataComponents;
@@ -243,9 +243,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         chartView.setBackgroundColor(argb);
     }
 
+    /**
+     * Sets the Pie Radius of the Chart. If the current type is
+     * not the Pie Chart, the value is simply stored, but not
+     * processed.
+     *
+     * The value is hidden in the blocks due to it being applicable
+     * to a single Chart only. TODO: Might be better to change this in the future
+     *
+     * TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
+     * @param percent  Percentage of the Pie Chart radius to fill
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
-                defaultValue = "0")
-    @SimpleProperty
+                defaultValue = "100")
+    @SimpleProperty(userVisible = false)
     public void PieRadius(int percent) {
         this.pieRadius = percent;
 
@@ -291,13 +302,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     @Override
     public void onInitialize() {
         // If the Chart View is of type PieChartView, the
-        // resizePieRings method has to be called to change
-        // the sizing of the inner Pie Charts. The reason
-        // why this is done in this onInitialize event is
-        // because the getHeight() and getWidth() methods only
-        // return results after the Form has been initialized.
-        // Since resizePieRings is invoked by the setter of the
-        // Pie radius, it is called instead.
+        // radius of the Chart has to be set after initialization
+        // due to the method relying on retrieving width and height
+        // via getWidth() and getHeight(), which only return non-zero
+        // values after the Screen is initialized.
         if (chartView instanceof PieChartView) {
             ((PieChartView)chartView).setPieRadius(pieRadius);
             chartView.Refresh();

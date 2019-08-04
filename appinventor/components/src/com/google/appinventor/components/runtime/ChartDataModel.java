@@ -333,7 +333,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      *
      * @param entry  entry to check against
      * @param criterion  criterion to check with (e.g. x value)
-     * @param value  value to use for comparison
+     * @param value  value to use for comparison (as a String)
      * @return  true if the entry matches the criterion
      */
     protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, String value) {

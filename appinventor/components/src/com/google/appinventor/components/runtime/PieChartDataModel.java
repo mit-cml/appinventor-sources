@@ -13,6 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
+  /* Since a custom legend is used which is shared by all the separate
+   * Pie Chart views (rings), for ease of deletion and operations on
+   * the entries, the Legend Entries List is kept for this single
+   * Data Series. The central view reference is kept to modify the
+   * Legend accordingly.
+   */
   private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
   private PieChartView view;
 
@@ -25,11 +31,17 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
    * @param chart  Chart to link Data Model
    * @param data Chart data instance
    */
-  protected PieChartDataModel(PieChartView view, PieChart chart, PieData data) {
+  public PieChartDataModel(PieChartView view, PieChart chart, PieData data) {
     super(data);
+
+    // Initialize dataset and add it to the Data object
     dataset = new PieDataSet(new ArrayList<PieEntry>(), "");
     this.data.addDataSet(dataset);
+
+    // Set the data to the Pie Chart (one Pie Chart component
+    // can have at most one Dataset in v3.1.0)
     chart.setData(data);
+
     setDefaultStylingProperties();
     this.view = view;
   }
@@ -135,13 +147,23 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
     return YailList.makeList(defaultValues);
   }
 
+  /**
+   * Sets the colors of the Data Series from the specified
+   * colors YailList.
+   *
+   * Invalid (non-color) entries are simply ignored.
+   * @param colors YailList of entries expected to contain colors (integers)
+   */
   public void setColors(YailList colors) {
+    // Parse the entries of the YailList
     List<Integer> resultColors = new ArrayList<Integer>();
 
     for (int i = 0; i < colors.size(); ++i) {
+      // Get the element of the YailList as a String
       String color = colors.getString(i);
 
       try {
+        // Parse the color value and add it to the results List
         int colorValue = Integer.parseInt(color);
         resultColors.add(colorValue);
       } catch (NumberFormatException e) {
@@ -149,11 +171,20 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
       }
     }
 
+    // Set the colors to the dataset
     dataset.setColors(resultColors);
 
+    // Update the legend
     for (int i = 0; i < legendEntries.size(); ++i) {
-      int index = i % dataset.getColors().size();
-      legendEntries.get(i).formColor = dataset.getColors().get(index);
+      // Since the number of colors might be less, the index
+      // of the color to use should be modulo the color count
+      int index = i % getDataset().getColors().size();
+
+      // Set the corresponding color to the Legend entry (since
+      // LegendEntry is referenced, this will automatically update
+      // the central Legend that contains all the entries, and not
+      // just the local ones)
+      legendEntries.get(i).formColor = getDataset().getColors().get(index);
     }
   }
 }
