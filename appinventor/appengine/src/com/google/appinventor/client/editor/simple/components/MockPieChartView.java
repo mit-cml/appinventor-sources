@@ -42,10 +42,25 @@ public class MockPieChartView extends MockChartView<PieChart> {
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
 
-    // TODO: Set tooltips to display X value as well (needs additional logic with labels)
-    // Can be accomplished by:
-    // chartWidget.getOptions().getTooltips().getCallbacks().setLabelCallback();
-    chartWidget.getOptions().getTooltips().getCallbacks().setLabelCallback(new TooltipLabelCallback() {
+    // Change the default handling & rendering of the Pie Chart view
+    changeTooltipRendering();
+    changeLegendClickHandling();
+    changeLegendLabelHandling();
+  }
+
+  /**
+   * Changes the way the tooltips are rendered.
+   *
+   * The default option is to show the same x label
+   * for all the Data Series, however, labels are
+   * defined on a per-entry basis.
+   *
+   * This method changes the Tooltip rendering to
+   * render in "x: y" format for each entry.
+   */
+  private void changeTooltipRendering() {
+    chartWidget.getOptions().getTooltips().getCallbacks()
+        .setLabelCallback(new TooltipLabelCallback() {
       @Override
       public String onBeforeLabel(IsChart chart, TooltipItem item) {
         return "";
@@ -99,20 +114,40 @@ public class MockPieChartView extends MockChartView<PieChart> {
         return "";
       }
     });
+  }
 
-    // Disable the Legend Click event which hides a data series (by setting
-    // an empty event handler). The reason this is done is because the
-    // click handler hides values across all the Datasets.
-    // TODO: In the future, perhaps a solution could be devised to implement
-    // TODO: altered logic to hide individual values. Alternatively, this
-    // TODO: feature could be disabled on all Charts for consistency, or simply kept as is.
+  /**
+   * Changes the onClick handler for the Legend labels.
+   *
+   * This method makes it so that nothing happens upon
+   * clicking a Legend label. The reason why this is
+   * done is because the default click handler hides
+   * values for all data series (and not just for
+   * the one being clicked on)
+   *
+   * TODO: In the future, perhaps a solution could be devised to implement
+   * TODO: altered logic to hide individual values (e.g. set them to 0).
+   * TODO: Alternatively, this feature could be disabled on all Charts for consistency,
+   * TODO: or simply kept as is.
+   */
+  private void changeLegendClickHandling() {
     chartWidget.addHandler(new LegendClickEventHandler() {
       @Override
       public void onClick(LegendClickEvent event) {
         // Do nothing
       }
     }, LegendClickEvent.TYPE);
+  }
 
+  /**
+   * Changes the way the Legend Labels are created.
+   *
+   * By default, the same x label is applied to all the
+   * Data Series. This method changes it so that for
+   * each individual entry, a label is created and
+   * constructed according to the entry.
+   */
+  private void changeLegendLabelHandling() {
     // Create a custom Legend generator for the Pie Chart
     chartWidget.getOptions().getLegend()
         .getLabels().setLabelsCallback(new LegendLabelsCallback() {
@@ -177,7 +212,12 @@ public class MockPieChartView extends MockChartView<PieChart> {
     dataModels.remove(model);
   }
 
+  /**
+   * Changes the radius of the Pie Chart View.
+   * @param percent  Percentage of the radius to fill in the Pie Chart
+   */
   public void setPieRadius(int percent) {
+    // Calculate & set hole radius
     int cutoutPercentage = 100 - percent;
     chartWidget.getOptions().setCutoutPercentage(cutoutPercentage);
   }

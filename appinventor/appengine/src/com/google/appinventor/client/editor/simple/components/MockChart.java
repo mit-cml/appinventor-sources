@@ -116,13 +116,38 @@ public final class MockChart extends MockContainer {
         }
     }
 
-    private void changeChartPropertyVisibilities() {
-        boolean showPieChartProperties = chartView instanceof MockPieChartView;
+  /**
+   * Sets the pie radius of the Chart if the current type is
+   * a Pie Chart, otherwise does nothing.
+   * @param newValue  new Pie Radius value (as String)
+   */
+  private void setPieRadiusProperty(String newValue) {
+      // Check if the Chart View is a Pie Chart to
+      // change the value
+      if (chartView instanceof MockPieChartView) {
+        // Parse the value to an integer
+        int value = Integer.parseInt(newValue);
 
+        // Change the radius of the Pie Chart & re-draw the Chart
+        ((MockPieChartView)chartView).setPieRadius(value);
+        chartView.getChartWidget().draw();
+      }
+    }
+
+    /**
+     * Changes Chart property visibilities depending on the
+     * current type of the Chart.
+     *
+     * Should be invoked after the Type property is changed.
+     */
+    private void changeChartPropertyVisibilities() {
+        // Handle Pie Chart property hiding
+        boolean showPieChartProperties = chartView instanceof MockPieChartView;
         showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);
 
         // If the component is currently selected, re-select it to refresh
-        // the Properties panel.
+        // the Properties panel. isSelected() should only be invoked when
+        // the view is in a container, hence the additional check here.
         if (getContainer() != null && isSelected()) {
             onSelectedChange(true);
         }
@@ -194,11 +219,7 @@ public final class MockChart extends MockContainer {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
-            if (chartView instanceof MockPieChartView) {
-                int value = Integer.parseInt(newValue);
-                ((MockPieChartView)chartView).setPieRadius(value);
-                chartView.getChartWidget().draw(); // Radius changing requires re-drawing the Chart
-            }
+            setPieRadiusProperty(newValue);
         }
     }
 
@@ -281,6 +302,8 @@ public final class MockChart extends MockContainer {
 
     @Override
     protected boolean isPropertyVisible(String propertyName) {
+        // Pie Radius property should be invisible by default, since
+        // the default Chart Type is a Line Chart
         if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             return false;
         }

@@ -44,14 +44,17 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
     // Construct a PieEntry from the specified tuple and add it to
     // the Data Series.
     PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
-    dataset.addEntry(entry);
 
-    LegendEntry legendEntry = new LegendEntry();
-    legendEntry.label = tuple.getString(0);
-    legendEntry.formColor = dataset.getColors().get((dataset.getEntryCount() - 1) % dataset.getColors().size());
+    if (entry != null) {
+      dataset.addEntry(entry);
 
-    legendEntries.add(legendEntry);
-    view.addLegendEntry(legendEntry);
+      LegendEntry legendEntry = new LegendEntry();
+      legendEntry.label = tuple.getString(0);
+      legendEntry.formColor = dataset.getColors().get((dataset.getEntryCount() - 1) % dataset.getColors().size());
+
+      legendEntries.add(legendEntry);
+      view.addLegendEntry(legendEntry);
+    }
   }
 
   @Override

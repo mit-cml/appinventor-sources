@@ -55,7 +55,6 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
     colors.clear();
 
     // Add the same color for every entry
-    // TODO: Possibly make a List of colors as a Designer property?
     for (int i = 0; i < dataSeries.getData().size(); ++i) {
       colors.add(color);
     }
@@ -71,6 +70,11 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
     // Get the index of the Data Series to use for default entries, and
     // multiply it by the number of values to use to create an offset
+    // TODO: Much like the MockPointChartDataModel does now, this should
+    // TODO: take into account the maximum data value in all the data series, since removing Data
+    // TODO: components can re-add the same entries to the Pie Chart itself.
+    // TODO: This can be kept and applied to the Line Chart Data Model as well if simplicity
+    // TODO: is opted for instead.
     int indexOffset = chartData.getDatasets().indexOf(this.dataSeries) * values;
 
     for (int i = 0; i < values; ++i) {
@@ -99,7 +103,8 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
       // Second entry is expected to be a double; attempt parsing
       Double y = Double.parseDouble(tuple[1]);
 
-      // Add data entry
+      // Add data entry (this if check is required due to
+      // the underlying library implementation of getData)
       if (dataSeries.getData().size() == 0) {
         dataSeries.setData(y);
       } else {
@@ -115,13 +120,18 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
 
   @Override
   protected String getDefaultTupleEntry(int index) {
+    // TODO: In the future, the getDefaultTupleEntry method could have
+    // TODO: an additional parameter for the index of the dimension
+    // TODO: to return differentiated values. Something like "Entry 1"
+    // TODO: could be more suited for the x value, while "1" would be more
+    // TODO: suited for the y value.
     return index + "";
   }
 
   @Override
   public void clearEntries() {
     dataSeries.getData().clear();
-    labels.clear();
+    labels.clear(); // Clear the labels (since they represent the x values)
   }
 
   @Override
@@ -143,8 +153,10 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   }
 
   /**
-   * Returns a List of entry labels in order
-   * @return  List of entry labels (Strings_
+   * Returns a List of entry labels corresponding to the
+   * x values of the Data Series in order.
+   *
+   * @return  List of entry labels (Strings)
    */
   public List<String> getLabels() {
     return labels;
