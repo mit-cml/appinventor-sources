@@ -664,7 +664,7 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
     Blockly.mainWorkspace.refreshBackpack();
     // Trigger a screen switch to send new YAIL.
-    var parts = Blockly.mainWorkspace.formName.split(/_/);
+    var parts = Blockly.mainWorkspace.formName.split(/_(.+)/);  // Split string on first _
     if (Blockly.ReplMgr.isConnected()) {
       Blockly.ReplMgr.pollYail(Blockly.mainWorkspace);
     }
