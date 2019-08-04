@@ -1289,6 +1289,58 @@ public abstract class PointChartDataModelTest
     assertExpectedEntriesHelper(expectedEntries);
   }
 
+  /**
+   * Test case to ensure that adding a valid time entry properly
+   * adds it to the Data Series
+   */
+  @Test
+  public void testAddTimeEntry() {
+    YailList timeEntry = createTuple(1f, 3f);
+    model.addTimeEntry(timeEntry);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(1f, 3f));
+    }};
+
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that if the maximum time entries
+   * count is exhausted, the first values are removed upon
+   * adding new time entries.
+   */
+  @Test
+  public void testAddTimeEntryExceedsMaximum() {
+    model.setMaximumTimeEntries(5);
+
+    List<YailList> entries = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(2f, 3f));
+      add(createTuple(3f, 4f));
+      add(createTuple(4f, 2f));
+      add(createTuple(5f, 1f));
+      add(createTuple(6f, 7f));
+      add(createTuple(7f, 1f));
+      add(createTuple(8f, 5f));
+    }};
+
+
+    for (YailList entry : entries) {
+      model.addTimeEntry(entry);
+    }
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(new Entry(4f, 2f));
+      add(new Entry(5f, 1f));
+      add(new Entry(6f, 7f));
+      add(new Entry(7f, 1f));
+      add(new Entry(8f, 5f));
+    }};
+
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
 //  /**
 //   * Test to ensure that passing in a row size
 //   * less than the size of the columns imports

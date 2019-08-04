@@ -6,12 +6,17 @@ import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
+
+    // Limit the maximum allowed real-time data entries
+    // Since real-time data comes in fast, the case of
+    // multi-data source input is unhandled since it's
+    // better to avoid it.
+    private int maximumTimeEntries = 200;
 
     /**
      * Enum used to specify the criterion to use for entry filtering/comparing.
@@ -407,6 +412,35 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public void clearEntries() {
         getDataset().clear();
+    }
+
+    /**
+     * Adds the specified entry as a time entry to the Data Series.
+     *
+     * The method handles additional logic for removing excess values
+     * if the count exceeds the threshold.
+     *
+     * @param tuple  tuple representing the time entry
+     */
+    public void addTimeEntry(YailList tuple) {
+        // If the entry count of the Data Series entries exceeds
+        // the maximum allowed time entries, then remove the first one
+        if (getDataset().getEntryCount() >= maximumTimeEntries) {
+            getDataset().removeFirst();
+        }
+
+        // Add entry from the specified tuple
+        // TODO: Support for multi-dimensional case (currently tuples always consist
+        // TODO: of two elements)
+        addEntryFromTuple(tuple);
+    }
+
+    /**
+     * Sets the maximum time entries to be kept in the Data Series
+     * @param entries  number of entries to keep
+     */
+    public void setMaximumTimeEntries(int entries) {
+        maximumTimeEntries = entries;
     }
 
     /**
