@@ -10,11 +10,13 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener {
+public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener,
+    ChartDataSourceGetValueListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
@@ -49,6 +51,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private String elements; // Elements Designer property
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
+
+    private int t = 1;
 
     /**
      * Creates a new Chart Data component.
@@ -300,6 +304,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             if (dataSourceValue == null) {
                 return;
             }
+
+            // After changing the Real Time Chart Data Source, the
+            // the t value should be reset.
+            if (dataSource instanceof RealTimeChartDataSource) {
+                t = 1;
+            }
           }
 
             if (dataSource instanceof CSVFile) {
@@ -541,6 +551,24 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 refreshChart();
             }
         });
+    }
+
+    @Override
+    public void onReceiveValue(String key, Object value) {
+        // Check that the key of the value received matches the
+        // Data Source value key
+        if (key.equals(dataSourceValue)) {
+            // Construct and add tuple with t value and the data value
+            // Note: The value is (and should) be imported non-asynchronously
+            // to prevent tearing when using multiple data series. Otherwise
+            // there can be more race conditions between two data series as
+            // well as some tearing.
+            YailList tuple = YailList.makeList(Arrays.asList(t, value));
+            chartDataModel.addTimeEntry(tuple);
+
+            refreshChart();
+            t++;
+        }
     }
 
     /**
