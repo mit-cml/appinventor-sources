@@ -35,18 +35,6 @@ public abstract class PointChartDataModelTest
   }
 
   /**
-   * Test to ensure that importing from a tuple with
-   * an invalid Y value does not add any entry.
-   */
-  @Test
-  public void testAddEntryFromTupleInvalidY() {
-    YailList tuple = createTuple(0f, "String");
-    model.addEntryFromTuple(tuple);
-
-    assertEquals(0, model.getDataset().getEntryCount());
-  }
-
-  /**
    * Test to ensure that importing from an x Column which is
    * empty and a Y column which has values results in the
    * x values to resolve to the default option (1 for first entry,

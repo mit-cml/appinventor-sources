@@ -324,6 +324,18 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
 
   /**
    * Test to ensure that importing from a tuple with
+   * an invalid Y value does not add any entry.
+   */
+  @Test
+  public void testAddEntryFromTupleInvalidY() {
+    YailList tuple = createTuple(0f, "String");
+    model.addEntryFromTuple(tuple);
+
+    assertEquals(0, model.getDataset().getEntryCount());
+  }
+
+  /**
+   * Test to ensure that importing from a tuple with
    * invalid X and Y values does not add any entry.
    */
   @Test
