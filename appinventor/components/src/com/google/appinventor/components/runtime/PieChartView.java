@@ -155,8 +155,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   /**
-   * Resizes all the inner Pie Charts according to the
-   * total count of Pie Charts.
+   * Resizes, rescales and sets the radius of all the inner
+   * Pie Charts according to the total count of Pie Charts
+   * to create a representative concentric ring Pie Chart.
    */
   public void resizePieRings() {
     // Store width and height of last Pie Chart (since getHeight() and
@@ -164,46 +165,51 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     int lastWidth = 0;
     int lastHeight = 0;
 
+    // Calculate the reduction factor to apply to both the radius and the scaling.
+    // The primary reduction factor here is the count of Pie Chart rings. The
+    // more rings, the smaller the factor (so the main factor itself is 1/#rings)
+    // The constant 0.75f was carefully picked through trial and error. It could
+    // be changed to something else, which would result in the inner-most rings
+    // becoming smaller. A factor of pieHoleRadius/100f is added for the reason
+    // that Pie Charts with a very small pie hole radius require a lesser reduction
+    // factor to maintain a larger fill percentage.
     float reductionFactor = (0.75f + pieHoleRadius/100f) / pieCharts.size();
+
+    // Calculate the current fill radius of the Chart (100% is the maximum,
+    // so we subtract the pie hole radius from the 100% to get the part
+    // that is filled)
     float radius = (100f - pieHoleRadius);
-    float newRadius = 100f - radius * reductionFactor;
+
+    // Calculate the new hole radius. The radius is first multiplied
+    // by the reduction factor (we reduce the fill radius), and then
+    // the hole radius is calculated by subtracting the reduced radius
+    // from 100%./
+    float newHoleRadius = 100f - radius * reductionFactor;
 
     for (int i = 0; i < pieCharts.size(); ++i) {
       PieChart pieChart = pieCharts.get(i);
 
-      // Pie Chart non-last: expand radius
-      if (i != pieCharts.size() - 1) {
-        pieChart.setTransparentCircleRadius(newRadius);
-        pieChart.setHoleRadius(newRadius);
-        pieChart.setDrawHoleEnabled(true);
-      } else {
-        float setRadius = pieHoleRadius * (1f + Math.abs(newRadius - pieHoleRadius) / 100f);
-        pieChart.setTransparentCircleRadius(setRadius);
-        pieChart.setHoleRadius(setRadius);
-
-        if (pieHoleRadius == 0) {
-          pieChart.setDrawHoleEnabled(false);
-        }
-      }
+      // Change the radius of the Pie Chart according
+      // to the newly calculated hole radius
+      boolean lastChart = (i == pieCharts.size() - 1);
+      changePieChartRadius(pieChart, newHoleRadius, lastChart);
 
       // FP on i != 0 always false
       if (i != 0) { // Inner Chart
-        // Get the RelativeLayout parameters of the Pie Chart
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)(pieChart.getLayoutParams());
+        // Calculate the scaling factor to use for the width and
+        // height of the Chart. The hole radius essentially represnets
+        // how much free space is available inside the Chart. The value
+        // is then divided by 100 to get a fraction to use as the new size.
+        float scalingFactor = (newHoleRadius)/100f;
 
-        float scalingFactor = (newRadius)/100f;
-
-        // Compute new width & height
+        // Compute new width & height using the scaling factor
         lastWidth = (int)(lastWidth * scalingFactor);
         lastHeight = (int)(lastHeight * scalingFactor);
 
-        // Set width & height of the Pie Chart, and update the Layout parameters
-        // of the Chart
-        params.width = lastWidth;
-        params.height = lastHeight;
-        pieChart.setLayoutParams(params);
+        // Change the size of the current Pie Chart
+        changePieChartSize(pieChart, lastWidth, lastHeight);
       } else { // Root Chart
-        // Set last height & width
+        // Set last height & width to use for the subsequent Charts.
         lastHeight = pieChart.getHeight();
         lastWidth = pieChart.getWidth();
       }
@@ -216,6 +222,72 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       // TODO: adjust the bottom offset.
       pieChart.setExtraBottomOffset(7);
     }
+  }
+
+  /**
+   * Helper method to change the radius of the specified Pie Chart
+   * to the specified new radius. The new radius also depends on
+   * whether this is the last (inner-most) Chart or not.
+   * @param pieChart  Pie Chart to change radius of
+   * @param newHoleRadius  New radius to set to the Pie Chart
+   * @param lastChart  Boolean to indicate whether the specified Chart is the last one
+   */
+  private void changePieChartRadius(PieChart pieChart, float newHoleRadius, boolean lastChart) {
+    if (!lastChart) { // Outer rings
+      // Set the radius to the specified new hole radius
+      pieChart.setTransparentCircleRadius(newHoleRadius);
+      pieChart.setHoleRadius(newHoleRadius);
+
+      // Draw the hole in the Pie Chart to free space
+      // for subsequent inner Pie Charts
+      pieChart.setDrawHoleEnabled(true);
+    } else { // Inner-most ring
+      // Pie hole radius is 0; Disable drawing the hole in the Pie Chart
+      if (pieHoleRadius == 0) {
+        pieChart.setDrawHoleEnabled(false);
+      } else {
+        // TODO: Improvements can be mostly made on this part
+
+        // Calculate the difference between the new pie hole radius and the
+        // current pie hole radius. OBSERVATION: for r [0, 100], this difference
+        // will always be positive.
+        float delta = newHoleRadius - pieHoleRadius;
+
+        // Use 1f + delta% as a factor for the current pieHoleRadius.
+        // Through trial and error, this value worked better than
+        // using the pieHoleRadius or the newRadius directly on
+        // the inner Chart. Using the pieHoleRadius produces
+        // an inner-most Chart that is far too large than the outer
+        // rings, while using the newHoleRadius produces a radius that
+        // is too small for certain cases (holeRadius < 25%). Hence,
+        // some percentage is used here instead. (the higher the
+        // difference between the new and old radius, the bigger
+        // the new radius)
+        float setRadius = pieHoleRadius * (1f + (delta) / 100f);
+
+
+        // Set the hole radius of the Pie chart to the calculated radius
+        pieChart.setTransparentCircleRadius(setRadius);
+        pieChart.setHoleRadius(setRadius);
+      }
+    }
+  }
+
+  /**
+   * Changes the width & height of the specified Pie Chart.
+   * @param pieChart  Pie Chart to change width and height of
+   * @param width  New width
+   * @param height  New height
+   */
+  private void changePieChartSize(PieChart pieChart, int width, int height) {
+    // Get the RelativeLayout parameters of the Pie Chart
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)(pieChart.getLayoutParams());
+
+    // Set width & height of the Pie Chart, and update the Layout parameters
+    // of the Chart
+    params.width = width;
+    params.height = height;
+    pieChart.setLayoutParams(params);
   }
 
   /**
