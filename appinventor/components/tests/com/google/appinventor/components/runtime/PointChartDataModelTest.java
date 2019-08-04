@@ -692,10 +692,9 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testGetEntriesAsTuplesEmpty() {
-    final YailList expected = new YailList();
-    YailList result = model.getEntriesAsTuples();
+    ArrayList<YailList> tuples = new ArrayList<YailList>();
 
-    assertEquals(expected, result);
+    getEntriesAsTuplesHelper(tuples);
   }
 
 
@@ -710,11 +709,7 @@ public abstract class PointChartDataModelTest
       add(createTuple(1f, 3f));
     }};
 
-    YailList expected = YailList.makeList(tuples);
-    model.importFromList(expected);
-
-    YailList result =  model.getEntriesAsTuples();
-    assertEquals(expected, result);
+    getEntriesAsTuplesHelper(tuples);
   }
 
   /**
@@ -730,11 +725,7 @@ public abstract class PointChartDataModelTest
       add(createTuple(5f, 2f));
     }};
 
-    YailList expected = YailList.makeList(tuples);
-    model.importFromList(expected);
-
-    YailList result =  model.getEntriesAsTuples();
-    assertEquals(expected, result);
+    getEntriesAsTuplesHelper(tuples);
   }
 
   /**
@@ -748,7 +739,6 @@ public abstract class PointChartDataModelTest
     final float value = 5f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
-
     assertTrue(result);
   }
 
@@ -763,7 +753,6 @@ public abstract class PointChartDataModelTest
     final float value = 1f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
-
     assertTrue(result);
   }
 
@@ -778,7 +767,6 @@ public abstract class PointChartDataModelTest
     final float value = 2f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
-
     assertFalse(result);
   }
 
@@ -793,7 +781,6 @@ public abstract class PointChartDataModelTest
     final float value = 4f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
-
     assertTrue(result);
   }
 
@@ -808,7 +795,6 @@ public abstract class PointChartDataModelTest
     final float value = 14f;
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value + "");
-
     assertFalse(result);
   }
 
@@ -917,12 +903,10 @@ public abstract class PointChartDataModelTest
   @Test
   public void testGetEntryFromTuple() {
     YailList tuple = createTuple(3f, 4f);
-
     Entry expected = createEntry(3f, 4f);
-    Entry result = model.getEntryFromTuple(tuple);
 
-    assertEquals(expected.getX(), result.getX());
-    assertEquals(expected.getY(), result.getY());
+    Entry result = model.getEntryFromTuple(tuple);
+    assertEntriesEqual(expected, result);
   }
 
   /**
@@ -932,10 +916,9 @@ public abstract class PointChartDataModelTest
   @Test
   public void testGetEntryFromTupleTooSmall() {
     YailList tuple = createTuple(1f);
-
     Entry expected = null;
-    Entry result = model.getEntryFromTuple(tuple);
 
+    Entry result = model.getEntryFromTuple(tuple);
     assertEquals(expected, result);
   }
 
@@ -947,12 +930,10 @@ public abstract class PointChartDataModelTest
   @Test
   public void testGetEntryFromTupleTooLarge() {
     YailList tuple = createTuple(4f, 1f, 2f, 7f);
-
     Entry expected = createEntry(4f, 1f);
-    Entry result = model.getEntryFromTuple(tuple);
 
-    assertEquals(expected.getX(), result.getX());
-    assertEquals(expected.getY(), result.getY());
+    Entry result = model.getEntryFromTuple(tuple);
+    assertEntriesEqual(expected, result);
   }
 
   /**
@@ -973,15 +954,9 @@ public abstract class PointChartDataModelTest
       add(createEntry(5f, 7f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
+    List<List> removeEntries = new ArrayList<List>();
 
-    // Remove entries from empty List
-    List<YailList> removeEntries = new ArrayList<YailList>();
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**
@@ -1001,18 +976,12 @@ public abstract class PointChartDataModelTest
       add(createEntry(5f, 7f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
-
     // Remove entries
     List<List> removeEntries = new ArrayList<List>() {{
       add(Arrays.asList(3f, 1f));
     }};
 
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**
@@ -1036,9 +1005,6 @@ public abstract class PointChartDataModelTest
       add(createEntry(6f, 8f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
-
     // Remove entries
     List<List> removeEntries = new ArrayList<List>() {{
       add(Arrays.asList(0f, 1f));
@@ -1046,10 +1012,7 @@ public abstract class PointChartDataModelTest
       add(Arrays.asList(9f, 2f));
     }};
 
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**
@@ -1076,9 +1039,6 @@ public abstract class PointChartDataModelTest
       add(createEntry(6f, 8f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
-
     // Remove entries
     List<List> removeEntries = new ArrayList<List>() {{
       add(Arrays.asList(1f, 5f)); // Does not exist
@@ -1086,10 +1046,7 @@ public abstract class PointChartDataModelTest
       add(Arrays.asList(9f, 2f));
     }};
 
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**
@@ -1111,9 +1068,6 @@ public abstract class PointChartDataModelTest
       add(createEntry(1f, 10f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
-
     // Remove entries
     List<Object> removeEntries = new ArrayList<Object>() {{
       add(Arrays.asList(9f, 5f));
@@ -1121,10 +1075,7 @@ public abstract class PointChartDataModelTest
       add("test-string"); // invalid entry
     }};
 
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**
@@ -1144,18 +1095,12 @@ public abstract class PointChartDataModelTest
       add(createEntry(1f, 10f));
     }};
 
-    // Import the data
-    model.importFromList(tuples);
-
     // Remove entries
-    List<Object> removeEntries = new ArrayList<Object>() {{
+    List<List> removeEntries = new ArrayList<List>() {{
       add(createTuple(9f, 5f));
     }};
 
-    model.removeValues(removeEntries);
-
-    // Assert expected entries
-    assertExpectedEntriesHelper(expectedEntries);
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   /**

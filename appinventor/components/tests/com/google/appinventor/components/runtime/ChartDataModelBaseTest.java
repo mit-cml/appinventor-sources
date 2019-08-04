@@ -130,6 +130,18 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
     assertEquals(expected, result);
   }
 
+  protected void removeValuesHelper(List<YailList> tuples, List<Entry> expectedEntries,
+                                    List removeEntries) {
+    // Import the data
+    model.importFromList(tuples);
+
+    // Remove entries
+    model.removeValues(removeEntries);
+
+    // Assert expected entries
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
   /**
    * Helper method that asserts whether the specified two entries are equal.
    * This is needed because the MPAndroidChart library's equal method checks
