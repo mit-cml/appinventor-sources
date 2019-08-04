@@ -173,6 +173,32 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
     }
   }
 
+  /**
+   * Test case to ensure that attempting to remove
+   * a LegendEntry that does not exist in the Legend of
+   * the root Pie Chart view does not remove any entries
+   * at all.
+   */
+  @Test
+  public void testRemoveLegendEntryNonExistent() {
+    // Create a new Legend Entry and add it to the Legend
+    LegendEntry entry = new LegendEntry();
+    entry.label = "Entry";
+    chartView.addLegendEntry(entry);
+
+    // Create a different Legend Entry and attempt to remove it
+    // from the Legend
+    LegendEntry removeEntry = new LegendEntry();
+    removeEntry.label = "Test";
+    chartView.removeLegendEntry(removeEntry);
+
+    // Get the entries of the Legend and assert that no entries
+    // have been removed.
+    LegendEntry[] legendEntries = chart.getLegend().getEntries();
+    assertEquals(1, legendEntries.length);
+    assertEquals(entry, legendEntries[0]);
+  }
+
   @Override
   public int getType() {
     return ComponentConstants.CHART_TYPE_PIE;
