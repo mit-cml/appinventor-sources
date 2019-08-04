@@ -58,12 +58,30 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
     PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
 
     if (entry != null) {
-      dataset.addEntry(entry);
+      getDataset().addEntry(entry);
 
+      // Construct a new Legend Entry
       LegendEntry legendEntry = new LegendEntry();
-      legendEntry.label = tuple.getString(0);
-      legendEntry.formColor = dataset.getColors().get((dataset.getEntryCount() - 1) % dataset.getColors().size());
 
+      // The label of the Legend Entry should be the x value of the tuple
+      legendEntry.label = tuple.getString(0);
+
+      // Get the entry count of the Data series and the
+      // colors of the Data Series
+      int entries = getDataset().getEntryCount();
+      List<Integer> colors = getDataset().getColors();
+
+      // The index of the color value to use is the
+      // last entry (the one which has just been added)
+      // modulo the size of the colors List (since
+      // there could be less colors than entries)
+      int index = (entries - 1) % colors.size();
+
+      // Set the color of the Legend Entry
+      legendEntry.formColor = colors.get(index);
+
+      // Add the Legend Entry both to the local Legend Entries List and
+      // to the Legend of the view itself.
       legendEntries.add(legendEntry);
       view.addLegendEntry(legendEntry);
     }
@@ -172,7 +190,7 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
     }
 
     // Set the colors to the dataset
-    dataset.setColors(resultColors);
+    getDataset().setColors(resultColors);
 
     // Update the legend
     for (int i = 0; i < legendEntries.size(); ++i) {
