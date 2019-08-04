@@ -35,29 +35,6 @@ public abstract class PointChartDataModelTest
   }
 
   /**
-   * Tests whether an entry is correctly added to the Data Set
-   * upon calling the add entry method with x and y coordinates.
-   */
-//  @Test
-//  public void testAddEntry() {
-//    // Pre-condition: make sure there are no entries initially
-//    assertEquals(0, model.getDataset().getEntryCount());
-//
-//    // Add an entry
-//    float x = 4;
-//    float y = 5;
-//    model.addEntry(x, y);
-//
-//    // Ensure that the entry has been added
-//    assertEquals(1, model.getDataset().getEntryCount());
-//
-//    // Make sure that a correct entry has been added
-//    Entry entry = model.getDataset().getEntryForIndex(0);
-//    assertEquals(x, entry.getX());
-//    assertEquals(y, entry.getY());
-//  }
-
-  /**
    * Tests to ensure that Data Series entries are not changed
    * when passing in invalid input via setEelements.
    */
@@ -65,14 +42,12 @@ public abstract class PointChartDataModelTest
   public void testSetElementsInvalid() {
     String elements = "1, 2, 3, 4, A, B";
 
-    model.setElements(elements);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 2f));
-      add(new Entry(3f, 4f));
+      add(createEntry(1f, 2f));
+      add(createEntry(3f, 4f));
     }};
 
-    assertExpectedEntriesHelper(expectedEntries);
+    setElementsHelper(elements, expectedEntries);
   }
 
   /**
@@ -81,18 +56,15 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testSetElementsEven() {
-    // We are adding (1, 2), (2, 4), (3, 1)
-    // End result should be ordered by X value.
     String elements = "1, 2, 2, 4, 3, 1";
-    model.setElements(elements);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 2f));
-      add(new Entry(2f, 4f));
-      add(new Entry(3f, 1f));
+      add(createEntry(1f, 2f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, 1f));
     }};
 
-    assertExpectedEntriesHelper(expectedEntries);
+    setElementsHelper(elements, expectedEntries);
   }
 
   /**
@@ -102,15 +74,13 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testSetElementsOdd() {
-    // List length is odd
     String elements = "1, 3, 5";
-    model.setElements(elements);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
+      add(createEntry(1f, 3f));
     }};
 
-    assertExpectedEntriesHelper(expectedEntries);
+    setElementsHelper(elements, expectedEntries);
   }
 
   /**
@@ -123,15 +93,11 @@ public abstract class PointChartDataModelTest
       add(createTuple(1f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 2f));
+      add(createEntry(1f, 2f));
     }};
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
   }
 
   /**
@@ -148,19 +114,15 @@ public abstract class PointChartDataModelTest
       add(createTuple(5f, 3f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-2f, 3f));
-      add(new Entry(0f, 7f));
-      add(new Entry(1f, 5f));
-      add(new Entry(3f, 4f));
-      add(new Entry(5f, 3f));
+      add(createEntry(-2f, 3f));
+      add(createEntry(0f, 7f));
+      add(createEntry(1f, 5f));
+      add(createEntry(3f, 4f));
+      add(createEntry(5f, 3f));
     }};
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
   }
 
   @Override
@@ -182,17 +144,13 @@ public abstract class PointChartDataModelTest
       add(createTuple(5f, 5f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-2f, 7f));
-      add(new Entry(0f, 3f));
-      add(new Entry(5f, 5f));
+      add(createEntry(-2f, 7f));
+      add(createEntry(0f, 3f));
+      add(createEntry(5f, 5f));
     }};
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
   }
 
   /**
@@ -201,11 +159,10 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testImportFromListEmpty() {
-    YailList pairs = new YailList();
+    YailList tuples = new YailList();
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
   }
 
   /**
@@ -221,15 +178,11 @@ public abstract class PointChartDataModelTest
       add(createTuple(1f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 2f));
+      add(createEntry(1f, 2f));
     }};
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
   }
 
   /**
@@ -245,17 +198,101 @@ public abstract class PointChartDataModelTest
       add(createTuple(1f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 1f));
-      add(new Entry(1f, 1f));
-      add(new Entry(1f, 2f));
+      add(createEntry(1f, 1f));
+      add(createEntry(1f, 1f));
+      add(createEntry(1f, 2f));
     }};
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromListHelper(tuples, expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple YailList entries imports
+   * all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericList() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(createTuple(1f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(-2f, 3f));
+      add(createEntry(0f, 7f));
+      add(createEntry(1f, 5f));
+    }};
+
+    importFromListGenericHelper(tuples, expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing multiple List (instead of YailList)
+   * entries imports all of the entries successfully.
+   */
+  @Test
+  public void testImportFromListGenericListEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(Arrays.asList(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(-2f, 3f));
+      add(createEntry(0f, 7f));
+      add(createEntry(5f, 4f));
+    }};
+
+    importFromListGenericHelper(tuples, expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a generic List (instead of
+   * a YailList) containing invalid entries does not import the
+   * invalid entries, but imports the valid entries in the List.
+   */
+  @Test
+  public void testImportFromListInvalidEntries() {
+    ArrayList<Object> tuples = new ArrayList<Object>() {{
+      add(Collections.singletonList(-2f));
+      add(Arrays.asList(0f, 7f));
+      add("test-string");
+      add(Arrays.asList(3f, 1f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 7f));
+      add(createEntry(3f, 1f));
+    }};
+
+    importFromListHelper(tuples, expectedEntries);
+  }
+
+  /**
+   * Test to ensure that importing from a List containing
+   * mixed entries (both generic List and YailList)
+   * imports all of them.
+   */
+  @Test
+  public void testImportFromListMixedEntries() {
+    ArrayList<List> tuples = new ArrayList<List>() {{
+      add(Arrays.asList(-2f, 3f));
+      add(createTuple(0f, 7f));
+      add(Arrays.asList(5f, 4f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(-2f, 3f));
+      add(createEntry(0f, 7f));
+      add(createEntry(5f, 4f));
+    }};
+
+    importFromListHelper(tuples, expectedEntries);
   }
 
   /**
@@ -271,7 +308,7 @@ public abstract class PointChartDataModelTest
     model.addEntryFromTuple(tuple);
 
     Entry entry = model.getDataset().getEntryForIndex(0);
-    Entry expectedEntry = new Entry(xValue, yValue);
+    Entry expectedEntry = createEntry(xValue, yValue);
 
     assertEquals(1, model.getDataset().getEntryCount());
     assertEntriesEqual(expectedEntry, entry);
@@ -290,7 +327,7 @@ public abstract class PointChartDataModelTest
     model.addEntryFromTuple(tuple);
 
     Entry entry = model.getDataset().getEntryForIndex(0);
-    Entry expectedEntry = new Entry(xValue, yValue);
+    Entry expectedEntry = createEntry(xValue, yValue);
 
     assertEquals(1, model.getDataset().getEntryCount());
     assertEntriesEqual(expectedEntry, entry);
@@ -370,30 +407,10 @@ public abstract class PointChartDataModelTest
   public void testImportFromCSVEmpty() {
     YailList xColumn = createTuple();
     YailList yColumn = createTuple();
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
-  }
-
-  /**
-   * Test to ensure that importing from two empty columns with
-   * a row size greater than 1 triggers the default option, which
-   * populates values automatically starting from 1 and incrementing
-   * on each new entry.
-   */
-  @Test
-  public void testImportFromCSVEmptyDefaultOption() {
-    YailList xColumn = createTuple();
-    YailList yColumn = createTuple();
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
-
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
   /**
@@ -406,17 +423,15 @@ public abstract class PointChartDataModelTest
   public void testImportFromCSVEmptyColumn() {
     YailList xColumn = createTuple();
     YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
-      add(new Entry(2f, 5f));
-      add(new Entry(3f, -3f));
-      add(new Entry(4f, 7f));
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 5f));
+      add(createEntry(3f, -3f));
+      add(createEntry(4f, 7f));
     }};
 
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
   /**
@@ -427,12 +442,10 @@ public abstract class PointChartDataModelTest
   public void testImportFromCSVOneRow() {
     YailList xColumn = createTuple("X");
     YailList yColumn = createTuple("Y");
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
 
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
   /**
@@ -444,14 +457,12 @@ public abstract class PointChartDataModelTest
   public void testImportFromCSVOneEntry() {
     YailList xColumn = createTuple("X", 2);
     YailList yColumn = createTuple("Y", 4);
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(2f, 4f));
+      add(createEntry(2f, 4f));
     }};
 
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
   /**
@@ -462,18 +473,16 @@ public abstract class PointChartDataModelTest
   public void testImportFromCSVManyEntries() {
     YailList xColumn = createTuple("X", 2, 3, 5, 7, 9);
     YailList yColumn = createTuple("Y", 4, 1, 3, 6, 10);
-    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(2f, 4f));
-      add(new Entry(3f, 1f));
-      add(new Entry(5f, 3f));
-      add(new Entry(7f, 6f));
-      add(new Entry(9f, 10f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, 1f));
+      add(createEntry(5f, 3f));
+      add(createEntry(7f, 6f));
+      add(createEntry(9f, 10f));
     }};
 
-    model.importFromCSV(columns);
-    assertExpectedEntriesHelper(expectedEntries);
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
   /**
@@ -489,22 +498,16 @@ public abstract class PointChartDataModelTest
       add(createTuple(7f, 4f));
       add(createTuple(11f, 3f));
     }};
-
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(0f, 3f));
-      add(new Entry(2f, 7f));
-      add(new Entry(7f, 4f));
-      add(new Entry(11f, 3f));
+      add(createEntry(0f, 3f));
+      add(createEntry(2f, 7f));
+      add(createEntry(7f, 4f));
+      add(createEntry(11f, 3f));
     }};
 
     YailList deleteTuple = createTuple(4f, 5f);
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    model.removeEntryFromTuple(deleteTuple);
-    assertExpectedEntriesHelper(expectedEntries);
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   /**
@@ -519,19 +522,14 @@ public abstract class PointChartDataModelTest
       add(createTuple(1f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 1f));
-      add(new Entry(1f, 2f));
+      add(createEntry(1f, 1f));
+      add(createEntry(1f, 2f));
     }};
 
     YailList deleteTuple = createTuple(1f, 1f);
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    model.removeEntryFromTuple(deleteTuple);
-    assertExpectedEntriesHelper(expectedEntries);
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   /**
@@ -546,20 +544,15 @@ public abstract class PointChartDataModelTest
       add(createTuple(5f, 9f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
-      add(new Entry(2f, 4f));
-      add(new Entry(5f, 9f));
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 4f));
+      add(createEntry(5f, 9f));
     }};
 
     YailList deleteTuple = createTuple(7f, 2f);
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    model.removeEntryFromTuple(deleteTuple);
-    assertExpectedEntriesHelper(expectedEntries);
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   /**
@@ -573,19 +566,14 @@ public abstract class PointChartDataModelTest
       add(createTuple(5f, 2f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
-      add(new Entry(5f, 2f));
+      add(createEntry(1f, 3f));
+      add(createEntry(5f, 2f));
     }};
 
     YailList deleteTuple = createTuple(5f);
 
-    // Import the data and assert all the entries
-    model.importFromList(pairs);
-    model.removeEntryFromTuple(deleteTuple);
-    assertExpectedEntriesHelper(expectedEntries);
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   /**
@@ -600,12 +588,9 @@ public abstract class PointChartDataModelTest
       add(createTuple(7f, 3f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     YailList searchTuple = createTuple(7f, 3f);
 
-    model.importFromList(pairs);
-    assertTrue(model.doesEntryExist(searchTuple));
+    doesEntryExistHelper(tuples, searchTuple, true);
   }
 
   /**
@@ -620,12 +605,9 @@ public abstract class PointChartDataModelTest
       add(createTuple(7f, 3f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     YailList searchTuple = createTuple(9f, 1f);
 
-    model.importFromList(pairs);
-    assertFalse(model.doesEntryExist(searchTuple));
+    doesEntryExistHelper(tuples, searchTuple, false);
   }
 
   /**
@@ -640,12 +622,9 @@ public abstract class PointChartDataModelTest
       add(createTuple(7f, 3f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-
     YailList searchTuple = createTuple(9f);
 
-    model.importFromList(pairs);
-    assertFalse(model.doesEntryExist(searchTuple));
+    doesEntryExistHelper(tuples, searchTuple, false);
   }
 
   /**
@@ -661,15 +640,10 @@ public abstract class PointChartDataModelTest
       add(createTuple(9f, 1f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-    model.importFromList(pairs);
-
-    Entry searchEntry = new Entry(7f, 3f);
+    Entry searchEntry = createEntry(7f, 3f);
     final int expectedIndex = 2;
 
-
-    int result = model.findEntryIndex(searchEntry);
-    assertEquals(expectedIndex, result);
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
   }
 
   /**
@@ -687,15 +661,10 @@ public abstract class PointChartDataModelTest
       add(createTuple(3f, 4f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-    model.importFromList(pairs);
-
-    Entry searchEntry = new Entry(2f, 3f);
+    Entry searchEntry = createEntry(2f, 3f);
     final int expectedIndex = 3;
 
-
-    int result = model.findEntryIndex(searchEntry);
-    assertEquals(expectedIndex, result);
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
   }
 
   /**
@@ -711,14 +680,10 @@ public abstract class PointChartDataModelTest
       add(createTuple(9f, 1f));
     }};
 
-    YailList pairs = YailList.makeList(tuples);
-    model.importFromList(pairs);
-
-    Entry searchEntry = new Entry(11f, 1f);
+    Entry searchEntry = createEntry(11f, 1f);
     final int expectedIndex = -1;
 
-    int result = model.findEntryIndex(searchEntry);
-    assertEquals(expectedIndex, result);
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
   }
 
   /**
@@ -778,7 +743,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testCriterionSatisfiedAll() {
-    Entry entry = new Entry(1f, 3f);
+    Entry entry = createEntry(1f, 3f);
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.All;
     final float value = 5f;
 
@@ -793,7 +758,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testCriterionSatisfiedXMatch() {
-    Entry entry = new Entry(1f, 4f);
+    Entry entry = createEntry(1f, 4f);
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
     final float value = 1f;
 
@@ -808,7 +773,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testCriterionSatisfiedXNoMatch() {
-    Entry entry = new Entry(5f, 2f);
+    Entry entry = createEntry(5f, 2f);
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
     final float value = 2f;
 
@@ -823,7 +788,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testCriterionSatisfiedYMatch() {
-    Entry entry = new Entry(2f, 4f);
+    Entry entry = createEntry(2f, 4f);
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
     final float value = 4f;
 
@@ -838,7 +803,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testCriterionSatisfiedYNoMatch() {
-    Entry entry = new Entry(7f, 15f);
+    Entry entry = createEntry(7f, 15f);
     final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.YValue;
     final float value = 14f;
 
@@ -937,7 +902,7 @@ public abstract class PointChartDataModelTest
    */
   @Test
   public void testGetTupleFromEntry() {
-    Entry entry = new Entry(2f, 3f);
+    Entry entry = createEntry(2f, 3f);
 
     YailList expected = createTuple(2f, 3f);
     YailList result = model.getTupleFromEntry(entry);
@@ -953,7 +918,7 @@ public abstract class PointChartDataModelTest
   public void testGetEntryFromTuple() {
     YailList tuple = createTuple(3f, 4f);
 
-    Entry expected = new Entry(3f, 4f);
+    Entry expected = createEntry(3f, 4f);
     Entry result = model.getEntryFromTuple(tuple);
 
     assertEquals(expected.getX(), result.getX());
@@ -983,107 +948,11 @@ public abstract class PointChartDataModelTest
   public void testGetEntryFromTupleTooLarge() {
     YailList tuple = createTuple(4f, 1f, 2f, 7f);
 
-    Entry expected = new Entry(4f, 1f);
+    Entry expected = createEntry(4f, 1f);
     Entry result = model.getEntryFromTuple(tuple);
 
     assertEquals(expected.getX(), result.getX());
     assertEquals(expected.getY(), result.getY());
-  }
-
-  /**
-   * Test to ensure that importing from a generic List (instead of
-   * a YailList) containing multiple YailList entries imports
-   * all of the entries successfully.
-   */
-  @Test
-  public void testImportFromListGenericList() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(-2f, 3f));
-      add(createTuple(0f, 7f));
-      add(createTuple(1f, 5f));
-    }};
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-2f, 3f));
-      add(new Entry(0f, 7f));
-      add(new Entry(1f, 5f));
-    }};
-
-    // Import the data and assert all the entries
-    model.importFromList(tuples);
-    assertExpectedEntriesHelper(expectedEntries);
-  }
-
-  /**
-   * Test to ensure that importing from a generic List (instead of
-   * a YailList) containing multiple List (instead of YailList)
-   * entries imports all of the entries successfully.
-   */
-  @Test
-  public void testImportFromListGenericListEntries() {
-    ArrayList<List> tuples = new ArrayList<List>() {{
-      add(Arrays.asList(-2f, 3f));
-      add(Arrays.asList(0f, 7f));
-      add(Arrays.asList(5f, 4f));
-    }};
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-2f, 3f));
-      add(new Entry(0f, 7f));
-      add(new Entry(5f, 4f));
-    }};
-
-    // Import the data and assert all the entries
-    model.importFromList(tuples);
-    assertExpectedEntriesHelper(expectedEntries);
-  }
-
-  /**
-   * Test to ensure that importing from a generic List (instead of
-   * a YailList) containing invalid entries does not import the
-   * invalid entries, but imports the valid entries in the List.
-   */
-  @Test
-  public void testImportFromListInvalidEntries() {
-    ArrayList<Object> tuples = new ArrayList<Object>() {{
-      add(Collections.singletonList(-2f));
-      add(Arrays.asList(0f, 7f));
-      add("test-string");
-      add(Arrays.asList(3f, 1f));
-    }};
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(0f, 7f));
-      add(new Entry(3f, 1f));
-    }};
-
-    // Import the data and assert all the entries
-    model.importFromList(tuples);
-    assertExpectedEntriesHelper(expectedEntries);
-  }
-
-  /**
-   * Test to ensure that importing from a List containing
-   * mixed entries (both generic List and YailList)
-   * imports all of them.
-   */
-  @Test
-  public void testImportFromListMixedEntries() {
-    ArrayList<List> tuples = new ArrayList<List>() {{
-      add(Arrays.asList(-2f, 3f));
-      add(createTuple(0f, 7f));
-      add(Arrays.asList(5f, 4f));
-    }};
-
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(-2f, 3f));
-      add(new Entry(0f, 7f));
-      add(new Entry(5f, 4f));
-    }};
-
-    // Import the data and assert all the entries
-    model.importFromList(tuples);
-    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -1099,9 +968,9 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, -1f));
-      add(new Entry(3f, 1f));
-      add(new Entry(5f, 7f));
+      add(createEntry(1f, -1f));
+      add(createEntry(3f, 1f));
+      add(createEntry(5f, 7f));
     }};
 
     // Import the data
@@ -1128,8 +997,8 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, -1f));
-      add(new Entry(5f, 7f));
+      add(createEntry(1f, -1f));
+      add(createEntry(5f, 7f));
     }};
 
     // Import the data
@@ -1162,9 +1031,9 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
-      add(new Entry(5f, 4f));
-      add(new Entry(6f, 8f));
+      add(createEntry(1f, 3f));
+      add(createEntry(5f, 4f));
+      add(createEntry(6f, 8f));
     }};
 
     // Import the data
@@ -1201,10 +1070,10 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(0f, 1f));
-      add(new Entry(1f, 3f));
-      add(new Entry(3f, 2f));
-      add(new Entry(6f, 8f));
+      add(createEntry(0f, 1f));
+      add(createEntry(1f, 3f));
+      add(createEntry(3f, 2f));
+      add(createEntry(6f, 8f));
     }};
 
     // Import the data
@@ -1238,8 +1107,8 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(0f, 3f));
-      add(new Entry(1f, 10f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 10f));
     }};
 
     // Import the data
@@ -1271,8 +1140,8 @@ public abstract class PointChartDataModelTest
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(0f, 3f));
-      add(new Entry(1f, 10f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 10f));
     }};
 
     // Import the data
@@ -1299,7 +1168,7 @@ public abstract class PointChartDataModelTest
     model.addTimeEntry(timeEntry);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(1f, 3f));
+      add(createEntry(1f, 3f));
     }};
 
     assertExpectedEntriesHelper(expectedEntries);
@@ -1331,33 +1200,20 @@ public abstract class PointChartDataModelTest
     }
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(new Entry(4f, 2f));
-      add(new Entry(5f, 1f));
-      add(new Entry(6f, 7f));
-      add(new Entry(7f, 1f));
-      add(new Entry(8f, 5f));
+      add(createEntry(4f, 2f));
+      add(createEntry(5f, 1f));
+      add(createEntry(6f, 7f));
+      add(createEntry(7f, 1f));
+      add(createEntry(8f, 5f));
     }};
 
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-//  /**
-//   * Test to ensure that passing in a row size
-//   * less than the size of the columns imports
-//   * only those select entries.
-//   */
-//  @Test
-//  public void testImportFromCSVLimitRows() {
-//    final int rows = 2;
-//    YailList xColumn = createTuple("X", 1, 4, 7, 9);
-//    YailList yColumn = createTuple("Y", -2, -3, 9, 8);
-//    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
-//
-//    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-//      add(new Entry(1f, -2f));
-//    }};
-//
-//    model.importFromCSV(columns);
-//    assertExpectedEntriesHelper(expectedEntries);
-//  }
+  @Override
+  protected Entry createEntry(Object... entries) {
+    float x = (float) entries[0];
+    float y = (float) entries[1];
+    return new Entry(x, y);
+  }
 }

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -54,7 +55,7 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
    *
    * @param expectedEntries  list of expected entries
    */
-  protected void assertExpectedEntriesHelper(ArrayList<Entry> expectedEntries) {
+  protected void assertExpectedEntriesHelper(List<Entry> expectedEntries) {
     // Make sure the number of entries parsed is correct
     assertEquals(expectedEntries.size(), model.getDataset().getEntryCount());
 
@@ -70,6 +71,57 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
     }
   }
 
+  protected void setElementsHelper(String elements, List<Entry> expectedEntries) {
+    model.setElements(elements);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  protected void importFromListHelper(List tuples, List<Entry> expectedEntries) {
+    YailList pairs = YailList.makeList(tuples);
+
+    // Import the data and assert all the entries
+    model.importFromList(pairs);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  protected void importFromListGenericHelper(List tuples, List<Entry> expectedEntries) {
+    model.importFromList(tuples);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  protected void importFromCSVHelper(List<Entry> expectedEntries, YailList... columns) {
+    YailList columnList = YailList.makeList(columns);
+
+    model.importFromCSV(columnList);
+    assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  protected void removeEntryFromTupleHelper(List<YailList> tuples, List<Entry> expectedEntries,
+                                            YailList deleteTuple) {
+      YailList pairs = YailList.makeList(tuples);
+
+      // Import the data, remove the entry and assert all the entries
+      model.importFromList(pairs);
+      model.removeEntryFromTuple(deleteTuple);
+      assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  protected void doesEntryExistHelper(List<YailList> tuples, YailList searchTuple, boolean expected) {
+    YailList pairs = YailList.makeList(tuples);
+
+    model.importFromList(pairs);
+    boolean result = model.doesEntryExist(searchTuple);
+    assertEquals(expected, result);
+  }
+
+  protected void findEntryIndexHelper(List<YailList> tuples, Entry searchEntry, int expectedIndex) {
+    YailList pairs = YailList.makeList(tuples);
+    model.importFromList(pairs);
+
+    int result = model.findEntryIndex(searchEntry);
+    assertEquals(expectedIndex, result);
+  }
+
   /**
    * Helper method that asserts whether the specified two entries are equal.
    * This is needed because the MPAndroidChart library's equal method checks
@@ -83,4 +135,6 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
   protected YailList createTuple(Object... entries) {
     return YailList.makeList(entries);
   }
+
+  protected abstract Entry createEntry(Object... entries);
 }
