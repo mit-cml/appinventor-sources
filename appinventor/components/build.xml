@@ -170,6 +170,8 @@
     <!-- Add extension libraries here -->
     <!-- Example: <copy toFile"${public.deps.dir}/my-dependency.jar" file="${lib.dir}/my-dependency/my-dependency-1.0.0.jar" /> -->
     <!-- Remember to include my-dependency.jar in the @UsesLibraries annotation in the extension -->
+    <copy toFile"${public.deps.dir}/onesignal.jar" file="${lib.dir}/newcomponent/onesignal.jar" />
+    <copy toFile"${public.deps.dir}/google-play-services.jar" file="${lib.dir}/newcomponent/google-play-services.jar" />
   </target>
 
   <path id="AndroidRuntime.path">
