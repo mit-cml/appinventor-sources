@@ -106,6 +106,9 @@ public final class Compiler {
   private static final String DEFAULT_VERSION_NAME = "1.0";
   private static final String DEFAULT_MIN_SDK = "14";
   private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
+  
+  //todo: DON NOT hard code this. this should come in from project fileimporter. Maybe through annotation??
+  private static final String DEFAULT_APP_ID = "AppId";  // the onesignal default push notification app i
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -269,6 +272,7 @@ public final class Compiler {
   private File libsDir; // The directory that will contain any native libraries for packaging
   private String dexCacheDir;
   private boolean hasSecondDex = false; // True if classes2.dex should be added to the APK
+  private boolean hasThirdDex = false; // True if classes3.dex should be added to the APK
 
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
@@ -284,6 +288,7 @@ public final class Compiler {
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
   
+  private String simpleCompTypesString="";
   private static String minSDK;
   /*
    * Generate the set of Android permissions needed by this project.
@@ -797,6 +802,7 @@ public final class Compiler {
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
+    String appId = (project.getAppId() == null) ? DEFAULT_APP_ID : cleanName(project.getAppId().trim());
     minSDK = (project.getMinApi() == null) ? DEFAULT_MIN_SDK : cleanName(project.getMinApi().trim());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
@@ -969,6 +975,49 @@ public final class Compiler {
           out.write("      </intent-filter>\n");
           out.write("    </activity>\n");
         }
+        
+        if (simpleCompTypesString.contains("OneSignalPush")) {
+                out.write("<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\"/>\n");
+                out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\"/>");
+
+                out.write("<receiver android:name=\"com.onesignal.GcmBroadcastReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\">");
+                out.write("   <intent-filter>");
+                out.write("   <action android:name=\"com.google.android.c2dm.intent.RECEIVE\"/>");
+                out.write("   <category android:name=\"" + packageName + "\"/>");
+                out.write("</intent-filter>");
+                out.write("</receiver>");
+
+                out.write("<receiver android:name=\"com.onesignal.NotificationOpenedReceiver\"/>");
+                out.write("<service android:name=\"com.onesignal.GcmIntentService\"/>");
+                out.write("<service android:name=\"com.onesignal.SyncService\" android:stopWithTask=\"false\"/>");
+                out.write("<activity android:name=\"com.onesignal.PermissionsActivity\" android:theme=\"@android:style/Theme.Translucent.NoTitleBar\"/>");
+                out.write("<service android:name=\"com.onesignal.NotificationRestoreService\"/>");
+                out.write("<receiver android:name=\"com.onesignal.BootUpReceiver\">");
+                out.write("   <intent-filter>");
+                out.write("       <action android:name=\"android.intent.action.BOOT_COMPLETED\"/>");
+                out.write("       <action android:name=\"android.intent.action.QUICKBOOT_POWERON\"/>");
+                out.write("   </intent-filter>");
+                out.write("</receiver>");
+                out.write("        <service android:name=\"com.onesignal.SyncJobService\" android:permission=\"android.permission.BIND_JOB_SERVICE\" />\n");
+
+                out.write("<receiver android:name=\"com.onesignal.UpgradeReceiver\">");
+                out.write("    <intent-filter>");
+                out.write("       <action android:name=\"android.intent.action.MY_PACKAGE_REPLACED\"/>");
+                out.write("    </intent-filter>");
+                out.write("</receiver>");
+
+            }
+
+            //OneSignal
+            if (simpleCompTypesString.contains("OneSignalPush") || isForCompanion) {
+                out.write("<activity android:name=\"com.google.android.gms.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\"/>");
+                out.write("<meta-data android:name=\"com.google.android.gms.version\" android:value=\"10084000\"/>");
+            }
+        
+           if (simpleCompTypesString.contains("OneSignalPush") || isForCompanion) {
+                out.write("<meta-data android:name=\"onesignal_app_id\" android:value=\"" + appId + "\"/>");
+            }
+
       }
 
       // Collect any additional <application> subelements into a single set.
@@ -1324,6 +1373,9 @@ public final class Compiler {
         apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
           "classes2.dex");
       }
+	  if (hasThirdDex) {
+        apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes3.dex"), "classes3.dex");
+      }
       if (nativeLibsNeeded.size() != 0) { // Need to add native libraries...
         apkBuilder.addNativeLibraries(libsDir);
       }
@@ -1668,18 +1720,28 @@ public final class Compiler {
     List<File> libList = new ArrayList<File>();
     List<File> inputList = new ArrayList<File>();
     List<File> class2List = new ArrayList<File>();
+	List<File> class3List = new ArrayList<File>();
     inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
 
-    for (String jar : SUPPORT_JARS) {
-      inputList.add(new File(getResource(jar)));
+    String googlePlayServicesLibFile = null;
+	
+    for (String lib : uniqueLibsNeeded) {
+      if (lib.contains("google-play-services")) {
+//        class2List.add(new File(lib));
+        googlePlayServicesLibFile = lib;
+        System.out.println("**** adding google-play-services");
+      }else {
+        libList.add(new File(lib));
+      }
     }
 
-    for (String lib : uniqueLibsNeeded) {
-      libList.add(new File(lib));
+    for (String jar : SUPPORT_JARS) {
+     inputList.add(new File(getResource(jar)));
     }
+	
 
     // BEGIN DEBUG -- XXX --
     // System.err.println("runDx -- libraries");
@@ -1721,6 +1783,30 @@ public final class Compiler {
         class2List.add(libList.get(i));
       }
     }
+	
+	//For multidexing, naming convention of classes2, classes3 should be followed.
+    //As result, we check to see if we have classes2 or not. If google-play-services-lib
+    // is needed AND classes2 lib files exist, then we load the googlePlayServices lib into
+    // classes3 else into classes2
+    if (googlePlayServicesLibFile != null) {
+      if (class2List.size() == 0) {
+        //add it to classes2List
+        class2List.add(new File(googlePlayServicesLibFile));
+      } else {
+        //otherwise add it to class3List
+        class3List.add(new File(googlePlayServicesLibFile));
+      }
+    }
+	
+	// Need to overcome the 65k method limit, we move the kawa jar to either classes2 or classes3
+        // This apparently isn't needed for companion. If build companion, then it'll create
+        if (!isForCompanion) {
+            if (class2List.size() == 0) {
+                class2List.add(new File(getResource(KAWA_RUNTIME)));
+            } else {
+                class3List.add(new File(getResource(KAWA_RUNTIME)));
+            }
+        }
 
     DexExecTask dexTask = new DexExecTask();
     dexTask.setExecutable(getResource(DX_JAR));
@@ -1740,6 +1826,11 @@ public final class Compiler {
     synchronized (SYNC_KAWA_OR_DX) {
       setProgress(50);
       dxSuccess = dexTask.execute(inputList);
+	  if (class3List.size() > 0) {
+        dexTask.setOutput(dexedClassesDir + File.separator + "classes3.dex");
+        dxSuccess = dexTask.execute(class3List);
+        hasThirdDex = true;
+      }
       if (dxSuccess && (class2List.size() > 0)) {
         setProgress(60);
         dexTask.setOutput(dexedClassesDir + File.separator + "classes2.dex");
@@ -1747,6 +1838,15 @@ public final class Compiler {
         dxSuccess = dexTask.execute(class2List);
         setProgress(75);
         hasSecondDex = true;
+		if (dxSuccess && class3List.size() > 0) {
+          System.out.println("***** has class3List");
+          setProgress(80);
+          dexTask.setOutput(dexedClassesDir + File.separator + "classes3.dex");
+          //inputList = new ArrayList<File>();
+          dxSuccess = dexTask.execute(class3List);
+          setProgress(82);
+          hasThirdDex = true;
+        }
       } else if (!dxSuccess) {  // The initial dx blew out, try more conservative
         LOG.info("DX execution failed, trying with fewer libraries.");
         if (secondTry) {        // Already tried the more conservative approach!
