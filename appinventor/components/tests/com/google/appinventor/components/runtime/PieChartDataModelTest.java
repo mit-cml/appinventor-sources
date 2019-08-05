@@ -351,6 +351,115 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     checkLegendHelper(expectedEntries);
   }
 
+  /**
+   * Test case to ensure that removing a single entry
+   * from the Data Series removes the corresponding
+   * Legend Entry properly.
+   */
+  @Test
+  public void testCheckLegendRemoveEntry() {
+    final int color = Color.BLUE;
+    model.setColor(color);
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry 1", 5f));
+      add(createTuple("Entry 2", 3f));
+      add(createTuple("Entry 3", 7f));
+      add(createTuple("Entry 4", 1f));
+    }};
+
+    model.importFromList(tuples);
+    model.removeEntryFromTuple(createTuple("Entry 2", 3f));
+
+    LegendEntry[] expectedEntries = {
+        createLegendEntry("Entry 1", color),
+        createLegendEntry("Entry 3", color),
+        createLegendEntry("Entry 4", color)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that removing a single entry
+   * from the Data Series removes the corresponding
+   * Legend Entry properly.
+   */
+  @Test
+  public void testCheckLegendRemoveMultipleEntries() {
+    List<Integer> colorList = new ArrayList<Integer>() {{
+      add(Color.RED);
+      add(Color.GREEN);
+      add(Color.BLUE);
+      add(Color.CYAN);
+      add(Color.YELLOW);
+    }};
+
+    YailList colors = YailList.makeList(colorList);
+
+    model.setColors(colors);
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 5f));
+      add(createTuple("Test", 5f));
+      add(createTuple("Random", 1f));
+      add(createTuple("Slice", 12f));
+      add(createTuple("Pie Slice", 10f));
+      add(createTuple("test", 17f));
+    }};
+
+    model.importFromList(tuples);
+    model.removeEntryFromTuple(createTuple("Entry", 5f));
+    model.removeEntryFromTuple(createTuple("Slice", 12f));
+    model.removeEntryFromTuple(createTuple("test", 17f));
+
+    LegendEntry[] expectedEntries = {
+        createLegendEntry("Test", Color.RED),
+        createLegendEntry("Random", Color.GREEN),
+        createLegendEntry("Pie Slice", Color.BLUE)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that removing entries from
+   * different Data Models properly changes the
+   * Legend of the Data model.
+   */
+  @Test
+  public void testCheckLegendRemoveEntriesFromMultipleDataSets() {
+    final int color1 = Color.CYAN;
+    final int color2 = Color.MAGENTA;
+    final int color3 = Color.YELLOW;
+
+    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
+
+    model.setColor(color1);
+    model2.setColor(color2);
+    model3.setColor(color3);
+
+    model.addEntryFromTuple(createTuple("Entry 1", 2f));
+    model2.addEntryFromTuple(createTuple("Model 2 Entry 1", 1f));
+    model.addEntryFromTuple(createTuple("Entry 2", 7f));
+    model2.addEntryFromTuple(createTuple("Model 2 Entry 1", 1f));
+    model.addEntryFromTuple(createTuple("Entry 3", 10f));
+    model3.addEntryFromTuple(createTuple("Model 3 Entry", 7f));
+
+    model.removeEntryFromTuple(createTuple("Entry 2", 7f));
+    model2.removeEntryFromTuple(createTuple("Model 2 Entry 1", 1f));
+
+    LegendEntry[] expectedEntries = {
+        createLegendEntry("Entry 1", color1),
+        createLegendEntry("Model 2 Entry 1", color2),
+        createLegendEntry("Entry 3", color1),
+        createLegendEntry("Model 3 Entry", color3)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
     LegendEntry[] legendEntries = legend.getEntries();
 

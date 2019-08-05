@@ -100,8 +100,13 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
       // Entry exists; remove it
       if (index >= 0) {
         getDataset().removeEntry(index);
+
+        // Remove the corresponding Legend entry (same index as Data Set index)
         LegendEntry removedEntry = legendEntries.remove(index);
         view.removeLegendEntry(removedEntry);
+
+        // Update the colors of the Legend entries
+        updateLegendColors();
       }
     }
   }
@@ -190,21 +195,10 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
       }
     }
 
-    // Set the colors to the dataset
+    // Set the colors to the dataset and updates the
+    // colors of the Legend entries.
     getDataset().setColors(resultColors);
-
-    // Update the legend
-    for (int i = 0; i < legendEntries.size(); ++i) {
-      // Since the number of colors might be less, the index
-      // of the color to use should be modulo the color count
-      int index = i % getDataset().getColors().size();
-
-      // Set the corresponding color to the Legend entry (since
-      // LegendEntry is referenced, this will automatically update
-      // the central Legend that contains all the entries, and not
-      // just the local ones)
-      legendEntries.get(i).formColor = getDataset().getColors().get(index);
-    }
+    updateLegendColors();
   }
 
   @Override
@@ -231,5 +225,24 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
     return p1.getLabel().equals(p2.getLabel()) // x value comparison
         && p1.getY() == p2.getY(); // y value comparison
+  }
+
+  /**
+   * Updates the colors of the Legend Entries based
+   * on the colors of the Data Series.
+   */
+  private void updateLegendColors() {
+    // Update the legend
+    for (int i = 0; i < legendEntries.size(); ++i) {
+      // Since the number of colors might be less, the index
+      // of the color to use should be modulo the color count
+      int index = i % getDataset().getColors().size();
+
+      // Set the corresponding color to the Legend entry (since
+      // LegendEntry is referenced, this will automatically update
+      // the central Legend that contains all the entries, and not
+      // just the local ones)
+      legendEntries.get(i).formColor = getDataset().getColors().get(index);
+    }
   }
 }

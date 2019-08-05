@@ -13,7 +13,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * Base class for ChartDataModel tests.
+ * Base class for ChartDataMod*el tests.
  *
  * Tests the integration with the MPAndroidChart library
  * classes by actually operating on the Data Series objects.
