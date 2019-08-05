@@ -203,7 +203,7 @@ public class DexExecTask  {
         if (mVerbose) {
             commandLineList.add("--verbose");
         }
-
+        commandLineList.add("--force-jumbo");
         commandLineList.add("--output=" + output);
 
         for (File input : inputs) {
