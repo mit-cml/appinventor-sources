@@ -3,6 +3,11 @@ package com.google.appinventor.components.runtime.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides utility functions for Chart Data Source related functionality,
+ * such as converting columns to rows. Used primarily by Chart compatible
+ * Data Sources.
+ */
 public class ChartDataSourceUtil {
   /**
    * Prevent instantiation.

@@ -453,7 +453,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected abstract YailList getDefaultValues(int size);
 
+    /**
+     * Returns default tuple entry value to use when a value
+     * is not present.
+     * @param index  index for the value
+     * @return  value corresponding to the specified index
+     */
     protected String getDefaultValue(int index) {
+        // Return value which directly corresponds to the index
+        // number. So default values go as 0, 1, 2, ..., N
         return index + "";
     }
 

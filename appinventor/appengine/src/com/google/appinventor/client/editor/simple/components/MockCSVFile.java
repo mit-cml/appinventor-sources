@@ -68,7 +68,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
       @Override
       public void onSuccess(List<List<String>> result) {
-        // Update rows & columnNames properties
+        // Update columns property
         columns = result;
 
         if (result.isEmpty()) {
@@ -76,9 +76,11 @@ public class MockCSVFile extends MockNonVisibleComponent {
           return;
         }
 
+        // Populate columnNames List (it was empty before)
         for (int i = 0; i < columns.size(); ++i) {
           List<String> column = columns.get(i);
 
+          // Add first element of the column if the column is not empty
           if (!column.isEmpty()) {
             columnNames.add(column.get(0));
           }
@@ -136,7 +138,6 @@ public class MockCSVFile extends MockNonVisibleComponent {
    * @return  List of Strings representing the column
    * */
   private List<String> getColumn(int index) {
-    // TODO: Room for optimization by storing columns locally post-read
     List<String> column = new ArrayList<String>();
 
     // If index is invalid, return empty List

@@ -56,6 +56,7 @@ final class ServerJsonNumber extends ServerJsonValue implements JSONNumber {
     return "" + value;
   }
 
+  @Override
   public String toString() {
     return toJson();
   }

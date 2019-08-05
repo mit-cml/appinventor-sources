@@ -358,14 +358,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Loads the file information associated with a node in the project tree. After
    * loading the file, the contents of it are parsed.
    *
-   * Expected format is CSV.
-   *
-   * TODO: Support JSON
+   * Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
    *
    * @param projectId  project ID
    * @param fileId  project node whose source should be loaded
    *
-   * @return  List of parsed rows (each row is a List of Strings)
+   * @return  List of parsed columns (each column is a List of Strings)
    */
   @Override
   public List<List<String>> loadDataFile(long projectId, String fileId) {
@@ -376,7 +376,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
     List<List<String>> columns = new ArrayList<List<String>>();
 
-    try {
+    if (result.startsWith("{")) {
       ServerJsonParser jsonParser = new ServerJsonParser();
       JSONValue value = jsonParser.parse(result);
 
@@ -402,7 +402,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       }
 
       return columns;
-    } catch (Exception e) {
+    } else {
       // Construct an InputStream and a CSVParser for the contents of the file
       ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
       CsvParser csvParser = new CsvParser(inputStream);
