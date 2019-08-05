@@ -133,7 +133,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
     String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON,
-    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
+    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor, String applicationPackage) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
@@ -142,6 +142,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     aName = Strings.nullToEmpty(aName);
     showListsAsJson = Strings.nullToEmpty(showListsAsJson);
     tutorialURL = Strings.nullToEmpty(tutorialURL);
+    applicationPackage = Strings.nullToEmpty(applicationPackage);
     subsetJSON = Strings.nullToEmpty(subsetJSON);
     actionBar = Strings.nullToEmpty(actionBar);
     theme = Strings.nullToEmpty(theme);
@@ -154,6 +155,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APPLICATION_PACKAGE + "\":\"" + applicationPackage +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"" + showListsAsJson +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"" + tutorialURL +
@@ -199,6 +201,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (aname != null) {
       contents += "aname=" + aname + "\n";
+    }
+    if (applicationPackage != null && !applicationPackage.isEmpty()) {
+      contents += "ApplicationPackage=" + applicationPackage + "\n";
     }
     if (sizing != null && !sizing.isEmpty()) {
       contents += "sizing=" + sizing + "\n";
@@ -320,6 +325,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newAccentColor = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    String newApplicationPackage = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_APPLICATION_PACKAGE));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -338,6 +346,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldUsesLocation = Strings.nullToEmpty(properties.getProperty("useslocation"));
     String oldSizing = Strings.nullToEmpty(properties.getProperty("sizing"));
     String oldAName = Strings.nullToEmpty(properties.getProperty("aname"));
+    String oldTutorialURL = Strings.nullToEmpty(properties.getProperty("tutorialurl"));
+    String oldApplicationPackage = Strings.nullToEmpty(properties.getProperty("ApplicationPackage"));
     String oldShowListsAsJson = Strings.nullToEmpty(properties.getProperty("showlistsasjson"));
     String oldTutorialURL = Strings.nullToEmpty(properties.getProperty("tutorialurl"));
     String oldSubsetJSON = Strings.nullToEmpty(properties.getProperty("subsetjson"));
@@ -349,8 +359,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
       || !newUsesLocation.equals(oldUsesLocation) ||
-         !newAName.equals(oldAName) || !newSizing.equals(oldSizing) ||
-      !newShowListsAsJson.equals(oldShowListsAsJson) ||
+         !newAName.equals(oldAName) || !newSizing.equals(oldSizing) || !newApplicationPackage.equals(oldApplicationPackage) ||
+         !newShowListsAsJson.equals(oldShowListsAsJson) ||
         !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
         !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
         !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
@@ -358,7 +368,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
-        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
+        newVCode, newVName, newUsesLocation, newAName, newApplicationPackage, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
         newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
