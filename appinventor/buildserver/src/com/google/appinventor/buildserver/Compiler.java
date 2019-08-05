@@ -283,7 +283,8 @@ public final class Compiler {
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
-
+  
+  private static String minSDK;
   /*
    * Generate the set of Android permissions needed by this project.
    */
