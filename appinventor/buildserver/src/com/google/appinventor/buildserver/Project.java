@@ -95,6 +95,7 @@ public final class Project {
   private static final String COLOR_PRIMARYTAG = "color.primary";
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
+  private static final String ONE_SIGNAL_PUSH_TAG = "AppId";
 
   // Table containing project properties
   private Properties properties;
@@ -288,6 +289,24 @@ public final class Project {
    */
   public String getMinSdk() {
     return properties.getProperty(ANDROID_MIN_SDK_TAG, "7");
+  }
+  
+  /**
+   * Returns the app name.
+   *
+   * @return  app name
+   */
+  public String getAppId() { return properties.getProperty(ONE_SIGNAL_PUSH_TAG); }
+
+
+  /**
+   * Sets the app name.
+   *
+   * @param appid  oneSignal App Id
+   */
+  public void setAppId(String appid) {
+
+    properties.setProperty(ONE_SIGNAL_PUSH_TAG, appid);
   }
 
   /**
