@@ -288,7 +288,7 @@ public final class Project {
    * @return  the minimum Android sdk
    */
   public String getMinSdk() {
-    return properties.getProperty(ANDROID_MIN_SDK_TAG, "7");
+    return properties.getProperty(ANDROID_MIN_SDK_TAG, "14");
   }
   
    public String getMinApi() {
