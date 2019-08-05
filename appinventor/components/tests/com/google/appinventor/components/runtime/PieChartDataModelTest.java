@@ -62,8 +62,6 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
 
     assertEquals(1, model.getDataset().getEntryCount());
     assertEntriesEqual(expectedEntry, entry);
-
-    // TODO: Test LegendEntry addition
   }
 
   /**
@@ -267,6 +265,104 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
 
     boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
     assertTrue(result);
+  }
+
+  /**
+   * Test case to ensure that adding a single entry
+   * adds the appropriate Legend Entry with the x value
+   * as the label and the value color as the color
+   */
+  @Test
+  public void testCheckLegendSingleEntry() {
+    final int color = Color.RED;
+    model.setColor(color);
+
+    YailList tuple = createTuple("Entry", 5f);
+    model.addEntryFromTuple(tuple);
+
+    LegendEntry[] expectedEntries = {
+      createLegendEntry("Entry", Color.RED)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that adding multiple entries
+   * to the Data Series adds the appropriate Legend
+   * Entries representing the values (x values as labels
+   * and value colors as Legend colors)
+   */
+  @Test
+  public void testCheckLegendMultipleEntries() {
+    final int color = Color.BLUE;
+    model.setColor(color);
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry 1", 5f));
+      add(createTuple("Entry 2", 3f));
+      add(createTuple("test", 7f));
+      add(createTuple("test 2", 1f));
+    }};
+
+    model.importFromList(tuples);
+
+    LegendEntry[] expectedEntries = {
+        createLegendEntry("Entry 1", color),
+        createLegendEntry("Entry 2", color),
+        createLegendEntry("test", color),
+        createLegendEntry("test 2", color)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that adding entries from
+   * different Data Models adds the appropriate entries
+   * corresponding to each entry of the separate data
+   * series.
+   */
+  @Test
+  public void testCheckLegendDifferentDataModelEntries() {
+    final int color1 = Color.RED;
+    final int color2 = Color.GREEN;
+    final int color3 = Color.BLUE;
+
+    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
+
+    model.setColor(color1);
+    model2.setColor(color2);
+    model3.setColor(color3);
+
+    model.addEntryFromTuple(createTuple("Entry 1", 5f));
+    model2.addEntryFromTuple(createTuple("Model 2 Entry", 9f));
+    model3.addEntryFromTuple(createTuple("Model 3 Entry", 1f));
+    model.addEntryFromTuple(createTuple("Entry 2", 10f));
+
+    LegendEntry[] expectedEntries = {
+        createLegendEntry("Entry 1", color1),
+        createLegendEntry("Model 2 Entry", color2),
+        createLegendEntry("Model 3 Entry", color3),
+        createLegendEntry("Entry 2", color1)
+    };
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  private void checkLegendHelper(LegendEntry[] expectedEntries) {
+    LegendEntry[] legendEntries = legend.getEntries();
+
+    assertEquals(expectedEntries.length, legendEntries.length);
+
+    for (int i = 0; i < expectedEntries.length; ++i) {
+      LegendEntry expected = expectedEntries[i];
+      LegendEntry actual = legendEntries[i];
+
+      assertEquals(expected.label, actual.label);
+      assertEquals(expected.formColor, actual.formColor);
+    }
   }
 
   private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
