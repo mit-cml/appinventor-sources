@@ -255,6 +255,20 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     }
   }
 
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and a matching x value which is a String returns true.
+   */
+  @Test
+  public void testCriterionSatisfiedXStringMatch() {
+    Entry entry = createEntry("Entry", 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final String value = "Entry";
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    assertTrue(result);
+  }
+
   private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
     YailList colors = YailList.makeList(colorList);
     model.setColors(colors);

@@ -346,17 +346,23 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                 break;
 
             case XValue: // Criterion satisfied based on x value match with the value
-                try {
-                    float xValue = Float.parseFloat(value);
-
-                    if (entry instanceof PieEntry) {
-                        PieEntry pieEntry = (PieEntry) entry;
-                        criterionSatisfied = pieEntry.getLabel().equals(xValue + "");
-                    } else {
+                // PieEntries and regular entries require different
+                // handling sine PieEntries have String x values
+                if (entry instanceof PieEntry) {
+                    // Criterion is satisfied for a Pie Entry only if
+                    // the label is equal to the specified value
+                    PieEntry pieEntry = (PieEntry) entry;
+                    criterionSatisfied = pieEntry.getLabel().equals(value);
+                } else {
+                    // X value is a float, so it has to be parsed and
+                    // compared. If parsing fails, the criterion is
+                    // not satisfied.
+                    try {
+                        float xValue = Float.parseFloat(value);
                         criterionSatisfied = (entry.getX() == xValue);
+                    } catch (NumberFormatException e) {
+                        // Do nothing (value already false)
                     }
-                } catch (NumberFormatException e) {
-                    // Do nothing (value already false)
                 }
                 break;
 
