@@ -449,6 +449,7 @@ public class Form extends AppInventorCompatActivity
     ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
     ActionBar(false);
     AccentColor(DEFAULT_ACCENT_COLOR);
+    MinAPI("14");
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     Theme(ComponentConstants.DEFAULT_THEME);
@@ -2629,5 +2630,12 @@ public class Form extends AppInventorCompatActivity
     } else {
       return FileUtil.openFile(path);
     }
+  }
+      
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MIN_API_LEVEL_OPTIONS, defaultValue = "14")
+  @SimpleProperty(userVisible = false, description = "Min API Level")
+  public void MinAPI(String minAPI) {
+        // We don't actually do anything This property is stored in the
+        // project properties file
   }
 }
