@@ -10,6 +10,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
@@ -204,6 +205,14 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
       // just the local ones)
       legendEntries.get(i).formColor = getDataset().getColors().get(index);
     }
+  }
+
+  @Override
+  public void setColor(int argb) {
+    // The setColor method must follow the same procedure
+    // as the setColors method due to the need of updating
+    // the Legend Entries.
+    setColors(YailList.makeList(Collections.singleton(argb)));
   }
 
   @Override
