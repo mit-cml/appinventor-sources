@@ -272,6 +272,7 @@ public final class Compiler {
   private File libsDir; // The directory that will contain any native libraries for packaging
   private String dexCacheDir;
   private boolean hasSecondDex = false; // True if classes2.dex should be added to the APK
+  private boolean hasThirdDex = false; // True if classes3.dex should be added to the APK
 
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
@@ -1370,6 +1371,9 @@ public final class Compiler {
         apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
           "classes2.dex");
       }
+	  if (hasThirdDex) {
+        apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes3.dex"), "classes3.dex");
+      }
       if (nativeLibsNeeded.size() != 0) { // Need to add native libraries...
         apkBuilder.addNativeLibraries(libsDir);
       }
@@ -1714,18 +1718,28 @@ public final class Compiler {
     List<File> libList = new ArrayList<File>();
     List<File> inputList = new ArrayList<File>();
     List<File> class2List = new ArrayList<File>();
+	List<File> class3List = new ArrayList<File>();
     inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
 
-    for (String jar : SUPPORT_JARS) {
-      inputList.add(new File(getResource(jar)));
+    String googlePlayServicesLibFile = null;
+	
+    for (String lib : uniqueLibsNeeded) {
+      if (lib.contains("google-play-services")) {
+//        class2List.add(new File(lib));
+        googlePlayServicesLibFile = lib;
+        System.out.println("**** adding google-play-services");
+      }else {
+        libList.add(new File(lib));
+      }
     }
 
-    for (String lib : uniqueLibsNeeded) {
-      libList.add(new File(lib));
+    for (String jar : SUPPORT_JARS) {
+     inputList.add(new File(getResource(jar)));
     }
+	
 
     // BEGIN DEBUG -- XXX --
     // System.err.println("runDx -- libraries");
@@ -1767,6 +1781,30 @@ public final class Compiler {
         class2List.add(libList.get(i));
       }
     }
+	
+	//For multidexing, naming convention of classes2, classes3 should be followed.
+    //As result, we check to see if we have classes2 or not. If google-play-services-lib
+    // is needed AND classes2 lib files exist, then we load the googlePlayServices lib into
+    // classes3 else into classes2
+    if (googlePlayServicesLibFile != null) {
+      if (class2List.size() == 0) {
+        //add it to classes2List
+        class2List.add(new File(googlePlayServicesLibFile));
+      } else {
+        //otherwise add it to class3List
+        class3List.add(new File(googlePlayServicesLibFile));
+      }
+    }
+	
+	// Need to overcome the 65k method limit, we move the kawa jar to either classes2 or classes3
+        // This apparently isn't needed for companion. If build companion, then it'll create
+        if (!isForCompanion) {
+            if (class2List.size() == 0) {
+                class2List.add(new File(getResource(KAWA_RUNTIME)));
+            } else {
+                class3List.add(new File(getResource(KAWA_RUNTIME)));
+            }
+        }
 
     DexExecTask dexTask = new DexExecTask();
     dexTask.setExecutable(getResource(DX_JAR));
@@ -1786,6 +1824,11 @@ public final class Compiler {
     synchronized (SYNC_KAWA_OR_DX) {
       setProgress(50);
       dxSuccess = dexTask.execute(inputList);
+	  if (class3List.size() > 0) {
+        dexTask.setOutput(dexedClassesDir + File.separator + "classes3.dex");
+        dxSuccess = dexTask.execute(class3List);
+        hasThirdDex = true;
+      }
       if (dxSuccess && (class2List.size() > 0)) {
         setProgress(60);
         dexTask.setOutput(dexedClassesDir + File.separator + "classes2.dex");
@@ -1793,6 +1836,15 @@ public final class Compiler {
         dxSuccess = dexTask.execute(class2List);
         setProgress(75);
         hasSecondDex = true;
+		if (dxSuccess && class3List.size() > 0) {
+          System.out.println("***** has class3List");
+          setProgress(80);
+          dexTask.setOutput(dexedClassesDir + File.separator + "classes3.dex");
+          //inputList = new ArrayList<File>();
+          dxSuccess = dexTask.execute(class3List);
+          setProgress(82);
+          hasThirdDex = true;
+        }
       } else if (!dxSuccess) {  // The initial dx blew out, try more conservative
         LOG.info("DX execution failed, trying with fewer libraries.");
         if (secondTry) {        // Already tried the more conservative approach!
