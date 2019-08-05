@@ -284,6 +284,8 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     pieChart.setLayoutParams(params);
   }
 
+  private float offset = 0;
+
   /**
    * Updates the offset of the specified Pie Chart ring accordingly
    * to the required height of the Legend.
@@ -297,9 +299,35 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // by the Legend. The offset itself is divided by 3 to reduce the
     // offset (the value was chosen through trial and error. Values above
     // are too small, while dividers <= 2 are too big in most cases)
-    // TODO: Improvements can be made on this part
+    // TODO: Improvements can be made on this part. Alternatively,
+    // TODO: a solution could be devised to instead apply margins to
+    // TODO: all inner pie rings and use the root Pie Chart with the
+    // TODO: Legend drawn outside. However, that comes with it's own issues
+    // TODO: (mainly centering the Chart)
     float dpNeededHeight = Utils.convertDpToPixel(chart.getLegend().mNeededHeight);
     float offset = dpNeededHeight / 3f;
+
+    // Incomplete alternate solution which takes the value that
+    // would be calculated if setDrawInside were to be enabled.
+    //    if (pieChart == chart) {
+    //      chart.setExtraBottomOffset(0);
+    //      chart.getLegend().setDrawInside(false);
+    //      chart.invalidate();
+    //      offset = Utils.convertPixelsToDp(chart.getViewPortHandler().offsetBottom());
+    //      chart.getLegend().setDrawInside(true);
+    //      chart.invalidate();
+    //    }
+
+    // Alternate solution (MPAndroidChart based)
+    // Calculate the offset in pixels to apply to the Pie Chart.
+    // The calculation is strongly based on the implementation
+    // in MPAndroidChart (in v3.1.0)
+    //    float offset = Math.min(chart.getLegend().mNeededHeight,
+    //        chart.getHeight() * chart.getLegend().getMaxSizePercent());
+    //
+    //    // Divide offset by 2 (the direct value is a bit too large)
+    //    offset = Utils.convertPixelsToDp(offset);
+
     pieChart.setExtraBottomOffset(offset);
   }
 
