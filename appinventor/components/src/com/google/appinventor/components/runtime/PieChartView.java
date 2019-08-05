@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       uiHandler.post(new Runnable() {
         @Override
         public void run() {
+          updatePieChartRingOffset(pieChart);
           pieChart.invalidate();
         }
       });
@@ -213,14 +215,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         lastHeight = pieChart.getHeight();
         lastWidth = pieChart.getWidth();
       }
-
-      // Since the Legend is drawn inside, an offset is needed
-      // so that the rings of the Pie Chart do not overlap with the
-      // Legend. The value was chosen as an optimal value (10 is too large,
-      // 5 is too small, 7 is a somewhat in the middle option)
-      // TODO: This could be improved in the future to (perhaps) dynamically
-      // TODO: adjust the bottom offset.
-      pieChart.setExtraBottomOffset(7);
     }
   }
 
@@ -288,6 +282,25 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     params.width = width;
     params.height = height;
     pieChart.setLayoutParams(params);
+  }
+
+  /**
+   * Updates the offset of the specified Pie Chart ring accordingly
+   * to the required height of the Legend.
+   *
+   * Since the Legend is drawn inside, an offset is needed so that the
+   * rings of the Pie Chart do not overlap with the Legend that much.
+   * @param pieChart  Chart to apply offset to
+   */
+  private void updatePieChartRingOffset(PieChart pieChart) {
+    // The chosen offset is dependent on the height required
+    // by the Legend. The offset itself is divided by 3 to reduce the
+    // offset (the value was chosen through trial and error. Values above
+    // are too small, while dividers <= 2 are too big in most cases)
+    // TODO: Improvements can be made on this part
+    float dpNeededHeight = Utils.convertDpToPixel(chart.getLegend().mNeededHeight);
+    float offset = dpNeededHeight / 3f;
+    pieChart.setExtraBottomOffset(offset);
   }
 
   /**

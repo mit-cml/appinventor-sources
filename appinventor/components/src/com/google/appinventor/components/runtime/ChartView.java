@@ -77,5 +77,6 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     protected void initializeDefaultSettings() {
         // Center the Legend
         chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        chart.getLegend().setWordWrapEnabled(true); // Wrap Legend entries in case of many entries
     }
 }
