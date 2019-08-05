@@ -94,14 +94,14 @@ public class Thermometer extends SingleValueSensor {
   }
 
   /**
-   * Returns the temperature in degrees Celsius by averaging the
-   * previous 10 measured values. The sensor must be enabled and available 
+   * Returns the temperature in degrees Celsius.
+   * The sensor must be enabled and available 
    * to return meaningful values.
    *
-   * @return the averaged temperature in degrees Celsius
+   * @return the temperature in degrees Celsius
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
    public float Temperature() {
-    return getAverageValue();
+    return getValue();
   }
 }

@@ -34,14 +34,16 @@ import android.hardware.SensorManager;
     nonVisible = true,
     iconName = "images/lightsensor.png")
 @SimpleObject
-public class LightSensor extends SingleValueSensor {
+public class LightSensor extends BufferedSingleValueSensor {
+  private static final int BUFFER_SIZE = 10;
+
   /**
    * Creates a new LightSensor component.
    *
    * @param container  ignored (because this is a non-visible component)
    */
   public LightSensor(ComponentContainer container) {
-    super(container.$form(), Sensor.TYPE_LIGHT);
+    super(container.$form(), Sensor.TYPE_LIGHT, BUFFER_SIZE);
   }
 
   @Override

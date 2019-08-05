@@ -94,14 +94,14 @@ public class Barometer extends SingleValueSensor {
   }
 
   /**
-   * Returns the atmospheridc pressure in hPa (millibar) by averaging the
-   * previous 10 measured values. The sensor must be enabled and available 
+   * Returns the atmospheridc pressure in hPa (millibar).
+   * The sensor must be enabled and available 
    * to return meaningful values.
    *
-   * @return the averaged atmospheric pressure in hPa (millibar)
+   * @return the atmospheric pressure in hPa (millibar)
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
    public float AirPressure() {
-    return getAverageValue();
+      return getValue();
   }
 }

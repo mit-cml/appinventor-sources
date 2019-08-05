@@ -12,15 +12,15 @@ import android.hardware.SensorManager;
 
 import java.util.List;
 
+/**
+ * A sensors reporting a single value, such as temperature or humidity.
+ */
 public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
-  private static final int BUFFER_SIZE = 10;
-
-  private AveragingBuffer buffer;
   private Sensor sensor;
+  protected float value;  // most recent value read
   protected final SensorManager sensorManager;
   protected boolean enabled;
-  protected int accuracy;
   protected int sensorType;
 
   public SingleValueSensor(ComponentContainer container, int sensorType) {
@@ -32,7 +32,6 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     enabled = true;
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     sensor = sensorManager.getDefaultSensor(sensorType);
-    buffer = new AveragingBuffer(BUFFER_SIZE);
     startListening();
   }
 
@@ -44,12 +43,12 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     sensorManager.unregisterListener(this);
   }
 
+  @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
     if (enabled && sensorEvent.sensor.getType() == sensorType) {
-      accuracy = sensorEvent.accuracy;
       final float[] values = sensorEvent.values;
-      buffer.insert(values[0]);
-      onValueChanged(values[0]);
+      value = values[0];
+      onValueChanged(value);
     }
   }
 
@@ -95,38 +94,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     }
   }
 
-  protected float getAverageValue() {
-    return buffer.getAverage();
-  }
-
-  private class AveragingBuffer {
-    private Float[] data;
-    private int next;
-
-    private AveragingBuffer(int size) {
-      data = new Float[size];
-      next = 0;
-    }
-
-    private void insert(Float datum) {
-      data[next++] = datum;
-      if (next == data.length) {
-        next = 0;
-      }
-    }
-
-    private float getAverage() {
-      double sum = 0;
-      int count = 0;
-
-      for (int i = 0; i < data.length; i++) {
-        if (data[i] != null) {
-          sum += data[i];
-          count++;
-        }
-      }
-
-      return (float) (count == 0 ? sum : sum / count);
-    }
+  protected float getValue() {
+    return value;
   }
 }
