@@ -4,6 +4,7 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -176,7 +177,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public void importFromCSV(YailList columns) {
         // Determine the (maximum) row count of the specified columns
-        int rows = determineRowCountInColumns(columns);
+        int rows = ChartDataSourceUtil.determineRowCountInColumns(columns);
 
         if (rows == 0) {
             // No rows exist. Do nothing.
@@ -221,42 +222,6 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         // Use the generated tuple list in the importFromList method to
         // import the data.
         importFromList(YailList.makeList(tuples));
-    }
-
-    /**
-     * Determines the total row count of the specified columns List. The
-     * columns List is expected to be a List of Lists, and invalid entries
-     * are simply skipped.
-     *
-     * In case of uneven rows, the maximum row count is returned.
-     *
-     * @param columns  Columns List to determine row count for
-     * @return  row count of the columns
-     */
-    private int determineRowCountInColumns(YailList columns) {
-        int rows = 0;
-
-        // Columns null case - return 0 rows
-        if (columns == null) {
-            return rows;
-        }
-
-        // Establish the row count of the specified columns
-        for (int i = 0; i < columns.size(); ++i) {
-            if (!(columns.getObject(i) instanceof YailList)) {
-                continue;
-            }
-
-            YailList column = (YailList)columns.getObject(i);
-
-            // Update rows variable if the column size is larger
-            // than the current row count
-            if (column.size() > rows) {
-                rows = column.size();
-            }
-        }
-
-        return rows;
     }
 
     /**

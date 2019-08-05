@@ -173,54 +173,6 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
         return (YailList)columns.getObject(index);
     }
 
-    /**
-     * Instantiates the columns list after CSV parsing to rows
-     * has been processed.
-     */
-    private void constructColumnsFromRows() {
-        // Store columns separately (first row indicates column names)
-        columnNames = (YailList)rows.getObject(0);
-
-        // Get the size of the row. The row size
-        // indicates the number of columns.
-        int rowSize = columnNames.size();
-
-        // Construct each column separately, and add it
-        // to the resulting list.
-        ArrayList<YailList> columnList = new ArrayList<YailList>();
-
-        for (int i = 0; i < rowSize; ++i) {
-            columnList.add(getColumn(i));
-        }
-
-        columns = YailList.makeList(columnList);
-    }
-
-    private void constructRowsFromColumns() {
-
-    }
-
-    /**
-     * Constructs and returns a column from the rows, given
-     * the index of the needed column.
-     *
-     * @param index  the index of the column to construct
-     * @return  YailList column representation of the specified index
-     */
-    private YailList getColumn(int index) {
-        List<String> entries = new ArrayList<String>();
-
-        for (int i = 0; i < rows.size(); ++i) {
-            // Get the i-th row
-            YailList row = (YailList) rows.getObject(i); // Safe cast
-
-            // index-th entry in the row is the required column value
-            entries.add((row.getString(index)));
-        }
-
-        return YailList.makeList(entries);
-    }
-
     @Override
     protected void AsyncRead(final InputStream inputStream, final String fileName) {
         // Add runnable to the Single Thread runner to read File asynchronously
@@ -237,14 +189,18 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
                         columns = JsonUtil.getColumnsFromJSON(result);
 
                         // Construct row lists from columns
-                        // TODO: ...
+                        rows = ChartDataSourceUtil.getRowsFromColumns(columns);
                     } else { // Assume CSV otherwise
                         // Parse rows from the result
                         rows = CsvUtil.fromCsvTable(result);
 
                         // Construct column lists from rows
-                        constructColumnsFromRows();
+                        columns = ChartDataSourceUtil.getColumnsFromRows(rows);
                     }
+
+                    // If rows size is non-zero, set column names to first row. Otherwise,
+                    // set it to an empty List.
+                    columnNames = (rows.size() > 0) ? ((YailList)rows.getObject(0)) : new YailList();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
