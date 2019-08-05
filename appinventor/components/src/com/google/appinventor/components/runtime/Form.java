@@ -1966,14 +1966,14 @@ public class Form extends AppInventorCompatActivity
     // Save the nextFormName so that it can be passed to the OtherScreenClosed event in the
     // future.
     this.nextFormName = nextFormName;
-    Log.i(LOG_TAG, "about to start new form" + nextFormName);
+    Log.i(LOG_TAG, "about to start new form" + fullyScrrenToOpen);
     try {
       Log.i(LOG_TAG, "startNewForm starting activity:" + activityIntent);
       startActivityForResult(activityIntent, SWITCH_FORM_REQUEST_CODE);
       AnimationUtil.ApplyOpenScreenAnimation(this, openAnimType);
     } catch (ActivityNotFoundException e) {
       dispatchErrorOccurredEvent(this, functionName,
-          ErrorMessages.ERROR_SCREEN_NOT_FOUND, nextFormName);
+          ErrorMessages.ERROR_SCREEN_NOT_FOUND, fullyScrrenToOpen);
     }
   }
 
