@@ -14,9 +14,14 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.util.CsvParser;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONString;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -44,7 +49,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -367,23 +374,58 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     // Load the contents of the specified file
     String result = load(projectId, fileId);
 
-    // Construct an InputStream and a CSVParser for the contents of the file
-    ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
-    CsvParser csvParser = new CsvParser(inputStream);
+    List<List<String>> columns = new ArrayList<List<String>>();
 
-    List<List<String>> csvRows = new ArrayList<List<String>>();
+    try {
+      ServerJsonParser jsonParser = new ServerJsonParser();
+      JSONValue value = jsonParser.parse(result);
 
-    for (int i = 0; i <= MAX_ROWS; ++i) {
-      if (!csvParser.hasNext()) { // No more rows exist; break
-        break;
+      Map<String, JSONValue> properties = value.asObject().getProperties();
+      for (final Map.Entry<String, JSONValue> entry : properties.entrySet()) {
+        List<String> column = new ArrayList<String>();
+
+        column.add(entry.getKey());
+
+        JSONValue entryValue = entry.getValue();
+
+        if (entryValue instanceof JSONArray) {
+          JSONArray entryArray = entryValue.asArray();
+
+          for (JSONValue arrayValue : entryArray.getElements()) {
+            column.add(arrayValue.toString());
+          }
+        } else {
+          column.add(entryValue.toString());
+        }
+
+        columns.add(column);
       }
 
-      // Parse next row and add it to the resulting rows
-      List<String> row = csvParser.next();
-      csvRows.add(row);
+      return columns;
+    } catch (Exception e) {
+      // Construct an InputStream and a CSVParser for the contents of the file
+      ByteArrayInputStream inputStream = new ByteArrayInputStream(result.getBytes());
+      CsvParser csvParser = new CsvParser(inputStream);
+
+      for (int i = 0; i <= MAX_ROWS; ++i) {
+        if (!csvParser.hasNext()) { // No more rows exist; break
+          break;
+        }
+
+        // Parse next row and add it to the resulting rows
+        List<String> row = csvParser.next();
+
+        for (int j = 0; j < row.size(); ++j) {
+          if (columns.size() <= j) {
+            columns.add(new ArrayList<String>());
+          }
+
+          columns.get(j).add(row.get(j));
+        }
+      }
     }
 
-    return csvRows;
+    return columns;
   }
 
   /**

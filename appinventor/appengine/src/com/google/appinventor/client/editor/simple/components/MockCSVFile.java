@@ -4,6 +4,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
@@ -19,7 +20,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
   private String sourceFile;
 
   private List<String> columnNames; // First row of the CSV contents
-  private List<List<String>> rows; // Parsed rows of the CSV file
+  private List<List<String>> columns; // Parsed columns of the CSV file
   private Set<CSVFileChangeListener> csvFileChangeListeners;
 
   /**
@@ -45,7 +46,6 @@ public class MockCSVFile extends MockNonVisibleComponent {
     // columnNames and rows property
     this.sourceFile = fileSource;
     columnNames = new ArrayList<String>();
-    rows = new ArrayList<List<String>>();
 
     // Update CSVFileChangeListeners to notify that
     // the columns list is (at least temporarily) empty
@@ -69,15 +69,20 @@ public class MockCSVFile extends MockNonVisibleComponent {
       @Override
       public void onSuccess(List<List<String>> result) {
         // Update rows & columnNames properties
-        rows = result;
+        columns = result;
 
         if (result.isEmpty()) {
           ErrorReporter.reportError(MESSAGES.emptyFileError());
           return;
         }
 
-        // First row should contain the column names
-        columnNames = result.get(0);
+        for (int i = 0; i < columns.size(); ++i) {
+          List<String> column = columns.get(i);
+
+          if (!column.isEmpty()) {
+            columnNames.add(column.get(0));
+          }
+        }
 
         // Notify CSVFileChangeListeners of the changes
         updateCSVFileChangeListeners();
@@ -99,15 +104,6 @@ public class MockCSVFile extends MockNonVisibleComponent {
    */
   public List<String> getColumnNames() {
     return columnNames;
-  }
-
-  /**
-   * Get the Rows of the MockCSVFile's parsed content
-   *
-   * @return  rows of the CSV File (List of Lists containing Strings)
-   */
-  public List<List<String>> getRows() {
-    return rows;
   }
 
   /**
@@ -148,17 +144,7 @@ public class MockCSVFile extends MockNonVisibleComponent {
       return column;
     }
 
-    // Iterate through all the rows
-    for (int i = 0; i < rows.size(); ++i) {
-      // i represents the current row, while index
-      // represents the column index.
-      String entry = rows.get(i).get(index);
-
-      // Add the entry to the result
-      column.add(entry);
-    }
-
-    return column;
+    return columns.get(index);
   }
 
   @Override
