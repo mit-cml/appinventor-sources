@@ -22,17 +22,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import android.os.Handler;
-
-import android.util.Log;
-
-import android.view.Surface;
-import android.view.WindowManager;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-
 /**
  * Physical world component that can measure the light level.
  * It is implemented using
@@ -77,8 +66,7 @@ public class LightSensor extends EnvironmentSensor {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public boolean Available() {
-    List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_LIGHT);
-    return sensors.size() > 0;
+    return sensorManager.getSensorList(Sensor.TYPE_LIGHT).size() > 0;
   }
 
   /**

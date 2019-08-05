@@ -53,10 +53,6 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
     sensorManager.unregisterListener(this);
   }
 
-  protected abstract void onValueChanged(float value);
-
-  // SensorListener implementation
-  @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
     if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
       accuracy = sensorEvent.accuracy;
@@ -65,10 +61,7 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
       onValueChanged(values[0]);
     }
   }
-
-  protected float getAverageValue() {
-    return buffer.getAverage();
-  }
+  protected abstract void onValueChanged(float value);
 
   @Override
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -93,6 +86,10 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
     if (enabled) {
       stopListening();
     }
+  }
+
+  protected float getAverageValue() {
+    return buffer.getAverage();
   }
 
   private class AveragingBuffer {
