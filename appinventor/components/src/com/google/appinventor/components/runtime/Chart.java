@@ -55,6 +55,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+        PieRadius(100);
 
         // Register onInitialize event of the Chart
         $form().registerForOnInitialize(this);
