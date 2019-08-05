@@ -796,6 +796,7 @@ public final class Compiler {
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
+    minSDK = (project.getMinApi() == null) ? DEFAULT_MIN_SDK : cleanName(project.getMinApi().trim());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
