@@ -104,7 +104,7 @@ public final class Compiler {
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_MIN_SDK = "14";
   private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*
@@ -283,7 +283,8 @@ public final class Compiler {
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
-
+  
+  private static String minSDK;
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -796,6 +797,7 @@ public final class Compiler {
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
+    minSDK = (project.getMinApi() == null) ? DEFAULT_MIN_SDK : cleanName(project.getMinApi().trim());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
