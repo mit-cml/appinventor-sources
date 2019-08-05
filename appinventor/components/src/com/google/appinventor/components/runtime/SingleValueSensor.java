@@ -12,7 +12,7 @@ import android.hardware.SensorManager;
 
 import java.util.List;
 
-public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
+public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
   private static final int BUFFER_SIZE = 10;
 
@@ -23,7 +23,7 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
   protected int accuracy;
   protected int sensorType;
 
-  public EnvironmentSensor(ComponentContainer container, int sensorType) {
+  public SingleValueSensor(ComponentContainer container, int sensorType) {
     super(container.$form());
     this.sensorType = sensorType;
     form.registerForOnResume(this);

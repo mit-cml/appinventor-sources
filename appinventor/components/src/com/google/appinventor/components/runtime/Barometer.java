@@ -23,44 +23,42 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 /**
- * Physical world component that can measure the light level.
- * It is implemented using
- * android.hardware.SensorListener
- * (http://developer.android.com/reference/android/hardware/SensorListener.html).
+ * Physical world component that can measure the ambient air pressure if
+ * supported by the hardware.
  */
 @DesignerComponent(version = 1,
-                   description = "Non-visible component that can measure the light level.",
+                   description = "Non-visible component that can measure the ambient air pressure.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
-    iconName = "images/lightsensor.png")
+    iconName = "images/barometer.png")
 @SimpleObject
-public class LightSensor extends SingleValueSensor {
+public class Barometer extends SingleValueSensor {
   /**
-   * Creates a new LightSensor component.
+   * Creates a new Barometer component.
    *
    * @param container  ignored (because this is a non-visible component)
    */
-  public LightSensor(ComponentContainer container) {
-    super(container.$form(), Sensor.TYPE_LIGHT);
+  public Barometer(ComponentContainer container) {
+    super(container.$form(), Sensor.TYPE_PRESSURE);
   }
 
   @Override
   protected void onValueChanged(float value) {
-    LightChanged(value);
+    AirPressureChanged(value);
   }
   
   /**
-   * Indicates the light level changed.
+   * Indicates the air pressure changed.
    */
   @SimpleEvent
-  public void LightChanged(float lux) {
-    EventDispatcher.dispatchEvent(this, "LightChanged", lux);
+  public void AirPressureChanged(float pressure) {
+    EventDispatcher.dispatchEvent(this, "AirPressureChanged", pressure);
   }
 
   /**
    * Available property getter method (read-only property).
    *
-   * @return {@code true} indicates that a light sensor is available,
+   * @return {@code true} indicates that a barometer is available,
    *         {@code false} that it isn't
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
@@ -96,13 +94,14 @@ public class LightSensor extends SingleValueSensor {
   }
 
   /**
-   * Returns the brightness in lux by averaging the previous 10 measured values.
-   * The sensor must be enabled and available to return meaningful values.
+   * Returns the atmospheridc pressure in hPa (millibar) by averaging the
+   * previous 10 measured values. The sensor must be enabled and available 
+   * to return meaningful values.
    *
-   * @return lux
+   * @return the atmospheric pressure in hPa (millibar)
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-   public float Lux() {
+   public float AirPressure() {
     return getAverageValue();
   }
 }
