@@ -1937,8 +1937,8 @@ public class Form extends AppInventorCompatActivity
         String packageName = getPackageName();  // this will be the actual package name that is in manifest.
         Log.i(LOG_TAG, "package name is:" + packageName);
 
-        if (packageName.startsWith("com.appybuilder")) {
-            Log.i(LOG_TAG, "packageName started with com.appybuilder. Actual is:" + packageName);
+        if (packageName.startsWith("com.aimod")) {
+            Log.i(LOG_TAG, "packageName started with com.aimod. Actual is:" + packageName);
 
             fullyScrrenToOpen = packageName + "." + nextFormName;
         } else {
