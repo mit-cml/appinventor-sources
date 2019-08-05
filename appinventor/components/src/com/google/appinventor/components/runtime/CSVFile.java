@@ -196,6 +196,10 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
         columns = YailList.makeList(columnList);
     }
 
+    private void constructRowsFromColumns() {
+
+    }
+
     /**
      * Constructs and returns a column from the rows, given
      * the index of the needed column.
@@ -227,42 +231,14 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
                     // Parse InputStream to String
                     final String result = readFromInputStream(inputStream);
 
+                    // First character is a curly bracket; Assume JSON
                     if (result.charAt(0) == '{') {
-                        Object jsonObject = JsonUtil.getObjectFromJson(result);
+                        // Parse columns from the result
+                        columns = JsonUtil.getColumnsFromJSON(result);
 
-                        List<YailList> resultColumns = new ArrayList<YailList>();
-
-                        if (jsonObject instanceof List) {
-                            List jsonList = (List) jsonObject;
-
-                            for (Object entry : jsonList) {
-                                List<String> columnElements = new ArrayList<String>();
-
-                                if (entry instanceof List) {
-                                    List listEntry = (List) entry;
-
-                                    columnElements.add(listEntry.get(0).toString());
-
-                                    Object jsonValue = listEntry.get(1);
-
-                                    if (jsonValue instanceof List) {
-                                        List jsonValueList = (List)jsonValue;
-
-                                        for (int j = 0; j < jsonValueList.size(); ++j) {
-                                            columnElements.add(jsonValueList.get(j).toString());
-                                        }
-                                    } else {
-                                        columnElements.add(jsonValue.toString());
-                                    }
-
-                                }
-
-                                resultColumns.add(YailList.makeList(columnElements));
-                            }
-
-                            columns = YailList.makeList(resultColumns);
-                        }
-                    } else {
+                        // Construct row lists from columns
+                        // TODO: ...
+                    } else { // Assume CSV otherwise
                         // Parse rows from the result
                         rows = CsvUtil.fromCsvTable(result);
 
