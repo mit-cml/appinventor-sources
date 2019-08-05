@@ -1818,6 +1818,12 @@ public class Form extends AppInventorCompatActivity
   public int AccentColor() {
     return accentColor;
   }
+      
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(userVisible = false)  //Since displayed only on Screen1, don't make this visible
+    public void ApplicationPackage(String applicationPackage) {
+        // We don't actually need to do anything.
+    }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
       defaultValue = ComponentConstants.DEFAULT_THEME)
