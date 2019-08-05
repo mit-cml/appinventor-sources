@@ -4,22 +4,11 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.common.ComponentCategory;
-
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
-import android.os.Handler;
 
 import java.util.List;
 
@@ -32,15 +21,17 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
   protected final SensorManager sensorManager;
   protected boolean enabled;
   protected int accuracy;
+  protected int sensorType;
 
-  public EnvironmentSensor(ComponentContainer container) {
+  public EnvironmentSensor(ComponentContainer container, int sensorType) {
     super(container.$form());
+    this.sensorType = sensorType;
     form.registerForOnResume(this);
     form.registerForOnStop(this);
 
     enabled = true;
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
-    sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+    sensor = sensorManager.getDefaultSensor(sensorType);
     buffer = new AveragingBuffer(BUFFER_SIZE);
     startListening();
   }
@@ -54,18 +45,34 @@ public abstract class EnvironmentSensor extends AndroidNonvisibleComponent
   }
 
   public void onSensorChanged(SensorEvent sensorEvent) {
-    if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
+    if (enabled && sensorEvent.sensor.getType() == sensorType) {
       accuracy = sensorEvent.accuracy;
       final float[] values = sensorEvent.values;
       buffer.insert(values[0]);
       onValueChanged(values[0]);
     }
   }
+
   protected abstract void onValueChanged(float value);
 
-  @Override
-  public void onAccuracyChanged(Sensor sensor, int accuracy) {
+  protected boolean isAvailable() {
+    return sensorManager.getSensorList(sensorType).size() > 0;
   }
+
+  protected void setEnabled(boolean enabled) {
+    if (this.enabled == enabled) {
+      return;
+    }
+    this.enabled = enabled;
+    if (enabled) {
+      startListening();
+    } else {
+      stopListening();
+    }
+  }
+
+  @Override
+  public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     
   @Override
   public void onResume() {

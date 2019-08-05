@@ -41,7 +41,7 @@ public class LightSensor extends EnvironmentSensor {
    * @param container  ignored (because this is a non-visible component)
    */
   public LightSensor(ComponentContainer container) {
-    super(container.$form());
+    super(container.$form(), Sensor.TYPE_LIGHT);
   }
 
   @Override
@@ -63,10 +63,9 @@ public class LightSensor extends EnvironmentSensor {
    * @return {@code true} indicates that a light sensor is available,
    *         {@code false} that it isn't
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean Available() {
-    return sensorManager.getSensorList(Sensor.TYPE_LIGHT).size() > 0;
+    return isAvailable();
   }
 
   /**
@@ -94,15 +93,7 @@ public class LightSensor extends EnvironmentSensor {
       defaultValue = "True")
   @SimpleProperty
   public void Enabled(boolean enabled) {
-    if (this.enabled == enabled) {
-      return;
-    }
-    this.enabled = enabled;
-    if (enabled) {
-      startListening();
-    } else {
-      stopListening();
-    }
+    setEnabled(enabled);
   }
 
   /**
@@ -111,8 +102,7 @@ public class LightSensor extends EnvironmentSensor {
    *
    * @return lux
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
    public float Lux() {
     return getAverageValue();
   }
