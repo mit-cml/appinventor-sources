@@ -1,5 +1,10 @@
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Color;
+import android.widget.RelativeLayout;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieEntry;
@@ -7,6 +12,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -14,6 +20,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataModel, PieData> {
   private PieChartView chartView;
+  private Legend legend;
 
   /**
    * Test to ensure that importing from an x Column which is
@@ -98,11 +105,177 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     assertFalse(model.areEntriesEqual(entry1, entry2));
   }
 
+  /**
+   * Test to ensure that setting the Colors property
+   * with a List containing a single entry properly
+   * sets the colors of the Data Series and sets
+   * the color to every value.
+   */
+  @Test
+  public void testSetColorsSingleColor() {
+    final int color = Color.BLUE;
+
+    List<Integer> colorList = new ArrayList<Integer>() {{
+      add(color);
+    }};
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 3f));
+      add(createTuple("Entry 2", 4f));
+      add(createTuple("Entry 3", 2f));
+      add(createTuple("Entry 4", 9f));
+    }};
+
+   int[] expectedColors = {
+       color,
+       color,
+       color,
+       color
+   };
+
+    setColorsHelper(colorList, tuples, expectedColors);
+  }
+
+  /**
+   * Test to ensure that setting the Colors property
+   * with a List containing multiple entries and a
+   * color for each entry properly sets the colors of
+   * the Data Series and the color for each individual entry.
+   */
+  @Test
+  public void testSetColorsMultipleColors() {
+    List<Integer> colorList = new ArrayList<Integer>() {{
+      add(Color.RED);
+      add(Color.GREEN);
+      add(Color.BLUE);
+      add(Color.YELLOW);
+      add(Color.CYAN);
+    }};
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 32f));
+      add(createTuple("Entry 2", 40f));
+      add(createTuple("Entry 3", 25f));
+      add(createTuple("Entry 4", 15f));
+      add(createTuple("Entry 5", 10f));
+    }};
+
+    int[] expectedColors = {
+        Color.RED,
+        Color.GREEN,
+        Color.BLUE,
+        Color.YELLOW,
+        Color.CYAN
+    };
+
+    setColorsHelper(colorList, tuples, expectedColors);
+  }
+
+  /**
+   * Test to ensure that setting the Colors property
+   * with a List containing multiple entries and less
+   * colors than entries properly sets the colors of
+   * the Data Series and the color for each individual entry
+   * is alternated properly between the set colors.
+   */
+  @Test
+  public void testSetColorsMultipleEntriesRepeatColors() {
+    List<Integer> colorList = new ArrayList<Integer>() {{
+      add(Color.RED);
+      add(Color.GREEN);
+      add(Color.BLUE);
+    }};
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 32f));
+      add(createTuple("Entry 2", 40f));
+      add(createTuple("Entry 3", 25f));
+      add(createTuple("Entry 4", 15f));
+      add(createTuple("Entry 5", 10f));
+      add(createTuple("Entry 6", 7f));
+      add(createTuple("Entry 7", 3f));
+    }};
+
+    int[] expectedColors = {
+        Color.RED,
+        Color.GREEN,
+        Color.BLUE,
+        Color.RED,
+        Color.GREEN,
+        Color.BLUE,
+        Color.RED
+    };
+
+    setColorsHelper(colorList, tuples, expectedColors);
+  }
+
+  /**
+   * Test to ensure that setting the Colors property
+   * with a List containing invalid entries skips
+   * the invalid entries, and sets the colors from the
+   * valid entries.
+   */
+  @Test
+  public void testSetColorsInvalidEntries() {
+    List<Object> colorList = new ArrayList<Object>() {{
+      add(Color.RED);
+      add("test");
+      add("random-string");
+      add(Color.BLUE);
+    }};
+
+    List<Integer> colorListExpected = new ArrayList<Integer>() {{
+      add(Color.RED);
+      add(Color.BLUE);
+    }};
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 32f));
+      add(createTuple("Entry 2", 40f));
+      add(createTuple("Entry 3", 25f));
+    }};
+
+    int[] expectedColors = {
+        Color.RED,
+        Color.BLUE,
+        Color.RED
+    };
+
+    YailList colors = YailList.makeList(colorList);
+    model.setColors(colors);
+    model.importFromList(tuples);
+
+    assertEquals(colorListExpected, model.getDataset().getColors());
+    assertEquals(expectedColors.length, legend.getEntries().length);
+
+    for (int i = 0; i < expectedColors.length; ++i) {
+      LegendEntry legendEntry = legend.getEntries()[i];
+
+      assertEquals(expectedColors[i], legendEntry.formColor);
+    }
+  }
+
+  private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
+    YailList colors = YailList.makeList(colorList);
+    model.setColors(colors);
+    model.importFromList(tuples);
+
+    assertEquals(colorList, model.getDataset().getColors());
+    assertEquals(expectedColors.length, legend.getEntries().length);
+
+    for (int i = 0; i < expectedColors.length; ++i) {
+      LegendEntry legendEntry = legend.getEntries()[i];
+
+      assertEquals(expectedColors[i], legendEntry.formColor);
+    }
+  }
+
   @Override
   public void setup() {
     chartView = new PieChartView(getForm());
     model = (PieChartDataModel)chartView.createChartModel();
     data = (PieData) model.getData();
+    legend = ((PieChart)((RelativeLayout)chartView.getView()).getChildAt(0)).getLegend();
   }
 
   @Override
@@ -127,5 +300,12 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     float yValue = (float) entries[1];
 
     return new PieEntry(yValue, xValue);
+  }
+
+  private LegendEntry createLegendEntry(String x, int color) {
+    LegendEntry legendEntry = new LegendEntry();
+    legendEntry.label = x;
+    legendEntry.formColor = color;
+    return legendEntry;
   }
 }
