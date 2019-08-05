@@ -45,28 +45,7 @@ import java.util.Queue;
     nonVisible = true,
     iconName = "images/lightsensor.png")
 @SimpleObject
-public class LightSensor extends AndroidNonvisibleComponent
-    implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
-
-  // Logging and Debugging
-  private static final String LOG_TAG = "LightSensor";
-  private static final boolean DEBUG = true;
-
-  // Backing for sensor values
-  private AveragingBuffer buffer;
-  private static final int BUFFER_SIZE = 10;
-
-  private int accuracy;
-
-  private final SensorManager sensorManager;
-
-  private final WindowManager windowManager;
-
-  // Indicates whether the sensor should generate events
-  private boolean enabled;
-
-  private Sensor sensor;
-
+public class LightSensor extends EnvironmentSensor {
   /**
    * Creates a new LightSensor component.
    *
@@ -74,18 +53,13 @@ public class LightSensor extends AndroidNonvisibleComponent
    */
   public LightSensor(ComponentContainer container) {
     super(container.$form());
-    form.registerForOnResume(this);
-    form.registerForOnStop(this);
-
-    enabled = true;
-    windowManager = (WindowManager) container.$context().getSystemService(Context.WINDOW_SERVICE);
-    sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
-    sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-    buffer = new AveragingBuffer(BUFFER_SIZE);
-    startListening();
   }
 
-
+  @Override
+  protected void onValueChanged(float value) {
+    LightChanged(value);
+  }
+  
   /**
    * Indicates the light level changed.
    */
@@ -120,16 +94,6 @@ public class LightSensor extends AndroidNonvisibleComponent
     return enabled;
   }
 
-  // Assumes that sensorManager has been initialized, which happens in constructor
-  private void startListening() {
-      sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
-  }
-
-  // Assumes that sensorManager has been initialized, which happens in constructor
-  private void stopListening() {
-    sensorManager.unregisterListener(this);
-  }
-
   /**
    * Specifies whether the sensor should generate events.  If true,
    * the sensor will generate events.  Otherwise, no events are
@@ -154,81 +118,14 @@ public class LightSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns the lux.
-   * The sensor must be enabled to return meaningful values.
+   * Returns the brightness in lux.
+   * The sensor must be enabled and available to return meaningful values.
    *
    * @return lux
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
-  public float Lux() {
-      return buffer.getAverage();
-  }
-
-  // SensorListener implementation
-  @Override
-  public void onSensorChanged(SensorEvent sensorEvent) {
-    if (enabled && sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
-      accuracy = sensorEvent.accuracy;
-      final float[] values = sensorEvent.values;
-      buffer.insert(values[0]);
-      LightChanged(values[0]);
-    }
-  }
-
-  @Override
-  public void onAccuracyChanged(Sensor sensor, int accuracy) {
-  }
-    
-  @Override
-  public void onResume() {
-    if (enabled) {
-      startListening();
-    }
-  }
-
-  @Override
-  public void onStop() {
-    if (enabled) {
-      stopListening();
-    }
-  }
-
-  @Override
-  public void onDelete() {
-    if (enabled) {
-      stopListening();
-    }
-  }
-
-  private class AveragingBuffer {
-    private Float[] data;
-    private int next;
-
-    private AveragingBuffer(int size) {
-      data = new Float[size];
-      next = 0;
-    }
-
-    private void insert(Float datum) {
-      data[next++] = datum;
-      if (next == data.length) {
-        next = 0;
-      }
-    }
-
-    private float getAverage() {
-      double sum = 0;
-      int count = 0;
-
-      for (int i = 0; i < data.length; i++) {
-        if (data[i] != null) {
-          sum += data[i];
-          count++;
-        }
-      }
-
-      return (float) (count == 0 ? sum : sum / count);
-    }
+   public float Lux() {
+    return getAverageValue();
   }
 }
