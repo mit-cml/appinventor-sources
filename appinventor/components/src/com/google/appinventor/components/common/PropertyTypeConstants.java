@@ -330,4 +330,11 @@ public class PropertyTypeConstants {
    *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_DATA_SOURCE = "chart_data_source";
+
+  /**
+   * Chart Pie Chart radius
+   * @see
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CHART_PIE_RADIUS = "chart_pie_radius";
 }

@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -256,7 +257,24 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * tuple (provided the entry exists)
      * @param tuple  Tuple representing the entry to remove
      */
-    public abstract void removeEntryFromTuple(YailList tuple);
+    public void removeEntryFromTuple(YailList tuple) {
+        // Construct an entry from the specified tuple
+        Entry entry = getEntryFromTuple(tuple);
+
+        if (entry != null) {
+            // TODO: The commented line should be used instead. However, the library does not (yet) implement
+            // TODO: equals methods in it's entries as of yet, so the below method fails.
+            // dataset.removeEntry(entry);
+
+            // Get the index of the entry
+            int index = findEntryIndex(entry);
+
+            // Entry exists; remove it
+            if (index >= 0) {
+                getDataset().removeEntry(index);
+            }
+        }
+    }
 
     /**
      * Checks whether an entry exists in the Data Series.
@@ -284,7 +302,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param criterion  criterion to use for comparison
      * @return  YailList of entries represented as tuples matching the specified conditions
      */
-    public YailList findEntriesByCriterion(float value, EntryCriterion criterion) {
+    public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
         List<YailList> entries = new ArrayList<YailList>();
 
         for (Object dataValue : getDataset().getValues()) {
@@ -308,7 +326,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public YailList getEntriesAsTuples() {
         // Use the All criterion to get all the Entries
-        return findEntriesByCriterion(0f, EntryCriterion.All);
+        return findEntriesByCriterion("0", EntryCriterion.All);
     }
 
     /**
@@ -316,10 +334,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      *
      * @param entry  entry to check against
      * @param criterion  criterion to check with (e.g. x value)
-     * @param value  value to use for comparison
+     * @param value  value to use for comparison (as a String)
      * @return  true if the entry matches the criterion
      */
-    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, float value) {
+    protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, String value) {
         boolean criterionSatisfied = false;
 
         switch (criterion) {
@@ -328,11 +346,35 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                 break;
 
             case XValue: // Criterion satisfied based on x value match with the value
-                criterionSatisfied = (entry.getX() == value);
+                // PieEntries and regular entries require different
+                // handling sine PieEntries have String x values
+                if (entry instanceof PieEntry) {
+                    // Criterion is satisfied for a Pie Entry only if
+                    // the label is equal to the specified value
+                    PieEntry pieEntry = (PieEntry) entry;
+                    criterionSatisfied = pieEntry.getLabel().equals(value);
+                } else {
+                    // X value is a float, so it has to be parsed and
+                    // compared. If parsing fails, the criterion is
+                    // not satisfied.
+                    try {
+                        float xValue = Float.parseFloat(value);
+                        criterionSatisfied = (entry.getX() == xValue);
+                    } catch (NumberFormatException e) {
+                        // Do nothing (value already false)
+                    }
+                }
                 break;
 
             case YValue: // Criterion satisfied based on y value match with the value
-                criterionSatisfied = (entry.getY() == value);
+                try {
+                    // Y value is always a float, therefore the String value has to
+                    // be parsed.
+                    float yValue = Float.parseFloat(value);
+                    criterionSatisfied = (entry.getY() == yValue);
+                } catch (NumberFormatException e) {
+                    // Do nothing (value already false)
+                }
                 break;
         }
 
@@ -364,7 +406,21 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param entry  Entry to find
      * @return  index of the entry, or -1 if entry is not found
      */
-    protected abstract int findEntryIndex(Entry entry);
+    protected int findEntryIndex(Entry entry) {
+        for (int i = 0; i < getDataset().getValues().size(); ++i) {
+            Entry currentEntry = getDataset().getEntryForIndex(i);
+
+            // Check whether the current entry is equal to the
+            // specified entry. Note that (in v3.1.0), equals()
+            // does not yield the same result.
+            if (areEntriesEqual(currentEntry, entry)) {
+                // Entry matched; Return
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     /**
      * Deletes all the entries in the Data Series.
@@ -418,4 +474,20 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  YailList of the specified number of entries containing the default values.
      */
     protected abstract YailList getDefaultValues(int size);
+
+    /**
+     * Checks equality between two entries.
+     *
+     * TODO: REMARK
+     * TODO: The reason why this method is needed is due to the equals()
+     * TODO: and equalTo() methods not being implemented fully to fit
+     * TODO: the requirements of the comparison done in the models.
+     * TODO: equalTo() does not check label equality (for Pie Charts)
+     * TODO: and equals() checks memory references instead of values.
+     *
+     * @param e1  first Entry to compare
+     * @param e2  second Entry to compare
+     * @return  true if the entries are equal
+     */
+    protected abstract boolean areEntriesEqual(Entry e1, Entry e2);
 }

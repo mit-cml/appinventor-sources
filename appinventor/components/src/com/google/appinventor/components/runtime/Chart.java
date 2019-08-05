@@ -7,6 +7,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.HashSet;
         category = ComponentCategory.CHARTS,
         description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public class Chart extends AndroidViewComponent implements ComponentContainer {
+public class Chart extends AndroidViewComponent implements ComponentContainer, OnInitializeListener {
     // Root layout of the Chart view. This is used to make Chart
     // dynamic removal & adding easier.
     private RelativeLayout view;
@@ -27,6 +28,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     private int type;
     private int backgroundColor;
     private String description;
+
+    private int pieRadius;
 
     // Attached Data components
     private ArrayList<ChartDataBase> dataComponents;
@@ -52,6 +55,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
         Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
+        PieRadius(100);
+
+        // Register onInitialize event of the Chart
+        $form().registerForOnInitialize(this);
     }
 
     @Override
@@ -162,7 +169,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
             case ComponentConstants.CHART_TYPE_BAR:
                 return new LineChartView(container.$context());
             case ComponentConstants.CHART_TYPE_PIE:
-                return new LineChartView(container.$context());
+                return new PieChartView(container.$context());
             default:
                 // Invalid argument
                 throw new IllegalArgumentException("type:" + type);
@@ -238,6 +245,30 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
     }
 
     /**
+     * Sets the Pie Radius of the Chart. If the current type is
+     * not the Pie Chart, the value is simply stored, but not
+     * processed.
+     *
+     * The value is hidden in the blocks due to it being applicable
+     * to a single Chart only. TODO: Might be better to change this in the future
+     *
+     * TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
+     * @param percent  Percentage of the Pie Chart radius to fill
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS,
+                defaultValue = "100")
+    @SimpleProperty(userVisible = false)
+    public void PieRadius(int percent) {
+        this.pieRadius = percent;
+
+        // Only set the value if the Chart View is a
+        // Pie Chart View; Otherwise take no action.
+        if (chartView instanceof PieChartView) {
+            ((PieChartView)chartView).setPieRadius(percent);
+        }
+    }
+
+    /**
      * Creates a new instance of a ChartDataModel, corresponding
      * to the current Chart type.
      * @return  new ChartDataModel object instance
@@ -267,5 +298,18 @@ public class Chart extends AndroidViewComponent implements ComponentContainer {
      */
     public void addDataComponent(ChartDataBase dataComponent) {
         dataComponents.add(dataComponent);
+    }
+
+    @Override
+    public void onInitialize() {
+        // If the Chart View is of type PieChartView, the
+        // radius of the Chart has to be set after initialization
+        // due to the method relying on retrieving width and height
+        // via getWidth() and getHeight(), which only return non-zero
+        // values after the Screen is initialized.
+        if (chartView instanceof PieChartView) {
+            ((PieChartView)chartView).setPieRadius(pieRadius);
+            chartView.Refresh();
+        }
     }
 }

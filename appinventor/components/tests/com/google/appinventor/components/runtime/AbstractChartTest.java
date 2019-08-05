@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.ColorDrawable;
+import android.view.View;
 import android.widget.RelativeLayout;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.easymock.EasyMock;
@@ -90,7 +91,21 @@ public abstract class AbstractChartTest<V extends ChartView,
         // Assert that the current view is in the root layout, and
         // the getChartView method returns the proper result.
         assertEquals(chartView, chartComponent.getChartView());
-        assertEquals(chart, relativeLayout.getChildAt(0));
+
+        // The Chart view is expected to be the first view of the Relative Layout
+        View child = relativeLayout.getChildAt(0);
+
+        // Since the Pie Chart instantiates a RelativeLayout instead of the
+        // Chart itself in the Chart componentt Relative Layout view,
+        // separate handling has to be done here for the Pie Chart.
+        // TODO: Refactor this to be in separate corresponding classes.
+        if (getType() == ComponentConstants.CHART_TYPE_PIE) {
+            // The Root Chart view is the child of the RelativeLayout which is
+            // a child of the Chart component's RelativeLayout.
+            assertEquals(chart, ((RelativeLayout)child).getChildAt(0));
+        } else {
+            assertEquals(chart, child);
+        }
 
         // Change the Type of the Chart
         chartComponent.Type(0);

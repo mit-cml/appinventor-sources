@@ -32,7 +32,7 @@ public final class CoordinateData extends ChartDataBase {
      * @param y - y value of entry
      */
     @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
-    public void AddEntry(final float x, final float y) {
+    public void AddEntry(final String x, final String y) {
         // Entry should be added via the Thread Runner asynchronously
         // to guarantee the order of data adding (e.g. CSV data
         // adding could be happening when this method is called,
@@ -58,7 +58,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Removes the first matching (x, y) point from the " +
         "Coordinate Data, if it exists.")
-    public void RemoveEntry(final float x, final float y) {
+    public void RemoveEntry(final String x, final String y) {
         // Entry should be deleted via the Thread Runner asynchronously
         // to guarantee the order of data adding (e.g. CSV data
         // adding could be happening when this method is called,
@@ -84,7 +84,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data." +
         "Returns true if the Entry exists, and false otherwise.")
-    public boolean DoesEntryExist(final float x, final float y) {
+    public boolean DoesEntryExist(final String x, final String y) {
         try {
             return threadRunner.submit(new Callable<Boolean>() {
                 @Override

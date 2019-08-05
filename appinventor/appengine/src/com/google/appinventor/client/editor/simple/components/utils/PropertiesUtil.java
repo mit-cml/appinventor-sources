@@ -287,6 +287,8 @@ public class PropertiesUtil {
       return new YoungAndroidCsvColumnSelectorProperty(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, CHART_DATA_SOURCES);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS)) {
+      return new YoungAndroidIntegerRangePropertyEditor(0, 100);
     } else {
       return new TextPropertyEditor();
     }

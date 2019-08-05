@@ -34,7 +34,7 @@ public class CoordinateDataTest extends ChartDataBaseTest<CoordinateData> {
 
         // Call the Add Entry method in the ChartData component
         // and verify that the appropriate model method was called.
-        chartData.AddEntry(x, y);
+        chartData.AddEntry(x + "", y + "");
         verify(model);
     }
 }

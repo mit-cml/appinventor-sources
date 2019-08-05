@@ -245,26 +245,6 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         }
     }
 
-    /**
-     * Hides or shows the specified property of the Component.
-     *
-     * @param property  Property key
-     * @param show  will show the property if set to true, will hide it otherwise
-     */
-    private void showProperty(String property, boolean show) {
-        // Get the current type flags of the Property
-        int type = properties.getProperty(property).getType();
-
-        if (show) {
-            type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
-        } else {
-            type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
-        }
-
-        // Set the new type
-        properties.getProperty(property).setType(type);
-    }
-
     @Override
     public void onPropertyChange(String propertyName, String newValue) {
         super.onPropertyChange(propertyName, newValue);

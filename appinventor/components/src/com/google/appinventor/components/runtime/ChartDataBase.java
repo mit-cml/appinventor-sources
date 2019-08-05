@@ -40,6 +40,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     private String label;
     private int color;
+    private YailList colors;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
 
@@ -76,6 +77,38 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             category = PropertyCategory.APPEARANCE)
     public int Color() {
         return color;
+    }
+
+    /**
+     * Returns the Chart's colors as a List
+     * @return  List of colors
+     */
+    @SimpleProperty(
+        category = PropertyCategory.APPEARANCE
+    )
+    public YailList Colors() {
+        // TODO: Add support for other Chart types (not just Pie Chart)
+        return colors;
+    }
+
+    /**
+     * Specifies the data series colors as a list of alpha-red-green-blue integers.
+     *
+     * TODO: Perhaps a Designer property selector could be devised here to select
+     * TODO: the colors of the Chart.
+     *
+     * @param argb  array of argb values
+     */
+    @SimpleProperty
+    public void Colors(YailList argb) {
+        colors = argb;
+
+        // TODO: Add support for other Chart types
+        if (chartDataModel instanceof PieChartDataModel) {
+            ((PieChartDataModel)chartDataModel).setColors(argb);
+        }
+
+        refreshChart();
     }
 
     /**
@@ -330,7 +363,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
         "A single entry is represented as a List of values of the entry.")
-    public YailList GetEntriesWithXValue(final float x) {
+    public YailList GetEntriesWithXValue(final String x) {
       try {
         return threadRunner.submit(new Callable<YailList>() {
           @Override
@@ -357,7 +390,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
         "A single entry is represented as a List of values of the entry.")
-    public YailList GetEntriesWithYValue(final float y) {
+    public YailList GetEntriesWithYValue(final String y) {
       try {
         return threadRunner.submit(new Callable<YailList>() {
           @Override
