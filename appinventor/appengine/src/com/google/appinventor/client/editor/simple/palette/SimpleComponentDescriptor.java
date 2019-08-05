@@ -119,6 +119,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/accelerometersensor.png", images.accelerometersensor());
     bundledImages.put("images/lightsensor.png", images.lightsensor());
     bundledImages.put("images/barometer.png", images.barometer());
+    bundledImages.put("images/thermometer.png", images.thermometer());
     bundledImages.put("images/gyroscopesensor.png", images.gyroscopesensor());
     bundledImages.put("images/nearfield.png", images.nearfield());
     bundledImages.put("images/activityStarter.png", images.activitystarter());

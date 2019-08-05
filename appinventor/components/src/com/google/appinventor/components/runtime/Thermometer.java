@@ -23,42 +23,42 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 /**
- * Physical world component that can measure the ambient air pressure if
+ * Physical world component that can measure the ambient air temperature if
  * supported by the hardware.
  */
 @DesignerComponent(version = 1,
-                   description = "Non-visible component that can measure the ambient air pressure.",
+                   description = "Non-visible component that can measure the ambient temperature.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
-    iconName = "images/barometer.png")
+    iconName = "images/thermometer.png")
 @SimpleObject
-public class Barometer extends SingleValueSensor {
+public class Thermometer extends SingleValueSensor {
   /**
-   * Creates a new Barometer component.
+   * Creates a new Thermometer component.
    *
    * @param container  ignored (because this is a non-visible component)
    */
-  public Barometer(ComponentContainer container) {
-    super(container.$form(), Sensor.TYPE_PRESSURE);
+  public Thermometer(ComponentContainer container) {
+    super(container.$form(), Sensor.TYPE_AMBIENT_TEMPERATURE);
   }
 
   @Override
   protected void onValueChanged(float value) {
-    AirPressureChanged(value);
+    TemperatureChanged(value);
   }
   
   /**
-   * Indicates the air pressure changed.
+   * Indicates the temperature changed.
    */
   @SimpleEvent
-  public void AirPressureChanged(float pressure) {
-    EventDispatcher.dispatchEvent(this, "AirPressureChanged", pressure);
+  public void TemperatureChanged(float temperature) {
+    EventDispatcher.dispatchEvent(this, "TemperatureChanged", temperature);
   }
 
   /**
    * Available property getter method (read-only property).
    *
-   * @return {@code true} indicates that a barometer is available,
+   * @return {@code true} indicates that a thermometer is available,
    *         {@code false} that it isn't
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
@@ -94,14 +94,14 @@ public class Barometer extends SingleValueSensor {
   }
 
   /**
-   * Returns the atmospheridc pressure in hPa (millibar) by averaging the
+   * Returns the temperature in degrees Celsius by averaging the
    * previous 10 measured values. The sensor must be enabled and available 
    * to return meaningful values.
    *
-   * @return the averaged atmospheric pressure in hPa (millibar)
+   * @return the averaged temperature in degrees Celsius
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-   public float AirPressure() {
+   public float Temperature() {
     return getAverageValue();
   }
 }

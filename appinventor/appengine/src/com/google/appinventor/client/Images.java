@@ -114,6 +114,14 @@ public interface Images extends Resources {
    @Source("com/google/appinventor/images/barometer.png")
    ImageResource barometer();
 
+   /**
+    * Designer palette item: thermometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/thermometer.png")
+   ImageResource thermometer();
+
   /**
    * Designer palette item: barcode scanner component
    */
