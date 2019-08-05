@@ -591,5 +591,11 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/rectangle.png")
   ImageResource rectangle();
+  
+  /**
+   * Designer palette item: AdMob component
+   */
+  @Source("com/google/appinventor/images/onesignal.png")
+  ImageResource onesignal();
 
 }
