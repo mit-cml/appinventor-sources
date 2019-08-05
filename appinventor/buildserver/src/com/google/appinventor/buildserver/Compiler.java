@@ -106,6 +106,9 @@ public final class Compiler {
   private static final String DEFAULT_VERSION_NAME = "1.0";
   private static final String DEFAULT_MIN_SDK = "7";
   private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
+  
+  //todo: DON NOT hard code this. this should come in from project fileimporter. Maybe through annotation??
+  private static final String DEFAULT_APP_ID = "AppId";  // the onesignal default push notification app i
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -283,7 +286,8 @@ public final class Compiler {
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
-
+  
+  private String simpleCompTypesString="";
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -796,6 +800,7 @@ public final class Compiler {
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
+    String appId = (project.getAppId() == null) ? DEFAULT_APP_ID : cleanName(project.getAppId().trim());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
@@ -967,6 +972,49 @@ public final class Compiler {
           out.write("      </intent-filter>\n");
           out.write("    </activity>\n");
         }
+        
+        if (simpleCompTypesString.contains("OneSignalPush")) {
+                out.write("<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\"/>\n");
+                out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\"/>");
+
+                out.write("<receiver android:name=\"com.onesignal.GcmBroadcastReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\">");
+                out.write("   <intent-filter>");
+                out.write("   <action android:name=\"com.google.android.c2dm.intent.RECEIVE\"/>");
+                out.write("   <category android:name=\"" + packageName + "\"/>");
+                out.write("</intent-filter>");
+                out.write("</receiver>");
+
+                out.write("<receiver android:name=\"com.onesignal.NotificationOpenedReceiver\"/>");
+                out.write("<service android:name=\"com.onesignal.GcmIntentService\"/>");
+                out.write("<service android:name=\"com.onesignal.SyncService\" android:stopWithTask=\"false\"/>");
+                out.write("<activity android:name=\"com.onesignal.PermissionsActivity\" android:theme=\"@android:style/Theme.Translucent.NoTitleBar\"/>");
+                out.write("<service android:name=\"com.onesignal.NotificationRestoreService\"/>");
+                out.write("<receiver android:name=\"com.onesignal.BootUpReceiver\">");
+                out.write("   <intent-filter>");
+                out.write("       <action android:name=\"android.intent.action.BOOT_COMPLETED\"/>");
+                out.write("       <action android:name=\"android.intent.action.QUICKBOOT_POWERON\"/>");
+                out.write("   </intent-filter>");
+                out.write("</receiver>");
+                out.write("        <service android:name=\"com.onesignal.SyncJobService\" android:permission=\"android.permission.BIND_JOB_SERVICE\" />\n");
+
+                out.write("<receiver android:name=\"com.onesignal.UpgradeReceiver\">");
+                out.write("    <intent-filter>");
+                out.write("       <action android:name=\"android.intent.action.MY_PACKAGE_REPLACED\"/>");
+                out.write("    </intent-filter>");
+                out.write("</receiver>");
+
+            }
+
+            //OneSignal
+            if (simpleCompTypesString.contains("OneSignalPush") || isForCompanion) {
+                out.write("<activity android:name=\"com.google.android.gms.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\"/>");
+                out.write("<meta-data android:name=\"com.google.android.gms.version\" android:value=\"10084000\"/>");
+            }
+        
+           if (simpleCompTypesString.contains("OneSignalPush") || isForCompanion) {
+                out.write("<meta-data android:name=\"onesignal_app_id\" android:value=\"" + appId + "\"/>");
+            }
+
       }
 
       // Collect any additional <application> subelements into a single set.
