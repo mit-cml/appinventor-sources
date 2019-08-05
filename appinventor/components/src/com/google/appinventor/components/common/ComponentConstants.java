@@ -102,6 +102,24 @@ public class ComponentConstants {
   public static final int POLYGON_PREFERRED_HEIGHT = 30;
   public static final int RECTANGLE_PREFERRED_WIDTH = 50;
   public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
+  
+  // Android API Level
+  public static final String API_14 = "API 14";
+  public static final String API_15 = "API 15";
+  public static final String API_16 = "API 16";
+  public static final String API_17 = "API 17";
+  public static final String API_18 = "API 18";
+  public static final String API_19 = "API 19";
+  public static final String API_20 = "API 20";
+  public static final String API_21 = "API 21";
+  public static final String API_22 = "API 22";
+  public static final String API_23 = "API 23";
+  public static final String API_24 = "API 24";
+  public static final String API_25 = "API 25";
+  public static final String API_26 = "API 26";
+  public static final String API_26 = "API 27";
+  public static final String API_26 = "API 28";
+
 
 }
 

@@ -133,7 +133,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
     String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON,
-    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
+    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor, String minApi) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
@@ -148,6 +148,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     primaryColor = Strings.nullToEmpty(primaryColor);
     primaryColorDark = Strings.nullToEmpty(primaryColorDark);
     accentColor = Strings.nullToEmpty(accentColor);
+    minApi = Strings.nullToEmpty(minApi);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
         "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
@@ -163,6 +164,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"" + primaryColor +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"" + primaryColorDark +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"" + accentColor +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_MinAPI + "\":\"" + minApi +
         "\"}}";
   }
 
@@ -179,7 +181,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
     String icon, String vcode, String vname, String useslocation, String aname,
     String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
-    String primaryColor, String primaryColorDark, String accentColor) {
+    String primaryColor, String primaryColorDark, String accentColor, String minApi) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -226,6 +228,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (accentColor != null && !accentColor.isEmpty()) {
       contents += "color.accent=" + accentColor + "\n";
+    }
+    if (minApi != null && !minApi.isEmpty()) {
+      contents += "MinAPI=" + minApi + "\n";
     }
     return contents;
   }
@@ -320,6 +325,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newAccentColor = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    String newMinApi = Strings.nullToEmpty(settings.getSetting(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_MinAPI));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -346,6 +354,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldPrimaryColor = Strings.nullToEmpty(properties.getProperty("color.primary"));
     String oldPrimaryColorDark = Strings.nullToEmpty(properties.getProperty("color.primary.dark"));
     String oldAccentColor = Strings.nullToEmpty(properties.getProperty("color.accent"));
+    String oldMinApi = Strings.nullToEmpty(properties.getProperty("MinAPI"));
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
       || !newUsesLocation.equals(oldUsesLocation) ||
@@ -353,7 +362,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       !newShowListsAsJson.equals(oldShowListsAsJson) ||
         !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
         !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
-        !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
+        !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)
+       || !newMinApi.equals(oldMinApi)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
@@ -451,6 +461,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String accentColor = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+    String minApi = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_MinAPI);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -471,7 +484,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             storageIo.getUser(userId).getUserEmail(), newName);
         newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
           vname, useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
-          theme, primaryColor, primaryColorDark, accentColor);
+          theme, primaryColor, primaryColorDark, accentColor, minApi);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -496,7 +509,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
         useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
-        primaryColorDark, accentColor));
+        primaryColorDark, accentColor, minApi));
   }
 
   @Override

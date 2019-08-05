@@ -104,7 +104,7 @@ public final class Compiler {
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_MIN_SDK = "14";
   private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
   
   //todo: DON NOT hard code this. this should come in from project fileimporter. Maybe through annotation??
@@ -289,6 +289,7 @@ public final class Compiler {
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
   
   private String simpleCompTypesString="";
+  private static String minSDK;
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -802,6 +803,7 @@ public final class Compiler {
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
     String appId = (project.getAppId() == null) ? DEFAULT_APP_ID : cleanName(project.getAppId().trim());
+    minSDK = (project.getMinApi() == null) ? DEFAULT_MIN_SDK : cleanName(project.getMinApi().trim());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {

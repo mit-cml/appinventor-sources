@@ -96,6 +96,7 @@ public final class Project {
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String ONE_SIGNAL_PUSH_TAG = "AppId";
+  private static final String MIN_API_TAG = "MinAPI";
 
   // Table containing project properties
   private Properties properties;
@@ -288,7 +289,15 @@ public final class Project {
    * @return  the minimum Android sdk
    */
   public String getMinSdk() {
-    return properties.getProperty(ANDROID_MIN_SDK_TAG, "7");
+    return properties.getProperty(ANDROID_MIN_SDK_TAG, "14");
+  }
+  
+   public String getMinApi() {
+    return properties.getProperty(MIN_API_TAG);
+  }
+
+  public void setMinApi(String minApi) {
+    properties.setProperty(MIN_API_TAG, minApi);
   }
   
   /**
