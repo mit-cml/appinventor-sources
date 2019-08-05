@@ -251,6 +251,7 @@ public class Form extends AppInventorCompatActivity
   // It should be changed from 100000 to 65535 if the functionality to extend
   // FragmentActivity is added in future.
   public static final int MAX_PERMISSION_NONCE = 100000;
+  private String userEmail = "";
 
   public static class PercentStorageRecord {
     public enum Dim {
@@ -292,6 +293,8 @@ public class Form extends AppInventorCompatActivity
 
     // Figure out the name of this form.
     String className = getClass().getName();
+    this.userEmail = className;
+//    Log.d(LOG_TAG, "xxxxx usercheck: user email is: " + userEmail);
     int lastDot = className.lastIndexOf('.');
     formName = className.substring(lastDot + 1);
     Log.d(LOG_TAG, "Form " + formName + " got onCreate");
@@ -1926,7 +1929,29 @@ public class Form extends AppInventorCompatActivity
     Intent activityIntent = new Intent();
     // Note that the following is dependent on form generated class names being the same as
     // their form names and all forms being in the same package.
-    activityIntent.setClassName(this, getPackageName() + "." + nextFormName);
+    // ApplicationPackage updates
+        //
+        String fullyScrrenToOpen = "";
+        Log.i(LOG_TAG, "trying to get package name");
+
+        String packageName = getPackageName();  // this will be the actual package name that is in manifest.
+        Log.i(LOG_TAG, "package name is:" + packageName);
+
+        if (packageName.startsWith("com.appybuilder")) {
+            Log.i(LOG_TAG, "packageName started with com.appybuilder. Actual is:" + packageName);
+
+            fullyScrrenToOpen = packageName + "." + nextFormName;
+        } else {
+            // user has enterd custom package name. the should've entered the full
+            fullyScrrenToOpen = "com.aimod." + nextFormName;
+            Log.i(LOG_TAG, "packageName was changed; custom package, prefixing:" + fullyScrrenToOpen);
+
+        }
+
+        Log.i(LOG_TAG, "setting intent class to:" + fullyScrrenToOpen);
+
+        activityIntent.setClassName(this, fullyScrrenToOpen)
+            
     String functionName = (startupValue == null) ? "open another screen" :
       "open another screen with start value";
     String jValue;
