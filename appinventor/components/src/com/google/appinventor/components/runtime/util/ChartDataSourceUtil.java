@@ -94,7 +94,7 @@ public class ChartDataSourceUtil {
       // the row.
       for (int j = 0; j < columns.size(); ++j) {
         // Columns is expected to contain only YailList entries
-        YailList column = (YailList) columns.get(j);
+        YailList column = (YailList) columns.getObject(j);
 
         // If the index is smaller than the column size, then
         // the entry exists.

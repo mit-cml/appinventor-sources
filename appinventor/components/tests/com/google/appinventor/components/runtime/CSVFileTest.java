@@ -335,6 +335,7 @@ public class CSVFileTest extends FileTestBase {
 //    csvFile.ReadFile(TARGET_FILE_READ);
 //
 //    System.out.println(csvFile.Columns().toString());
+//    System.out.println(csvFile.Rows().toString());
 //  }
 
   /// Helper methods
