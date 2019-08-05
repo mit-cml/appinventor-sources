@@ -26,6 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BluetoothClient component
@@ -41,7 +44,7 @@ import java.util.UUID;
 @UsesPermissions(permissionNames =
                  "android.permission.BLUETOOTH, " +
                  "android.permission.BLUETOOTH_ADMIN")
-public final class BluetoothClient extends BluetoothConnectionBase {
+public final class BluetoothClient extends BluetoothConnectionBase implements RealTimeChartDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
@@ -298,5 +301,43 @@ public final class BluetoothClient extends BluetoothConnectionBase {
     Log.i(logTag, "Connected to Bluetooth device " +
         BluetoothReflection.getBluetoothDeviceAddress(bluetoothDevice) + " " +
         BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
+  }
+
+  private HashSet<ChartDataBase> dataObservers = new HashSet<ChartDataBase>();
+
+  @Override
+  public void addDataSourceObserver(ChartDataBase dataComponent) {
+    if (dataObservers.isEmpty()) {
+      ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+      scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+        @Override
+        public void run() {
+          if (IsConnected() && BytesAvailableToReceive() >= 2) {
+            int result = ReceiveSigned2ByteNumber();
+            notifyDataSourceObservers(null, result);
+          }
+        }
+      }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    dataObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+
+  }
+
+  @Override
+  public void notifyDataSourceObservers(String key, Object newValue) {
+    for (ChartDataBase observer : dataObservers) {
+      observer.onReceiveValue(key, newValue);
+    }
+  }
+
+  @Override
+  public String getDataValue(String key) {
+    return "0";
   }
 }

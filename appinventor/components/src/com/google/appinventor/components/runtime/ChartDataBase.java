@@ -557,7 +557,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     public void onReceiveValue(String key, Object value) {
         // Check that the key of the value received matches the
         // Data Source value key
-        if (key.equals(dataSourceValue)) {
+        if (key == null || key.equals(dataSourceValue)) {
             // Construct and add tuple with t value and the data value
             // Note: The value is (and should) be imported non-asynchronously
             // to prevent tearing when using multiple data series. Otherwise
