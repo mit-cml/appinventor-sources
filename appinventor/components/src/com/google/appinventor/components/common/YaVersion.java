@@ -459,7 +459,7 @@ public class YaVersion {
   // For YOUNG_ANDROiD_VERSION 185:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROiD_VERSION 186:
-  // - AddMinApi Choice
+  // - Add Min Api Level
 
   public static final int YOUNG_ANDROID_VERSION = 186;
 
