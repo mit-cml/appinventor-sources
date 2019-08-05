@@ -227,11 +227,48 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
                     // Parse InputStream to String
                     final String result = readFromInputStream(inputStream);
 
-                    // Parse rows from the result
-                    rows = CsvUtil.fromCsvTable(result);
+                    if (result.charAt(0) == '{') {
+                        Object jsonObject = JsonUtil.getObjectFromJson(result);
 
-                    // Construct column lists from rows
-                    constructColumnsFromRows();
+                        List<YailList> resultColumns = new ArrayList<YailList>();
+
+                        if (jsonObject instanceof List) {
+                            List jsonList = (List) jsonObject;
+
+                            for (Object entry : jsonList) {
+                                List<String> columnElements = new ArrayList<String>();
+
+                                if (entry instanceof List) {
+                                    List listEntry = (List) entry;
+
+                                    columnElements.add(listEntry.get(0).toString());
+
+                                    Object jsonValue = listEntry.get(1);
+
+                                    if (jsonValue instanceof List) {
+                                        List jsonValueList = (List)jsonValue;
+
+                                        for (int j = 0; j < jsonValueList.size(); ++j) {
+                                            columnElements.add(jsonValueList.get(j).toString());
+                                        }
+                                    } else {
+                                        columnElements.add(jsonValue.toString());
+                                    }
+
+                                }
+
+                                resultColumns.add(YailList.makeList(columnElements));
+                            }
+
+                            columns = YailList.makeList(resultColumns);
+                        }
+                    } else {
+                        // Parse rows from the result
+                        rows = CsvUtil.fromCsvTable(result);
+
+                        // Construct column lists from rows
+                        constructColumnsFromRows();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {

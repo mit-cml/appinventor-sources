@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
+import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +9,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
 
 /**
@@ -315,6 +318,24 @@ public class CSVFileTest extends FileTestBase {
     // Use the helper to assert the result
     testGetColumnsHelper(expected, columns);
   }
+
+//  @Test
+//  public void test() {
+//    String json = "{\n";
+//
+//    json += "\"value\": \"test\",\n";
+//    json += "\"values\": [1,2,3]";
+//
+//    json += "\n}";
+//
+//    List list = (List) JsonUtil.getObjectFromJson(json);
+//
+//    testWriteAndReadFile("/" + TARGET_FILE_READ, json, true);
+//
+//    csvFile.ReadFile(TARGET_FILE_READ);
+//
+//    System.out.println(csvFile.Columns().toString());
+//  }
 
   /// Helper methods
 
