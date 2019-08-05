@@ -169,60 +169,20 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * The row size is used to create a column with default
      * values in case of an absence of data.
      *
+     * The first element is skipped, since it is assumed that it
+     * is the column name.
+     *
      * @param columns  columns to import data from
      */
     public void importFromCSV(YailList columns) {
-        if (columns == null) {
-            return;
-        }
-
-        // Establish the row count of the specified columns
-        int rows = 0;
-
-        for (int i = 0; i < columns.size(); ++i) {
-            YailList column = (YailList)columns.getObject(i);
-
-            if (column.size() != 0) {
-                rows = column.size();
-                break;
-            }
-        }
+        // Determine the (maximum) row count of the specified columns
+        int rows = determineRowCountInColumns(columns);
 
         if (rows == 0) {
             // No rows exist. Do nothing.
             return;
         }
 
-        // Initially, the final column List is created (empty
-        // column Lists should be populated with default values)
-        ArrayList<YailList> dataColumns = new ArrayList<YailList>();
-
-        for (int i = 0; i < columns.size(); ++i) {
-            // Get the column element
-            YailList column = (YailList)columns.getObject(i);
-
-            if (column.size() == 0) { // Column is empty, populate it with default values
-                dataColumns.add(getDefaultValues(rows));
-            } else { // Add the specified CSV column to the data columns to use for importing
-                dataColumns.add(column);
-            }
-        }
-
-        // Import from the finalized CSV columns.
-        importFromCSVColumns(dataColumns, rows);
-    }
-
-    /**
-     * Imports data from the specified set of CSV column data and
-     * the specified number of rows.
-     *
-     * The first element is skipped, since it is assumed that it
-     * is the column name.
-     *
-     * @param columns  List of fixed-width columns, each of which contain data
-     * @param rows  Number of rows in the CSV (number of elements in the columns)
-     */
-    private void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
         List<YailList> tuples = new ArrayList<YailList>();
 
         // Generate tuples from the columns
@@ -231,8 +191,25 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             // Add entries to the tuple from all i-th values (i-th row)
             // of the data columns.
-            for (YailList column : columns) {
-                tupleElements.add(column.getString(i));
+            for (int j = 0; j < columns.size(); ++j) {
+                Object value = columns.getObject(j);
+
+                // Invalid column specified; Add default value
+                if (!(value instanceof YailList)) {
+                    tupleElements.add(getDefaultValue(i));
+                    continue;
+                }
+
+                // Safe-cast value to YailList
+                YailList column = (YailList) value;
+
+                if (column.size() > i) { // Entry exists in column
+                    // Add entry from column
+                    tupleElements.add(column.getString(i));
+                } else { // Entry does not exist in column
+                    // Use default value instead
+                    tupleElements.add(getDefaultValue(i));
+                }
             }
 
             // Create the YailList tuple representation and add it to the
@@ -244,6 +221,42 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         // Use the generated tuple list in the importFromList method to
         // import the data.
         importFromList(YailList.makeList(tuples));
+    }
+
+    /**
+     * Determines the total row count of the specified columns List. The
+     * columns List is expected to be a List of Lists, and invalid entries
+     * are simply skipped.
+     *
+     * In case of uneven rows, the maximum row count is returned.
+     *
+     * @param columns  Columns List to determine row count for
+     * @return  row count of the columns
+     */
+    private int determineRowCountInColumns(YailList columns) {
+        int rows = 0;
+
+        // Columns null case - return 0 rows
+        if (columns == null) {
+            return rows;
+        }
+
+        // Establish the row count of the specified columns
+        for (int i = 0; i < columns.size(); ++i) {
+            if (!(columns.getObject(i) instanceof YailList)) {
+                continue;
+            }
+
+            YailList column = (YailList)columns.getObject(i);
+
+            // Update rows variable if the column size is larger
+            // than the current row count
+            if (column.size() > rows) {
+                rows = column.size();
+            }
+        }
+
+        return rows;
     }
 
     /**
@@ -474,6 +487,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  YailList of the specified number of entries containing the default values.
      */
     protected abstract YailList getDefaultValues(int size);
+
+    protected String getDefaultValue(int index) {
+        return index + "";
+    }
 
     /**
      * Checks equality between two entries.
