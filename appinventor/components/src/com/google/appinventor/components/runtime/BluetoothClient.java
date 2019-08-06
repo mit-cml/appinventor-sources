@@ -313,12 +313,16 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
       scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
         @Override
         public void run() {
-          if (IsConnected() && BytesAvailableToReceive() >= 2) {
-            int result = ReceiveSigned2ByteNumber();
-            notifyDataSourceObservers(null, result);
+          if (IsConnected()) {
+            int bytesReceiveable = BytesAvailableToReceive();
+
+            if (bytesReceiveable > 0) {
+              String result = ReceiveText(bytesReceiveable);
+              notifyDataSourceObservers(null, result);
+            }
           }
         }
-      }, 1, 1, TimeUnit.SECONDS);
+      }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     dataObservers.add(dataComponent);
