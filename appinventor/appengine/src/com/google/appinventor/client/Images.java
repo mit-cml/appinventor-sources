@@ -123,6 +123,14 @@ public interface Images extends Resources {
    ImageResource thermometer();
 
   /**
+    * Designer palette item: hygrometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/hygrometer.png")
+   ImageResource hygrometer();
+
+  /**
    * Designer palette item: barcode scanner component
    */
   @Source("com/google/appinventor/images/barcodeScanner.png")
