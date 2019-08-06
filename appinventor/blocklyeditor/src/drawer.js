@@ -148,6 +148,7 @@ Blockly.Drawer.createBlockInfoArray_ = function() {
         "STEP":{inputType:"value",blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"1"}}}
       }},
       {type:"controls_forEach"},
+      {type:"controls_break"},
       {type:"controls_while"},
       {type:"controls_choose"},
       {type:"controls_do_then_return"},
@@ -169,6 +170,7 @@ Blockly.Drawer.createBlockInfoArray_ = function() {
       {type:"math_multiply"},
       {type:"math_division"},
       {type:"math_power"},
+      {type:"math_bitwise"},
       {type:"math_random_int", input:{
         "FROM":{inputType:"value", blockInfo:{type:"math_number",fieldNameToValue:{"NUM":"1"}}},
         "TO":{inputType:"value", blockInfo:{type:"math_number", fieldNameToValue:{"NUM":"100"}}}
@@ -215,6 +217,8 @@ Blockly.Drawer.createBlockInfoArray_ = function() {
       {type:"lists_is_in"},
       {type:"lists_length"},
       {type:"lists_is_empty"},
+      {type:"lists_reverse"},
+      {type:"lists_join_with_separator"},
       {type:"lists_pick_random_item"},
       {type:"lists_position_in"},
       {type:"lists_select_item"},
