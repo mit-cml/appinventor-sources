@@ -50,6 +50,18 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private final List<Component> attachedComponents = new ArrayList<Component>();
   private Set<Integer> acceptableDeviceClasses;
 
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
+  // Executor Service to poll data continuously from the Input Stream
+  // which holds data sent by Bluetooth connections. Used for sending
+  // data to Data listeners, and only initialized as soon as an observer
+  // is added to this component.
+  private ScheduledExecutorService dataPollService;
+
+  // Fixed polling rate for the Data Polling Service
+  private static final int POLLING_RATE = 100;
+
   /**
    * Creates a new BluetoothClient.
    */
@@ -303,39 +315,58 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
         BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
   }
 
-  private HashSet<ChartDataBase> dataObservers = new HashSet<ChartDataBase>();
-
   @Override
   public void addDataSourceObserver(ChartDataBase dataComponent) {
-    if (dataObservers.isEmpty()) {
-      ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-
-      scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-        @Override
-        public void run() {
-          if (IsConnected()) {
-            int bytesReceiveable = BytesAvailableToReceive();
-
-            if (bytesReceiveable > 0) {
-              String result = ReceiveText(bytesReceiveable);
-              notifyDataSourceObservers(null, result);
-            }
-          }
-        }
-      }, 0, 500, TimeUnit.MILLISECONDS);
+    // Data Polling Service has not been initialized yet; Initialize it
+    // (since Data Component is added)
+    if (dataPollService == null) {
+      startBluetoothDataPolling();
     }
 
-    dataObservers.add(dataComponent);
+    // Add the Data Component as an observer
+    dataSourceObservers.add(dataComponent);
+  }
+
+  /**
+   * Starts the scheduled Data Polling Service that
+   * continuously reads data and notifies all the
+   * observers with the new data.
+   */
+  private void startBluetoothDataPolling() {
+    // Create a new Scheduled Executor (Single threaded)
+    dataPollService = Executors.newSingleThreadScheduledExecutor();
+
+    // Execute runnable task at a fixed millisecond rate
+    dataPollService.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        // Ensure that the BluetoothClient is connected
+        if (IsConnected()) {
+          // Check how many bytes can be received
+          int bytesReceivable = BytesAvailableToReceive();
+
+          // At least one byte can be received and there
+          // are observers which can receive the data
+          if (bytesReceivable > 0 && !dataSourceObservers.isEmpty()) {
+            // Read data until the delimiter byte (hence the -1)
+            String result = ReceiveText(-1);
+
+            // Notify observers with the new data (and blank key)
+            notifyDataSourceObservers("", result);
+          }
+        }
+      }
+    }, 0, POLLING_RATE, TimeUnit.MILLISECONDS);
   }
 
   @Override
   public void removeDataSourceObserver(ChartDataBase dataComponent) {
-
+    dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataSourceObservers(String key, Object newValue) {
-    for (ChartDataBase observer : dataObservers) {
+    for (ChartDataBase observer : dataSourceObservers) {
       observer.onReceiveValue(key, newValue);
     }
   }

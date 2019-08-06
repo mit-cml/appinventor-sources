@@ -554,20 +554,25 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onReceiveValue(String key, Object value) {
+    public void onReceiveValue(final String key, final Object value) {
         // Check that the key of the value received matches the
         // Data Source value key
-        if (key == null || key.equals(dataSourceValue)) {
-            // Construct and add tuple with t value and the data value
-            // Note: The value is (and should) be imported non-asynchronously
-            // to prevent tearing when using multiple data series. Otherwise
-            // there can be more race conditions between two data series as
-            // well as some tearing.
-            YailList tuple = YailList.makeList(Arrays.asList(t, value));
-            chartDataModel.addTimeEntry(tuple);
+        if (key.equals("") || key.equals(dataSourceValue)) {
+            container.$context().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Construct and add tuple with t value and the data value
+                    // Note: The value is (and should) be imported non-asynchronously
+                    // to prevent tearing when using multiple data series. Otherwise
+                    // there can be more race conditions between two data series as
+                    // well as some tearing.
+                    YailList tuple = YailList.makeList(Arrays.asList(t, value));
+                    chartDataModel.addTimeEntry(tuple);
 
-            refreshChart();
-            t++;
+                    refreshChart();
+                    t++;
+                }
+            });
         }
     }
 
