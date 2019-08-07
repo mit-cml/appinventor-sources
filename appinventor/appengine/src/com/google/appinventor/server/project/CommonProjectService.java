@@ -116,6 +116,22 @@ public abstract class CommonProjectService {
     }
     return storageIo.uploadRawFileForce(projectId, fileId, userId, new byte[0]);
   }
+  
+  /**
+   * Adds a new screen to the given project.
+   *
+   * @param userId the user id
+   * @param projectId  project ID
+   * @param fileId  ID of file to delete
+   * @return modification date for project
+   */
+  public long copyScreen(String userId, long projectId, String targetFormFileId, String fileId) {
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    if (!sourceFiles.contains(fileId)) {
+      storageIo.addSourceFilesToProject(userId, projectId, false, fileId);
+    }
+    return storageIo.uploadRawFileForce(projectId, fileId, userId, new byte[0]);
+  }
 
   /**
    * Deletes a file in the given project.
