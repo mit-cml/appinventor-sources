@@ -589,6 +589,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
+  
+  @Override
+  public long copyScreen(long projectId, String targetFormFileId, String fileId) {
+     final String userId = userInfoProvider.getUserId();
+     return getProjectRpcImpl(userId, projectId).copyScreen(userId, projectId, targetFormFileId, fileId);
+  }
 
   @Override
   public TextFile importMedia(String sessionId, long projectId, String url, boolean save)
