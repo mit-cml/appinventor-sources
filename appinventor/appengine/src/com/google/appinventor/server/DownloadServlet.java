@@ -186,6 +186,23 @@ public class DownloadServlet extends OdeServlet {
           projectId, /* include history*/ true, /* include keystore */ true, zipName, true, true, false, false);
         downloadableFile = zipFile.getRawFile();
 
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_SOURCE_SCREEN)) {
+        // Download project source screen files as a zip.
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+        uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE_SCREEN);
+        String projectTitle = (uriComponents.length > PROJECT_TITLE_INDEX_SCREEN) ?
+                uriComponents[PROJECT_TITLE_INDEX_SCREEN] : null;
+        String screenTitle = (uriComponents.length > SCREEN_TITLE_INDEX) ?
+                uriComponents[SCREEN_TITLE_INDEX] : null;
+        final boolean includeProjectHistory = true;
+        String zipName_projectTitle = (projectTitle == null) ? null :
+                StringUtils.normalizeForFilename(projectTitle);
+        String zipName_screenTitle = (screenTitle == null) ? null :
+                StringUtils.normalizeForFilename(screenTitle);
+        String zipName = zipName_projectTitle + "_" + zipName_screenTitle  + ".scr";
+        ProjectSourceZip zipFile = fileExporter.exportProjectSourceScreenZip(userId,
+                projectId, zipName);
+        downloadableFile = zipFile.getRawFile();
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
         // Download all project source files as a zip of zips.
         ProjectSourceZip zipFile = fileExporter.exportAllProjectsSourceZip(
