@@ -2196,6 +2196,126 @@ public class ObjectifyStorageIo implements  StorageIo {
     projectSourceZip.setMetadata(projectName.t);
     return projectSourceZip;
   }
+  
+   @Override
+  public ProjectSourceZip exportProjectSourceScreenZip(final String userId, final long projectId,
+                                                       @Nullable String zipName) throws IOException {
+    final Result<Integer> fileCount = new Result<Integer>();
+    fileCount.t = 0;
+    final Result<String> projectHistory = new Result<String>();
+    projectHistory.t = null;
+    // We collect up all the file data for the project in a transaction but
+    // then we read the data and write the zip file outside of the transaction
+    // to avoid problems reading blobs in a transaction with the wrong
+    // entity group.
+    final List<FileData> fileData = new ArrayList<FileData>();
+    final Result<String> projectName = new Result<String>();
+    projectName.t = null;
+    String fileName = null;
+    final String screenName = zipName.split("_")[1];
+    final String screenName1 = screenName.replace(".scr", "");
+    final String projectPropertiesFileName = "project.properties";
+    ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
+    final ZipOutputStream out = new ZipOutputStream(zipFile);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<ProjectData> projectKey = projectKey(projectId);
+          boolean foundFiles = false;
+          for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+            String fileName = fd.fileName;
+            if (fd.role.equals(FileData.RoleEnum.SOURCE) && (fileName.contains(screenName1) ||fileName.contains(projectPropertiesFileName))) {
+              if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+                // Skip legacy remix history files that were previous stored with the project
+                continue;
+              }
+              fileData.add(fd);
+              foundFiles = true;
+            }
+          }
+          if (foundFiles) {
+            ProjectData pd = datastore.find(projectKey);
+            projectName.t = pd.name;
+          }
+        }
+      }, false);
+      // Process the file contents outside of the job since we can't read
+      // blobs in the job.
+      for (FileData fd : fileData) {
+        fileName = fd.fileName;
+        byte[] data;
+        if (fd.isBlob) {
+          try {
+            data = getBlobstoreBytes(fd.blobstorePath);
+          } catch (BlobReadException e) {
+            throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+          }
+        } else if (fd.isGCS) {
+          try {
+            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
+            int bytesRead = 0;
+            int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+            ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+            GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+            try {
+              while (bytesRead < fileSize) {
+                bytesRead += readChannel.read(resultBuffer);
+                if (bytesRead < fileSize) {
+                  LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                }
+              }
+            } finally {
+              readChannel.close();
+            }
+            data = resultBuffer.array();
+          } catch (IOException e) {
+            throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+          }
+        } else {
+          data = fd.content;
+        }
+        if (data == null) {     // This happens if file creation is interrupted
+          data = new byte[0];
+        }
+        out.putNextEntry(new ZipEntry(fileName));
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        fileCount.t++;
+      }
+      if (projectHistory.t != null) {
+        byte[] data = projectHistory.t.getBytes(StorageUtil.DEFAULT_CHARSET);
+        out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        fileCount.t++;
+      }
+    } catch (ObjectifyException e) {
+      CrashReport.createAndLogError(LOG, null,
+              collectProjectErrorInfo(userId, projectId, fileName), e);
+      throw new IOException("Reflecting exception for userid " + userId +
+              " projectId " + projectId + ", original exception " + e.getMessage());
+    } catch (RuntimeException e) {
+      CrashReport.createAndLogError(LOG, null,
+              collectProjectErrorInfo(userId, projectId, fileName), e);
+      throw new IOException("Reflecting exception for userid " + userId +
+              " projectId " + projectId + ", original exception " + e.getMessage());
+    }
+    if (fileCount.t == 0) {
+      // can't close out since will get a ZipException due to the lack of files
+      throw new IllegalArgumentException("No files to download");
+    }
+    out.close();
+    if (zipName == null) {
+      zipName = projectName.t + ".aia";
+    }
+    ProjectSourceZip projectSourceZip =
+            new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);
+    projectSourceZip.setMetadata(projectName.t);
+    return projectSourceZip;
+  }
 
   @Override
   public Motd getCurrentMotd() {
