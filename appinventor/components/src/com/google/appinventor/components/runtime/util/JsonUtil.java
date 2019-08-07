@@ -304,6 +304,8 @@ public class JsonUtil {
     // object is a List. Otherwise, return empty columns
     List<YailList> resultColumns = new ArrayList<YailList>();
 
+    // JSON object is expected to be of type ArrayList.
+    // If that is not the case, parsing is not done.
     if (jsonObject instanceof List) {
       // Cast parsed object to List, which represents
       // all the JSON entries

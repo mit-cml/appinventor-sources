@@ -2,12 +2,10 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieEntry;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -105,7 +103,7 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
   protected void importFromCSVHelper(List<Entry> expectedEntries, YailList... columns) {
     YailList columnList = YailList.makeList(columns);
 
-    model.importFromCSV(columnList);
+    model.importFromColumns(columnList);
     assertExpectedEntriesHelper(expectedEntries);
   }
 

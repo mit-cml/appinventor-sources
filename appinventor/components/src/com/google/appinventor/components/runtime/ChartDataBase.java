@@ -9,7 +9,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -252,7 +251,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 }
 
                 // Import from CSV file with the specified parameters
-                chartDataModel.importFromCSV(csvResult);
+                chartDataModel.importFromColumns(csvResult);
 
                 // Refresh the Chart after import
                 refreshChart();

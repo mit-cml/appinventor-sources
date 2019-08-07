@@ -164,18 +164,16 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from the specified list of columns with
-     * the specified row size.
-     *
-     * The row size is used to create a column with default
-     * values in case of an absence of data.
+     * Imports data from the specified list of columns.
+     * Tuples are formed from the rows of the combined
+     * columns in order of the columns.
      *
      * The first element is skipped, since it is assumed that it
      * is the column name.
      *
      * @param columns  columns to import data from
      */
-    public void importFromCSV(YailList columns) {
+    public void importFromColumns(YailList columns) {
         // Determine the (maximum) row count of the specified columns
         int rows = ChartDataSourceUtil.determineRowCountInColumns(columns);
 
