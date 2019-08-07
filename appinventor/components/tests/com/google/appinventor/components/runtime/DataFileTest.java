@@ -7,6 +7,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
@@ -19,8 +21,9 @@ import static junit.framework.Assert.fail;
 public class DataFileTest extends FileTestBase {
   protected DataFile dataFile;
 
-  protected static final String TARGET_FILE = "testCsv.csv";
+  protected static final String TARGET_CSV_FILE = "testCsv.csv";
   protected static final String TARGET_FILE_2_ROWS = "testCsv2Rows.csv";
+  protected static final String TARGET_JSON_FILE = "testJson.json";
   protected static final String TARGET_FILE_READ = "testWriteCsv.txt";
   protected static final String DATA = "X,Y\n1,2\n"; // Same as testCsv2Rows.csv
 
@@ -46,10 +49,10 @@ public class DataFileTest extends FileTestBase {
   /**
    * Test to ensure that the ColumnNames property getter returns
    * the correct result and the result is returned only after
-   * the reading of the File is finished.
+   * the reading of the File is finished for the case of CSV.
    */
   @Test
-  public void testGetColumnNames() {
+  public void testGetColumnNamesCSV() {
     ArrayList<String> expectedValues = new ArrayList<String>() {{
       add("X");
       add("Y");
@@ -364,7 +367,15 @@ public class DataFileTest extends FileTestBase {
    */
   private void loadTestCSVFile() {
     grantFilePermissions();
-    dataFile.ReadFile("//" + TARGET_FILE);
+    dataFile.ReadFile("//" + TARGET_CSV_FILE);
+  }
+
+  /**
+   * Helper method to load a test JSON file for the tests
+   */
+  private void loadTestJSONFile() {
+    grantFilePermissions();
+    dataFile.readFromFile("//" + TARGET_JSON_FILE);
   }
 
   /**
