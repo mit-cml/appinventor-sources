@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for the DataFile component.
@@ -72,12 +74,41 @@ public class DataFileTest extends FileTestBase {
   }
 
   /**
-   * Test to ensure that the Rows property getter returns
+   * Test to ensure that the ColumnNames property getter returns
    * the correct result and the result is returned only after
-   * the reading of the File is finished.
+   * the reading of the File is finished for the case ofJSON.
    */
   @Test
-  public void testGetRows() {
+  public void testGetColumnNamesJSON() {
+    HashSet<String> expectedValues = new HashSet<String>() {{
+      add("a");
+      add("b");
+      add("c");
+      add("x");
+      add("y");
+      add("z");
+    }};
+
+    // Load the test JSON File & get the Column Names.
+    // Since ColumnNames() is blocking, we do not
+    // need to worry about explicitly running async tasks
+    loadTestJSONFile();
+    YailList columnNames = dataFile.ColumnNames();
+
+    // Since JSON key-value pairs are stored in HashMaps,
+    // we cannot ensure deterministic ordering here. Instead,
+    // check that all the expected values are contained.
+    assertTrue(columnNames.containsAll(expectedValues));
+  }
+
+  /**
+   * Test to ensure that the Rows property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished. Test case for CSV
+   * data.
+   */
+  @Test
+  public void testGetRowsCSV() {
     ArrayList<YailList> expectedValues = new ArrayList<YailList>() {{
       add(YailList.makeList(Arrays.asList("X", "Y", "Z")));
       add(YailList.makeList(Arrays.asList("1", "2", "3")));
@@ -87,8 +118,8 @@ public class DataFileTest extends FileTestBase {
 
     YailList expected = YailList.makeList(expectedValues);
 
-    // Load the test CSV File & get the Column Names.
-    // Since ColumnNames() is blocking, we do not
+    // Load the test CSV File & get the Rows.
+    // Since Rows() is blocking, we do not
     // need to worry about explicitly running async tasks
     loadTestCSVFile();
     YailList rows = dataFile.Rows();
@@ -98,12 +129,46 @@ public class DataFileTest extends FileTestBase {
   }
 
   /**
-   * Test to ensure that the Columns property getter returns
+   * Test to ensure that the Rows property getter returns
    * the correct result and the result is returned only after
-   * the reading of the File is finished.
+   * the reading of the File is finished. Test case for JSON
+   * data.
    */
   @Test
-  public void testGetColumns() {
+  public void testGetRowsJSON() {
+    List<List<String>> expectedRows = new ArrayList<List<String>>() {{
+      add(Arrays.asList("x", "y", "z", "a", "b", "c"));
+      add(Arrays.asList("1", "2", "3", "1", "3", "value"));
+      add(Arrays.asList("2", "3", "4", "2", "", ""));
+      add(Arrays.asList("3", "4", "5", "", "", ""));
+    }};
+
+    // Load the test JSON File & get the Columns.
+    // Since Columns() is blocking, we do not
+    // need to worry about explicitly running async tasks
+    loadTestJSONFile();
+    YailList rows = dataFile.Rows();
+
+    // Assert that all the expected elements are contained
+    // in each separate row. The reason for this loop is
+    // due to the fact that JSON key-value pairs are
+    // stored in HashMaps, and since the rows are
+    // the transpose of the columns, a row-by-row
+    // check is needed instead.
+    for (int i = 0; i < expectedRows.size(); ++i) {
+      YailList row = (YailList)rows.getObject(i);
+      assertTrue(row.containsAll(expectedRows.get(i)));
+    }
+  }
+
+  /**
+   * Test to ensure that the Columns property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished. Test case for CSV
+   * data.
+   */
+  @Test
+  public void testGetColumnsCSV() {
     ArrayList<YailList> expectedValues = new ArrayList<YailList>() {{
       add(YailList.makeList(Arrays.asList("X", "1", "2", "3")));
       add(YailList.makeList(Arrays.asList("Y", "2", "3", "4")));
@@ -120,6 +185,36 @@ public class DataFileTest extends FileTestBase {
 
     // Assert that the expected result is obtained
     assertEquals(expected, columns);
+  }
+
+  /**
+   * Test to ensure that the Columns property getter returns
+   * the correct result and the result is returned only after
+   * the reading of the File is finished. Test case for JSON
+   * data.
+   */
+  @Test
+  public void testGetColumnsJSON() {
+    HashSet<YailList> expectedValues = new HashSet<YailList>() {{
+      add(YailList.makeList(Arrays.asList("x", "1", "2", "3")));
+      add(YailList.makeList(Arrays.asList("y", "2", "3", "4")));
+      add(YailList.makeList(Arrays.asList("z", "3", "4", "5")));
+      add(YailList.makeList(Arrays.asList("a", "1", "2")));
+      add(YailList.makeList(Arrays.asList("b", "3")));
+      add(YailList.makeList(Arrays.asList("c", "value")));
+    }};
+
+    // Load the test JSON File & get the Columns.
+    // Since Columns() is blocking, we do not
+    // need to worry about explicitly running async tasks
+    loadTestJSONFile();
+    YailList columns = dataFile.Columns();
+
+    // Assert that all the expected columns are contained
+    // in the result. We use contains instead of equals
+    // since JSON key-value pairs are stored in HashMaps
+    // and thus ordering cannot be ensured.
+    assertTrue(columns.containsAll(expectedValues));
   }
 
   /**
