@@ -2,9 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
@@ -12,31 +10,31 @@ import java.util.*;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-public class MockCSVFile extends MockNonVisibleComponent {
-  public static final String TYPE = "CSVFile";
+public class MockDataFile extends MockNonVisibleComponent {
+  public static final String TYPE = "DataFile";
 
   private static final String PROPERTY_NAME_SOURCE_FILE = "SourceFile";
 
   private String sourceFile;
 
-  private List<String> columnNames; // First row of the CSV contents
-  private List<List<String>> columns; // Parsed columns of the CSV file
-  private Set<CSVFileChangeListener> csvFileChangeListeners;
+  private List<String> columnNames; // First row of the Data File's contents
+  private List<List<String>> columns; // Parsed columns of the Data File
+  private Set<DataFileChangeListener> dataFileChangeListeners;
 
   /**
-   * Creates a new instance of a CSVFile component whose icon is
+   * Creates a new instance of a DataFile component whose icon is
    * loaded dynamically (not part of the icon image bundle)
    */
-  public MockCSVFile(SimpleEditor editor, String type, Image iconImage) {
+  public MockDataFile(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
 
-    csvFileChangeListeners = new HashSet<CSVFileChangeListener>();
+    dataFileChangeListeners = new HashSet<DataFileChangeListener>();
   }
 
   /**
-   * Changes the Source File property of the MockCSVFile.
+   * Changes the Source File property of the MockDataFile.
    * Upon change, the new file is imported and parsed, the
-   * contents are stored, and CSVFileChangeListeners are
+   * contents are stored, and DataFileChangeListeners are
    * updated.
    *
    * @param fileSource  name of the new Source File
@@ -47,9 +45,9 @@ public class MockCSVFile extends MockNonVisibleComponent {
     this.sourceFile = fileSource;
     columnNames = new ArrayList<String>();
 
-    // Update CSVFileChangeListeners to notify that
+    // Update DataFileChangeListeners to notify that
     // the columns list is (at least temporarily) empty
-    updateCSVFileChangeListeners();
+    updateDataFileChangeListeners();
 
     // Check that the SourceFile property is a valid file
     if (fileSource == null || fileSource.equals("")) {
@@ -86,8 +84,8 @@ public class MockCSVFile extends MockNonVisibleComponent {
           }
         }
 
-        // Notify CSVFileChangeListeners of the changes
-        updateCSVFileChangeListeners();
+        // Notify DataFileChangeListeners of the changes
+        updateDataFileChangeListeners();
 
         // Hide the info message shown after setting the Source File property
         ErrorReporter.hide();
@@ -96,13 +94,13 @@ public class MockCSVFile extends MockNonVisibleComponent {
 
     // Show message to indicate parsing of the files
     // (since this is an asynchronous operation)
-    ErrorReporter.reportInfo(MESSAGES.csvParsingMessage(sourceFile, this.getName()));
+    ErrorReporter.reportInfo(MESSAGES.dsataFileParsingMessage(sourceFile, this.getName()));
   }
 
   /**
-   * Get the Column Names (first row) of the MockCSVFile's parsed content
+   * Get the Column Names (first row) of the MockDataFile's parsed content
    *
-   * @return  column names of the CSV File (list of Strings)
+   * @return  column names of the Data File (list of Strings)
    */
   public List<String> getColumnNames() {
     return columnNames;
@@ -118,18 +116,18 @@ public class MockCSVFile extends MockNonVisibleComponent {
    * @return  List of columns (a column is a List of Strings)
    */
   public List<List<String>> getColumns(List<String> columns) {
-    ArrayList<List<String>> csvColumns = new ArrayList<List<String>>();
+    ArrayList<List<String>> dataColumns = new ArrayList<List<String>>();
 
     for (String column : columns) {
       // Get the index of the column and get the column itself
       int index = columnNames.indexOf(column);
-      List<String> csvColumn = getColumn(index);
+      List<String> dataColumn = getColumn(index);
 
       // Add the column to the result
-      csvColumns.add(csvColumn);
+      dataColumns.add(dataColumn);
     }
 
-    return csvColumns;
+    return dataColumns;
   }
 
   /**
@@ -158,32 +156,32 @@ public class MockCSVFile extends MockNonVisibleComponent {
   }
 
   /**
-   * Adds a new CSV File Change listener to the Mock CSV File component
+   * Adds a new Data File Change listener to the Mock Data File component
    * @param listener  Listener to add
    */
-  public void addCSVFileChangeListener(CSVFileChangeListener listener) {
-    csvFileChangeListeners.add(listener);
+  public void addDataFileChangeListener(DataFileChangeListener listener) {
+    dataFileChangeListeners.add(listener);
   }
 
   /**
-   * Removes a CSV File Change Listener from the Mock CSV File component
+   * Removes a Data File Change Listener from the Mock Data File component
    * @param listener  Listener to remove
    */
-  public void removeCSVFileChangeListener(CSVFileChangeListener listener) {
-    csvFileChangeListeners.remove(listener);
+  public void removeDataFileChangeListener(DataFileChangeListener listener) {
+    dataFileChangeListeners.remove(listener);
   }
 
   /**
-   * Updates all the attached CSVFileChangeListeners
+   * Updates all the attached DataFileChangeListeners
    */
-  private void updateCSVFileChangeListeners() {
-    // CsvFileChangeListeners set is not yet initialized. Ignore method.
+  private void updateDataFileChangeListeners() {
+    // DataFileChangeListeners set is not yet initialized. Ignore method.
     // Can occur pre-initialization in certain cases.
-    if (csvFileChangeListeners == null) {
+    if (dataFileChangeListeners == null) {
       return;
     }
 
-    for (CSVFileChangeListener listener : csvFileChangeListeners) {
+    for (DataFileChangeListener listener : dataFileChangeListeners) {
       // Call onColumnsChange event
       listener.onColumnsChange(this);
     }

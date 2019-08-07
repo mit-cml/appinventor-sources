@@ -132,11 +132,11 @@ public abstract class MockChartDataModel<D extends Dataset> {
     protected abstract void setDefaultStylingProperties();
 
     /**
-     * Sets the elements of the Data Series from the specified CSV columns.
+     * Sets the elements of the Data Series from the specified columns.
      *
      * @param columns List of columns to import from
      */
-    public void setElementsFromCSVColumns(List<List<String>> columns) {
+    public void setElementsFromColumns(List<List<String>> columns) {
         // Clear the current entries
         clearEntries();
 

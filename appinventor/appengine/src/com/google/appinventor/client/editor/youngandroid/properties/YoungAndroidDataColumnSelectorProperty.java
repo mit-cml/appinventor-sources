@@ -1,7 +1,7 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import com.google.appinventor.client.editor.simple.components.CSVFileChangeListener;
-import com.google.appinventor.client.editor.simple.components.MockCSVFile;
+import com.google.appinventor.client.editor.simple.components.DataFileChangeListener;
+import com.google.appinventor.client.editor.simple.components.MockDataFile;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
 import com.google.gwt.user.client.Command;
@@ -16,12 +16,12 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Property setter for selecting columns in Chart Data components
- * for the attached CSVFile sources.
+ * for the attached DataFile sources.
  *
  * TODO: Reduce redundancy (a lot of reuse from ComponentSelector)
  */
-public class YoungAndroidCsvColumnSelectorProperty
-    extends AdditionalChoicePropertyEditor implements CSVFileChangeListener {
+public class YoungAndroidDataColumnSelectorProperty
+    extends AdditionalChoicePropertyEditor implements DataFileChangeListener {
 
   protected ListWithNone choices;
 
@@ -31,14 +31,14 @@ public class YoungAndroidCsvColumnSelectorProperty
   // The YaFormEditor associated with this property editor.
   private final YaFormEditor editor;
 
-  private MockCSVFile csvFile; // Associated source MockCSVFile
+  private MockDataFile dataFile; // Associated source MockDataFile
 
   /**
    * Creates a new property editor for selecting a column.
    *
    * @param editor the editor that this property editor belongs to
    */
-  public YoungAndroidCsvColumnSelectorProperty(final YaFormEditor editor) {
+  public YoungAndroidDataColumnSelectorProperty(final YaFormEditor editor) {
     this.editor = editor;
 
     VerticalPanel selectorPanel = new VerticalPanel();
@@ -109,7 +109,7 @@ public class YoungAndroidCsvColumnSelectorProperty
    * Clears the current columns and reinitializes the choices list.
    *
    * Re-initialization is needed to clear old entries of the list.
-   * Used when updating the CSV source.
+   * Used when updating the DataFile source.
    */
   private void initializeChoices() {
     columnsList.clear();
@@ -138,22 +138,22 @@ public class YoungAndroidCsvColumnSelectorProperty
   }
 
   /**
-   * Changes the MockCSVFile source of the CSV column selector
-   * @param source  new MockCSVFile source
+   * Changes the MockDataFile source of the Data column selector
+   * @param source  new MockDataFile source
    */
-  public void changeSource(MockCSVFile source) {
-    // Check if a CSVFile source is currently referenced by the
+  public void changeSource(MockDataFile source) {
+    // Check if a DataFile source is currently referenced by the
     // selector, and if it is, de-attach this selector from it.
-    if (csvFile != null) {
-      csvFile.removeCSVFileChangeListener(this);
+    if (dataFile != null) {
+      dataFile.removeDataFileChangeListener(this);
     }
 
-    // Update the csvFile source
-    csvFile = source;
+    // Update the dataFile source
+    dataFile = source;
 
-    if (csvFile != null) {
-      // Register to listen for the CsvFile column change events
-      csvFile.addCSVFileChangeListener(this);
+    if (dataFile != null) {
+      // Register to listen for the DataFile column change events
+      dataFile.addDataFileChangeListener(this);
 
       // Update the columns of the selector
       updateColumns();
@@ -161,10 +161,10 @@ public class YoungAndroidCsvColumnSelectorProperty
   }
 
   /**
-   * Updates the columns from the local CSVFile source.
+   * Updates the columns from the local DataFile source.
    */
   public void updateColumns() {
-    List<String> columns = csvFile.getColumnNames();
+    List<String> columns = dataFile.getColumnNames();
 
     initializeChoices(); // Re-initialize choices list
 
@@ -197,9 +197,9 @@ public class YoungAndroidCsvColumnSelectorProperty
   }
 
   @Override
-  public void onColumnsChange(MockCSVFile csvFile) {
-    // Edge case: Event originates from the wrong MockCSVFile source
-    if (!this.csvFile.equals(csvFile)) {
+  public void onColumnsChange(MockDataFile dataFile) {
+    // Edge case: Event originates from the wrong MockDataFile source
+    if (!this.dataFile.equals(dataFile)) {
       return;
     }
 

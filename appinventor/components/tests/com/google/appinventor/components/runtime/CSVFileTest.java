@@ -1,7 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
-import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +7,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
@@ -17,10 +14,10 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
 
 /**
- * Tests for the CSVFile component.
+ * Tests for the DataFile component.
  */
-public class CSVFileTest extends FileTestBase {
-  protected CSVFile csvFile;
+public class DataFileTest extends FileTestBase {
+  protected DataFile dataFile;
 
   protected static final String TARGET_FILE = "testCsv.csv";
   protected static final String TARGET_FILE_2_ROWS = "testCsv2Rows.csv";
@@ -30,20 +27,20 @@ public class CSVFileTest extends FileTestBase {
   @Before
   public void setUp() {
     super.setUp();
-    csvFile = new CSVFile(getForm());
+    dataFile = new DataFile(getForm());
   }
 
   /**
-   * Test to ensure that instantiating a CSVFile component sets the
+   * Test to ensure that instantiating a DataFile component sets the
    * proper default properties.
    */
   @Test
   public void testDefaults() {
     YailList emptyList = new YailList();
 
-    assertEquals(emptyList, csvFile.Rows());
-    assertEquals(emptyList, csvFile.Columns());
-    assertEquals(emptyList, csvFile.ColumnNames());
+    assertEquals(emptyList, dataFile.Rows());
+    assertEquals(emptyList, dataFile.Columns());
+    assertEquals(emptyList, dataFile.ColumnNames());
   }
 
   /**
@@ -65,7 +62,7 @@ public class CSVFileTest extends FileTestBase {
     // Since ColumnNames() is blocking, we do not
     // need to worry about explicitly running async tasks
     loadTestCSVFile();
-    YailList columnNames = csvFile.ColumnNames();
+    YailList columnNames = dataFile.ColumnNames();
 
     // Assert that the expected result is obtained
     assertEquals(expected, columnNames);
@@ -91,7 +88,7 @@ public class CSVFileTest extends FileTestBase {
     // Since ColumnNames() is blocking, we do not
     // need to worry about explicitly running async tasks
     loadTestCSVFile();
-    YailList rows = csvFile.Rows();
+    YailList rows = dataFile.Rows();
 
     // Assert that the expected result is obtained
     assertEquals(expected, rows);
@@ -116,7 +113,7 @@ public class CSVFileTest extends FileTestBase {
     // Since ColumnNames() is blocking, we do not
     // need to worry about explicitly running async tasks
     loadTestCSVFile();
-    YailList columns = csvFile.Columns();
+    YailList columns = dataFile.Columns();
 
     // Assert that the expected result is obtained
     assertEquals(expected, columns);
@@ -125,29 +122,29 @@ public class CSVFileTest extends FileTestBase {
   /**
    * Test to ensure that setting the Source File property
    * properly reads the specified file from the media path
-   * and populates the CSVFile with the correct properties
+   * and populates the DataFile with the correct properties
    * (only Rows is checked for simplicity)
    */
   @Test
   public void testSetSourceFile() {
     // Assert that rows are empty initially
     YailList emptyList = new YailList();
-    assertEquals(emptyList, csvFile.Rows());
+    assertEquals(emptyList, dataFile.Rows());
 
     // Grant permissions & update the Source File of the CSV File
     grantFilePermissions();
-    csvFile.SourceFile(TARGET_FILE_2_ROWS);
+    dataFile.SourceFile(TARGET_FILE_2_ROWS);
 
     // Get the expected value and assert that it is equal to the result
     YailList expected = expectedValues2Rows();
-    assertEquals(expected, csvFile.Rows());
+    assertEquals(expected, dataFile.Rows());
   }
 
   /**
    * Test to ensure that reading a file using a
    * relative path (no slash) correctly reads a
    * file from the correct directory and populates
-   * the CSVFile with the appropriate properties
+   * the DataFile with the appropriate properties
    * (only Rows is checked for simplicity)
    */
   @Test
@@ -155,14 +152,14 @@ public class CSVFileTest extends FileTestBase {
     testWriteAndReadFile(TARGET_FILE_READ, DATA, false);
 
     YailList expected = expectedValues2Rows();
-    assertEquals(expected, csvFile.Rows());
+    assertEquals(expected, dataFile.Rows());
   }
 
   /**
    * Test to ensure that reading a file using
    * an absolute path (single slash) correctly
    * reads the file from the correct directory and
-   * populates the CSVFile with the appropriate properties
+   * populates the DataFile with the appropriate properties
    * (only Rows is checked for simplicity)
    */
   @Test
@@ -170,7 +167,7 @@ public class CSVFileTest extends FileTestBase {
     testWriteAndReadFile("/" + TARGET_FILE_READ, DATA, true);
 
     YailList expected = expectedValues2Rows();
-    assertEquals(expected, csvFile.Rows());
+    assertEquals(expected, dataFile.Rows());
   }
 
   /**
@@ -184,9 +181,9 @@ public class CSVFileTest extends FileTestBase {
     YailList expectedColumnNames = YailList.makeList(Collections.singletonList("Y"));
     YailList expectedList = YailList.makeList(Collections.singletonList(expectedColumnNames));
 
-    assertEquals(expectedColumnNames, csvFile.ColumnNames());
-    assertEquals(expectedList, csvFile.Rows());
-    assertEquals(expectedList, csvFile.Columns());
+    assertEquals(expectedColumnNames, dataFile.ColumnNames());
+    assertEquals(expectedList, dataFile.Rows());
+    assertEquals(expectedList, dataFile.Columns());
   }
 
   /**
@@ -201,10 +198,10 @@ public class CSVFileTest extends FileTestBase {
     loadTestCSVFile();
 
     // The Y column is the 2nd column of the test CSV data
-    YailList expected = (YailList) csvFile.Columns().getObject(1);
+    YailList expected = (YailList) dataFile.Columns().getObject(1);
 
     // Assert result equals to expected value
-    YailList result = csvFile.getColumn(column);
+    YailList result = dataFile.getColumn(column);
     assertEquals(expected, result);
   }
 
@@ -222,7 +219,7 @@ public class CSVFileTest extends FileTestBase {
     YailList expected = new YailList();
 
     // Assert result equals to expected value
-    YailList result = csvFile.getColumn(column);
+    YailList result = dataFile.getColumn(column);
     assertEquals(expected, result);
   }
 
@@ -240,7 +237,7 @@ public class CSVFileTest extends FileTestBase {
     YailList expected = new YailList();
 
     // Assert result equals to expected value
-    YailList result = csvFile.getColumn(column);
+    YailList result = dataFile.getColumn(column);
     assertEquals(expected, result);
   }
 
@@ -258,7 +255,7 @@ public class CSVFileTest extends FileTestBase {
     YailList expected = new YailList();
 
     // Assert result equals to expected value
-    YailList result = csvFile.getColumn(column);
+    YailList result = dataFile.getColumn(column);
     assertEquals(expected, result);
   }
 
@@ -291,7 +288,7 @@ public class CSVFileTest extends FileTestBase {
     loadTestCSVFile();
 
     // Construct the expected value
-    YailList xColumn = (YailList)csvFile.Columns().getObject(2);
+    YailList xColumn = (YailList) dataFile.Columns().getObject(2);
     YailList expected = YailList.makeList(Collections.singletonList(xColumn));
 
     // Use the helper to assert the result
@@ -311,8 +308,8 @@ public class CSVFileTest extends FileTestBase {
     loadTestCSVFile();
 
     // Construct the expected value
-    YailList xColumn = (YailList) csvFile.Columns().getObject(0);
-    YailList zColumn = (YailList) csvFile.Columns().getObject(2);
+    YailList xColumn = (YailList) dataFile.Columns().getObject(0);
+    YailList zColumn = (YailList) dataFile.Columns().getObject(2);
     YailList expected = YailList.makeList(Arrays.asList(xColumn, zColumn));
 
     // Use the helper to assert the result
@@ -332,10 +329,10 @@ public class CSVFileTest extends FileTestBase {
 //
 //    testWriteAndReadFile("/" + TARGET_FILE_READ, json, true);
 //
-//    csvFile.ReadFile(TARGET_FILE_READ);
+//    dataFile.ReadFile(TARGET_FILE_READ);
 //
-//    System.out.println(csvFile.Columns().toString());
-//    System.out.println(csvFile.Rows().toString());
+//    System.out.println(dataFile.Columns().toString());
+//    System.out.println(dataFile.Rows().toString());
 //  }
 
   /// Helper methods
@@ -350,7 +347,7 @@ public class CSVFileTest extends FileTestBase {
     YailList result = null;
 
     try {
-      result = csvFile.getDataValue(columns).get();
+      result = dataFile.getDataValue(columns).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
       fail("Exception thrown!");
@@ -367,12 +364,12 @@ public class CSVFileTest extends FileTestBase {
    */
   private void loadTestCSVFile() {
     grantFilePermissions();
-    csvFile.ReadFile("//" + TARGET_FILE);
+    dataFile.ReadFile("//" + TARGET_FILE);
   }
 
   /**
    * Helper method to write the specified data to the target file, and then
-   * read the file in the CSVFile component.
+   * read the file in the DataFile component.
    *
    * @param targetFile  Path to the file to read
    * @param data  Data to write
@@ -381,7 +378,7 @@ public class CSVFileTest extends FileTestBase {
   private void testWriteAndReadFile(String targetFile, String data, boolean external) {
     grantFilePermissions();
     writeTempFile(targetFile, data, external);
-    csvFile.ReadFile(targetFile);
+    dataFile.ReadFile(targetFile);
   }
 
   /**

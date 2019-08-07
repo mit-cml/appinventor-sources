@@ -224,14 +224,14 @@ public final class MockChart extends MockContainer {
     }
 
     /**
-     * Creates Data components from the contents of the specified MockCSVFile component.
+     * Creates Data components from the contents of the specified MockDataFile component.
      * The Data components are then attached as children to the Chart and the Source property
      * of each individual Data component is set accordingly.
      *
-     * @param csvSource  MockCSVFile component to instantiate components from
+     * @param dataFileSource  MockDataFile component to instantiate components from
      */
-    public void addCSVFile(MockCSVFile csvSource) {
-        List<String> columnNames = csvSource.getColumnNames();
+    public void addDataFile(MockDataFile dataFileSource) {
+        List<String> columnNames = dataFileSource.getColumnNames();
 
         for (String column : columnNames) {
             // Create a new MockCoordinateData component and attach it to the Chart
@@ -241,9 +241,9 @@ public final class MockChart extends MockContainer {
             data.addToChart(MockChart.this);
 
             // Change the properties of the instantiated data component
-            data.changeProperty("CsvYColumn", column);
+            data.changeProperty("DataFileYColumn", column);
             data.changeProperty("Label", column);
-            data.changeProperty("Source", csvSource.getName());
+            data.changeProperty("Source", dataFileSource.getName());
         }
     }
 
@@ -285,19 +285,19 @@ public final class MockChart extends MockContainer {
         MockComponent component = getComponentFromDragSource(source);
 
         return (component instanceof MockCoordinateData)
-                || (isComponentAcceptableCSVFile(component));
+                || (isComponentAcceptableDataFileSource(component));
     }
 
     /**
-     * Checks whether the component is an acceptable CSVFile drag source for the Chart.
-     * The criterion is that the Component must be of type CSVFile and is
+     * Checks whether the component is an acceptable DataFile drag source for the Chart.
+     * The criterion is that the Component must be of type DataFile and is
      * already instantiated in a container.
      * @param component  Component to check
-     * @return  true if the component is a CSVFile that is an acceptable source
+     * @return  true if the component is a DataFile that is an acceptable source
      */
-    private boolean isComponentAcceptableCSVFile(MockComponent component) {
-        return component instanceof MockCSVFile
-                && component.getContainer() != null; // CSVFile must already be in it's own container
+    private boolean isComponentAcceptableDataFileSource(MockComponent component) {
+        return component instanceof MockDataFile
+                && component.getContainer() != null; // DataFile must already be in it's own container
     }
 
     @Override
