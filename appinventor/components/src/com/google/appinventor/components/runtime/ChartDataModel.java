@@ -175,7 +175,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public void importFromColumns(YailList columns) {
         // Determine the (maximum) row count of the specified columns
-        int rows = ChartDataSourceUtil.determineRowCountInColumns(columns);
+        int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
 
         if (rows == 0) {
             // No rows exist. Do nothing.

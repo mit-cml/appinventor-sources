@@ -189,13 +189,13 @@ public class DataFile extends FileBase implements ChartDataSource<YailList, Futu
                         columns = JsonUtil.getColumnsFromJSON(result);
 
                         // Construct row lists from columns
-                        rows = ChartDataSourceUtil.getRowsFromColumns(columns);
+                        rows = ChartDataSourceUtil.getTranspose(columns);
                     } else { // Assume CSV otherwise
                         // Parse rows from the result
                         rows = CsvUtil.fromCsvTable(result);
 
                         // Construct column lists from rows
-                        columns = ChartDataSourceUtil.getColumnsFromRows(rows);
+                        columns = ChartDataSourceUtil.getTranspose(rows);
                     }
 
                     // If rows size is non-zero, set column names to first row. Otherwise,
