@@ -295,7 +295,7 @@ public class JsonUtil {
    * @param json  JSON string to parse
    * @return  YailList of columns, where each entry is a YailList
    */
-  public static YailList getColumnsFromJSON(String json) {
+  public static YailList getColumnsFromJSON(String json) throws JSONException {
     // Parse object from JSON object
     Object jsonObject = getObjectFromJson(json);
 
