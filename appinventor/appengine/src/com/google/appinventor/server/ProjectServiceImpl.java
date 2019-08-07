@@ -391,7 +391,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
         if (entryValue instanceof JSONArray) {
           JSONArray entryArray = entryValue.asArray();
 
-          for (JSONValue arrayValue : entryArray.getElements()) {
+          List<JSONValue> jsonElements = entryArray.getElements();
+
+          int entries = Math.min(jsonElements.size(), MAX_ROWS);
+
+          for (int i = 0; i < entries; ++i) {
+            JSONValue arrayValue = jsonElements.get(i);
             column.add(arrayValue.toString());
           }
         } else {
