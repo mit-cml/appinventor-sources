@@ -628,6 +628,60 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       return super.addFile(userId, projectId, fileId);
     }
   }
+  
+  @Override
+  public long copyScreen(String userId, long projectId, String targetFileId, String fileId) {
+    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
+            fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
+      // If the file to be added is a form file or a blocks file, add a new form file, a new
+      // blocks file, and a new yail file (as a placeholder for later code generation)
+      String qualifiedFormName = YoungAndroidSourceNode.getQualifiedName(fileId);
+      String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
+      String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
+      String yailFileName = YoungAndroidYailNode.getYailFileId(qualifiedFormName);
+      String targetQualifiedFormName = YoungAndroidSourceNode.getQualifiedName(targetFileId);
+      String targetFormFileName = YoungAndroidFormNode.getFormFileId(targetQualifiedFormName);
+      String targetBlocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(targetQualifiedFormName);
+      String targetYailFileName = YoungAndroidYailNode.getYailFileId(targetQualifiedFormName);
+      List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+      //LOG.info("source files are:" +sourceFiles);
+
+      boolean hasYail = true;
+      if (!sourceFiles.contains(formFileName) &&
+              !sourceFiles.contains(blocklyFileName)
+              && !sourceFiles.contains(yailFileName)
+              ) {
+        hasYail = sourceFiles.contains(targetYailFileName);
+        if (sourceFiles.contains(targetFormFileName) &&
+                sourceFiles.contains(targetBlocklyFileName)
+//                &&sourceFiles.contains(targetYailFileName)
+                ) {
+          //Screen1, or Screen2
+          int lastDotPos = qualifiedFormName.lastIndexOf('.');
+          String simpleFormName = qualifiedFormName.substring(lastDotPos + 1);
+          lastDotPos = targetQualifiedFormName.lastIndexOf('.');
+          String simpleTargetFormName = targetQualifiedFormName.substring(lastDotPos + 1);
+          String formFileContents = load(userId, projectId, targetFormFileName).replace(simpleTargetFormName, simpleFormName);
+          storageIo.addSourceFilesToProject(userId, projectId, false, formFileName);
+          storageIo.uploadFileForce(projectId, formFileName, userId, formFileContents, StorageUtil.DEFAULT_CHARSET);
+          if (hasYail) {
+              String yailFileContents = load(userId, projectId, targetYailFileName).replace(simpleTargetFormName, simpleFormName);
+              storageIo.addSourceFilesToProject(userId, projectId, false, yailFileName);
+              storageIo.uploadFileForce(projectId, yailFileName, userId, yailFileContents, StorageUtil.DEFAULT_CHARSET);
+          }
+        String blocklyFileContents = load(userId, projectId, targetBlocklyFileName).replace(simpleTargetFormName, simpleFormName);
+        storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
+        return storageIo.uploadFileForce(projectId, blocklyFileName, userId, blocklyFileContents, StorageUtil.DEFAULT_CHARSET);
+        } else {
+          throw new IllegalStateException("One or more files to be copied don't exist. Error:" +sourceFiles + ", target:" +  targetYailFileName);
+        }
+      } else {
+        throw new IllegalStateException("One or more files to be added already exists.");
+      }
+    } else {
+      return super.addFile(userId, projectId, fileId);
+    }
+  }
 
   @Override
   public long deleteFile(String userId, long projectId, String fileId) {
