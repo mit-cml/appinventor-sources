@@ -4,7 +4,6 @@
 # Released under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
 
-
 """
 Internationalization helper tool for MIT App Inventor. This utility provides two commands, combine and split, to work
 with the Java properties and JavaScript files needed to internationalize the App Inventor web editor.

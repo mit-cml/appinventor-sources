@@ -131,6 +131,8 @@
   <extend-property name="locale" values="hu"/>
   <!-- Dutch -->
   <extend-property name="locale" values="nl"/>
+  <!-- Turkish -->
+  <extend-property name="locale" values="tr"/>
   <!-- German -->
   <extend-property name="locale" values="de"/>
 

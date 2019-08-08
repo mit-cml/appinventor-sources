@@ -17,6 +17,7 @@
     '../lib/blockly/msg/js/ru.js',
     '../lib/blockly/msg/js/sv.js',
     '../lib/blockly/msg/js/nl.js',
+    '../lib/blockly/msg/js/tr.js',
     '../lib/blockly/msg/js/pt-br.js',
     '../lib/blockly/msg/js/pt.js',
     '../lib/blockly/msg/js/hu.js',
@@ -37,6 +38,7 @@
     './src/msg/pt/_messages.js',
     './src/msg/hu/_messages.js',
     './src/msg/nl/_messages.js',
+    './src/msg/tr/_messages.js',
     './src/msg/de/_messages.js',
     // English should always come last as the base language
     './src/msg/en/_messages.js',
