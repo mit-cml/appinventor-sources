@@ -4,6 +4,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.*;
+import org.json.JSONException;
 
 import java.io.*;
 import java.util.*;
@@ -192,11 +193,17 @@ public class DataFile extends FileBase implements ChartDataSource<YailList, Futu
                     // TODO: handled, but currently there is a bit too much overhead in doing
                     // TODO: so due to YailLists not supporting the add() operation)
                     if (result.charAt(0) == '{') {
-                        // Parse columns from the result
-                        columns = JsonUtil.getColumnsFromJSON(result);
+                        try {
+                            // Parse columns from the result
+                            columns = JsonUtil.getColumnsFromJSON(result);
 
-                        // Construct row lists from columns
-                        rows = ChartDataSourceUtil.getTranspose(columns);
+                            // Construct row lists from columns
+                            rows = ChartDataSourceUtil.getTranspose(columns);
+                        } catch (JSONException e) {
+                            // JSON parsing failed; Fallback to CSV
+                            rows = CsvUtil.fromCsvTable(result);
+                            columns = ChartDataSourceUtil.getTranspose(rows);
+                        }
                     } else { // Assume CSV otherwise
                         // Parse rows from the result
                         rows = CsvUtil.fromCsvTable(result);
