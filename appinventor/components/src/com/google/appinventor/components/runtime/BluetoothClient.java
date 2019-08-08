@@ -348,11 +348,25 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
           // At least one byte can be received and there
           // are observers which can receive the data
           if (bytesReceivable > 0 && !dataSourceObservers.isEmpty()) {
-            // Read data until the delimiter byte (hence the -1)
+            // Read all of the available data
             String result = ReceiveText(-1);
 
-            // Notify observers with the new data (and blank key)
-            notifyDataSourceObservers("", result);
+            int index = -1;
+
+            for (int i = 0; i < result.length(); ++i) {
+              if (Character.isDigit(result.charAt(i))) {
+                index = i;
+                break;
+              }
+            }
+
+            if (index != -1) {
+              String key = result.substring(0, index);
+              String value = result.substring(index);
+
+              // Notify observers with the new data (and blank key)
+              notifyDataSourceObservers(key, value);
+            }
           }
         }
       }
