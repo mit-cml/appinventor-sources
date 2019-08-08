@@ -441,8 +441,6 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(1f, 4f));
       add(createEntry(3f, 9f));
-      add(createEntry(4f, Float.parseFloat(model.getDefaultValue(3))));
-      add(createEntry(7f, Float.parseFloat(model.getDefaultValue(4))));
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);

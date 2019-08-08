@@ -146,10 +146,9 @@ public abstract class MockChartDataModel<D extends Dataset> {
         for (int i = 0; i < columns.size(); ++i) {
             int columnSize = columns.get(i).size();
 
-            // Non-empty column found, break here
-            if (columnSize > 0) {
+            // Bigger column found; Update rows entry
+            if (columnSize > rows) {
                 rows = columnSize;
-                break;
             }
         }
 
@@ -165,8 +164,10 @@ public abstract class MockChartDataModel<D extends Dataset> {
 
                 if (column.size() == 0) { // Empty column; Use default value
                     tuple[j] = getDefaultTupleEntry(i);
-                } else { // Use the column's value
+                } else if (column.size() > i) { // Column has value; Use the column's value (if the column is large enough)
                     tuple[j] = column.get(i);
+                } else {
+                    tuple[j] = "";
                 }
             }
 

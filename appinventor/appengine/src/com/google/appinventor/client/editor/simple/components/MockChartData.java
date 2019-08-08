@@ -281,7 +281,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     }
 
     /**
-     * Sets the properties for the Chart Data component.
+     * Sets the properties for the Cha[rt Data component.
      *
      * The need for this method is the fact that the component's
      * properties can only be set after the Data component has been added to

@@ -203,20 +203,19 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                 YailList column = (YailList) value;
 
                 if (column.size() > i) { // Entry exists in column
-                    // Get the i-th entry from the column
-                    String columnEntry = column.getString(i);
-
-                    // Blank value; Use default value instead
-                    if (columnEntry.equals("")) {
-                        tupleElements.add(getDefaultValue(i));
-                    } else {
-                        // Add entry from column
-                        tupleElements.add(column.getString(i));
-                    }
-                } else { // Entry does not exist in column
+                    // Add entry from column
+                    tupleElements.add(column.getString(i));
+                } else if (column.size() == 0) { // Column empty (default value should be used)
                     // Use default value instead
                     tupleElements.add(getDefaultValue(i));
                 }
+
+                // Alternative solution: Add default values for missing entries as well.
+                // This might, however, not be the desired behavior.
+//                else {
+//                    // Use default value instead
+//                    tupleElements.add(getDefaultValue(i));
+//                }
             }
 
             // Create the YailList tuple representation and add it to the

@@ -107,8 +107,6 @@ public abstract class PointChartDataModelTest
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(1f, 2f));
       add(createEntry(2f, 5f));
-      add(createEntry(Float.parseFloat(model.getDefaultValue(3)), 7f));
-      add(createEntry(Float.parseFloat(model.getDefaultValue(4)), 10f));
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
