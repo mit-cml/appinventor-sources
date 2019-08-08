@@ -184,6 +184,13 @@ public class DataFile extends FileBase implements ChartDataSource<YailList, Futu
                     final String result = readFromInputStream(inputStream);
 
                     // First character is a curly bracket; Assume JSON
+                    // TODO: When fetching columns and rows, in the case of
+                    // TODO: colums/rows being uneven lengths, the final rows and columns
+                    // TODO: objects will differ (the transpose will fill missing entries
+                    // TODO: with blank empty String entries, while the original List will
+                    // TODO: have uneven sized Lists. For consistency, this should be
+                    // TODO: handled, but currently there is a bit too much overhead in doing
+                    // TODO: so due to YailLists not supporting the add() operation)
                     if (result.charAt(0) == '{') {
                         // Parse columns from the result
                         columns = JsonUtil.getColumnsFromJSON(result);
