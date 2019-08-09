@@ -356,6 +356,16 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   @Override
   public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
+
+    // No more Data Source observers exist;
+    // Shut down polling service and null it
+    // (the reason for nulling is so that a new
+    // service could be created upon adding a new
+    // observer)
+    if (dataSourceObservers.isEmpty()) {
+      dataPollService.shutdown();
+      dataPollService = null;
+    }
   }
 
   @Override
