@@ -340,21 +340,14 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     dataPollService.scheduleAtFixedRate(new Runnable() {
       @Override
       public void run() {
-        // Ensure that the BluetoothClient is connected
-        if (IsConnected()) {
-          // Check how many bytes can be received
-          int bytesReceivable = BytesAvailableToReceive();
+        // Retrieve data value (with a null key, since
+        // key value does not matter for BluetoothClient)
+        String value = getDataValue(null);
 
-          // At least one byte can be received and there
-          // are observers which can receive the data
-          if (bytesReceivable > 0 && !dataSourceObservers.isEmpty()) {
-            // Read all of the available data
-            String result = ReceiveText(-1);
-
-            // Notify observers with the new data using a null key (key does
-            // not matter for BluetoothClient)
-            notifyDataObservers(null, result);
-          }
+        // Notify data obserevers only if a non-empty value
+        // has been retrieved successfully.
+        if (!value.equals("")) {
+          notifyDataObservers(null, value);
         }
       }
     }, 0, POLLING_RATE, TimeUnit.MILLISECONDS);
@@ -374,6 +367,20 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
 
   @Override
   public String getDataValue(String key) {
-    return "0";
+    String value = "";
+
+    // Ensure that the BluetoothClient is connected
+    if (IsConnected()) {
+      // Check how many bytes can be received
+      int bytesReceivable = BytesAvailableToReceive();
+
+      // At least one byte can be received
+      if (bytesReceivable > 0) {
+        // Read contents from the Bluetooth connection until delimiter
+        value = ReceiveText(-1);
+      }
+    }
+
+    return value;
   }
 }
