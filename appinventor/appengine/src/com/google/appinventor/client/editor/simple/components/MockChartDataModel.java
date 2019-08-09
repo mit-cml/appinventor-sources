@@ -167,6 +167,8 @@ public abstract class MockChartDataModel<D extends Dataset> {
                 } else if (column.size() > i) { // Column has value; Use the column's value (if the column is large enough)
                     tuple[j] = column.get(i);
                 } else {
+                    // Column too small; Use empty String (up for interpretation
+                    // for addEntryFromTuple)
                     tuple[j] = "";
                 }
             }

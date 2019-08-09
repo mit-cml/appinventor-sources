@@ -208,6 +208,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                 } else if (column.size() == 0) { // Column empty (default value should be used)
                     // Use default value instead
                     tupleElements.add(getDefaultValue(i));
+                } else { // Column too small
+                    // Add blank entry (""), up for the addEntryFromTuple method
+                    // to interpret.
+                    tupleElements.add("");
                 }
 
                 // Alternative solution: Add default values for missing entries as well.

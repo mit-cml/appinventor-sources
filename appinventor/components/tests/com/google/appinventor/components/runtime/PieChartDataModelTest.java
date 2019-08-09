@@ -460,6 +460,26 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     checkLegendHelper(expectedEntries);
   }
 
+  /**
+   * Test to ensure that importing from columns of uneven
+   * size (where the x column is smaller) fills in missing
+   * x values with empty Strings.
+   */
+  @Test
+  public void testImportFromCSVUnevenColumnsXValue() {
+    YailList xColumn = createTuple("X", "Entry 1", "Entry 2");
+    YailList yColumn = createTuple("Y", 20f, 30f, 40f, 50f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry("Entry 1", 20f));
+      add(createEntry("Entry 2", 30f));
+      add(createEntry("", 40f));
+      add(createEntry("", 50f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
     LegendEntry[] legendEntries = legend.getEntries();
 
