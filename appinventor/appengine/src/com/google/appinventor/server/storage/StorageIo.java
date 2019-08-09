@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * indefinitely. It is up to the caller to choose the source of user ids.
  *
  */
-public interface  StorageIo {
+public interface StorageIo {
   /**
    * Constant for an invalid project ID.
    */
