@@ -66,6 +66,8 @@ Blockly.Drawer.buildTree_ = function() {
   var tree = {};
   var formName = Blockly.mainWorkspace.formName;
   var screenName = formName.substring(formName.indexOf("_") + 1);
+
+  // Check to see if a Blocks Toolkit is defined. If so, use that to build the tree.
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
     var subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
     if (subsetJsonString) {
@@ -93,8 +95,7 @@ Blockly.Drawer.buildTree_ = function() {
 };
 
 /**
- * Build the hierarchical tree of block types.
- * Note: taken from Blockly's toolbox.js
+ * Build the hierarchical tree of built-in block types using the JSON property BlocksToolkit
  * @return {!Object} Tree object.
  * @private
  */
@@ -106,9 +107,9 @@ Blockly.Drawer.buildToolkitTree_ = function(jsonToolkit) {
     for (var key in subsetBlockArray) {
       if (key != 'ComponentBlocks') {
         var cat = "cat_" + key;
-        var test = subsetBlockArray[key];
-        for (var i = 0; i < test.length; i++) {
-          var block = test[i];
+        var catBlocks = subsetBlockArray[key];
+        for (var i = 0; i < catBlocks.length; i++) {
+          var block = catBlocks[i];
           var name = block.type;
           if (cat in tree) {
             tree[cat].push(name);
