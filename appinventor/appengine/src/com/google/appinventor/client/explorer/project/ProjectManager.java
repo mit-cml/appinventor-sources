@@ -9,7 +9,6 @@ package com.google.appinventor.client.explorer.project;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
@@ -81,7 +80,6 @@ public final class ProjectManager {
 
     return projects;
   }
-
 
   /**
    * Returns a list of the projects with the given project name prefix.

@@ -44,7 +44,7 @@ public interface ProjectManagerEventListener {
   void onProjectRemoved(Project project);
 
   /**
-   * Invoked after a project was removed from trashlist.
+   * Invoked after a project was removed from trash list.
    *
    * @param project  project removed
    */
