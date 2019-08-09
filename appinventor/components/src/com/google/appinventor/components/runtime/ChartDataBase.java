@@ -607,6 +607,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         if (importData) {
             final String finalValue = valueString;
 
+            // Import value in non-async (since this is a real-time value,
+            // the update will come faster than running in async)
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

@@ -351,7 +351,8 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
             // Read all of the available data
             String result = ReceiveText(-1);
 
-            // Notify observers with the new data (and null key)
+            // Notify observers with the new data using a null key (key does
+            // not matter for BluetoothClient)
             notifyDataObservers(null, result);
           }
         }
