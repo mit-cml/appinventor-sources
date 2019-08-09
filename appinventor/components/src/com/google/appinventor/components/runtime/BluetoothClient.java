@@ -316,7 +316,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void addDataSourceObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     // Data Polling Service has not been initialized yet; Initialize it
     // (since Data Component is added)
     if (dataPollService == null) {
@@ -365,7 +365,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
               String value = result.substring(index);
 
               // Notify observers with the new data (and blank key)
-              notifyDataSourceObservers(key, value);
+              notifyDataObservers(key, value);
             }
           }
         }
@@ -379,7 +379,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void notifyDataSourceObservers(String key, Object newValue) {
+  public void notifyDataObservers(String key, Object newValue) {
     for (ChartDataBase observer : dataSourceObservers) {
       observer.onReceiveValue(key, newValue);
     }

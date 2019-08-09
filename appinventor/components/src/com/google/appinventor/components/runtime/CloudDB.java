@@ -991,7 +991,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
             // Notify all the Data Source observers of the change
-            notifyDataSourceObservers(tag, null);
+            notifyDataObservers(tag, null);
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1076,7 +1076,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     final Object finalTagValue = tagValue;
 
     // Notify all the Data Source observers of the change
-    notifyDataSourceObservers(tag, finalTagValue);
+    notifyDataObservers(tag, finalTagValue);
 
     androidUIHandler.post(new Runnable() {
       public void run() {
@@ -1388,7 +1388,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   @Override
-  public void addDataSourceObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
@@ -1398,7 +1398,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   @Override
-  public void notifyDataSourceObservers(String key, Object newValue) {
+  public void notifyDataObservers(String key, Object newValue) {
     // Notify each Chart Data observer component of the Data value change
     for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onDataSourceValueChange(this, key, newValue);

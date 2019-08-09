@@ -5,7 +5,6 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.data.ChartData;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -27,7 +26,6 @@ import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONException;
 
 /**
@@ -105,7 +103,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
       @Override
       public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Upon value change, notify the observers with the key and the value
-        notifyDataSourceObservers(key, GetValue(key, null));
+        notifyDataObservers(key, GetValue(key, null));
       }
     };
 
@@ -182,7 +180,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
-    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
+    notifyDataObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
@@ -202,7 +200,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
     sharedPrefsEditor.commit();
-    notifyDataSourceObservers(null, null); // Notify observers with null value to be interpreted as clear
+    notifyDataObservers(null, null); // Notify observers with null value to be interpreted as clear
   }
 
   /**
@@ -228,7 +226,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @Override
-  public void addDataSourceObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
@@ -238,7 +236,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @Override
-  public void notifyDataSourceObservers(String key, Object newValue) {
+  public void notifyDataObservers(String key, Object newValue) {
     // Notify each Chart Data observer component of the Data value change
     for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onDataSourceValueChange(this, key, newValue);

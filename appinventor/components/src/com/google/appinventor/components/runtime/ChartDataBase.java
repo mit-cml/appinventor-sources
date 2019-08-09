@@ -330,7 +330,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         if (initialized) {
           if (dataSource instanceof ObservableChartDataSource) {
             // Add this Data Component as an observer to the ObservableChartDataSource object
-            ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+            ((ObservableChartDataSource)dataSource).addDataObserver(this);
 
             // No Data Source Value specified; Do not proceed with importing data
             if (dataSourceValue == null) {
@@ -586,7 +586,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onReceiveValue(final String key, final Object value) {
+    public void onReceiveValue(RealTimeChartDataSource component, final String key, final Object value) {
         // Check that the key of the value received matches the
         // Data Source value key
         if (key.equals("") || key.equals(dataSourceValue)) {
