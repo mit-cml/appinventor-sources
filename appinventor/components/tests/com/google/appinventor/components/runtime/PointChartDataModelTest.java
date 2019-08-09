@@ -94,6 +94,24 @@ public abstract class PointChartDataModelTest
     assertFalse(model.areEntriesEqual(entry1, entry2));
   }
 
+  /**
+   * Test to ensure that importing from columns of uneven
+   * size imports all the entries while replacing the
+   * blank entries in other Lists with default values.
+   */
+  @Test
+  public void testImportFromCSVUnevenColumnsBlankEntries() {
+    YailList xColumn = createTuple("X", 1f, 2f, "", "");
+    YailList yColumn = createTuple("Y", 2f, 5f, 7f, 10f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(1f, 2f));
+      add(createEntry(2f, 5f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
   @Override
   protected Entry createEntry(Object... entries) {
     float x = (float) entries[0];

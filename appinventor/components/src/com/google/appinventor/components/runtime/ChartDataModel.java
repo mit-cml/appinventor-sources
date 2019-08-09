@@ -4,6 +4,7 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -163,66 +164,24 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
-     * Imports data from the specified list of columns with
-     * the specified row size.
+     * Imports data from the specified list of columns.
+     * Tuples are formed from the rows of the combined
+     * columns in order of the columns.
      *
-     * The row size is used to create a column with default
-     * values in case of an absence of data.
+     * The first element is skipped, since it is assumed that it
+     * is the column name.
      *
      * @param columns  columns to import data from
      */
-    public void importFromCSV(YailList columns) {
-        if (columns == null) {
-            return;
-        }
-
-        // Establish the row count of the specified columns
-        int rows = 0;
-
-        for (int i = 0; i < columns.size(); ++i) {
-            YailList column = (YailList)columns.getObject(i);
-
-            if (column.size() != 0) {
-                rows = column.size();
-                break;
-            }
-        }
+    public void importFromColumns(YailList columns) {
+        // Determine the (maximum) row count of the specified columns
+        int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
 
         if (rows == 0) {
             // No rows exist. Do nothing.
             return;
         }
 
-        // Initially, the final column List is created (empty
-        // column Lists should be populated with default values)
-        ArrayList<YailList> dataColumns = new ArrayList<YailList>();
-
-        for (int i = 0; i < columns.size(); ++i) {
-            // Get the column element
-            YailList column = (YailList)columns.getObject(i);
-
-            if (column.size() == 0) { // Column is empty, populate it with default values
-                dataColumns.add(getDefaultValues(rows));
-            } else { // Add the specified CSV column to the data columns to use for importing
-                dataColumns.add(column);
-            }
-        }
-
-        // Import from the finalized CSV columns.
-        importFromCSVColumns(dataColumns, rows);
-    }
-
-    /**
-     * Imports data from the specified set of CSV column data and
-     * the specified number of rows.
-     *
-     * The first element is skipped, since it is assumed that it
-     * is the column name.
-     *
-     * @param columns  List of fixed-width columns, each of which contain data
-     * @param rows  Number of rows in the CSV (number of elements in the columns)
-     */
-    private void importFromCSVColumns(ArrayList<YailList> columns, int rows) {
         List<YailList> tuples = new ArrayList<YailList>();
 
         // Generate tuples from the columns
@@ -231,8 +190,36 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             // Add entries to the tuple from all i-th values (i-th row)
             // of the data columns.
-            for (YailList column : columns) {
-                tupleElements.add(column.getString(i));
+            for (int j = 0; j < columns.size(); ++j) {
+                Object value = columns.getObject(j);
+
+                // Invalid column specified; Add default value
+                if (!(value instanceof YailList)) {
+                    tupleElements.add(getDefaultValue(i));
+                    continue;
+                }
+
+                // Safe-cast value to YailList
+                YailList column = (YailList) value;
+
+                if (column.size() > i) { // Entry exists in column
+                    // Add entry from column
+                    tupleElements.add(column.getString(i));
+                } else if (column.size() == 0) { // Column empty (default value should be used)
+                    // Use default value instead
+                    tupleElements.add(getDefaultValue(i));
+                } else { // Column too small
+                    // Add blank entry (""), up for the addEntryFromTuple method
+                    // to interpret.
+                    tupleElements.add("");
+                }
+
+                // Alternative solution: Add default values for missing entries as well.
+                // This might, however, not be the desired behavior.
+//                else {
+//                    // Use default value instead
+//                    tupleElements.add(getDefaultValue(i));
+//                }
             }
 
             // Create the YailList tuple representation and add it to the
@@ -474,6 +461,18 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  YailList of the specified number of entries containing the default values.
      */
     protected abstract YailList getDefaultValues(int size);
+
+    /**
+     * Returns default tuple entry value to use when a value
+     * is not present.
+     * @param index  index for the value
+     * @return  value corresponding to the specified index
+     */
+    protected String getDefaultValue(int index) {
+        // Return value which directly corresponds to the index
+        // number. So default values go as 0, 1, 2, ..., N
+        return index + "";
+    }
 
     /**
      * Checks equality between two entries.

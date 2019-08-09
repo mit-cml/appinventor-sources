@@ -30,4 +30,9 @@ final class ServerJsonString extends ServerJsonValue implements JSONString {
   public String toJson() {
     return JSONUtil.toJson(value);
   }
+
+  @Override
+  public String toString() {
+    return getString();
+  }
 }

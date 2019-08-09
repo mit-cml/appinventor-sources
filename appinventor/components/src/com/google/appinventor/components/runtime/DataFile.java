@@ -3,21 +3,21 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.*;
+import org.json.JSONException;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-@DesignerComponent(version = YaVersion.FILE_COMPONENT_VERSION,
+@DesignerComponent(version = 1,
         description = "To be updated",
         category = ComponentCategory.STORAGE,
         nonVisible = true,
         iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class CSVFile extends FileBase implements ChartDataSource<YailList, Future<YailList>> {
+public class DataFile extends FileBase implements ChartDataSource<YailList, Future<YailList>> {
     private String sourceFile;
 
     private YailList rows;
@@ -27,10 +27,10 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
     /**
-     * Creates a new CSVFile component.
+     * Creates a new DataFile component.
      * @param container the Form that this component is contained in.
      */
-    public CSVFile(ComponentContainer container) {
+    public DataFile(ComponentContainer container) {
         super(container);
 
         rows = new YailList();
@@ -43,12 +43,12 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     /**
      * Rows property getter method
      *
-     * @return a YailList representing the parsed rows of the CSV file.
+     * @return a YailList representing the parsed rows of the Data file.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
-            " to the CSV file's content.")
+            " to the Data File's content.")
     public YailList Rows() {
-        return getCSVPropertyHelper(new Callable<YailList>() {
+        return getYailListPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
                 return rows;
@@ -60,12 +60,12 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     /**
      * Columns property getter method
      *
-     * @return a YailList representing the parsed columns of the CSV file.
+     * @return a YailList representing the parsed columns of the Data file.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
-            " to the CSV file's content.")
+            " to the Data File's content.")
     public YailList Columns() {
-        return getCSVPropertyHelper(new Callable<YailList>() {
+        return getYailListPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
                 return columns;
@@ -75,15 +75,15 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
 
     /**
      * Column names property getter method.
-     * The intended use case of the method is for CSV files which contain
+     * The intended use case of the method is for Data Files which contain
      * the column names in the first row.
      *
      * @return  a YailList containing the elements of the first row.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
-            " of the CSV contents.")
+            " of the Data File's contents.")
     public YailList ColumnNames() {
-        return getCSVPropertyHelper(new Callable<YailList>() {
+        return getYailListPropertyHelper(new Callable<YailList>() {
             @Override
             public YailList call() throws Exception {
                 return columnNames;
@@ -103,9 +103,9 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
      * @param propertyCallable  Callable that returns the required YailList property
      * @return  YailList property
      */
-    private YailList getCSVPropertyHelper(Callable<YailList> propertyCallable) {
+    private YailList getYailListPropertyHelper(Callable<YailList> propertyCallable) {
         // Since reading might be in progress, the task of
-        // getting a CSVFile property should be queued so that the
+        // getting a DataFile property should be queued so that the
         // thread is blocked until the reading is finished.
         try {
             return  threadRunner
@@ -121,7 +121,7 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     }
 
     /**
-     * Sets the source file to parse CSV from, and then parses the CSV
+     * Sets the source file to parse data from, and then parses the
      * file asynchronously.
      * The results are stored in the Columns, Rows and ColumnNames properties.
      *
@@ -139,6 +139,7 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     }
 
     @SimpleFunction(description = "Indicates source file to load data from." +
+        "The expected format of the contents of the file are either CSV or JSON." +
         "Prefix the filename with / to read from a specific file on the SD card. " +
         "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
         "assets packaged with an application (also works for the Companion) start " +
@@ -173,50 +174,6 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
         return (YailList)columns.getObject(index);
     }
 
-    /**
-     * Instantiates the columns list after CSV parsing to rows
-     * has been processed.
-     */
-    private void constructColumnsFromRows() {
-        // Store columns separately (first row indicates column names)
-        columnNames = (YailList)rows.getObject(0);
-
-        // Get the size of the row. The row size
-        // indicates the number of columns.
-        int rowSize = columnNames.size();
-
-        // Construct each column separately, and add it
-        // to the resulting list.
-        ArrayList<YailList> columnList = new ArrayList<YailList>();
-
-        for (int i = 0; i < rowSize; ++i) {
-            columnList.add(getColumn(i));
-        }
-
-        columns = YailList.makeList(columnList);
-    }
-
-    /**
-     * Constructs and returns a column from the rows, given
-     * the index of the needed column.
-     *
-     * @param index  the index of the column to construct
-     * @return  YailList column representation of the specified index
-     */
-    private YailList getColumn(int index) {
-        List<String> entries = new ArrayList<String>();
-
-        for (int i = 0; i < rows.size(); ++i) {
-            // Get the i-th row
-            YailList row = (YailList) rows.getObject(i); // Safe cast
-
-            // index-th entry in the row is the required column value
-            entries.add((row.getString(index)));
-        }
-
-        return YailList.makeList(entries);
-    }
-
     @Override
     protected void AsyncRead(final InputStream inputStream, final String fileName) {
         // Add runnable to the Single Thread runner to read File asynchronously
@@ -227,11 +184,37 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
                     // Parse InputStream to String
                     final String result = readFromInputStream(inputStream);
 
-                    // Parse rows from the result
-                    rows = CsvUtil.fromCsvTable(result);
+                    // First character is a curly bracket; Assume JSON
+                    // TODO: When fetching columns and rows, in the case of
+                    // TODO: colums/rows being uneven lengths, the final rows and columns
+                    // TODO: objects will differ (the transpose will fill missing entries
+                    // TODO: with blank empty String entries, while the original List will
+                    // TODO: have uneven sized Lists. For consistency, this should be
+                    // TODO: handled, but currently there is a bit too much overhead in doing
+                    // TODO: so due to YailLists not supporting the add() operation)
+                    if (result.charAt(0) == '{') {
+                        try {
+                            // Parse columns from the result
+                            columns = JsonUtil.getColumnsFromJSON(result);
 
-                    // Construct column lists from rows
-                    constructColumnsFromRows();
+                            // Construct row lists from columns
+                            rows = ChartDataSourceUtil.getTranspose(columns);
+                        } catch (JSONException e) {
+                            // JSON parsing failed; Fallback to CSV
+                            rows = CsvUtil.fromCsvTable(result);
+                            columns = ChartDataSourceUtil.getTranspose(rows);
+                        }
+                    } else { // Assume CSV otherwise
+                        // Parse rows from the result
+                        rows = CsvUtil.fromCsvTable(result);
+
+                        // Construct column lists from rows
+                        columns = ChartDataSourceUtil.getTranspose(rows);
+                    }
+
+                    // If rows size is non-zero, set column names to first row. Otherwise,
+                    // set it to an empty List.
+                    columnNames = (rows.size() > 0) ? ((YailList)rows.getObject(0)) : new YailList();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -242,7 +225,7 @@ public class CSVFile extends FileBase implements ChartDataSource<YailList, Futur
     }
 
     /**
-     * Returns a Future object which holds the CSVFile columns at the point
+     * Returns a Future object which holds the DataFile columns at the point
      * of invoking the method.
      *
      * If reading is in progress, the method blocks until reading is done

@@ -9,7 +9,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -28,10 +27,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * finish before the data is returned. */
     protected ExecutorService threadRunner;
 
-    // Properties used in Designer to import from CSV.
+    // Properties used in Designer to import from DataFile.
     // Represents the names of the columns to use,
     // where each index corresponds to a single dimension.
-    protected List<String> csvColumns;
+    protected List<String> dataFileColumns;
 
     // Property used in Designer to import from a Data Source.
     // Represents the key value of the value to use from the
@@ -223,36 +222,36 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
-     * Imports data from a CSV file component, with the specified column names.
+     * Imports data from a Data File component, with the specified column names.
      * The method is ran asynchronously.
      *
-     * @param csvFile  CSV File component to import from
+     * @param dataFile  Data File component to import from
      * @param columns  list of column names to import from
      */
-    protected void importFromCSVAsync(final CSVFile csvFile, YailList columns) {
-        // Get the Future object representing the columns in the CSVFile component,
-        final Future<YailList> csvFileColumns = csvFile.getDataValue(columns);
+    protected void importFromDataFileAsync(final DataFile dataFile, YailList columns) {
+        // Get the Future object representing the columns in the DataFile component,
+        final Future<YailList> dataFileColumns = dataFile.getDataValue(columns);
 
-        // Import the data from the CSV file asynchronously
+        // Import the data from the Data file asynchronously
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                YailList csvResult = null;
+                YailList dataResult = null;
 
                 try {
-                    // Get the columns from the CSVFile. The retrieval of
+                    // Get the columns from the DataFile. The retrieval of
                     // the result is blocking, so it will first wait for
                     // the reading to be processed.
                     // The expected format is a (rowCount, columns) List.
-                    csvResult = csvFileColumns.get();
+                    dataResult = dataFileColumns.get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
 
-                // Import from CSV file with the specified parameters
-                chartDataModel.importFromCSV(csvResult);
+                // Import from Data file with the specified parameters
+                chartDataModel.importFromColumns(dataResult);
 
                 // Refresh the Chart after import
                 refreshChart();
@@ -261,33 +260,33 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
-     * Sets the CSV column to parse data from the CSV source for the x values.
+     * Sets the Data column to parse data from the DataFile source for the x values.
      *
      * @param column  name of the column for the x values
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
-    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the x values." +
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN, defaultValue = "")
+    @SimpleProperty(description="Sets the column to parse from the attached Data File for the x values." +
         "If a column is not specified, default values for the x values will be generated instead.",
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
-    public void CsvXColumn(String column) {
+    public void DataFileXColumn(String column) {
         // The first element represents the x entries
-        csvColumns.set(0, column);
+        dataFileColumns.set(0, column);
     }
 
     /**
-     * Sets the CSV column to parse data from the CSV source for the y values.
+     * Sets the Data column to parse data from the DataFile source for the y values.
      *
      * @param column  name of the column for the y values
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN, defaultValue = "")
-    @SimpleProperty(description="Sets the column to parse from the attached CSV file for the y values." +
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN, defaultValue = "")
+    @SimpleProperty(description="Sets the column to parse from the attached Data File for the y values." +
         "If a column is not specified, default values for the y values will be generated instead.",
         category = PropertyCategory.BEHAVIOR,
         userVisible = false)
-    public void CsvYColumn(String column) {
+    public void DataFileYColumn(String column) {
         // The second element represents the y entries
-        csvColumns.set(1, column);
+        dataFileColumns.set(1, column);
     }
 
     /**
@@ -315,12 +314,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * is then automatically imported.
      *
      * TODO: Modify description to include more data sources
-     * TODO: Support for more Data Sources (so not only limited to CSVFile)
+     * TODO: Support for more Data Sources (so not only limited to DataFile)
      * @param dataSource  Data Source to use for the Chart data.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
-                    "include CSVFiles.")
+                    "include DataFiles, TinyDB, CloudDB and AccelerometerSensor.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(ChartDataSource dataSource) {
         this.dataSource = dataSource;
@@ -345,8 +344,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             }
           }
 
-            if (dataSource instanceof CSVFile) {
-                importFromCSVAsync((CSVFile)dataSource, YailList.makeList(csvColumns));
+            if (dataSource instanceof DataFile) {
+                importFromDataFileAsync((DataFile)dataSource, YailList.makeList(dataFileColumns));
             } else if (dataSource instanceof TinyDB) {
               ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
             } else if (dataSource instanceof CloudDB) {

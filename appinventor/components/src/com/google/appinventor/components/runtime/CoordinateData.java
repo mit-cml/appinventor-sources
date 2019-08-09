@@ -6,7 +6,6 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +21,7 @@ public final class CoordinateData extends ChartDataBase {
      */
     public CoordinateData(Chart chartContainer) {
         super(chartContainer);
-        csvColumns = Arrays.asList("", ""); // Construct default csvColumns list with 2 entries
+        dataFileColumns = Arrays.asList("", ""); // Construct default dataFileColumns list with 2 entries
     }
 
     /**
@@ -105,20 +104,20 @@ public final class CoordinateData extends ChartDataBase {
     }
 
     /**
-     * Imports data from a CSV file component, with the specified column names.
+     * Imports data from a Data file component, with the specified column names.
      *
-     * @param csvFile  CSV File component to import from
+     * @param dataFile  Data File component to import from
      * @param xValueColumn  x-value column name
      * @param yValueColumn  y-value column name
      */
-    @SimpleFunction(description = "Imports data from the specified CSVFile component, given the names of the " +
+    @SimpleFunction(description = "Imports data from the specified DataFile component, given the names of the " +
         "X and Y value columns. Passing in empty text for any of the column parameters will result" +
         " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
         " 1, and so forth.")
-    public void ImportFromCSV(final CSVFile csvFile, String xValueColumn, String yValueColumn) {
+    public void ImportFromDataFile(final DataFile dataFile, String xValueColumn, String yValueColumn) {
         // Construct a YailList of columns from the specified parameters
         YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
-        importFromCSVAsync(csvFile, columns);
+        importFromDataFileAsync(dataFile, columns);
     }
 }

@@ -1,21 +1,21 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvColumnSelectorProperty;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
 import java.util.List;
 
-public abstract class MockChartData extends MockVisibleComponent implements CSVFileChangeListener {
+public abstract class MockChartData extends MockVisibleComponent implements DataFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
     private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
-    private static final String PROPERTY_CSV_X_COLUMN = "CsvXColumn";
-    private static final String PROPERTY_CSV_Y_COLUMN = "CsvYColumn";
+    private static final String PROPERTY_DATA_FILE_X_COLUMN = "DataFileXColumn";
+    private static final String PROPERTY_DATA_FILE_Y_COLUMN = "DataFileYColumn";
 
     // Represents the Chart data icon
     private Image iconWidget;
@@ -24,8 +24,8 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected MockChartDataModel chartDataModel;
     protected MockComponent dataSource;
 
-    // Stores the CSVColumn properties (in order) to import from
-    protected List<String> csvColumns;
+    // Stores the DataFileColumn properties (in order) to import from
+    protected List<String> dataFileColumns;
 
     private String currentElements = "";
 
@@ -71,12 +71,12 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     protected boolean isPropertyVisible(String propertyName) {
         // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
         // Chart Source related properties should be hidden by default,
-        // as they are only shown upon certain conditions (e.g. CSVColumn
-        // properties are only shown when the Source component is a CSVFile)
+        // as they are only shown upon certain conditions (e.g. DataFileColumn
+        // properties are only shown when the Source component is a DataFile)
         if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
-                propertyName.equals(PROPERTY_CSV_X_COLUMN) ||
-                propertyName.equals(PROPERTY_CSV_Y_COLUMN) ||
+                propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN) ||
+                propertyName.equals(PROPERTY_DATA_FILE_Y_COLUMN) ||
                 propertyName.equals(PROPERTY_CHART_SOURCE_VALUE)) {
             return false;
         }
@@ -117,10 +117,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
      * @param source  Name of the new Source component attached
      */
     private void setSourceProperty(String source) {
-        // If a Data Source was previously assigned and is of type CSVFile,
+        // If a Data Source was previously assigned and is of type DataFile,
         // de-attach this Data component from it
-        if (dataSource instanceof MockCSVFile) {
-            ((MockCSVFile)dataSource).removeCSVFileChangeListener(this);
+        if (dataSource instanceof MockDataFile) {
+            ((MockDataFile)dataSource).removeDataFileChangeListener(this);
         }
 
         // Get the newly attached Source component
@@ -142,44 +142,44 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     }
 
     /**
-     * Sets the CSV X Column property of the Chart Data component.
-     * After setting the property, the CSV data is then re-imported
+     * Sets the Data File X Column property of the Chart Data component.
+     * After setting the property, the data is then re-imported
      * (if possible)
      * @param column  new column name
      */
-    private void setCSVXColumnProperty(String column) {
-        // The X column is the first element of the csvColumns list
-        csvColumns.set(0, column);
-        updateCSVData();
+    private void setDataFileXColumnProperty(String column) {
+        // The X column is the first element of the dataFileColumns list
+        dataFileColumns.set(0, column);
+        updateDataFileData();
     }
 
     /**
-     * Sets the CSV Y Column property of the Chart Data component.
-     * After setting the property, the CSV data is then re-imported
+     * Sets the DataFile Y Column property of the Chart Data component.
+     * After setting the property, the data is then re-imported
      * (if possible)
      * @param column  new column name
      */
-    private void setCSVYColumnProperty(String column) {
-        // The Y column is the second element of the csvColumns list
-        csvColumns.set(1, column);
-        updateCSVData();
+    private void setDataFileYColumnProperty(String column) {
+        // The Y column is the second element of the dataFileColumns list
+        dataFileColumns.set(1, column);
+        updateDataFileData();
     }
 
     /**
-     * Imports data into the Chart from the attached CSVFile source
-     * based on the current CSV column properties.
+     * Imports data into the Chart from the attached DataFile source
+     * based on the current DataFile column properties.
      */
-    protected void updateCSVData() {
-        // DataSource is not of instance MockCSVFile. Ignore event call
-        if (!(dataSource instanceof MockCSVFile)) {
+    protected void updateDataFileData() {
+        // DataSource is not of instance MockDataFile. Ignore event call
+        if (!(dataSource instanceof MockDataFile)) {
             return;
         }
 
-        // Get the columns from the MockCSVFile using the local CSV Column properties (safe cast)
-        List<List<String>> columns = ((MockCSVFile)(dataSource)).getColumns(csvColumns);
+        // Get the columns from the MockDataFile using the local DataFile Column properties (safe cast)
+        List<List<String>> columns = ((MockDataFile)(dataSource)).getColumns(dataFileColumns);
 
-        // Import the CSV data to the Data Series
-        chartDataModel.setElementsFromCSVColumns(columns);
+        // Import the data to the Data Series
+        chartDataModel.setElementsFromColumns(columns);
         refreshChart();
     }
 
@@ -191,55 +191,55 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
         // Hide Elements from Pairs property if a Data Source has been set
         showProperty(PROPERTY_PAIRS, (dataSource == null));
 
-        // Handle CSV-related property responses
-        handleCSVPropertySetting();
+        // Handle DataFile-related property responses
+        handleDataFilePropertySetting();
 
-        // Show Data Source Value only if the Data Source is non-null and not of type MockCSVFile
-        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockCSVFile));
+        // Show Data Source Value only if the Data Source is non-null and not of type MockDataFile
+        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockDataFile));
         showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
     }
 
     /**
-     * Handles properties with regards to a CSV source upon
+     * Handles properties with regards to a DataFile source upon
      * changing the Data Source of the Data component.
      *
-     * The method shows/hides the CSV X and Y Column properties
-     * depending on the attached Source (if it's a CSVFile, then
+     * The method shows/hides the DataFile X and Y Column properties
+     * depending on the attached Source (if it's a DataFile, then
      * the properties will be shown, and hidden otherwise)
      * If the properties are shown, the Column selectors
      * are updated to track the new data source, and the
      * data in the Data Series is updated.
      */
-    private void handleCSVPropertySetting() {
-        // Show the CSVColumns property only if the attached Source component is of type CSVFile
-        boolean showCSVColumns = (dataSource instanceof MockCSVFile);
+    private void handleDataFilePropertySetting() {
+        // Show the DataFileColumns property only if the attached Source component is of type DataFile
+        boolean showDataFileColumns = (dataSource instanceof MockDataFile);
 
-        // Hide or show the CsvColumns property depending on condition
-        showProperty(PROPERTY_CSV_X_COLUMN, showCSVColumns);
-        showProperty(PROPERTY_CSV_Y_COLUMN, showCSVColumns);
+        // Hide or show the DataFileColumns property depending on condition
+        showProperty(PROPERTY_DATA_FILE_X_COLUMN, showDataFileColumns);
+        showProperty(PROPERTY_DATA_FILE_Y_COLUMN, showDataFileColumns);
 
         // Get the Column property selectors
-        YoungAndroidCsvColumnSelectorProperty xEditor =
-            (YoungAndroidCsvColumnSelectorProperty)
-                properties.getProperty(PROPERTY_CSV_X_COLUMN).getEditor();
+        YoungAndroidDataColumnSelectorProperty xEditor =
+            (YoungAndroidDataColumnSelectorProperty)
+                properties.getProperty(PROPERTY_DATA_FILE_X_COLUMN).getEditor();
 
-        YoungAndroidCsvColumnSelectorProperty yEditor =
-            (YoungAndroidCsvColumnSelectorProperty)
-                properties.getProperty(PROPERTY_CSV_Y_COLUMN).getEditor();
+        YoungAndroidDataColumnSelectorProperty yEditor =
+            (YoungAndroidDataColumnSelectorProperty)
+                properties.getProperty(PROPERTY_DATA_FILE_Y_COLUMN).getEditor();
 
-        if (showCSVColumns) {
-            // Add the current Data component as a CSVFileChangeListener to the CSVFile
-            ((MockCSVFile)dataSource).addCSVFileChangeListener(this);
+        if (showDataFileColumns) {
+            // Add the current Data component as a DataFileChangeListener to the DataFile
+            ((MockDataFile)dataSource).addDataFileChangeListener(this);
 
-            // Update the data of the Data component to represent the CSVFile
-            onColumnsChange((MockCSVFile)dataSource);
+            // Update the data of the Data component to represent the DataFile
+            onColumnsChange((MockDataFile)dataSource);
 
             // Update the Source of the column selectors
-            xEditor.changeSource((MockCSVFile)dataSource);
-            yEditor.changeSource((MockCSVFile)dataSource);
+            xEditor.changeSource((MockDataFile)dataSource);
+            yEditor.changeSource((MockDataFile)dataSource);
         } else {
             // Remove data sources from the property editors (since Data Source
-            // is not a CSVFile)
+            // is not a DataFile)
             xEditor.changeSource(null);
             yEditor.changeSource(null);
         }
@@ -266,10 +266,10 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
             refreshChart();
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
-        } else if (propertyName.equals(PROPERTY_CSV_X_COLUMN)) {
-            setCSVXColumnProperty(newValue);
-        } else if (propertyName.equals(PROPERTY_CSV_Y_COLUMN)) {
-            setCSVYColumnProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN)) {
+            setDataFileXColumnProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_DATA_FILE_Y_COLUMN)) {
+            setDataFileYColumnProperty(newValue);
         }
     }
 
@@ -296,11 +296,11 @@ public abstract class MockChartData extends MockVisibleComponent implements CSVF
     }
 
     @Override
-    public void onColumnsChange(MockCSVFile csvFile) {
-        if (!dataSource.equals(csvFile)) {
+    public void onColumnsChange(MockDataFile dataFile) {
+        if (!dataSource.equals(dataFile)) {
             return;
         }
 
-        updateCSVData();
+        updateDataFileData();
     }
 }

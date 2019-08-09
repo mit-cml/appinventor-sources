@@ -429,6 +429,24 @@ public abstract class ChartDataModel2DTest<M extends ChartDataModel,
   }
 
   /**
+   * Test to ensure that importing from columns of uneven
+   * size imports all the entries while replacing the
+   * missing entries in other Lists with default values.
+   */
+  @Test
+  public void testImportFromCSVUnevenColumns() {
+    YailList xColumn = createTuple("X", 1f, 3f, 4f, 7f);
+    YailList yColumn = createTuple("Y", 4f, 9f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(1f, 4f));
+      add(createEntry(3f, 9f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
+  /**
    * Test to ensure that deleting an entry by providing an
    * existing tuple from the Data Series properly deletes it.
    */
