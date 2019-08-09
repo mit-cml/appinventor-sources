@@ -501,7 +501,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
@@ -509,7 +509,7 @@ public int getDeviceDefaultOrientation() {
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
     for (ChartDataBase dataComponent : dataSourceObservers) {
-      dataComponent.onReceiveValue(key, value);
+      dataComponent.onReceiveValue(this, key, value);
     }
   }
 

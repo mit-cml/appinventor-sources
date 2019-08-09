@@ -1393,7 +1393,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 

@@ -231,7 +231,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 

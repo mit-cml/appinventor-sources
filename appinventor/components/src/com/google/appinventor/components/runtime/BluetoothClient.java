@@ -374,14 +374,14 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
     for (ChartDataBase observer : dataSourceObservers) {
-      observer.onReceiveValue(key, newValue);
+      observer.onReceiveValue(this, key, newValue);
     }
   }
 

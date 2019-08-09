@@ -589,7 +589,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     public void onReceiveValue(RealTimeChartDataSource component, final String key, final Object value) {
         // Check that the key of the value received matches the
         // Data Source value key
-        if (key.equals("") || key.equals(dataSourceValue)) {
+        if (key == null || key.equals(dataSourceValue)) {
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
