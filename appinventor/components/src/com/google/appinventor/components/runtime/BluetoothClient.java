@@ -60,7 +60,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private ScheduledExecutorService dataPollService;
 
   // Fixed polling rate for the Data Polling Service (in milliseconds)
-  private static final int POLLING_RATE = 100;
+  private static final int POLLING_RATE = 5;
 
   /**
    * Creates a new BluetoothClient.
