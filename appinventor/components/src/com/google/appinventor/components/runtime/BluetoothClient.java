@@ -60,7 +60,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private ScheduledExecutorService dataPollService;
 
   // Fixed polling rate for the Data Polling Service
-  private static final int POLLING_RATE = 100;
+  private static final int POLLING_RATE = 10;
 
   /**
    * Creates a new BluetoothClient.
@@ -351,22 +351,8 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
             // Read all of the available data
             String result = ReceiveText(-1);
 
-            int index = -1;
-
-            for (int i = 0; i < result.length(); ++i) {
-              if (Character.isDigit(result.charAt(i))) {
-                index = i;
-                break;
-              }
-            }
-
-            if (index != -1) {
-              String key = result.substring(0, index);
-              String value = result.substring(index);
-
-              // Notify observers with the new data (and blank key)
-              notifyDataObservers(key, value);
-            }
+            // Notify observers with the new data (and null key)
+            notifyDataObservers(null, result);
           }
         }
       }

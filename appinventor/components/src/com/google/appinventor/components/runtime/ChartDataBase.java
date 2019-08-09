@@ -60,10 +60,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
+
         initChartData();
+        DataSourceValue("");
 
         threadRunner = Executors.newSingleThreadExecutor();
-
         container.$form().registerForOnInitialize(this);
     }
 
@@ -586,10 +587,26 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onReceiveValue(RealTimeChartDataSource component, final String key, final Object value) {
-        // Check that the key of the value received matches the
-        // Data Source value key
-        if (key == null || key.equals(dataSourceValue)) {
+    public void onReceiveValue(RealTimeChartDataSource component, final String key, Object value) {
+        boolean importData = false;
+
+        String valueString = (String) value;
+
+        if (component instanceof BluetoothClient) {
+            importData = valueString.startsWith(dataSourceValue);
+
+            if (importData) {
+                valueString = valueString.substring(dataSourceValue.length());
+            }
+        } else {
+            // Check that the key of the value received matches the
+            // Data Source value key
+            importData = (key == null || key.equals(dataSourceValue));
+        }
+
+        if (importData) {
+            final String finalValue = valueString;
+
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -598,7 +615,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     // to prevent tearing when using multiple data series. Otherwise
                     // there can be more race conditions between two data series as
                     // well as some tearing.
-                    YailList tuple = YailList.makeList(Arrays.asList(t, value));
+                    YailList tuple = YailList.makeList(Arrays.asList(t, finalValue));
                     chartDataModel.addTimeEntry(tuple);
 
                     refreshChart();
