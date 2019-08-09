@@ -318,11 +318,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
 
   /**
-   * CSVFile columns
+   * DataFile columns
    * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvFileSelectorPropertyEditor
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataFileSelectorPropertyEditor
    */
-  public static final String PROPERTY_TYPE_CSV_COLUMN = "csv_file_column";
+  public static final String PROPERTY_TYPE_DATA_FILE_COLUMN = "data_file_column";
 
   /**
    * ChartData Data Source component
@@ -330,4 +330,11 @@ public class PropertyTypeConstants {
    *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_DATA_SOURCE = "chart_data_source";
+
+  /**
+   * Chart Pie Chart radius
+   * @see
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CHART_PIE_RADIUS = "chart_pie_radius";
 }

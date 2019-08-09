@@ -1,6 +1,5 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 
 import java.util.Map;
@@ -38,8 +37,8 @@ public class MockChartLayout extends MockLayout {
             container.addComponent(source);
             ((MockChartData)source).addToChart((MockChart) container);
             return true;
-        } else if (source instanceof MockCSVFile) {
-            ((MockChart)container).addCSVFile((MockCSVFile)source);
+        } else if (source instanceof MockDataFile) {
+            ((MockChart)container).addDataFile((MockDataFile)source);
             return true;
         }
 

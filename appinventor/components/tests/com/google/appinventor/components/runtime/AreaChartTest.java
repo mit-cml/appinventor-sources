@@ -13,7 +13,7 @@ public class AreaChartTest extends AbstractChartTest<AreaChartView, LineChart> {
         super.setUp();
 
         chartView = (AreaChartView)chartComponent.getChartView();
-        chart = chartView.getView();
+        chart = (LineChart) chartView.getView();
     }
 
     @Override

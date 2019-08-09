@@ -14,7 +14,7 @@ public class ScatterChartTest extends AbstractChartTest<ScatterChartView, Scatte
     super.setUp();
 
     chartView = (ScatterChartView) chartComponent.getChartView();
-    chart = chartView.getView();
+    chart = (ScatterChart) chartView.getView();
   }
 
   @Override

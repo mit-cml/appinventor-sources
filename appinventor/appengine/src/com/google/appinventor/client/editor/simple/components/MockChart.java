@@ -14,6 +14,7 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
+    private static final String PROPERTY_NAME_PIE_RADIUS = "PieRadius";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -115,6 +116,43 @@ public final class MockChart extends MockContainer {
         }
     }
 
+  /**
+   * Sets the pie radius of the Chart if the current type is
+   * a Pie Chart, otherwise does nothing.
+   * @param newValue  new Pie Radius value (as String)
+   */
+  private void setPieRadiusProperty(String newValue) {
+      // Check if the Chart View is a Pie Chart to
+      // change the value
+      if (chartView instanceof MockPieChartView) {
+        // Parse the value to an integer
+        int value = Integer.parseInt(newValue);
+
+        // Change the radius of the Pie Chart & re-draw the Chart
+        ((MockPieChartView)chartView).setPieRadius(value);
+        chartView.getChartWidget().draw();
+      }
+    }
+
+    /**
+     * Changes Chart property visibilities depending on the
+     * current type of the Chart.
+     *
+     * Should be invoked after the Type property is changed.
+     */
+    private void changeChartPropertyVisibilities() {
+        // Handle Pie Chart property hiding
+        boolean showPieChartProperties = chartView instanceof MockPieChartView;
+        showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);
+
+        // If the component is currently selected, re-select it to refresh
+        // the Properties panel. isSelected() should only be invoked when
+        // the view is in a container, hence the additional check here.
+        if (getContainer() != null && isSelected()) {
+            onSelectedChange(true);
+        }
+    }
+
     /**
      * Creates and returns a new MockChartView object based on the type
      * (integer) provided
@@ -132,7 +170,7 @@ public final class MockChart extends MockContainer {
             case ComponentConstants.CHART_TYPE_BAR:
                 return new MockLineChartView();
             case ComponentConstants.CHART_TYPE_PIE:
-                return new MockLineChartView();
+                return new MockPieChartView();
             default:
                 // Invalid argument
                 throw new IllegalArgumentException("type:" + type);
@@ -174,23 +212,26 @@ public final class MockChart extends MockContainer {
 
         if (propertyName.equals(PROPERTY_NAME_TYPE)) {
             setTypeProperty(newValue);
+            changeChartPropertyVisibilities();
         } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
             chartView.setBackgroundColor(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
+            setPieRadiusProperty(newValue);
         }
     }
 
     /**
-     * Creates Data components from the contents of the specified MockCSVFile component.
+     * Creates Data components from the contents of the specified MockDataFile component.
      * The Data components are then attached as children to the Chart and the Source property
      * of each individual Data component is set accordingly.
      *
-     * @param csvSource  MockCSVFile component to instantiate components from
+     * @param dataFileSource  MockDataFile component to instantiate components from
      */
-    public void addCSVFile(MockCSVFile csvSource) {
-        List<String> columnNames = csvSource.getColumnNames();
+    public void addDataFile(MockDataFile dataFileSource) {
+        List<String> columnNames = dataFileSource.getColumnNames();
 
         for (String column : columnNames) {
             // Create a new MockCoordinateData component and attach it to the Chart
@@ -200,9 +241,9 @@ public final class MockChart extends MockContainer {
             data.addToChart(MockChart.this);
 
             // Change the properties of the instantiated data component
-            data.changeProperty("CsvYColumn", column);
+            data.changeProperty("DataFileYColumn", column);
             data.changeProperty("Label", column);
-            data.changeProperty("Source", csvSource.getName());
+            data.changeProperty("Source", dataFileSource.getName());
         }
     }
 
@@ -244,18 +285,29 @@ public final class MockChart extends MockContainer {
         MockComponent component = getComponentFromDragSource(source);
 
         return (component instanceof MockCoordinateData)
-                || (isComponentAcceptableCSVFile(component));
+                || (isComponentAcceptableDataFileSource(component));
     }
 
     /**
-     * Checks whether the component is an acceptable CSVFile drag source for the Chart.
-     * The criterion is that the Component must be of type CSVFile and is
+     * Checks whether the component is an acceptable DataFile drag source for the Chart.
+     * The criterion is that the Component must be of type DataFile and is
      * already instantiated in a container.
      * @param component  Component to check
-     * @return  true if the component is a CSVFile that is an acceptable source
+     * @return  true if the component is a DataFile that is an acceptable source
      */
-    private boolean isComponentAcceptableCSVFile(MockComponent component) {
-        return component instanceof MockCSVFile
-                && component.getContainer() != null; // CSVFile must already be in it's own container
+    private boolean isComponentAcceptableDataFileSource(MockComponent component) {
+        return component instanceof MockDataFile
+                && component.getContainer() != null; // DataFile must already be in it's own container
+    }
+
+    @Override
+    protected boolean isPropertyVisible(String propertyName) {
+        // Pie Radius property should be invisible by default, since
+        // the default Chart Type is a Line Chart
+        if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
+            return false;
+        }
+
+        return super.isPropertyVisible(propertyName);
     }
 }

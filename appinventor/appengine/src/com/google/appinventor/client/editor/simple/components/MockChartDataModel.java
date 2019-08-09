@@ -132,11 +132,11 @@ public abstract class MockChartDataModel<D extends Dataset> {
     protected abstract void setDefaultStylingProperties();
 
     /**
-     * Sets the elements of the Data Series from the specified CSV columns.
+     * Sets the elements of the Data Series from the specified columns.
      *
      * @param columns List of columns to import from
      */
-    public void setElementsFromCSVColumns(List<List<String>> columns) {
+    public void setElementsFromColumns(List<List<String>> columns) {
         // Clear the current entries
         clearEntries();
 
@@ -146,10 +146,9 @@ public abstract class MockChartDataModel<D extends Dataset> {
         for (int i = 0; i < columns.size(); ++i) {
             int columnSize = columns.get(i).size();
 
-            // Non-empty column found, break here
-            if (columnSize > 0) {
+            // Bigger column found; Update rows entry
+            if (columnSize > rows) {
                 rows = columnSize;
-                break;
             }
         }
 
@@ -165,8 +164,12 @@ public abstract class MockChartDataModel<D extends Dataset> {
 
                 if (column.size() == 0) { // Empty column; Use default value
                     tuple[j] = getDefaultTupleEntry(i);
-                } else { // Use the column's value
+                } else if (column.size() > i) { // Column has value; Use the column's value (if the column is large enough)
                     tuple[j] = column.get(i);
+                } else {
+                    // Column too small; Use empty String (up for interpretation
+                    // for addEntryFromTuple)
+                    tuple[j] = "";
                 }
             }
 

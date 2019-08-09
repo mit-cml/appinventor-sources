@@ -62,46 +62,8 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void removeEntryFromTuple(YailList tuple) {
-    // Construct an entry from the specified tuple
-    Entry entry = getEntryFromTuple(tuple);
-
-    if (entry != null) {
-      // TODO: The commented line should be used instead. However, the library does not (yet) implement
-      // TODO: equals methods in it's entries as of yet, so the below method fails.
-      // dataset.removeEntry(entry);
-
-      // Get the index of the entry
-      int index = findEntryIndex(entry);
-
-      // Entry exists; remove it
-      if (index >= 0) {
-        getDataset().removeEntry(index);
-      }
-    }
-  }
-
-  @Override
-  protected int findEntryIndex(Entry entry) {
-    for (int i = 0; i < getDataset().getValues().size(); ++i) {
-      Entry currentEntry = getDataset().getEntryForIndex(i);
-
-      // Check whether the current entry is equal to the
-      // specified entry. Note that (in v3.1.0), equals()
-      // does not yield the same result.
-      if (currentEntry.equalTo(entry)) {
-        // Entry matched; Return
-        return i;
-      }
-    }
-
-    return -1;
-  }
-
-  @Override
   protected YailList getDefaultValues(int size) {
-    // Default values for LineChartBaseDataModel should be
+    // Default values for Point Chart Data Models should be
     // integers from 0 to N (0, 1, 2, ...)
     ArrayList<Integer> defaultValues = new ArrayList<>();
 
@@ -110,5 +72,10 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
     }
 
     return YailList.makeList(defaultValues);
+  }
+
+  @Override
+  protected boolean areEntriesEqual(Entry e1, Entry e2) {
+    return e1.equalTo(e2);
   }
 }

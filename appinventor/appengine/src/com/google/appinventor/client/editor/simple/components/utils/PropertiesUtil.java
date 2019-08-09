@@ -18,7 +18,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidCsvColumnSelectorProperty;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDefaultURLPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
@@ -62,7 +62,6 @@ import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -83,7 +82,7 @@ import java.util.List;
 public class PropertiesUtil {
   // Construct a HashSet of acceptable Chart Data Source components
   private static final HashSet<String> CHART_DATA_SOURCES = new HashSet<String>() {{
-    add("CSVFile");
+    add("DataFile");
     add("TinyDB");
     add("CloudDB");
     add("AccelerometerSensor");
@@ -284,10 +283,12 @@ public class PropertiesUtil {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE)) {
       return new YoungAndroidChartTypeChoicePropertyEditor();
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CSV_COLUMN)) {
-      return new YoungAndroidCsvColumnSelectorProperty(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN)) {
+      return new YoungAndroidDataColumnSelectorProperty(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, CHART_DATA_SOURCES);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS)) {
+      return new YoungAndroidIntegerRangePropertyEditor(0, 100);
     } else {
       return new TextPropertyEditor();
     }
