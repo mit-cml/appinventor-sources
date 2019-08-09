@@ -303,7 +303,7 @@ public class Ode implements EntryPoint {
   private SplashConfig splashConfig; // Splash Screen Configuration
 
   private boolean secondBuildserver = false; // True if we have a second
-  // buildserver.
+                                             // buildserver.
 
   // The flags below are used by the Build menus. Because we have two
   // different buildservers, we have two sets of build menu items, one
@@ -386,8 +386,8 @@ public class Ode implements EntryPoint {
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
-            // failure message
-            MESSAGES.gallerySettingsError()) {
+    // failure message
+    MESSAGES.gallerySettingsError()) {
       @Override
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
@@ -606,15 +606,15 @@ public class Ode implements EntryPoint {
     }
     OdeLog.log("Ode.openPreviousProject called");
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+      getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
 
     // Retrieve the userTemplates
     String userTemplates = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-            getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
+      getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
     if (templateLoadingFlag) {  // We are loading a template, open it instead
-      // of the last project
+                               // of the last project
       NewProjectCommand callbackCommand = new NewProjectCommand() {
         @Override
         public void execute(Project project) {
@@ -627,17 +627,17 @@ public class Ode implements EntryPoint {
       try {
         long galleryId_Long = Long.valueOf(galleryId);
         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-                // failure message
-                MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(GalleryApp app) {
-            if(app == null){
-              openProject(value);
-              Window.alert(MESSAGES.galleryIdNotExist());
-            }else{
-              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-            }
-          }
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(GalleryApp app) {
+                if(app == null){
+                  openProject(value);
+                  Window.alert(MESSAGES.galleryIdNotExist());
+                }else{
+                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+                }
+              }
         };
         Ode.getInstance().getGalleryService().getApp(galleryId_Long, callback);
       } catch (NumberFormatException e) {
@@ -785,8 +785,8 @@ public class Ode implements EntryPoint {
 
     // Get user information.
     OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
-            // failure message
-            MESSAGES.serverUnavailable()) {
+         // failure message
+        MESSAGES.serverUnavailable()) {
 
       @Override
       public void onSuccess(Config result) {
@@ -875,15 +875,15 @@ public class Ode implements EntryPoint {
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
                 OdeAsyncCallback<String> templateCallback =
-                        new OdeAsyncCallback<String>(
-                                // failure message
-                                MESSAGES.createProjectError()) {
-                          @Override
-                          public void onSuccess(String json) {
-                            // Save the templateData
-                            TemplateUploadWizard.initializeBuiltInTemplates(json);
-                          }
-                        };
+                    new OdeAsyncCallback<String>(
+                        // failure message
+                        MESSAGES.createProjectError()) {
+                      @Override
+                      public void onSuccess(String json) {
+                        // Save the templateData
+                        TemplateUploadWizard.initializeBuiltInTemplates(json);
+                      }
+                     };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
               }
             });
