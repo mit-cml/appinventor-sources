@@ -61,6 +61,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
 
+        // Set default properties and instantiate Chart Data Model
         initChartData();
         DataSourceValue("");
 
@@ -621,7 +622,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             // Import value in non-async (since this is a real-time value,
             // the update will come faster than running in async)
             // Importing the value asynchronously could cause more
-            // rac conditions between data series (as well as added tearing)
+            // race conditions between data series (as well as added tearing)
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

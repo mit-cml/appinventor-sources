@@ -333,7 +333,10 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
    * observers with the new data.
    */
   private void startBluetoothDataPolling() {
-    // Create a new Scheduled Executor (Single threaded)
+    // Create a new Scheduled Executor. The executor is made single
+    // threaded to prevent race conditions between consequent
+    // Bluetooth reading as well as due to performance (since the
+    // chosen polling interval is chosen to be quite small)
     dataPollService = Executors.newSingleThreadScheduledExecutor();
 
     // Execute runnable task at a fixed millisecond rate
