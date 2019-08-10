@@ -36,6 +36,8 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   // of Legend Entries across all Pie Chart rings.
   private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
 
+  private float bottomOffset = 0f;
+
   /**
    * Creates a new Pie Chart view instance which manages
    * all the Pie Chart rings.
@@ -284,8 +286,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     pieChart.setLayoutParams(params);
   }
 
-  private float offset = 0;
-
   /**
    * Updates the offset of the specified Pie Chart ring accordingly
    * to the required height of the Legend.
@@ -295,20 +295,32 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * @param pieChart  Chart to apply offset to
    */
   private void updatePieChartRingOffset(PieChart pieChart) {
-    // The chosen offset is dependent on the height required
-    // by the Legend. The offset itself is divided by 3 to reduce the
-    // offset (the value was chosen through trial and error. Values above
-    // are too small, while dividers <= 2 are too big in most cases)
     // TODO: Improvements can be made on this part. Alternatively,
     // TODO: a solution could be devised to instead apply margins to
     // TODO: all inner pie rings and use the root Pie Chart with the
     // TODO: Legend drawn outside. However, that comes with it's own issues
     // TODO: (mainly centering the Chart)
-    float dpNeededHeight = Utils.convertDpToPixel(chart.getLegend().mNeededHeight);
-    float offset = dpNeededHeight / 3f;
+
+    // Offset only has to be calculated once; Do so on the root Pie Chart
+    // This is based on the assumption that this method is invoked from
+    // a loop which loops through all Pie Charts.
+    if (chart == pieChart) {
+      // The chosen offset is dependent on the height required
+      // by the Legend. The offset itself is divided by 2.5 to reduce the
+      // offset (the value was chosen through trial and error. Values above
+      // are too small, while dividers <= 2 are too big in most cases)
+      // The offset is capped at 25 (value was chosen through observations)
+      // to prevent excess downsizing of inner Pie Charts.
+      float dpNeededHeight = Utils.convertPixelsToDp(chart.getLegend().mNeededHeight);
+      bottomOffset = dpNeededHeight / 2.5f;
+      bottomOffset = Math.min(25f, bottomOffset);
+    }
 
     // Incomplete alternate solution which takes the value that
     // would be calculated if setDrawInside were to be enabled.
+    // The issue with this solution is that the offset is calculated
+    // on the root Pie Chart, which is bigger than inner Pie Charts
+    // (therefore it is not fully representative)
     //    if (pieChart == chart) {
     //      chart.setExtraBottomOffset(0);
     //      chart.getLegend().setDrawInside(false);
@@ -319,6 +331,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     //    }
 
     // Alternate solution (MPAndroidChart based)
+    // This solution seems to downsize inner rings far too much.
     // Calculate the offset in pixels to apply to the Pie Chart.
     // The calculation is strongly based on the implementation
     // in MPAndroidChart (in v3.1.0)
@@ -328,7 +341,32 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     //    // Divide offset by 2 (the direct value is a bit too large)
     //    offset = Utils.convertPixelsToDp(offset);
 
-    pieChart.setExtraBottomOffset(offset);
+    // Alternate solution by making use of line break counts.
+    // The multiplier and offset have been picked through trial and error.
+    // The value 7 seems like a sweet spot value for offsets, and the multiplier
+    // was chosen through observing different values.
+//    if (chart == pieChart) {
+//      chart.getLegendRenderer().computeLegend(chart.getData());
+//
+//      float multiplier = 1;
+//
+//      for (boolean point : chart.getLegend().getCalculatedLabelBreakPoints()) {
+//        if (point) {
+//          multiplier +=  0.75f;
+//
+//          if (multiplier >= 4f) {
+//            break;
+//          }
+//        }
+//      }
+//
+//      offset = multiplier * 7f;
+//    }
+
+    // Set the bottom offset to the indicated Pie Chart and
+    // recalculate offsets to update straight away.
+    pieChart.setExtraBottomOffset(bottomOffset);
+    pieChart.calculateOffsets();
   }
 
   /**
