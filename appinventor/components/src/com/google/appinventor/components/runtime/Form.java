@@ -431,11 +431,6 @@ public class Form extends AppInventorCompatActivity
   }
 
   private void defaultPropertyValues() {
-    if (isRepl()) {
-      ActionBar(actionBarEnabled);
-    } else {
-      ActionBar(themeHelper.hasActionBar());
-    }
     Scrollable(false);       // frameLayout is created in Scrollable()
     Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
