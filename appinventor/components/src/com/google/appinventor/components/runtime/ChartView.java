@@ -44,6 +44,16 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
      * may attempt to refresh the Chart at the same time.
      */
     public synchronized void Refresh() {
+        // Approaches that do not fully work (still prone to exceptions):
+        // * Using an AsyncTask queue and executing the next one right after the other
+        // * Switching ExecutorService with a HandlerThread + Handler (same behavior)
+        // * Using a CountdownLatch to wait for invalidate to be over
+        // * Switching off hardware acceleration for the Chart (no effect)
+        // * Synchronizing the Data object
+        // * Adding delays (far less exceptions however)
+        // * Moving all the lines to run on UI (sometimes makes it worse)
+        // * Using runOnUIThread instead of Handler
+
         // Notify the Data component of data changes (needs to be called
         // when Datasets get changed directly)
         // TODO: Possibly move to ChartDataBase?
@@ -56,12 +66,12 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // Invalidate the Chart on the UI thread (via the Handler)
         // The invalidate method should only be invoked on the UI thread
         // to prevent exceptions.
-        uiHandler.post(new Runnable() {
+        uiHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 chart.invalidate();
             }
-        });
+        }, 100);
     }
 
     /**
