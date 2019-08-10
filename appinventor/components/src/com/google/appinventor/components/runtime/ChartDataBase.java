@@ -60,10 +60,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
+
+        // Set default properties and instantiate Chart Data Model
         initChartData();
+        DataSourceValue("");
 
         threadRunner = Executors.newSingleThreadExecutor();
-
         container.$form().registerForOnInitialize(this);
     }
 
@@ -330,7 +332,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         if (initialized) {
           if (dataSource instanceof ObservableChartDataSource) {
             // Add this Data Component as an observer to the ObservableChartDataSource object
-            ((ObservableChartDataSource)dataSource).addDataSourceObserver(this);
+            ((ObservableChartDataSource)dataSource).addDataObserver(this);
 
             // No Data Source Value specified; Do not proceed with importing data
             if (dataSourceValue == null) {
@@ -586,20 +588,49 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     @Override
-    public void onReceiveValue(String key, Object value) {
-        // Check that the key of the value received matches the
-        // Data Source value key
-        if (key.equals(dataSourceValue)) {
-            // Construct and add tuple with t value and the data value
-            // Note: The value is (and should) be imported non-asynchronously
-            // to prevent tearing when using multiple data series. Otherwise
-            // there can be more race conditions between two data series as
-            // well as some tearing.
-            YailList tuple = YailList.makeList(Arrays.asList(t, value));
-            chartDataModel.addTimeEntry(tuple);
+    public void onReceiveValue(RealTimeChartDataSource component, final String key, Object value) {
+        // Boolean to indicate whether data should be imported (conditions
+        // for importing are satisfied)
+        boolean importData = false;
 
-            refreshChart();
-            t++;
+        // BluetoothClient requires different handling due to value format
+        // expected to be with a prefix (prefix||value)
+        if (component instanceof BluetoothClient) {
+            // Get the imported value as a String
+            String valueString = (String) value;
+
+            // Check whether the retrieved value starts with the local
+            // dataSourceValue (which indicates the prefix)
+            importData = valueString.startsWith(dataSourceValue);
+
+            // Data should be imported (prefix match)
+            if (importData) {
+                // Extract the value from the retrieved prefix||value pair
+                // The extraction is done by cutting off the prefix entirely.
+                value = valueString.substring(dataSourceValue.length());
+            }
+        } else {
+            // Check that the key of the value received matches the
+            // Data Source value key
+            importData = key == null || key.equals(dataSourceValue);
+        }
+
+        if (importData) {
+            // Create tuple from current t value and the received value
+            final YailList tuple = YailList.makeList(Arrays.asList(t, value));
+
+            // Import value in non-async (since this is a real-time value,
+            // the update will come faster than running in async)
+            // Importing the value asynchronously could cause more
+            // race conditions between data series (as well as added tearing)
+            container.$context().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    chartDataModel.addTimeEntry(tuple);
+                    refreshChart();
+                    t++;
+                }
+            });
         }
     }
 

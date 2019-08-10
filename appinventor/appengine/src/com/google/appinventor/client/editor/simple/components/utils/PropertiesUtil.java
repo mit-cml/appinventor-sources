@@ -86,6 +86,7 @@ public class PropertiesUtil {
     add("TinyDB");
     add("CloudDB");
     add("AccelerometerSensor");
+    add("BluetoothClient");
   }};
 
 

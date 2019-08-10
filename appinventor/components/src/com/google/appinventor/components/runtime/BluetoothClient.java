@@ -26,6 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BluetoothClient component
@@ -41,11 +44,23 @@ import java.util.UUID;
 @UsesPermissions(permissionNames =
                  "android.permission.BLUETOOTH, " +
                  "android.permission.BLUETOOTH_ADMIN")
-public final class BluetoothClient extends BluetoothConnectionBase {
+public final class BluetoothClient extends BluetoothConnectionBase implements RealTimeChartDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
   private Set<Integer> acceptableDeviceClasses;
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
+  // Executor Service to poll data continuously from the Input Stream
+  // which holds data sent by Bluetooth connections. Used for sending
+  // data to Data listeners, and only initialized as soon as an observer
+  // is added to this component.
+  private ScheduledExecutorService dataPollService;
+
+  // Fixed polling rate for the Data Polling Service (in milliseconds)
+  private static final int POLLING_RATE = 5;
 
   /**
    * Creates a new BluetoothClient.
@@ -298,5 +313,87 @@ public final class BluetoothClient extends BluetoothConnectionBase {
     Log.i(logTag, "Connected to Bluetooth device " +
         BluetoothReflection.getBluetoothDeviceAddress(bluetoothDevice) + " " +
         BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    // Data Polling Service has not been initialized yet; Initialize it
+    // (since Data Component is added)
+    if (dataPollService == null) {
+      startBluetoothDataPolling();
+    }
+
+    // Add the Data Component as an observer
+    dataSourceObservers.add(dataComponent);
+  }
+
+  /**
+   * Starts the scheduled Data Polling Service that
+   * continuously reads data and notifies all the
+   * observers with the new data.
+   */
+  private void startBluetoothDataPolling() {
+    // Create a new Scheduled Executor. The executor is made single
+    // threaded to prevent race conditions between consequent
+    // Bluetooth reading as well as due to performance (since the
+    // chosen polling interval is chosen to be quite small)
+    dataPollService = Executors.newSingleThreadScheduledExecutor();
+
+    // Execute runnable task at a fixed millisecond rate
+    dataPollService.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        // Retrieve data value (with a null key, since
+        // key value does not matter for BluetoothClient)
+        String value = getDataValue(null);
+
+        // Notify data obserevers only if a non-empty value
+        // has been retrieved successfully.
+        if (!value.equals("")) {
+          notifyDataObservers(null, value);
+        }
+      }
+    }, 0, POLLING_RATE, TimeUnit.MILLISECONDS);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+
+    // No more Data Source observers exist;
+    // Shut down polling service and null it
+    // (the reason for nulling is so that a new
+    // service could be created upon adding a new
+    // observer)
+    if (dataSourceObservers.isEmpty()) {
+      dataPollService.shutdown();
+      dataPollService = null;
+    }
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object newValue) {
+    for (ChartDataBase observer : dataSourceObservers) {
+      observer.onReceiveValue(this, key, newValue);
+    }
+  }
+
+  @Override
+  public String getDataValue(String key) {
+    String value = "";
+
+    // Ensure that the BluetoothClient is connected
+    if (IsConnected()) {
+      // Check how many bytes can be received
+      int bytesReceivable = BytesAvailableToReceive();
+
+      // At least one byte can be received
+      if (bytesReceivable > 0) {
+        // Read contents from the Bluetooth connection until delimiter
+        value = ReceiveText(-1);
+      }
+    }
+
+    return value;
   }
 }

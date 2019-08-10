@@ -11,7 +11,6 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -233,9 +232,9 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(Z_CACHE, zAccel);
 
     // Notify the Data Source observers with the updated values
-    notifyDataSourceObservers("X", xAccel);
-    notifyDataSourceObservers("Y", yAccel);
-    notifyDataSourceObservers("Z", zAccel);
+    notifyDataObservers("X", xAccel);
+    notifyDataObservers("Y", yAccel);
+    notifyDataObservers("Z", zAccel);
 
     long currentTime = System.currentTimeMillis();
 
@@ -497,20 +496,20 @@ public int getDeviceDefaultOrientation() {
   }
 
   @Override
-  public void addDataSourceObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataSourceObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
-  public void notifyDataSourceObservers(String key, Object value) {
+  public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
     for (ChartDataBase dataComponent : dataSourceObservers) {
-      dataComponent.onReceiveValue(key, value);
+      dataComponent.onReceiveValue(this, key, value);
     }
   }
 
