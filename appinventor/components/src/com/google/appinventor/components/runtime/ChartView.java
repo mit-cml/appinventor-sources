@@ -70,6 +70,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // * Not using a Handler (simply using postInvalidate)
         // * Posting runnables from Chart itself
         // * Additional thread sleeping in-between Chart refreshes
+        // * Scheduling ChartData tasks with delay
         // The chosen solution is to then have delays and refresh throttling.
 
 
