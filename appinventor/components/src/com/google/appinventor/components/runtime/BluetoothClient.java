@@ -340,7 +340,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     dataPollService = Executors.newSingleThreadScheduledExecutor();
 
     // Execute runnable task at a fixed millisecond rate
-    dataPollService.scheduleAtFixedRate(new Runnable() {
+    dataPollService.scheduleWithFixedDelay(new Runnable() {
       @Override
       public void run() {
         List<String> values = new ArrayList<String>();
