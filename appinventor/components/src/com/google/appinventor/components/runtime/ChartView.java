@@ -57,14 +57,17 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // With regards to the issue, approaches that do not fully work (still prone to exceptions):
         // * Using an AsyncTask queue and executing the next one right after the other
         // * Switching ExecutorService with a HandlerThread + Handler (same behavior)
-        // * Using a CountdownLatch to wait for invalidate to be over
+        // * Using a CountdownLatch to wait for invalidate to be over (+ HardwareAcceleration disabled)
         // * Switching off hardware acceleration for the Chart (no effect)
         // * Synchronizing the Data object
-        // * Adding delays (far less exceptions however)
+        // * Adding delays (far less exceptions however) <------ CURRENT SOLUTION
         // * Moving all the lines to run purely on UI with no delays (sometimes makes it worse)
         // * Using runOnUIThread instead of Handler
         // * Using volatile variables for datasets/data/chart
         // * Deferring Refresh calls to happen at the end of ExecutorService queue
+        // * Using DelayQueue to throttle refreshes (alternate solution)
+        // * Not using a Handler (simply using postInvalidate)
+        // * Posting runnables from Chart itself
         // The chosen solution is to then have delays and refresh throttling.
 
 
@@ -107,6 +110,37 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
                 }
             }
         }, 100);
+
+        // Alternate solution (very similar results):
+        //        if (!delayQueue.isEmpty()) {
+        //            return;
+        //        }
+        //
+        //        final long startTime = System.currentTimeMillis() + 100;
+        //
+        //        Delayed delay = new Delayed() {
+        //            @Override
+        //            public long getDelay(@NonNull TimeUnit unit) {
+        //                return unit.convert(startTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        //            }
+        //
+        //            @Override
+        //            public int compareTo(@NonNull Delayed o) {
+        //                return 0;
+        //            }
+        //        };
+        //
+        //        delayQueue.put(delay);
+        //
+        //        try {
+        //            delayQueue.take();
+        //        } catch (InterruptedException e) {
+        //            e.printStackTrace();
+        //        }
+        //
+        //        chart.getData().notifyDataChanged();
+        //        chart.notifyDataSetChanged();
+        //        chart.postInvalidate();
     }
 
     /**
