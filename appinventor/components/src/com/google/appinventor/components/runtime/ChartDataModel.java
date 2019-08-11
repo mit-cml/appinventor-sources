@@ -258,7 +258,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
 
             // Entry exists; remove it
             if (index >= 0) {
-                getDataset().removeEntry(index);
+                getDataset().getValues().remove(index);
             }
         }
     }
@@ -428,7 +428,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         // If the entry count of the Data Series entries exceeds
         // the maximum allowed time entries, then remove the first one
         if (getDataset().getEntryCount() >= maximumTimeEntries) {
-            getDataset().removeFirst();
+            getDataset().getValues().remove(0);
         }
 
         // Add entry from the specified tuple

@@ -505,9 +505,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // LineChartBase Data Model
         // TODO: In case the addEntryOrdered method is ever used instead,
         // TODO: this line could then be removed.
-        if (chartDataModel instanceof LineChartBaseDataModel) {
-            chartDataModel.getDataset().notifyDataSetChanged();
-        }
+        chartDataModel.getDataset().notifyDataSetChanged();
 
         container.refresh();
     }
