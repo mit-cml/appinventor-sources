@@ -443,14 +443,13 @@ public class Ode implements EntryPoint {
     // screenShotMaybe() so build the runnable now
     hideTutorials();
     Runnable next = new Runnable() {
-      @Override
-      public void run() {
-        if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
-          ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
-          //shifting back to show projects
-          if(currentView==TRASHCAN)
-          {
+        @Override
+        public void run() {
+          if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+            ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
+            ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+            //shifting back to show projects
+          if(currentView==TRASHCAN)  {
             projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
             projectListPanel.setWidth("100%");
             projectListPanel.add(ProjectListBox.getProjectListBox());
