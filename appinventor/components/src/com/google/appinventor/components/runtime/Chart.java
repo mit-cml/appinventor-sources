@@ -31,6 +31,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
 
     private int pieRadius;
 
+    private int t = 0;
+
     // Attached Data components
     private ArrayList<ChartDataBase> dataComponents;
 
@@ -311,5 +313,44 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
             ((PieChartView)chartView).setPieRadius(pieRadius);
             chartView.Refresh();
         }
+    }
+
+    /**
+     * Returns the t value to use for time entries for a
+     * Data Series of this Chart component.
+     *
+     * Takes in the t value of a Data Series as an argument
+     * to determine a value tailored to the Data Series, while
+     * updating the t value for this Chart if necessary.
+     *
+     * This method primarily takes care of syncing t values
+     * across all the Data Series of the Chart for consistency.
+     *
+     * @param dataSeriesT  t value of a Data Series
+     * @return  t value to use for time entries for the invoking Data Series
+     */
+    public int updateAndGetTValue(int dataSeriesT) {
+        int returnValue;
+
+        // If the difference between the global t and the Data Series' t
+        // value is more than one, that means the Data Series' t value
+        // is out of sync and must be updated.
+        if (t - dataSeriesT > 1) {
+            returnValue = t;
+        } else {
+            returnValue = dataSeriesT;
+        }
+
+        // Calculate the new Data Series t value (by incrementing by 1,
+        // since that will be the value after adding a time entry).
+        // If this value is more than t, then update the global t
+        // value (since a bigger one will immediately be present upon
+        // adding a Time Entry to the Data Series)
+        if ((dataSeriesT + 1) > t) {
+            t = dataSeriesT;
+        }
+
+        // Return the calculated t value
+        return returnValue;
     }
 }

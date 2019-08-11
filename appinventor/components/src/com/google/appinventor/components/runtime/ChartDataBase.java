@@ -52,7 +52,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
-    private int t = 1;
+    private int t = 0;
 
     /**
      * Creates a new Chart Data component.
@@ -616,8 +616,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         }
 
         if (importData) {
-            // Create tuple from current t value and the received value
-            final YailList tuple = YailList.makeList(Arrays.asList(t, value));
+            // Get value as final value to use for the runnable on UI thread
+            final Object finalValue = value;
 
             // Import value in non-async (since this is a real-time value,
             // the update will come faster than running in async)
@@ -626,8 +626,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    // Get the  t value synced across the entire Chart
+                    // and update the synced value if necessary
+                    t = container.updateAndGetTValue(t);
+
+                    // Create tuple from current t value and the received value
+                    final YailList tuple = YailList.makeList(Arrays.asList(t, finalValue));
+
                     chartDataModel.addTimeEntry(tuple);
                     refreshChart();
+
+                    // Increment t value
                     t++;
                 }
             });
