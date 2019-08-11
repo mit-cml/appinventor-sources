@@ -54,6 +54,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // the crashes (although a solution to wholly avoid them has not been found).
         // It is also worth to note that the MPAndroidChart (in v3.1.0) is not a thread-safe
         // library, but otherwise it seems to work quite well in async.
+        // The mentioned issues occur even with just a single Data Set attached.
         // With regards to the issue, approaches that do not fully work (still prone to exceptions):
         // * Using an AsyncTask queue and executing the next one right after the other
         // * Switching ExecutorService with a HandlerThread + Handler (same behavior)
@@ -68,6 +69,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // * Using DelayQueue to throttle refreshes (alternate solution)
         // * Not using a Handler (simply using postInvalidate)
         // * Posting runnables from Chart itself
+        // * Additional thread sleeping in-between Chart refreshes
         // The chosen solution is to then have delays and refresh throttling.
 
 
