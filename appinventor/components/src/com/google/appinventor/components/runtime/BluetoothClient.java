@@ -60,7 +60,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private ScheduledExecutorService dataPollService;
 
   // Fixed polling rate for the Data Polling Service (in milliseconds)
-  private static final int POLLING_RATE = 5;
+  private static final int POLLING_RATE = 10;
 
   /**
    * Creates a new BluetoothClient.
@@ -343,27 +343,13 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     dataPollService.scheduleWithFixedDelay(new Runnable() {
       @Override
       public void run() {
-        List<String> values = new ArrayList<String>();
+        // Retrieve data value (with a null key, since
+        // key value does not matter for BluetoothClient)
+        String value = getDataValue(null);
 
-        // As a tearing & choppy refreshing preventative measure,
-        // Read values as many times as there are Data Source observers.
-        // This is done to adapt to cases where each Data Source observer
-        // has it's own prefix to read all data roughly at the same time.
-        // If the prefixes are non-unique, simply more data is read.
-        for (int i = 0; i < dataSourceObservers.size(); ++i) {
-          // Retrieve data value (with a null key, since
-          // key value does not matter for BluetoothClient)
-          String value = getDataValue(null);
-
-          // Non-empty (valid) value retrieved successfully.
-          // Add it to the values result List.
-          if (!value.equals("")) {
-            values.add(value);
-          }
-        }
-
-        // Notify the Data Observers with the retrieved values
-        for (String value : values) {
+        // Notify data observers of the retrieved value if it is
+        // non-empty
+        if (!value.equals("")) {
           notifyDataObservers(null, value);
         }
       }
