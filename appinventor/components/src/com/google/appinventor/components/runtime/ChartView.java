@@ -71,6 +71,8 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // * Posting runnables from Chart itself
         // * Additional thread sleeping in-between Chart refreshes
         // * Scheduling ChartData tasks with delay
+        // * Using a single ScheduledExecutorService (with delays/DelayQueue/current setup) for all Data Series
+        //   for refreshing
         // The chosen solution is to then have delays and refresh throttling.
 
 
