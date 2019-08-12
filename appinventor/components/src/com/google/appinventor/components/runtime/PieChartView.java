@@ -217,6 +217,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         lastHeight = pieChart.getHeight();
         lastWidth = pieChart.getWidth();
       }
+
+      // Invalidate the resized Pie Chart
+      pieChart.invalidate();
     }
   }
 
