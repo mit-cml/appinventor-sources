@@ -41,7 +41,7 @@ $Source $Yail
 (add-component Screen1 SpeechRecognizer SpeechRecognizer1 
 )
 
-(define-event SpeechRecognizer1 AfterGettingText($result)(set-this-form)
+(define-event SpeechRecognizer1 AfterGettingText($result $partial)(set-this-form)
     (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* (lexical-value $result)) '(text)))
 ;;; TextToSpeech1
 

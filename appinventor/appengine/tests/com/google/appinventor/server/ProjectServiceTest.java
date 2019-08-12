@@ -499,6 +499,7 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET + "\":\"\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"AppTheme.Light.DarkActionBar\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"0\",\"" +

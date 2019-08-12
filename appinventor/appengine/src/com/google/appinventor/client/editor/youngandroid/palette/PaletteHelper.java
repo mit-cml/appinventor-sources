@@ -11,4 +11,5 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 interface PaletteHelper {
   void addPaletteItem(VerticalPanel panel, SimplePaletteItem component);
+  void clear();
 }

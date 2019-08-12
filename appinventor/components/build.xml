@@ -120,6 +120,7 @@
   <target name="CopyComponentLibraries"
           description="Copies libraries needed for components into the public build directory">
     <property name="support.dir" location="${lib.dir}/android/support" />
+    <property name="support.version" value="28.0.0" />
     <copy toFile="${public.deps.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${public.deps.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
     <copy toFile="${public.deps.dir}/webrtc.jar"
@@ -136,8 +137,7 @@
     <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
-    <copy toFile="${public.deps.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
-    <copy toFile="${public.deps.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
+    <copy toFile="${public.deps.dir}/httpmime.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
@@ -153,32 +153,16 @@
     <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${public.deps.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <!-- BEGIN Android Support Libraries -->
-    <copy toFile="${public.deps.dir}/animated-vector-drawable.aar" file="${support.dir}/animated-vector-drawable-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/animated-vector-drawable.jar" file="${support.dir}/animated-vector-drawable-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/appcompat-v7.aar" file="${support.dir}/appcompat-v7-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/appcompat-v7.jar" file="${support.dir}/appcompat-v7-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/core-common.jar" file="${support.dir}/core-common-1.0.0.jar" />
-    <copy toFile="${public.deps.dir}/lifecycle-common.jar" file="${support.dir}/lifecycle-common-1.0.0.jar" />
-    <copy toFile="${public.deps.dir}/runtime.aar" file="${support.dir}/runtime-1.0.0.aar" />
-    <copy toFile="${public.deps.dir}/runtime.jar" file="${support.dir}/runtime-1.0.0.jar" />
-    <copy toFile="${public.deps.dir}/support-annotations.jar" file="${support.dir}/support-annotations-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-compat.aar" file="${support.dir}/support-compat-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-compat.jar" file="${support.dir}/support-compat-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-core-ui.aar" file="${support.dir}/support-core-ui-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-core-ui.jar" file="${support.dir}/support-core-ui-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-core-utils.aar" file="${support.dir}/support-core-utils-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-core-utils.jar" file="${support.dir}/support-core-utils-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-fragment.aar" file="${support.dir}/support-fragment-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-fragment.jar" file="${support.dir}/support-fragment-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-media-compat.aar" file="${support.dir}/support-media-compat-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-media-compat.jar" file="${support.dir}/support-media-compat-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-v4.aar" file="${support.dir}/support-v4-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-v4.jar" file="${support.dir}/support-v4-26.1.0.jar" />
-    <copy toFile="${public.deps.dir}/support-vector-drawable.aar" file="${support.dir}/support-vector-drawable-26.1.0.aar" />
-    <copy toFile="${public.deps.dir}/support-vector-drawable.jar" file="${support.dir}/support-vector-drawable-26.1.0.jar" />
+    <copy todir="${public.deps.dir}/">
+      <fileset dir="${support.dir}/" includes="*.aar,*.jar" excludes="testing-support-R-classes.jar" />
+      <mapper type="regexp" from="([-a-z0-9]*)-[0-9\.]*\.(aar|jar)$$" to="\1.\2" />
+    </copy>
+    <copy todir="${public.deps.dir}/">
+      <fileset dir="${support.dir}/" includes="*.txt" />
+    </copy>
     <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
     <!-- END Android Support Libraries -->
-    <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-26/android.jar" />
+    <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-28/android.jar" />
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
@@ -247,7 +231,7 @@
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
     <pathelement location="${lib.dir}/robolectric/robolectric-3.3.2-all-deps.jar" />
-    <pathelement location="${lib.dir}/android/android-26/android.jar" />
+    <pathelement location="${lib.dir}/android/android-28/android.jar" />
   </path>
 
   <path id="AndroidRuntimeTests.path">
@@ -487,7 +471,7 @@
       <include name="${barcode.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${lib.dir}/QRGenerator/core.jar" />
-        <pathelement location="${lib.dir}/android/android-26/android.jar" />
+        <pathelement location="${lib.dir}/android/android-28/android.jar" />
       </classpath>
     </ai.javac>
 

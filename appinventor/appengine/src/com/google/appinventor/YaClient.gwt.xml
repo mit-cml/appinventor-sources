@@ -31,6 +31,7 @@
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.google.gwt.query.Query" />
+  <inherits name="com.google.gwt.xml.XML" />
 
   <!-- servlets -->
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
