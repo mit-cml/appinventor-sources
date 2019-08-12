@@ -346,8 +346,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         // If this value is more than t, then update the global t
         // value (since a bigger one will immediately be present upon
         // adding a Time Entry to the Data Series)
-        if ((dataSeriesT + 1) > t) {
-            t = dataSeriesT;
+        if ((returnValue + 1) > t) {
+            t = returnValue + 1;
         }
 
         // Return the calculated t value
