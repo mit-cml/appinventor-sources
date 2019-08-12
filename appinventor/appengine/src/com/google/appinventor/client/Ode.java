@@ -383,7 +383,7 @@ public class Ode implements EntryPoint {
    *
    */
   public void  loadGallerySettings() {
-    // Callback for when the server returns us the apps
+     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
     // failure message
@@ -613,7 +613,7 @@ public class Ode implements EntryPoint {
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
     if (templateLoadingFlag) {  // We are loading a template, open it instead
-                               // of the last project
+                                // of the last project
       NewProjectCommand callbackCommand = new NewProjectCommand() {
           @Override
           public void execute(Project project) {
@@ -882,7 +882,7 @@ public class Ode implements EntryPoint {
                         // Save the templateData
                         TemplateUploadWizard.initializeBuiltInTemplates(json);
                       }
-                     };
+                    };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
               }
             });
@@ -1023,10 +1023,10 @@ public class Ode implements EntryPoint {
 
     // Projects tab
     pVertPanel = new VerticalPanel() {
-      /**
-       * Flag to indicate the project list has been rendered at least once.
-       */
-      private boolean rendered = false;
+        /**
+         * Flag to indicate the project list has been rendered at least once.
+         */
+        private boolean rendered = false;
 
         // Override to add splash screen behavior after leaving the project list
         @Override
@@ -1037,14 +1037,15 @@ public class Ode implements EntryPoint {
             // this flag indicates we are now being shown (possibly again...)
             rendered = true;
             maybeShowSplash2();  // in case of new user; they have no projects!
-          } else if (rendered && !visible && (mayNeedSplash || shouldShowWelcomeDialog())   && !didShowSplash) {
+          } else if (rendered && !visible && (mayNeedSplash || shouldShowWelcomeDialog())
+                     && !didShowSplash) {
             showSplashScreens();
           }
         }
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    // HorizontalPanel projectListPanel = new HorizontalPanel();
+    HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
@@ -1118,7 +1119,7 @@ public class Ode implements EntryPoint {
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
 
-    // Gallery app tab
+     // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
@@ -1775,7 +1776,7 @@ public class Ode implements EntryPoint {
           if (noshow.getValue()) { // User checked the box
             userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
               changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-               "" + splashConfig.version);
+                "" + splashConfig.version);
             userSettings.saveSettings(null);
           }
           maybeShowNoProjectsDialog();
@@ -1858,7 +1859,7 @@ public class Ode implements EntryPoint {
           // Update Splash Settings here
           userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
             changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-             "" + YaVersion.SPLASH_SURVEY);
+              "" + YaVersion.SPLASH_SURVEY);
           userSettings.saveSettings(null);
           takeSurvey();         // Open survey in a new window
           maybeShowSplash();
@@ -1879,7 +1880,7 @@ public class Ode implements EntryPoint {
           dialogBox.hide();
           // Update Splash Settings here
           Settings settings =
-             userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
+            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
           settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
             "" + YaVersion.SPLASH_SURVEY);
           String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
@@ -2195,23 +2196,23 @@ public class Ode implements EntryPoint {
           cancelSession.setEnabled(false); // Disable button to prevent further clicking
           continueSession.setEnabled(false); // This one as well
           Timer t = new Timer() {
-            int count = 5;
-            @Override
-            public void run() {
-              if (count > 0) {
-                HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
-                html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
-                count -= 1;
-              } else {
-                this.cancel();
-                getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
-                        " fileId = " + fileId + " User = " + userEmail, logReturn);
+              int count = 5;
+              @Override
+              public void run() {
+                if (count > 0) {
+                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+                  html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
+                  count -= 1;
+                } else {
+                  this.cancel();
+                  getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
+                      " fileId = " + fileId + " User = " + userEmail, logReturn);
+                }
               }
-            }
-          };
+            };
           t.scheduleRepeating(1000);     // Run every second
         }
-    })  ;
+      });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2311,9 +2312,9 @@ public class Ode implements EntryPoint {
   public void recordCorruptProject(long projectId, String fileId, String message) {
     getProjectService().recordCorruption(projectId, fileId, message,
         new OdeAsyncCallback<Void>(
-                "") {                   // No failure message
+          "") {                   // No failure message
           @Override
-          public void onSuccess(Void result) {
+            public void onSuccess(Void result) {
             // do nothing
           }
         });
@@ -2418,30 +2419,30 @@ public class Ode implements EntryPoint {
           screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
           OdeLog.log("ScreenShotName = " + screenShotName);
           projectService.screenshot(sessionId, projectId, screenShotName, result,
-                  new OdeAsyncCallback<RpcResult>() {
-                    @Override
-                    public void onSuccess(RpcResult result) {
-                      if (deferred) {
-                        next.run();
-                      }
-                    }
-                    public void OnFailure(Throwable caught) {
-                      super.onFailure(caught);
-                      if (deferred) {
-                        next.run();
-                      }
-                    }
-                  });
+            new OdeAsyncCallback<RpcResult>() {
+              @Override
+              public void onSuccess(RpcResult result) {
+                if (deferred) {
+                  next.run();
+                }
+              }
+              public void OnFailure(Throwable caught) {
+                super.onFailure(caught);
+                if (deferred) {
+                  next.run();
+                }
+              }
+            });
           if (!deferred) {
             next.run();
           }
         }
-      @Override
-      public void onFailure(String error) {
-        OdeLog.log("Screenshot failed: " + error);
-        next.run();
-      }
-    });
+        @Override
+        public void onFailure(String error) {
+          OdeLog.log("Screenshot failed: " + error);
+          next.run();
+        }
+      });
   }
 
   private void initializeGallery() {

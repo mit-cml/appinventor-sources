@@ -154,7 +154,6 @@ public final class Project {
     }
     return true;
   }
-
   public long getGalleryId() {
     return projectInfo.getGalleryId();
   }

@@ -70,7 +70,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private boolean projectListLoading = true;
 
-
   // UI elements
   private final Grid table;
   private final Label nameSortIndicator;
@@ -369,7 +368,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public List<Project> getSelectedProjects() {
     return selectedProjects;
   }
-
 
   // ProjectManagerEventListener implementation
 

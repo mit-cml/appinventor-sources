@@ -412,9 +412,9 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
       Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
-          numSelectedProjects > 0);
+        numSelectedProjects > 0);
       Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-          numSelectedProjects > 0);
+        numSelectedProjects > 0);
       return;
     }
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
@@ -454,4 +454,5 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, true);
     }
   }
+
 }

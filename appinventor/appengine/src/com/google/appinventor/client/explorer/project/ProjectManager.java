@@ -43,17 +43,17 @@ public final class ProjectManager {
     deletedProjectsMap = new HashMap<Long, Project>();
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
     Ode.getInstance().getProjectService().getProjectInfos(
-            new OdeAsyncCallback<List<UserProject>>(
-                    MESSAGES.projectInformationRetrievalError()) {
-              @Override
-              public void onSuccess(List<UserProject> projectInfos) {
-                for (UserProject projectInfo : projectInfos) {
-                    if(!projectInfo.getProjectMovedToTrashFlag()){addProject(projectInfo);}
-                    else{addDeletedProject(projectInfo);}
-                }
-                fireProjectsLoaded();
-              }
-            });
+      new OdeAsyncCallback<List<UserProject>>(
+        MESSAGES.projectInformationRetrievalError()) {
+        @Override
+        public void onSuccess(List<UserProject> projectInfos) {
+          for (UserProject projectInfo : projectInfos) {
+            if(!projectInfo.getProjectMovedToTrashFlag()){addProject(projectInfo);}
+            else{addDeletedProject(projectInfo);}
+          }
+          fireProjectsLoaded();
+        }
+      });
   }
 
   /**
