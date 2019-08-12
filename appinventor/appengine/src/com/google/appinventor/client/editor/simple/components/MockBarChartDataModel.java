@@ -19,7 +19,9 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
 
   @Override
   public void changeColor(String color) {
-
+    color = getHexColor(color);
+    dataSeries.setBackgroundColor(color);
+    dataSeries.setBorderColor(color);
   }
 
   @Override
@@ -39,7 +41,7 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
 
   @Override
   protected String getDefaultTupleEntry(int index) {
-    return null;
+    return index + "";
   }
 
   @Override
