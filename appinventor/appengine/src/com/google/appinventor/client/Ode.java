@@ -1615,7 +1615,7 @@ public class Ode implements EntryPoint {
         @Override
         public void run() {
         }
-    }, true);                 // Wait for i/o!!!
+      }, true);                 // Wait for i/o!!!
   }
 
   /**
@@ -1774,8 +1774,8 @@ public class Ode implements EntryPoint {
           dialogBox.hide();
           if (noshow.getValue()) { // User checked the box
             userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-                    changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-                            "" + splashConfig.version);
+              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
+               "" + splashConfig.version);
             userSettings.saveSettings(null);
           }
           maybeShowNoProjectsDialog();
@@ -1857,8 +1857,8 @@ public class Ode implements EntryPoint {
           dialogBox.hide();
           // Update Splash Settings here
           userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-                  changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-                          "" + YaVersion.SPLASH_SURVEY);
+            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+             "" + YaVersion.SPLASH_SURVEY);
           userSettings.saveSettings(null);
           takeSurvey();         // Open survey in a new window
           maybeShowSplash();
@@ -1879,9 +1879,9 @@ public class Ode implements EntryPoint {
           dialogBox.hide();
           // Update Splash Settings here
           Settings settings =
-                  userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
+             userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
           settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-                  "" + YaVersion.SPLASH_SURVEY);
+            "" + YaVersion.SPLASH_SURVEY);
           String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
           if (declined == null) declined = ""; // Shouldn't happen
           if (declined != "") declined += ",";
@@ -2079,23 +2079,23 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dialogBox.hide();
-        sessionId = "force";  // OK, over-ride in place!
-        // Because we ultimately got here from a failure in the save function...
-        ChainableCommand cmd = new SaveAllEditorsCommand(null);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
-        // Will now go back to our regularly scheduled main loop
-      }
-    });
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          sessionId = "force";  // OK, over-ride in place!
+          // Because we ultimately got here from a failure in the save function...
+          ChainableCommand cmd = new SaveAllEditorsCommand(null);
+          cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
+          // Will now go back to our regularly scheduled main loop
+        }
+      });
     holder.add(continueSession);
     Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());
     cancelSession.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dialogBox.hide();
-        invalidSessionDialog();
-      }
-    });
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          invalidSessionDialog();
+        }
+      });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2174,12 +2174,12 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());
     continueSession.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dialogBox.hide();
-        // call save2 again, this time with force = true so the empty workspace will be written
-        getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
-      }
-    });
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          // call save2 again, this time with force = true so the empty workspace will be written
+          getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
+        }
+      });
     holder.add(continueSession);
     final Button cancelSession = new Button(MESSAGES.blocksTruncatedDialogButtonNoSave());
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
@@ -2189,29 +2189,29 @@ public class Ode implements EntryPoint {
       }
     };
     cancelSession.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        // Note: We do *not* remove the dialog, this locks the UI up (our intent)
-        // Wait for a few seconds for other I/O to complete
-        cancelSession.setEnabled(false); // Disable button to prevent further clicking
-        continueSession.setEnabled(false); // This one as well
-        Timer t = new Timer() {
-          int count = 5;
-          @Override
-          public void run() {
-            if (count > 0) {
-              HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
-              html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
-              count -= 1;
-            } else {
-              this.cancel();
-              getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
-                      " fileId = " + fileId + " User = " + userEmail, logReturn);
+        public void onClick(Widget sender) {
+          // Note: We do *not* remove the dialog, this locks the UI up (our intent)
+          // Wait for a few seconds for other I/O to complete
+          cancelSession.setEnabled(false); // Disable button to prevent further clicking
+          continueSession.setEnabled(false); // This one as well
+          Timer t = new Timer() {
+            int count = 5;
+            @Override
+            public void run() {
+              if (count > 0) {
+                HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+                html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
+                count -= 1;
+              } else {
+                this.cancel();
+                getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
+                        " fileId = " + fileId + " User = " + userEmail, logReturn);
+              }
             }
-          }
-        };
-        t.scheduleRepeating(1000);     // Run every second
-      }
-    });
+          };
+          t.scheduleRepeating(1000);     // Run every second
+        }
+    })  ;
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2241,10 +2241,10 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        dialogBox.hide();
-      }
-    });
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2310,13 +2310,13 @@ public class Ode implements EntryPoint {
 
   public void recordCorruptProject(long projectId, String fileId, String message) {
     getProjectService().recordCorruption(projectId, fileId, message,
-            new OdeAsyncCallback<Void>(
-                    "") {                   // No failure message
-              @Override
-              public void onSuccess(Void result) {
-                // do nothing
-              }
-            });
+        new OdeAsyncCallback<Void>(
+                "") {                   // No failure message
+          @Override
+          public void onSuccess(Void result) {
+            // do nothing
+          }
+        });
   }
 
   /**
@@ -2404,38 +2404,38 @@ public class Ode implements EntryPoint {
     final long projectId = editor.getProjectId();
     final FileNode fileNode = editor.getFileNode();
     currentFileEditor.getBlocksImage(new Callback<String,String>() {
-      @Override
-      public void onSuccess(String result) {
-        int comma = result.indexOf(",");
-        if (comma < 0) {
-          OdeLog.log("screenshot invalid");
-          next.run();
-          return;
-        }
-        result = result.substring(comma+1); // Strip off url header
-        String screenShotName = fileNode.getName();
-        int period = screenShotName.lastIndexOf(".");
-        screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
-        OdeLog.log("ScreenShotName = " + screenShotName);
-        projectService.screenshot(sessionId, projectId, screenShotName, result,
-                new OdeAsyncCallback<RpcResult>() {
-                  @Override
-                  public void onSuccess(RpcResult result) {
-                    if (deferred) {
-                      next.run();
+        @Override
+        public void onSuccess(String result) {
+          int comma = result.indexOf(",");
+          if (comma < 0) {
+            OdeLog.log("screenshot invalid");
+            next.run();
+            return;
+          }
+          result = result.substring(comma+1); // Strip off url header
+          String screenShotName = fileNode.getName();
+          int period = screenShotName.lastIndexOf(".");
+          screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
+          OdeLog.log("ScreenShotName = " + screenShotName);
+          projectService.screenshot(sessionId, projectId, screenShotName, result,
+                  new OdeAsyncCallback<RpcResult>() {
+                    @Override
+                    public void onSuccess(RpcResult result) {
+                      if (deferred) {
+                        next.run();
+                      }
                     }
-                  }
-                  public void OnFailure(Throwable caught) {
-                    super.onFailure(caught);
-                    if (deferred) {
-                      next.run();
+                    public void OnFailure(Throwable caught) {
+                      super.onFailure(caught);
+                      if (deferred) {
+                        next.run();
+                      }
                     }
-                  }
-                });
-        if (!deferred) {
-          next.run();
+                  });
+          if (!deferred) {
+            next.run();
+          }
         }
-      }
       @Override
       public void onFailure(String error) {
         OdeLog.log("Screenshot failed: " + error);
@@ -2574,7 +2574,7 @@ public class Ode implements EntryPoint {
 
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-            && !newURL.startsWith("http://appinv.us/"))) {
+        && !newURL.startsWith("http://appinv.us/"))) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
@@ -2588,15 +2588,15 @@ public class Ode implements EntryPoint {
   // a shared backpack
   private void loadBackpack() {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
-      @Override
-      public void onSuccess(String backpack) {
-        BlocklyPanel.setInitialBackpack(backpack);
-      }
-      @Override
-      public void onFailure(Throwable caught) {
-        OdeLog.log("Fetching backpack failed");
-      }
-    });
+        @Override
+        public void onSuccess(String backpack) {
+          BlocklyPanel.setInitialBackpack(backpack);
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.log("Fetching backpack failed");
+        }
+      });
   }
 
   public boolean hasSecondBuildserver() {
