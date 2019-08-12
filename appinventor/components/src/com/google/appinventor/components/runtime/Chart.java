@@ -25,12 +25,13 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // Underlying Chart view
     private ChartView chartView;
 
+    // Properties
     private int type;
     private int backgroundColor;
     private String description;
-
     private int pieRadius;
 
+    // Synced t value across all Data Series (used for real-time entries)
     private int t = 0;
 
     // Attached Data components
@@ -321,13 +322,13 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
      *
      * Takes in the t value of a Data Series as an argument
      * to determine a value tailored to the Data Series, while
-     * updating the t value for this Chart if necessary.
+     * updating the synced t value of the Chart component.
      *
      * This method primarily takes care of syncing t values
      * across all the Data Series of the Chart for consistency.
      *
      * @param dataSeriesT  t value of a Data Series
-     * @return  t value to use for time entries for the invoking Data Series
+     * @return  t value to use for the next time entry based on the specified parameter
      */
     public int updateAndGetTValue(int dataSeriesT) {
         int returnValue;

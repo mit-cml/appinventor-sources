@@ -499,14 +499,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        // In case of the LineChartBaseDataModel being used, the Data Set
-        // of the model has to manually notify the changes (since entries
-        // are added directly to the Data Set in the case of the
-        // LineChartBase Data Model
-        // TODO: In case the addEntryOrdered method is ever used instead,
-        // TODO: this line could then be removed.
+        // Notify data set changes (needs to be invoked when changing
+        // values of the Data Set directly, which occurs in add/remove
+        // entry methods)
         chartDataModel.getDataset().notifyDataSetChanged();
 
+        // Refresh the Chart
         container.refresh();
     }
 

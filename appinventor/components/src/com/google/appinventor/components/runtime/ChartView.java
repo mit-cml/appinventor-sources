@@ -14,6 +14,10 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
 
     protected Handler uiHandler = new Handler();
 
+    // Used to store a single Runnable to refresh the Chart.
+    // The AtomicReference acts as an accumulator in throttling the
+    // number of refreshes to limit the refresh rate to a single refreesh
+    // per certain time frame.
     private AtomicReference<Runnable> refreshRunnable = new AtomicReference<Runnable>();
 
     /**
