@@ -286,10 +286,11 @@ public class ProjectToolbar extends Toolbar {
       String message;
       GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
-        if (projects.get(0).isPublished())
+        if (projects.get(0).isPublished()) {
           message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
-        else
+        } else {
           message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+        }
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
