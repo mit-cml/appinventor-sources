@@ -134,28 +134,28 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   @Override
-  public synchronized void Refresh() {
-    // Refresh each Pie Chart (ring) individually
-    for (final PieChart pieChart : pieCharts) {
-      // Notify the Data component of data changes (needs to be called
-      // when Datasets get changed directly)
-      pieChart.getData().notifyDataChanged();
+  public Runnable getRefreshRunnable() {
+    return new Runnable() {
+      @Override
+      public void run() {
+        // Refresh each Pie Chart (ring) individually
+        for (final PieChart pieChart : pieCharts) {
+          // Notify the Data component of data changes (needs to be called
+          // when Datasets get changed directly)
+          pieChart.getData().notifyDataChanged();
 
-      // Notify the Chart of Data changes (needs to be called
-      // when Data objects get changed directly)
-      pieChart.notifyDataSetChanged();
+          // Notify the Chart of Data changes (needs to be called
+          // when Data objects get changed directly)
+          pieChart.notifyDataSetChanged();
 
-      // Invalidate the Chart on the UI thread (via the Handler)
-      // The invalidate method should only be invoked on the UI thread
-      // to prevent exceptions.
-      uiHandler.post(new Runnable() {
-        @Override
-        public void run() {
+          // Invalidate the Chart on the UI thread (via the Handler)
+          // The invalidate method should only be invoked on the UI thread
+          // to prevent exceptions.
           updatePieChartRingOffset(pieChart);
           pieChart.invalidate();
         }
-      });
-    }
+      }
+    };
   }
 
   /**
