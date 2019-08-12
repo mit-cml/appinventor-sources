@@ -74,6 +74,8 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // * Using a single ScheduledExecutorService (with delays/DelayQueue/current setup) for all Data Series
         //   for refreshing
         // * Using RateLimiter with 10 permits (1 per 100ms) to throttle refresh rate
+        // * Using scheduled interval executor + queue to accumulate executable tasks per 100ms, execute them
+        //   in sequence and then refresh the Chart only once
         // The chosen solution is to then have delays and refresh throttling.
 
 
