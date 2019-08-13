@@ -62,7 +62,9 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     return new Runnable() {
       @Override
       public void run() {
-        if (chart.getData().getDataSetCount() >= 2) {
+        int dataSetCount = chart.getData().getDataSetCount();
+
+        if (dataSetCount >= 2) {
           chart.groupBars(START_X_VALUE, GROUP_SPACE, BAR_SPACE);
           chart.getXAxis().setAxisMinimum(START_X_VALUE);
 
