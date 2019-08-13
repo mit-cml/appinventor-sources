@@ -278,6 +278,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           isDrag = true;
           drag = true;
 
+	  // Ignore any MOVE event that goes outside the bounds of the canvas
+	  if ((x <= 0) || (x > width) || (y <= 0) || (y > height)) {
+	    break;
+	  }
+
           // Update draggedSprites by adding any that are currently being
           // touched.
           for (Sprite sprite : sprites) {
