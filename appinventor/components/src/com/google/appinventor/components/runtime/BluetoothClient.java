@@ -60,7 +60,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private ScheduledExecutorService dataPollService;
 
   // Fixed polling rate for the Data Polling Service (in milliseconds)
-  private static final int POLLING_RATE = 5;
+  private static final int POLLING_RATE = 10;
 
   /**
    * Creates a new BluetoothClient.
@@ -340,15 +340,15 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     dataPollService = Executors.newSingleThreadScheduledExecutor();
 
     // Execute runnable task at a fixed millisecond rate
-    dataPollService.scheduleAtFixedRate(new Runnable() {
+    dataPollService.scheduleWithFixedDelay(new Runnable() {
       @Override
       public void run() {
         // Retrieve data value (with a null key, since
         // key value does not matter for BluetoothClient)
         String value = getDataValue(null);
 
-        // Notify data obserevers only if a non-empty value
-        // has been retrieved successfully.
+        // Notify data observers of the retrieved value if it is
+        // non-empty
         if (!value.equals("")) {
           notifyDataObservers(null, value);
         }
