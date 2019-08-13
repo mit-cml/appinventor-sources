@@ -76,7 +76,7 @@ import java.util.Map;
 @UsesLibraries(libraries = "json.jar")
 
 
-public class Web extends AndroidNonvisibleComponent implements Component {
+public class Web extends AndroidNonvisibleComponent implements Component, ChartDataSource<YailList, YailList> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -1179,5 +1179,43 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(this, functionName, e.errorNumber, e.index);
     }
     return null;
+  }
+
+  @Override
+  public YailList getDataValue(YailList key) {
+    YailList result = null;
+    final CapturedProperties webProps = capturePropertyValues("Get");
+
+    if (webProps != null) {
+      // Open the connection.
+      HttpURLConnection connection = null;
+      try {
+        connection = openConnection(webProps, "GET");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      if (connection != null) {
+        try {
+          // Get the response.
+          final String responseType = getResponseType(connection);
+          final String responseContent = getResponseContent(connection);
+
+          // 1.Check responseType
+          // JSON? - Parse JSON
+          // CSV/Text? - Parse CSV
+          // 2.After parsing, construct columns (where appropriate)
+          // 3.Get columns with specified key
+          // 4.Return result
+
+        } catch (IOException e) {
+          return result;
+        } finally {
+          connection.disconnect();
+        }
+      }
+    }
+
+    return result;
   }
 }

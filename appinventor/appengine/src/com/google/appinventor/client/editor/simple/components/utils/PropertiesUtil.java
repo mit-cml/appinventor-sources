@@ -87,6 +87,7 @@ public class PropertiesUtil {
     add("CloudDB");
     add("AccelerometerSensor");
     add("BluetoothClient");
+    add("Web");
   }};
 
 
