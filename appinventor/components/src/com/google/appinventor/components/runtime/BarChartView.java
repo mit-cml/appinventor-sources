@@ -13,6 +13,9 @@ public class BarChartView extends ChartView<BarChart, BarData> {
   private static final float START_X_VALUE = 0f;
   private static final float GROUP_SPACE = 0.08f;
 
+  private float barSpace = 0f;
+  private float barWidth = 0f;
+
 
   public BarChartView(Activity context) {
     chart = new BarChart(context);
@@ -30,7 +33,26 @@ public class BarChartView extends ChartView<BarChart, BarData> {
 
   @Override
   public ChartDataModel createChartModel() {
-    return new BarChartDataModel(data);
+    BarChartDataModel model = new BarChartDataModel(data);
+
+    int dataSetCount = chart.getData().getDataSetCount();
+
+    if (dataSetCount > 1) {
+      // (BarWidth + BarSpace) * #datasets + groupSpace should equal 1
+      // to fit into the granularity of the Chart. The 1f here represents
+      // the fixed granularity of the X axis. Since the number of data sets
+      // can change, the bar space and bar width should be re-calculated.
+      // 10% and 90% of the remainder are given to the Bar Space and the Bar Width,
+      // respectively.
+      float x = (1f - GROUP_SPACE)/dataSetCount;
+      barSpace = x * 0.1f;
+      barWidth = x * 0.9f;
+
+      // Update the bar width of the Bar Chart
+      chart.getData().setBarWidth(barWidth);
+    }
+
+    return model;
   }
 
   @Override
@@ -42,6 +64,7 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     chart.setLayoutParams(new ViewGroup.LayoutParams
         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+    chart.getXAxis().setAxisMinimum(START_X_VALUE);
     chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
     chart.getXAxis().setCenterAxisLabels(true);
     chart.getXAxis().setGranularity(1f);
@@ -64,20 +87,8 @@ public class BarChartView extends ChartView<BarChart, BarData> {
         int dataSetCount = chart.getData().getDataSetCount();
 
         if (dataSetCount >= 2) {
-          // (BarWidth + BarSpace) * #datasets + groupSpace should equal 1
-          // to fit into the granularity of the Chart. The 1f here represents
-          // the fixed granularity of the X axis. Since the number of data sets
-          // can change, the bar space and bar width should be re-calculated.
-          // 10% and 90% of the remainder are given to the Bar Space and the Bar Width,
-          // respectively.
-          float x = (1f - GROUP_SPACE)/dataSetCount;
-          float barSpace = x * 0.1f;
-          float barWidth = x * 0.9f;
-
-          // Update the bar width and regroup the bars with the recalculated values
-          chart.getData().setBarWidth(barWidth);
+          // Group Bar Chart barsr with the current parameters
           chart.groupBars(START_X_VALUE, GROUP_SPACE, barSpace);
-          chart.getXAxis().setAxisMinimum(START_X_VALUE);
 
           // Determine the maximum number of entries between Bar Data Sets
           int maxEntries = 0;
