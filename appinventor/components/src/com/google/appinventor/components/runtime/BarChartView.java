@@ -62,14 +62,6 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     return new Runnable() {
       @Override
       public void run() {
-        // Notify the Data component of data changes (needs to be called
-        // when Datasets get changed directly)
-        chart.getData().notifyDataChanged();
-
-        // Notify the Chart of Data changes (needs to be called
-        // when Data objects get changed directly)
-        chart.notifyDataSetChanged();
-
         if (chart.getData().getDataSetCount() >= 2) {
           chart.groupBars(START_X_VALUE, GROUP_SPACE, BAR_SPACE);
           chart.getXAxis().setAxisMinimum(START_X_VALUE);
@@ -82,6 +74,14 @@ public class BarChartView extends ChartView<BarChart, BarData> {
 
           chart.getXAxis().setAxisMaximum(START_X_VALUE + chart.getData().getGroupWidth(GROUP_SPACE, BAR_SPACE) * maxEntries);
         }
+
+        // Notify the Data component of data changes (needs to be called
+        // when Datasets get changed directly)
+        chart.getData().notifyDataChanged();
+
+        // Notify the Chart of Data changes (needs to be called
+        // when Data objects get changed directly)
+        chart.notifyDataSetChanged();
 
         // Invalidate the Chart view for the changes to take
         // effect. NOTE: Most exceptions with regards to data
