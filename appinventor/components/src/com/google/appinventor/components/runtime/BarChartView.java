@@ -11,8 +11,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 public class BarChartView extends ChartView<BarChart, BarData> {
   private static final float START_X_VALUE = 0f;
-  private static final float GROUP_SPACE = 0.2f;
-  private static final float BAR_SPACE = 0.05f;
+  private static final float GROUP_SPACE = 0.08f;
 
 
   public BarChartView(Activity context) {
@@ -65,16 +64,33 @@ public class BarChartView extends ChartView<BarChart, BarData> {
         int dataSetCount = chart.getData().getDataSetCount();
 
         if (dataSetCount >= 2) {
-          chart.groupBars(START_X_VALUE, GROUP_SPACE, BAR_SPACE);
+          // (BarWidth + BarSpace) * #datasets + groupSpace should equal 1
+          // to fit into the granularity of the Chart. The 1f here represents
+          // the fixed granularity of the X axis. Since the number of data sets
+          // can change, the bar space and bar width should be re-calculated.
+          // 10% and 90% of the remainder are given to the Bar Space and the Bar Width,
+          // respectively.
+          float x = (1f - GROUP_SPACE)/dataSetCount;
+          float barSpace = x * 0.1f;
+          float barWidth = x * 0.9f;
+
+          // Update the bar width and regroup the bars with the recalculated values
+          chart.getData().setBarWidth(barWidth);
+          chart.groupBars(START_X_VALUE, GROUP_SPACE, barSpace);
           chart.getXAxis().setAxisMinimum(START_X_VALUE);
 
+          // Determine the maximum number of entries between Bar Data Sets
           int maxEntries = 0;
 
           for (IBarDataSet dataSet : chart.getData().getDataSets()) {
             maxEntries = Math.max(maxEntries, dataSet.getEntryCount());
           }
 
-          chart.getXAxis().setAxisMaximum(START_X_VALUE + chart.getData().getGroupWidth(GROUP_SPACE, BAR_SPACE) * maxEntries);
+          // Set the maximum value for the x axis based on maximum entries and the group
+          // width of the grouped bars. The calculation is based directly on the example
+          // presented in the MPAndroidChart library example activities.
+          chart.getXAxis().setAxisMaximum(START_X_VALUE +
+              chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
         }
 
         // Notify the Data component of data changes (needs to be called
