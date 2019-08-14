@@ -19,6 +19,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.ArrayList;

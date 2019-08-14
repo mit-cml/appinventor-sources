@@ -57,6 +57,13 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_BUTTON_SHAPE = "button_shape";
 
   /**
+   * recyclerview orientation.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidRecyclerViewOrientationPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION = "recyclerview_orientation";
+
+  /**
    * Any of the colors specified in {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor}.
    */
