@@ -1310,24 +1310,19 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
    * @param responseType  Type of the response
    */
   private void updateColumns(final String responseContent, final String responseType) {
-    // Keep track of a flag whether to try CSV importing
-    boolean tryCSV = false;
-
-    // Check whether the response type is a JSON type
+    // Check whether the response type is a JSON type (by checking
+    // whether the response type contains the String 'json')
+    // If this is not the case, CSV parsing is attempted if the
+    // response type contains the 'csv' String or the type starts
+    // with 'text/'.
     if (responseType.contains("json")) {
       // Proceed with JSON parsing
       try {
         columns = JsonUtil.getColumnsFromJSON(responseContent);
-        return; // JSON parsing successful; Return from method
       } catch (JSONException e) {
-        // Json unsuccessful; Proceed with CSV parsing instead
-        tryCSV = true;
+        // Json importing unsuccessful
       }
-    }
-
-    // CSV importing is done if JSON parsing failed, the response type is CSV or
-    // the response type starts with 'text/'
-    if (tryCSV || responseType.contains("csv") || responseType.startsWith("text/")) {
+    } else if (responseType.contains("csv") || responseType.startsWith("text/")) {
       try {
         columns = CsvUtil.fromCsvTable(responseContent);
         columns = ChartDataSourceUtil.getTranspose(columns);
