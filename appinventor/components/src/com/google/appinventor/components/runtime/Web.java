@@ -1225,19 +1225,8 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
     // work done.
     updateColumns(lastResponse, lastResponseType);
 
-    // Construct a List of columns to return as a result
-    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
-
-    // Iterate over the specified column names
-    for (int i = 0; i < key.size(); ++i) {
-      // Get and add the specified column to the resulting columns list
-      String columnName = key.getString(i);
-      YailList column = getColumn(columnName);
-      resultingColumns.add(column);
-    }
-
-    // Return result as a YailList
-    return YailList.makeList(resultingColumns);
+    // Return resulting columns
+    return getColumns(key);
 
     // The initial, alternate approach was to simply send a request. However,
     // this approach is inefficient since too many requests will be sent,
@@ -1323,10 +1312,35 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       YailList list = (YailList)columns.getObject(i);
 
       if (!list.isEmpty() && list.getString(0).equals(column)) {
-        return  list;
+        return list;
       }
     }
 
     return new YailList();
+  }
+
+  /**
+   * Returns a List of the specified columns stored internally
+   * in the Web component (as data of the last request)
+   *
+   * If a column is not found, it is substituted by an empty List.
+   *
+   * @param keyColumns  List of columns to return
+   * @return  List of the specified columns
+   */
+  public YailList getColumns(YailList keyColumns) {
+    // Construct a List of columns to return as a result
+    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+
+    // Iterate over the specified column names
+    for (int i = 0; i < keyColumns.size(); ++i) {
+      // Get and add the specified column to the resulting columns list
+      String columnName = keyColumns.getString(i);
+      YailList column = getColumn(columnName);
+      resultingColumns.add(column);
+    }
+
+    // Return result as YailList
+    return YailList.makeList(resultingColumns);
   }
 }
