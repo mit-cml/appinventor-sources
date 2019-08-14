@@ -174,12 +174,22 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param columns  columns to import data from
      */
     public void importFromColumns(YailList columns) {
+        YailList tuples = getTuplesFromColumns(columns);
+
+        if (tuples.size() > 0) {
+            // Use the generated tuple list in the importFromList method to
+            // import the data.
+            importFromList(tuples);
+        }
+    }
+
+    public YailList getTuplesFromColumns(YailList columns) {
         // Determine the (maximum) row count of the specified columns
         int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
 
         if (rows == 0) {
             // No rows exist. Do nothing.
-            return;
+            return new YailList();
         }
 
         List<YailList> tuples = new ArrayList<YailList>();
@@ -228,9 +238,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             tuples.add(tuple);
         }
 
-        // Use the generated tuple list in the importFromList method to
-        // import the data.
-        importFromList(YailList.makeList(tuples));
+        return YailList.makeList(tuples);
     }
 
     /**

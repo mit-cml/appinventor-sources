@@ -58,6 +58,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -81,7 +82,7 @@ import java.util.concurrent.FutureTask;
 @UsesLibraries(libraries = "json.jar")
 
 
-public class Web extends AndroidNonvisibleComponent implements Component, ChartDataSource<YailList, YailList> {
+public class Web extends AndroidNonvisibleComponent implements Component, ObservableChartDataSource<YailList, YailList> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -192,7 +193,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
   private boolean saveResponse;
   private String responseFileName = "";
 
-  private YailList columns = null;
+  private YailList columns = new YailList();
   private String lastResponse = "";
   private String lastResponseType = "";
   private FutureTask<Void> lastTask = null;
@@ -925,6 +926,8 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
           lastResponse = responseContent;
           lastResponseType = responseType;
 
+          notifyDataObservers(null, null);
+
           // Dispatch the event.
           activity.runOnUiThread(new Runnable() {
             @Override
@@ -1342,5 +1345,28 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
 
     // Return result as YailList
     return YailList.makeList(resultingColumns);
+  }
+
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(YailList key, Object newValue) {
+    if (!dataSourceObservers.isEmpty()) {
+      updateColumns(lastResponse, lastResponseType);
+    }
+
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, null, columns);
+    }
   }
 }

@@ -32,6 +32,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     // where each index corresponds to a single dimension.
     protected List<String> dataFileColumns;
 
+    // Properties used in Designer to import from Web components.
+    // Represents the names of the columns to use,
+    // where each index corresponds to a single dimension.
+    protected List<String> webColumns;
+
     // Property used in Designer to import from a Data Source.
     // Represents the key value of the value to use from the
     // attached Data Source.
@@ -290,6 +295,13 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         dataFileColumns.set(0, column);
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description = "", category = PropertyCategory.BEHAVIOR, userVisible = false)
+    public void WebXColumn(String column) {
+        // The first element represents the x entries
+        webColumns.set(0, column);
+    }
+
     /**
      * Sets the Data column to parse data from the DataFile source for the y values.
      *
@@ -303,6 +315,13 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     public void DataFileYColumn(String column) {
         // The second element represents the y entries
         dataFileColumns.set(1, column);
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(description = "", category = PropertyCategory.BEHAVIOR, userVisible = false)
+    public void WebYColumn(String column) {
+        // The second element represents the y entries
+        webColumns.set(1, column);
     }
 
     /**
@@ -363,9 +382,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             if (dataSource instanceof DataFile) {
                 importFromDataFileAsync((DataFile)dataSource, YailList.makeList(dataFileColumns));
             } else if (dataSource instanceof TinyDB) {
-              ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
+                ImportFromTinyDB((TinyDB)dataSource, dataSourceValue);
             } else if (dataSource instanceof CloudDB) {
                 ImportFromCloudDB((CloudDB)dataSource, dataSourceValue);
+            } else if (dataSource instanceof Web) {
+                importFromWebAsync((Web)dataSource, YailList.makeList(webColumns));
             }
         }
     }
@@ -571,7 +592,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param newValue  the new value of the observed value
      */
     @Override
-    public void onDataSourceValueChange(ChartDataSource component, String key, final Object newValue) {
+    public void onDataSourceValueChange(final ChartDataSource component, String key, final Object newValue) {
         if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
@@ -587,12 +608,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     chartDataModel.removeValues((List)currentDataSourceValue);
                 }
 
-                // Update current Data Source value
-                currentDataSourceValue = newValue;
+                if (component instanceof Web) {
+                    YailList columns = ((Web)component).getColumns(YailList.makeList(webColumns));
+                    currentDataSourceValue = chartDataModel.getTuplesFromColumns(columns);
+                } else {
+                    // Update current Data Source value
+                    currentDataSourceValue = newValue;
+                }
 
                 // New value is a List; Import the value
-                if (newValue instanceof List) {
-                    chartDataModel.importFromList((List)newValue);
+                if (currentDataSourceValue instanceof List) {
+                    chartDataModel.importFromList((List)currentDataSourceValue);
                 }
 
                 // Refresh the Chart view
