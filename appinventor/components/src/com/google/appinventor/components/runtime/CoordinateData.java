@@ -122,7 +122,18 @@ public final class CoordinateData extends ChartDataBase {
         importFromDataFileAsync(dataFile, columns);
     }
 
-    @SimpleFunction
+    /**
+     * Imports data from a Web component, with the specified column names.
+     *
+     * @param web  Web component to import from
+     * @param xValueColumn  x-value column name
+     * @param yValueColumn  y-value column name
+     */
+    @SimpleFunction(description = "Imports data from the specified Web component, given the names of the " +
+        "X and Y value columns. Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, ...). " +
+        "In order for the data importing to be successful, first the Get block must be called on the Web component " +
+        "to load the data, after which this block can be executed. The usage of the gotValue event " +
+        "in the Web component is unnecessary.")
     public void ImportFromWeb(final Web web, String xValueColumn, String yValueColumn) {
         // Construct a YailList of columns from the specified parameters
         YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
