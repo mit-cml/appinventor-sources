@@ -61,7 +61,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
@@ -82,7 +84,7 @@ import java.util.concurrent.FutureTask;
 @UsesLibraries(libraries = "json.jar")
 
 
-public class Web extends AndroidNonvisibleComponent implements Component, ObservableChartDataSource<YailList, YailList> {
+public class Web extends AndroidNonvisibleComponent implements Component, ObservableChartDataSource<YailList, Future<YailList>> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -1224,32 +1226,49 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   @Override
-  public YailList getDataValue(YailList key) {
-    // If the last GET task is not yet done/cancelled, then the lastTask.get()
-    // method is invoked to wait for completion of the task.
-    if (lastTask != null && !lastTask.isDone() && !lastTask.isCancelled()) {
-      try {
-        lastTask.get();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        e.printStackTrace();
+  public Future<YailList> getDataValue(final YailList key) {
+    // Record the last running asynchronous task. The FutureTask's
+    // calculations will wait for the completion of the task.
+    final FutureTask<Void> currentTask = lastTask;
+
+    // Construct a new FutureTask which handles returning the appropriate data
+    // value after the currently recorded last task is processed.
+    FutureTask<YailList> getDataValueTask = new FutureTask<YailList>
+        (new Callable<YailList>() {
+      @Override
+      public YailList call() throws Exception {
+        // If the last recorded GET task is not yet done/cancelled, then the get()
+        // method is invoked to wait for completion of the task.
+        if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+          try {
+            currentTask.get();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          } catch (ExecutionException e) {
+            e.printStackTrace();
+          }
+        }
+
+        // Update the locally stored columns list with the contents of the
+        // last response and response type. The reason why this is not done
+        // after HTTP methods is to not reduce performance for non-Chart related
+        // work done.
+        updateColumns(lastResponse, lastResponseType);
+
+        // Return resulting columns
+        return getColumns(key);
       }
-    }
+    });
 
-    // Update the locally stored columns list with the contents of the
-    // last response and response type. The reason why this is not done
-    // after HTTP methods is to not reduce performance for non-Chart related
-    // work done.
-    updateColumns(lastResponse, lastResponseType);
-
-    // Return resulting columns
-    return getColumns(key);
+    // Run and return the getDataValue FutureTask
+    AsynchUtil.runAsynchronously(getDataValueTask);
+    return getDataValueTask;
 
     // The initial, alternate approach was to simply send a request. However,
     // this approach is inefficient since too many requests will be sent,
     // and that has an impact on both performance and on APIs which allow
-    // limited requests to be sent.
+    // limited requests to be sent. When this approach was used, the data
+    // type is YailList instead of Future<YailList>
     //    YailList result = null;
     //    final CapturedProperties webProps = capturePropertyValues("Get");
     //

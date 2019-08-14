@@ -236,7 +236,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param columns  list of column names to import from
      */
     protected void importFromDataFileAsync(final DataFile dataFile, YailList columns) {
-        // Get the Future object representing the columns in the DataFile component,
+        // Get the Future object representing the columns in the DataFile component.
         final Future<YailList> dataFileColumns = dataFile.getDataValue(columns);
 
         // Import the data from the Data file asynchronously
@@ -249,7 +249,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     // Get the columns from the DataFile. The retrieval of
                     // the result is blocking, so it will first wait for
                     // the reading to be processed.
-                    // The expected format is a (rowCount, columns) List.
                     dataResult = dataFileColumns.get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -275,12 +274,25 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param columns  list of column names to import from
      */
     protected void importFromWebAsync(final Web webComponent, final YailList columns) {
+      // Get the Future object representing the columns in the Web component.
+      final Future<YailList> webColumns = webComponent.getDataValue(columns);
+
         // Import the Data from the Web component asynchronously
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
-                // Get the data columns of the Web component
-                YailList dataColumns = webComponent.getDataValue(columns);
+              // Get the data columns from the Web component. The retrieval of
+              // the result is blocking, so it will first wait for
+              // the retrieval to be processed in full.
+              YailList dataColumns = null;
+
+              try {
+                dataColumns = webColumns.get();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              } catch (ExecutionException e) {
+                e.printStackTrace();
+              }
 
                 // Import the data from the retrieved columns
                 chartDataModel.importFromColumns(dataColumns);
@@ -635,8 +647,15 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     chartDataModel.removeValues((List)currentDataSourceValue);
                 }
 
+                // Update currentDataSourceValue; Web component requires different handling
+                // from all other ObservableChartDataSource components.
                 if (component instanceof Web) {
+                    // Get the columns from the local webColumns properties
                     YailList columns = ((Web)component).getColumns(YailList.makeList(webColumns));
+
+                    // Set the current Data Source Value to all the tuples from the columns.
+                    // This is needed to easily remove values later on when the value changes
+                    // again.
                     currentDataSourceValue = chartDataModel.getTuplesFromColumns(columns);
                 } else {
                     // Update current Data Source value
