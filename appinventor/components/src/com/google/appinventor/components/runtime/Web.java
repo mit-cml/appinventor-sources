@@ -207,10 +207,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   // The columns are used for Chart Data importing.
   private YailList columns = new YailList();
 
-
-  private String lastResponse = "";
-  private String lastResponseType = "";
-
   // Set of observers
   private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
@@ -938,11 +934,19 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } else {
           final String responseContent = getResponseContent(connection);
 
-          // Save last response & type to use for later value retrieval
-          // (via getDataValue method)
-          lastResponse = responseContent;
-          lastResponseType = responseType;
+          // Update the locally stored columns list with the contents of the
+          // retrieved response & response type.
+          // TODO: Optimizations are possible here. Currently for projects which
+          // TODO: do not make use of Chart components, this will create extra overhead
+          // TODO: due to JSON/CSV parsing.
+          updateColumns(responseContent, responseType);
 
+          // Notify all data observers with null key and null value.
+          // Key and value are unused, hence it does not matter here.
+          // TODO: Since the Web component is rather irregular in the
+          // TODO: sense that the key and value do not matter for notification,
+          // TODO: perhaps it would be worthwhile for the Web component to
+          // TODO: have a different interface?
           notifyDataObservers(null, null);
 
           // Dispatch the event.
@@ -1249,12 +1253,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
           }
         }
 
-        // Update the locally stored columns list with the contents of the
-        // last response and response type. The reason why this is not done
-        // after HTTP methods is to not reduce performance for non-Chart related
-        // work done.
-        updateColumns(lastResponse, lastResponseType);
-
         // Return resulting columns
         return getColumns(key);
       }
@@ -1392,11 +1390,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   @Override
   public void notifyDataObservers(YailList key, Object newValue) {
-    if (!dataSourceObservers.isEmpty()) {
-      updateColumns(lastResponse, lastResponseType);
-    }
-
     for (ChartDataBase dataComponent : dataSourceObservers) {
+      // Notify Data Component observer with the new columns value (and null key,
+      // since key does not matter in the case of the Web component)
       dataComponent.onDataSourceValueChange(this, null, columns);
     }
   }
