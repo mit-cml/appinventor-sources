@@ -22,7 +22,7 @@ public final class CoordinateData extends ChartDataBase {
     public CoordinateData(Chart chartContainer) {
         super(chartContainer);
         dataFileColumns = Arrays.asList("", ""); // Construct default dataFileColumns list with 2 entries
-        webColumns = Arrays.asList("", "");
+        webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
     }
 
     /**

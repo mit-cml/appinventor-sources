@@ -266,12 +266,23 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         });
     }
 
+
+    /**
+     * Imports data from a Web component, with the specified column names.
+     * The method is ran asynchronously.
+     *
+     * @param webComponent  web component to import from
+     * @param columns  list of column names to import from
+     */
     protected void importFromWebAsync(final Web webComponent, final YailList columns) {
+        // Import the Data from the Web component asynchronously
         threadRunner.execute(new Runnable() {
             @Override
             public void run() {
+                // Get the data columns of the Web component
                 YailList dataColumns = webComponent.getDataValue(columns);
 
+                // Import the data from the retrieved columns
                 chartDataModel.importFromColumns(dataColumns);
 
                 // Refresh the Chart after import
@@ -295,8 +306,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         dataFileColumns.set(0, column);
     }
 
+    /**
+     * Sets the Data column to parse data from the Web component source for the x values.
+     *
+     * @param column  name of the column for the x values
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description = "", category = PropertyCategory.BEHAVIOR, userVisible = false)
+    @SimpleProperty(description = "Sets the column to parse from the attached Web component for the x values." +
+        "If a column is not specified, default values for the x values will be generated instead.",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
     public void WebXColumn(String column) {
         // The first element represents the x entries
         webColumns.set(0, column);
@@ -317,8 +336,16 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         dataFileColumns.set(1, column);
     }
 
+    /**
+     * Sets the Data column to parse data from the Web component source for the y values.
+     *
+     * @param column  name of the column for the y values
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description = "", category = PropertyCategory.BEHAVIOR, userVisible = false)
+    @SimpleProperty(description = "Sets the column to parse from the attached Web component for the y values." +
+        "If a column is not specified, default values for the y values will be generated instead.",
+        category = PropertyCategory.BEHAVIOR,
+        userVisible = false)
     public void WebYColumn(String column) {
         // The second element represents the y entries
         webColumns.set(1, column);
