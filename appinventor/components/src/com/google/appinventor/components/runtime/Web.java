@@ -23,6 +23,8 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
+import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -55,8 +57,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /**
  * The Original Web component provided functions for HTTP GET and POST requests.
@@ -186,6 +191,11 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
   private YailList requestHeaders = new YailList();
   private boolean saveResponse;
   private String responseFileName = "";
+
+  private YailList columns = null;
+  private String lastResponse = "";
+  private String lastResponseType = "";
+  private FutureTask<Void> lastTask = null;
 
   /**
    * Creates a new Web component.
@@ -354,23 +364,25 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, null, "GET");
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (Exception e) {
-          Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
-        }
+          try {
+            performRequest(webProps, null, null, "GET");
+          } catch (PermissionException e) {
+            form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
+          } catch (FileUtil.FileException e) {
+            form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                e.getErrorMessageNumber());
+          } catch (Exception e) {
+            Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
+            form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
+          }
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -428,7 +440,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         try {
@@ -443,7 +455,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
         }
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -501,7 +515,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         try {
@@ -516,7 +530,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
         }
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -538,7 +554,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         try {
@@ -553,7 +569,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
               ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
         }
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /*
@@ -581,7 +599,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         // Convert text to bytes using the encoding.
@@ -610,7 +628,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
         }
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
 
@@ -901,6 +921,10 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
         } else {
           final String responseContent = getResponseContent(connection);
 
+          // Save last response & type, and update the columns to be null
+          lastResponse = responseContent;
+          lastResponseType = responseType;
+
           // Dispatch the event.
           activity.runOnUiThread(new Runnable() {
             @Override
@@ -1183,39 +1207,126 @@ public class Web extends AndroidNonvisibleComponent implements Component, ChartD
 
   @Override
   public YailList getDataValue(YailList key) {
-    YailList result = null;
-    final CapturedProperties webProps = capturePropertyValues("Get");
-
-    if (webProps != null) {
-      // Open the connection.
-      HttpURLConnection connection = null;
+    // If the last GET task is not yet done/cancelled, then the lastTask.get()
+    // method is invoked to wait for completion of the task.
+    if (lastTask != null && !lastTask.isDone() && !lastTask.isCancelled()) {
       try {
-        connection = openConnection(webProps, "GET");
-      } catch (IOException e) {
+        lastTask.get();
+      } catch (InterruptedException e) {
         e.printStackTrace();
-      }
-
-      if (connection != null) {
-        try {
-          // Get the response.
-          final String responseType = getResponseType(connection);
-          final String responseContent = getResponseContent(connection);
-
-          // 1.Check responseType
-          // JSON? - Parse JSON
-          // CSV/Text? - Parse CSV
-          // 2.After parsing, construct columns (where appropriate)
-          // 3.Get columns with specified key
-          // 4.Return result
-
-        } catch (IOException e) {
-          return result;
-        } finally {
-          connection.disconnect();
-        }
+      } catch (ExecutionException e) {
+        e.printStackTrace();
       }
     }
 
-    return result;
+    // Update the locally stored columns list with the contents of the
+    // last response and response type. The reason why this is not done
+    // after HTTP methods is to not reduce performance for non-Chart related
+    // work done.
+    updateColumns(lastResponse, lastResponseType);
+
+    // Construct a List of columns to return as a result
+    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+
+    // Iterate over the specified column names
+    for (int i = 0; i < key.size(); ++i) {
+      // Get and add the specified column to the resulting columns list
+      String columnName = key.getString(i);
+      YailList column = getColumn(columnName);
+      resultingColumns.add(column);
+    }
+
+    // Return result as a YailList
+    return YailList.makeList(resultingColumns);
+
+    // The initial, alternate approach was to simply send a request. However,
+    // this approach is inefficient since too many requests will be sent,
+    // and that has an impact on both performance and on APIs which allow
+    // limited requests to be sent.
+    //    YailList result = null;
+    //    final CapturedProperties webProps = capturePropertyValues("Get");
+    //
+    //    if (webProps != null) {
+    //      // Open the connection.
+    //      HttpURLConnection connection = null;
+    //      try {
+    //        connection = openConnection(webProps, "GET");
+    //      } catch (IOException e) {
+    //        e.printStackTrace();
+    //      }
+    //
+    //      if (connection != null) {
+    //        try {
+    //          // Get the response.
+    //          final String responseType = getResponseType(connection);
+    //          final String responseContent = getResponseContent(connection);
+    //
+    //        } catch (IOException e) {
+    //          return result;
+    //        } finally {
+    //          connection.disconnect();
+    //        }
+    //      }
+    //    }
+    //
+    //    return result;
+  }
+
+  /**
+   * Updates the local Columns List based on the specified response content
+   * and type. Columns are parsed either from JSON or CSV, depending on
+   * the response type. On invalid response types, parsing is simply skipped.
+   *
+   * Currently supported MIME types are all types which have 'json' in the name,
+   * types which have 'csv' in the name, as well as types which start with 'text/'
+   *
+   * @param responseContent  Content of the response
+   * @param responseType  Type of the response
+   */
+  private void updateColumns(final String responseContent, final String responseType) {
+    // Keep track of a flag whether to try CSV importing
+    boolean tryCSV = false;
+
+    // Check whether the response type is a JSON type
+    if (responseType.contains("json")) {
+      // Proceed with JSON parsing
+      try {
+        columns = JsonUtil.getColumnsFromJSON(responseContent);
+        return; // JSON parsing successful; Return from method
+      } catch (JSONException e) {
+        // Json unsuccessful; Proceed with CSV parsing instead
+        tryCSV = true;
+      }
+    }
+
+    // CSV importing is done if JSON parsing failed, the response type is CSV or
+    // the response type starts with 'text/'
+    if (tryCSV || responseType.contains("csv") || responseType.startsWith("text/")) {
+      try {
+        columns = CsvUtil.fromCsvTable(responseContent);
+        columns = ChartDataSourceUtil.getTranspose(columns);
+      } catch (Exception e) {
+        // Set columns to empty List (failed parsing)
+        columns = new YailList();
+      }
+    }
+  }
+
+  /**
+   * Gets the column identified by the specified String from
+   * the locally stored columns List.
+   * @param column  name of the Column to retrieve
+   * @return  YailList representation of the column (empty List if not found)
+   */
+  public YailList getColumn(String column) {
+    for (int i = 0; i < columns.size(); ++i) {
+      YailList list = (YailList)columns.getObject(i);
+
+      if (!list.isEmpty() && list.getString(0).equals(column)) {
+        return  list;
+      }
+    }
+
+    return new YailList();
   }
 }

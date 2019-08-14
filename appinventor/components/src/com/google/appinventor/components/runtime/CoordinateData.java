@@ -120,4 +120,12 @@ public final class CoordinateData extends ChartDataBase {
 
         importFromDataFileAsync(dataFile, columns);
     }
+
+    @SimpleFunction
+    public void ImportFromWeb(final Web web, String xValueColumn, String yValueColumn) {
+        // Construct a YailList of columns from the specified parameters
+        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
+
+        importFromWebAsync(web, columns);
+    }
 }

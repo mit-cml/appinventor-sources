@@ -261,6 +261,20 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         });
     }
 
+    protected void importFromWebAsync(final Web webComponent, final YailList columns) {
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                YailList dataColumns = webComponent.getDataValue(columns);
+
+                chartDataModel.importFromColumns(dataColumns);
+
+                // Refresh the Chart after import
+                refreshChart();
+            }
+        });
+    }
+
     /**
      * Sets the Data column to parse data from the DataFile source for the x values.
      *
