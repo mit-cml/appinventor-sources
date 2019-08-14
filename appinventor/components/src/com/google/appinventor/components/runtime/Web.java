@@ -193,10 +193,24 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   private boolean saveResponse;
   private String responseFileName = "";
 
+  // Used to keep track of the last executed AsyncTask.
+  // Used when retrieving Data Values for Chart data importing.
+  // This allows to retrieve a recently updated value after
+  // it has been retrieved asynchronously. Instead of running
+  // regular Runnables on each asynchronous operation, the
+  // lastTask variable is instead constructed and ran.
+  private FutureTask<Void> lastTask = null;
+
+  // Store a List of columns parsed from the latest response (JSON/CSV).
+  // The columns are used for Chart Data importing.
   private YailList columns = new YailList();
+
+
   private String lastResponse = "";
   private String lastResponseType = "";
-  private FutureTask<Void> lastTask = null;
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new Web component.
@@ -922,7 +936,8 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } else {
           final String responseContent = getResponseContent(connection);
 
-          // Save last response & type, and update the columns to be null
+          // Save last response & type to use for later value retrieval
+          // (via getDataValue method)
           lastResponse = responseContent;
           lastResponseType = responseType;
 
@@ -1311,14 +1326,18 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
    * @return  YailList representation of the column (empty List if not found)
    */
   public YailList getColumn(String column) {
+    // Iterate through all the columns
     for (int i = 0; i < columns.size(); ++i) {
       YailList list = (YailList)columns.getObject(i);
 
+      // If column has first entry, and the entry is equal to the
+      // queried column, then this is our resulting column.
       if (!list.isEmpty() && list.getString(0).equals(column)) {
         return list;
       }
     }
 
+    // Column not found; Return empty YailList.
     return new YailList();
   }
 
@@ -1346,8 +1365,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     // Return result as YailList
     return YailList.makeList(resultingColumns);
   }
-
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   @Override
   public void addDataObserver(ChartDataBase dataComponent) {
