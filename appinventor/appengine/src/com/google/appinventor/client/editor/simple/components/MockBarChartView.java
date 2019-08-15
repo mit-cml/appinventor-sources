@@ -4,6 +4,19 @@ import org.pepstock.charba.client.BarChart;
 import org.pepstock.charba.client.configuration.CartesianLinearAxis;
 import org.pepstock.charba.client.data.Dataset;
 
+
+/**
+ * Chart View for the Bar Chart. Responsible for the GUI of the Bar Chart.
+ *
+ * The Bar Chart has two important properties:
+ * 1.The entries in each Data Series of the Bar Chart are indexed by
+ * x value, meaning that the first entry has an x value of 0, the second
+ * has an x value of 1, and so on. The x value essentially acts as an index.
+ *
+ * 2.Following from the 1st property, the entries are sorted by the x value (in
+ * ascending order), and the difference between neighboring entries' x values are
+ * at most 1.
+ */
 public class MockBarChartView extends MockChartView<BarChart> {
   /**
    * Creates a new MockBarChartView object instance.

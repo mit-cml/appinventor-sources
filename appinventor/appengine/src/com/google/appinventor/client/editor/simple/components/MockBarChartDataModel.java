@@ -10,6 +10,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Chart Data Model for Bar Chart based views.
+ */
 public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
   // Keep track of the associated Mock Bar Chart View to be able
   // to invoke axis label updating.
@@ -91,10 +94,23 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
    * The tuple is expected to have at least 2 entries. All subsequent
    * values are ignored.
    *
+   * The addEntryFromTuple method relies on the property that each
+   * entry in the Bar Chart corresponds to an index, meaning that
+   * an x value directly corresponds to an index in the Data Series.
+   * This also implies that the entries in the Data Series are
+   * sorted by x value. Moreover, if entries with an x value
+   * which is at least 1 bigger than the current size is added,
+   * blank entries are filled in between.
+   *
    * @param tuple  tuple (array of doubles)
    */
   public void addEntryFromTuple(Double... tuple) {
+    // The first entry of the tuple is expected to represent
+    // the x value. Since the Bar Chart's x values are whole
+    // numbers, the value has to be rounded.
     int xValue = (int) Math.round(tuple[0]);
+
+    // The second entry of the tuple is expected to be the y value.
     double yValue = tuple[1];
 
     // If x is less than 0, then skip the insertion, since
@@ -103,10 +119,26 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
       return;
     }
 
+    // Same data adding logic is used as in BarChartDataModel
+    // (Android implementation)
+    // TODO: This could probably be factored somehow to reduce redundancy
+    // TODO: and use a common method.
+
+    // If the x value is less than the current number of
+    // Data Series in the Chart, then the x value already
+    // exists in the Data Series (by the sorted entries property)
     if (xValue < dataSeries.getData().size()) {
+      // Use x value as index to update the y value
       dataSeries.getData().set(xValue, yValue);
     } else {
+      // Fill Bar Data Series with empty values until the
+      // size equals the x value (to preserve sorted entries
+      // and index property)
       while (dataSeries.getData().size() < xValue) {
+        // Due to the way the Charba library currently
+        // handles the getData method, if the current
+        // number of Data entries is 0, the Data has to
+        // be set instead of being added directly.
         if (dataSeries.getData().size() == 0) {
           dataSeries.setData(0.0);
         } else {
@@ -114,6 +146,10 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
         }
       }
 
+      // After filling the entries (if necessary), the
+      // value is added at the end of the Data Series
+      // (size becomes 1 bigger than the x value, so the
+      // x value now represents the last index of the Data)
       if (dataSeries.getData().size() == 0) {
         dataSeries.setData(yValue);
       } else {
