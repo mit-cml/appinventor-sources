@@ -11,11 +11,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
-  MockBarChartView view;
+  // Keep track of the associated Mock Bar Chart View to be able
+  // to invoke axis label updating.
+  private MockBarChartView view;
 
-  public MockBarChartDataModel(Data chartData, MockBarChartView view) {
-    super(chartData);
+  /**
+   * Creates a new Mock Bar Chart Data Model object instance,
+   * linking it with the specified MockBarChartView object.
+   * @param view  MockBarChartView to link the model to
+   */
+  public MockBarChartDataModel(MockBarChartView view) {
+    super(view.getChartWidget().getData());
 
+    // Set local view variable (needed to invoke the updateLabels method)
     this.view = view;
 
     // Create the Data Series object
@@ -39,15 +47,22 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
   protected void setDefaultElements() {
     final int points = 4; // Number of points to add
 
+    // Set the starting y value for the current model
+    // as the total size of the Datasets present in the Chart.
+    // This is used to differentiate values between added Data
+    // components.
+    // TODO: In the future, this could take into account the global
+    // TODO: maximum (much like the MockLineChartDataModel does now)
+    // TODO: or have recalculations done, since if Data Series are
+    // TODO: deleted, the y values can overlap between Data Series.
     double yVal = chartData.getDatasets().size();
 
     for (int i = 0; i < points; ++i) {
       // Construct the x and y values based on the index
-      double xValue = i;
       double yValue = yVal + i;
 
       // Add an entry based on the constructed values
-      addEntryFromTuple(xValue, yValue);
+      addEntryFromTuple((double) i, yValue);
     }
   }
 
@@ -131,6 +146,10 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
       setDefaultElements();
     }
 
+    // After changing the elements of the Mock Bar Chart Data Model,
+    // the labels for the x axis have to be reconstructed. This is
+    // done from the view since all Data Series need to be taken into
+    // account.
     view.updateLabels();
   }
 
@@ -138,6 +157,8 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
   public void removeDataSeriesFromChart() {
     super.removeDataSeriesFromChart();
 
+    // After removing the Data Series from the Charts,
+    // the labels have to yet again be recalculated.
     view.updateLabels();
   }
 }
