@@ -472,7 +472,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param size  Number of entries to return
      * @return  YailList of the specified number of entries containing the default values.
      */
-    protected abstract YailList getDefaultValues(int size);
+//    protected abstract YailList getDefaultValues(int size);
 
     /**
      * Returns default tuple entry value to use when a value

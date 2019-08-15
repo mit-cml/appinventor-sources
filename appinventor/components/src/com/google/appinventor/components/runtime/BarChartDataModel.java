@@ -89,18 +89,18 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
 
   }
 
-  @Override
-  protected YailList getDefaultValues(int size) {
-    // Default values for Bar Chart Data Models should be
-    // integers from 0 to N (0, 1, 2, ...)
-    ArrayList<Integer> defaultValues = new ArrayList<>();
-
-    for (int i = 0; i < size; ++i) {
-      defaultValues.add(i);
-    }
-
-    return YailList.makeList(defaultValues);
-  }
+//  @Override
+//  protected YailList getDefaultValues(int size) {
+//    // Default values for Bar Chart Data Models should be
+//    // integers from 0 to N (0, 1, 2, ...)
+//    ArrayList<Integer> defaultValues = new ArrayList<>();
+//
+//    for (int i = 0; i < size; ++i) {
+//      defaultValues.add(i);
+//    }
+//
+//    return YailList.makeList(defaultValues);
+//  }
 
   @Override
   protected boolean areEntriesEqual(Entry e1, Entry e2) {
