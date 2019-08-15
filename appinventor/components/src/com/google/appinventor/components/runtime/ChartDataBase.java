@@ -397,6 +397,13 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     "include DataFiles, TinyDB, CloudDB and AccelerometerSensor.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(ChartDataSource dataSource) {
+        // If the previous Data Source is an ObservableChartDataSource,
+        // this Chart Data component must be removed from the observers
+        // List of the Data Source.
+        if (this.dataSource instanceof ObservableChartDataSource) {
+            ((ObservableChartDataSource)this.dataSource).removeDataObserver(this);
+        }
+
         this.dataSource = dataSource;
 
         // The data should only be imported after the Data component
@@ -433,44 +440,53 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     @SimpleFunction
     public void ChangeDataSource(ChartDataSource source, String keyValue) {
-        if (source instanceof ObservableChartDataSource) {
-            ((ObservableChartDataSource)source).removeDataObserver(this);
-        }
-
+        // DataFile and Web components require different handling for
+        // changing the Data Source. The expected format is CSV values.
         if (source instanceof DataFile || source instanceof Web) {
             YailList keyValues = new YailList();
 
             try {
+                // Attempt to CSV Parse the specified String
                 keyValues = CsvUtil.fromCsvRow(keyValue);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            // Retrieve the List of columns to modify (DataFile columns if Data Source
+            // is a DataFile, and Web columns otherwise.
             List<String> columnsList = (source instanceof DataFile) ? dataFileColumns : webColumns;
 
+            // Iterate through all the columns
             for (int i = 0; i < columnsList.size(); ++i) {
+                // Default option: Set to blank
                 String columnValue = "";
 
+                // KeyValues has required column
                 if (keyValues.size() > i) {
+                    // Update the column value of the current iteration to
+                    // the parsed column value
                     columnValue = keyValues.getString(i);
                 }
 
+                // Update the i-th column value of the DataFileColumns/WebColumns
                 columnsList.set(i, columnValue);
             }
         } else {
+            // All other Data Source components simply take
+            // the keyValue argument as the dataSourceValue.
             dataSourceValue = keyValue;
         }
 
+        // Change the Data Source
         Source(source);
     }
 
     @SimpleFunction
     public void RemoveDataSource() {
-        if (dataSource instanceof ObservableChartDataSource) {
-            ((ObservableChartDataSource)dataSource).removeDataObserver(this);
-        }
-
+        // Change the Chart Data Source to null
         Source(null);
+
+        // Reset all DataSource related values to blank
         dataSourceValue = "";
 
         for (int i = 0; i < dataFileColumns.size(); ++i) {
