@@ -394,7 +394,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
-                    "include DataFiles, TinyDB, CloudDB and AccelerometerSensor.")
+                "include DataFile, Web, TinyDB, CloudDB, AccelerometerSensor and BluetoothClient components.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(ChartDataSource dataSource) {
         // If the previous Data Source is an ObservableChartDataSource,
@@ -432,61 +432,95 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         }
     }
 
-    @SimpleFunction
-    public void ChangeDataSource(ChartDataSource source, String keyValue) {
-        // DataFile and Web components require different handling for
-        // changing the Data Source. The expected format is CSV values.
-        if (source instanceof DataFile || source instanceof Web) {
-            YailList keyValues = new YailList();
+    /**
+     * Changes the attached Data Source of the Chart Data component to the
+     * newly specified Source with the specified key value argument.
+     *
+     * In the case of DataFile and Web components, the keyValue is
+     * expected to be a CSV-formatted String.
+     *
+     * @param source  Data Source to attach to the Data component
+     * @param keyValue  Key value identifying the value to use from the Data Source
+     */
+    @SimpleFunction(description = "Changes the linked Data Source of the Data component, and " +
+        "imports the data that matches the specified key value. Accepted Data Source types " +
+        "include DataFile, Web, TinyDB, CloudDB, AccelerometerSensor and BluetoothClient components." +
+        "If the data identified by the key is updated in the attached Data Source component, then " +
+        "the data is also updated in the Chart Data component. In the case of DataFile and Web " +
+        "components, the key value should be in CSV format, specified as follows: X,Y,Z\n" +
+        "X, Y and Z correspond to column names respectively to use from the DataFile or Web " +
+        "component upon importing.")
+    public void ChangeDataSource(final ChartDataSource source, final String keyValue) {
+        // To avoid interruptions to Data importing, the Chart Data Source should be
+        // changed asynchronously.
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // DataFile and Web components require different handling for
+                // changing the Data Source. The expected format is CSV values.
+                if (source instanceof DataFile || source instanceof Web) {
+                    YailList keyValues = new YailList();
 
-            try {
-                // Attempt to CSV Parse the specified String
-                keyValues = CsvUtil.fromCsvRow(keyValue);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                    try {
+                        // Attempt to CSV Parse the specified String
+                        keyValues = CsvUtil.fromCsvRow(keyValue);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-            // Retrieve the List of columns to modify (DataFile columns if Data Source
-            // is a DataFile, and Web columns otherwise.
-            List<String> columnsList = (source instanceof DataFile) ? dataFileColumns : webColumns;
+                    // Retrieve the List of columns to modify (DataFile columns if Data Source
+                    // is a DataFile, and Web columns otherwise.
+                    List<String> columnsList = (source instanceof DataFile) ? dataFileColumns : webColumns;
 
-            // Iterate through all the columns
-            for (int i = 0; i < columnsList.size(); ++i) {
-                // Default option: Set to blank
-                String columnValue = "";
+                    // Iterate through all the columns
+                    for (int i = 0; i < columnsList.size(); ++i) {
+                        // Default option: Set to blank
+                        String columnValue = "";
 
-                // KeyValues has required column
-                if (keyValues.size() > i) {
-                    // Update the column value of the current iteration to
-                    // the parsed column value
-                    columnValue = keyValues.getString(i);
+                        // KeyValues has required column
+                        if (keyValues.size() > i) {
+                            // Update the column value of the current iteration to
+                            // the parsed column value
+                            columnValue = keyValues.getString(i);
+                        }
+
+                        // Update the i-th column value of the DataFileColumns/WebColumns
+                        columnsList.set(i, columnValue);
+                    }
+                } else {
+                    // All other Data Source components simply take
+                    // the keyValue argument as the dataSourceValue.
+                    dataSourceValue = keyValue;
                 }
 
-                // Update the i-th column value of the DataFileColumns/WebColumns
-                columnsList.set(i, columnValue);
+                // Change the Data Source
+                Source(source);
             }
-        } else {
-            // All other Data Source components simply take
-            // the keyValue argument as the dataSourceValue.
-            dataSourceValue = keyValue;
-        }
-
-        // Change the Data Source
-        Source(source);
+        });
     }
 
-    @SimpleFunction
+    /**
+     * Removes the currently attached Data Source from the Chart Data component.
+     */
+    @SimpleFunction(description = "Un-links the currently associated Data Source component from the Chart.")
     public void RemoveDataSource() {
-        // Change the Chart Data Source to null
-        Source(null);
+        // To avoid interruptions to Data importing, the Chart Data Source should be
+        // changed asynchronously.
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Change the Chart Data Source to null
+                Source(null);
 
-        // Reset all DataSource related values to blank
-        dataSourceValue = "";
+                // Reset all DataSource related values to blank
+                dataSourceValue = "";
 
-        for (int i = 0; i < dataFileColumns.size(); ++i) {
-            dataFileColumns.set(i, "");
-            webColumns.set(i, "");
-        }
+                for (int i = 0; i < dataFileColumns.size(); ++i) {
+                    dataFileColumns.set(i, "");
+                    webColumns.set(i, "");
+                }
+            }
+        });
     }
 
     /**
