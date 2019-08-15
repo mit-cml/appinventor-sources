@@ -418,12 +418,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             if (dataSourceValue == null) {
                 return;
             }
-
-            // After changing the Real Time Chart Data Source, the
-            // the t value should be reset.
-            if (dataSource instanceof RealTimeChartDataSource) {
-                t = 1;
-            }
           }
 
             if (dataSource instanceof DataFile) {
