@@ -6,6 +6,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -427,6 +428,54 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             } else if (dataSource instanceof Web) {
                 importFromWebAsync((Web)dataSource, YailList.makeList(webColumns));
             }
+        }
+    }
+
+    @SimpleFunction
+    public void ChangeDataSource(ChartDataSource source, String keyValue) {
+        if (source instanceof ObservableChartDataSource) {
+            ((ObservableChartDataSource)source).removeDataObserver(this);
+        }
+
+        if (source instanceof DataFile || source instanceof Web) {
+            YailList keyValues = new YailList();
+
+            try {
+                keyValues = CsvUtil.fromCsvRow(keyValue);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            List<String> columnsList = (source instanceof DataFile) ? dataFileColumns : webColumns;
+
+            for (int i = 0; i < columnsList.size(); ++i) {
+                String columnValue = "";
+
+                if (keyValues.size() > i) {
+                    columnValue = keyValues.getString(i);
+                }
+
+                columnsList.set(i, columnValue);
+            }
+        } else {
+            dataSourceValue = keyValue;
+        }
+
+        Source(source);
+    }
+
+    @SimpleFunction
+    public void RemoveDataSource() {
+        if (dataSource instanceof ObservableChartDataSource) {
+            ((ObservableChartDataSource)dataSource).removeDataObserver(this);
+        }
+
+        Source(null);
+        dataSourceValue = "";
+
+        for (int i = 0; i < dataFileColumns.size(); ++i) {
+            dataFileColumns.set(i, "");
+            webColumns.set(i, "");
         }
     }
 
