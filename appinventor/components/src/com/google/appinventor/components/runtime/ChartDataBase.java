@@ -493,6 +493,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     dataSourceValue = keyValue;
                 }
 
+                // Reset Current Data Source Value to null
+                currentDataSourceValue = null;
+
                 // Change the Data Source
                 Source(source);
             }
@@ -514,6 +517,9 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
                 // Reset all DataSource related values to blank
                 dataSourceValue = "";
+
+                // Reset current Data Source Value to null
+                currentDataSourceValue = null;
 
                 for (int i = 0; i < dataFileColumns.size(); ++i) {
                     dataFileColumns.set(i, "");
