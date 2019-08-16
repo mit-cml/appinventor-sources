@@ -268,10 +268,20 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             // Get the index of the entry
             int index = findEntryIndex(entry);
 
-            // Entry exists; remove it
-            if (index >= 0) {
-                getDataset().getValues().remove(index);
-            }
+            removeEntry(index);
+        }
+    }
+
+    /**
+     * Removes the entry in the specified index, provided that the
+     * index is within bounds.
+     *
+     * @param index  Index of the Entry to remove
+     */
+    public void removeEntry(int index) {
+        // Entry exists; remove it
+        if (index >= 0 && index < getDataset().getEntryCount()) {
+            getDataset().getValues().remove(index);
         }
     }
 

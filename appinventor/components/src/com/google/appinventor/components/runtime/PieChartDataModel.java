@@ -84,25 +84,17 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
   }
 
   @Override
-  public void removeEntryFromTuple(YailList tuple) {
-    // Construct an entry from the specified tuple
-    Entry entry = getEntryFromTuple(tuple);
+  public void removeEntry(int index) {
+    // Entry exists; remove it
+    if (index >= 0) {
+      getDataset().removeEntry(index);
 
-    if (entry != null) {
-      // Get the index of the entry
-      int index = findEntryIndex(entry);
+      // Remove the corresponding Legend entry (same index as Data Set index)
+      LegendEntry removedEntry = legendEntries.remove(index);
+      view.removeLegendEntry(removedEntry);
 
-      // Entry exists; remove it
-      if (index >= 0) {
-        getDataset().removeEntry(index);
-
-        // Remove the corresponding Legend entry (same index as Data Set index)
-        LegendEntry removedEntry = legendEntries.remove(index);
-        view.removeLegendEntry(removedEntry);
-
-        // Update the colors of the Legend entries
-        updateLegendColors();
-      }
+      // Update the colors of the Legend entries
+      updateLegendColors();
     }
   }
 

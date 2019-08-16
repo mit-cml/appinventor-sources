@@ -105,30 +105,23 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
   }
 
   @Override
-  public void removeEntryFromTuple(YailList tuple) {
-    // Construct an entry from the specified tuple
-    Entry entry = getEntryFromTuple(tuple);
-
-    if (entry != null) {
-      // Get the index of the entry
-      int index = findEntryIndex(entry);
-
-      // Entry exists; remove it
-      if (index >= 0) {
-        // If the index of the Entry to remove is the last Entry,
-        // we can simply remove the Entry from the Data Series' values.
-        if (index == getDataset().getEntryCount() - 1) {
-          getDataset().getValues().remove(index);
-        } else {
-          // If the Entry to be removed is not the last Entry, we
-          // have to instead set the Y value of the Entry to be
-          // removed to 0 in order to preserve the Bar Chart Data
-          // properties (x values sorted and correspond to indexes)
-          getDataset().getValues().get(index).setY(0f);
-        }
+  public void removeEntry(int index) {
+    // Entry exists; remove it
+    if (index >= 0) {
+      // If the index of the Entry to remove is the last Entry,
+      // we can simply remove the Entry from the Data Series' values.
+      if (index == getDataset().getEntryCount() - 1) {
+        getDataset().getValues().remove(index);
+      } else {
+        // If the Entry to be removed is not the last Entry, we
+        // have to instead set the Y value of the Entry to be
+        // removed to 0 in order to preserve the Bar Chart Data
+        // properties (x values sorted and correspond to indexes)
+        getDataset().getValues().get(index).setY(0f);
       }
     }
   }
+
 
   // TODO: FindEntryIndex can be optimized by making use of the property
   // TODO: that the x value corresponds to the index.
