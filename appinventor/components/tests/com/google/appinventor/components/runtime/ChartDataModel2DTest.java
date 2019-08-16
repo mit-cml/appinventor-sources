@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-public abstract class ChartDataModel2DTest<M extends ChartDataModel,
+public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     D extends ChartData>
     extends ChartDataModelBaseTest<M, D> {
   /**

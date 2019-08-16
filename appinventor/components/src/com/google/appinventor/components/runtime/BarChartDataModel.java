@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
+public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
   /**
    * Initializes a new ChartDataModel object instance.
    *
@@ -21,11 +21,6 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
     dataset = new BarDataSet(new ArrayList<BarEntry>(), "");
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();
-  }
-
-  @Override
-  protected int getTupleSize() {
-    return 2;
   }
 
   @Override
@@ -99,14 +94,6 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
   }
 
   @Override
-  public YailList getTupleFromEntry(Entry entry) {
-    // Create a list with the X and Y values of the entry, and
-    // convert the generic List to a YailList
-    List tupleEntries = Arrays.asList(entry.getX(), entry.getY());
-    return YailList.makeList(tupleEntries);
-  }
-
-  @Override
   protected void setDefaultStylingProperties() {
 
   }
@@ -123,9 +110,4 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
 //
 //    return YailList.makeList(defaultValues);
 //  }
-
-  @Override
-  protected boolean areEntriesEqual(Entry e1, Entry e2) {
-    return e1.equalTo(e2);
-  }
 }

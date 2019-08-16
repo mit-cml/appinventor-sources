@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
+public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
   /* Since a custom legend is used which is shared by all the separate
    * Pie Chart views (rings), for ease of deletion and operations on
    * the entries, the Legend Entries List is kept for this single
@@ -45,11 +45,6 @@ public class PieChartDataModel extends ChartDataModel<PieDataSet, PieData> {
 
     setDefaultStylingProperties();
     this.view = view;
-  }
-
-  @Override
-  protected int getTupleSize() {
-    return 2;
   }
 
   @Override

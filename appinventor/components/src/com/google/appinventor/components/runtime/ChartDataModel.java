@@ -500,5 +500,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param e2  second Entry to compare
      * @return  true if the entries are equal
      */
-    protected abstract boolean areEntriesEqual(Entry e1, Entry e2);
+    protected boolean areEntriesEqual(Entry e1, Entry e2) {
+        return e1.equalTo(e2);
+    }
 }
