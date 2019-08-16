@@ -140,6 +140,7 @@
     "./src/substitution.js",
     "./src/language_switch.js",
     "./src/warning.js",
+    "./src/toolboxController.js",
 
     // Dialog Utiltiy
     "./src/util.js",

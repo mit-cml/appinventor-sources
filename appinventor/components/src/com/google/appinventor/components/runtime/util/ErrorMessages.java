@@ -15,6 +15,7 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class ErrorMessages {
+  public static final int ERROR_DEFAULT = 0;
   // Phone version errors
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL = 1;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER = 2;
@@ -252,12 +253,24 @@ public final class ErrorMessages {
   // Augmented Reality Errors
   public static final int ERROR_INVALID_CONFIGURATION_VALUE = 3700;
 
-  // Start the next group of errors at 3800
+  //SpeechRecognizer Errors
+  public static final int ERROR_AUDIO = 3801;
+  public static final int ERROR_CLIENT = 3802;
+  public static final int ERROR_INSUFFICIENT_PERMISSIONS = 3803;
+  public static final int ERROR_NETWORK = 3804;
+  public static final int ERROR_NETWORK_TIMEOUT = 3805;
+  public static final int ERROR_NO_MATCH = 3806;
+  public static final int ERROR_RECOGNIZER_BUSY = 3807;
+  public static final int ERROR_SERVER = 3808;
+  public static final int ERROR_SPEECH_TIMEOUT = 3809;
+
+  // Start the next group of errors at 3900
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
   static {
     errorMessages = new HashMap<Integer, String>();
+    errorMessages.put(ERROR_DEFAULT, "Try Again.");
     // Phone version errors
     errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL,
         "Warning: This app contains functionality that does not work on this phone: " +
@@ -630,6 +643,17 @@ public final class ErrorMessages {
     // Augmented Reality errors
     errorMessages.put(ERROR_INVALID_CONFIGURATION_VALUE,
         "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
+
+    //SpeechRecognizer Errors
+    errorMessages.put(ERROR_AUDIO, "Audio Recording Error");
+    errorMessages.put(ERROR_CLIENT, "Client Side Error");
+    errorMessages.put(ERROR_INSUFFICIENT_PERMISSIONS, "Insufficient Permissions");
+    errorMessages.put(ERROR_NETWORK, "Network Error");
+    errorMessages.put(ERROR_NETWORK_TIMEOUT, "Network Timeout");
+    errorMessages.put(ERROR_NO_MATCH, "No Match");
+    errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
+    errorMessages.put(ERROR_SERVER, "Error From Server");
+    errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
   }
 
   private ErrorMessages() {

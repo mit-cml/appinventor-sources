@@ -9,6 +9,8 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -26,6 +28,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  * http://developer.android.com/reference/android/view/ViewGroup.html
  */
 public class ScaledFrameLayout extends ViewGroup {
+
+  private static final int MATRIX_SAVE_FLAG = 0x01;
 
   /** The amount of space used by children in the left gutter. */
   private int mLeftWidth;
@@ -54,7 +58,11 @@ public class ScaledFrameLayout extends ViewGroup {
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
-    canvas.save(Canvas.MATRIX_SAVE_FLAG);
+    if (VERSION.SDK_INT < VERSION_CODES.P) {
+      canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null, MATRIX_SAVE_FLAG);
+    } else {
+      canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null);
+    }
     canvas.scale(mScale, mScale);
     super.dispatchDraw(canvas);
     canvas.restore();

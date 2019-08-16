@@ -115,6 +115,9 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private float lastAzimuth = Float.NaN;
   private ScaleBarOverlay scaleBar;
 
+  private static final float[] ANCHOR_HORIZONTAL = { Float.NaN, 0.0f, 1.0f, 0.5f };
+  private static final float[] ANCHOR_VERTICAL = { Float.NaN, 0.0f, 0.5f, 1.0f };
+
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
     private LocationSensor source;
@@ -720,6 +723,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void updateFeaturePosition(MapMarker aiMarker) {
     Marker marker = (Marker)featureOverlays.get(aiMarker);
     if (marker != null) {
+      marker.setAnchor(ANCHOR_HORIZONTAL[aiMarker.AnchorHorizontal()],
+          ANCHOR_VERTICAL[aiMarker.AnchorVertical()]);
       marker.setPosition(new GeoPoint(aiMarker.Latitude(), aiMarker.Longitude()));
       view.invalidate();
     }

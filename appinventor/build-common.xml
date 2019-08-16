@@ -406,14 +406,4 @@
          target="JsonComponentDescription"/>
   </target>
 
-  <!-- ====================================================================
-       components_XmlComponentDescription builds:
-       - build/components/ya_lang_def.xml
-       ==================================================================== -->
-  
-  <target name="components_XmlComponentDescription">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
-         target="XmlComponentDescription"/>
-  </target>
-
 </project>

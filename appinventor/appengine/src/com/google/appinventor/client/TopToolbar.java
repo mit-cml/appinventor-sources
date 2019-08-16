@@ -290,11 +290,8 @@ public class TopToolbar extends Composite {
     }
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
         new AboutCompanionAction()));
-/* Commented out for now, we do not update the Companion ourselves anymore (except for
-   the emulator). Instead we display a bar-code when necessary or direct people to the
-   companionInformation menu item above */
-/*    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
-      new CompanionUpdateAction())); */
+    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
+        new CompanionUpdateAction()));
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
@@ -512,9 +509,9 @@ public class TopToolbar extends Composite {
   private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
           exportProject(selectedProjects.get(0));
