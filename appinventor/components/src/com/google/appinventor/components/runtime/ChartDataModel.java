@@ -18,7 +18,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     // Since real-time data comes in fast, the case of
     // multi-data source input is unhandled since it's
     // better to avoid it.
-    private int maximumTimeEntries = 200;
+    protected int maximumTimeEntries = 200;
 
     /**
      * Enum used to specify the criterion to use for entry filtering/comparing.

@@ -122,6 +122,24 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     }
   }
 
+  @Override
+  public void addTimeEntry(YailList tuple) {
+    // TODO: Currently, this implementation breaks the sorted x value
+    // TODO: property (the START X VALUE is no longer 0). A potential
+    // TODO: fix could be shifting the values instead of removing them,
+    // TODO: zeroing out values on removal (which would result in too
+    // TODO: many entries, however) or by handling the case where
+    // TODO: data adding is added after/during Real Time Data import.
+
+    // If the entry count of the Data Series entries exceeds
+    // the maximum allowed time entries, then remove the first one
+    if (getDataset().getEntryCount() >= maximumTimeEntries) {
+      getDataset().getValues().remove(0);
+    }
+
+    getDataset().addEntry((BarEntry)getEntryFromTuple(tuple));
+  }
+
 
   // TODO: FindEntryIndex can be optimized by making use of the property
   // TODO: that the x value corresponds to the index.
