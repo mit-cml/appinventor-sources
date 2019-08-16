@@ -82,6 +82,8 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         //   in sequence and then refresh the Chart only once
         // * Using FutureTasks, Hardware Acceleration off (to make invalidate non-async) and run on UI thread
         //   and FutureTask.get() to wait for refreshing to finish
+        // * Using FutureTasks and cancelling current Refresh tasks, and starting another one (+ CountDownLatch
+        //   approach combined with FutureTask cancelling)
         // The chosen solution is to then have delays and refresh throttling.
 
 
