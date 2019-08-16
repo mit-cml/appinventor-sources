@@ -170,7 +170,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
             case ComponentConstants.CHART_TYPE_AREA:
                 return new AreaChartView(container.$context());
             case ComponentConstants.CHART_TYPE_BAR:
-                return new LineChartView(container.$context());
+                return new BarChartView(container.$context());
             case ComponentConstants.CHART_TYPE_PIE:
                 return new PieChartView(container.$context());
             default:

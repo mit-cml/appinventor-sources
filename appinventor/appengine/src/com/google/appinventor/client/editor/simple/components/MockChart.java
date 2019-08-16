@@ -168,7 +168,7 @@ public final class MockChart extends MockContainer {
             case ComponentConstants.CHART_TYPE_AREA:
                 return new MockAreaChartView();
             case ComponentConstants.CHART_TYPE_BAR:
-                return new MockLineChartView();
+                return new MockBarChartView();
             case ComponentConstants.CHART_TYPE_PIE:
                 return new MockPieChartView();
             default:
