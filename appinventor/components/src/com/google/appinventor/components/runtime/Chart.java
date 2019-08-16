@@ -330,11 +330,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
      * @param dataSeriesT  t value of a Data Series
      * @return  t value to use for the next time entry based on the specified parameter
      */
-    public int updateAndGetTValue(int dataSeriesT) {
-        // TODO: Method should be revised and tested. The final condition
-        // TODO: most likely follows from the first two if statements (so
-        // TODO: the condition becomes redundant)
-
+    public int getSyncedTValue(int dataSeriesT) {
         int returnValue;
 
         // If the difference between the global t and the Data Series' t
@@ -346,14 +342,11 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
             returnValue = dataSeriesT;
         }
 
-        // Calculate the new Data Series t value (by incrementing by 1,
-        // since that will be the value after adding a time entry).
-        // If this value is more than t, then update the global t
-        // value (since a bigger one will immediately be present upon
-        // adding a Time Entry to the Data Series)
-        if ((returnValue + 1) > t) {
-            t = returnValue + 1;
-        }
+        // Since the returnValue is either bigger or equal to t,
+        // the new synchronized t value should be 1 higher than
+        // the return value (since immediately after getting the
+        // t value, the value will be incremented either way)
+        t = returnValue + 1;
 
         // Return the calculated t value
         return returnValue;

@@ -809,7 +809,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 public void run() {
                     // Get the  t value synced across the entire Chart
                     // and update the synced value if necessary
-                    t = container.updateAndGetTValue(t);
+                    t = container.getSyncedTValue(t);
 
                     // Create tuple from current t value and the received value
                     final YailList tuple = YailList.makeList(Arrays.asList(t, finalValue));
