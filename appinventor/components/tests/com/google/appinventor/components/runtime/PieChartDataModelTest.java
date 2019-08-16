@@ -34,10 +34,10 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry("1", 3f));
-      add(createEntry("2", 5f));
-      add(createEntry("3", -3f));
-      add(createEntry("4", 7f));
+      add(createEntry("0", 3f));
+      add(createEntry("1", 5f));
+      add(createEntry("2", -3f));
+      add(createEntry("3", 7f));
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
@@ -69,7 +69,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
    * have the same x and y values returns true via
    * the areEntriesEqual method.
    */
-  @Test
+  @Override
   public void testEntriesEqual() {
     Entry entry1 = createEntry("Entry", 12f);
     Entry entry2 = createEntry("Entry", 12f);
@@ -82,7 +82,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
    * have the same x but different y values returns false via
    * the areEntriesEqual method.
    */
-  @Test
+  @Override
   public void testEntriesNotEqualY() {
     Entry entry1 = createEntry("Entry", 12f);
     Entry entry2 = createEntry("Entry", 15f);
@@ -95,7 +95,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
    * have the same y but different x values returns false via
    * the areEntriesEqual method.
    */
-  @Test
+  @Override
   public void testEntriesNotEqualX() {
     Entry entry1 = createEntry("Entry", 10f);
     Entry entry2 = createEntry("Entry 2", 10f);

@@ -461,6 +461,45 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
+  /**
+   * Test to ensure that importing from columns of uneven
+   * size imports all the entries while replacing the
+   * blank entries in other Lists with default values.
+   */
+  @Test
+  public void testImportFromCSVUnevenColumnsBlankEntries() {
+    YailList xColumn = createTuple("X", 0f, 1f, "", "");
+    YailList yColumn = createTuple("Y", 1f, 3f, 5f, -4f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 1f));
+      add(createEntry(1f, 3f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
+  /**
+   * Test to ensure that importing from an x Column which is
+   * empty and a Y column which has values results in the
+   * x values to resolve to the default option (1 for first entry,
+   * 2 for second, ...)
+   */
+  @Test
+  public void testImportFromCSVEmptyColumn() {
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple("Y", 1f, 3f, 4f, -3f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 1f));
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, -3f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
   @Override
   protected void assertEntriesEqual(Entry e1, Entry e2) {
     assertEquals(e1.getX(), e2.getX());

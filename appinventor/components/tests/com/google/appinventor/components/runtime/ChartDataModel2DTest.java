@@ -1094,4 +1094,43 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
 
     assertExpectedEntriesHelper(expectedEntries);
   }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x and y values returns true via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesEqual() {
+    Entry entry1 = createEntry(1f, 3f);
+    Entry entry2 = createEntry(1f, 3f);
+
+    assertTrue(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x but different y values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualY() {
+    Entry entry1 = createEntry(3f, 5f);
+    Entry entry2 = createEntry(3f, 7f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same y but different x values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualX() {
+    Entry entry1 = createEntry(4f, 2f);
+    Entry entry2 = createEntry(1f, 2f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
+  }
 }

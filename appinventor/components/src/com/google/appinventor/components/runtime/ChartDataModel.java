@@ -206,9 +206,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             for (int j = 0; j < columns.size(); ++j) {
                 Object value = columns.getObject(j);
 
-                // Invalid column specified; Add default value
+                // Invalid column specified; Add default value (minus one to
+                // compensate for the skipped value)
                 if (!(value instanceof YailList)) {
-                    tupleElements.add(getDefaultValue(i));
+                    tupleElements.add(getDefaultValue(i - 1));
                     continue;
                 }
 
@@ -219,8 +220,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                     // Add entry from column
                     tupleElements.add(column.getString(i));
                 } else if (column.size() == 0) { // Column empty (default value should be used)
-                    // Use default value instead
-                    tupleElements.add(getDefaultValue(i));
+                    // Use default value instead (we use an index minus one to componsate
+                    // for the skipped initial value)
+                    tupleElements.add(getDefaultValue(i - 1));
                 } else { // Column too small
                     // Add blank entry (""), up for the addEntryFromTuple method
                     // to interpret.
