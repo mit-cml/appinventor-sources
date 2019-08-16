@@ -400,7 +400,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // If the previous Data Source is an ObservableChartDataSource,
         // this Chart Data component must be removed from the observers
         // List of the Data Source.
-        if (this.dataSource instanceof ObservableChartDataSource) {
+        if (this.dataSource != dataSource && this.dataSource instanceof ObservableChartDataSource) {
             ((ObservableChartDataSource)this.dataSource).removeDataObserver(this);
         }
 

@@ -32,7 +32,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int pieRadius;
 
     // Synced t value across all Data Series (used for real-time entries)
-    private int t = 0;
+    // Start the value from 1 (in contrast to starting from 0 as in Chart
+    // Data Base) to lessen off-by-one offsets for multiple Chart Data Series.
+    private int t = 1;
 
     // Attached Data components
     private ArrayList<ChartDataBase> dataComponents;
