@@ -608,27 +608,6 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   }
 
   /**
-   * Test to ensure that specifying an existing Entry (of which there are duplicates)
-   * to the findEntryIndex method  returns the first found entry's index.
-   */
-  @Test
-  public void testFindEntryIndexExistsMultiple() {
-    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(1f, 2f));
-      add(createTuple(2f, 1f));
-      add(createTuple(2f, 3f));
-      add(createTuple(2f, 3f));
-      add(createTuple(3f, 4f));
-    }};
-
-    Entry searchEntry = createEntry(2f, 3f);
-    final int expectedIndex = 3;
-
-    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
-  }
-
-  /**
    * Test to ensure that specifying a non-existent entry returns a negative
    * index (denoting entry not found)
    */
@@ -681,9 +660,9 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testGetEntriesAsTuplesMultipleEntries() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(3f, 4f));
-      add(createTuple(5f, 2f));
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 4f));
+      add(createTuple(2f, 2f));
     }};
 
     getEntriesAsTuplesHelper(tuples);

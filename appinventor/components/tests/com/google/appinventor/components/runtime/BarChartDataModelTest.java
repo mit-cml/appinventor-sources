@@ -198,7 +198,19 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
 
   @Override
   public void testFindEntryIndexExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(3f, 1f));
+      add(createTuple(4f, 6f));
+      add(createTuple(6f, -1f));
+      add(createTuple(7f, 3f));
+    }};
 
+    Entry searchEntry = createEntry(7f, 3f);
+    final int expectedIndex = 7;
+
+    model.importFromList(tuples);
+
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
   }
 
   @Override
@@ -220,21 +232,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
-  }
-
-  @Override
-  public void testRemoveFromTupleInvalid() {
-
-  }
-
-  @Override
-  public void testRemoveValuesMultipleValues() {
-
-  }
-
-  @Override
-  public void testRemoveValuesYailListEntries() {
-
   }
 
   @Override
@@ -273,21 +270,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
   }
 
   @Override
-  public void testRemoveValuesSingleValue() {
-
-  }
-
-  @Override
-  public void testRemoveFromTupleExists() {
-
-  }
-
-  @Override
-  public void testAddTimeEntryExceedsMaximum() {
-
-  }
-
-  @Override
   public void testImportFromListDuplicates() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
       add(createTuple(0f, 5f));
@@ -300,16 +282,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     }};
 
     importFromListHelper(tuples, expectedEntries);
-  }
-
-  @Override
-  public void testRemoveFromTupleMultipleEntries() {
-
-  }
-
-  @Override
-  public void testGetEntriesAsTuplesMultipleEntries() {
-
   }
 
   @Override
@@ -336,13 +308,44 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     importFromListHelper(tuples, expectedEntries);
   }
 
+
+  @Override
+  public void testRemoveFromTupleInvalid() {
+
+  }
+
+  @Override
+  public void testRemoveValuesMultipleValues() {
+
+  }
+
+  @Override
+  public void testRemoveValuesYailListEntries() {
+
+  }
+
+  @Override
+  public void testRemoveValuesSingleValue() {
+
+  }
+
+  @Override
+  public void testRemoveFromTupleExists() {
+
+  }
+
+  @Override
+  public void testRemoveFromTupleMultipleEntries() {
+
+  }
+
   @Override
   public void testRemoveValuesNonExistentValues() {
 
   }
 
   @Override
-  public void testFindEntryIndexExistsMultiple() {
+  public void testAddTimeEntryExceedsMaximum() {
 
   }
 

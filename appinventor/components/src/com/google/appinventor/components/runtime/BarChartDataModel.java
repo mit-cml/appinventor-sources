@@ -104,6 +104,9 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
 
   }
 
+  // TODO: FindEntryIndex can be optimized by making use of the property
+  // TODO: that the x value corresponds to the index.
+
 //  @Override
 //  protected YailList getDefaultValues(int size) {
 //    // Default values for Bar Chart Data Models should be

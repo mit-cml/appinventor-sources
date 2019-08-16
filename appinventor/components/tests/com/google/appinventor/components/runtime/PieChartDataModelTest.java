@@ -480,6 +480,27 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
+  /**
+   * Test to ensure that specifying an existing Entry (of which there are duplicates)
+   * to the findEntryIndex method  returns the first found entry's index.
+   */
+  @Test
+  public void testFindEntryIndexExistsMultiple() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Test", 3f));
+      add(createTuple("Test", 2f));
+      add(createTuple("Entry", 1f));
+      add(createTuple("Entry", 3f));
+      add(createTuple("Entry", 3f));
+      add(createTuple("Entry 2", 4f));
+    }};
+
+    Entry searchEntry = createEntry("Entry", 3f);
+    final int expectedIndex = 3;
+
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
+  }
+
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
     LegendEntry[] legendEntries = legend.getEntries();
 
