@@ -280,7 +280,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     public void removeEntry(int index) {
         // Entry exists; remove it
-        if (index >= 0 && index < getDataset().getEntryCount()) {
+        if (index >= 0) {
             getDataset().getValues().remove(index);
         }
     }
