@@ -462,11 +462,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
   }
 
   @Override
-  public void testAddTimeEntryExceedsMaximum() {
-
-  }
-
-  @Override
   protected void assertEntriesEqual(Entry e1, Entry e2) {
     assertEquals(e1.getX(), e2.getX());
     assertEquals(e1.getY(), e2.getY());
