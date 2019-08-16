@@ -146,7 +146,7 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     // If there is more than one Data Set in the Bar Chart, the
     // bars have to be regrouped.
     if (dataSetCount > 1) {
-      // Group Bar Chart barsr with the current parameters
+      // Group Bar Chart bars with the current parameters
       chart.groupBars(START_X_VALUE, GROUP_SPACE, barSpace);
 
       // Determine the maximum number of entries between Bar Data Sets.
