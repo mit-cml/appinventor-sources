@@ -41,6 +41,12 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
       // that x values correspond to an index), we need additional
       // logic for entry insertion.
 
+      // Negative x value is an invalid input (negative index);
+      // Skip entry adding.
+      if (xValue < 0) {
+        return;
+      }
+
       // X Value is less than the entry count of the Data Series;
       // This means that the value already exists
       if (xValue < getDataset().getEntryCount()) {
