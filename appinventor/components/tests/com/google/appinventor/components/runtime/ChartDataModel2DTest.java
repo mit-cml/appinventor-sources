@@ -115,15 +115,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testImportFromListBiggerTuples() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(-2f, 7f, 3f));
-      add(createTuple(0f, 3f, 2f));
-      add(createTuple(5f, 5f, 2f));
+      add(createTuple(0f, 7f, 3f));
+      add(createTuple(1f, 3f, 2f));
+      add(createTuple(2f, 5f, 2f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(-2f, 7f));
-      add(createEntry(0f, 3f));
-      add(createEntry(5f, 5f));
+      add(createEntry(0f, 7f));
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 5f));
     }};
 
     importFromListHelper(tuples, expectedEntries);
@@ -238,12 +238,12 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
       add(Collections.singletonList(-2f));
       add(Arrays.asList(0f, 7f));
       add("test-string");
-      add(Arrays.asList(3f, 1f));
+      add(Arrays.asList(1f, 1f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
       add(createEntry(0f, 7f));
-      add(createEntry(3f, 1f));
+      add(createEntry(1f, 1f));
     }};
 
     importFromListHelper(tuples, expectedEntries);
@@ -257,15 +257,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testImportFromListMixedEntries() {
     ArrayList<List> tuples = new ArrayList<List>() {{
-      add(Arrays.asList(-2f, 3f));
-      add(createTuple(0f, 7f));
-      add(Arrays.asList(5f, 4f));
+      add(Arrays.asList(0f, 3f));
+      add(createTuple(1f, 7f));
+      add(Arrays.asList(2f, 4f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(-2f, 3f));
-      add(createEntry(0f, 7f));
-      add(createEntry(5f, 4f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 7f));
+      add(createEntry(2f, 4f));
     }};
 
     importFromListHelper(tuples, expectedEntries);
@@ -500,15 +500,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testRemoveFromTupleNonExistent() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(2f, 4f));
-      add(createTuple(5f, 9f));
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 4f));
+      add(createTuple(2f, 9f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 3f));
-      add(createEntry(2f, 4f));
-      add(createEntry(5f, 9f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 4f));
+      add(createEntry(2f, 9f));
     }};
 
     YailList deleteTuple = createTuple(7f, 2f);
@@ -904,15 +904,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testRemoveValuesEmpty() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, -1f));
-      add(createTuple(3f, 1f));
-      add(createTuple(5f, 7f));
+      add(createTuple(0f, -1f));
+      add(createTuple(1f, 1f));
+      add(createTuple(2f, 7f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, -1f));
-      add(createEntry(3f, 1f));
-      add(createEntry(5f, 7f));
+      add(createEntry(0f, -1f));
+      add(createEntry(1f, 1f));
+      add(createEntry(2f, 7f));
     }};
 
     List<List> removeEntries = new ArrayList<List>();
@@ -1090,14 +1090,14 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     model.setMaximumTimeEntries(5);
 
     List<YailList> entries = new ArrayList<YailList>() {{
-      add(createTuple(1f, 1f));
-      add(createTuple(2f, 3f));
-      add(createTuple(3f, 4f));
-      add(createTuple(4f, 2f));
-      add(createTuple(5f, 1f));
-      add(createTuple(6f, 7f));
-      add(createTuple(7f, 1f));
-      add(createTuple(8f, 5f));
+      add(createTuple(0f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(2f, 4f));
+      add(createTuple(3f, 2f));
+      add(createTuple(4f, 1f));
+      add(createTuple(5f, 7f));
+      add(createTuple(6f, 1f));
+      add(createTuple(7f, 5f));
     }};
 
 
@@ -1106,11 +1106,11 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     }
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(4f, 2f));
-      add(createEntry(5f, 1f));
-      add(createEntry(6f, 7f));
-      add(createEntry(7f, 1f));
-      add(createEntry(8f, 5f));
+      add(createEntry(3f, 2f));
+      add(createEntry(4f, 1f));
+      add(createEntry(5f, 7f));
+      add(createEntry(6f, 1f));
+      add(createEntry(7f, 5f));
     }};
 
     assertExpectedEntriesHelper(expectedEntries);

@@ -57,7 +57,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
         // the index, missing values up until the x value
         // need to be filled (with 0 values)
         while (getDataset().getEntryCount() < xValue) {
-          getDataset().addEntry(new BarEntry(0, 0));
+          getDataset().addEntry(new BarEntry(getDataset().getEntryCount(), 0));
         }
 
         // Add the entry to the Data Series; Since we
