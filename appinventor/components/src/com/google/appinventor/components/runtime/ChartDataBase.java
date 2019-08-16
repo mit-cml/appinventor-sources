@@ -58,7 +58,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
-    private int t = 1;
+    private int t = 0;
 
     /**
      * Creates a new Chart Data component.
@@ -672,16 +672,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * Refreshes the Chart view object.
      */
     protected void refreshChart() {
-        // In case of the LineChartBaseDataModel being used, the Data Set
-        // of the model has to manually notify the changes (since entries
-        // are added directly to the Data Set in the case of the
-        // LineChartBase Data Model
-        // TODO: In case the addEntryOrdered method is ever used instead,
-        // TODO: this line could then be removed.
-        if (chartDataModel instanceof LineChartBaseDataModel) {
-            chartDataModel.getDataset().notifyDataSetChanged();
-        }
+        // Notify data set changes (needs to be invoked when changing
+        // values of the Data Set directly, which occurs in add/remove
+        // entry methods)
+        chartDataModel.getDataset().notifyDataSetChanged();
 
+        // Refresh the Chart
         container.refresh();
     }
 
@@ -801,8 +797,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         }
 
         if (importData) {
-            // Create tuple from current t value and the received value
-            final YailList tuple = YailList.makeList(Arrays.asList(t, value));
+            // Get value as final value to use for the runnable on UI thread
+            final Object finalValue = value;
 
             // Import value in non-async (since this is a real-time value,
             // the update will come faster than running in async)
@@ -811,8 +807,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
             container.$context().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    // Get the  t value synced across the entire Chart
+                    // and update the synced value if necessary
+                    t = container.updateAndGetTValue(t);
+
+                    // Create tuple from current t value and the received value
+                    final YailList tuple = YailList.makeList(Arrays.asList(t, finalValue));
+
                     chartDataModel.addTimeEntry(tuple);
                     refreshChart();
+
+                    // Increment t value
                     t++;
                 }
             });
