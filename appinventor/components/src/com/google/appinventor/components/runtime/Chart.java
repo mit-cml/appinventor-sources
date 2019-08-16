@@ -331,6 +331,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
      * @return  t value to use for the next time entry based on the specified parameter
      */
     public int updateAndGetTValue(int dataSeriesT) {
+        // TODO: Method should be revised and tested. The final condition
+        // TODO: most likely follows from the first two if statements (so
+        // TODO: the condition becomes redundant)
+
         int returnValue;
 
         // If the difference between the global t and the Data Series' t
