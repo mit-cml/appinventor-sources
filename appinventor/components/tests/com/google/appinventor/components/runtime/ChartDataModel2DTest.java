@@ -523,13 +523,13 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testRemoveFromTupleInvalid() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(5f, 2f));
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 2f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 3f));
-      add(createEntry(5f, 2f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 2f));
     }};
 
     YailList deleteTuple = createTuple(5f);
@@ -1027,7 +1027,7 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
       add(createTuple(0f, 3f));
       add(createTuple(1f, 10f));
-      add(createTuple(9f, 5f));
+      add(createTuple(2f, 5f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
@@ -1037,7 +1037,7 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
 
     // Remove entries
     List<List> removeEntries = new ArrayList<List>() {{
-      add(createTuple(9f, 5f));
+      add(createTuple(2f, 5f));
     }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);

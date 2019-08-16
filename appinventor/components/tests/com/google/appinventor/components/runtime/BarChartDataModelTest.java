@@ -7,6 +7,8 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -308,40 +310,155 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     importFromListHelper(tuples, expectedEntries);
   }
 
-
-  @Override
-  public void testRemoveFromTupleInvalid() {
-
-  }
-
-  @Override
-  public void testRemoveValuesMultipleValues() {
-
-  }
-
-  @Override
-  public void testRemoveValuesYailListEntries() {
-
-  }
-
-  @Override
-  public void testRemoveValuesSingleValue() {
-
-  }
-
+  /**
+   * Test case to ensure that removing an Entry which is
+   * not the last Entry simply sets the y value of the Entry
+   * to 0.
+   */
   @Override
   public void testRemoveFromTupleExists() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 7f));
+      add(createTuple(3f, 5f)); // The entry to be removed
+      add(createTuple(5f, 4f));
+    }};
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 7f));
+      add(createEntry(2f, 0f));
+      add(createEntry(3f, 0f));
+      add(createEntry(4f, 0f));
+      add(createEntry(5f, 4f));
+    }};
 
+    YailList deleteTuple = createTuple(3f, 5f);
+
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
+  }
+
+  /**
+   * Test case to ensure that removing an Entry which is
+   * the last Entry actually removes the Entry.
+   */
+  @Test
+  public void testRemoveFromTupleLast() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 3f));
+      add(createTuple(2f, 4f));
+      add(createTuple(3f, 1f));
+      add(createTuple(4f, 5f)); // The entry to be removed
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 0f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, 1f));
+    }};
+
+    YailList deleteTuple = createTuple(4f, 5f);
+
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   @Override
   public void testRemoveFromTupleMultipleEntries() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 1f));
+      add(createTuple(1f, 3f));
+      add(createTuple(1f, 2f));
+    }};
 
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 0f));
+    }};
+
+    YailList deleteTuple = createTuple(1f, 2f);
+
+    removeEntryFromTupleHelper(tuples, expectedEntries, deleteTuple);
   }
 
   @Override
   public void testRemoveValuesNonExistentValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, -1f));
+      add(createTuple(2f, 2f));
+      add(createTuple(4f, 4f));
+      add(createTuple(5f, -3f));
+    }};
 
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, -1f));
+      add(createEntry(1f, 0f));
+      add(createEntry(2f, 2f));
+      add(createEntry(3f, 0f));
+    }};
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(createTuple(5f, -3f));
+      add(createTuple(4f, 4f));
+      add(createTuple(3f, 1f)); // Does not exist
+      add(createTuple(2f, 3f)); // Does not exist
+    }};
+
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
+  }
+
+  @Override
+  public void testRemoveValuesSingleValue() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, -3f));
+      add(createTuple(2f, 4f));
+      add(createTuple(4f, 5f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 0f));
+      add(createEntry(1f, -3f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, 0f));
+    }};
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(Arrays.asList(4f, 5f));
+    }};
+
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
+  }
+
+  @Override
+  public void testRemoveValuesMultipleValues() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(0f, 0f));
+      add(createTuple(1f, 3f));
+      add(createTuple(3f, 7f));
+      add(createTuple(5f, 6f));
+      add(createTuple(6f, 4f));
+      add(createTuple(8f, 3f));
+    }};
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f,0f));
+      add(createEntry(1f,0f));
+      add(createEntry(2f,0f));
+      add(createEntry(3f,7f));
+      add(createEntry(4f,0f));
+      add(createEntry(5f,0f));
+      add(createEntry(6f,4f));
+      add(createEntry(7f,0f));
+    }};
+
+    // Remove entries
+    List<List> removeEntries = new ArrayList<List>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(5f, 6f));
+      add(createTuple(8f, 3f));
+    }};
+
+    removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
 
   @Override
