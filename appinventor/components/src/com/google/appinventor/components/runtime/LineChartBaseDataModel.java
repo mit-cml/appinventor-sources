@@ -9,6 +9,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDataSet, LineData>  {
     /**
@@ -69,6 +70,12 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
     public void setColor(int argb) {
         super.setColor(argb);
         getDataset().setCircleColor(argb);
+    }
+
+    @Override
+    public void setColors(List<Integer> colors) {
+        super.setColors(colors);
+        getDataset().setCircleColors(colors);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -108,13 +109,28 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      */
     @SimpleProperty
     public void Colors(YailList argb) {
-        colors = argb;
+        // Parse the entries of the YailList
+        List<Integer> resultColors = new ArrayList<Integer>();
 
-        // TODO: Add support for other Chart types
-        if (chartDataModel instanceof PieChartDataModel) {
-            ((PieChartDataModel)chartDataModel).setColors(argb);
+        for (int i = 0; i < argb.size(); ++i) {
+            // Get the element of the YailList as a String
+            String color = argb.getString(i);
+
+            try {
+                // Parse the color value and add it to the results List
+                int colorValue = Integer.parseInt(color);
+                resultColors.add(colorValue);
+            } catch (NumberFormatException e) {
+                // Skip invalid entry
+            }
         }
 
+        // Update the Colors YailList variable
+        colors = YailList.makeList(resultColors);
+
+        // Set the colors from the constructed List of colors
+        // and refresh the Chart.
+        chartDataModel.setColors(resultColors);
         refreshChart();
     }
 

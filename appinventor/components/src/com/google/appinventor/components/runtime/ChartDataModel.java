@@ -72,6 +72,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Changes the colors of the Data Series from the passed in Colors List.
+     *
+     * @param colors  List of colors to set to the Data Series
+     */
+    public void setColors(List<Integer> colors) {
+        getDataset().setColors(colors);
+    }
+
+    /**
      * Changes the label of the data set.
      *
      * @param text  new label text

@@ -160,31 +160,15 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
 
   /**
    * Sets the colors of the Data Series from the specified
-   * colors YailList.
+   * colors List, where each value in the List is an integer.
    *
-   * Invalid (non-color) entries are simply ignored.
-   * @param colors YailList of entries expected to contain colors (integers)
+   * @param colors List of entries expected to contain colors (integers)
    */
-  public void setColors(YailList colors) {
-    // Parse the entries of the YailList
-    List<Integer> resultColors = new ArrayList<Integer>();
+  public void setColors(List<Integer> colors) {
+    super.setColors(colors);
 
-    for (int i = 0; i < colors.size(); ++i) {
-      // Get the element of the YailList as a String
-      String color = colors.getString(i);
-
-      try {
-        // Parse the color value and add it to the results List
-        int colorValue = Integer.parseInt(color);
-        resultColors.add(colorValue);
-      } catch (NumberFormatException e) {
-        // Skip invalid entry
-      }
-    }
-
-    // Set the colors to the dataset and updates the
-    // colors of the Legend entries.
-    getDataset().setColors(resultColors);
+    // After setting the colors, the colors of the Legend
+    // need to be updated.
     updateLegendColors();
   }
 
