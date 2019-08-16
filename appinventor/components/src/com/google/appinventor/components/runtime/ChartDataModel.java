@@ -18,7 +18,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     // Since real-time data comes in fast, the case of
     // multi-data source input is unhandled since it's
     // better to avoid it.
-    private int maximumTimeEntries = 200;
+    protected int maximumTimeEntries = 200;
 
     /**
      * Enum used to specify the criterion to use for entry filtering/comparing.
@@ -174,13 +174,26 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param columns  columns to import data from
      */
     public void importFromColumns(YailList columns) {
+        // Get a YailList of tuples from the specified columns
+        YailList tuples = getTuplesFromColumns(columns);
+
+        // Use the generated tuple list in the importFromList method to
+        // import the data.
+        importFromList(tuples);
+    }
+
+    /**
+     * Constructs and returns a List of tuples from the specified Columns List.
+     * The Columns List is expected to be a List containing Lists, where each
+     * List corresponds to a column, the first entry of which is the header/name
+     * of the column (hence it is skipped in generating data)
+     *
+     * @param columns  List of columns to generate tuples from
+     * @return  Generated List of tuples from the columns
+     */
+    public YailList getTuplesFromColumns(YailList columns) {
         // Determine the (maximum) row count of the specified columns
         int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
-
-        if (rows == 0) {
-            // No rows exist. Do nothing.
-            return;
-        }
 
         List<YailList> tuples = new ArrayList<YailList>();
 
@@ -228,9 +241,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             tuples.add(tuple);
         }
 
-        // Use the generated tuple list in the importFromList method to
-        // import the data.
-        importFromList(YailList.makeList(tuples));
+        // Return result as YailList
+        return YailList.makeList(tuples);
     }
 
     /**
@@ -256,10 +268,20 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             // Get the index of the entry
             int index = findEntryIndex(entry);
 
-            // Entry exists; remove it
-            if (index >= 0) {
-                getDataset().getValues().remove(index);
-            }
+            removeEntry(index);
+        }
+    }
+
+    /**
+     * Removes the entry in the specified index, provided that the
+     * index is within bounds.
+     *
+     * @param index  Index of the Entry to remove
+     */
+    public void removeEntry(int index) {
+        // Entry exists; remove it
+        if (index >= 0) {
+            getDataset().getValues().remove(index);
         }
     }
 
@@ -460,7 +482,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param size  Number of entries to return
      * @return  YailList of the specified number of entries containing the default values.
      */
-    protected abstract YailList getDefaultValues(int size);
+//    protected abstract YailList getDefaultValues(int size);
 
     /**
      * Returns default tuple entry value to use when a value
@@ -488,5 +510,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @param e2  second Entry to compare
      * @return  true if the entries are equal
      */
-    protected abstract boolean areEntriesEqual(Entry e1, Entry e2);
+    protected boolean areEntriesEqual(Entry e1, Entry e2) {
+        return e1.equalTo(e2);
+    }
 }

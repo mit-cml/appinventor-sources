@@ -112,6 +112,27 @@ public abstract class PointChartDataModelTest
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
   }
 
+  /**
+   * Test to ensure that specifying an existing Entry (of which there are duplicates)
+   * to the findEntryIndex method  returns the first found entry's index.
+   */
+  @Test
+  public void testFindEntryIndexExistsMultiple() {
+    ArrayList<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple(1f, 3f));
+      add(createTuple(1f, 2f));
+      add(createTuple(2f, 1f));
+      add(createTuple(2f, 3f));
+      add(createTuple(2f, 3f));
+      add(createTuple(3f, 4f));
+    }};
+
+    Entry searchEntry = createEntry(2f, 3f);
+    final int expectedIndex = 3;
+
+    findEntryIndexHelper(tuples, searchEntry, expectedIndex);
+  }
+
   @Override
   protected Entry createEntry(Object... entries) {
     float x = (float) entries[0];

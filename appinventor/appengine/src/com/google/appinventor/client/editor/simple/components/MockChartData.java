@@ -16,6 +16,8 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
     private static final String PROPERTY_DATA_FILE_X_COLUMN = "DataFileXColumn";
     private static final String PROPERTY_DATA_FILE_Y_COLUMN = "DataFileYColumn";
+    private static final String PROPERTY_WEB_X_COLUMN = "WebXColumn";
+    private static final String PROPERTY_WEB_Y_COLUMN = "WebYColumn";
 
     // Represents the Chart data icon
     private Image iconWidget;
@@ -77,7 +79,9 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
                 propertyName.equals(PROPERTY_NAME_WIDTH) ||
                 propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN) ||
                 propertyName.equals(PROPERTY_DATA_FILE_Y_COLUMN) ||
-                propertyName.equals(PROPERTY_CHART_SOURCE_VALUE)) {
+                propertyName.equals(PROPERTY_CHART_SOURCE_VALUE) ||
+                propertyName.equals(PROPERTY_WEB_X_COLUMN) ||
+                propertyName.equals(PROPERTY_WEB_Y_COLUMN)) {
             return false;
         }
 
@@ -191,11 +195,18 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         // Hide Elements from Pairs property if a Data Source has been set
         showProperty(PROPERTY_PAIRS, (dataSource == null));
 
+        // Hide or show the Web column properties depending on condition
+        boolean showWebColumns = (dataSource != null && dataSource.getType().equals("Web"));
+        showProperty(PROPERTY_WEB_X_COLUMN, showWebColumns);
+        showProperty(PROPERTY_WEB_Y_COLUMN, showWebColumns);
+
         // Handle DataFile-related property responses
         handleDataFilePropertySetting();
 
-        // Show Data Source Value only if the Data Source is non-null and not of type MockDataFile
-        boolean showDataSourceValue = (dataSource != null && !(dataSource instanceof MockDataFile));
+        // Show Data Source Value only if the Data Source is non-null and not of type MockDataFile or Web
+        boolean showDataSourceValue = (dataSource != null &&
+            !(dataSource instanceof MockDataFile || showWebColumns));
+
         showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
     }
 

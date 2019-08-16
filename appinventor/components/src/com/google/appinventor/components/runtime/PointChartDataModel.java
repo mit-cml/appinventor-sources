@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
-    D extends BarLineScatterCandleBubbleData> extends ChartDataModel<T, D>{
+    D extends BarLineScatterCandleBubbleData> extends Chart2DDataModel<T, D> {
   /**
    * Initializes a new PointChartDataModel object instance.
    *
@@ -19,11 +19,6 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
    */
   protected PointChartDataModel(D data) {
     super(data);
-  }
-
-  @Override
-  protected int getTupleSize() {
-    return 2;
   }
 
   @Override
@@ -53,29 +48,16 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
     return null;
   }
 
-  @Override
-  public YailList getTupleFromEntry(Entry entry) {
-    // Create a list with the X and Y values of the entry, and
-    // convert the generic List to a YailList
-    List tupleEntries = Arrays.asList(entry.getX(), entry.getY());
-    return YailList.makeList(tupleEntries);
-  }
-
-  @Override
-  protected YailList getDefaultValues(int size) {
-    // Default values for Point Chart Data Models should be
-    // integers from 0 to N (0, 1, 2, ...)
-    ArrayList<Integer> defaultValues = new ArrayList<>();
-
-    for (int i = 0; i < size; ++i) {
-      defaultValues.add(i);
-    }
-
-    return YailList.makeList(defaultValues);
-  }
-
-  @Override
-  protected boolean areEntriesEqual(Entry e1, Entry e2) {
-    return e1.equalTo(e2);
-  }
+//  @Override
+//  protected YailList getDefaultValues(int size) {
+//    // Default values for Point Chart Data Models should be
+//    // integers from 0 to N (0, 1, 2, ...)
+//    ArrayList<Integer> defaultValues = new ArrayList<>();
+//
+//    for (int i = 0; i < size; ++i) {
+//      defaultValues.add(i);
+//    }
+//
+//    return YailList.makeList(defaultValues);
+//  }
 }

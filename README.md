@@ -34,8 +34,17 @@ You will also need a copy of the [App Engine SDK](https://developers.google.com/
 
 If you want to make changes to the source, you are going to need to run an automated test suite, and for that you will also need [phantomjs](http://phantomjs.org/). Have a look at the testing section for more information.
 
-Note: Java 8 will work locally, and it is also supported by AppEngine, but you may need to [specify your runtime](https://cloud.google.com/appengine/docs/standard/java/runtime-java8) if you want to use appspot.
-Also note that certain Java 8 features, such as lambda expressions, are not supported on Android, so please don't use them in your changes to the source code.
+Note 1: If you are working on a 64-bit linux system, you need to install 32-bit version of: glibc(to get a 32-bit version of ld-linux.so), zlib and libstdc++.
+
+If you are on a Debian-based distribution(Ubuntu), use:
+
+    $ sudo apt-get install libc6:i386 zlib1g:i386 libstdc++6:i386
+
+If you are on an RPM-based distribution(Fedora), use:
+
+    $ sudo dnf install glibc.i686 zlib.i686 libstdc++.i686
+
+Note 2: Certain Java 8 features, such as lambda expressions, are not supported on Android, so please don't use them in your changes to the source code.
 
 ### Forking or cloning
 Consider ***forking*** the project if you want to make changes to the sources. If you simply want to run it locally, you can simply ***clone*** it.
@@ -110,4 +119,4 @@ The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you 
     $ ant tests
 
 ## Need help?
-Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) or [G+ community](https://plus.google.com/u/0/b/116831753302186936352/116831753302186936352/posts).
+Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev).
