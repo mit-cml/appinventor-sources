@@ -35,15 +35,34 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
 
     // If entry constructed successfully, add it to the Data Series
     if (entry != null) {
+      // Since Bar Chart entries use x values as indexes (which
+      // are integers), we need to cast the entry's x value to an integer.
       int xValue = (int)entry.getX();
 
+      // To ensure the two properties of the Bar Chart entries
+      // (one of which is the property where entries are sorted
+      // in ascending order by x values, where the difference between
+      // subsequent x values is always 1, and the other which is
+      // that x values correspond to an index), we need additional
+      // logic for entry insertion.
+
+      // X Value is less than the entry count of the Data Series;
+      // This means that the value already exists
       if (xValue < getDataset().getEntryCount()) {
+        // Use x value as index and update the entry in that position
         getDataset().getValues().set(xValue, entry);
       } else {
+        // To ensure that the x value would correspond to
+        // the index, missing values up until the x value
+        // need to be filled (with 0 values)
         while (getDataset().getEntryCount() < xValue) {
           getDataset().addEntry(new BarEntry(0, 0));
         }
 
+        // Add the entry to the Data Series; Since we
+        // took care of missing values, this will now guarantee
+        // that the x value corresponds to the last index of
+        // the Data Series (equal to entryCount - 1)
         getDataset().addEntry(entry);
       }
     }
@@ -59,7 +78,10 @@ public class BarChartDataModel extends ChartDataModel<BarDataSet, BarData> {
       String yValue = tuple.getString(1);
 
       try {
-        // Attempt to parse the x and y value String representations
+        // Attempt to parse the x and y value String representations.
+        // Since the Bar Chart uses x entries as an index (so an
+        // x value of 3 would correspond to the 4th entry [3rd index],
+        //the float value has to be rounded to an integer.
         int x = Math.round(Float.parseFloat(xValue));
         float y = Float.parseFloat(yValue);
 
