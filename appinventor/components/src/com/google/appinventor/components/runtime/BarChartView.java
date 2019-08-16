@@ -83,6 +83,14 @@ public class BarChartView extends ChartView<BarChart, BarData> {
       // Update the bar width of the Bar Chart
       chart.getData().setBarWidth(barWidth);
     }
+
+    // If the Data Set count on Bar Space and Width recalculation is
+    // 2, that means the 2nd Data Set has been added, and as such,
+    // the appropriate settings can be set which apply to Grouped Bar Charts.
+    if (dataSetCount == 2) {
+      chart.getXAxis().setAxisMinimum(START_X_VALUE); // The values should start from 0
+      chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
+    }
   }
 
   @Override
@@ -94,9 +102,7 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     chart.setLayoutParams(new ViewGroup.LayoutParams
         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    chart.getXAxis().setAxisMinimum(START_X_VALUE); // The values should start from 0
     chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
-    chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
     chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
 
     // The X Axis values should be rounded off (since x values are whole numbers)
