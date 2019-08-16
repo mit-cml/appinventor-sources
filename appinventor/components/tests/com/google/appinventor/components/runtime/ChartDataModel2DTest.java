@@ -23,11 +23,11 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
    */
   @Test
   public void testSetElementsInvalid() {
-    String elements = "1.0,2.0,3.0,4.0,A,B";
+    String elements = "0.0,2.0,1.0,4.0,A,B";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 2f));
-      add(createEntry(3f, 4f));
+      add(createEntry(0f, 2f));
+      add(createEntry(1f, 4f));
     }};
 
     setElementsHelper(elements, expectedEntries);
@@ -39,12 +39,12 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
    */
   @Test
   public void testSetElementsEven() {
-    String elements = "1.0,2.0,2.0,4.0,3.0,1.0";
+    String elements = "0.0,2.0,1.0,4.0,2.0,1.0";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 2f));
-      add(createEntry(2f, 4f));
-      add(createEntry(3f, 1f));
+      add(createEntry(0f, 2f));
+      add(createEntry(1f, 4f));
+      add(createEntry(2f, 1f));
     }};
 
     setElementsHelper(elements, expectedEntries);
@@ -57,10 +57,10 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
    */
   @Test
   public void testSetElementsOdd() {
-    String elements = "1.0,3.0,5.0";
+    String elements = "0.0,3.0,5.0";
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 3f));
+      add(createEntry(0f, 3f));
     }};
 
     setElementsHelper(elements, expectedEntries);
@@ -191,15 +191,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testImportFromListGenericList() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(-2f, 3f));
-      add(createTuple(0f, 7f));
-      add(createTuple(1f, 5f));
+      add(createTuple(0f, 3f));
+      add(createTuple(1f, 7f));
+      add(createTuple(2f, 5f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(-2f, 3f));
-      add(createEntry(0f, 7f));
-      add(createEntry(1f, 5f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 7f));
+      add(createEntry(2f, 5f));
     }};
 
     importFromListGenericHelper(tuples, expectedEntries);
@@ -213,15 +213,15 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testImportFromListGenericListEntries() {
     ArrayList<List> tuples = new ArrayList<List>() {{
-      add(Arrays.asList(-2f, 3f));
-      add(Arrays.asList(0f, 7f));
-      add(Arrays.asList(5f, 4f));
+      add(Arrays.asList(0f, 3f));
+      add(Arrays.asList(1f, 7f));
+      add(Arrays.asList(2f, 4f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(-2f, 3f));
-      add(createEntry(0f, 7f));
-      add(createEntry(5f, 4f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 7f));
+      add(createEntry(2f, 4f));
     }};
 
     importFromListGenericHelper(tuples, expectedEntries);

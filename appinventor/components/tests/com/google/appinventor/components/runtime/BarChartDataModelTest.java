@@ -95,32 +95,12 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
   }
 
   @Override
-  public void testSetElementsInvalid() {
-
-  }
-
-  @Override
-  public void testSetElementsOdd() {
-
-  }
-
-  @Override
-  public void testSetElementsEven() {
-
-  }
-
-  @Override
   public void testImportFromListDuplicates() {
 
   }
 
   @Override
   public void testImportFromListBiggerTuples() {
-
-  }
-
-  @Override
-  public void testImportFromListGenericList() {
 
   }
 
@@ -141,11 +121,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
 
   @Override
   public void testRemoveValuesNonExistentValues() {
-
-  }
-
-  @Override
-  public void testImportFromListGenericListEntries() {
 
   }
 
