@@ -352,9 +352,9 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
    */
   @Test
   public void testClearEntries() {
-    model.addEntryFromTuple(createTuple(4f, 5f));
-    model.addEntryFromTuple(createTuple(3f, 2f));
-    model.addEntryFromTuple(createTuple(1f, 4f));
+    model.addEntryFromTuple(createTuple(0f, 5f));
+    model.addEntryFromTuple(createTuple(1f, 2f));
+    model.addEntryFromTuple(createTuple(2f, 4f));
 
     assertEquals(3, model.getDataset().getEntryCount());
 
