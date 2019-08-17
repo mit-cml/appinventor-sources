@@ -656,7 +656,7 @@ Blockly.Msg.de.switch_language_to_german = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Teilt den Text in Stücke anhand des Textes \'bei\' als Trennungspunkt und erzeugt eine Liste der Resultate.  \n'
         + 'Das Teilen von "one,two,three,four" bei "," (Komma) gibt die Liste "(one two three four)" zurück. \n'
-        + 'Das Teilen von "one-potato,two-potato,three-potato,four" bei "-potato" gibt die Liste "(one two three four)" zurück.';
+        + 'Das Teilen von "one-potato two-potato three-potato four" bei "-potato" gibt die Liste "(one two three four)" zurück.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Teilt den gegebenen Text in eine Liste anhand eines beliebigen Elementes der Liste \'bei (Liste)\' als \n'
         + 'Trennungspunkt und gibt eine Liste der Resultate zurück. \n'
