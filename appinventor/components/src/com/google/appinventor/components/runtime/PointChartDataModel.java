@@ -19,7 +19,6 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
    */
   protected PointChartDataModel(D data) {
     super(data);
-    entries = new ArrayList<Entry>();
   }
 
   @Override

@@ -141,6 +141,28 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     };
   }
 
+  @Override
+  public void Refresh2(ChartDataModel model) {
+    model.updateEntries();
+
+    // Regroup bars (if appropriate)
+    regroupBars();
+
+    // Notify the Data component of data changes (needs to be called
+    // when Datasets get changed directly)
+    chart.getData().notifyDataChanged();
+
+    // Notify the Chart of Data changes (needs to be called
+    // when Data objects get changed directly)
+    chart.notifyDataSetChanged();
+
+    // Invalidate the Chart view for the changes to take
+    // effect. NOTE: Most exceptions with regards to data
+    // changing too fast occur as a result of calling the
+    // invalidate method.
+    chart.invalidate();
+  }
+
   /**
    * Regroups the Bars of the Bar Chart, while also re-calculating the
    * maximum X axis value to fit all the bars. If there is only a

@@ -51,20 +51,20 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
       // This means that the value already exists
       if (xValue < getDataset().getEntryCount()) {
         // Use x value as index and update the entry in that position
-        getDataset().getValues().set(xValue, entry);
+        entries.set(xValue, entry);
       } else {
         // To ensure that the x value would correspond to
         // the index, missing values up until the x value
         // need to be filled (with 0 values)
-        while (getDataset().getEntryCount() < xValue) {
-          getDataset().addEntry(new BarEntry(getDataset().getEntryCount(), 0));
+        while (entries.size() < xValue) {
+          entries.add(new BarEntry(entries.size(), 0));
         }
 
         // Add the entry to the Data Series; Since we
         // took care of missing values, this will now guarantee
         // that the x value corresponds to the last index of
         // the Data Series (equal to entryCount - 1)
-        getDataset().addEntry(entry);
+        entries.add(entry);
       }
     }
   }
@@ -110,14 +110,14 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     if (index >= 0) {
       // If the index of the Entry to remove is the last Entry,
       // we can simply remove the Entry from the Data Series' values.
-      if (index == getDataset().getEntryCount() - 1) {
-        getDataset().getValues().remove(index);
+      if (index == entries.size() - 1) {
+        entries.remove(index);
       } else {
         // If the Entry to be removed is not the last Entry, we
         // have to instead set the Y value of the Entry to be
         // removed to 0 in order to preserve the Bar Chart Data
         // properties (x values sorted and correspond to indexes)
-        getDataset().getValues().get(index).setY(0f);
+        entries.get(index).setY(0f);
       }
     }
   }
@@ -133,11 +133,11 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
 
     // If the entry count of the Data Series entries exceeds
     // the maximum allowed time entries, then remove the first one
-    if (getDataset().getEntryCount() >= maximumTimeEntries) {
-      getDataset().getValues().remove(0);
+    if (entries.size() >= maximumTimeEntries) {
+      entries.remove(0);
     }
 
-    getDataset().addEntry((BarEntry)getEntryFromTuple(tuple));
+    entries.add((BarEntry)getEntryFromTuple(tuple));
   }
 
 
