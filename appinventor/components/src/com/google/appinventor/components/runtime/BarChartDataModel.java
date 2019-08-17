@@ -4,6 +4,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -140,6 +141,33 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     entries.add((BarEntry)getEntryFromTuple(tuple));
   }
 
+  @Override
+  protected boolean areEntriesEqual(Entry e1, Entry e2) {
+    // To avoid (unlikely) cast exceptions, check that
+    // both the entries are of instance BarEntry, and return
+    // false if that is not the case.
+    if (!(e1 instanceof BarEntry && e2 instanceof BarEntry)) {
+      return false;
+    }
+
+    // Due to Bar grouping affecting the x values of the
+    // entries, we need to floor the entries to get rid
+    // of the decimal part. The offset is guaranteed to be
+    // less than 1 (based on the source code and the chosen
+    // granularity and spacing)
+    return Math.floor(e1.getX()) == Math.floor(e2.getX()) &&
+        e1.getY() == e2.getY();
+  }
+
+  @Override
+  public YailList getTupleFromEntry(Entry entry) {
+    // Create a list with the X and Y values of the entry, and
+    // convert the generic List to a YailList. Since Bar Chart
+    // grouping adds offsets to the x value (which are expected
+    // to be below 1), the x value needs to be floored.
+    List tupleEntries = Arrays.asList(Math.floor(entry.getX()), entry.getY());
+    return YailList.makeList(tupleEntries);
+  }
 
   // TODO: FindEntryIndex can be optimized by making use of the property
   // TODO: that the x value corresponds to the index.

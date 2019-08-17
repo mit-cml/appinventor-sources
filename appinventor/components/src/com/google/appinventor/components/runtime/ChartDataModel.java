@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
@@ -370,7 +371,16 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                     // not satisfied.
                     try {
                         float xValue = Float.parseFloat(value);
-                        criterionSatisfied = (entry.getX() == xValue);
+                        float compareValue = entry.getX();
+
+                        // Since Bar Chart grouping applies offsets to x values,
+                        // and the x values are expected to be integers, the
+                        // value has to be floored.
+                        if (entry instanceof BarEntry) {
+                            compareValue = (float)Math.floor(compareValue);
+                        }
+
+                        criterionSatisfied = (compareValue == xValue);
                     } catch (NumberFormatException e) {
                         // Do nothing (value already false)
                     }
