@@ -54,7 +54,7 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
     PieEntry entry = (PieEntry) getEntryFromTuple(tuple);
 
     if (entry != null) {
-      getDataset().addEntry(entry);
+      this.entries.add(entry);
 
       // Construct a new Legend Entry
       LegendEntry legendEntry = new LegendEntry();
@@ -64,7 +64,7 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
 
       // Get the entry count of the Data series and the
       // colors of the Data Series
-      int entries = getDataset().getEntryCount();
+      int entries = this.entries.size();
       List<Integer> colors = getDataset().getColors();
 
       // The index of the color value to use is the
@@ -87,7 +87,7 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
   public void removeEntry(int index) {
     // Entry exists; remove it
     if (index >= 0) {
-      getDataset().removeEntry(index);
+      entries.remove(index);
 
       // Remove the corresponding Legend entry (same index as Data Set index)
       LegendEntry removedEntry = legendEntries.remove(index);

@@ -158,6 +158,30 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     };
   }
 
+  @Override
+  public void Refresh2(ChartDataModel model) {
+    model.updateEntries();
+
+    for (PieChart pieChart : pieCharts) {
+      if (pieChart.getData().getDataSet().equals(model.getDataset())) {
+        // Notify the Data component of data changes (needs to be called
+        // when Datasets get changed directly)
+        pieChart.getData().notifyDataChanged();
+
+        // Notify the Chart of Data changes (needs to be called
+        // when Data objects get changed directly)
+        pieChart.notifyDataSetChanged();
+      }
+
+      // Invalidate the Chart on the UI thread (via the Handler)
+      // The invalidate method should only be invoked on the UI thread
+      // to prevent exceptions.
+      updatePieChartRingOffset(pieChart);
+      pieChart.invalidate();
+    }
+  }
+
+
   /**
    * Resizes, rescales and sets the radius of all the inner
    * Pie Charts according to the total count of Pie Charts
