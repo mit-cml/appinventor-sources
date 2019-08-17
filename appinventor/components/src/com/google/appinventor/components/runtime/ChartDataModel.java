@@ -516,6 +516,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     public void updateEntries() {
+        System.out.println(entries.size());
         dataset.setValues(new ArrayList<Entry>(entries));
+        System.out.println(dataset.getValues().size());
+        System.out.println("=========");
     }
 }
