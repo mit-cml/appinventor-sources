@@ -162,8 +162,10 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   public void Refresh2(ChartDataModel model) {
     model.updateEntries();
 
+    chart.getLegend().setCustom(legendEntries);
+
     for (PieChart pieChart : pieCharts) {
-      if (pieChart.getData().getDataSet().equals(model.getDataset())) {
+      if (pieChart == chart || pieChart.getData().getDataSet().equals(model.getDataset())) {
         // Notify the Data component of data changes (needs to be called
         // when Datasets get changed directly)
         pieChart.getData().notifyDataChanged();
@@ -400,18 +402,26 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * Adds a new Legend Entry to the Legend of the Pie Chart view.
    * @param entry  Legend Entry to add
    */
-  public void addLegendEntry(LegendEntry entry) {
-    legendEntries.add(entry); // Add the Legend Entry to local reference List
-    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
+  public void addLegendEntry(final LegendEntry entry) {
+    uiHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        legendEntries.add(entry); // Add the Legend Entry to local reference List
+      }
+    });
   }
 
   /**
    * Removes the specified Legend Entry from the Legend of the Pie Chart view
    * @param entry  Legend Entry to remove
    */
-  public void removeLegendEntry(LegendEntry entry) {
-    legendEntries.remove(entry); // Remove the Legend Entry from local reference list
-    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
+  public void removeLegendEntry(final LegendEntry entry) {
+    uiHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        legendEntries.remove(entry); // Remove the Legend Entry from local reference list
+      }
+    });
   }
 
   /**

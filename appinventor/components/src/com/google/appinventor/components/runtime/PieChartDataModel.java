@@ -64,14 +64,14 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
 
       // Get the entry count of the Data series and the
       // colors of the Data Series
-      int entries = this.entries.size();
+      int entriesCount = this.entries.size();
       List<Integer> colors = getDataset().getColors();
 
       // The index of the color value to use is the
       // last entry (the one which has just been added)
       // modulo the size of the colors List (since
       // there could be less colors than entries)
-      int index = (entries - 1) % colors.size();
+      int index = (entriesCount - 1) % colors.size();
 
       // Set the color of the Legend Entry
       legendEntry.formColor = colors.get(index);
