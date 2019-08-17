@@ -50,7 +50,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
 
       // X Value is less than the entry count of the Data Series;
       // This means that the value already exists
-      if (xValue < getDataset().getEntryCount()) {
+      if (xValue < entries.size()) {
         // Use x value as index and update the entry in that position
         entries.set(xValue, entry);
       } else {

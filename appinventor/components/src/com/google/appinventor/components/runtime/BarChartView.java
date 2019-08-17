@@ -88,7 +88,6 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     // 2, that means the 2nd Data Set has been added, and as such,
     // the appropriate settings can be set which apply to Grouped Bar Charts.
     if (dataSetCount == 2) {
-      chart.getXAxis().setAxisMinimum(START_X_VALUE); // The values should start from 0
       chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
     }
   }
@@ -184,6 +183,8 @@ public class BarChartView extends ChartView<BarChart, BarData> {
       for (IBarDataSet dataSet : chart.getData().getDataSets()) {
         maxEntries = Math.max(maxEntries, dataSet.getEntryCount());
       }
+
+      chart.getXAxis().setAxisMinimum(START_X_VALUE); // Update the x axis to start from the start x value
 
       // Set the maximum value for the x axis based on maximum entries and the group
       // width of the grouped bars. The calculation is based directly on the example
