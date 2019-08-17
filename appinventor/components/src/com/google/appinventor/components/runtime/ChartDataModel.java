@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
+    protected List<Entry> entries;
 
     // Limit the maximum allowed real-time data entries
     // Since real-time data comes in fast, the case of
@@ -283,7 +284,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void removeEntry(int index) {
         // Entry exists; remove it
         if (index >= 0) {
-            getDataset().getValues().remove(index);
+            entries.remove(index);
         }
     }
 
@@ -316,9 +317,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
         List<YailList> entries = new ArrayList<YailList>();
 
-        for (Object dataValue : getDataset().getValues()) {
-            Entry entry = (Entry) dataValue;
-
+        for (Entry entry : this.entries) {
             // Check whether the provided criterion & value combination are satisfied
             // according to the current Entry
             if (isEntryCriterionSatisfied(entry, criterion, value)) {
@@ -418,8 +417,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  index of the entry, or -1 if entry is not found
      */
     protected int findEntryIndex(Entry entry) {
-        for (int i = 0; i < getDataset().getValues().size(); ++i) {
-            Entry currentEntry = getDataset().getEntryForIndex(i);
+        for (int i = 0; i < entries.size(); ++i) {
+            Entry currentEntry = entries.get(i);
 
             // Check whether the current entry is equal to the
             // specified entry. Note that (in v3.1.0), equals()
@@ -437,7 +436,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Deletes all the entries in the Data Series.
      */
     public void clearEntries() {
-        getDataset().clear();
+        entries.clear();
     }
 
     /**
@@ -451,8 +450,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void addTimeEntry(YailList tuple) {
         // If the entry count of the Data Series entries exceeds
         // the maximum allowed time entries, then remove the first one
-        if (getDataset().getEntryCount() >= maximumTimeEntries) {
-            getDataset().getValues().remove(0);
+        if (entries.size() >= maximumTimeEntries) {
+            entries.remove(0);
         }
 
         // Add entry from the specified tuple
@@ -514,5 +513,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected boolean areEntriesEqual(Entry e1, Entry e2) {
         return e1.equalTo(e2);
+    }
+
+    public void updateEntries() {
+        dataset.setValues(new ArrayList<Entry>(entries));
     }
 }

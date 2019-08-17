@@ -6,6 +6,11 @@ import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ChartView<C extends Chart, D extends ChartData> {
@@ -161,6 +166,30 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
                 chart.invalidate();
             }
         };
+    }
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    public void Refresh2(final ChartDataModel model) {
+        model.updateEntries();
+
+        // Notify the Data component of data changes (needs to be called
+        // when Datasets get changed directly)
+        chart.getData().notifyDataChanged();
+
+        // Notify the Chart of Data changes (needs to be called
+        // when Data objects get changed directly)
+        chart.notifyDataSetChanged();
+
+        // Invalidate the Chart view for the changes to take
+        // effect. NOTE: Most exceptions with regards to data
+        // changing too fast occur as a result of calling the
+        // invalidate method.
+        chart.invalidate();
     }
 
     /**

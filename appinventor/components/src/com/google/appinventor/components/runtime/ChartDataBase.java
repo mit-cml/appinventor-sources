@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.os.Looper;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -675,10 +676,31 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // Notify data set changes (needs to be invoked when changing
         // values of the Data Set directly, which occurs in add/remove
         // entry methods)
-        chartDataModel.getDataset().notifyDataSetChanged();
+        // chartDataModel.getDataset().notifyDataSetChanged();
 
         // Refresh the Chart
-        container.refresh();
+        // container.refresh();
+
+        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
+            @Override
+            public void run() {
+                container.getChartView().Refresh2(chartDataModel);
+            }
+        }, null);
+
+        container.getChartView().uiHandler.post(task);
+
+        if (Looper.getMainLooper() != Looper.myLooper()) {
+            try {
+                task.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+//        container.getChartView().Refresh2(chartDataModel);
     }
 
     @Override
