@@ -68,11 +68,11 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
    */
   protected void assertExpectedEntriesHelper(List<Entry> expectedEntries) {
     // Make sure the number of entries parsed is correct
-    assertEquals(expectedEntries.size(), model.getDataset().getEntryCount());
+    assertEquals(expectedEntries.size(), model.getEntries().size());
 
-    for (int i = 0; i < model.getDataset().getEntryCount(); ++i) {
+    for (int i = 0; i < model.getEntries().size(); ++i) {
       // Get the entry from the Data Series
-      Entry entry = model.getDataset().getEntryForIndex(i);
+      Entry entry = (Entry) model.getEntries().get(i);
 
       // Get the expected entry
       Entry expectedEntry = expectedEntries.get(i);
