@@ -681,24 +681,26 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // Refresh the Chart
         // container.refresh();
 
-        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-            @Override
-            public void run() {
-                container.getChartView().Refresh2(chartDataModel);
-            }
-        }, null);
+        container.getChartView().Refresh2(chartDataModel);
 
-        container.getChartView().uiHandler.post(task);
-
-        if (Looper.getMainLooper() != Looper.myLooper()) {
-            try {
-                task.get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
+//            @Override
+//            public void run() {
+//                container.getChartView().Refresh2(chartDataModel);
+//            }
+//        }, null);
+//
+//        container.getChartView().uiHandler.post(task);
+//
+//        if (Looper.getMainLooper() != Looper.myLooper()) {
+//            try {
+//                task.get();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 //        container.getChartView().Refresh2(chartDataModel);
     }

@@ -526,6 +526,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         return e1.equalTo(e2);
     }
 
+    public List<Entry> getEntries() {
+        return entries;
+    }
+
     public void updateEntries() {
         dataset.setValues(new ArrayList<Entry>(entries));
     }

@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.utils.Utils;
 
@@ -159,8 +160,8 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   @Override
-  public void Refresh2(ChartDataModel model) {
-    model.updateEntries();
+  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+    model.getDataset().setValues(entries);
 
     chart.getLegend().setCustom(legendEntries);
 
@@ -182,7 +183,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       pieChart.invalidate();
     }
   }
-
 
   /**
    * Resizes, rescales and sets the radius of all the inner

@@ -6,8 +6,11 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+
+import java.util.List;
 
 public class BarChartView extends ChartView<BarChart, BarData> {
   // Constant for the starting value to group Bar Chart bars from
@@ -140,9 +143,8 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     };
   }
 
-  @Override
-  public void Refresh2(ChartDataModel model) {
-    model.updateEntries();
+  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+    model.getDataset().setValues(entries);
 
     // Regroup bars (if appropriate)
     regroupBars();

@@ -1,11 +1,16 @@
 package com.google.appinventor.components.runtime;
 
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.Entry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -175,7 +180,31 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     }
 
     public void Refresh2(final ChartDataModel model) {
-        model.updateEntries();
+        RefreshTask refreshTask = new RefreshTask(model.getEntries());
+        refreshTask.execute(model);
+    }
+
+    private class RefreshTask extends AsyncTask<ChartDataModel, Void, ChartDataModel> {
+
+        private List<Entry> mEntries;
+
+        public RefreshTask(List<Entry> entries) {
+            mEntries = new ArrayList<Entry>(entries);
+        }
+
+        @Override
+        protected ChartDataModel doInBackground(ChartDataModel... chartDataModels) {
+            return chartDataModels[0];
+        }
+
+        @Override
+        protected void onPostExecute(ChartDataModel result) {
+            Refresh(result, mEntries);
+        }
+    }
+
+    protected void Refresh(ChartDataModel model, List<Entry> entries) {
+        model.getDataset().setValues(entries);
 
         // Notify the Data component of data changes (needs to be called
         // when Datasets get changed directly)
