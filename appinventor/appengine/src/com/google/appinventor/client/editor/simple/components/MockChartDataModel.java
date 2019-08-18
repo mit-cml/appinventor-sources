@@ -163,7 +163,7 @@ public abstract class MockChartDataModel<D extends Dataset> {
                 List<String> column = columns.get(j);
 
                 if (column.size() == 0) { // Empty column; Use default value
-                    tuple[j] = getDefaultTupleEntry(i);
+                    tuple[j] = getDefaultTupleEntry(i - 1); // Minus one to compensate for skipped entry
                 } else if (column.size() > i) { // Column has value; Use the column's value (if the column is large enough)
                     tuple[j] = column.get(i);
                 } else {
