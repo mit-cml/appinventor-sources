@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
+import android.os.Looper;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -57,10 +58,10 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     YailList tuple = createTuple(xValue, yValue);
     model.addEntryFromTuple(tuple);
 
-    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry entry = model.getEntries().get(0);
     Entry expectedEntry = createEntry(xValue, yValue);
 
-    assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getEntries().size());
     assertEntriesEqual(expectedEntry, entry);
   }
 
@@ -244,13 +245,22 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     model.importFromList(tuples);
 
     assertEquals(colorListExpected, model.getDataset().getColors());
-    assertEquals(expectedColors.length, legend.getEntries().length);
 
-    for (int i = 0; i < expectedColors.length; ++i) {
-      LegendEntry legendEntry = legend.getEntries()[i];
+    // Post with a delay of 1ms to wait for UI thread Legend adding
+    // to finish.
+    // TODO: Fix up test to be more deterministic
+    chartView.uiHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        assertEquals(expectedColors.length, legend.getEntries().length);
 
-      assertEquals(expectedColors[i], legendEntry.formColor);
-    }
+        for (int i = 0; i < expectedColors.length; ++i) {
+          LegendEntry legendEntry = legend.getEntries()[i];
+
+          assertEquals(expectedColors[i], legendEntry.formColor);
+        }
+      }
+    }, 1);
   }
 
   /**
@@ -502,32 +512,50 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   }
 
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
-    LegendEntry[] legendEntries = legend.getEntries();
+    // Post with a delay of 1ms to wait for UI thread Legend adding
+    // to finish. Simply using post does not produce the desired
+    // result.
+    // TODO: Fix up test to be more deterministic
+    chartView.uiHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        LegendEntry[] legendEntries = legend.getEntries();
 
-    assertEquals(expectedEntries.length, legendEntries.length);
+        assertEquals(expectedEntries.length, legendEntries.length);
 
-    for (int i = 0; i < expectedEntries.length; ++i) {
-      LegendEntry expected = expectedEntries[i];
-      LegendEntry actual = legendEntries[i];
+        for (int i = 0; i < expectedEntries.length; ++i) {
+          LegendEntry expected = expectedEntries[i];
+          LegendEntry actual = legendEntries[i];
 
-      assertEquals(expected.label, actual.label);
-      assertEquals(expected.formColor, actual.formColor);
-    }
+          assertEquals(expected.label, actual.label);
+          assertEquals(expected.formColor, actual.formColor);
+        }
+      }
+    }, 1);
   }
 
   private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
-    YailList colors = YailList.makeList(colorList);
-    model.setColors(colors);
-    model.importFromList(tuples);
+    // Pot with a delay of 1ms to wait for UI thread Legend adding
+    // to finish. Simply using post does not produce the desired
+    // result.
+    // TODO: Fix up test to be more deterministic
+    chartView.uiHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        YailList colors = YailList.makeList(colorList);
+        model.setColors(colors);
+        model.importFromList(tuples);
 
-    assertEquals(colorList, model.getDataset().getColors());
-    assertEquals(expectedColors.length, legend.getEntries().length);
+        assertEquals(colorList, model.getDataset().getColors());
+        assertEquals(expectedColors.length, legend.getEntries().length);
 
-    for (int i = 0; i < expectedColors.length; ++i) {
-      LegendEntry legendEntry = legend.getEntries()[i];
+        for (int i = 0; i < expectedColors.length; ++i) {
+          LegendEntry legendEntry = legend.getEntries()[i];
 
-      assertEquals(expectedColors[i], legendEntry.formColor);
-    }
+          assertEquals(expectedColors[i], legendEntry.formColor);
+        }
+      }
+    }, 1);
   }
 
   @Override
