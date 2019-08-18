@@ -119,31 +119,6 @@ public class BarChartView extends ChartView<BarChart, BarData> {
   }
 
   @Override
-  protected Runnable getRefreshRunnable() {
-    return new Runnable() {
-      @Override
-      public void run() {
-        // Regroup bars (if appropriate)
-        regroupBars();
-
-        // Notify the Data component of data changes (needs to be called
-        // when Datasets get changed directly)
-        chart.getData().notifyDataChanged();
-
-        // Notify the Chart of Data changes (needs to be called
-        // when Data objects get changed directly)
-        chart.notifyDataSetChanged();
-
-        // Invalidate the Chart view for the changes to take
-        // effect. NOTE: Most exceptions with regards to data
-        // changing too fast occur as a result of calling the
-        // invalidate method.
-        chart.invalidate();
-      }
-    };
-  }
-
-  @Override
   protected void Refresh(ChartDataModel model, List<Entry> entries) {
     // Update the ChartDataModel's entries
     model.getDataset().setValues(entries);
@@ -195,4 +170,30 @@ public class BarChartView extends ChartView<BarChart, BarData> {
           chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
     }
   }
+
+
+//  @Override
+//  protected Runnable getRefreshRunnable() {
+//    return new Runnable() {
+//      @Override
+//      public void run() {
+//        // Regroup bars (if appropriate)
+//        regroupBars();
+//
+//        // Notify the Data component of data changes (needs to be called
+//        // when Datasets get changed directly)
+//        chart.getData().notifyDataChanged();
+//
+//        // Notify the Chart of Data changes (needs to be called
+//        // when Data objects get changed directly)
+//        chart.notifyDataSetChanged();
+//
+//        // Invalidate the Chart view for the changes to take
+//        // effect. NOTE: Most exceptions with regards to data
+//        // changing too fast occur as a result of calling the
+//        // invalidate method.
+//        chart.invalidate();
+//      }
+//    };
+//  }
 }

@@ -72,12 +72,20 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     }
 
     /**
-     * Refreshes the Chart to react to Data Set changes.
-     *
-     * The method is made asynchronous since multiple Data Sets
-     * may attempt to refresh the Chart at the same time.
+     * Refreshes the Chart View to react to styling changes.
      */
     public void Refresh() {
+        chart.invalidate();
+
+        /* BELOW COMMENTS CONTAIN PREVIOUS CHART REFRESHING SOLUTION;
+         * The currently chosen solution re-sets the values of the Data Sets
+         * on the UI thread on each Refresh; Previously, the Refresh method
+         * used NotifyDataSetChanged, which caused issues when refreshing went
+         * by a bit too quick (and multiple Data Series were in place); The
+         * older Refresh solution used a complementing getRefreshRunnable method.
+         * Currently, this method is utilized to only be used whenever the Chart
+         * View itself is refreshed on changing styling properties (e.g. color) */
+
         // Currently, if data is changed far too fast and too many Refresh calls are invoked,
         // exceptions related to the library will be thrown (ArrayIndexOutOfBoundsExceptions)
         // Since these exceptions are beyond our control, some measures are needed to control
@@ -110,6 +118,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         //   and FutureTask.get() to wait for refreshing to finish
         // * Using FutureTasks and cancelling current Refresh tasks, and starting another one (+ CountDownLatch
         //   approach combined with FutureTask cancelling)
+        // * Waiting for Refresh Tasks to finish via posted FutureTasks on the UI Handler
         // The chosen solution is to then have delays and refresh throttling.
 
 
@@ -117,24 +126,24 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // executed in a UIHandler. Since the AtomicReference holds a single Runnable
         // instance, it also acts as an accumulator in the case of too many refresh
         // calls being invoked within a time frame of 100ms.
-        refreshRunnable.set(getRefreshRunnable());
+//        refreshRunnable.set(getRefreshRunnable());
 
         // Post a Refresh runnable on the UI Thread (via the UI Handler),
         // since refreshing should only be invoked in the UI thread (due
         // to accessing views). A delay of 100ms is used to throttle the
         // refresh rate to prevent crashes.
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Get the runnable from the AtomicReference
-                Runnable runnable = refreshRunnable.getAndSet(null);
-
-                // Runnable non-null; Execute it
-                if (runnable != null) {
-                    runnable.run();
-                }
-            }
-        }, 100);
+//        uiHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Get the runnable from the AtomicReference
+//                Runnable runnable = refreshRunnable.getAndSet(null);
+//
+//                // Runnable non-null; Execute it
+//                if (runnable != null) {
+//                    runnable.run();
+//                }
+//            }
+//        }, 100);
 
         // Alternate solution (very similar results):
         //        if (!delayQueue.isEmpty()) {
@@ -166,27 +175,6 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         //        chart.getData().notifyDataChanged();
         //        chart.notifyDataSetChanged();
         //        chart.postInvalidate();
-    }
-
-    protected Runnable getRefreshRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                // Notify the Data component of data changes (needs to be called
-                // when Datasets get changed directly)
-                chart.getData().notifyDataChanged();
-
-                // Notify the Chart of Data changes (needs to be called
-                // when Data objects get changed directly)
-                chart.notifyDataSetChanged();
-
-                // Invalidate the Chart view for the changes to take
-                // effect. NOTE: Most exceptions with regards to data
-                // changing too fast occur as a result of calling the
-                // invalidate method.
-                chart.invalidate();
-            }
-        };
     }
 
     /**
@@ -266,4 +254,25 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // effect.
         chart.invalidate();
     }
+
+    //    protected Runnable getRefreshRunnable() {
+//        return new Runnable() {
+//            @Override
+//            public void run() {
+//                // Notify the Data component of data changes (needs to be called
+//                // when Datasets get changed directly)
+//                chart.getData().notifyDataChanged();
+//
+//                // Notify the Chart of Data changes (needs to be called
+//                // when Data objects get changed directly)
+//                chart.notifyDataSetChanged();
+//
+//                // Invalidate the Chart view for the changes to take
+//                // effect. NOTE: Most exceptions with regards to data
+//                // changing too fast occur as a result of calling the
+//                // invalidate method.
+//                chart.invalidate();
+//            }
+//        };
+//    }
 }

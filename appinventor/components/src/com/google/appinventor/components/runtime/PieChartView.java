@@ -135,31 +135,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   @Override
-  public Runnable getRefreshRunnable() {
-    return new Runnable() {
-      @Override
-      public void run() {
-        // Refresh each Pie Chart (ring) individually
-        for (final PieChart pieChart : pieCharts) {
-          // Notify the Data component of data changes (needs to be called
-          // when Datasets get changed directly)
-          pieChart.getData().notifyDataChanged();
-
-          // Notify the Chart of Data changes (needs to be called
-          // when Data objects get changed directly)
-          pieChart.notifyDataSetChanged();
-
-          // Invalidate the Chart on the UI thread (via the Handler)
-          // The invalidate method should only be invoked on the UI thread
-          // to prevent exceptions.
-          updatePieChartRingOffset(pieChart);
-          pieChart.invalidate();
-        }
-      }
-    };
-  }
-
-  @Override
   protected void Refresh(ChartDataModel model, List<Entry> entries) {
     // Update the ChartDataModel's entries
     model.getDataset().setValues(entries);
@@ -461,4 +436,29 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // Resize Pie Chart rings accordingly
     resizePieRings();
   }
+
+  //  @Override
+//  public Runnable getRefreshRunnable() {
+//    return new Runnable() {
+//      @Override
+//      public void run() {
+//        // Refresh each Pie Chart (ring) individually
+//        for (final PieChart pieChart : pieCharts) {
+//          // Notify the Data component of data changes (needs to be called
+//          // when Datasets get changed directly)
+//          pieChart.getData().notifyDataChanged();
+//
+//          // Notify the Chart of Data changes (needs to be called
+//          // when Data objects get changed directly)
+//          pieChart.notifyDataSetChanged();
+//
+//          // Invalidate the Chart on the UI thread (via the Handler)
+//          // The invalidate method should only be invoked on the UI thread
+//          // to prevent exceptions.
+//          updatePieChartRingOffset(pieChart);
+//          pieChart.invalidate();
+//        }
+//      }
+//    };
+//  }
 }

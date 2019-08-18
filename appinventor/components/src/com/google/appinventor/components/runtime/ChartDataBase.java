@@ -669,9 +669,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
-     * Refreshes the Chart view object.
+     * Refreshes the Chart View object with the current up to date
+     * Data Series data.
      */
     protected void refreshChart() {
+        // Update the Chart with the Chart Data Model's current
+        // data and refresh the Chart itself.
+        container.getChartView().Refresh(chartDataModel);
+
+        // ORIGINAL SOLUTION (refreshing Chart directly via container.refresh())
+        // ISSUE: Causes exceptions/crashes upon quicker data adding & refreshing.
+
         // Notify data set changes (needs to be invoked when changing
         // values of the Data Set directly, which occurs in add/remove
         // entry methods)
@@ -680,7 +688,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // Refresh the Chart
         // container.refresh();
 
-        container.getChartView().Refresh(chartDataModel);
+        // Newer solution to post a FutureTask and wait for it to finish
+        // if the thread is an async thread;
+        // ISSUE: Deadlocks can be caused (UI thread waits on async thread
+        // to finish, while async thread waits on the UI thread to finish)
 
 //        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
 //            @Override
