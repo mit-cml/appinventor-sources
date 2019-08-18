@@ -1,6 +1,5 @@
 package com.google.appinventor.components.runtime;
 
-import android.os.Looper;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -681,12 +680,12 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         // Refresh the Chart
         // container.refresh();
 
-        container.getChartView().Refresh2(chartDataModel);
+        container.getChartView().Refresh(chartDataModel);
 
 //        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
 //            @Override
 //            public void run() {
-//                container.getChartView().Refresh2(chartDataModel);
+//                container.getChartView().Refresh(chartDataModel);
 //            }
 //        }, null);
 //
@@ -702,7 +701,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 //            }
 //        }
 
-//        container.getChartView().Refresh2(chartDataModel);
+//        container.getChartView().Refresh(chartDataModel);
     }
 
     @Override

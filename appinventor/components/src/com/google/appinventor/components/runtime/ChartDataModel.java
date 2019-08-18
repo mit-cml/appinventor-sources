@@ -14,6 +14,11 @@ import java.util.List;
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
+
+    // Local List of entries; The modifications of the Data are made
+    // directly to these Entries, which are meant to be detached from
+    // the Dataset object itself to prevent exceptions & crashes due
+    // to asynchronous operations
     protected List<Entry> entries;
 
     // Limit the maximum allowed real-time data entries
@@ -526,11 +531,11 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
         return e1.equalTo(e2);
     }
 
+    /**
+     * Returns the entries of the Chart Data Model.
+     * @return  List of entries of the Chart Data Model (Data Series)
+     */
     public List<Entry> getEntries() {
         return entries;
-    }
-
-    public void updateEntries() {
-        dataset.setValues(new ArrayList<Entry>(entries));
     }
 }

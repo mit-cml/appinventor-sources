@@ -56,6 +56,22 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     }
 
     /**
+     * Creates a new Chart Model object instance.
+     *
+     * @return  Chart Model instance
+     */
+    public abstract ChartDataModel createChartModel();
+
+    /**
+     * Sets the necessary default settings for the Chart view.
+     */
+    protected void initializeDefaultSettings() {
+        // Center the Legend
+        chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        chart.getLegend().setWordWrapEnabled(true); // Wrap Legend entries in case of many entries
+    }
+
+    /**
      * Refreshes the Chart to react to Data Set changes.
      *
      * The method is made asynchronous since multiple Data Sets
@@ -173,8 +189,16 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         };
     }
 
-    public void Refresh2(final ChartDataModel model) {
+    /**
+     * Updates the specified Chart Data Model and refreshes the
+     * Chart.
+     * @param model  Chart Data Model to update & refresh
+     */
+    public void Refresh(final ChartDataModel model) {
+        // Create a new RefreshTask with the model's current List of Entries
         RefreshTask refreshTask = new RefreshTask(model.getEntries());
+
+        // Execute the RefreshTask with the ChartDataModel argument
         refreshTask.execute(model);
     }
 
@@ -241,21 +265,5 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         // Invalidate the Chart view for the changes to take
         // effect.
         chart.invalidate();
-    }
-
-    /**
-     * Creates a new Chart Model object instance.
-     *
-     * @return  Chart Model instance
-     */
-    public abstract ChartDataModel createChartModel();
-
-    /**
-     * Sets the necessary default settings for the Chart view.
-     */
-    protected void initializeDefaultSettings() {
-        // Center the Legend
-        chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        chart.getLegend().setWordWrapEnabled(true); // Wrap Legend entries in case of many entries
     }
 }
