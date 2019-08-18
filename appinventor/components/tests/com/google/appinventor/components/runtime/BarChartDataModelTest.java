@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataModel, BarData> {
 
@@ -73,8 +74,7 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     model.addEntryFromTuple(tuple);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 1f));
+      add(createEntry(0f, 1f));
     }};
 
     assertExpectedEntriesHelper(expectedEntries);
@@ -459,6 +459,89 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);
+  }
+
+  /**
+   * Test to ensure that importing from columns of uneven
+   * size imports all the entries while replacing the
+   * blank entries in other Lists with default values.
+   */
+  @Test
+  public void testImportFromCSVUnevenColumnsBlankEntries() {
+    YailList xColumn = createTuple("X", 0f, 1f, "", "");
+    YailList yColumn = createTuple("Y", 1f, 3f, 5f, -4f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 1f));
+      add(createEntry(1f, 3f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
+  /**
+   * Test to ensure that importing from an x Column which is
+   * empty and a Y column which has values results in the
+   * x values to resolve to the default option (1 for first entry,
+   * 2 for second, ...)
+   */
+  @Test
+  public void testImportFromCSVEmptyColumn() {
+    YailList xColumn = createTuple();
+    YailList yColumn = createTuple("Y", 1f, 3f, 4f, -3f);
+
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+      add(createEntry(0f, 1f));
+      add(createEntry(1f, 3f));
+      add(createEntry(2f, 4f));
+      add(createEntry(3f, -3f));
+    }};
+
+    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and an integer x value while checking against an
+   * Entry which has a decimal x value returns true (since x value is floored)
+   */
+  @Test
+  public void testCriterionSatisfiedXDecimalMatch() {
+    Entry entry = createEntry(1.7f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final String value = "1";
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    assertTrue(result);
+  }
+
+  /**
+   * Test case to ensure that retrieving a tuple from an
+   * Entry which has a decimal x value returns a tuple
+   * with a rounded x value.
+   */
+  @Test
+  public void testGetTupleFromEntryDecimal() {
+    Entry entry = createEntry(4.75f, 1f);
+
+    YailList expected = createTuple(4f, 1f);
+    YailList result = model.getTupleFromEntry(entry);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that checking for Entry
+   * equality between two entries which have the
+   * same y value and x values with differing
+   * decimal parts returns true (since values are floored)
+   */
+  @Test
+  public void testEntriesEqualDecimalXValues() {
+    Entry entry1 = createEntry(3.3f, 5f);
+    Entry entry2 = createEntry(3.7f, 5f);
+
+    assertTrue(model.areEntriesEqual(entry1, entry2));
   }
 
   @Override

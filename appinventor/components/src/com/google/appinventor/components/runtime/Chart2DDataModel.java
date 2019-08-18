@@ -30,5 +30,4 @@ public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData> e
     List tupleEntries = Arrays.asList(entry.getX(), entry.getY());
     return YailList.makeList(tupleEntries);
   }
-
 }

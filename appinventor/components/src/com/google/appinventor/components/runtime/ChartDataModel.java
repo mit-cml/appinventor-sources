@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
@@ -13,6 +14,12 @@ import java.util.List;
 public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     protected D data;
     protected T dataset;
+
+    // Local List of entries; The modifications of the Data are made
+    // directly to these Entries, which are meant to be detached from
+    // the Dataset object itself to prevent exceptions & crashes due
+    // to asynchronous operations
+    protected List<Entry> entries;
 
     // Limit the maximum allowed real-time data entries
     // Since real-time data comes in fast, the case of
@@ -36,6 +43,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected ChartDataModel(D data) {
         this.data = data;
+        entries = new ArrayList<Entry>();
     }
 
     /**
@@ -215,9 +223,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             for (int j = 0; j < columns.size(); ++j) {
                 Object value = columns.getObject(j);
 
-                // Invalid column specified; Add default value
+                // Invalid column specified; Add default value (minus one to
+                // compensate for the skipped value)
                 if (!(value instanceof YailList)) {
-                    tupleElements.add(getDefaultValue(i));
+                    tupleElements.add(getDefaultValue(i - 1));
                     continue;
                 }
 
@@ -228,8 +237,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                     // Add entry from column
                     tupleElements.add(column.getString(i));
                 } else if (column.size() == 0) { // Column empty (default value should be used)
-                    // Use default value instead
-                    tupleElements.add(getDefaultValue(i));
+                    // Use default value instead (we use an index minus one to componsate
+                    // for the skipped initial value)
+                    tupleElements.add(getDefaultValue(i - 1));
                 } else { // Column too small
                     // Add blank entry (""), up for the addEntryFromTuple method
                     // to interpret.
@@ -290,7 +300,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void removeEntry(int index) {
         // Entry exists; remove it
         if (index >= 0) {
-            getDataset().getValues().remove(index);
+            entries.remove(index);
         }
     }
 
@@ -323,9 +333,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
         List<YailList> entries = new ArrayList<YailList>();
 
-        for (Object dataValue : getDataset().getValues()) {
-            Entry entry = (Entry) dataValue;
-
+        for (Entry entry : this.entries) {
             // Check whether the provided criterion & value combination are satisfied
             // according to the current Entry
             if (isEntryCriterionSatisfied(entry, criterion, value)) {
@@ -377,7 +385,16 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
                     // not satisfied.
                     try {
                         float xValue = Float.parseFloat(value);
-                        criterionSatisfied = (entry.getX() == xValue);
+                        float compareValue = entry.getX();
+
+                        // Since Bar Chart grouping applies offsets to x values,
+                        // and the x values are expected to be integers, the
+                        // value has to be floored.
+                        if (entry instanceof BarEntry) {
+                            compareValue = (float)Math.floor(compareValue);
+                        }
+
+                        criterionSatisfied = (compareValue == xValue);
                     } catch (NumberFormatException e) {
                         // Do nothing (value already false)
                     }
@@ -425,8 +442,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * @return  index of the entry, or -1 if entry is not found
      */
     protected int findEntryIndex(Entry entry) {
-        for (int i = 0; i < getDataset().getValues().size(); ++i) {
-            Entry currentEntry = getDataset().getEntryForIndex(i);
+        for (int i = 0; i < entries.size(); ++i) {
+            Entry currentEntry = entries.get(i);
 
             // Check whether the current entry is equal to the
             // specified entry. Note that (in v3.1.0), equals()
@@ -444,7 +461,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      * Deletes all the entries in the Data Series.
      */
     public void clearEntries() {
-        getDataset().clear();
+        entries.clear();
     }
 
     /**
@@ -458,8 +475,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     public void addTimeEntry(YailList tuple) {
         // If the entry count of the Data Series entries exceeds
         // the maximum allowed time entries, then remove the first one
-        if (getDataset().getEntryCount() >= maximumTimeEntries) {
-            getDataset().getValues().remove(0);
+        if (entries.size() >= maximumTimeEntries) {
+            entries.remove(0);
         }
 
         // Add entry from the specified tuple
@@ -521,5 +538,13 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
      */
     protected boolean areEntriesEqual(Entry e1, Entry e2) {
         return e1.equalTo(e2);
+    }
+
+    /**
+     * Returns the entries of the Chart Data Model.
+     * @return  List of entries of the Chart Data Model (Data Series)
+     */
+    public List<Entry> getEntries() {
+        return entries;
     }
 }

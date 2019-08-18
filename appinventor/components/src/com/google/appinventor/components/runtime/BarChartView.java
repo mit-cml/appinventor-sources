@@ -6,8 +6,11 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+
+import java.util.List;
 
 public class BarChartView extends ChartView<BarChart, BarData> {
   // Constant for the starting value to group Bar Chart bars from
@@ -83,6 +86,13 @@ public class BarChartView extends ChartView<BarChart, BarData> {
       // Update the bar width of the Bar Chart
       chart.getData().setBarWidth(barWidth);
     }
+
+    // If the Data Set count on Bar Space and Width recalculation is
+    // 2, that means the 2nd Data Set has been added, and as such,
+    // the appropriate settings can be set which apply to Grouped Bar Charts.
+    if (dataSetCount == 2) {
+      chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
+    }
   }
 
   @Override
@@ -94,9 +104,7 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     chart.setLayoutParams(new ViewGroup.LayoutParams
         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    chart.getXAxis().setAxisMinimum(START_X_VALUE); // The values should start from 0
     chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
-    chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
     chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
 
     // The X Axis values should be rounded off (since x values are whole numbers)
@@ -111,28 +119,24 @@ public class BarChartView extends ChartView<BarChart, BarData> {
   }
 
   @Override
-  protected Runnable getRefreshRunnable() {
-    return new Runnable() {
-      @Override
-      public void run() {
-        // Regroup bars (if appropriate)
-        regroupBars();
+  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+    // Update the ChartDataModel's entries
+    model.getDataset().setValues(entries);
 
-        // Notify the Data component of data changes (needs to be called
-        // when Datasets get changed directly)
-        chart.getData().notifyDataChanged();
+    // Regroup bars (if appropriate)
+    regroupBars();
 
-        // Notify the Chart of Data changes (needs to be called
-        // when Data objects get changed directly)
-        chart.notifyDataSetChanged();
+    // Notify the Data component of data changes (needs to be called
+    // when Datasets get changed directly)
+    chart.getData().notifyDataChanged();
 
-        // Invalidate the Chart view for the changes to take
-        // effect. NOTE: Most exceptions with regards to data
-        // changing too fast occur as a result of calling the
-        // invalidate method.
-        chart.invalidate();
-      }
-    };
+    // Notify the Chart of Data changes (needs to be called
+    // when Data objects get changed directly)
+    chart.notifyDataSetChanged();
+
+    // Invalidate the Chart view for the changes to take
+    // effect.
+    chart.invalidate();
   }
 
   /**
@@ -157,6 +161,8 @@ public class BarChartView extends ChartView<BarChart, BarData> {
         maxEntries = Math.max(maxEntries, dataSet.getEntryCount());
       }
 
+      chart.getXAxis().setAxisMinimum(START_X_VALUE); // Update the x axis to start from the start x value
+
       // Set the maximum value for the x axis based on maximum entries and the group
       // width of the grouped bars. The calculation is based directly on the example
       // presented in the MPAndroidChart library example activities.
@@ -164,4 +170,30 @@ public class BarChartView extends ChartView<BarChart, BarData> {
           chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
     }
   }
+
+
+//  @Override
+//  protected Runnable getRefreshRunnable() {
+//    return new Runnable() {
+//      @Override
+//      public void run() {
+//        // Regroup bars (if appropriate)
+//        regroupBars();
+//
+//        // Notify the Data component of data changes (needs to be called
+//        // when Datasets get changed directly)
+//        chart.getData().notifyDataChanged();
+//
+//        // Notify the Chart of Data changes (needs to be called
+//        // when Data objects get changed directly)
+//        chart.notifyDataSetChanged();
+//
+//        // Invalidate the Chart view for the changes to take
+//        // effect. NOTE: Most exceptions with regards to data
+//        // changing too fast occur as a result of calling the
+//        // invalidate method.
+//        chart.invalidate();
+//      }
+//    };
+//  }
 }
