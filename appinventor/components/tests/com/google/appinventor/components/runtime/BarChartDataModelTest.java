@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataModel, BarData> {
 
@@ -497,6 +498,50 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
+  }
+
+  /**
+   * Test to ensure that checking for criterion satisfaction with the
+   * X Value criterion and an integer x value while checking against an
+   * Entry which has a decimal x value returns true (since x value is floored)
+   */
+  @Test
+  public void testCriterionSatisfiedXDecimalMatch() {
+    Entry entry = createEntry(1.7f, 4f);
+    final ChartDataModel.EntryCriterion criterion = ChartDataModel.EntryCriterion.XValue;
+    final String value = "1";
+
+    boolean result = model.isEntryCriterionSatisfied(entry, criterion, value);
+    assertTrue(result);
+  }
+
+  /**
+   * Test case to ensure that retrieving a tuple from an
+   * Entry which has a decimal x value returns a tuple
+   * with a rounded x value.
+   */
+  @Test
+  public void testGetTupleFromEntryDecimal() {
+    Entry entry = createEntry(4.75f, 1f);
+
+    YailList expected = createTuple(4f, 1f);
+    YailList result = model.getTupleFromEntry(entry);
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that checking for Entry
+   * equality between two entries which have the
+   * same y value and x values with differing
+   * decimal parts returns true (since values are floored)
+   */
+  @Test
+  public void testEntriesEqualDecimalXValues() {
+    Entry entry1 = createEntry(3.3f, 5f);
+    Entry entry2 = createEntry(3.7f, 5f);
+
+    assertTrue(model.areEntriesEqual(entry1, entry2));
   }
 
   @Override
