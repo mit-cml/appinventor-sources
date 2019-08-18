@@ -173,37 +173,61 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         };
     }
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
     public void Refresh2(final ChartDataModel model) {
         RefreshTask refreshTask = new RefreshTask(model.getEntries());
         refreshTask.execute(model);
     }
 
+    /**
+     * AsyncTask used to refresh the Chart View with new data on the UI thread.
+     * Used as a measure to prevent crashes and exceptions by taking in a constant
+     * copy of the data, and re-setting it to the currently refreshed Chart Data
+     * Model, while also updating the Chart itself and invalidating the View.
+     */
     private class RefreshTask extends AsyncTask<ChartDataModel, Void, ChartDataModel> {
 
+        // Local copy of latest Chart Entries
         private List<Entry> mEntries;
 
         public RefreshTask(List<Entry> entries) {
+            // Create a copy of the passed in Entries List.
             mEntries = new ArrayList<Entry>(entries);
         }
 
         @Override
         protected ChartDataModel doInBackground(ChartDataModel... chartDataModels) {
+            // All the work should be done on the UI thread; Simply pass the first
+            // passed in Chart Data Model (expect non-null, non-empty var args)
             return chartDataModels[0];
         }
 
         @Override
         protected void onPostExecute(ChartDataModel result) {
+            // Refresh the Chart and the Data Model with the
+            // local Entries List copy. This is done on the UI
+            // thread to avoid exceptions (onPostExecute runs
+            // on the UI)
             Refresh(result, mEntries);
         }
     }
 
+    /**
+     * Sets the specified List of Entries to the specified Chart Data
+     * Model and refreshes the local Chart View.
+     *
+     * To be used after updating a ChartDataModel's entries to display
+     * the changes on the Chart itself.
+     *
+     * Values are overwritten with the specified List of entries.
+     *
+     * @param model  Chart Data Model to update
+     * @param entries  List of entries to set to the Chart Data Model
+     */
     protected void Refresh(ChartDataModel model, List<Entry> entries) {
+        // Set the specified Entries to the Data Set. This is used to
+        // prevent exceptions on quick data changing operations (so that
+        // the invalidation/refreshing can keep up and inconsistent states
+        // would not be caused by asynchronous operations)
         model.getDataset().setValues(entries);
 
         // Notify the Data component of data changes (needs to be called
@@ -215,9 +239,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         chart.notifyDataSetChanged();
 
         // Invalidate the Chart view for the changes to take
-        // effect. NOTE: Most exceptions with regards to data
-        // changing too fast occur as a result of calling the
-        // invalidate method.
+        // effect.
         chart.invalidate();
     }
 

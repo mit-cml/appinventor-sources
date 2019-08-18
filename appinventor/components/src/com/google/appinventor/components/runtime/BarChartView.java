@@ -143,7 +143,9 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     };
   }
 
+  @Override
   protected void Refresh(ChartDataModel model, List<Entry> entries) {
+    // Update the ChartDataModel's entries
     model.getDataset().setValues(entries);
 
     // Regroup bars (if appropriate)
@@ -158,9 +160,7 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     chart.notifyDataSetChanged();
 
     // Invalidate the Chart view for the changes to take
-    // effect. NOTE: Most exceptions with regards to data
-    // changing too fast occur as a result of calling the
-    // invalidate method.
+    // effect.
     chart.invalidate();
   }
 
