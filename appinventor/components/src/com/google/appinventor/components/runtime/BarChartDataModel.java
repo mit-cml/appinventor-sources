@@ -165,7 +165,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     // convert the generic List to a YailList. Since Bar Chart
     // grouping adds offsets to the x value (which are expected
     // to be below 1), the x value needs to be floored.
-    List tupleEntries = Arrays.asList(Math.floor(entry.getX()), entry.getY());
+    List tupleEntries = Arrays.asList((float)Math.floor(entry.getX()), entry.getY());
     return YailList.makeList(tupleEntries);
   }
 
