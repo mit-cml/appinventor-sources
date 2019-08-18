@@ -46,52 +46,13 @@ public abstract class PointChartDataModelTest
     YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 3f));
-      add(createEntry(2f, 5f));
-      add(createEntry(3f, -3f));
-      add(createEntry(4f, 7f));
+      add(createEntry(0f, 3f));
+      add(createEntry(1f, 5f));
+      add(createEntry(2f, -3f));
+      add(createEntry(3f, 7f));
     }};
 
     importFromCSVHelper(expectedEntries, xColumn, yColumn);
-  }
-
-  /**
-   * Test to ensure that comparing two entries which
-   * have the same x and y values returns true via
-   * the areEntriesEqual method.
-   */
-  @Test
-  public void testEntriesEqual() {
-    Entry entry1 = createEntry(1f, 3f);
-    Entry entry2 = createEntry(1f, 3f);
-
-    assertTrue(model.areEntriesEqual(entry1, entry2));
-  }
-
-  /**
-   * Test to ensure that comparing two entries which
-   * have the same x but different y values returns false via
-   * the areEntriesEqual method.
-   */
-  @Test
-  public void testEntriesNotEqualY() {
-    Entry entry1 = createEntry(3f, 5f);
-    Entry entry2 = createEntry(3f, 7f);
-
-    assertFalse(model.areEntriesEqual(entry1, entry2));
-  }
-
-  /**
-   * Test to ensure that comparing two entries which
-   * have the same y but different x values returns false via
-   * the areEntriesEqual method.
-   */
-  @Test
-  public void testEntriesNotEqualX() {
-    Entry entry1 = createEntry(4f, 2f);
-    Entry entry2 = createEntry(1f, 2f);
-
-    assertFalse(model.areEntriesEqual(entry1, entry2));
   }
 
   /**

@@ -283,10 +283,10 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     YailList tuple = createTuple(xValue, yValue);
     model.addEntryFromTuple(tuple);
 
-    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry entry = (Entry) model.getEntries().get(0);
     Entry expectedEntry = createEntry(xValue, yValue);
 
-    assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getEntries().size());
     assertEntriesEqual(expectedEntry, entry);
   }
 
@@ -302,10 +302,10 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     YailList tuple = createTuple(xValue, yValue, 5f, 7f, 3f);
     model.addEntryFromTuple(tuple);
 
-    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry entry = (Entry) model.getEntries().get(0);
     Entry expectedEntry = createEntry(xValue, yValue);
 
-    assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getEntries().size());
     assertEntriesEqual(expectedEntry, entry);
   }
 
@@ -356,11 +356,11 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     model.addEntryFromTuple(createTuple(1f, 2f));
     model.addEntryFromTuple(createTuple(2f, 4f));
 
-    assertEquals(3, model.getDataset().getEntryCount());
+    assertEquals(3, model.getEntries().size());
 
     model.clearEntries();
 
-    assertEquals(0, model.getDataset().getEntryCount());
+    assertEquals(0, model.getEntries().size());
   }
 
   /**
@@ -1093,5 +1093,44 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     }};
 
     assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x and y values returns true via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesEqual() {
+    Entry entry1 = createEntry(1f, 3f);
+    Entry entry2 = createEntry(1f, 3f);
+
+    assertTrue(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same x but different y values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualY() {
+    Entry entry1 = createEntry(3f, 5f);
+    Entry entry2 = createEntry(3f, 7f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
+  }
+
+  /**
+   * Test to ensure that comparing two entries which
+   * have the same y but different x values returns false via
+   * the areEntriesEqual method.
+   */
+  @Test
+  public void testEntriesNotEqualX() {
+    Entry entry1 = createEntry(4f, 2f);
+    Entry entry2 = createEntry(1f, 2f);
+
+    assertFalse(model.areEntriesEqual(entry1, entry2));
   }
 }

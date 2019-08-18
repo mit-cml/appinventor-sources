@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.utils.Utils;
 
@@ -134,28 +135,36 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   @Override
-  public Runnable getRefreshRunnable() {
-    return new Runnable() {
-      @Override
-      public void run() {
-        // Refresh each Pie Chart (ring) individually
-        for (final PieChart pieChart : pieCharts) {
-          // Notify the Data component of data changes (needs to be called
-          // when Datasets get changed directly)
-          pieChart.getData().notifyDataChanged();
+  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+    // Update the ChartDataModel's entries
+    model.getDataset().setValues(entries);
 
-          // Notify the Chart of Data changes (needs to be called
-          // when Data objects get changed directly)
-          pieChart.notifyDataSetChanged();
+    // Update the Legend of the Chart with the stored custom Legend Entries
+    chart.getLegend().setCustom(legendEntries);
 
-          // Invalidate the Chart on the UI thread (via the Handler)
-          // The invalidate method should only be invoked on the UI thread
-          // to prevent exceptions.
-          updatePieChartRingOffset(pieChart);
-          pieChart.invalidate();
-        }
+    // Every Pie Chart (ring) has to be updated post-refresh
+    for (PieChart pieChart : pieCharts) {
+      // Both the root Chart has to be updated (due to the Legend)
+      // as well as the Pie Chart with the specified ChartDataModel.
+      // TODO: The second condition could be made more readable in the future.
+      if (pieChart == chart
+          || pieChart.getData().getDataSet().equals(model.getDataset())) {
+        // Notify the Data component of data changes (needs to be called
+        // when Datasets get changed directly)
+        pieChart.getData().notifyDataChanged();
+
+        // Notify the Chart of Data changes (needs to be called
+        // when Data objects get changed directly)
+        pieChart.notifyDataSetChanged();
       }
-    };
+
+      // Update the Pie Chart Ring offsets (after Legend changing)
+      updatePieChartRingOffset(pieChart);
+
+      // Invalidate the Pie Chart ring for the changes to take effect
+      // on the View itself.
+      pieChart.invalidate();
+    }
   }
 
   /**
@@ -376,18 +385,33 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * Adds a new Legend Entry to the Legend of the Pie Chart view.
    * @param entry  Legend Entry to add
    */
-  public void addLegendEntry(LegendEntry entry) {
-    legendEntries.add(entry); // Add the Legend Entry to local reference List
-    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
+  public void addLegendEntry(final LegendEntry entry) {
+    // In order to prevent exceptions, the Legend Entries have to
+    // be added to the List on the UI thread (in order).
+    // Since refresh calls are only made after all the entries
+    // have been added, all the Legend Entries will show up
+    // on refresh.
+    uiHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        legendEntries.add(entry); // Add the Legend Entry to local reference List
+      }
+    });
   }
 
   /**
    * Removes the specified Legend Entry from the Legend of the Pie Chart view
    * @param entry  Legend Entry to remove
    */
-  public void removeLegendEntry(LegendEntry entry) {
-    legendEntries.remove(entry); // Remove the Legend Entry from local reference list
-    chart.getLegend().setCustom(legendEntries); // Re-set the Legend's entries to the List to update
+  public void removeLegendEntry(final LegendEntry entry) {
+    // To prevent exceptions, Legend Entries have to be removed
+    // from the List on the UI thread.
+    uiHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        legendEntries.remove(entry); // Remove the Legend Entry from local reference list
+      }
+    });
   }
 
   /**
@@ -412,4 +436,29 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // Resize Pie Chart rings accordingly
     resizePieRings();
   }
+
+  //  @Override
+//  public Runnable getRefreshRunnable() {
+//    return new Runnable() {
+//      @Override
+//      public void run() {
+//        // Refresh each Pie Chart (ring) individually
+//        for (final PieChart pieChart : pieCharts) {
+//          // Notify the Data component of data changes (needs to be called
+//          // when Datasets get changed directly)
+//          pieChart.getData().notifyDataChanged();
+//
+//          // Notify the Chart of Data changes (needs to be called
+//          // when Data objects get changed directly)
+//          pieChart.notifyDataSetChanged();
+//
+//          // Invalidate the Chart on the UI thread (via the Handler)
+//          // The invalidate method should only be invoked on the UI thread
+//          // to prevent exceptions.
+//          updatePieChartRingOffset(pieChart);
+//          pieChart.invalidate();
+//        }
+//      }
+//    };
+//  }
 }

@@ -39,7 +39,7 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
             // In Line Chart based data series, the data is already pre-sorted.
             // We can thus run binary search by comparing with the x value, and
             // using an x+1 value to find the insertion point
-            int index = Collections.binarySearch(getDataset().getValues(), // Use the list of entries
+            int index = Collections.binarySearch(entries, // Use the list of entries
                 entry, // Search for the same x value as the entry to be added
                 new EntryXComparator()); // Compare by x value
 
@@ -49,19 +49,19 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
                 index = -index - 1;
             } else {
                 // Get the entry count of the Data Set
-                int entryCount = getDataset().getValues().size();
+                int entryCount = entries.size();
 
                 // Iterate until an entry with a differing (higher) x value is found (this
                 // is where the value should be inserted)
                 // The reason for a loop is to pass through all the duplicate entries.
-                while (index < entryCount && getDataset().getEntryForIndex(index).getX() == entry.getX()) {
+                while (index < entryCount && entries.get(index).getX() == entry.getX()) {
                     index++;
                 }
             }
 
             // Since we are adding a value manually to the specified index, we
             // must call notifyDataSetChanged manually here.
-            getDataset().getValues().add(index, entry);
+            entries.add(index, entry);
         }
     }
 

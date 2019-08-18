@@ -28,7 +28,7 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
 
     // If entry constructed successfully, add it to the Data Series
     if (entry != null) {
-      getDataset().addEntry(entry);
+      entries.add(entry);
     }
   }
 
