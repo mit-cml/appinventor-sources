@@ -73,8 +73,7 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     model.addEntryFromTuple(tuple);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 1f));
+      add(createEntry(0f, 1f));
     }};
 
     assertExpectedEntriesHelper(expectedEntries);
