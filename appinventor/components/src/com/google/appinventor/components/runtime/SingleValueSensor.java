@@ -15,6 +15,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 
 import java.util.List;
 
@@ -24,11 +25,13 @@ import java.util.List;
 @SimpleObject
 public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
+  private static final int DEFAULT_REFRESH_TIME = 1000; // ms
   private Sensor sensor;
+  protected int sensorType;
   protected float value;  // most recent value read
   protected final SensorManager sensorManager;
   protected boolean enabled;
-  protected int sensorType;
+  protected int refreshTime;
 
   public SingleValueSensor(ComponentContainer container, int sensorType) {
     super(container.$form());
@@ -43,7 +46,17 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   }
 
   protected void startListening() {
-    sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+    // Before Gingerbread, the only legal values for the third argument
+    // to registerListener() were SENSOR_DELAY_NORMAL, SENSOR_DELAY_UI,
+    // SENSOR_DELAY_GAME, or SENSOR_DELAY_FASTEST. From Gingerbread,
+    // the refresh rate can be requested in microseconds.
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+      // App Inventor users specify time in milliseconds.
+      int timeInMicroseconds = refreshTime * 1000;
+      sensorManager.registerListener(this, sensor, timeInMicroseconds);
+    } else {
+      sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+    }
   }
 
   protected void stopListening() {
@@ -86,6 +99,37 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   @SimpleProperty
   public void Enabled(boolean enabled) {
     setEnabled(enabled);
+  }
+
+  /**
+   * RefreshTime property getter method.
+   *
+   * @return time in ms between updates
+   */
+  @SimpleProperty(
+      description = "The requested minimum time in milliseconds between " +
+      "changed values being reported. This is only a request, which the " +
+      "Android system is not guaranteed to respect.",
+      category = PropertyCategory.BEHAVIOR)
+  public int RefreshTime() {
+    return refreshTime;
+  }
+
+  /**
+   * RefreshTime property setter method.
+   *
+   * @param time in ms between updates
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_REFRESH_TIME + "")
+  @SimpleProperty
+  public void RefreshTime(int time) {
+    refreshTime = time;
+    if (enabled) {
+      stopListening();
+      startListening();
+    }
   }
 
   @Override
