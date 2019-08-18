@@ -4,6 +4,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,6 +21,7 @@ import java.util.List;
 /**
  * A sensors reporting a single value, such as temperature or humidity.
  */
+@SimpleObject
 public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
   private Sensor sensor;
@@ -41,6 +48,44 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
 
   protected void stopListening() {
     sensorManager.unregisterListener(this);
+  }
+
+  /**
+   * Available property getter method (read-only property).
+   *
+   * @return {@code true} indicates that a hygrometer is available,
+   *         {@code false} that it isn't
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean Available() {
+    return isAvailable();
+  }
+
+/**
+   * If true, the sensor will generate events.  Otherwise, no events
+   * are generated.
+   *
+   * @return {@code true} indicates that the sensor generates events,
+   *         {@code false} that it doesn't
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean Enabled() {
+    return enabled;
+  }
+
+  /**
+   * Specifies whether the sensor should generate events.  If true,
+   * the sensor will generate events.  Otherwise, no events are
+   * generated.
+   *
+   * @param enabled  {@code true} enables sensor event generation,
+   *                 {@code false} disables it
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void Enabled(boolean enabled) {
+    setEnabled(enabled);
   }
 
   @Override

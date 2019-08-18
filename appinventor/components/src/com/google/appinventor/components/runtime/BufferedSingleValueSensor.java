@@ -4,6 +4,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.SimpleObject;
+
 import android.content.Context;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
@@ -12,6 +14,7 @@ import android.hardware.SensorManager;
  * A single-value sensor whose most recent values should be buffered
  * and averaged.
  */
+@SimpleObject
 public abstract class BufferedSingleValueSensor extends SingleValueSensor {
   private AveragingBuffer buffer;
 
