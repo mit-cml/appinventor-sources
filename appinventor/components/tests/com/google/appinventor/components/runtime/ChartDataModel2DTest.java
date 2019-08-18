@@ -283,10 +283,10 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     YailList tuple = createTuple(xValue, yValue);
     model.addEntryFromTuple(tuple);
 
-    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry entry = (Entry) model.getEntries().get(0);
     Entry expectedEntry = createEntry(xValue, yValue);
 
-    assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getEntries().size());
     assertEntriesEqual(expectedEntry, entry);
   }
 
@@ -302,10 +302,10 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     YailList tuple = createTuple(xValue, yValue, 5f, 7f, 3f);
     model.addEntryFromTuple(tuple);
 
-    Entry entry = model.getDataset().getEntryForIndex(0);
+    Entry entry = (Entry) model.getEntries().get(0);
     Entry expectedEntry = createEntry(xValue, yValue);
 
-    assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getEntries().size());
     assertEntriesEqual(expectedEntry, entry);
   }
 
@@ -356,11 +356,11 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     model.addEntryFromTuple(createTuple(1f, 2f));
     model.addEntryFromTuple(createTuple(2f, 4f));
 
-    assertEquals(3, model.getDataset().getEntryCount());
+    assertEquals(3, model.getEntries().size());
 
     model.clearEntries();
 
-    assertEquals(0, model.getDataset().getEntryCount());
+    assertEquals(0, model.getEntries().size());
   }
 
   /**
