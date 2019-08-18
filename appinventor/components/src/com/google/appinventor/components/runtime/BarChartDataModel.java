@@ -83,8 +83,8 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
         // Attempt to parse the x and y value String representations.
         // Since the Bar Chart uses x entries as an index (so an
         // x value of 3 would correspond to the 4th entry [3rd index],
-        //the float value has to be rounded to an integer.
-        int x = Math.round(Float.parseFloat(xValue));
+        // the float value has to be floored.
+        int x = (int)Math.floor(Float.parseFloat(xValue));
         float y = Float.parseFloat(yValue);
 
         return new BarEntry(x, y);
