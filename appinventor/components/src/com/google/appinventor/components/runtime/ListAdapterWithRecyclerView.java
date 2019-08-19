@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -44,10 +43,14 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private int textColor;
     private int textSize; 
     private int layoutType;
+    private int backgroundColor;
+    private int selectionColor;
 
-    private int idFirst,idSecond,idImages;
+    public boolean isSelected=false;
 
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType){
+    private int idFirst,idSecond,idImages,idCard;
+
+    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor){
         this.firstItem = first;
         this.secondItem = second;   
         this.images=images;
@@ -55,6 +58,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         this.textSize=textSize;
         this.textColor=textColor;
         this.layoutType=layoutType;
+        this.backgroundColor=backgroundColor;
+        this.selectionColor=selectionColor;
     }
 
     @Override
@@ -71,14 +76,18 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         cardView.setCardElevation(2.1f);
         cardView.setRadius(0);
         cardView.setMaxCardElevation(3f);
+        cardView.setBackgroundColor(backgroundColor);
+        cardView.setClickable(isSelected);
 
         idFirst=View.generateViewId();
         idSecond=View.generateViewId();
         idImages=View.generateViewId();
+        idCard=View.generateViewId();
 
         textViewFirst.setId(idFirst);
         textViewSecond.setId(idSecond);
         imageView.setId(idImages);
+        cardView.setId(idCard);
 
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -102,7 +111,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
         LinearLayout.LayoutParams params1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         params1.setMargins(30 ,30,30,30);
-            
+
         cardView.setBackgroundColor(Color.parseColor("#E9E9E9"));
 
         ViewCompat.setElevation(cardView, 20);
@@ -159,6 +168,24 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     @Override
     public void onBindViewHolder(final RvViewHolder holder, int position) {
+          
+           if(isSelected){
+            holder.cardView.setBackgroundColor(selectionColor);}
+            else{
+            holder.cardView.setBackgroundColor(backgroundColor);}
+
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isSelected=!isSelected;
+                    if(isSelected){
+                    holder.cardView.setBackgroundColor(selectionColor);
+                    }else{
+                    holder.cardView.setBackgroundColor(backgroundColor);
+                    }
+                }
+            });
+
             if(layoutType==0){
             String first =firstItem[position];
             holder.textViewFirst.setText(first);
@@ -203,9 +230,13 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         public TextView textViewFirst;
         public TextView textViewSecond;
         public ImageView imageVieww;
+        public CardView cardView;
 
         public RvViewHolder(View view){
             super(view);
+
+            cardView=(CardView)view.findViewById(idCard);
+
             if(layoutType == 0){
             textViewFirst = (TextView)view.findViewById(idFirst);
             }

@@ -76,7 +76,7 @@ public final class RecyclerView extends AndroidViewComponent{
     private ListAdapterWithRecyclerView listAdapterWithRecyclerView;
 
     private int backgroundColor;
-    private static final int DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    private static final int DEFAULT_BACKGROUND_COLOR = Color.BLACK;
 
     // The text color of the ListView's items.  All items have the same text color
     private int textColor;
@@ -113,6 +113,7 @@ public final class RecyclerView extends AndroidViewComponent{
 //    SelectionIndex(0);
 
     recyclerView = new android.support.v7.widget.RecyclerView(container.$context());
+    recyclerView.setBackgroundColor(Color.WHITE);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -310,7 +311,7 @@ public final class RecyclerView extends AndroidViewComponent{
     } 
     }
     
-    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout);  
+    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor);  
     LinearLayoutManager layoutManager;
     GridLayoutManager gridlayoutManager;
 
@@ -338,7 +339,7 @@ public final class RecyclerView extends AndroidViewComponent{
   /**
    * Sets the index to the passed argument for selection
    * @param index the index to be selected
-  
+      
   @SimpleProperty(description="Specifies the position of the selected item in the ListView. " +
       "This could be used to retrieve" +
       "the text at the chosen position. If an attempt is made to set this to a " +
@@ -382,8 +383,10 @@ public final class RecyclerView extends AndroidViewComponent{
 
   public void setBackgroundColor(int color) {
       backgroundColor = color;
-      recyclerView.setBackgroundColor(backgroundColor);
-      linearLayout.setBackgroundColor(backgroundColor);
+     // recyclerView.setBackgroundColor(backgroundColor);
+     // linearLayout.setBackgroundColor(backgroundColor);
+      setAdapterr();
+
      }
 
   /**
@@ -425,7 +428,7 @@ public final class RecyclerView extends AndroidViewComponent{
    *
    * @return selection color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
-   
+   */
   @SimpleProperty(description = "The color of the item when it is selected.")
   public int SelectionColor() {
     return selectionColor;
@@ -439,15 +442,13 @@ public final class RecyclerView extends AndroidViewComponent{
    *
    * @param argb selection color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
-   
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
-    recyclerView.setSelector(new GradientDrawable(
-    GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
-    ));
+    setAdapterr();
   }
 
   /**
