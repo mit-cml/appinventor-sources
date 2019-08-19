@@ -302,7 +302,7 @@ public class ProjectToolbar extends Toolbar {
         if(!gallerySettings.galleryEnabled()){
           message = MESSAGES.confirmDeleteManyProjects(projectNames);
         } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+          message = MESSAGES.confirmDeleteForeverManyProjectsWithGalleryOn(projectNames);
         }
       }
       return Window.confirm(message);
@@ -443,6 +443,8 @@ public class ProjectToolbar extends Toolbar {
     }
     setButtonEnabled(WIDGET_NAME_DELETE_FOREVER, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
+        false);
   }
 
   // If we started a project, then the start button was disabled (to avoid

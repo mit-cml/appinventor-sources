@@ -1045,7 +1045,6 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
