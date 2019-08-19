@@ -25,6 +25,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import java.util.HashSet;
+
 /**
  * This component keeps count of steps using the accelerometer.
  *
@@ -39,7 +41,8 @@ import android.util.Log;
   iconName = "images/pedometer.png")
 @SimpleObject
 public class Pedometer extends AndroidNonvisibleComponent
-    implements Component, SensorEventListener, Deleteable {
+    implements Component, SensorEventListener, Deleteable,
+    RealTimeChartDataSource<String, Float> {
   private static final String TAG = "Pedometer";
   private static final String PREFS_NAME = "PedometerPrefs";
 
@@ -69,6 +72,9 @@ public class Pedometer extends AndroidNonvisibleComponent
 
   private float[] avgWindow = new float[10];
   private int avgPos = 0;
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /** Constructor. */
   public Pedometer(ComponentContainer container) {
@@ -187,6 +193,9 @@ public class Pedometer extends AndroidNonvisibleComponent
    */
   @SimpleEvent(description = "This event is run when a raw step is detected")
   public void SimpleStep(int simpleSteps, float distance) {
+    notifyDataObservers("SimpleSteps", simpleSteps);
+    notifyDataObservers("Distance", distance);
+
     EventDispatcher.dispatchEvent(this, "SimpleStep", simpleSteps, distance);
   }
 
@@ -200,6 +209,9 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleEvent(description = "This event is run when a walking step is detected. " +
     "A walking step is a step that appears to be involved in forward motion.")
   public void WalkStep(int walkSteps, float distance) {
+    notifyDataObservers("WalkSteps", walkSteps);
+    notifyDataObservers("Distance", distance);
+
     EventDispatcher.dispatchEvent(this, "WalkStep", walkSteps, distance);
   }
 
@@ -494,4 +506,40 @@ public class Pedometer extends AndroidNonvisibleComponent
     return false;
   }
 
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  @Override
+  public Float getDataValue(String key) {
+    // TODO: Add documentation for Key value names
+
+    switch (key) {
+      case "SimpleSteps":
+        return (float) numStepsRaw;
+
+      case "WalkSteps":
+        return (float) numStepsWithFilter;
+
+      case "Distance":
+        return totalDistance;
+
+      default:
+        return 0f;
+    }
+  }
 }

@@ -92,6 +92,7 @@ public class PropertiesUtil {
     add("GyroscopeSensor");
     add("OrientationSensor");
     add("ProximitySensor");
+    add("Pedometer");
   }};
 
 
