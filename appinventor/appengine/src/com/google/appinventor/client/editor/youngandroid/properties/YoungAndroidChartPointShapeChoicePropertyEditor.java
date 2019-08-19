@@ -9,10 +9,10 @@ public class YoungAndroidChartPointShapeChoicePropertyEditor extends ChoicePrope
 
   // Chart Point Shape choices
   private static final Choice[] shapes = new Choice[] {
-      new Choice(MESSAGES.lineChartType(), ComponentConstants.CHART_POINT_STYLE_CIRCLE + ""),
-      new Choice(MESSAGES.scatterChartType(), ComponentConstants.CHART_POINT_STYLE_SQUARE + ""),
-      new Choice(MESSAGES.areaChartType(), ComponentConstants.CHART_POINT_STYLE_TRIANGLE + ""),
-      new Choice(MESSAGES.barChartType(), ComponentConstants.CHART_POINT_STYLE_CROSS + "")
+      new Choice(MESSAGES.chartCircleShape(), ComponentConstants.CHART_POINT_STYLE_CIRCLE + ""),
+      new Choice(MESSAGES.chartSquareShape(), ComponentConstants.CHART_POINT_STYLE_SQUARE + ""),
+      new Choice(MESSAGES.chartTriangleShape(), ComponentConstants.CHART_POINT_STYLE_TRIANGLE + ""),
+      new Choice(MESSAGES.chartCrossShape(), ComponentConstants.CHART_POINT_STYLE_CROSS + "")
   };
 
   public YoungAndroidChartPointShapeChoicePropertyEditor() {
