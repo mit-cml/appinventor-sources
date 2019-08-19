@@ -55,6 +55,14 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         chart.getDescription().setText(text);
     }
 
+    public void setLegendEnabled(boolean enabled) {
+        chart.getLegend().setEnabled(enabled);
+    }
+
+    public void setGridEnabled(boolean enabled) {
+        chart.getXAxis().setDrawGridLines(false);
+    }
+
     /**
      * Creates a new Chart Model object instance.
      *

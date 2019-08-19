@@ -171,6 +171,13 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     }
   }
 
+  @Override
+  public void setGridEnabled(boolean enabled) {
+    super.setGridEnabled(enabled);
+    chart.getAxisLeft().setDrawGridLines(enabled);
+    chart.getAxisRight().setDrawGridLines(enabled);
+  }
+
 
 //  @Override
 //  protected Runnable getRefreshRunnable() {

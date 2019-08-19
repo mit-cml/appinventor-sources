@@ -30,6 +30,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
     private int pieRadius;
+    private boolean legendEnabled;
+    private boolean gridEnabled;
 
     // Synced t value across all Data Series (used for real-time entries)
     // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -271,6 +273,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         if (chartView instanceof PieChartView) {
             ((PieChartView)chartView).setPieRadius(percent);
         }
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+                defaultValue = "true")
+    @SimpleProperty
+    public void LegendEnabled(boolean enabled) {
+
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+        defaultValue = "true")
+    @SimpleProperty
+    public void GridEnabled(boolean enabled) {
+
     }
 
     /**
