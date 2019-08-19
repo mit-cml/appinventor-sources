@@ -57,7 +57,7 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
                 break;
 
             case ComponentConstants.CHART_LINE_TYPE_STEPPED:
-                dataSeries.setSteppedLine(SteppedLine.MIDDLE);
+                dataSeries.setSteppedLine(SteppedLine.BEFORE);
                 dataSeries.setLineTension(0);
                 break;
         }
