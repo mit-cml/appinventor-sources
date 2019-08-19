@@ -302,7 +302,7 @@ public class ProjectToolbar extends Toolbar {
         if(!gallerySettings.galleryEnabled()){
           message = MESSAGES.confirmDeleteManyProjects(projectNames);
         } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+          message = MESSAGES.confirmDeleteForeverManyProjectsWithGalleryOn(projectNames);
         }
       }
       return Window.confirm(message);

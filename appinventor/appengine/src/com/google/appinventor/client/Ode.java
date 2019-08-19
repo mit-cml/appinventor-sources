@@ -449,12 +449,12 @@ public class Ode implements EntryPoint {
             ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
             ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
             //shifting back to show projects
-          if(currentView==TRASHCAN)  {
-            projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
-            projectListPanel.setWidth("100%");
-            projectListPanel.add(ProjectListBox.getProjectListBox());
-            pVertPanel.add(projectListPanel);
-          }
+            if(currentView==TRASHCAN)  {
+              projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
+              projectListPanel.setWidth("100%");
+              projectListPanel.add(ProjectListBox.getProjectListBox());
+              pVertPanel.add(projectListPanel);
+            }
         }
           currentView = PROJECTS;
           getTopToolbar().updateFileMenuButtons(currentView);
@@ -1045,7 +1045,6 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
