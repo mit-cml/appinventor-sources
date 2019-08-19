@@ -237,7 +237,11 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         boolean showScatterChartProperties =
             chartDataModel instanceof MockScatterChartDataModel;
 
+        boolean showLineBaseChartProperties =
+            chartDataModel instanceof MockLineChartBaseDataModel;
+
         showProperty(PROPERTY_POINT_SHAPE, showScatterChartProperties);
+        showProperty(PROPERTY_LINE_TYPE, showLineBaseChartProperties);
     }
 
     /**
@@ -309,7 +313,8 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
           setPointShapeProperty(newValue);
           refreshChart();
         } else if (propertyName.equals(PROPERTY_LINE_TYPE)) {
-
+          setLineTypeProperty(newValue);
+          refreshChart();
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
         } else if (propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN)) {
