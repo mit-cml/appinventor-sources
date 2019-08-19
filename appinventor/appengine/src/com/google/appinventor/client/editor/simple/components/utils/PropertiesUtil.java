@@ -89,6 +89,7 @@ public class PropertiesUtil {
     add("AccelerometerSensor");
     add("BluetoothClient");
     add("Web");
+    add("GyroscopeSensor");
   }};
 
 
