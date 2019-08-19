@@ -12,7 +12,8 @@ public class YoungAndroidChartPointShapeChoicePropertyEditor extends ChoicePrope
       new Choice(MESSAGES.chartCircleShape(), ComponentConstants.CHART_POINT_STYLE_CIRCLE + ""),
       new Choice(MESSAGES.chartSquareShape(), ComponentConstants.CHART_POINT_STYLE_SQUARE + ""),
       new Choice(MESSAGES.chartTriangleShape(), ComponentConstants.CHART_POINT_STYLE_TRIANGLE + ""),
-      new Choice(MESSAGES.chartCrossShape(), ComponentConstants.CHART_POINT_STYLE_CROSS + "")
+      new Choice(MESSAGES.chartCrossShape(), ComponentConstants.CHART_POINT_STYLE_CROSS + ""),
+      new Choice(MESSAGES.chartXShape(), ComponentConstants.CHART_POINT_STYLE_X + "")
   };
 
   public YoungAndroidChartPointShapeChoicePropertyEditor() {

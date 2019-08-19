@@ -53,6 +53,10 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
         pointStyle = PointStyle.CROSS;
         break;
 
+      case ComponentConstants.CHART_POINT_STYLE_X:
+        pointStyle = PointStyle.CROSS_ROT;
+        break;
+
       default:
         pointStyle = PointStyle.CIRCLE;
     }

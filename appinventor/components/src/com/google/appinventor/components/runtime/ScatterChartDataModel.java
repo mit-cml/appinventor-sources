@@ -56,6 +56,10 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
         dataset.setScatterShape(ScatterChart.ScatterShape.CROSS);
         break;
 
+      case ComponentConstants.CHART_POINT_STYLE_X:
+        dataset.setScatterShape(ScatterChart.ScatterShape.X);
+        break;
+
       default:
         dataset.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
     }
