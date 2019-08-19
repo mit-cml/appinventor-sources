@@ -49,6 +49,14 @@ public abstract class MockChartView<C extends AbstractChart> {
         MockComponentsUtil.setWidgetBackgroundColor(chartWidget, value);
     }
 
+    public void setLegendEnabled(boolean enabled) {
+        chartWidget.getOptions().getLegend().setDisplay(enabled);
+    }
+
+    public void setGridEnabled(boolean enabled) {
+        // TODO: ...
+    }
+
     /**
      * Creates a new MockChartDataModel object instance
      * representative of the MockChartView type.

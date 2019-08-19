@@ -14,6 +14,8 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
+    private static final String PROPERTY_NAME_LEGEND_ENABLED = "LegendEnabled";
+    private static final String PROPERTY_NAME_GRID_ENABLED = "GridEnabled";
     private static final String PROPERTY_NAME_PIE_RADIUS = "PieRadius";
 
     static {
@@ -218,6 +220,12 @@ public final class MockChart extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_LEGEND_ENABLED)) {
+          boolean enabled = Boolean.parseBoolean(newValue);
+          chartView.setLegendEnabled(enabled);
+        } else if (propertyName.equals(PROPERTY_NAME_GRID_ENABLED)) {
+          boolean enabled = Boolean.parseBoolean(newValue);
+          chartView.setGridEnabled(enabled);
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             setPieRadiusProperty(newValue);
         }

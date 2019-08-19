@@ -276,17 +276,19 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-                defaultValue = "true")
+                defaultValue = "True")
     @SimpleProperty
     public void LegendEnabled(boolean enabled) {
-
+        this.legendEnabled = enabled;
+        chartView.setLegendEnabled(enabled);
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-        defaultValue = "true")
+        defaultValue = "True")
     @SimpleProperty
     public void GridEnabled(boolean enabled) {
-
+        this.gridEnabled = enabled;
+        chartView.setLegendEnabled(enabled);
     }
 
     /**
