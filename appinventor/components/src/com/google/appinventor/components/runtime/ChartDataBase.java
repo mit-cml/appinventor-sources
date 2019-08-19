@@ -49,6 +49,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private int color;
     private YailList colors;
     private int pointShape;
+    private int lineType;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
 
@@ -183,6 +184,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
         if (chartDataModel instanceof ScatterChartDataModel) {
             ((ScatterChartDataModel)chartDataModel).setPointShape(shape);
+        }
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+        defaultValue = ComponentConstants.CHART_LINE_TYPE_LINEAR + "")
+    @SimpleProperty(userVisible = false)
+    public void LineType(int type) {
+        this.lineType = type;
+
+        if (chartDataModel instanceof LineChartBaseDataModel) {
+            ((LineChartBaseDataModel)chartDataModel).setLineType(type);
         }
     }
 

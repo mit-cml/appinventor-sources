@@ -117,5 +117,9 @@ public class ComponentConstants {
   public static final int CHART_POINT_STYLE_TRIANGLE = 2;
   public static final int CHART_POINT_STYLE_CROSS = 3;
   public static final int CHART_POINT_STYLE_X = 4;
+
+  public static final int CHART_LINE_TYPE_LINEAR = 0;
+  public static final int CHART_LINE_TYPE_CURVED = 1;
+  public static final int CHART_LINE_TYPE_STEPPED = 2;
 }
 

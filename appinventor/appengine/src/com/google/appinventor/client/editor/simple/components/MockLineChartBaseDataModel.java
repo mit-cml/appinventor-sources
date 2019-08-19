@@ -1,7 +1,10 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.enums.CubicInterpolationMode;
+import org.pepstock.charba.client.enums.SteppedLine;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,6 +41,22 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
             // going outside the Chart, which would happen since we
             // are using a Scatter Chart.
             dataSeries.getDataPoints().sort(Comparator.comparingDouble(DataPoint::getX));
+        }
+    }
+
+    public void setLineType(int type) {
+        switch (type) {
+            case ComponentConstants.CHART_LINE_TYPE_LINEAR:
+                dataSeries.setSteppedLine(SteppedLine.AFTER);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_CURVED:
+                dataSeries.setSteppedLine(SteppedLine.MIDDLE);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_STEPPED:
+                dataSeries.setSteppedLine(SteppedLine.BEFORE);
+                break;
         }
     }
 }

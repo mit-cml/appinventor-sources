@@ -12,6 +12,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
     private static final String PROPERTY_POINT_SHAPE = "PointShape";
+    private static final String PROPERTY_LINE_TYPE = "LineType";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
     private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
@@ -31,7 +32,6 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     protected List<String> dataFileColumns;
 
     private String currentElements = "";
-    private int pointShape = 0;
 
     /**
      * Creates a new instance of a Mock Chart Data component.
@@ -165,10 +165,18 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     }
 
     private void setPointShapeProperty(String newValue) {
-        this.pointShape = Integer.parseInt(newValue);
+        int pointShape = Integer.parseInt(newValue);
 
         if (chartDataModel instanceof MockScatterChartDataModel) {
             ((MockScatterChartDataModel)chartDataModel).changePointShape(pointShape);
+        }
+    }
+
+    private void setLineTypeProperty(String newValue) {
+        int lineType = Integer.parseInt(newValue);
+
+        if (chartDataModel instanceof MockLineChartBaseDataModel) {
+            ((MockLineChartBaseDataModel)chartDataModel).setLineType(lineType);
         }
     }
 
@@ -300,6 +308,8 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         } else if (propertyName.equals(PROPERTY_POINT_SHAPE)) {
           setPointShapeProperty(newValue);
           refreshChart();
+        } else if (propertyName.equals(PROPERTY_LINE_TYPE)) {
+
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
         } else if (propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN)) {

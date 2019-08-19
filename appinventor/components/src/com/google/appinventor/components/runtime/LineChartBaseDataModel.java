@@ -4,6 +4,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.EntryXComparator;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -81,5 +82,25 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
     @Override
     protected void setDefaultStylingProperties() {
         getDataset().setDrawCircleHole(false); // Draw full circle instead of a hollow one
+    }
+
+    public void setLineType(int type) {
+        switch (type) {
+            case ComponentConstants.CHART_LINE_TYPE_LINEAR:
+                dataset.setMode(LineDataSet.Mode.LINEAR);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_CURVED:
+                dataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_STEPPED:
+                dataset.setMode(LineDataSet.Mode.STEPPED);
+                break;
+
+            default:
+                dataset.setMode(LineDataSet.Mode.LINEAR);
+                break;
+        }
     }
 }
