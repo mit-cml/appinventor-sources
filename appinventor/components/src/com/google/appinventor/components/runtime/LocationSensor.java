@@ -66,7 +66,11 @@ import java.util.Set;
                  "android.permission.ACCESS_MOCK_LOCATION," +
                  "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
 public class LocationSensor extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener, Deleteable {
+    implements Component, OnStopListener, OnResumeListener, Deleteable,
+    RealTimeChartDataSource<String, Float> {
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -268,6 +272,11 @@ public class LocationSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void LocationChanged(double latitude, double longitude, double altitude, float speed) {
+    notifyDataObservers("latitude", latitude);
+    notifyDataObservers("longitude", longitude);
+    notifyDataObservers("altitude", altitude);
+    notifyDataObservers("speed", speed);
+
     EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude, speed);
   }
 
@@ -707,5 +716,45 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private boolean empty(String s) {
     return s == null || s.length() == 0;
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  @Override
+  public Float getDataValue(String key) {
+    // TODO: Add documentation for Key Value names
+
+    switch (key) {
+      case "latitude":
+        return (float) latitude;
+
+      case "longitude":
+        return (float )longitude;
+
+      case "altitude":
+        return (float) altitude;
+
+      case "speed":
+        return speed;
+
+      default:
+        return 0f;
+    }
   }
 }
