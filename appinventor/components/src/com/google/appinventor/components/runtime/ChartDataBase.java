@@ -187,7 +187,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         }
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE,
         defaultValue = ComponentConstants.CHART_LINE_TYPE_LINEAR + "")
     @SimpleProperty(userVisible = false)
     public void LineType(int type) {
