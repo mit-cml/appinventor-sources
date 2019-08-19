@@ -177,7 +177,7 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
     // The setColor method must follow the same procedure
     // as the setColors method due to the need of updating
     // the Legend Entries.
-    setColors(YailList.makeList(Collections.singleton(argb)));
+    setColors(Collections.singletonList(argb));
   }
 
   @Override
