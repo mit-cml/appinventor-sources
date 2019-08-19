@@ -47,6 +47,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private String label;
     private int color;
     private YailList colors;
+    private int pointShape;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
 
@@ -171,6 +172,17 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         this.label = text;
         chartDataModel.setLabel(text);
         refreshChart();
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+            defaultValue = "0")
+    @SimpleProperty(userVisible = false)
+    public void PointShape(int shape) {
+        this.pointShape = shape;
+
+        if (chartDataModel instanceof ScatterChartDataModel) {
+            ((ScatterChartDataModel)chartDataModel).setPointShape(shape);
+        }
     }
 
     /**

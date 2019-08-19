@@ -4,6 +4,7 @@ import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -35,5 +36,28 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
   @Override
   protected void setDefaultStylingProperties() {
     getDataset().setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+  }
+
+  public void setPointShape(int shape) {
+    switch (shape) {
+      case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
+        dataset.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        break;
+
+      case ComponentConstants.CHART_POINT_STYLE_SQUARE:
+        dataset.setScatterShape(ScatterChart.ScatterShape.SQUARE);
+        break;
+
+      case ComponentConstants.CHART_POINT_STYLE_TRIANGLE:
+        dataset.setScatterShape(ScatterChart.ScatterShape.TRIANGLE);
+        break;
+
+      case ComponentConstants.CHART_POINT_STYLE_CROSS:
+        dataset.setScatterShape(ScatterChart.ScatterShape.CROSS);
+        break;
+
+      default:
+        dataset.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    }
   }
 }
