@@ -50,7 +50,7 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
         break;
 
       case ComponentConstants.CHART_POINT_STYLE_CROSS:
-        pointStyle = PointStyle.TRIANGLE;
+        pointStyle = PointStyle.CROSS;
         break;
 
       default:

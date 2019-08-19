@@ -67,6 +67,10 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         // Set the properties to the Data Series
         setDataSeriesProperties();
 
+        // Change the visibilities of the styling properties
+        // according to Chart type
+        changeStylingPropertiesVisibility();
+
         // Refresh the Chart view
         refreshChart();
     }
@@ -83,7 +87,8 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
                 propertyName.equals(PROPERTY_DATA_FILE_Y_COLUMN) ||
                 propertyName.equals(PROPERTY_CHART_SOURCE_VALUE) ||
                 propertyName.equals(PROPERTY_WEB_X_COLUMN) ||
-                propertyName.equals(PROPERTY_WEB_Y_COLUMN)) {
+                propertyName.equals(PROPERTY_WEB_Y_COLUMN) ||
+                propertyName.equals(PROPERTY_POINT_SHAPE)) {
             return false;
         }
 
@@ -220,6 +225,13 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
     }
 
+    private void changeStylingPropertiesVisibility() {
+        boolean showScatterChartProperties =
+            chartDataModel instanceof MockScatterChartDataModel;
+
+        showProperty(PROPERTY_POINT_SHAPE, showScatterChartProperties);
+    }
+
     /**
      * Handles properties with regards to a DataFile source upon
      * changing the Data Source of the Data component.
@@ -287,6 +299,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
             refreshChart();
         } else if (propertyName.equals(PROPERTY_POINT_SHAPE)) {
           setPointShapeProperty(newValue);
+          refreshChart();
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
         } else if (propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN)) {

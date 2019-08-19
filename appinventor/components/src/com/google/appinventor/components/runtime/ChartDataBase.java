@@ -5,6 +5,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -174,8 +175,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         refreshChart();
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
-            defaultValue = "0")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_POINT_SHAPE,
+            defaultValue = ComponentConstants.CHART_POINT_STYLE_CIRCLE + "")
     @SimpleProperty(userVisible = false)
     public void PointShape(int shape) {
         this.pointShape = shape;
