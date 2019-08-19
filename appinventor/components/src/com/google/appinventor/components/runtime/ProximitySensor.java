@@ -15,6 +15,8 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
+import java.util.HashSet;
 import java.util.List;
 
 @DesignerComponent(version = YaVersion.PROXIMITYSENSOR_COMPONENT_VERSION,
@@ -31,7 +33,7 @@ import java.util.List;
 @SimpleObject
 public class ProximitySensor extends AndroidNonvisibleComponent
         implements OnStopListener, OnResumeListener, SensorComponent, OnPauseListener,
-        SensorEventListener, Deleteable {
+        SensorEventListener, Deleteable, RealTimeChartDataSource<String, Float> {
 
     private Sensor proximitySensor;
 
@@ -43,6 +45,9 @@ public class ProximitySensor extends AndroidNonvisibleComponent
 
     // Indicates if the sensor should be running when screen is off (on pause)
     private boolean keepRunningWhenOnPause;
+
+    // Set of observers
+    private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
     /**
      * Creates a new ProximitySensor component.
@@ -200,6 +205,11 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     @SimpleEvent(description = "Triggered when distance (in cm) of the object to the device changes. ")
     public void ProximityChanged(float distance) {
         this.distance = distance;
+
+        // Notify Data Observers of the changed distance (with null key, since
+        // the key does not matter, since only one value is returned)
+        notifyDataObservers(null, distance);
+
         EventDispatcher.dispatchEvent(this, "ProximityChanged", this.distance);
     }
 
@@ -222,5 +232,28 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void addDataObserver(ChartDataBase dataComponent) {
+        dataSourceObservers.add(dataComponent);
+    }
+
+    @Override
+    public void removeDataObserver(ChartDataBase dataComponent) {
+        dataSourceObservers.remove(dataComponent);
+    }
+
+    @Override
+    public void notifyDataObservers(String key, Object value) {
+        // Notify each Chart Data observer component of the Data value change
+        for (ChartDataBase dataComponent : dataSourceObservers) {
+            dataComponent.onReceiveValue(this, key, value);
+        }
+    }
+
+    @Override
+    public Float getDataValue(String key) {
+        return distance;
     }
 }

@@ -91,6 +91,7 @@ public class PropertiesUtil {
     add("Web");
     add("GyroscopeSensor");
     add("OrientationSensor");
+    add("ProximitySensor");
   }};
 
 
