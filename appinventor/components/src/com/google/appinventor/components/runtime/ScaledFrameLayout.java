@@ -58,11 +58,7 @@ public class ScaledFrameLayout extends ViewGroup {
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
-    if (VERSION.SDK_INT < VERSION_CODES.P) {
-      canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null, MATRIX_SAVE_FLAG);
-    } else {
-      canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null);
-    }
+    canvas.save();
     canvas.scale(mScale, mScale);
     super.dispatchDraw(canvas);
     canvas.restore();
