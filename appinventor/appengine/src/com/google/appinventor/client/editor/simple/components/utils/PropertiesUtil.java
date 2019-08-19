@@ -90,6 +90,7 @@ public class PropertiesUtil {
     add("BluetoothClient");
     add("Web");
     add("GyroscopeSensor");
+    add("OrientationSensor");
   }};
 
 

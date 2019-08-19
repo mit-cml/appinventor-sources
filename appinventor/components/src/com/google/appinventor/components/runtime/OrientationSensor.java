@@ -29,6 +29,8 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import java.util.HashSet;
+
 /**
  * Sensor that can measure absolute orientation in 3 dimensions.
  *
@@ -57,7 +59,8 @@ import android.view.WindowManager;
 
 @SimpleObject
 public class OrientationSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeChartDataSource<String, Float> {
   // Constants
   private static final String LOG_TAG = "OrientationSensor";
   // offsets in array returned by SensorManager.getOrientation()
@@ -94,6 +97,9 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   private final float[] rotationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] inclinationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] values = new float[DIMENSIONS];
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new OrientationSensor component.
@@ -152,6 +158,11 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void OrientationChanged(float azimuth, float pitch, float roll) {
+    // Notify the Data Source observers with the updated values
+    notifyDataObservers("azimuth", azimuth);
+    notifyDataObservers("pitch", pitch);
+    notifyDataObservers("roll", roll);
+
     EventDispatcher.dispatchEvent(this, "OrientationChanged", azimuth, pitch, roll);
   }
 
@@ -425,6 +436,43 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  @Override
+  public Float getDataValue(String key) {
+    // TODO: Add documentation for X, Y and Z Data Source value names
+
+    switch (key) {
+      case "azimuth":
+        return azimuth;
+
+      case "pitch":
+        return pitch;
+
+      case "roll":
+        return roll;
+
+      default:
+        return 0f;
     }
   }
 }
