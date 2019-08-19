@@ -193,6 +193,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    */
   @SimpleEvent(description = "This event is run when a raw step is detected")
   public void SimpleStep(int simpleSteps, float distance) {
+    // Notify Data Observers with changed SimpleSteps and Distance values
     notifyDataObservers("SimpleSteps", simpleSteps);
     notifyDataObservers("Distance", distance);
 
@@ -209,6 +210,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleEvent(description = "This event is run when a walking step is detected. " +
     "A walking step is a step that appears to be involved in forward motion.")
   public void WalkStep(int walkSteps, float distance) {
+    // Notify Data Observers with changed WalkSteps and Distance values
     notifyDataObservers("WalkSteps", walkSteps);
     notifyDataObservers("Distance", distance);
 

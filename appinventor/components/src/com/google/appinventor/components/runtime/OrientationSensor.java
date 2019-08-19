@@ -459,7 +459,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
 
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for X, Y and Z Data Source value names
+    // TODO: Add documentation for Key value names
 
     switch (key) {
       case "azimuth":
