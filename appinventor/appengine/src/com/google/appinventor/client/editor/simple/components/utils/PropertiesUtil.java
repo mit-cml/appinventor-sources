@@ -93,6 +93,7 @@ public class PropertiesUtil {
     add("OrientationSensor");
     add("ProximitySensor");
     add("Pedometer");
+    add("LocationSensor");
   }};
 
 
