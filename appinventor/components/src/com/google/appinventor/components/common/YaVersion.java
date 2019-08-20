@@ -456,8 +456,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 11
   // For YOUNG_ANDROID_VERESION 184:
   // - Added Switch
+  // For YOUNG_ANDROiD_VERSION 185:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 184;
+  public static final int YOUNG_ANDROID_VERSION = 185;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1051,7 +1053,11 @@ public class YaVersion {
   // - The SavedRecording property was added.
   public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 2:
+  // - The UseLegacy property was added which is set to True by default.
+  // - The Stop method was added, which works only when UseLegacy
+  //   property is set to False.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1248,11 +1254,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.53 or 2.53u";
+  public static final String PREFERRED_COMPANION = "2.54 or 2.54u";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.53", "2.53u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.54", "2.54u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
