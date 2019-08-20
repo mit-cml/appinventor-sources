@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
@@ -184,18 +185,25 @@ public final class MockChart extends MockContainer {
      * components and setting back all the properties.
      */
     private void reinitializeChart() {
-        // Chart type changing requires setting back Chart-related properties
-        chartView.setBackgroundColor(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
-        chartView.setTitle(getPropertyValue(PROPERTY_NAME_DESCRIPTION));
-        chartView.getChartWidget().draw();
-
-        // Re-attach all children MockChartData components.
-        // This is needed since the properties of the MockChart
-        // are set after the Data components are attached to
-        // the Chart, and thus they need to be re-attached.
-        for (MockComponent child : children) {
-            ((MockChartData) child).addToChart(MockChart.this);
+      // Re-set all Chart properties to take effect on
+      // the newly instantiated Chart View
+      for (EditableProperty property : properties) {
+        // The Type property should not be re-set, since
+        // this method call is part of the Type setting process.
+        if (!property.getName().equals(PROPERTY_NAME_TYPE)) {
+          onPropertyChange(property.getName(), property.getValue());
         }
+      }
+
+      chartView.getChartWidget().draw();
+
+      // Re-attach all children MockChartData components.
+      // This is needed since the properties of the MockChart
+      // are set after the Data components are attached to
+      // the Chart, and thus they need to be re-attached.
+      for (MockComponent child : children) {
+          ((MockChartData) child).addToChart(MockChart.this);
+      }
     }
 
     @Override
