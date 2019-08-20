@@ -18,6 +18,7 @@ public final class MockChart extends MockContainer {
     private static final String PROPERTY_NAME_LEGEND_ENABLED = "LegendEnabled";
     private static final String PROPERTY_NAME_GRID_ENABLED = "GridEnabled";
     private static final String PROPERTY_NAME_PIE_RADIUS = "PieRadius";
+    private static final String PROPERTY_NAME_LABELS_FROM_STRING = "LabelsFromString";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -151,6 +152,7 @@ public final class MockChart extends MockContainer {
         // Handle Axis Chart property hiding
         boolean showAxisChartProperties = chartView instanceof MockAxisChartView;
         showProperty(PROPERTY_NAME_GRID_ENABLED, showAxisChartProperties);
+        showProperty(PROPERTY_NAME_LABELS_FROM_STRING, showAxisChartProperties);
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel. isSelected() should only be invoked when
