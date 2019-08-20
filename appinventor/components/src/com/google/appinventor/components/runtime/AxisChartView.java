@@ -12,5 +12,9 @@ public abstract class AxisChartView<C extends BarLineChartBase,
 
     chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
     chart.getAxisRight().setEnabled(false); // Disable right Y axis so there's only one
+
+    // Set the granularities both for the X and the Y axis to 1
+    chart.getAxisLeft().setGranularity(1f);
+    chart.getXAxis().setGranularity(1f);
   }
 }

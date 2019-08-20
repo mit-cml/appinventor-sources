@@ -17,6 +17,9 @@ public abstract class MockAxisChartView<C extends AbstractChart> extends MockCha
 
     xAxis = new CartesianLinearAxis(chartWidget);
     yAxis = new CartesianLinearAxis(chartWidget);
+
+    xAxis.getTicks().setStepSize(1);
+    yAxis.getTicks().setStepSize(1);
   }
 
   public void setGridEnabled(boolean enabled) {
