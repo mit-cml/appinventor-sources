@@ -106,13 +106,13 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
 
     chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
 
-    // The X Axis values should be rounded off (since x values are whole numbers)
-    chart.getXAxis().setValueFormatter(new ValueFormatter() {
-      @Override
-      public String getFormattedValue(float value) {
-        return String.valueOf((int) value);
-      }
-    });
+//    // The X Axis values should be rounded off (since x values are whole numbers)
+//    chart.getXAxis().setValueFormatter(new ValueFormatter() {
+//      @Override
+//      public String getFormattedValue(float value) {
+//        return String.valueOf((int) value);
+//      }
+//    });
   }
 
   @Override
