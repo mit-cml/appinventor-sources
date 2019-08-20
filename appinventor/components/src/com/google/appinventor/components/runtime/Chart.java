@@ -199,6 +199,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
 
         Description(description);
         BackgroundColor(backgroundColor);
+        LegendEnabled(legendEnabled);
+        GridEnabled(gridEnabled);
     }
 
     /**
@@ -288,7 +290,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     @SimpleProperty
     public void GridEnabled(boolean enabled) {
         this.gridEnabled = enabled;
-        chartView.setLegendEnabled(enabled);
+        chartView.setGridEnabled(enabled);
     }
 
     /**

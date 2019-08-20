@@ -2,7 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.ScatterChart;
 
-public abstract class MockPointChartView extends MockChartView<ScatterChart> {
+public abstract class MockPointChartView extends MockAxisChartView<ScatterChart> {
   /**
    * Creates a new MockPointChartView object instance.
    */
@@ -18,5 +18,13 @@ public abstract class MockPointChartView extends MockChartView<ScatterChart> {
     * manual handling. */
     chartWidget = new ScatterChart();
     initializeDefaultSettings();
+  }
+
+  @Override
+  protected void initializeDefaultSettings() {
+    super.initializeDefaultSettings();
+
+    chartWidget.getOptions().getScales().setXAxes(xAxis);
+    chartWidget.getOptions().getScales().setYAxes(yAxis);
   }
 }

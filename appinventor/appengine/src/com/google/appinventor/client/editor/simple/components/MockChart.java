@@ -225,9 +225,11 @@ public final class MockChart extends MockContainer {
           chartView.setLegendEnabled(enabled);
           chartView.getChartWidget().draw();
         } else if (propertyName.equals(PROPERTY_NAME_GRID_ENABLED)) {
-          boolean enabled = Boolean.parseBoolean(newValue);
-          chartView.setGridEnabled(enabled);
-          refreshChart();
+          if (chartView instanceof MockAxisChartView) {
+            boolean enabled = Boolean.parseBoolean(newValue);
+            ((MockAxisChartView)chartView).setGridEnabled(enabled);
+            chartView.getChartWidget().draw();
+          }
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             setPieRadiusProperty(newValue);
         }

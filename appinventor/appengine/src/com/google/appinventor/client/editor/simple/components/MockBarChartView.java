@@ -17,7 +17,7 @@ import org.pepstock.charba.client.data.Dataset;
  * ascending order), and the difference between neighboring entries' x values are
  * at most 1.
  */
-public class MockBarChartView extends MockChartView<BarChart> {
+public class MockBarChartView extends MockAxisChartView<BarChart> {
   /**
    * Creates a new MockBarChartView object instance.
    */
@@ -33,9 +33,8 @@ public class MockBarChartView extends MockChartView<BarChart> {
     // In order to not have the y values cut off (the y axis being started
     // at the minimum value), set the suggested minimum to be 0 (on negative
     // values, the minimum becomes lower)
-    CartesianLinearAxis axis = new CartesianLinearAxis(chartWidget);
-    axis.getTicks().setSuggestedMin(0);
-    chartWidget.getOptions().getScales().setYAxes(axis);
+    yAxis.getTicks().setSuggestedMin(0);
+    chartWidget.getOptions().getScales().setYAxes(yAxis);
   }
 
   @Override
