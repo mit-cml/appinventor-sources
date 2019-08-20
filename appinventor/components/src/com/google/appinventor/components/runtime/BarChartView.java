@@ -12,7 +12,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.List;
 
-public class BarChartView extends ChartView<BarChart, BarData> {
+public class BarChartView extends AxisChartView<BarChart, BarData> {
   // Constant for the starting value to group Bar Chart bars from
   private static final float START_X_VALUE = 0f;
 
@@ -104,7 +104,6 @@ public class BarChartView extends ChartView<BarChart, BarData> {
     chart.setLayoutParams(new ViewGroup.LayoutParams
         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM); // Position X axis to the bottom
     chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
 
     // The X Axis values should be rounded off (since x values are whole numbers)
@@ -114,8 +113,6 @@ public class BarChartView extends ChartView<BarChart, BarData> {
         return String.valueOf((int) value);
       }
     });
-
-    chart.getAxisRight().setDrawLabels(false); // Disable right Y axis so there's only one
   }
 
   @Override

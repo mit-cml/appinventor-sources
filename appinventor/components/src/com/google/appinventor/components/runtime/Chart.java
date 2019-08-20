@@ -290,7 +290,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     @SimpleProperty
     public void GridEnabled(boolean enabled) {
         this.gridEnabled = enabled;
-        chartView.setGridEnabled(enabled);
+
+        if (chartView instanceof AxisChartView) {
+            chartView.setGridEnabled(enabled);
+        }
     }
 
     /**
