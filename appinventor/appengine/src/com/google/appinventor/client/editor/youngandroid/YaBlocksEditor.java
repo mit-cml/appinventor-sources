@@ -698,7 +698,9 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public static native void resendAssetsAndExtensions()/*-{
-    if (top.ReplState && top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
+    if (top.ReplState && (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
       Blockly.ReplMgr.resendAssetsAndExtensions();
     }
   }-*/;
