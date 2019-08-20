@@ -148,6 +148,10 @@ public final class MockChart extends MockContainer {
         boolean showPieChartProperties = chartView instanceof MockPieChartView;
         showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);
 
+        // Handle Axis Chart property hiding
+        boolean showAxisChartProperties = chartView instanceof MockAxisChartView;
+        showProperty(PROPERTY_NAME_GRID_ENABLED, showAxisChartProperties);
+
         // If the component is currently selected, re-select it to refresh
         // the Properties panel. isSelected() should only be invoked when
         // the view is in a container, hence the additional check here.
