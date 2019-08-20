@@ -523,7 +523,7 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
         + '"nzanas plátanos manzanas uvas."';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divide el texto en partes utilizando el texto \'at\' como puntos de corte y genera una lista con los resultados.  \n'
         + 'Recortar "uno,dos,tres,cuatro" en "," (coma) devuelve la lista "(uno dos tres cuatro)". \n'
-        + 'Recortar "uno-patata dos-patata tres-patata cuatro" en "-patata" devuelve la lista"(uno dos tres cuatro)".'
+        + 'Recortar "uno-patata dos-patata tres-patata cuatro" en "-patata " devuelve la lista"(uno dos tres cuatro)".'
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divide el texto especificado en una lista, utilizando cualquiera de los elementos de la lista \'at\' como \n'
         + 'punto de corte, y devuelve una lista con los resultados. \n'
         + 'Recortar "manzana, pera, plátano, pescado" con \'at\' como lista de dos elementos cuyo \n'
