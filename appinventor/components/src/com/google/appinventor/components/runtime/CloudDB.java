@@ -91,7 +91,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
         "\"RedisPort\" Property to access your own server.",
     designerHelpDescription = "Non-visible component that communicates with CloudDB " +
         "server to store and retrieve information.",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/cloudDB.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
