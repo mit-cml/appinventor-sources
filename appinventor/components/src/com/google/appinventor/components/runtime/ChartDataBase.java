@@ -98,7 +98,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         category = PropertyCategory.APPEARANCE
     )
     public YailList Colors() {
-        // TODO: Add support for other Chart types (not just Pie Chart)
         return colors;
     }
 
