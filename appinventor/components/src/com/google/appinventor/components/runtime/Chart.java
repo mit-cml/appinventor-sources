@@ -30,8 +30,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
     private int pieRadius;
-    private boolean legendEnabled;
-    private boolean gridEnabled;
+    private boolean legendEnabled = true;
+    private boolean gridEnabled = true;
 
     // Synced t value across all Data Series (used for real-time entries)
     // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -292,7 +292,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         this.gridEnabled = enabled;
 
         if (chartView instanceof AxisChartView) {
-            chartView.setGridEnabled(enabled);
+            ((AxisChartView)chartView).setGridEnabled(enabled);
         }
     }
 

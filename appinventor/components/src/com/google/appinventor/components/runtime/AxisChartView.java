@@ -17,4 +17,9 @@ public abstract class AxisChartView<C extends BarLineChartBase,
     chart.getAxisLeft().setGranularity(1f);
     chart.getXAxis().setGranularity(1f);
   }
+
+  public void setGridEnabled(boolean enabled) {
+    chart.getXAxis().setDrawGridLines(enabled);
+    chart.getAxisLeft().setDrawGridLines(enabled);
+  }
 }
