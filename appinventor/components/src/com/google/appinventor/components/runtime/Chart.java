@@ -7,10 +7,14 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @SimpleObject
 @DesignerComponent(version = 1,
@@ -30,8 +34,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
     private int pieRadius;
-    private boolean legendEnabled = true;
-    private boolean gridEnabled = true;
+    private boolean legendEnabled;
+    private boolean gridEnabled;
+    private YailList labels;
 
     // Synced t value across all Data Series (used for real-time entries)
     // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -63,6 +68,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
         PieRadius(100);
+        LegendEnabled(true);
+        GridEnabled(true);
 
         // Register onInitialize event of the Chart
         $form().registerForOnInitialize(this);
@@ -201,6 +208,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         BackgroundColor(backgroundColor);
         LegendEnabled(legendEnabled);
         GridEnabled(gridEnabled);
+        Labels(labels);
     }
 
     /**
@@ -293,6 +301,39 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
 
         if (chartView instanceof AxisChartView) {
             ((AxisChartView)chartView).setGridEnabled(enabled);
+        }
+    }
+
+    @SimpleProperty
+    public void Labels(YailList labels) {
+        this.labels = labels;
+
+        if (chartView instanceof AxisChartView) {
+            List<String> stringLabels = new ArrayList<String>();
+
+            for (int i = 0; i < labels.size(); ++i) {
+                String label = labels.getString(i);
+                stringLabels.add(label);
+            }
+
+            ((AxisChartView)chartView).setLabels(stringLabels);
+        }
+    }
+
+    @SimpleProperty
+    public YailList Labels() {
+        return labels;
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+                    defaultValue = "")
+    @SimpleProperty(userVisible = false)
+    public void LabelsFromString(String labels) {
+        try {
+            YailList labelsList = ElementsUtil.elementsFromString(labels);
+            Labels(labelsList);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

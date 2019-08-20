@@ -42,4 +42,8 @@ public abstract class AxisChartView<C extends BarLineChartBase,
     chart.getXAxis().setDrawGridLines(enabled);
     chart.getAxisLeft().setDrawGridLines(enabled);
   }
+
+  public void setLabels(List<String> labels) {
+    this.axisLabels = labels;
+  }
 }
