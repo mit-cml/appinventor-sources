@@ -70,6 +70,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         PieRadius(100);
         LegendEnabled(true);
         GridEnabled(true);
+        Labels(new YailList());
 
         // Register onInitialize event of the Chart
         $form().registerForOnInitialize(this);

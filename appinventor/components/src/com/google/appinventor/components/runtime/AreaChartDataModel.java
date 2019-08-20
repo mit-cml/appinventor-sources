@@ -30,6 +30,6 @@ public class AreaChartDataModel extends LineChartBaseDataModel {
     protected void setDefaultStylingProperties() {
         super.setDefaultStylingProperties();
         dataset.setDrawFilled(true);
-        dataset.setFillAlpha(255);
+        dataset.setFillAlpha(150);
     }
 }
