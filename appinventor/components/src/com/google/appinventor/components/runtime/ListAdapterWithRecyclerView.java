@@ -36,6 +36,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     private static final String TAG = "ListAdapterWithRecyclerView";
 
+    private static ClickListener clickListener;
+
     private String[] firstItem;
     private String[] secondItem;
     private ArrayList<Drawable> images;
@@ -45,12 +47,13 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private int layoutType;
     private int backgroundColor;
     private int selectionColor;
+ //   private int selectionIndex;
 
     public boolean isSelected=false;
 
     private int idFirst,idSecond,idImages,idCard;
 
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor){
+    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor){//,int selectionIndex){
         this.firstItem = first;
         this.secondItem = second;   
         this.images=images;
@@ -60,6 +63,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         this.layoutType=layoutType;
         this.backgroundColor=backgroundColor;
         this.selectionColor=selectionColor;
+      //  this.selectionIndex=selectionIndex;
     }
 
     @Override
@@ -168,7 +172,11 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     @Override
     public void onBindViewHolder(final RvViewHolder holder, int position) {
-          
+         
+         /*   if(position == selectionIndex){
+                holder.cardView.setBackgroundColor(selectionColor);    
+            }
+         */   
            if(isSelected){
             holder.cardView.setBackgroundColor(selectionColor);}
             else{
@@ -185,7 +193,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
                     }
                 }
             });
-
+            
             if(layoutType==0){
             String first =firstItem[position];
             holder.textViewFirst.setText(first);
@@ -225,7 +233,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         return (firstItem.length);
     }
 
-    class RvViewHolder extends RecyclerView.ViewHolder{
+    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         
         public TextView textViewFirst;
         public TextView textViewSecond;
@@ -234,6 +242,9 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
         public RvViewHolder(View view){
             super(view);
+
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
 
             cardView=(CardView)view.findViewById(idCard);
 
@@ -258,5 +269,26 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             imageVieww = (ImageView)view.findViewById(idImages);
             }
         }
+
+         @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            clickListener.onItemLongClick(getAdapterPosition(), v);
+            return false;
+        }
+
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        ListAdapterWithRecyclerView.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
     }
 };

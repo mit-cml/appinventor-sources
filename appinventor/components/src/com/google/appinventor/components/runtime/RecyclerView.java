@@ -59,7 +59,7 @@ import org.json.JSONObject;
 @UsesLibraries(libraries ="RecyclerView.jar, CardView.jar, CardView.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
     "android.permission.READ_EXTERNAL_STORAGE")
-public final class RecyclerView extends AndroidViewComponent{
+public final class RecyclerView extends AndroidViewComponent {
 
     private static final String LOG_TAG = "RecyclerView";
     
@@ -69,7 +69,7 @@ public final class RecyclerView extends AndroidViewComponent{
     private android.support.v7.widget.RecyclerView recyclerView;
     private Context ctx;
     private int selectionIndex;
-    private String selection;
+    private String selectionFirst="",selectionSecond="";
     private boolean showFilter = false;
     private static final boolean DEFAULT_ENABLED = false;
 
@@ -113,6 +113,7 @@ public final class RecyclerView extends AndroidViewComponent{
 //    SelectionIndex(0);
 
     recyclerView = new android.support.v7.widget.RecyclerView(container.$context());
+    //recyclerView.setOnItemClickListener(this);
     recyclerView.setBackgroundColor(Color.WHITE);
 
     txtSearchBox = new EditText(container.$context());
@@ -132,6 +133,10 @@ public final class RecyclerView extends AndroidViewComponent{
         public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
           // When user changed the Text
           //listAdapterWithRecyclerView.getFilter().filter(cs);
+          if(!currentItems.isEmpty()) {
+            //setAdapterData();
+              listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+          }
         }
 
         @Override
@@ -311,7 +316,33 @@ public final class RecyclerView extends AndroidViewComponent{
     } 
     }
     
-    listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor);  
+  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor);  
+   
+   listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+    @Override
+    public void onItemClick(int position, View v) {
+      JSONObject item = currentItems.get(position);
+      selectionFirst = item.has("Text1")?item.getString("Text1"):"";
+      selectionSecond = item.has("Text2")?item.getString("Text2"):"";
+      selectionIndex= position;
+      //adb -d logcat System.out.print("jrneene");
+      System.out.println("Spannable Adapter/...........");
+     // this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
+      AfterPicking();
+    }
+
+    @Override
+    public void onItemLongClick(int position, View v) {
+        //Log.d("efn", "onItemLongClick pos = " + position);
+      System.out.println("Spannable Adapter"+position);
+      JSONObject item = currentItems.get(position);
+      selectionFirst = item.has("Text1")?item.getString("Text1"):"";
+      selectionSecond = item.has("Text2")?item.getString("Text2"):"";
+      selectionIndex= position;     
+      AfterPicking();
+    }
+});
+
     LinearLayoutManager layoutManager;
     GridLayoutManager gridlayoutManager;
 
@@ -571,4 +602,39 @@ public final class RecyclerView extends AndroidViewComponent{
     this.orientation = orientation;
     setAdapterr();
   }
+
+
+  /**
+   * Simple event to raise when the component is clicked. Implementation of
+   * AdapterView.OnItemClickListener
+   */
+/*  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    if(!currentItems.isEmpty()) {
+      JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
+      this.selection = item.has("Text1")?item.getString("Text1"):"";
+     // this.selectionDetailText = item.has("Text2")?item.getString("Text2"):"";
+      //this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
+      this.selectionIndex=position;
+    } //else {
+      //System.out.println("Spannable Adapter/...........");
+      //Spannable item = (Spannable) parent.getAdapter().getItem(position);
+      //this.selection = item.toString();
+      //this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
+    //}
+     setAdapterr(); 
+    AfterPicking();
+  }*/
+
+  /**
+   * Simple event to be raised after the an element has been chosen in the list.
+   * The selected element is available in the Selection property.
+   */
+  @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the" +
+      " list. The selected element is available in the Selection property.")
+  public void AfterPicking() {
+    System.out.println("Spannable Adapter"+selectionIndex);
+    EventDispatcher.dispatchEvent(this, "AfterPicking");
+  }
+
 }
