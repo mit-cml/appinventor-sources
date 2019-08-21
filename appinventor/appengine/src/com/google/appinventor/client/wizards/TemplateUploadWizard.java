@@ -799,7 +799,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       wrapper.add(panel);
       initWidget(wrapper);
       setStylePrimaryName("ode-ContextMenu");
-      setHeight("500px");
+      setHeight("355px");
     }
 
     public static void setTemplate(TemplateInfo info, String hostUrl) {
@@ -879,7 +879,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     templateCellList.setPageSize(list.size() + 10);
     templateCellList.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
     templateCellList.setWidth("250px");
-    templateCellList.setHeight("500px");
+    templateCellList.setHeight("355px");
     templateCellList.setVisible(true);
     templateCellList.getElement().getStyle().setOverflow(Style.Overflow.SCROLL);
 
@@ -916,11 +916,11 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     super.show();
     // Wizard size (having it resize between page changes is quite annoying)
     int width = 640;
-    int height = 600;
+    int height = 458;
     this.center();
 
     setPixelSize(width, height);
-    super.setPagePanelHeight(580);
+    super.setPagePanelHeight(400);
   }
 
   /**
