@@ -138,6 +138,34 @@ public final class MockChart extends MockContainer {
       }
     }
 
+  /**
+   * Reacts to the LegendEnabled property change by changing
+   * the Mock Chart accordingly.
+   * @param newValue  new value of the property (String)
+   */
+  private void setLegendEnabledProperty(String newValue) {
+      boolean enabled = Boolean.parseBoolean(newValue);
+      chartView.setLegendEnabled(enabled);
+
+      chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
+    }
+
+  /**
+   * Reacts to the GridEnabled property change by changing
+   * the Mock Chart accordingly.
+   * @param newValue  new value of the property (String)
+   */
+    private void setGridEnabledProperty(String newValue) {
+      // The property should only be reflected on the Chart
+      // if the Chart View is an Axis Chart View.
+      if (chartView instanceof MockAxisChartView) {
+        boolean enabled = Boolean.parseBoolean(newValue);
+        ((MockAxisChartView)chartView).setGridEnabled(enabled);
+
+        chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
+      }
+    }
+
     /**
      * Changes Chart property visibilities depending on the
      * current type of the Chart.
@@ -235,15 +263,9 @@ public final class MockChart extends MockContainer {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
         } else if (propertyName.equals(PROPERTY_NAME_LEGEND_ENABLED)) {
-          boolean enabled = Boolean.parseBoolean(newValue);
-          chartView.setLegendEnabled(enabled);
-          chartView.getChartWidget().draw();
+          setLegendEnabledProperty(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_GRID_ENABLED)) {
-          if (chartView instanceof MockAxisChartView) {
-            boolean enabled = Boolean.parseBoolean(newValue);
-            ((MockAxisChartView)chartView).setGridEnabled(enabled);
-            chartView.getChartWidget().draw();
-          }
+          setGridEnabledProperty(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             setPieRadiusProperty(newValue);
         }

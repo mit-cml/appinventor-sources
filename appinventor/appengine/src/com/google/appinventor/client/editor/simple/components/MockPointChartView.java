@@ -24,6 +24,7 @@ public abstract class MockPointChartView extends MockAxisChartView<ScatterChart>
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
 
+    // Set the custom x and y axis to the Chart
     chartWidget.getOptions().getScales().setXAxes(xAxis);
     chartWidget.getOptions().getScales().setYAxes(yAxis);
   }

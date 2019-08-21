@@ -34,6 +34,9 @@ public class MockBarChartView extends MockAxisChartView<BarChart> {
     // at the minimum value), set the suggested minimum to be 0 (on negative
     // values, the minimum becomes lower)
     yAxis.getTicks().setSuggestedMin(0);
+
+    // Set the custom x and y axis to the Chart
+    chartWidget.getOptions().getScales().setXAxes(xAxis);
     chartWidget.getOptions().getScales().setYAxes(yAxis);
   }
 

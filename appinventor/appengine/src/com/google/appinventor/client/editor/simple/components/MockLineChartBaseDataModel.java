@@ -44,21 +44,31 @@ public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel
         }
     }
 
+    /**
+     * Changes the Line type of the Data Series.
+     *
+     * The following values are used:
+     * 0 - Linear
+     * 1 - Curved
+     * 2 - Stepped
+     *
+     * @param type  new Line type value (integer)
+     */
     public void setLineType(int type) {
         switch (type) {
             case ComponentConstants.CHART_LINE_TYPE_LINEAR:
-                dataSeries.setSteppedLine(SteppedLine.FALSE);
-                dataSeries.setLineTension(0);
+                dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line
+                dataSeries.setLineTension(0); // Disable curved line
                 break;
 
             case ComponentConstants.CHART_LINE_TYPE_CURVED:
-                dataSeries.setSteppedLine(SteppedLine.FALSE);
-                dataSeries.setLineTension(0.5); // Set 50% Line Tension (curve)
+                dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line
+                dataSeries.setLineTension(0.5); // Set 50% Line Tension (enable curve)
                 break;
 
             case ComponentConstants.CHART_LINE_TYPE_STEPPED:
-                dataSeries.setSteppedLine(SteppedLine.BEFORE);
-                dataSeries.setLineTension(0);
+                dataSeries.setSteppedLine(SteppedLine.BEFORE); // Enable stepped line
+                dataSeries.setLineTension(0); // Disable curved line
                 break;
         }
     }
