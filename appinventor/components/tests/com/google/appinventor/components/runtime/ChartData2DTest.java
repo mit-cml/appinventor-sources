@@ -9,13 +9,13 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.verify;
 
 /**
- * Unit tests for CoordinateData component.
+ * Unit tests for ChartData2D component.
  */
-public class CoordinateDataTest extends ChartDataBaseTest<CoordinateData> {
+public class ChartData2DTest extends ChartDataBaseTest<ChartData2D> {
     @Override
     protected void setupChartComponents() {
         super.setupChartComponents();
-        chartData = new CoordinateData(chart);
+        chartData = new ChartData2D(chart);
     }
 
     /**

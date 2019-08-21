@@ -260,9 +260,9 @@ public final class MockChart extends MockContainer {
         List<String> columnNames = dataFileSource.getColumnNames();
 
         for (String column : columnNames) {
-            // Create a new MockCoordinateData component and attach it to the Chart
+            // Create a new MockChartData2D component and attach it to the Chart
             // TODO: More data component support
-            MockCoordinateData data = new MockCoordinateData(editor);
+            MockChartData2D data = new MockChartData2D(editor);
             addComponent(data);
             data.addToChart(MockChart.this);
 
@@ -310,7 +310,7 @@ public final class MockChart extends MockContainer {
     protected boolean acceptableSource(DragSource source) {
         MockComponent component = getComponentFromDragSource(source);
 
-        return (component instanceof MockCoordinateData)
+        return (component instanceof MockChartData2D)
                 || (isComponentAcceptableDataFileSource(component));
     }
 
