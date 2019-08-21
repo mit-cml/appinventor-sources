@@ -91,6 +91,7 @@ public final class RecyclerView extends AndroidViewComponent {
     private int layout;
     private String propertyValue;
     private ArrayList<JSONObject> currentItems;
+    private ArrayList<JSONObject> currentItemsCopy;
 
     private int orientation;
 
@@ -106,6 +107,7 @@ public final class RecyclerView extends AndroidViewComponent {
     linearLayout.setOrientation(LinearLayout.VERTICAL);
 
     currentItems = new ArrayList<>();
+    currentItemsCopy = new ArrayList<>();
 
     ctx=container.$context();
     
@@ -132,11 +134,31 @@ public final class RecyclerView extends AndroidViewComponent {
         @Override
         public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
           // When user changed the Text
-          //listAdapterWithRecyclerView.getFilter().filter(cs);
-          if(!currentItems.isEmpty()) {
-            //setAdapterData();
-              listAdapterWithRecyclerView.getFilter().filter(cs.toString());
-          }
+         
+
+         if(cs!=null && cs.length()>0 && !currentItems.isEmpty()){
+
+          currentItems.clear();
+          int n=currentItemsCopy.size(),k=0;
+          cs=cs.toString().toLowerCase();  
+          for(int i=0;i<n;i++){
+           // JSONObject object = currentItemsCopy.get(i);
+          //  first[i]=object.has("Text1")?object.getString("Text1"):"";   
+           
+            if(currentItemsCopy.get(i).getString("Text1").toLowerCase().contains(cs)){
+                currentItems.add(k,currentItemsCopy.get(i));
+                k++;
+            }
+            }
+          setAdapterr();    
+         }
+
+
+          /*if(!currentItems.isEmpty()) {
+            
+            //container.$context().adaptor.getFilter().filter(cs.toString());
+            //setAdapterr();
+          }*/
         }
 
         @Override
@@ -326,12 +348,12 @@ public final class RecyclerView extends AndroidViewComponent {
       selectionSecond = item.has("Text2")?item.getString("Text2"):"";
       selectionIndex= position;
       //adb -d logcat System.out.print("jrneene");
-      System.out.println("Spannable Adapter/...........");
+      System.out.println("Spannable Adapter/..........."+position);
      // this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
       AfterPicking();
     }
 
-    @Override
+   /* @Override
     public void onItemLongClick(int position, View v) {
         //Log.d("efn", "onItemLongClick pos = " + position);
       System.out.println("Spannable Adapter"+position);
@@ -340,7 +362,7 @@ public final class RecyclerView extends AndroidViewComponent {
       selectionSecond = item.has("Text2")?item.getString("Text2"):"";
       selectionIndex= position;     
       AfterPicking();
-    }
+    }*/
 });
 
     LinearLayoutManager layoutManager;
@@ -554,6 +576,8 @@ public final class RecyclerView extends AndroidViewComponent {
       JSONArray arr = new JSONArray(propertyValue);
       for(int i = 0; i < arr.length(); ++i) {
         currentItems.add(i, arr.getJSONObject(i));
+        currentItemsCopy.add(i, arr.getJSONObject(i));
+
       }
     }
 

@@ -176,21 +176,23 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
          /*   if(position == selectionIndex){
                 holder.cardView.setBackgroundColor(selectionColor);    
             }
-         */   
+            
            if(isSelected){
             holder.cardView.setBackgroundColor(selectionColor);}
             else{
             holder.cardView.setBackgroundColor(backgroundColor);}
-
+            */
             holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isSelected=!isSelected;
+                holder.onClick(v);
+                
                     if(isSelected){
                     holder.cardView.setBackgroundColor(selectionColor);
                     }else{
                     holder.cardView.setBackgroundColor(backgroundColor);
                     }
+                isSelected=!isSelected;    
                 }
             });
             
@@ -233,7 +235,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         return (firstItem.length);
     }
 
-    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{//, View.OnLongClickListener{
         
         public TextView textViewFirst;
         public TextView textViewSecond;
@@ -244,7 +246,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             super(view);
 
             view.setOnClickListener(this);
-            view.setOnLongClickListener(this);
+            //view.setOnLongClickListener(this);
 
             cardView=(CardView)view.findViewById(idCard);
 
@@ -275,11 +277,11 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             clickListener.onItemClick(getAdapterPosition(), v);
         }
 
-        @Override
+      /*  @Override
         public boolean onLongClick(View v) {
             clickListener.onItemLongClick(getAdapterPosition(), v);
             return false;
-        }
+        }*/
 
     }
 
@@ -289,6 +291,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     public interface ClickListener {
         void onItemClick(int position, View v);
-        void onItemLongClick(int position, View v);
+    //    void onItemLongClick(int position, View v);
     }
 };
