@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.BarChart;
+import org.pepstock.charba.client.configuration.CartesianCategoryAxis;
 import org.pepstock.charba.client.configuration.CartesianLinearAxis;
 import org.pepstock.charba.client.data.Dataset;
 
@@ -36,7 +37,7 @@ public class MockBarChartView extends MockAxisChartView<BarChart> {
     yAxis.getTicks().setSuggestedMin(0);
 
     // Set the custom x and y axis to the Chart
-    chartWidget.getOptions().getScales().setXAxes(xAxis);
+    // chartWidget.getOptions().getScales().setXAxes(xAxis);
     chartWidget.getOptions().getScales().setYAxes(yAxis);
   }
 
