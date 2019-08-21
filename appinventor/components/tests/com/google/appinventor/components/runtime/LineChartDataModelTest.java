@@ -153,7 +153,7 @@ public class LineChartDataModelTest
   /**
    * Test to ensure that adding various entries out of order results
    * in a sorted Data Series post-adding.
-   *
+   * <p>
    * This is an example case which breaks when using MPAndroidChart's
    * addEntryOrdered method (in v3.1.0)
    */

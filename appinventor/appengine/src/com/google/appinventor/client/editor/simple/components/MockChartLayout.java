@@ -6,42 +6,42 @@ import java.util.Map;
 
 public class MockChartLayout extends MockLayout {
 
-    MockChartLayout() {
-        layoutWidth = ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
-        layoutHeight = ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+  MockChartLayout() {
+    layoutWidth = ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
+    layoutHeight = ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+  }
+
+  @Override
+  LayoutInfo createContainerLayoutInfo(Map<MockComponent, LayoutInfo> layoutInfoMap) {
+    return new LayoutInfo(layoutInfoMap, container) {
+      @Override
+      int calculateAutomaticWidth() {
+        return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
+      }
+
+      @Override
+      int calculateAutomaticHeight() {
+        return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+      }
+    };
+  }
+
+  @Override
+  void layoutChildren(LayoutInfo containerLayoutInfo) {
+
+  }
+
+  @Override
+  boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
+    if (source instanceof MockChartData) {
+      container.addComponent(source);
+      ((MockChartData) source).addToChart((MockChart) container);
+      return true;
+    } else if (source instanceof MockDataFile) {
+      ((MockChart) container).addDataFile((MockDataFile) source);
+      return true;
     }
 
-    @Override
-    LayoutInfo createContainerLayoutInfo(Map<MockComponent, LayoutInfo> layoutInfoMap) {
-        return new LayoutInfo(layoutInfoMap, container) {
-            @Override
-            int calculateAutomaticWidth() {
-                return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
-            }
-
-            @Override
-            int calculateAutomaticHeight() {
-                return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
-            }
-        };
-    }
-
-    @Override
-    void layoutChildren(LayoutInfo containerLayoutInfo) {
-
-    }
-
-    @Override
-    boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
-        if (source instanceof MockChartData) {
-            container.addComponent(source);
-            ((MockChartData)source).addToChart((MockChart) container);
-            return true;
-        } else if (source instanceof MockDataFile) {
-            ((MockChart)container).addDataFile((MockDataFile)source);
-            return true;
-        }
-
-        return false;
-    }
+    return false;
+  }
 }

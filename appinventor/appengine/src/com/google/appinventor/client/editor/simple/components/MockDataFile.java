@@ -37,7 +37,7 @@ public class MockDataFile extends MockNonVisibleComponent {
    * contents are stored, and DataFileChangeListeners are
    * updated.
    *
-   * @param fileSource  name of the new Source File
+   * @param fileSource name of the new Source File
    */
   private void setSourceFileProperty(String fileSource) {
     // Update the source file property & reset the
@@ -59,38 +59,38 @@ public class MockDataFile extends MockNonVisibleComponent {
 
     Ode.getInstance().getProjectService().loadDataFile(projectId, "assets/" + fileSource,
         new AsyncCallback<List<List<String>>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        ErrorReporter.reportError(caught.getMessage());
-      }
-
-      @Override
-      public void onSuccess(List<List<String>> result) {
-        // Update columns property
-        columns = result;
-
-        if (result.isEmpty()) {
-          ErrorReporter.reportError(MESSAGES.emptyFileError());
-          return;
-        }
-
-        // Populate columnNames List (it was empty before)
-        for (int i = 0; i < columns.size(); ++i) {
-          List<String> column = columns.get(i);
-
-          // Add first element of the column if the column is not empty
-          if (!column.isEmpty()) {
-            columnNames.add(column.get(0));
+          @Override
+          public void onFailure(Throwable caught) {
+            ErrorReporter.reportError(caught.getMessage());
           }
-        }
 
-        // Notify DataFileChangeListeners of the changes
-        updateDataFileChangeListeners();
+          @Override
+          public void onSuccess(List<List<String>> result) {
+            // Update columns property
+            columns = result;
 
-        // Hide the info message shown after setting the Source File property
-        ErrorReporter.hide();
-      }
-    });
+            if (result.isEmpty()) {
+              ErrorReporter.reportError(MESSAGES.emptyFileError());
+              return;
+            }
+
+            // Populate columnNames List (it was empty before)
+            for (int i = 0; i < columns.size(); ++i) {
+              List<String> column = columns.get(i);
+
+              // Add first element of the column if the column is not empty
+              if (!column.isEmpty()) {
+                columnNames.add(column.get(0));
+              }
+            }
+
+            // Notify DataFileChangeListeners of the changes
+            updateDataFileChangeListeners();
+
+            // Hide the info message shown after setting the Source File property
+            ErrorReporter.hide();
+          }
+        });
 
     // Show message to indicate parsing of the files
     // (since this is an asynchronous operation)
@@ -100,7 +100,7 @@ public class MockDataFile extends MockNonVisibleComponent {
   /**
    * Get the Column Names (first row) of the MockDataFile's parsed content
    *
-   * @return  column names of the Data File (list of Strings)
+   * @return column names of the Data File (list of Strings)
    */
   public List<String> getColumnNames() {
     return columnNames;
@@ -108,12 +108,12 @@ public class MockDataFile extends MockNonVisibleComponent {
 
   /**
    * Returns a List of the specified columns.
-   *
+   * <p>
    * If a column is not found, it is substituted by
    * an empty List.
    *
-   * @param columns  List of columns to get
-   * @return  List of columns (a column is a List of Strings)
+   * @param columns List of columns to get
+   * @return List of columns (a column is a List of Strings)
    */
   public List<List<String>> getColumns(List<String> columns) {
     ArrayList<List<String>> dataColumns = new ArrayList<List<String>>();
@@ -132,9 +132,10 @@ public class MockDataFile extends MockNonVisibleComponent {
 
   /**
    * Gets the column in the specified index
-   * @param index  index of the column
-   * @return  List of Strings representing the column
-   * */
+   *
+   * @param index index of the column
+   * @return List of Strings representing the column
+   */
   private List<String> getColumn(int index) {
     List<String> column = new ArrayList<String>();
 
@@ -157,7 +158,8 @@ public class MockDataFile extends MockNonVisibleComponent {
 
   /**
    * Adds a new Data File Change listener to the Mock Data File component
-   * @param listener  Listener to add
+   *
+   * @param listener Listener to add
    */
   public void addDataFileChangeListener(DataFileChangeListener listener) {
     dataFileChangeListeners.add(listener);
@@ -165,7 +167,8 @@ public class MockDataFile extends MockNonVisibleComponent {
 
   /**
    * Removes a Data File Change Listener from the Mock Data File component
-   * @param listener  Listener to remove
+   *
+   * @param listener Listener to remove
    */
   public void removeDataFileChangeListener(DataFileChangeListener listener) {
     dataFileChangeListeners.remove(listener);

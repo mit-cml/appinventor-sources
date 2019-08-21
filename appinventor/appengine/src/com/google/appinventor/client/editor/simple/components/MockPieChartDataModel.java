@@ -156,7 +156,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
    * Returns a List of entry labels corresponding to the
    * x values of the Data Series in order.
    *
-   * @return  List of entry labels (Strings)
+   * @return List of entry labels (Strings)
    */
   public List<String> getLabels() {
     return labels;

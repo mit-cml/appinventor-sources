@@ -20,8 +20,8 @@ public class ChartDataSourceUtil {
    * The YailList is expected to contain List entries, and invalid
    * entries are simply skipped.
    *
-   * @param matrix  Matrix to return maximum list size of
-   * @return  Maximum List size of the matrix's nested Lists
+   * @param matrix Matrix to return maximum list size of
+   * @return Maximum List size of the matrix's nested Lists
    */
   public static int determineMaximumListSize(YailList matrix) {
     int entries = 0;
@@ -38,7 +38,7 @@ public class ChartDataSourceUtil {
         continue;
       }
 
-      YailList list = (YailList)matrix.getObject(i);
+      YailList list = (YailList) matrix.getObject(i);
 
       // A list entry with a bigger size has been found; update
       // the value.
@@ -54,12 +54,12 @@ public class ChartDataSourceUtil {
    * Returns the transpose of the specified matrix (List of Lists)
    * The specified YailList parameter is expected to contain nested
    * YailList entries. Invalid entries are simply ignored.
-   *
+   * <p>
    * The method is used to convert a List of rows to a List of
    * columns and vice versa (the transpose)
    *
-   * @param matrix  Matrix to return the transpose of
-   * @return  Transpose of the specified matrix.
+   * @param matrix Matrix to return the transpose of
+   * @return Transpose of the specified matrix.
    */
   public static YailList getTranspose(YailList matrix) {
     // Determine the maximum entry count of the matrix
@@ -82,15 +82,15 @@ public class ChartDataSourceUtil {
   /**
    * Constructs and returns a transpose entry from the given matrix
    * with the given index.
-   *
+   * <p>
    * The index represents the entry required. If the matrix is a List
    * of rows, the index represents the number of the column to return.
    * If the matrix is a List of columns, the index represents the
    * number of the row to return.
    *
-   * @param matrix  Matrix to return the transpose entry of
+   * @param matrix Matrix to return the transpose entry of
    * @param index  The index of the entry to return
-   * @return  The index-th transpose entry of the matrix
+   * @return The index-th transpose entry of the matrix
    */
   private static YailList getTransposeEntry(YailList matrix, int index) {
     List<String> entries = new ArrayList<String>();

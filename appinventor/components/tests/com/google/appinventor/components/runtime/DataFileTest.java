@@ -156,7 +156,7 @@ public class DataFileTest extends FileTestBase {
     // the transpose of the columns, a row-by-row
     // check is needed instead.
     for (int i = 0; i < expectedRows.size(); ++i) {
-      YailList row = (YailList)rows.getObject(i);
+      YailList row = (YailList) rows.getObject(i);
       assertTrue(row.containsAll(expectedRows.get(i)));
     }
   }
@@ -438,7 +438,8 @@ public class DataFileTest extends FileTestBase {
   /**
    * Helper method to assert the expected and the resulting values of the
    * getColumns method
-   * @param expected  Expected value
+   *
+   * @param expected Expected value
    * @param columns  List of columns argument
    */
   private void testGetColumnsHelper(YailList expected, YailList columns) {
@@ -477,9 +478,9 @@ public class DataFileTest extends FileTestBase {
    * Helper method to write the specified data to the target file, and then
    * read the file in the DataFile component.
    *
-   * @param targetFile  Path to the file to read
-   * @param data  Data to write
-   * @param external  Write to external storage?
+   * @param targetFile Path to the file to read
+   * @param data       Data to write
+   * @param external   Write to external storage?
    */
   private void testWriteAndReadFile(String targetFile, String data, boolean external) {
     grantFilePermissions();
@@ -490,7 +491,8 @@ public class DataFileTest extends FileTestBase {
   /**
    * Returns the YailList of the expected values for the 2-row CSV test data.
    * The expected values are  ((X,Y), (1,2))
-   * @return  YailList of expected values for the 2-row test CSV data
+   *
+   * @return YailList of expected values for the 2-row test CSV data
    */
   private YailList expectedValues2Rows() {
     ArrayList<YailList> expectedValues = new ArrayList<YailList>() {{

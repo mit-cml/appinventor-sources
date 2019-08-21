@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public abstract class PointChartDataModelTest
     <M extends PointChartDataModel,
-    D extends ChartData>
+        D extends ChartData>
     extends ChartDataModel2DTest<M, D> {
   /**
    * Test to ensure that importing from a tuple with
