@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.*;
 import org.json.JSONException;
 
@@ -10,7 +11,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-@DesignerComponent(version = 1,
+@DesignerComponent(version = YaVersion.DATA_FILE_COMPONENT_VERSION,
     description = "To be updated",
     category = ComponentCategory.STORAGE,
     nonVisible = true,

@@ -1383,6 +1383,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Canvas upgraders
 
+  "Chart": {
+
+  }, // End Chart upgraders
+
+  "ChartData2D": {
+
+  }, // End ChartData2D upgraders
+
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
@@ -1449,6 +1457,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade"
 
   }, // End ContactPicker upgraders
+
+  "DataFile": {
+
+  }, // End DataFile upgraders
 
 
   "DatePicker": {
