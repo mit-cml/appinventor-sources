@@ -5,6 +5,9 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Property editor for Chart Point Shape.
+ */
 public class YoungAndroidChartPointShapeChoicePropertyEditor extends ChoicePropertyEditor {
 
   // Chart Point Shape choices

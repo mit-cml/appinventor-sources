@@ -20,13 +20,6 @@ public abstract class PointChartView<T extends BarLineChartBase,
   }
 
   @Override
-  public void setGridEnabled(boolean enabled) {
-    super.setGridEnabled(enabled);
-    chart.getAxisLeft().setDrawGridLines(enabled);
-    chart.getAxisRight().setDrawGridLines(enabled);
-  }
-
-  @Override
   public View getView() {
     return chart;
   }

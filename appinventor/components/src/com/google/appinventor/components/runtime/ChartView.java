@@ -55,6 +55,10 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
         chart.getDescription().setText(text);
     }
 
+    /**
+     * Enables or disables the Legend.
+     * @param enabled  Specifies whether the Legend should be enabled.
+     */
     public void setLegendEnabled(boolean enabled) {
         chart.getLegend().setEnabled(enabled);
     }

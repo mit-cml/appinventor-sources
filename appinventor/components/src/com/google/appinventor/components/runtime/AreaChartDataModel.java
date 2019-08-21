@@ -17,19 +17,24 @@ public class AreaChartDataModel extends LineChartBaseDataModel {
     @Override
     public void setColor(int argb) {
         super.setColor(argb);
-        dataset.setFillColor(argb);
+        dataset.setFillColor(argb); // Change fill color
     }
 
     @Override
     public void setColors(List<Integer> colors) {
         super.setColors(colors);
-        dataset.setFillColor(colors.get(0));
+
+        // If the colors List is non-empty, use the first oclor
+        // as the fill color.
+        if (!colors.isEmpty()) {
+            dataset.setFillColor(colors.get(0));
+        }
     }
 
     @Override
     protected void setDefaultStylingProperties() {
         super.setDefaultStylingProperties();
-        dataset.setDrawFilled(true);
-        dataset.setFillAlpha(150);
+        dataset.setDrawFilled(true); // Enable fill underneath the lines
+        dataset.setFillAlpha(100); // Set fill color to be transparent (value of 100 out of 255)
     }
 }

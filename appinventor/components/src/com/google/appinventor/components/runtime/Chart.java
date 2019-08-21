@@ -286,6 +286,10 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         }
     }
 
+    /**
+     * Changes the visibility of the Chart's Legend.
+     * @param enabled  indicates whether the Chart should be enabled.
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
                 defaultValue = "True")
     @SimpleProperty
@@ -294,21 +298,44 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         chartView.setLegendEnabled(enabled);
     }
 
+    /**
+     * Changes the visibility of the Chart's grid, if the
+     * Chart View is a Chart with an Axis.
+     * @param enabled  indicates whether the Chart's grid should be enabled.
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
         defaultValue = "True")
     @SimpleProperty
     public void GridEnabled(boolean enabled) {
         this.gridEnabled = enabled;
 
+        // Only change grid visibility if the Chart View is an
+        // Axis Chart View, since non-axis Charts do not have
+        // grids.
         if (chartView instanceof AxisChartView) {
             ((AxisChartView)chartView).setGridEnabled(enabled);
         }
     }
 
+    /**
+     * Changes the Chart's X axis labels to the specified List,
+     * if the Chart View is a Chart with an Axis.
+     *
+     * The first entry of the List corresponds to the x value of 0,
+     * the second to the x value of 1, and so on.
+     *
+     * If a label is not specified for an x value, a default value
+     * is used (usually the numeric value)
+     *
+     * @param labels  List of labels to set to the X Axis of the Chart
+     */
     @SimpleProperty
     public void Labels(YailList labels) {
         this.labels = labels;
 
+        // Only change the labels if the Chart View is
+        // an Axis Chart View, since Charts without an
+        // axis will not have an X Axis.
         if (chartView instanceof AxisChartView) {
             List<String> stringLabels = new ArrayList<String>();
 
@@ -321,21 +348,29 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         }
     }
 
+    /**
+     * Returns a List of Labels set to the X Axis.
+     * @return  List of Labels used for the X Axis
+     */
     @SimpleProperty
     public YailList Labels() {
         return labels;
     }
 
+
+    /**
+     * Specifies the labels to set to the Chart's X Axis, provided the current
+     * view is a Chart with an X Axis.
+     * @see #Labels(YailList)
+     * @param labels  Comma-separated values, where each value represents a label (in order)
+     */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
                     defaultValue = "")
     @SimpleProperty(userVisible = false)
     public void LabelsFromString(String labels) {
-        try {
-            YailList labelsList = ElementsUtil.elementsFromString(labels);
-            Labels(labelsList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Retrieve the elements from the CSV-formatted String
+        YailList labelsList = ElementsUtil.elementsFromString(labels);
+        Labels(labelsList); // Set the Labels from the retrieved elements List
     }
 
     /**

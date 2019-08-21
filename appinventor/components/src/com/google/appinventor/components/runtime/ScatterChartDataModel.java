@@ -38,6 +38,15 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
     getDataset().setScatterShape(ScatterChart.ScatterShape.CIRCLE);
   }
 
+  /**
+   * Changes the Point Shape of the Scatter Data Series.
+   *
+   * @param shape  one of {@link ComponentConstants#CHART_POINT_STYLE_CIRCLE},
+   *          {@link ComponentConstants#CHART_POINT_STYLE_SQUARE},
+   *          {@link ComponentConstants#CHART_POINT_STYLE_TRIANGLE},
+   *          {@link ComponentConstants#CHART_POINT_STYLE_CROSS} or
+   *          {@link ComponentConstants#CHART_POINT_STYLE_X}
+   */
   public void setPointShape(int shape) {
     switch (shape) {
       case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
@@ -59,9 +68,6 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
       case ComponentConstants.CHART_POINT_STYLE_X:
         dataset.setScatterShape(ScatterChart.ScatterShape.X);
         break;
-
-      default:
-        dataset.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
     }
   }
 }
