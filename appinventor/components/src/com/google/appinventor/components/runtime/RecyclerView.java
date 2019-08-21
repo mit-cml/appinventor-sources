@@ -136,7 +136,7 @@ public final class RecyclerView extends AndroidViewComponent {
           // When user changed the Text
          
 
-         if(cs!=null && cs.length()>0 && !currentItems.isEmpty()){
+         if(cs!=null && cs.length()>0 && !currentItemsCopy.isEmpty()){
 
           currentItems.clear();
           int n=currentItemsCopy.size(),k=0;
@@ -151,6 +151,16 @@ public final class RecyclerView extends AndroidViewComponent {
             }
             }
           setAdapterr();    
+         }else if(cs!=null && cs.length()==0 && !currentItemsCopy.isEmpty()){
+
+          currentItems.clear();
+          int n=currentItemsCopy.size(),k=0;  
+          for(int i=0;i<n;i++){           
+                currentItems.add(i,currentItemsCopy.get(i)); 
+            }
+          setAdapterr();  
+
+
          }
 
 

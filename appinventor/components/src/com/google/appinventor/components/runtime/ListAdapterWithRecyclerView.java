@@ -116,7 +116,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams params1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         params1.setMargins(30 ,30,30,30);
 
-        cardView.setBackgroundColor(Color.parseColor("#E9E9E9"));
+        //cardView.setBackgroundColor(Color.parseColor("#E9E9E9"));
 
         ViewCompat.setElevation(cardView, 20);
 
