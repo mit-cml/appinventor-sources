@@ -795,7 +795,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       panel.add(descriptionHtml);
       panel.add(image);
       SimplePanel wrapper = new SimplePanel();
-      wrapper.getElement().getStyle().setOverflow(Style.Overflow.SCROLL);
+      wrapper.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
       wrapper.add(panel);
       initWidget(wrapper);
       setStylePrimaryName("ode-ContextMenu");
@@ -881,7 +881,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     templateCellList.setWidth("250px");
     templateCellList.setHeight("355px");
     templateCellList.setVisible(true);
-    templateCellList.getElement().getStyle().setOverflow(Style.Overflow.SCROLL);
+    templateCellList.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
 
     // Add a selection model to handle user selection.
     final SingleSelectionModel<TemplateInfo> selectionModel =
