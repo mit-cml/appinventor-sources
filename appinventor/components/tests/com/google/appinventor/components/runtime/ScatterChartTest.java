@@ -8,13 +8,14 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class ScatterChartTest extends AbstractChartTest<ScatterChartView, ScatterChart> {
+public class ScatterChartTest extends AxisChartTest<ScatterChartView, ScatterChart> {
   @Before
   public void setUp() {
     super.setUp();
 
     chartView = (ScatterChartView) chartComponent.getChartView();
     chart = (ScatterChart) chartView.getView();
+    xAxisValueFormatter = chart.getXAxis().getValueFormatter();
   }
 
   @Override

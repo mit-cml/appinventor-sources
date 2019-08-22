@@ -7,13 +7,14 @@ import org.junit.Before;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
-public class AreaChartTest extends AbstractChartTest<AreaChartView, LineChart> {
+public class AreaChartTest extends AxisChartTest<AreaChartView, LineChart> {
     @Before
     public void setUp() {
         super.setUp();
 
         chartView = (AreaChartView)chartComponent.getChartView();
         chart = (LineChart) chartView.getView();
+        xAxisValueFormatter = chart.getXAxis().getValueFormatter();
     }
 
     @Override
