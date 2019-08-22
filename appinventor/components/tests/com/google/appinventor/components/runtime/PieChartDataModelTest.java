@@ -245,22 +245,13 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     model.importFromList(tuples);
 
     assertEquals(colorListExpected, model.getDataset().getColors());
+    assertEquals(expectedColors.length, legend.getEntries().length);
 
-    // Post with a delay of 1ms to wait for UI thread Legend adding
-    // to finish.
-    // TODO: Fix up test to be more deterministic
-    chartView.uiHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        assertEquals(expectedColors.length, legend.getEntries().length);
+    for (int i = 0; i < expectedColors.length; ++i) {
+      LegendEntry legendEntry = legend.getEntries()[i];
 
-        for (int i = 0; i < expectedColors.length; ++i) {
-          LegendEntry legendEntry = legend.getEntries()[i];
-
-          assertEquals(expectedColors[i], legendEntry.formColor);
-        }
-      }
-    }, 1);
+      assertEquals(expectedColors[i], legendEntry.formColor);
+    }
   }
 
   /**
@@ -512,50 +503,32 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   }
 
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
-    // Post with a delay of 1ms to wait for UI thread Legend adding
-    // to finish. Simply using post does not produce the desired
-    // result.
-    // TODO: Fix up test to be more deterministic
-    chartView.uiHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        LegendEntry[] legendEntries = legend.getEntries();
+      LegendEntry[] legendEntries = legend.getEntries();
 
-        assertEquals(expectedEntries.length, legendEntries.length);
+      assertEquals(expectedEntries.length, legendEntries.length);
 
-        for (int i = 0; i < expectedEntries.length; ++i) {
-          LegendEntry expected = expectedEntries[i];
-          LegendEntry actual = legendEntries[i];
+      for (int i = 0; i < expectedEntries.length; ++i) {
+        LegendEntry expected = expectedEntries[i];
+        LegendEntry actual = legendEntries[i];
 
-          assertEquals(expected.label, actual.label);
-          assertEquals(expected.formColor, actual.formColor);
-        }
+        assertEquals(expected.label, actual.label);
+        assertEquals(expected.formColor, actual.formColor);
       }
-    }, 1);
   }
 
   private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
-    // Pot with a delay of 1ms to wait for UI thread Legend adding
-    // to finish. Simply using post does not produce the desired
-    // result.
-    // TODO: Fix up test to be more deterministic
-    chartView.uiHandler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        YailList colors = YailList.makeList(colorList);
-        model.setColors(colors);
-        model.importFromList(tuples);
+      YailList colors = YailList.makeList(colorList);
+      model.setColors(colors);
+      model.importFromList(tuples);
 
-        assertEquals(colorList, model.getDataset().getColors());
-        assertEquals(expectedColors.length, legend.getEntries().length);
+      assertEquals(colorList, model.getDataset().getColors());
+      assertEquals(expectedColors.length, legend.getEntries().length);
 
-        for (int i = 0; i < expectedColors.length; ++i) {
-          LegendEntry legendEntry = legend.getEntries()[i];
+      for (int i = 0; i < expectedColors.length; ++i) {
+        LegendEntry legendEntry = legend.getEntries()[i];
 
-          assertEquals(expectedColors[i], legendEntry.formColor);
-        }
+        assertEquals(expectedColors[i], legendEntry.formColor);
       }
-    }, 1);
   }
 
   @Override
