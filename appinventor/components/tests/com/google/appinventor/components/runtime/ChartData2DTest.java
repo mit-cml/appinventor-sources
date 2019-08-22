@@ -42,6 +42,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     data.setExecutorService(new RoboExecutorService());
   }
 
+  /**
+   * Test case to ensure that changing the color of the
+   * Data component changes the property properly.
+   */
   @Test
   public void testSetColor() {
     int argb = 0xFFAABBCC;
@@ -50,6 +54,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(argb, model.getDataset().getColor());
   }
 
+  /**
+   * Test case to ensure that changing the label of the
+   * Data component changes the property properly.
+   */
   @Test
   public void testSetLabel() {
     String label = "Test Label";
@@ -58,6 +66,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(label, model.getDataset().getLabel());
   }
 
+  /**
+   * Test case to ensure that setting the Colors List property
+   * of the Data component with a single color value changes
+   * the property properly.
+   */
   @Test
   public void testSetColorsSingleColor() {
     YailList colors = YailList.makeList(
@@ -69,6 +82,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(1, model.getDataset().getColors().size());
   }
 
+  /**
+   * Test case to ensure that setting the Colors List property
+   * of the Data component with multiple color values changes
+   * the property properly.
+   */
   @Test
   public void testSetColorsMultipleColors() {
     YailList colors = YailList.makeList(
@@ -81,6 +99,12 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, model.getDataset().getColors().size());
   }
 
+  /**
+   * Test case to ensure that setting the Colors List property
+   * to the Data component with a List that contains invalid color
+   * entries skips the invalid entries, and imports the valid
+   * color values.
+   */
   @Test
   public void testSetColorsInvalidEntries() {
     YailList colors = YailList.makeList(
@@ -98,6 +122,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(2, model.getDataset().getColors().size());
   }
 
+  /**
+   * Test case to ensure that calling the addEntry method of the
+   * Data component properly adds the entry.
+   */
   @Test
   public void testAddEntry() {
     assertEquals(0, model.getDataset().getEntryCount());
@@ -105,6 +133,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(1, model.getDataset().getEntryCount());
   }
 
+
+  /**
+   * Test case to ensure that calling the removeEntry method of the
+   * Data component properly removes the entry.
+   */
   @Test
   public void testRemoveEntry() {
     data.AddEntry("1", "1");
@@ -114,18 +147,30 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(0, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that calling the FindEntry method of the
+   * Data component with an Entry that exists returns true.
+   */
   @Test
   public void testEntryExistsTrue() {
     data.AddEntry("1", "3");
     assertTrue(data.DoesEntryExist("1", "3"));
   }
 
+  /**
+   * Test case to ensure that calling the FindEntry method of the
+   * Data component with an Entry that does not exist returns false.
+   */
   @Test
   public void testEntryExistsFalse() {
     data.AddEntry("4", "2");
     assertFalse(data.DoesEntryExist("4", "1"));
   }
 
+  /**
+   * Test case to ensure that calling the Import from List method
+   * of the Data component imports the entries properly.
+   */
   @Test
   public void testImportFromList() {
     assertEquals(0, model.getDataset().getEntryCount());
@@ -143,6 +188,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that calling the Clear method of the
+   * Data component clears all the entries properly.
+   */
   @Test
   public void testClear() {
     data.AddEntry("1", "3");
@@ -153,6 +202,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(0, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that calling the GetAllEntries method
+   * of the Data component properly retrieves all the entries.
+   */
   @Test
   public void testGetAllEntries() {
     data.AddEntry("0", "5");
@@ -164,6 +217,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, entries.size());
   }
 
+  /**
+   * Test case to ensure that calling the GetEntriesByXValue
+   * properly retrieves all the entries with the specified x value.
+   */
   @Test
   public void testGetEntriesByXValue() {
     data.AddEntry("1", "2");
@@ -174,6 +231,10 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(1, entries.size());
   }
 
+  /**
+   * Test case to ensure that calling the GetEntriesByYValue
+   * properly retrieves all the entries with the specified y value.
+   */
   @Test
   public void testGetEntriesByYValue() {
     data.AddEntry("0", "3");
@@ -185,6 +246,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(2, entries.size());
   }
 
+  /**
+   * Test case to ensure that upon setting the Point Shape of the Data
+   * component when the Chart type is a Scatter Chart properly updates
+   * the Point Shape of the Scatter Chart.
+   */
   @Test
   public void testSetPointShape() {
     chartComponent.Type(ComponentConstants.CHART_TYPE_SCATTER);
@@ -196,6 +262,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertNotSame(renderer, ((ScatterDataSet)model.getDataset()).getShapeRenderer());
   }
 
+  /**
+   * Test case to ensure that upon setting the Line Type of the Data
+   * component when the Chart type is a Line Chart properly updates
+   * the Line Type of the Line Chart.
+   */
   @Test
   public void testSetLineType() {
     LineDataSet.Mode mode = ((LineDataSet)model.getDataset()).getMode();
@@ -204,18 +275,30 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertNotSame(mode, ((LineDataSet)model.getDataset()).getMode());
   }
 
+  /**
+   * Test case to ensure that setting the elements from pairs
+   * property with a null value imports no values.
+   */
   @Test
   public void testSetElementsFromPairsNull() {
     data.ElementsFromPairs(null);
     assertEquals(0, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that setting the elements from pairs
+   * property with an empty value imports no values.
+   */
   @Test
   public void testSetElementsFromPairsEmpty() {
     data.ElementsFromPairs("");
     assertEquals(0, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that setting the elements from pairs
+   * property with multiple values imports the values properly.
+   */
   @Test
   public void testSetElementsFromPairs() {
     data.onBeforeInitialize();
@@ -223,6 +306,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that importing from a Data File component
+   * via the ImportFromDataFile method with valid columns imports
+   * the data properly.
+   */
   @Test
   public void testImportFromDataFile() {
     // Setup expected parameters & expected return value
@@ -252,6 +340,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that importing from a TinyDB component
+   * via the ImportFromTinyDB method with a valid tag imports the
+   * data properly.
+   */
   @Test
   public void testImportFromTinyDB() {
     String expectedParameter = "TagKey";
@@ -285,6 +378,11 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(4, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that importing from a Web component
+   * via the ImportFromWeb method with valid columns imports
+   * the data properly.
+   */
   @Test
   public void testImportFromWeb() {
     // Setup expected parameters & expected return value
@@ -309,10 +407,16 @@ public class ChartData2DTest extends RobolectricTestBase {
     // Execute import
     data.ImportFromWeb(web, "A", "B");
 
-    // 3 entries are expected to be imported
+    // 2 entries are expected to be imported
     assertEquals(2, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that setting the Data File as
+   * a Source and using valid column properties for the
+   * X and the Y properly imports the data from the
+   * Data File after the Data component is initialized.
+   */
   @Test
   public void testDataFileSource() {
     // Setup expected parameters & expected return value
@@ -347,6 +451,12 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(5, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that setting the Web component as
+   * a Source and using valid column properties for the
+   * X and the Y property imports the data from the Web
+   * component after the Data component is initialized.
+   */
   @Test
   public void testWebSource() {
     // Setup expected parameters & expected return value
@@ -385,6 +495,12 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(3, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that the OnDataSourceValueChange
+   * method removes the old values and adds the new values
+   * to the Data component when the OnDataSourceValueChange
+   * event originated from the attached Source component.
+   */
   @Test
   public void testOnDataSourceValueChange() {
     String expectedParameter = "TagKey";
@@ -447,6 +563,13 @@ public class ChartData2DTest extends RobolectricTestBase {
     assertEquals(2, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that the OnDataSourceValueChange
+   * method removes the old values, and imports the new values
+   * in the case when a Web component is attached to the
+   * Data component, and the event originates from that
+   * Web component.
+   */
   @Test
   public void testOnDataSourceValueChangeWeb() {
     // Setup expected parameters & expected return value
@@ -487,7 +610,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     // Initialize Data component
     data.onBeforeInitialize();
 
-    // 4 entries are expected to be imported
+    // 3 entries are expected to be imported
     assertEquals(3, model.getDataset().getEntryCount());
 
     EasyMock.reset(web);
@@ -500,10 +623,15 @@ public class ChartData2DTest extends RobolectricTestBase {
      data.onDataSourceValueChange(web, null, newColumns);
 
     // The previous values should be deleted, and the new ones
-    // should be added, resulting in 2 values in the Data Series.
+    // should be added, resulting in 1 value in the Data Series.
      assertEquals(1, model.getDataset().getEntryCount());
   }
 
+  /**
+   * Test case to ensure that receiving an OnReceiveValue event
+   * on the Data component from a Data Source that is attached
+   * to the Data component properly adds the value.
+   */
   @Test
   public void testOnReceiveValue() {
     AccelerometerSensor sensor = EasyMock.createMock(AccelerometerSensor.class);
@@ -561,6 +689,16 @@ public class ChartData2DTest extends RobolectricTestBase {
 //    assertEquals(3, model.getDataset().getEntryCount());
 //  }
 
+  /**
+   * Helper method that constructs a Mock Future object
+   * instance wrapping the specified return value.
+   *
+   * To avoid thread blocking, mock Future objects can
+   * be used to test Chart Data Sources which return
+   * Future objects/
+   * @param returnValue  value that the Future object should return
+   * @return  Future object wrapping the return value.
+   */
   private Future getMockFutureObject(Object returnValue) {
     Future futureObject = EasyMock.createMock(Future.class);
 
