@@ -71,10 +71,23 @@ public class MockBarChartView extends MockAxisChartView<BarChart> {
     String[] labels = new String[labelCount];
 
     for (int i = 0; i < labelCount; ++i) {
-      labels[i] = i + "";
+      // If a value for the current index is available
+      // in the local Labels array, use that value instead.
+      // Otherwise, use the default index value.
+      if (i < this.labels.length) {
+        labels[i] = this.labels[i];
+      } else {
+        labels[i] = i + "";
+      }
     }
 
     // Set the constructed labels
     chartWidget.getData().setLabels(labels);
+  }
+
+  @Override
+  public void updateLabels(String[] labels) {
+    super.updateLabels(labels);
+    updateLabels();
   }
 }

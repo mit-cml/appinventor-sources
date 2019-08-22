@@ -35,6 +35,9 @@ public final class MockChart extends MockContainer {
     // Series are part of the Chart object itself.
     private boolean childrenReattached = false;
 
+    // Store the LabelsFromStrings property parsed result
+    private String[] labelArray = new String[0];
+
     /**
      * Creates a new instance of a visible component.
      *
@@ -148,7 +151,31 @@ public final class MockChart extends MockContainer {
       chartView.setLegendEnabled(enabled);
 
       chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
+  }
+
+  /**
+   * Reacts to the LabelsFromString property change by
+   * changing the Labels of the Mock Chart accordingly,
+   * provided that the Mock Chart has an X Axis.
+   * @param labels CSV formatted String representing the labels
+   *               to apply to the X axis.
+   */
+  private void setLabelsFromStringProperty(String labels) {
+    // Base case: Empty List of Labels should be an empty array.
+    if (labels.equals("")) {
+      labelArray = new String[0];
+    } else {
+      // TODO: Use a CSV split method that supports escaping commas, etc?
+      labelArray = labels.split(",");
     }
+
+    // Only update the labels to the Chart if the Chart is of type
+    // MockAxisChartView, since the labels apply to the X Axis.
+    if (chartView instanceof MockAxisChartView) {
+      ((MockAxisChartView)chartView).updateLabels(labelArray);
+      refreshChart();
+    }
+  }
 
   /**
    * Reacts to the GridEnabled property change by changing
@@ -268,6 +295,8 @@ public final class MockChart extends MockContainer {
           setGridEnabledProperty(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             setPieRadiusProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_NAME_LABELS_FROM_STRING)) {
+          setLabelsFromStringProperty(newValue);
         }
     }
 

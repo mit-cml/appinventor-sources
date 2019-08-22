@@ -11,6 +11,8 @@ public abstract class MockAxisChartView<C extends AbstractChart> extends MockCha
   protected CartesianLinearAxis xAxis;
   protected CartesianLinearAxis yAxis;
 
+  protected String[] labels = new String[0];
+
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
@@ -32,5 +34,13 @@ public abstract class MockAxisChartView<C extends AbstractChart> extends MockCha
   public void setGridEnabled(boolean enabled) {
     xAxis.getGrideLines().setDisplay(enabled);
     yAxis.getGrideLines().setDisplay(enabled);
+  }
+
+  /**
+   * Updates the custom X axis Labels of the Chart View.
+   * @param labels  New Array of custom X Axis labels
+   */
+  public void updateLabels(String[] labels) {
+    this.labels = labels;
   }
 }
