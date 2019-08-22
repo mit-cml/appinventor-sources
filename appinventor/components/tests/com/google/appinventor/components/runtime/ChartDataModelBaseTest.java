@@ -6,6 +6,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -56,6 +57,23 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
     int argb = 0xFFEEDDCC;
     model.setColor(argb);
     assertEquals(argb, model.getDataset().getColor());
+  }
+
+  /**
+   * Tests whether the setColors method correctly changes the colors
+   * of the Data Series.
+   */
+  @Test
+  public void testSetColors() {
+    List<Integer> colors = new ArrayList<Integer>() {{
+      add(0xFFEEDDCC);
+      add(0xFFFFFFFF);
+      add(0xAABBCCDD);
+    }};
+
+    model.setColors(colors);
+
+    assertEquals(colors, model.getDataset().getColors());
   }
 
   /**

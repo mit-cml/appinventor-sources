@@ -2,11 +2,15 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for the LineChartModel class.
@@ -250,5 +254,57 @@ public class LineChartDataModelTest
     model.importFromList(pairs);
     model.addEntryFromTuple(createTuple(-7f, 1f)); // Should be inserted after all the entries that have x value 4
     assertExpectedEntriesHelper(expectedEntries);
+  }
+
+  /**
+   * Test case to ensure that setting the Data Series
+   * Line Type to Linear sets the according mode to the
+   * Data Series.
+   */
+  @Test
+  public void testSetLineTypeLinear() {
+    int lineType = ComponentConstants.CHART_LINE_TYPE_LINEAR;
+    LineDataSet.Mode expectedMode = LineDataSet.Mode.LINEAR;
+
+    setLineTypeHelper(lineType, expectedMode);
+  }
+
+  /**
+   * Test case to ensure that setting the Data Series
+   * Line Type to Curved sets the according mode to the
+   * Data Series.
+   */
+  @Test
+  public void testSetLineTypeCurved() {
+    int lineType = ComponentConstants.CHART_LINE_TYPE_CURVED;
+    LineDataSet.Mode expectedMode = LineDataSet.Mode.CUBIC_BEZIER;
+
+    setLineTypeHelper(lineType, expectedMode);
+  }
+
+  /**
+   * Test case to ensure that setting the Data Series
+   * Line Type to Stepped sets the according mode to the
+   * Data Series.
+   */
+  @Test
+  public void testSetLineTypeStepped() {
+    int lineType = ComponentConstants.CHART_LINE_TYPE_STEPPED;
+    LineDataSet.Mode expectedMode = LineDataSet.Mode.STEPPED;
+
+    setLineTypeHelper(lineType, expectedMode);
+  }
+
+  /**
+   * Helper method that sets the specified Line Type to the
+   * Data Model, and then asserts that the expected mode is
+   * set to the Data Series.
+   * @param type  Line Type to set to the Data Series (integer)
+   * @param expectedMode  Expected Mode of the Data Series
+   */
+  private void setLineTypeHelper(int type, LineDataSet.Mode expectedMode) {
+    model.setLineType(type);
+
+    assertEquals(expectedMode, model.getDataset().getMode());
   }
 }
