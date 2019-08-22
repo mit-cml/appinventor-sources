@@ -11,20 +11,20 @@ import java.util.Optional;
 
 /**
  * Chart Data Model for the Mock Line Chart view.
- * <p>
+ *
  * Responsible for handling data operations on the Data
  * of the Line Chart.
  */
 public class MockLineChartDataModel extends MockLineChartBaseDataModel {
 
-  /**
-   * Creates a new MockLineChartDataModel instance.
-   *
-   * @param chartData Data object of the Chart View.
-   */
-  public MockLineChartDataModel(Data chartData) {
-    super(chartData);
-  }
+    /**
+     * Creates a new MockLineChartDataModel instance.
+     *
+     * @param chartData Data object of the Chart View.
+     */
+    public MockLineChartDataModel(Data chartData) {
+        super(chartData);
+    }
 
 //    @Override
 //    protected void setDefaultStylingProperties() {

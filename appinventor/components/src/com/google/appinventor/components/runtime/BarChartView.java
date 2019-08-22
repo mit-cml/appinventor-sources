@@ -27,7 +27,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
   /**
    * Instantiates a new Bar Chart View in the given context.
    *
-   * @param context Context to instantiate view in
+   * @param context  Context to instantiate view in
    */
   public BarChartView(Activity context) {
     // Set the Chart object to a new Bar Chart instance
@@ -79,7 +79,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
       // Since the number of data sets can change, the bar space and
       // bar width should be re-calculated. 10% and 90% of the remainder
       // are given to the Bar Space and the Bar Width, respectively.
-      float x = (1f - GROUP_SPACE) / dataSetCount;
+      float x = (1f - GROUP_SPACE)/dataSetCount;
       barSpace = x * 0.1f;
       barWidth = x * 0.9f;
 

@@ -33,7 +33,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     if (entry != null) {
       // Since Bar Chart entries use x values as indexes (which
       // are integers), we need to cast the entry's x value to an integer.
-      int xValue = (int) entry.getX();
+      int xValue = (int)entry.getX();
 
       // To ensure the two properties of the Bar Chart entries
       // (one of which is the property where entries are sorted
@@ -84,7 +84,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
         // Since the Bar Chart uses x entries as an index (so an
         // x value of 3 would correspond to the 4th entry [3rd index],
         // the float value has to be floored.
-        int x = (int) Math.floor(Float.parseFloat(xValue));
+        int x = (int)Math.floor(Float.parseFloat(xValue));
         float y = Float.parseFloat(yValue);
 
         return new BarEntry(x, y);
@@ -138,7 +138,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
       entries.remove(0);
     }
 
-    entries.add((BarEntry) getEntryFromTuple(tuple));
+    entries.add((BarEntry)getEntryFromTuple(tuple));
   }
 
   @Override
@@ -165,7 +165,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     // convert the generic List to a YailList. Since Bar Chart
     // grouping adds offsets to the x value (which are expected
     // to be below 1), the x value needs to be floored.
-    List tupleEntries = Arrays.asList((float) Math.floor(entry.getX()), entry.getY());
+    List tupleEntries = Arrays.asList((float)Math.floor(entry.getX()), entry.getY());
     return YailList.makeList(tupleEntries);
   }
 

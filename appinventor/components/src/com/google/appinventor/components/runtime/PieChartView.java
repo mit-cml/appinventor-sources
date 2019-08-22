@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Class that handles the GUI, initialization and managing of all
  * Data Series for the Pie Chart.
- * <p>
+ *
  * Since MPAndroidChart (in v3.1.0) does not support concentric
  * rings, an implementation was done using multiple Pie Chart
  * views by stacking them on top of another to create concentric
@@ -42,8 +42,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   /**
    * Creates a new Pie Chart view instance which manages
    * all the Pie Chart rings.
-   *
-   * @param context Activity context where the view should be initialized in
+   * @param context  Activity context where the view should be initialized in
    */
   public PieChartView(Activity context) {
     // Instantiate the Root View layout and the Root Chart
@@ -90,10 +89,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   /**
    * Creates, initializes & attaches a new Pie Chart ring to add to the
    * Pie Chart root view.
-   * <p>
-   * To be called upon creating a new PieChartDataModel.
    *
-   * @return created Pie Chart instance
+   * To be called upon creating a new PieChartDataModel.
+   * @return  created Pie Chart instance
    */
   private PieChart createPieChartRing() {
     PieChart pieChart;
@@ -104,8 +102,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       pieChart = new PieChart(activity); // Create a new Pie Chart
       pieChart.getDescription().setEnabled(false); // Hide description
       pieChart.getLegend().setEnabled(false); // Hide legend
-    }
-    ;
+    };
 
     // Set the corresponding properties of the Pie Chart view
     // to the newly created Pie Chart
@@ -116,7 +113,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // adjust all the necessary widths & heights.
     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
         (ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams.MATCH_PARENT);
     params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
     pieChart.setLayoutParams(params);
 
@@ -131,8 +128,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * Sets the mutually defined styling proeprties to the specified Pie
    * Chart. This method allows having consistency between all the
    * instantiated Pie Chart rings.
-   *
-   * @param chart Pie Chart to apply styling settings to
+   * @param chart  Pie Chart to apply styling settings to
    */
   private void setPieChartProperties(PieChart chart) {
     chart.setDrawEntryLabels(false);
@@ -190,7 +186,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // becoming smaller. A factor of pieHoleRadius/100f is added for the reason
     // that Pie Charts with a very small pie hole radius require a lesser reduction
     // factor to maintain a larger fill percentage.
-    float reductionFactor = (0.75f + pieHoleRadius / 100f) / pieCharts.size();
+    float reductionFactor = (0.75f + pieHoleRadius/100f) / pieCharts.size();
 
     // Calculate the current fill radius of the Chart (100% is the maximum,
     // so we subtract the pie hole radius from the 100% to get the part
@@ -217,11 +213,11 @@ public class PieChartView extends ChartView<PieChart, PieData> {
         // height of the Chart. The hole radius essentially represnets
         // how much free space is available inside the Chart. The value
         // is then divided by 100 to get a fraction to use as the new size.
-        float scalingFactor = (newHoleRadius) / 100f;
+        float scalingFactor = (newHoleRadius)/100f;
 
         // Compute new width & height using the scaling factor
-        lastWidth = (int) (lastWidth * scalingFactor);
-        lastHeight = (int) (lastHeight * scalingFactor);
+        lastWidth = (int)(lastWidth * scalingFactor);
+        lastHeight = (int)(lastHeight * scalingFactor);
 
         // Change the size of the current Pie Chart
         changePieChartSize(pieChart, lastWidth, lastHeight);
@@ -240,10 +236,9 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * Helper method to change the radius of the specified Pie Chart
    * to the specified new radius. The new radius also depends on
    * whether this is the last (inner-most) Chart or not.
-   *
-   * @param pieChart      Pie Chart to change radius of
-   * @param newHoleRadius New radius to set to the Pie Chart
-   * @param lastChart     Boolean to indicate whether the specified Chart is the last one
+   * @param pieChart  Pie Chart to change radius of
+   * @param newHoleRadius  New radius to set to the Pie Chart
+   * @param lastChart  Boolean to indicate whether the specified Chart is the last one
    */
   private void changePieChartRadius(PieChart pieChart, float newHoleRadius, boolean lastChart) {
     if (!lastChart) { // Outer rings
@@ -288,14 +283,13 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   /**
    * Changes the width & height of the specified Pie Chart.
-   *
-   * @param pieChart Pie Chart to change width and height of
-   * @param width    New width
-   * @param height   New height
+   * @param pieChart  Pie Chart to change width and height of
+   * @param width  New width
+   * @param height  New height
    */
   private void changePieChartSize(PieChart pieChart, int width, int height) {
     // Get the RelativeLayout parameters of the Pie Chart
-    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) (pieChart.getLayoutParams());
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)(pieChart.getLayoutParams());
 
     // Set width & height of the Pie Chart, and update the Layout parameters
     // of the Chart
@@ -307,11 +301,10 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   /**
    * Updates the offset of the specified Pie Chart ring accordingly
    * to the required height of the Legend.
-   * <p>
+   *
    * Since the Legend is drawn inside, an offset is needed so that the
    * rings of the Pie Chart do not overlap with the Legend that much.
-   *
-   * @param pieChart Chart to apply offset to
+   * @param pieChart  Chart to apply offset to
    */
   private void updatePieChartRingOffset(PieChart pieChart) {
     // TODO: Improvements can be made on this part. Alternatively,
@@ -390,8 +383,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   /**
    * Adds a new Legend Entry to the Legend of the Pie Chart view.
-   *
-   * @param entry Legend Entry to add
+   * @param entry  Legend Entry to add
    */
   public void addLegendEntry(final LegendEntry entry) {
     // In order to prevent exceptions, the Legend Entries have to
@@ -409,8 +401,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   /**
    * Removes the specified Legend Entry from the Legend of the Pie Chart view
-   *
-   * @param entry Legend Entry to remove
+   * @param entry  Legend Entry to remove
    */
   public void removeLegendEntry(final LegendEntry entry) {
     // To prevent exceptions, Legend Entries have to be removed
@@ -425,10 +416,10 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
   /**
    * Sets the radius of the Pie Chart (in percentage)
-   * <p>
+   *
    * E.g. 100% - full Pie Chart, 50% - donut
    *
-   * @param percent percentage of the radius to fill.
+   * @param percent  percentage of the radius to fill.
    */
   public void setPieRadius(int percent) {
     // Disallow setting percentage that does not fall

@@ -27,17 +27,17 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
    */
   @Override
   public void testAddEntryFromTuplePair() {
-    final float xValue = 0f;
-    final float yValue = 10f;
-    YailList tuple = createTuple(xValue, yValue);
+      final float xValue = 0f;
+      final float yValue = 10f;
+      YailList tuple = createTuple(xValue, yValue);
 
-    model.addEntryFromTuple(tuple);
+      model.addEntryFromTuple(tuple);
 
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 10f));
-    }};
+      ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+        add(createEntry(0f, 10f));
+      }};
 
-    assertExpectedEntriesHelper(expectedEntries);
+      assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -441,14 +441,14 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 7f));
-      add(createEntry(4f, 0f));
-      add(createEntry(5f, 0f));
-      add(createEntry(6f, 4f));
-      add(createEntry(7f, 0f));
+      add(createEntry(0f,0f));
+      add(createEntry(1f,0f));
+      add(createEntry(2f,0f));
+      add(createEntry(3f,7f));
+      add(createEntry(4f,0f));
+      add(createEntry(5f,0f));
+      add(createEntry(6f,4f));
+      add(createEntry(7f,0f));
     }};
 
     // Remove entries

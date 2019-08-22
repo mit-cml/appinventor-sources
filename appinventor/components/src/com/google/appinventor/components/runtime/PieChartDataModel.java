@@ -25,12 +25,12 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
 
   /**
    * Initializes a new PieChartDataModel object instance.
-   * <p>
+   *
    * Links the Data Model to the specified Chart, since one
    * Pie Chart instance represents a single ring of a Pie Chart.
    *
-   * @param chart Chart to link Data Model
-   * @param data  Chart data instance
+   * @param chart  Chart to link Data Model
+   * @param data Chart data instance
    */
   public PieChartDataModel(PieChartView view, PieChart chart, PieData data) {
     super(data);

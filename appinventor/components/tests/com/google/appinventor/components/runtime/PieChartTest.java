@@ -63,7 +63,7 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
    * Test case to ensure that setting the Pie Radius
    * of the Chart while the type is of type Pie Chart
    * actually has effect on the radius.
-   * <p>
+   *
    * Since the calculated values are non-direct, for
    * simplicity, this test case tests a non-full Pie Chart
    * fill and a full fill, the difference between them being

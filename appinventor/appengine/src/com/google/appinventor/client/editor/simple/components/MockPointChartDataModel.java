@@ -47,7 +47,7 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
     // that many data points.
     Optional<DataPoint> maxYPoint = chartData.getDatasets() // Get all the data sets
         .stream() // Create a stream
-        .flatMap(l -> ((ScatterDataset) l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
+        .flatMap(l -> ((ScatterDataset)l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
         .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value
 
     // Get the maximum data point Y value. We take the maximum to ensure
@@ -80,11 +80,11 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
 
   /**
    * Adds an entry to the Data Series from the specified tuple.
-   * <p>
+   *
    * The tuple is expected to have at least 2 entries. All subsequent
    * values are ignored.
    *
-   * @param tuple tuple (array of doubles)
+   * @param tuple  tuple (array of doubles)
    */
   public void addEntryFromTuple(Double... tuple) {
     // Construct the data point

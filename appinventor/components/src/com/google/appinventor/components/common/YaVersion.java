@@ -681,9 +681,9 @@ public class YaVersion {
   // - DrawShape & DrawArc was added
   public static final int CANVAS_COMPONENT_VERSION = 11;
 
-  public static int CHART_COMPONENT_VERSION = 1;
+  public static final int CHART_COMPONENT_VERSION = 1;
 
-  public static int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

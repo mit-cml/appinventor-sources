@@ -7,17 +7,17 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
 
 public class LineChartView extends LineChartViewBase {
-  /**
-   * Instantiate a new LineChartView in the given context.
-   *
-   * @param context Context to instantiate view in
-   */
-  public LineChartView(Activity context) {
-    super(context);
-  }
+    /**
+     * Instantiate a new LineChartView in the given context.
+     *
+     * @param context Context to instantiate view in
+     */
+    public LineChartView(Activity context) {
+        super(context);
+    }
 
-  @Override
-  public ChartDataModel createChartModel() {
-    return new LineChartDataModel(data);
-  }
+    @Override
+    public ChartDataModel createChartModel() {
+        return new LineChartDataModel(data);
+    }
 }

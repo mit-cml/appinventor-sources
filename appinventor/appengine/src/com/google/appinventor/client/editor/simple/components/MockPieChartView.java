@@ -50,81 +50,81 @@ public class MockPieChartView extends MockChartView<PieChart> {
 
   /**
    * Changes the way the tooltips are rendered.
-   * <p>
+   *
    * The default option is to show the same x label
    * for all the Data Series, however, labels are
    * defined on a per-entry basis.
-   * <p>
+   *
    * This method changes the Tooltip rendering to
    * render in "x: y" format for each entry.
    */
   private void changeTooltipRendering() {
     chartWidget.getOptions().getTooltips().getCallbacks()
         .setLabelCallback(new TooltipLabelCallback() {
-          @Override
-          public String onBeforeLabel(IsChart chart, TooltipItem item) {
-            return "";
-          }
+      @Override
+      public String onBeforeLabel(IsChart chart, TooltipItem item) {
+        return "";
+      }
 
-          @Override
-          public String onLabel(IsChart chart, TooltipItem item) {
-            // Get the Data Series & entry indexes
-            int seriesIndex = item.getDatasetIndex();
-            int entryIndex = item.getIndex();
+      @Override
+      public String onLabel(IsChart chart, TooltipItem item) {
+        // Get the Data Series & entry indexes
+        int seriesIndex = item.getDatasetIndex();
+        int entryIndex = item.getIndex();
 
-            // Get the corresponding MockPieChartDataModel
-            MockPieChartDataModel model = dataModels.get(seriesIndex);
+        // Get the corresponding MockPieChartDataModel
+        MockPieChartDataModel model = dataModels.get(seriesIndex);
 
-            // The x value can be found in the labels List, while the
-            // y value can be found in the Data List of the Data Series
-            String xValue = model.getLabels().get(entryIndex);
-            double yValue = model.dataSeries.getData().get(entryIndex);
+        // The x value can be found in the labels List, while the
+        // y value can be found in the Data List of the Data Series
+        String xValue = model.getLabels().get(entryIndex);
+        double yValue = model.dataSeries.getData().get(entryIndex);
 
-            // Format the label String which displays the x and the y values
-            return xValue + ": " + yValue;
-          }
+        // Format the label String which displays the x and the y values
+        return xValue + ": " + yValue;
+      }
 
-          @Override
-          public TooltipLabelColor onLabelColor(IsChart chart, TooltipItem item) {
-            TooltipLabelColor color = new TooltipLabelColor();
+      @Override
+      public TooltipLabelColor onLabelColor(IsChart chart, TooltipItem item) {
+        TooltipLabelColor color = new TooltipLabelColor();
 
-            // Get the Data Series & entry indexes
-            int seriesIndex = item.getDatasetIndex();
-            int entryIndex = item.getIndex();
+        // Get the Data Series & entry indexes
+        int seriesIndex = item.getDatasetIndex();
+        int entryIndex = item.getIndex();
 
-            // Get the corresponding Data Series & retrieve the color of
-            // the corresponding entry
-            PieDataset dataSeries = dataModels.get(seriesIndex).dataSeries;
-            IsColor colorValue = dataSeries.getBackgroundColor().get(entryIndex);
+        // Get the corresponding Data Series & retrieve the color of
+        // the corresponding entry
+        PieDataset dataSeries = dataModels.get(seriesIndex).dataSeries;
+        IsColor colorValue = dataSeries.getBackgroundColor().get(entryIndex);
 
-            // Set the color value of the constructed TooltipLabelColor object and
-            // return it
-            color.setBackgroundColor(colorValue);
-            return color;
-          }
+        // Set the color value of the constructed TooltipLabelColor object and
+        // return it
+        color.setBackgroundColor(colorValue);
+        return color;
+      }
 
-          @Override
-          public IsColor onLabelTextColor(IsChart chart, TooltipItem item) {
-            // Label text should always be white
-            return ColorBuilder.build(255, 255, 255);
-          }
+      @Override
+      public IsColor onLabelTextColor(IsChart chart, TooltipItem item) {
+        // Label text should always be white
+        return ColorBuilder.build(255, 255, 255);
+      }
 
-          @Override
-          public String onAfterLabel(IsChart chart, TooltipItem item) {
-            return "";
-          }
-        });
+      @Override
+      public String onAfterLabel(IsChart chart, TooltipItem item) {
+        return "";
+      }
+    });
   }
 
   /**
    * Changes the onClick handler for the Legend labels.
-   * <p>
+   *
    * This method makes it so that nothing happens upon
    * clicking a Legend label. The reason why this is
    * done is because the default click handler hides
    * values for all data series (and not just for
    * the one being clicked on)
-   * <p>
+   *
    * TODO: In the future, perhaps a solution could be devised to implement
    * TODO: altered logic to hide individual values (e.g. set them to 0).
    * TODO: Alternatively, this feature could be disabled on all Charts for consistency,
@@ -141,7 +141,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
 
   /**
    * Changes the way the Legend Labels are created.
-   * <p>
+   *
    * By default, the same x label is applied to all the
    * Data Series. This method changes it so that for
    * each individual entry, a label is created and
@@ -206,8 +206,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
 
   /**
    * Unlinks the specified Data Model from the Mock Pie Chart View.
-   *
-   * @param model model to unlink
+   * @param model  model to unlink
    */
   public void removeDataModel(MockPieChartDataModel model) {
     dataModels.remove(model);
@@ -215,8 +214,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
 
   /**
    * Changes the radius of the Pie Chart View.
-   *
-   * @param percent Percentage of the radius to fill in the Pie Chart
+   * @param percent  Percentage of the radius to fill in the Pie Chart
    */
   public void setPieRadius(int percent) {
     // Calculate & set hole radius

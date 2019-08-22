@@ -152,5 +152,4 @@ public interface Component {
 
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
-
 }

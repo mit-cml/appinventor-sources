@@ -125,12 +125,12 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
       add(createTuple("Entry 4", 9f));
     }};
 
-    int[] expectedColors = {
-        color,
-        color,
-        color,
-        color
-    };
+   int[] expectedColors = {
+       color,
+       color,
+       color,
+       color
+   };
 
     setColorsHelper(colorList, tuples, expectedColors);
   }
@@ -291,7 +291,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     model.addEntryFromTuple(tuple);
 
     LegendEntry[] expectedEntries = {
-        createLegendEntry("Entry", Color.RED)
+      createLegendEntry("Entry", Color.RED)
     };
 
     checkLegendHelper(expectedEntries);
@@ -339,8 +339,8 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     final int color2 = Color.GREEN;
     final int color3 = Color.BLUE;
 
-    PieChartDataModel model2 = (PieChartDataModel) chartView.createChartModel();
-    PieChartDataModel model3 = (PieChartDataModel) chartView.createChartModel();
+    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
 
     model.setColor(color1);
     model2.setColor(color2);
@@ -443,8 +443,8 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     final int color2 = Color.MAGENTA;
     final int color3 = Color.YELLOW;
 
-    PieChartDataModel model2 = (PieChartDataModel) chartView.createChartModel();
-    PieChartDataModel model3 = (PieChartDataModel) chartView.createChartModel();
+    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
 
     model.setColor(color1);
     model2.setColor(color2);
@@ -561,15 +561,15 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   @Override
   public void setup() {
     chartView = new PieChartView(getForm());
-    model = (PieChartDataModel) chartView.createChartModel();
+    model = (PieChartDataModel)chartView.createChartModel();
     data = (PieData) model.getData();
-    legend = ((PieChart) ((RelativeLayout) chartView.getView()).getChildAt(0)).getLegend();
+    legend = ((PieChart)((RelativeLayout)chartView.getView()).getChildAt(0)).getLegend();
   }
 
   @Override
   protected void assertEntriesEqual(Entry e1, Entry e2) {
     assertEquals(e1.getClass(), e2.getClass());
-    assertEquals(((PieEntry) e1).getLabel(), ((PieEntry) e2).getLabel());
+    assertEquals(((PieEntry)e1).getLabel(), ((PieEntry)e2).getLabel());
     assertEquals(e1.getY(), e2.getY());
   }
 
