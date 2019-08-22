@@ -461,4 +461,12 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 //      }
 //    };
 //  }
+
+  /**
+   * Returns a List of the Pie Chart's Legend Entries.
+   * @return  List of Legend Entries
+   */
+  public List<LegendEntry> getLegendEntries() {
+    return legendEntries;
+  }
 }
