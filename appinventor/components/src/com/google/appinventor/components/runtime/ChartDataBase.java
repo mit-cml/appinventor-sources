@@ -8,7 +8,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
-import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.OnBeforeInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener,
+public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, ChartDataSourceChangeListener,
     ChartDataSourceGetValueListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
@@ -76,7 +76,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         DataSourceValue("");
 
         threadRunner = Executors.newSingleThreadExecutor();
-        container.$form().registerForOnInitialize(this);
+        container.$form().registerForOnBeforeInitialize(this);
     }
 
     /**
@@ -793,7 +793,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * is fully initialized.
      */
     @Override
-    public void onInitialize() {
+    public void onBeforeInitialize() {
         initialized = true;
 
         // Data Source should only be imported after the Screen
