@@ -343,4 +343,8 @@ public class PropertyTypeConstants {
    *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_PIE_RADIUS = "chart_pie_radius";
+
+  public static final String PROPERTY_TYPE_CHART_POINT_SHAPE = "chart_point_shape";
+
+  public static final String PROPERTY_TYPE_CHART_LINE_TYPE = "chart_line_type";
 }

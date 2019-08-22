@@ -6,11 +6,14 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class MockChartData extends MockVisibleComponent implements DataFileChangeListener {
     private static final String PROPERTY_COLOR = "Color";
     private static final String PROPERTY_LABEL = "Label";
+    private static final String PROPERTY_POINT_SHAPE = "PointShape";
+    private static final String PROPERTY_LINE_TYPE = "LineType";
     private static final String PROPERTY_PAIRS = "ElementsFromPairs";
     private static final String PROPERTY_CHART_SOURCE = "Source";
     private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
@@ -18,6 +21,24 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     private static final String PROPERTY_DATA_FILE_Y_COLUMN = "DataFileYColumn";
     private static final String PROPERTY_WEB_X_COLUMN = "WebXColumn";
     private static final String PROPERTY_WEB_Y_COLUMN = "WebYColumn";
+
+    // The HashMap contains properties that should be hidden by default.
+    // Height and Width properties should be hidden since they do not matter
+    // for the Chart Data component.
+    // Chart Source related properties should be hidden by default,
+    // as they are only shown upon certain conditions (e.g. DataFileColumn
+    // properties are only shown when the Source component is a DataFile)
+    // The Point Shape property should be h
+    private static final HashSet<String> hiddenProperties = new HashSet<String>() {{
+       add(PROPERTY_NAME_HEIGHT);
+       add(PROPERTY_NAME_WIDTH);
+       add(PROPERTY_DATA_FILE_X_COLUMN);
+       add(PROPERTY_DATA_FILE_Y_COLUMN);
+       add(PROPERTY_CHART_SOURCE_VALUE);
+       add(PROPERTY_WEB_X_COLUMN);
+       add(PROPERTY_WEB_Y_COLUMN);
+       add(PROPERTY_POINT_SHAPE);
+    }};
 
     // Represents the Chart data icon
     private Image iconWidget;
@@ -65,23 +86,19 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         // Set the properties to the Data Series
         setDataSeriesProperties();
 
+        // Change the visibilities of the styling properties
+        // according to Chart type
+        changeStylingPropertiesVisibility();
+
         // Refresh the Chart view
         refreshChart();
     }
 
     @Override
     protected boolean isPropertyVisible(String propertyName) {
-        // Hide HEIGHT and WIDTH properties (not needed for Chart Data)
-        // Chart Source related properties should be hidden by default,
-        // as they are only shown upon certain conditions (e.g. DataFileColumn
-        // properties are only shown when the Source component is a DataFile)
-        if (propertyName.equals(PROPERTY_NAME_HEIGHT) ||
-                propertyName.equals(PROPERTY_NAME_WIDTH) ||
-                propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN) ||
-                propertyName.equals(PROPERTY_DATA_FILE_Y_COLUMN) ||
-                propertyName.equals(PROPERTY_CHART_SOURCE_VALUE) ||
-                propertyName.equals(PROPERTY_WEB_X_COLUMN) ||
-                propertyName.equals(PROPERTY_WEB_Y_COLUMN)) {
+        // If the set of properties to hide contains the specified
+        // property, then hide the property.
+        if (hiddenProperties.contains(propertyName)) {
             return false;
         }
 
@@ -158,6 +175,42 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     }
 
     /**
+     * Sets the Point Shape property to the Chart Data component,
+     * provided that the Data Model is a ScatterChartDataModel.
+     * If that is indeed the case, the point shape of the Scatter
+     * Chart Data Model is then changed.
+     * @param newValue  New value of the Point Shape (String)
+     */
+    private void setPointShapeProperty(String newValue) {
+        int pointShape = Integer.parseInt(newValue);
+
+        // Only change the point shape of the Model if it is of
+        // type ScatterChartDataModel (since only that model supports
+        // the changing of the Point Shape)
+        if (chartDataModel instanceof MockScatterChartDataModel) {
+            ((MockScatterChartDataModel)chartDataModel).changePointShape(pointShape);
+        }
+    }
+
+    /**
+     * Sets the Line Type property to the Chart Data component,
+     * provided that the Data Model is a LineChartBaseDataModel.
+     * If that is indeed the case, the line type of the Line
+     * Chart Data Model is then changed.
+     * @param newValue  New value of the Line Type (String)
+     */
+    private void setLineTypeProperty(String newValue) {
+        int lineType = Integer.parseInt(newValue);
+
+        // Only change the line type of the Model if it is of
+        // type lineChartBaseDataModel (since only that model
+        // supports the changing of the Line Type)
+        if (chartDataModel instanceof MockLineChartBaseDataModel) {
+            ((MockLineChartBaseDataModel)chartDataModel).setLineType(lineType);
+        }
+    }
+
+    /**
      * Sets the DataFile Y Column property of the Chart Data component.
      * After setting the property, the data is then re-imported
      * (if possible)
@@ -208,6 +261,27 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
             !(dataSource instanceof MockDataFile || showWebColumns));
 
         showProperty(PROPERTY_CHART_SOURCE_VALUE, showDataSourceValue);
+    }
+
+    /**
+     * Change the visibility of styling related properties which
+     * only apply to limited Data Models, rather than all of them.
+     *
+     * This method should be invoked upon changing the type of the
+     * Data Model.
+     */
+    private void changeStylingPropertiesVisibility() {
+        // Handle Scatter Chart related property hiding
+        boolean showScatterChartProperties =
+            chartDataModel instanceof MockScatterChartDataModel;
+
+        showProperty(PROPERTY_POINT_SHAPE, showScatterChartProperties);
+
+        // Handle Line Chart Base related property hiding
+        boolean showLineBaseChartProperties =
+            chartDataModel instanceof MockLineChartBaseDataModel;
+
+        showProperty(PROPERTY_LINE_TYPE, showLineBaseChartProperties);
     }
 
     /**
@@ -275,6 +349,12 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         } else if (propertyName.equals(PROPERTY_PAIRS)) {
             setElementsFromPairsProperty(newValue);
             refreshChart();
+        } else if (propertyName.equals(PROPERTY_POINT_SHAPE)) {
+          setPointShapeProperty(newValue);
+          refreshChart();
+        } else if (propertyName.equals(PROPERTY_LINE_TYPE)) {
+          setLineTypeProperty(newValue);
+          refreshChart();
         } else if (propertyName.equals(PROPERTY_CHART_SOURCE)) {
             setSourceProperty(newValue);
         } else if (propertyName.equals(PROPERTY_DATA_FILE_X_COLUMN)) {

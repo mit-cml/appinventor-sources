@@ -10,13 +10,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
-public class BarChartTest extends AbstractChartTest<BarChartView, BarChart> {
+public class BarChartTest extends AxisChartTest<BarChartView, BarChart> {
   @Before
   public void setUp() {
     super.setUp();
 
     chartView = (BarChartView) chartComponent.getChartView();
     chart = (BarChart) chartView.getView();
+    xAxisValueFormatter = chart.getXAxis().getValueFormatter();
   }
 
   @Override

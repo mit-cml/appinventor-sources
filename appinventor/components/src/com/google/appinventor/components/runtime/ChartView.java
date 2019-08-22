@@ -56,6 +56,14 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
     }
 
     /**
+     * Enables or disables the Legend.
+     * @param enabled  Specifies whether the Legend should be enabled.
+     */
+    public void setLegendEnabled(boolean enabled) {
+        chart.getLegend().setEnabled(enabled);
+    }
+
+    /**
      * Creates a new Chart Model object instance.
      *
      * @return  Chart Model instance

@@ -50,6 +50,14 @@ public abstract class MockChartView<C extends AbstractChart> {
     }
 
     /**
+     * Changes the visibility of the Legend.
+     * @param enabled  indicatees whether to enable the Legend.
+     */
+    public void setLegendEnabled(boolean enabled) {
+        chartWidget.getOptions().getLegend().setDisplay(enabled);
+    }
+
+    /**
      * Creates a new MockChartDataModel object instance
      * representative of the MockChartView type.
      * @return  new MockChartDataModel instance

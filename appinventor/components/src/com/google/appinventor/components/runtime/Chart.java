@@ -7,10 +7,14 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @SimpleObject
 @DesignerComponent(version = 1,
@@ -30,6 +34,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int backgroundColor;
     private String description;
     private int pieRadius;
+    private boolean legendEnabled;
+    private boolean gridEnabled;
+    private YailList labels;
 
     // Synced t value across all Data Series (used for real-time entries)
     // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -61,6 +68,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         BackgroundColor(Component.COLOR_DEFAULT);
         Description("");
         PieRadius(100);
+        LegendEnabled(true);
+        GridEnabled(true);
+        Labels(new YailList());
 
         // Register onInitialize event of the Chart
         $form().registerForOnInitialize(this);
@@ -197,6 +207,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
 
         Description(description);
         BackgroundColor(backgroundColor);
+        LegendEnabled(legendEnabled);
+        GridEnabled(gridEnabled);
+        Labels(labels);
     }
 
     /**
@@ -271,6 +284,93 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         if (chartView instanceof PieChartView) {
             ((PieChartView)chartView).setPieRadius(percent);
         }
+    }
+
+    /**
+     * Changes the visibility of the Chart's Legend.
+     * @param enabled  indicates whether the Chart should be enabled.
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+                defaultValue = "True")
+    @SimpleProperty
+    public void LegendEnabled(boolean enabled) {
+        this.legendEnabled = enabled;
+        chartView.setLegendEnabled(enabled);
+    }
+
+    /**
+     * Changes the visibility of the Chart's grid, if the
+     * Chart View is a Chart with an Axis.
+     * @param enabled  indicates whether the Chart's grid should be enabled.
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+        defaultValue = "True")
+    @SimpleProperty
+    public void GridEnabled(boolean enabled) {
+        this.gridEnabled = enabled;
+
+        // Only change grid visibility if the Chart View is an
+        // Axis Chart View, since non-axis Charts do not have
+        // grids.
+        if (chartView instanceof AxisChartView) {
+            ((AxisChartView)chartView).setGridEnabled(enabled);
+        }
+    }
+
+    /**
+     * Changes the Chart's X axis labels to the specified List,
+     * if the Chart View is a Chart with an Axis.
+     *
+     * The first entry of the List corresponds to the x value of 0,
+     * the second to the x value of 1, and so on.
+     *
+     * If a label is not specified for an x value, a default value
+     * is used (usually the numeric value)
+     *
+     * @param labels  List of labels to set to the X Axis of the Chart
+     */
+    @SimpleProperty
+    public void Labels(YailList labels) {
+        this.labels = labels;
+
+        // Only change the labels if the Chart View is
+        // an Axis Chart View, since Charts without an
+        // axis will not have an X Axis.
+        if (chartView instanceof AxisChartView) {
+            List<String> stringLabels = new ArrayList<String>();
+
+            for (int i = 0; i < labels.size(); ++i) {
+                String label = labels.getString(i);
+                stringLabels.add(label);
+            }
+
+            ((AxisChartView)chartView).setLabels(stringLabels);
+        }
+    }
+
+    /**
+     * Returns a List of Labels set to the X Axis.
+     * @return  List of Labels used for the X Axis
+     */
+    @SimpleProperty
+    public YailList Labels() {
+        return labels;
+    }
+
+
+    /**
+     * Specifies the labels to set to the Chart's X Axis, provided the current
+     * view is a Chart with an X Axis.
+     * @see #Labels(YailList)
+     * @param labels  Comma-separated values, where each value represents a label (in order)
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+                    defaultValue = "")
+    @SimpleProperty(userVisible = false)
+    public void LabelsFromString(String labels) {
+        // Retrieve the elements from the CSV-formatted String
+        YailList labelsList = ElementsUtil.elementsFromString(labels);
+        Labels(labelsList); // Set the Labels from the retrieved elements List
     }
 
     /**

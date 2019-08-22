@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
@@ -14,7 +15,10 @@ public final class MockChart extends MockContainer {
 
     private static final String PROPERTY_NAME_TYPE = "Type";
     private static final String PROPERTY_NAME_DESCRIPTION = "Description";
+    private static final String PROPERTY_NAME_LEGEND_ENABLED = "LegendEnabled";
+    private static final String PROPERTY_NAME_GRID_ENABLED = "GridEnabled";
     private static final String PROPERTY_NAME_PIE_RADIUS = "PieRadius";
+    private static final String PROPERTY_NAME_LABELS_FROM_STRING = "LabelsFromString";
 
     static {
         ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
@@ -30,6 +34,9 @@ public final class MockChart extends MockContainer {
     // reattached. The reattachment has to happen only once, since the Data
     // Series are part of the Chart object itself.
     private boolean childrenReattached = false;
+
+    // Store the LabelsFromStrings property parsed result
+    private String[] labelArray = new String[0];
 
     /**
      * Creates a new instance of a visible component.
@@ -134,6 +141,58 @@ public final class MockChart extends MockContainer {
       }
     }
 
+  /**
+   * Reacts to the LegendEnabled property change by changing
+   * the Mock Chart accordingly.
+   * @param newValue  new value of the property (String)
+   */
+  private void setLegendEnabledProperty(String newValue) {
+      boolean enabled = Boolean.parseBoolean(newValue);
+      chartView.setLegendEnabled(enabled);
+
+      chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
+  }
+
+  /**
+   * Reacts to the LabelsFromString property change by
+   * changing the Labels of the Mock Chart accordingly,
+   * provided that the Mock Chart has an X Axis.
+   * @param labels CSV formatted String representing the labels
+   *               to apply to the X axis.
+   */
+  private void setLabelsFromStringProperty(String labels) {
+    // Base case: Empty List of Labels should be an empty array.
+    if (labels.equals("")) {
+      labelArray = new String[0];
+    } else {
+      // TODO: Use a CSV split method that supports escaping commas, etc?
+      labelArray = labels.split(",");
+    }
+
+    // Only update the labels to the Chart if the Chart is of type
+    // MockAxisChartView, since the labels apply to the X Axis.
+    if (chartView instanceof MockAxisChartView) {
+      ((MockAxisChartView)chartView).updateLabels(labelArray);
+      refreshChart();
+    }
+  }
+
+  /**
+   * Reacts to the GridEnabled property change by changing
+   * the Mock Chart accordingly.
+   * @param newValue  new value of the property (String)
+   */
+    private void setGridEnabledProperty(String newValue) {
+      // The property should only be reflected on the Chart
+      // if the Chart View is an Axis Chart View.
+      if (chartView instanceof MockAxisChartView) {
+        boolean enabled = Boolean.parseBoolean(newValue);
+        ((MockAxisChartView)chartView).setGridEnabled(enabled);
+
+        chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
+      }
+    }
+
     /**
      * Changes Chart property visibilities depending on the
      * current type of the Chart.
@@ -144,6 +203,11 @@ public final class MockChart extends MockContainer {
         // Handle Pie Chart property hiding
         boolean showPieChartProperties = chartView instanceof MockPieChartView;
         showProperty(PROPERTY_NAME_PIE_RADIUS, showPieChartProperties);
+
+        // Handle Axis Chart property hiding
+        boolean showAxisChartProperties = chartView instanceof MockAxisChartView;
+        showProperty(PROPERTY_NAME_GRID_ENABLED, showAxisChartProperties);
+        showProperty(PROPERTY_NAME_LABELS_FROM_STRING, showAxisChartProperties);
 
         // If the component is currently selected, re-select it to refresh
         // the Properties panel. isSelected() should only be invoked when
@@ -182,18 +246,25 @@ public final class MockChart extends MockContainer {
      * components and setting back all the properties.
      */
     private void reinitializeChart() {
-        // Chart type changing requires setting back Chart-related properties
-        chartView.setBackgroundColor(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
-        chartView.setTitle(getPropertyValue(PROPERTY_NAME_DESCRIPTION));
-        chartView.getChartWidget().draw();
-
-        // Re-attach all children MockChartData components.
-        // This is needed since the properties of the MockChart
-        // are set after the Data components are attached to
-        // the Chart, and thus they need to be re-attached.
-        for (MockComponent child : children) {
-            ((MockChartData) child).addToChart(MockChart.this);
+      // Re-set all Chart properties to take effect on
+      // the newly instantiated Chart View
+      for (EditableProperty property : properties) {
+        // The Type property should not be re-set, since
+        // this method call is part of the Type setting process.
+        if (!property.getName().equals(PROPERTY_NAME_TYPE)) {
+          onPropertyChange(property.getName(), property.getValue());
         }
+      }
+
+      chartView.getChartWidget().draw();
+
+      // Re-attach all children MockChartData components.
+      // This is needed since the properties of the MockChart
+      // are set after the Data components are attached to
+      // the Chart, and thus they need to be re-attached.
+      for (MockComponent child : children) {
+          ((MockChartData) child).addToChart(MockChart.this);
+      }
     }
 
     @Override
@@ -218,8 +289,14 @@ public final class MockChart extends MockContainer {
         } else if (propertyName.equals(PROPERTY_NAME_DESCRIPTION)) {
             chartView.setTitle(newValue);
             chartView.getChartWidget().draw(); // Title changing requires re-drawing the Chart
+        } else if (propertyName.equals(PROPERTY_NAME_LEGEND_ENABLED)) {
+          setLegendEnabledProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_NAME_GRID_ENABLED)) {
+          setGridEnabledProperty(newValue);
         } else if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
             setPieRadiusProperty(newValue);
+        } else if (propertyName.equals(PROPERTY_NAME_LABELS_FROM_STRING)) {
+          setLabelsFromStringProperty(newValue);
         }
     }
 

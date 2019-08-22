@@ -1,8 +1,12 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.ScatterChart;
+import org.pepstock.charba.client.callbacks.TickCallback;
+import org.pepstock.charba.client.configuration.Axis;
 
-public abstract class MockPointChartView extends MockChartView<ScatterChart> {
+import java.util.List;
+
+public abstract class MockPointChartView extends MockAxisChartView<ScatterChart> {
   /**
    * Creates a new MockPointChartView object instance.
    */
@@ -18,5 +22,36 @@ public abstract class MockPointChartView extends MockChartView<ScatterChart> {
     * manual handling. */
     chartWidget = new ScatterChart();
     initializeDefaultSettings();
+  }
+
+  @Override
+  protected void initializeDefaultSettings() {
+    super.initializeDefaultSettings();
+
+    // Set the custom x and y axis to the Chart
+    chartWidget.getOptions().getScales().setXAxes(xAxis);
+    chartWidget.getOptions().getScales().setYAxes(yAxis);
+
+    xAxis.getTicks().setCallback(new TickCallback() {
+      @Override
+      public String onCallback(Axis axis, double value, int index, List<Double> values) {
+        // Round the double value to an integer to get the index representation of the value
+        // The reason we do not use the index parameter is due to the fact that the
+        // Chart X Axis is indexed with negative numbers. For example, if the minimum
+        // value is -5, then the index of 0 would apply to the -5 value. Due to
+        // limited support of this in the MPAndroidChart library, we use our own
+        // system of 0-value based indexing.
+        int indexValue = (int) Math.round(value);
+
+        // Check if the index value is within the bound of the labels array.
+        // If that is the case, then use the value from the labels array.
+        if (indexValue >= 0 && indexValue < labels.length) {
+          return labels[indexValue];
+        } else {
+          // Otherwise, use the value itself.
+          return value + "";
+        }
+      }
+    });
   }
 }

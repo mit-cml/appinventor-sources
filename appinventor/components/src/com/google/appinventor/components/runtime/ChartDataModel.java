@@ -80,6 +80,19 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
     }
 
     /**
+     * Changes the colors of the Data Series from the passed in Colors List.
+     *
+     * @param colors  List of colors to set to the Data Series
+     */
+    public void setColors(List<Integer> colors) {
+        // With regards to the Colors property setting for the
+        // ScatterChartDataModel, currently an issue exists:
+        // https://github.com/PhilJay/MPAndroidChart/issues/4483
+        // which sets the same color to 2 points at once.
+        getDataset().setColors(colors);
+    }
+
+    /**
      * Changes the label of the data set.
      *
      * @param text  new label text

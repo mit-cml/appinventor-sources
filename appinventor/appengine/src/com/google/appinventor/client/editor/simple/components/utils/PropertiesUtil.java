@@ -16,6 +16,8 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty;
@@ -298,6 +300,10 @@ public class PropertiesUtil {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, CHART_DATA_SOURCES);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS)) {
       return new YoungAndroidIntegerRangePropertyEditor(0, 100);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_POINT_SHAPE)) {
+      return new YoungAndroidChartPointShapeChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE)) {
+      return new YoungAndroidChartLineTypeChoicePropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

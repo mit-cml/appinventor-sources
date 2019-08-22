@@ -4,11 +4,13 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.EntryXComparator;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDataSet, LineData>  {
     /**
@@ -68,11 +70,40 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
     @Override
     public void setColor(int argb) {
         super.setColor(argb);
-        getDataset().setCircleColor(argb);
+        getDataset().setCircleColor(argb); // Also update the circle color
+    }
+
+    @Override
+    public void setColors(List<Integer> colors) {
+        super.setColors(colors);
+        getDataset().setCircleColors(colors); // Also update the circle colors
     }
 
     @Override
     protected void setDefaultStylingProperties() {
         getDataset().setDrawCircleHole(false); // Draw full circle instead of a hollow one
+    }
+
+    /**
+     * Changes the Line Type of the Line Chart Data Series.
+     *
+     * @param type  one of {@link ComponentConstants#CHART_LINE_TYPE_LINEAR},
+     *          {@link ComponentConstants#CHART_LINE_TYPE_CURVED} or
+     *          {@link ComponentConstants#CHART_LINE_TYPE_STEPPED}
+     */
+    public void setLineType(int type) {
+        switch (type) {
+            case ComponentConstants.CHART_LINE_TYPE_LINEAR:
+                dataset.setMode(LineDataSet.Mode.LINEAR);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_CURVED:
+                dataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                break;
+
+            case ComponentConstants.CHART_LINE_TYPE_STEPPED:
+                dataset.setMode(LineDataSet.Mode.STEPPED);
+                break;
+        }
     }
 }

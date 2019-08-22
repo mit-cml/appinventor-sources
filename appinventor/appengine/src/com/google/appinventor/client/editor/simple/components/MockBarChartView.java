@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.BarChart;
+import org.pepstock.charba.client.configuration.CartesianCategoryAxis;
 import org.pepstock.charba.client.configuration.CartesianLinearAxis;
 import org.pepstock.charba.client.data.Dataset;
 
@@ -17,7 +18,7 @@ import org.pepstock.charba.client.data.Dataset;
  * ascending order), and the difference between neighboring entries' x values are
  * at most 1.
  */
-public class MockBarChartView extends MockChartView<BarChart> {
+public class MockBarChartView extends MockAxisChartView<BarChart> {
   /**
    * Creates a new MockBarChartView object instance.
    */
@@ -33,9 +34,11 @@ public class MockBarChartView extends MockChartView<BarChart> {
     // In order to not have the y values cut off (the y axis being started
     // at the minimum value), set the suggested minimum to be 0 (on negative
     // values, the minimum becomes lower)
-    CartesianLinearAxis axis = new CartesianLinearAxis(chartWidget);
-    axis.getTicks().setSuggestedMin(0);
-    chartWidget.getOptions().getScales().setYAxes(axis);
+    yAxis.getTicks().setSuggestedMin(0);
+
+    // Set the custom x and y axis to the Chart
+    // chartWidget.getOptions().getScales().setXAxes(xAxis);
+    chartWidget.getOptions().getScales().setYAxes(yAxis);
   }
 
   @Override
@@ -68,10 +71,23 @@ public class MockBarChartView extends MockChartView<BarChart> {
     String[] labels = new String[labelCount];
 
     for (int i = 0; i < labelCount; ++i) {
-      labels[i] = i + "";
+      // If a value for the current index is available
+      // in the local Labels array, use that value instead.
+      // Otherwise, use the default index value.
+      if (i < this.labels.length) {
+        labels[i] = this.labels[i];
+      } else {
+        labels[i] = i + "";
+      }
     }
 
     // Set the constructed labels
     chartWidget.getData().setLabels(labels);
+  }
+
+  @Override
+  public void updateLabels(String[] labels) {
+    super.updateLabels(labels);
+    updateLabels();
   }
 }

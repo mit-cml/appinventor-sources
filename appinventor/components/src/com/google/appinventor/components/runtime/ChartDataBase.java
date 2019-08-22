@@ -5,11 +5,13 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -46,6 +48,8 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     private String label;
     private int color;
     private YailList colors;
+    private int pointShape;
+    private int lineType;
 
     private ChartDataSource dataSource; // Attached Chart Data Source
 
@@ -94,7 +98,6 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         category = PropertyCategory.APPEARANCE
     )
     public YailList Colors() {
-        // TODO: Add support for other Chart types (not just Pie Chart)
         return colors;
     }
 
@@ -104,17 +107,32 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * TODO: Perhaps a Designer property selector could be devised here to select
      * TODO: the colors of the Chart.
      *
-     * @param argb  array of argb values
+     * @param colors  List of argb values
      */
     @SimpleProperty
-    public void Colors(YailList argb) {
-        colors = argb;
+    public void Colors(YailList colors) {
+        // Parse the entries of the YailList
+        List<Integer> resultColors = new ArrayList<Integer>();
 
-        // TODO: Add support for other Chart types
-        if (chartDataModel instanceof PieChartDataModel) {
-            ((PieChartDataModel)chartDataModel).setColors(argb);
+        for (int i = 0; i < colors.size(); ++i) {
+            // Get the element of the YailList as a String
+            String color = colors.getString(i);
+
+            try {
+                // Parse the color value and add it to the results List
+                int colorValue = Integer.parseInt(color);
+                resultColors.add(colorValue);
+            } catch (NumberFormatException e) {
+                // Skip invalid entry
+            }
         }
 
+        // Update the Colors YailList variable
+        this.colors = YailList.makeList(resultColors);
+
+        // Set the colors from the constructed List of colors
+        // and refresh the Chart.
+        chartDataModel.setColors(resultColors);
         refreshChart();
     }
 
@@ -158,11 +176,57 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
     }
 
     /**
+     * Changes the Point Shape of the Data Series, provided
+     * that the Data Series is a Scatter Chart Data Series.
+     *
+     * @param shape  one of {@link ComponentConstants#CHART_POINT_STYLE_CIRCLE},
+     *          {@link ComponentConstants#CHART_POINT_STYLE_SQUARE},
+     *          {@link ComponentConstants#CHART_POINT_STYLE_TRIANGLE},
+     *          {@link ComponentConstants#CHART_POINT_STYLE_CROSS} or
+     *          {@link ComponentConstants#CHART_POINT_STYLE_X}
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_POINT_SHAPE,
+            defaultValue = ComponentConstants.CHART_POINT_STYLE_CIRCLE + "")
+    @SimpleProperty(userVisible = false)
+    public void PointShape(int shape) {
+        this.pointShape = shape;
+
+        // Only change the Point Shape if the Chart Data Model is a
+        // ScatterChartDataModel (other models do not support changing
+        // the Point Shape)
+        if (chartDataModel instanceof ScatterChartDataModel) {
+            ((ScatterChartDataModel)chartDataModel).setPointShape(shape);
+        }
+    }
+
+    /**
+     * Changes the Line Type of the Data Series, provided
+     * that the Data Series is a Line based Data Series.
+     *
+     * @param type  one of {@link ComponentConstants#CHART_LINE_TYPE_LINEAR},
+     *          {@link ComponentConstants#CHART_LINE_TYPE_CURVED} or
+     *          {@link ComponentConstants#CHART_LINE_TYPE_STEPPED}
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE,
+        defaultValue = ComponentConstants.CHART_LINE_TYPE_LINEAR + "")
+    @SimpleProperty(userVisible = false)
+    public void LineType(int type) {
+        this.lineType = type;
+
+        // Only change the Line Type if the Chart Data Model is a
+        // LineChartBaseDataModel (other models do not support changing
+        // the Line Type)
+        if (chartDataModel instanceof LineChartBaseDataModel) {
+            ((LineChartBaseDataModel)chartDataModel).setLineType(type);
+        }
+    }
+
+    /**
      * Specifies the elements of the entries that the Chart should have.
      * @param elements  Comma-separated values of Chart entries alternating between x and y values.
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description="To be done (non-functional for now)",  category = PropertyCategory.BEHAVIOR,
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
                     userVisible = false)
     public void ElementsFromPairs(String elements) {
         this.elements = elements;
