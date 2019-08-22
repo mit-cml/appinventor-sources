@@ -8,6 +8,7 @@ import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.easymock.EasyMock;
 import org.junit.Test;
+import org.powermock.api.easymock.PowerMock;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.shadows.ShadowApplication;
 
@@ -272,7 +273,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     );
 
     // Setup mock TinyDB to return the expected value given the
-    // expected parameters
+    // expected parameter
     TinyDB tinyDB = EasyMock.createMock(TinyDB.class);
     EasyMock.expect(tinyDB.getDataValue(expectedParameter))
         .andReturn(expectedList);
@@ -282,6 +283,66 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     // 3 entries are expected to be imported
     assertEquals(4, model.getDataset().getEntryCount());
+  }
+
+  @Test
+  public void testImportFromWeb() {
+    // Setup expected parameters & expected return value
+    YailList expectedParameters = YailList.makeList(Arrays.asList("A", "B"));
+
+    YailList columns = YailList.makeList(Arrays.asList(
+        YailList.makeList(Arrays.asList("A", "1", "7")),
+        YailList.makeList(Arrays.asList("B", "3", "1"))
+    ));
+
+    Future returnValue = getMockFutureObject(columns);
+
+    // Setup mock Web component to return the expected value given the
+    // expected parameters
+    Web web = EasyMock.createMock(Web.class);
+    EasyMock.expect(web.getDataValue(expectedParameters))
+        .andReturn(returnValue);
+
+    // Register the Mock Data File
+    replay(web);
+
+    // Execute import
+    data.ImportFromWeb(web, "A", "B");
+
+    // 3 entries are expected to be imported
+    assertEquals(2, model.getDataset().getEntryCount());
+  }
+
+  @Test
+  public void testImportFromCloudDB() {
+    String expectedParameter = "CloudKey";
+    YailList expectedList = YailList.makeList(
+        Arrays.asList(
+            YailList.makeList(
+                Arrays.asList("0", "7")
+            ),
+            YailList.makeList(
+                Arrays.asList("1", "9")
+            ),
+            YailList.makeList(
+                Arrays.asList("3", "0")
+            )
+        )
+    );
+
+    Future returnValue = getMockFutureObject(expectedList);
+
+    // Setup mock CloudDB to return the expected value given the
+    // expected parameter
+    CloudDB cloudDB = EasyMock.createMock(CloudDB.class);
+    EasyMock.expect(cloudDB.getDataValue(expectedParameter))
+        .andReturn(returnValue);
+    replay(cloudDB);
+
+    data.ImportFromCloudDB(cloudDB, expectedParameter);
+
+    // 3 entries are expected to be imported
+    assertEquals(3, model.getDataset().getEntryCount());
   }
 
   private Future getMockFutureObject(Object returnValue) {
