@@ -868,6 +868,11 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
 
     @Override
     public void onReceiveValue(RealTimeChartDataSource component, final String key, Object value) {
+        // Calling component is not the actual Data Source
+        if (component != dataSource) {
+            return;
+        }
+
         // Boolean to indicate whether data should be imported (conditions
         // for importing are satisfied)
         boolean importData = false;
@@ -935,5 +940,17 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
             && key.equals(dataSourceValue)) { // The key should equal the local key
             currentDataSourceValue = newValue;
         }
+    }
+
+    /**
+     * Changes the underlying Executor Service of the threadRunner.
+     *
+     * Primarily used for testing to inject test/mock ExecutorService
+     * classes.
+     *
+     * @param service  new ExecutorService object to use..
+     */
+    public void setExecutorService(ExecutorService service) {
+        threadRunner = service;
     }
 }
