@@ -31,11 +31,11 @@ public class MockAreaChartDataModel extends MockLineChartBaseDataModel {
         color = getHexColor(color);
 
         // Construct an IsColor object from the hex color value,
-        // and set an alpha value of 60% (255*0.6) for consistency
+        // and set an alpha value of 40% (255*0.4) for consistency
         // with the Android implementation.
         // The solution is Microsoft Edge compatible.
         IsColor colorObject = ColorBuilder.parse(color);
-        colorObject = colorObject.alpha(0.6);
+        colorObject = colorObject.alpha(0.4);
 
         dataSeries.setBackgroundColor(colorObject);
         dataSeries.setPointBackgroundColor(color);

@@ -70,13 +70,13 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
     @Override
     public void setColor(int argb) {
         super.setColor(argb);
-        getDataset().setCircleColor(argb);
+        getDataset().setCircleColor(argb); // Also update the circle color
     }
 
     @Override
     public void setColors(List<Integer> colors) {
         super.setColors(colors);
-        getDataset().setCircleColors(colors);
+        getDataset().setCircleColors(colors); // Also update the circle colors
     }
 
     @Override
@@ -84,6 +84,13 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
         getDataset().setDrawCircleHole(false); // Draw full circle instead of a hollow one
     }
 
+    /**
+     * Changes the Line Type of the Line Chart Data Series.
+     *
+     * @param type  one of {@link ComponentConstants#CHART_LINE_TYPE_LINEAR},
+     *          {@link ComponentConstants#CHART_LINE_TYPE_CURVED} or
+     *          {@link ComponentConstants#CHART_LINE_TYPE_STEPPED}
+     */
     public void setLineType(int type) {
         switch (type) {
             case ComponentConstants.CHART_LINE_TYPE_LINEAR:
@@ -96,10 +103,6 @@ public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDat
 
             case ComponentConstants.CHART_LINE_TYPE_STEPPED:
                 dataset.setMode(LineDataSet.Mode.STEPPED);
-                break;
-
-            default:
-                dataset.setMode(LineDataSet.Mode.LINEAR);
                 break;
         }
     }

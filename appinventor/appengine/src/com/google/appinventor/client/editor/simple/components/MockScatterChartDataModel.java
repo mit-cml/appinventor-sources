@@ -35,6 +35,18 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
     }
   }
 
+  /**
+   * Changes the Point Shape of the Data Series.
+   *
+   * The following values are used:
+   * 0 - Circle
+   * 1 - Square
+   * 2 - Triangle
+   * 3 - Cross
+   * 4 - X
+   *
+   * @param shape  new Point Shape value (integer)
+   */
   public void changePointShape(int shape) {
     switch (shape) {
       case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
@@ -56,9 +68,6 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
       case ComponentConstants.CHART_POINT_STYLE_X:
         pointStyle = PointStyle.CROSS_ROT;
         break;
-
-      default:
-        pointStyle = PointStyle.CIRCLE;
     }
 
     dataSeries.setPointStyle(pointStyle);

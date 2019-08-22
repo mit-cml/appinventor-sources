@@ -6,6 +6,7 @@ import com.github.mikephil.charting.components.LegendEntry;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.shadows.ShadowLooper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,10 +98,10 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
 
     chartView.addLegendEntry(entry);
 
-    LegendEntry[] entries = chart.getLegend().getEntries();
+    List<LegendEntry> entries = chartView.getLegendEntries();
 
-    assertEquals(1, entries.length);
-    assertEquals(entry, entries[0]);
+    assertEquals(1, entries.size());
+    assertEquals(entry, entries.get(0));
   }
 
   /**
@@ -123,14 +124,14 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
 
     // Get the LegendEntries array and assert that the count of entries
     // is the same as the expected count
-    LegendEntry[] legendEntries = chart.getLegend().getEntries();
-    assertEquals(entries, legendEntries.length);
+    List<LegendEntry> legendEntries = chartView.getLegendEntries();
+    assertEquals(entries, legendEntries.size());
 
     for (int i = 0; i < entries; ++i) {
       // Get the expected and actual LegendEntries, and
       // assert that they are equal
       LegendEntry expected = expectedEntries.get(i);
-      LegendEntry actual = legendEntries[i];
+      LegendEntry actual = legendEntries.get(i);
       assertEquals(expected, actual);
     }
   }
@@ -161,14 +162,14 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
 
     // Get the LegendEntries of the chart, and assert that the
     // size with the expected entries is equivalent
-    LegendEntry[] legendEntries = chart.getLegend().getEntries();
-    assertEquals(expectedEntries.size(), legendEntries.length);
+    List<LegendEntry> legendEntries = chartView.getLegendEntries();
+    assertEquals(expectedEntries.size(), legendEntries.size());
 
     for (int i = 0; i < expectedEntries.size(); ++i) {
       // Get both the expected and actual Legend Entries,
       // and assert that they are equal
       LegendEntry expected = expectedEntries.get(i);
-      LegendEntry actual = legendEntries[i];
+      LegendEntry actual = legendEntries.get(i);
       assertEquals(expected, actual);
     }
   }
@@ -194,9 +195,9 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
 
     // Get the entries of the Legend and assert that no entries
     // have been removed.
-    LegendEntry[] legendEntries = chart.getLegend().getEntries();
-    assertEquals(1, legendEntries.length);
-    assertEquals(entry, legendEntries[0]);
+    List<LegendEntry> legendEntries = chartView.getLegendEntries();
+    assertEquals(1, legendEntries.size());
+    assertEquals(entry, legendEntries.get(0));
   }
 
   @Override

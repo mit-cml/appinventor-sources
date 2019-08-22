@@ -1,8 +1,14 @@
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
@@ -14,13 +20,14 @@ import static org.junit.Assert.*;
  * between the View component and the Chart component, as well as
  * integration with the MPAndroidChart library classes.
  */
-public class LineChartTest extends AbstractChartTest<LineChartView, LineChart> {
+public class LineChartTest extends AxisChartTest<LineChartView, LineChart> {
     @Before
     public void setUp() {
         super.setUp();
 
         chartView = (LineChartView)chartComponent.getChartView();
         chart = (LineChart) chartView.getView();
+        xAxisValueFormatter = chart.getXAxis().getValueFormatter();
     }
 
     @Override

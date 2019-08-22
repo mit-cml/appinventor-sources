@@ -91,6 +91,11 @@ public class PropertiesUtil {
     add("AccelerometerSensor");
     add("BluetoothClient");
     add("Web");
+    add("GyroscopeSensor");
+    add("OrientationSensor");
+    add("ProximitySensor");
+    add("Pedometer");
+    add("LocationSensor");
   }};
 
 
