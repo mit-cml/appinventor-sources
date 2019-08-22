@@ -11,26 +11,25 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// To maintain a list of components present in a single ListViewRow
+//import java.util.List;
 
 /**
  * Mock ListView component.
  *
  */
-public final class MockListView extends MockVisibleComponent {
+public final class MockListView extends MockContainer {
 
  /**
    * Component type name.
@@ -62,6 +61,11 @@ public final class MockListView extends MockVisibleComponent {
   // list to store data to be inflated in listview
   private List<JSONObject> currentItems;
 
+//  private MockLayout mockLayout;
+//  private AbsolutePanel rootPanel;
+//  private List<MockComponent> children;
+
+    private boolean custom = false;
   /**
    * Creates a new MockListView component. It places a label inside a simplepanel which
    * is then placed into a vertical panel
@@ -69,7 +73,8 @@ public final class MockListView extends MockVisibleComponent {
    * @param editor  editor of source file the component belongs to
    */
   public MockListView(SimpleEditor editor) {
-    super(editor, TYPE, images.listview());
+    super(editor, TYPE, images.listview(), MockFormHelper.makeLayout());
+//    super(editor, TYPE, images.listview(), MockHVArrangementHelper.makeLayout(ComponentConstants.LAYOUT_ORIENTATION_VERTICAL));
 
     currentItems = new ArrayList<>();
 
@@ -78,6 +83,7 @@ public final class MockListView extends MockVisibleComponent {
     listViewWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
     listViewWidget.setStylePrimaryName("ode-SimpleMockComponent");
     listViewWidget.setStyleName("listViewComponentStyle", true);
+    listViewWidget.add(rootPanel);
 
     createFilterBox();
 
@@ -85,6 +91,9 @@ public final class MockListView extends MockVisibleComponent {
     // might call setElementsFromString, which tries to set the item textcolor
     textColor  = DEFAULT_TEXT_COLOR;
     detailTextColor = DEFAULT_TEXT_COLOR;
+
+//    MockListViewRow listViewRow = new MockListViewRow(editor);
+//    listViewWidget.add(listViewRow.layoutWidget);
 
     initComponent(listViewWidget);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
@@ -330,6 +339,22 @@ public final class MockListView extends MockVisibleComponent {
     return label;
   }
 
+//  private void enableCustomLayout(String value) {
+//      custom = Boolean.parseBoolean(value);
+//      listViewWidget.clear();
+//      createFilterBox();
+//      if (filterShowing) {
+//          textBoxWidget.setVisible(true);
+//      } else {
+//          textBoxWidget.setVisible(false);
+//      }
+//      if (custom == true) {
+//          listViewWidget.add(rootPanel);
+//      } else {
+//          listViewWidget.remove(rootPanel);
+//      }
+//  }
+
   // PropertyChangeListener implementation
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
@@ -382,6 +407,65 @@ public final class MockListView extends MockVisibleComponent {
         setElementsFromStringProperty(currentElements);
       }
       refreshForm();
+//    } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_CUSTOM)) {
+//        enableCustomLayout(newValue);
+//        refreshForm();
     }
   }
+
+    @Override
+    protected boolean acceptableSource(DragSource source) {
+        MockComponent component = (MockComponent) source;
+        if(component instanceof MockListViewRow) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //    @Override
+//    public Widget getDropTargetWidget() {
+//        return listViewWidget;
+//    }
+//
+//    protected boolean acceptableSource(DragSource source) {
+//        MockComponent component = null;
+//        if (source instanceof MockComponent) {
+//            component = (MockComponent) source;
+//        } else if (source instanceof SimplePaletteItem) {
+//            component = (MockComponent) source.getDragWidget();
+//        }
+//        if (component instanceof MockVisibleComponent) {
+//            // Sprites are only allowed on Canvas, not other containers.
+//            // Map features are only allowed on Map, not other containers.
+//            if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+//    @Override
+//    public boolean onDragEnter(DragSource source, int x, int y) {
+//        boolean accept = acceptableSource(source);
+//        if (accept) {
+//            listViewWidget.onDragEnter(x, y);
+//        }
+//        return accept;
+//    }
+//
+//    @Override
+//    public void onDragContinue(DragSource source, int x, int y) {
+//
+//    }
+//
+//    @Override
+//    public void onDragLeave(DragSource source) {
+//
+//    }
+//
+//    @Override
+//    public void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
+//
+//    }
 }

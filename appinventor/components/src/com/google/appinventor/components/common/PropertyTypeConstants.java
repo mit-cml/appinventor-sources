@@ -321,4 +321,6 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor}
    */
   public static final String PROPERTY_TYPE_LISTVIEW_ADD_DATA = "ListViewAddData";
+
+//  public static final String PROPERTY_TYPE_LISTVIEWROW_ORIENTATION = "ListViewRowOrientation";
 }

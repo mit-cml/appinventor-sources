@@ -106,6 +106,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private ArrayAdapter<JSONObject> itemAdapter;
   private ArrayAdapter<JSONObject> itemAdapterCopy;
   private ArrayList<JSONObject> currentItems;
+  private Boolean custom;
 
   /**
    * Creates a new ListView component.
@@ -195,6 +196,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     container.$add(this);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     ListData("");
+    Custom(false);
   }
 
   @Override
@@ -781,5 +783,18 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       }
     }
     setAdapterData();
+  }
+
+  @SimpleProperty(
+          category = PropertyCategory.BEHAVIOR)
+  public boolean Custom() {
+    return custom;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void Custom(boolean value) {
+    custom = value;
   }
 }
