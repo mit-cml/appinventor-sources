@@ -6,6 +6,7 @@ import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+import org.easymock.EasyMock;
 import org.junit.Test;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.shadows.ShadowApplication;
@@ -14,7 +15,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
 public class ChartData2DTest extends RobolectricTestBase {
@@ -218,6 +224,79 @@ public class ChartData2DTest extends RobolectricTestBase {
 
   @Test
   public void testImportFromDataFile() {
+    // Setup expected parameters & expected return value
+    YailList expectedParameters = YailList.makeList(Arrays.asList("X", "Y"));
 
+    YailList columns = YailList.makeList(Arrays.asList(
+        YailList.makeList(Arrays.asList("X", "1", "2", "3")),
+        YailList.makeList(Arrays.asList("Y", "2", "3", "4"))
+    ));
+
+    Future returnValue = getMockFutureObject(columns);
+
+
+    // Setup mock Data File to return the expected value given the
+    // expected parameters
+    DataFile dataFile = EasyMock.createMock(DataFile.class);
+    EasyMock.expect(dataFile.getDataValue(expectedParameters))
+        .andReturn(returnValue);
+
+    // Register the Mock Data File
+    replay(dataFile);
+
+    // Execute import
+    data.ImportFromDataFile(dataFile, "X", "Y");
+
+    // 3 entries are expected to be imported
+    assertEquals(3, model.getDataset().getEntryCount());
+  }
+
+  @Test
+  public void testImportFromTinyDB() {
+    String expectedParameter = "TagKey";
+    YailList expectedList = YailList.makeList(
+        Arrays.asList(
+            YailList.makeList(
+                Arrays.asList("1", "2")
+            ),
+            YailList.makeList(
+                Arrays.asList("2", "4")
+            ),
+            YailList.makeList(
+                Arrays.asList("4", "2")
+            ),
+            YailList.makeList(
+                Arrays.asList("5", "2")
+            )
+        )
+    );
+
+    // Setup mock TinyDB to return the expected value given the
+    // expected parameters
+    TinyDB tinyDB = EasyMock.createMock(TinyDB.class);
+    EasyMock.expect(tinyDB.getDataValue(expectedParameter))
+        .andReturn(expectedList);
+    replay(tinyDB);
+
+    data.ImportFromTinyDB(tinyDB, expectedParameter);
+
+    // 3 entries are expected to be imported
+    assertEquals(4, model.getDataset().getEntryCount());
+  }
+
+  private Future getMockFutureObject(Object returnValue) {
+    Future futureObject = EasyMock.createMock(Future.class);
+
+    try {
+      EasyMock.expect(futureObject.get()).andReturn(returnValue);
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    replay(futureObject);
+
+    return futureObject;
   }
 }
