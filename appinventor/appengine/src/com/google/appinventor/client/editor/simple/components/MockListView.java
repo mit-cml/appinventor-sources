@@ -16,13 +16,6 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-<<<<<<< HEAD
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
-=======
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -31,10 +24,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
->>>>>>> ankriti/listview-layout
-
-import java.util.ArrayList;
-
 
 /**
  * Mock ListView component.
@@ -53,12 +42,8 @@ public final class MockListView extends MockVisibleComponent {
   private SimplePanel panelForItem;
   private String[] currentList;
   private boolean filterShowing = false;
-<<<<<<< HEAD
-  private VerticalPanel itemPanel;
-=======
   private VerticalPanel verticalItemPanel;
   private HorizontalPanel horizontalItemPanel;
->>>>>>> ankriti/listview-layout
 
   private static final String DEFAULT_BACKGROUND_COLOR = "&HFF000000";
 
@@ -69,11 +54,6 @@ public final class MockListView extends MockVisibleComponent {
   private String textColor;
   private String detailTextColor;
   private String currentElements;
-<<<<<<< HEAD
-  private String layout;
-  private ArrayList<JSONObject> currentItems;
-  
-=======
 
   // variable to store the layout type for listview
   private String layout;
@@ -81,7 +61,6 @@ public final class MockListView extends MockVisibleComponent {
   // list to store data to be inflated in listview
   private ArrayList<JSONObject> currentItems;
 
->>>>>>> ankriti/listview-layout
   /**
    * Creates a new MockListView component. It places a label inside a simplepanel which
    * is then placed into a vertical panel
@@ -192,12 +171,9 @@ public final class MockListView extends MockVisibleComponent {
     listViewWidget.add(panelForItem);
   }
 
-<<<<<<< HEAD
-=======
   /**
    * update the layout type of the listview
    */
->>>>>>> ankriti/listview-layout
   private void updateLayoutType(String value) {
     layout = value;
     YoungAndroidListViewAddDataPropertyEditor editor =
@@ -208,12 +184,9 @@ public final class MockListView extends MockVisibleComponent {
     }
   }
 
-<<<<<<< HEAD
-=======
   /**
    * reads JSONString and convert it to JSONObject for each row and add it to ArrayList
    */
->>>>>>> ankriti/listview-layout
   private void displayOnDesigner(String value) {
     currentItems.clear();
     JSONValue jsonValue = (value.isEmpty() || value.equals("")) ? null : JSONParser.parseStrict(value);
@@ -229,12 +202,9 @@ public final class MockListView extends MockVisibleComponent {
     }
   }
 
-<<<<<<< HEAD
-=======
   /**
    * creates view of each row item in the designer according to the type of layout
    */
->>>>>>> ankriti/listview-layout
   private void createLabelItem(ArrayList<JSONObject> arrayList) {
     listViewWidget.clear();
     createFilterBox();
@@ -247,27 +217,6 @@ public final class MockListView extends MockVisibleComponent {
 
     for(int i = 0; i < arrayList.size(); ++i) {
       JSONObject object = arrayList.get(i);
-<<<<<<< HEAD
-      itemPanel = new VerticalPanel();
-      itemPanel.setStylePrimaryName("listViewItemStyle");
-      itemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
-     ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
-      String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
-      String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
-      if(layout.equals("0")) {
-        itemPanel.add(createInlineLabel(text1, "100%", textColor));
-      } else if(layout.equals("1")) {
-        itemPanel.add(createInlineLabel(text1, "50%", textColor));
-        itemPanel.add(createInlineLabel(text2, "50%", detailTextColor));
-      }
-      listViewWidget.add(itemPanel);
-    }
-  }
-
-  private InlineLabel createInlineLabel(String value, String heightValue, String color) {
-    InlineLabel label = new InlineLabel(value);
-    label.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", heightValue);
-=======
       if (layout.equals("0")) {
         verticalItemPanel = new VerticalPanel();
         verticalItemPanel.setStylePrimaryName("listViewItemStyle");
@@ -356,7 +305,6 @@ public final class MockListView extends MockVisibleComponent {
    */
   private InlineLabel createInlineLabel(String value, String color) {
     InlineLabel label = new InlineLabel(value);
->>>>>>> ankriti/listview-layout
     MockComponentsUtil.setWidgetBackgroundColor(label, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(label, color);
     return label;
@@ -405,14 +353,11 @@ public final class MockListView extends MockVisibleComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
       displayOnDesigner(newValue);
-<<<<<<< HEAD
-=======
 
       /* checks if data is present in ElementsFromStringProperty too
        * and hence populate the listview with its data when data from
        * AddData property is cleared
        */
->>>>>>> ankriti/listview-layout
       if(currentList != null) {
         setElementsFromStringProperty(currentElements);
       }

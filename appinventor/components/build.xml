@@ -3,7 +3,6 @@
 <!-- ======================================================================
      Copyright 2011 Google Inc.  All Rights Reserved.
      Copyright 2012-2017 Massachusetts Institute of Technology, All rights reserved.
-
      App Inventor component libraries
      ====================================================================== -->
 
@@ -137,20 +136,7 @@
     <copy toFile="${public.deps.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${public.deps.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${public.deps.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
-<<<<<<< HEAD
-    <copy toFile="${public.deps.dir}/CardView.jar" file="${lib.dir}/cardview/classes.jar" />
-    <copy toFile="${public.deps.dir}/CardView.aar" file="${lib.dir}/cardview/cardviewv7-26.1.0.aar" />
-=======
-<<<<<<< HEAD
-    <copy toFile="${public.deps.dir}/classes.jar" file="${lib.dir}/cardview/classes.jar" />
->>>>>>> ankriti/listview-layout
-    <copy toFile="${public.deps.dir}/RecyclerView.jar" file="${lib.dir}/recyclerview/RecyclerView.jar" />
-    
-    <copy toFile="${public.deps.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
-    <copy toFile="${public.deps.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
-=======
     <copy toFile="${public.deps.dir}/httpmime.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
->>>>>>> 4c6385a8dbf1a07d0c23fbc5bb1440336618aec3
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
@@ -174,7 +160,6 @@
       <fileset dir="${support.dir}/" includes="*.txt" />
     </copy>
     <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
-    
     <!-- END Android Support Libraries -->
     <copy toFile="${public.deps.dir}/android.jar" file="${lib.dir}/android/android-28/android.jar" />
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
@@ -267,7 +252,6 @@
 
   <!-- =====================================================================
        Define task ai.apt for running the annotation processor.
-
        This is based on the "javac" task instead of the "apt" task because
        the apt task does not offer any useful additional tags. We don't use
        the "ai.javac" task here because it does dependancy checking that is
@@ -624,3 +608,4 @@
   </target>
 
 </project>
+

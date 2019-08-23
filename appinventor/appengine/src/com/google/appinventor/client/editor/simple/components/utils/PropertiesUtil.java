@@ -32,10 +32,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor;
-<<<<<<< HEAD
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidRecyclerViewOrientationPropertyEditor;
-=======
->>>>>>> ankriti/listview-layout
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapScaleUnitsPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapTypePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;

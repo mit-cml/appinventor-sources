@@ -317,10 +317,6 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
 
-<<<<<<< HEAD
-  public static final String PROPERTY_TYPE_LISTVIEW_LAYOUT = "ListViewLayout";
-
-=======
   /**
    * Choices of layout type for ListView.
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor}
@@ -331,6 +327,6 @@ public class PropertyTypeConstants {
    * Button to add data for different ListView layout types.
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor}
    */
->>>>>>> ankriti/listview-layout
+
   public static final String PROPERTY_TYPE_LISTVIEW_ADD_DATA = "ListViewAddData";
 }
