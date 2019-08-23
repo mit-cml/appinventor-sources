@@ -57,13 +57,24 @@ public class LightSensor extends BufferedSingleValueSensor {
   }
 
   /**
-   * Returns the brightness in lux by averaging the previous 10 measured values.
+   * Returns the last measured brightness in lux.
    * The sensor must be enabled and available to return meaningful values.
    *
    * @return lux
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
    public float Lux() {
+    return getValue();
+  }
+
+  /**
+   * Returns the brightness in lux by averaging the previous 10 measured values.
+   * The sensor must be enabled and available to return meaningful values.
+   *
+   * @return lux
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+   public float AverageLux() {
     return getAverageValue();
   }
 }
