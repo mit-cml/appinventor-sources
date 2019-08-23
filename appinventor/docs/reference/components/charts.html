@@ -496,22 +496,43 @@
                       <a href="#Chart.Description">Description</a> and <a href="#Chart.GridEnabled">GridEnabled</a>.
                     </p>
 
+                    <dt><code>Elements</code></dt>
+                    <dd>List of Choices to Display (as a list)</dd>
+                    <dt><code>ElementsFromString</code></dt>
+                    <dd>Comma separated list of choices to use</dd>
+
                  <h3>Properties</h3>
                  <dl>
                    <dt class="color" id="Chart.BackgroundColor">BackgroundColor<i></i></dt>
                    <dd>Sets or gets the background color of the chart.</dd>
                    <dt class="text" id="Chart.Description">Description<i></i></dt>
                    <dd>Sets or gets the title of the chart.</dd>
-                   <dt class="boolean" id="Chart.GridEnabled">GridEnabled<i></i></dt>
+                   <dt class="boolean do" id="Chart.GridEnabled">GridEnabled<i></i></dt>
                    <dd>Hides or shows the grid of the chart. Only applies to Charts which have axes.</dd>
                    <dt class="number" id="Chart.Height">Height<i></i></dt>
                    <dd>Sets or gets the height of the chart, in pixels.</dd>
-                   <dt class="boolean" id="Chart.LegendEnabled">LegendEnabled<i></i></dt>
+                   <dt class="list bo" id="Chart.Labels">Labels<i></i></dt>
+                   <dd>Indicates the custom Labels to apply to the x axis of the Chart. Values are taken
+                     in order (first label corresponds to the 0th x value, the second to the 1st, and so on)
+                     If a label is not provided, the default x value is used. Only takes effect on Charts which have axes.
+                   </dd>
+                   <dt class="text do wo" id="Chart.LabelsFromString">LabelsFromString<i></i></dt>
+                   <dd>Comma separated list of Labels to use for the x axis of the Chart. Only takes effect
+                     on Charts which have axes.
+                   </dd>
+                   <dt class="boolean do" id="Chart.LegendEnabled">LegendEnabled<i></i></dt>
                    <dd>Hides or shows the legend of the chart.</dd>
-                   <!-- Add Type property -->
-                   <!-- Add Visible property -->
-                   <!-- Add Labels/LabelsFromString property -->
-                   <!-- Add PieRadius property -->
+                   <dt class="number do ro" id="Chart.PieRadius">PieRadius<i></i></dt>
+                   <dd>Sets the Pie Radius of a Pie Chart from 0% to 100%, where the percentage
+                     indicates the percentage of the hole fill. 100% means that a full Pie Chart
+                     is drawn, while values closer to 0% correspond to hollow Pie Charts.</dd>
+                   <dt class="text do" id="Chart.Type">Type<i></i></dt>
+                   <dd>Sets the type of the Chart to use. Determines the type of data to be plotted.
+                     Valid types include line, area, scatter, bar and pie.
+                   </dd>
+                   <dt class="boolean" id="Chart.Visible">Visible<i></i></dt>
+                   <dd>Sets or gets whether the component should be visible on the screen. Value is true if the component
+                     is showing and false if hidden.</dd>
                    <dt class="number" id="Chart.Width">Width<i></i></dt>
                    <dd>Sets or gets the width of the chart, in pixels.</dd>
                  </dl>
@@ -526,16 +547,78 @@
 
                  <h3>Properties</h3>
                  <dl>
-                   <!-- Add Color Property -->
-                   <!-- Add Label Property -->
-                   <!-- Add Elements/ElementsFromPairs Property -->
-                   <!-- Add Source Property -->
-                   <!-- Add WebColumn Properties -->
-                   <!-- Add DataSourceValue Property -->
-                   <!-- Add DataFileColumn Properties -->
-                   <!-- Add Colors Property -->
-                   <!-- Add LineType Property -->
-                   <!-- Add PointShape Property -->
+                  <dt class="color" id="ChartData2D.Color">Color<i></i></dt>
+                  <dd>Sets or gets the color of the data series.</dd>
+                  <dt class="list bo" id="ChartData2D.Colors">Colors<i></i></dt>
+                  <dd>Sets or gets the colors of the data series. The colors are applied
+                    to the values in order, and are alternated in order if there are more
+                    entries than colors.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.DataFileXColumn">DataFileXColumn<i></i></dt>
+                  <dd>Value used when importing data from a DataFile component Source. The
+                    value represents the column to use from the DataFile for the x entries
+                    of the Data Series. For instance, if a column's first value is "X",
+                    and a column value of "X" is specified, that column will be used
+                    for the x values.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.DataFileYColumn">DataFileYColumn<i></i></dt>
+                  <dd>Value used when importing data from a DataFile component Source. The
+                    value represents the column to use from the DataFile for the x entries
+                    of the Data Series. For instance, if a column's first value is "Y",
+                    and a column value of "Y" is specified, that column will be used
+                    for the x values.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.DataSourceValue">DataSourceValue<i></i></dt>
+                  <dd>Key value to use for retrieving data from the selected Chart Data Source.<br>
+                    For TinyDB and CloudDB, this is the tag value. <br>
+                    For the AccelerometerSensor, the value should be one of the following: X Y or Z<br>
+                    For the GyroscopeSensor, the value should be one of the following: X Y or Z<br>
+                    For the LocationSensor, the value should be one of the following: latitude, longitude, altitude or speed<br>
+                    For the OrientationSensor, the value should be one of the following: pitch, azimuth or roll<br>
+                    For the Pedometer, the value should be one of the following: WalkSteps, SimpleSteps or Distance<br>
+                    For the ProximitySensor, no value is required.<br>
+                    For the BluetoothClient, the value represents the prefix to remove from the value. For instance,
+                    if values come in the format "t:12", the prefix can be specified as "t:", and the prefix will
+                    then be removed from the data. No value can be specified if purely numerical values are returned.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.ElementsFromPairs">ElementsFromPairs<i></i></dt>
+                  <dd>Comma separated list of Elements to use for the data series. Values are formatted
+                    as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
+                    from the x and y values.
+                  </dd>
+                  <dt class="text" id="ChartData2D.Label">Label<i></i></dt>
+                  <dd>Sets or gets the label of the data series.</dd>
+                  <dt class="text do wo" id="ChartData2D.LineType">LineType<i></i></dt>
+                  <dd>Sets the type of lines to use for Line data series. Valid types
+                    include linear, curved or stepped.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.PointShape">PointShape<i></i></dt>
+                  <dd>Sets the shape of points to use for the Scatter data series. Valid types
+                    include circle, square, triangle, cross, x.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.Source">Source<i></i></dt>
+                  <dd>Sets the Source to use for the Data component. Valid choices
+                    include TinyDB, CloudDB, DataFile, Web, AccelerometerSensor,
+                    BluetoothClient, GyroscopeSensor, LocationSensor, OrientationSensor,
+                    Pedometer and ProximitySensor. The Source value also requires
+                    valid DataSourceValue, WebColumn or DataFileColumn properties,
+                    depending on the type of the Source attached (the required properties
+                    show up in the Properties menu after the Source is changed).
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.WebXColumn">WebXColumn<i></i></dt>
+                  <dd>Value used when importing data from a Web component Source. The
+                    value represents the column to use from the Web for the x entries
+                    of the Data Series. For instance, if the contents of the Web are
+                    retrieved in JSON format, and an array with the "X" tag exists,
+                    the "X" column value can be specified to use that array.
+                  </dd>
+                  <dt class="text do wo" id="ChartData2D.WebYColumn">WebYColumn<i></i></dt>
+                  <dd>Value used when importing data from a Web component Source. The
+                    value represents the column to use from the Web for the y entries
+                    of the Data Series. For instance, if the contents of the Web are
+                    retrieved in JSON format, and an array with the "Y" tag exists,
+                    the "Y" column value can be specified to use that array.
+                  </dd>
                  </dl>
 
                  <h3>Methods</h3>
