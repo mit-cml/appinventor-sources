@@ -1379,7 +1379,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // DrawShape & DrawArc was added
     // No blocks need to be modified to upgrade to version 11.
-    11: "noUpgrade"
+    11: "noUpgrade",
 
     // ExtendMovesOutsideCanvas was added
     // No blocks need to be modified to upgrade to version 12.
