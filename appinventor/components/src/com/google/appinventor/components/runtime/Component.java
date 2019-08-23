@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -160,7 +160,16 @@ public interface Component {
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
 
+<<<<<<< HEAD
   static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
   static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
+=======
+  // constants for type of ListViewLayout
+  static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
+  static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
+  static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
+  static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
+  static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+>>>>>>> ankriti/listview-layout
 
 }

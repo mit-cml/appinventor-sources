@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -32,6 +32,11 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ArrayAdapterSingleText;
 import com.google.appinventor.components.runtime.util.ArrayAdapterTwoText;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageSingleText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageTwoText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterSingleText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoText;
+import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoTextLinear;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,6 +85,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   // The text color of the ListView's items.  All items have the same text color
   private int textColor;
+
+  // The color of secondary text of ListView's items. All secondary text items have same text color
+
   private int detailTextColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
@@ -90,6 +98,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int detailTextSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
 
+  private int imageWidth;
+  private int imageHeight;
+  private static final int DEFAULT_IMAGE_WIDTH = 200;
+
+  // variable for ListView layout types
   private int layout;
   private String propertyValue;
 
@@ -173,6 +186,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     detailTextSize = DEFAULT_TEXT_SIZE;
     TextSize(textSize);
     DetailTextSize(detailTextSize);
+
+    imageWidth = DEFAULT_IMAGE_WIDTH;
+    imageHeight = DEFAULT_IMAGE_WIDTH;
+    ImageWidth(imageWidth);
+    ImageHeight(imageHeight);
+
     ElementsFromString("");
 
     listViewLayout.addView(txtSearchBox);
@@ -286,6 +305,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   public void setAdapterData(){
     if(!currentItems.isEmpty()) {
+<<<<<<< HEAD
       if(layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
         ArrayAdapterSingleText adapterSingleText = new ArrayAdapterSingleText(textSize, textColor, container, currentItems);
         itemAdapter = adapterSingleText.createAdapter();
@@ -295,12 +315,44 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
             container, currentItems);
         itemAdapter = adapterTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_2);
+=======
+      // if the data is available in AddData property
+      if(layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
+        ListViewArrayAdapterSingleText adapterSingleText = new ListViewArrayAdapterSingleText(textSize, textColor,
+            container, currentItems);
+        itemAdapter = adapterSingleText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_1);
+      } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
+        ListViewArrayAdapterTwoText adapterTwoText = new ListViewArrayAdapterTwoText(textSize, detailTextSize,
+            textColor, detailTextColor, container, currentItems);
+        itemAdapter = adapterTwoText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_2);
+      } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+        ListViewArrayAdapterTwoTextLinear adapterTwoTextLinear = new ListViewArrayAdapterTwoTextLinear(textSize,
+            detailTextSize, textColor, detailTextColor, container, currentItems);
+        itemAdapter = adapterTwoTextLinear.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
+      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
+        ListViewArrayAdapterImageSingleText adapterImageSingleText = new ListViewArrayAdapterImageSingleText(textSize,
+            textColor, imageWidth, imageHeight, container, currentItems);
+        itemAdapter = adapterImageSingleText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
+      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+        ListViewArrayAdapterImageTwoText adapterImageTwoText = new ListViewArrayAdapterImageTwoText(textSize,
+            detailTextSize, textColor, detailTextColor, imageWidth, imageHeight, container, currentItems);
+        itemAdapter = adapterImageTwoText.createAdapter();
+        itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
+>>>>>>> ankriti/listview-layout
       }
       view.setAdapter(itemAdapter);
       for(int i = 0; i < itemAdapter.getCount(); ++i) {
         itemAdapterCopy.insert(itemAdapter.getItem(i), i);
       }
     } else {
+<<<<<<< HEAD
+=======
+      // if the data is not available in AddData property but is available in ElementsFromString property
+>>>>>>> ankriti/listview-layout
       adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
           itemsToColoredText());
       view.setAdapter(adapter);
@@ -584,6 +636,32 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
+   * Returns the color of the secondary text in a ListView layout
+   *
+   * @return color of the secondary text
+   */
+  @SimpleProperty(
+      description = "The text color of DetailText of listview items. ",
+      category = PropertyCategory.APPEARANCE)
+  public int DetailTextColor() {
+    return detailTextColor;
+  }
+
+  /**
+   * Specifies the color of the secondary text in a ListView layout
+   *
+   * @param argb background color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void DetailTextColor(int argb) {
+    detailTextColor = argb;
+    setAdapterData();
+  }
+
+  /**
    * Returns the listview's text font Size
    *
    * @return text size as an float
@@ -612,11 +690,16 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
+<<<<<<< HEAD
    * Returns the listview's detailText font Size
+=======
+   * Returns the listview's secondary-text font Size
+>>>>>>> ankriti/listview-layout
    *
    * @return text size as an float
    */
   @SimpleProperty(
+<<<<<<< HEAD
           description = "The detailText size of the listview items.",
           category = PropertyCategory.APPEARANCE)
   public int DetailTextSize() {
@@ -657,6 +740,118 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return propertyValue;
   }
 
+=======
+      description = "The detailText size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int DetailTextSize() {
+    return detailTextSize;
+  }
+
+  /**
+   * Specifies the ListView item's secondary-text font size
+   *
+   * @param integer value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SimpleProperty
+  public void DetailTextSize(int fontSize) {
+    if(fontSize>1000)
+      detailTextSize = 999;
+    else
+      detailTextSize = fontSize;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the image width of ListView layouts containing images
+   *
+   * @return width of image
+   */
+  @SimpleProperty(
+      description = "The image width of the listview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageWidth() {
+    return imageWidth;
+  }
+
+  /**
+   * Specifies the image width of ListView layouts containing images
+   *
+   * @param width sets the width of image in the ListView row
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageWidth(int width) {
+    imageWidth = width;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the image height of ListView layouts containing images
+   *
+   * @return height of image
+   */
+  @SimpleProperty(
+      description = "The image height of the listview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageHeight() {
+    return imageHeight;
+  }
+
+  /**
+   * Specifies the image height of ListView layouts containing images
+   *
+   * @param height sets the height of image in the ListView row
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageHeight(int height) {
+    imageHeight = height;
+    setAdapterData();
+  }
+
+  /**
+   * Returns type of layout selected to display. Designer only property.
+   *
+   * @return layout as integer value
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public int ListViewLayout() {
+    return layout;
+  }
+
+  /**
+   * Specifies type of layout for ListView row. Designer only property.
+   *
+   * @param value integer value to determine type of ListView layout
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
+      defaultValue = Component.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
+  @SimpleProperty(userVisible = false)
+  public void ListViewLayout(int value) {
+    layout = value;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the data to be displayed in the ListView as a JsonString. Designer only property.
+   *
+   * @return string form of the array of JsonObject
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String AddData() {
+    return propertyValue;
+  }
+
+  /**
+   * Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+   *
+   * @param propertyValue string representation of row data (JsonArray of JsonObjects)
+   */
+>>>>>>> ankriti/listview-layout
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public void AddData(String propertyValue){

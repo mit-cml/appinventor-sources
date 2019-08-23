@@ -36,6 +36,14 @@ import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.ArrayList;
 
+<<<<<<< HEAD
+=======
+/**
+ * AddData property in the ListView component. It is used to add/delete data
+ * for different layout types of ListView.
+ */
+
+>>>>>>> ankriti/listview-layout
 public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
   private Button addData;
@@ -74,20 +82,40 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       public void onClick(ClickEvent clickEvent) {
         ClickHandle ch = new ClickHandle(layout);
         ch.center();
+<<<<<<< HEAD
+=======
+        ch.setStylePrimaryName("ode-DialogBox");
+>>>>>>> ankriti/listview-layout
         ch.show();
       }
     });
     initWidget(addData);
   }
 
+<<<<<<< HEAD
+=======
+  /**
+   * set layout type of ListView so as to display contents AddData dialog box accordingly
+   */
+>>>>>>> ankriti/listview-layout
   public void setLayout(String layout) {
     this.layout = layout;
   }
 
+<<<<<<< HEAD
   class ClickHandle extends DialogBox {
     VerticalPanel verticalPanel;
     HorizontalPanel actionButtons;
     Button add, ok, cancel;
+=======
+  /**
+   * class to display data table and add/delete data for AddData property
+   */
+  class ClickHandle extends DialogBox {
+    VerticalPanel verticalPanel;
+    HorizontalPanel actionButtons;
+    Button add, save, cancel;
+>>>>>>> ankriti/listview-layout
     CellTable<JSONObject> table;
     JSONArray rows;
 
@@ -134,7 +162,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       return column;
     }
 
+<<<<<<< HEAD
     Column<JSONObject, String> createImageSelectionBoxes(final String columnKey) {
+=======
+    Column<JSONObject, String> createImageSelectionDropDown(final String columnKey) {
+>>>>>>> ankriti/listview-layout
       Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
       YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
       ArrayList<String> choices = new ArrayList<>();
@@ -174,7 +206,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       table = new CellTable<>();
       rows = new JSONArray();
       add  = new Button("Click to Add Row Data");
+<<<<<<< HEAD
       ok = new Button("OK");
+=======
+      save = new Button("SAVE");
+>>>>>>> ankriti/listview-layout
       cancel = new Button("CANCEL");
 
       setText("Add Data to the ListView");
@@ -187,6 +223,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       table.setEmptyTableWidget(new Label("No row data available yet!"));
       model.addDataDisplay(table);
 
+<<<<<<< HEAD
       if (layoutValue.equals("0")) {
         table.addColumn(createTextBoxes("Text1"), "Text1");
       } else if (layoutValue.equals("1") || layoutValue.equals("2")) {
@@ -199,6 +236,23 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         table.addColumn(createTextBoxes("Text1"), "Text1");
         table.addColumn(createTextBoxes("Text2"), "Text2");
         table.addColumn(createImageSelectionBoxes("Image"), "Image");
+=======
+      /*
+       * create table columns and type of each column according to the type of ListView layout
+       */
+      if (layoutValue.equals("0")) {
+        table.addColumn(createTextBoxes("Text1"), "MainText");
+      } else if (layoutValue.equals("1") || layoutValue.equals("2")) {
+        table.addColumn(createTextBoxes("Text1"), "MainText");
+        table.addColumn(createTextBoxes("Text2"), "DetailText");
+      } else if(layoutValue.equals("3")) {
+        table.addColumn(createTextBoxes("Text1"), "MainText");
+        table.addColumn(createImageSelectionDropDown("Image"), "Image");
+      } else if(layoutValue.equals("4")) {
+        table.addColumn(createTextBoxes("Text1"), "MainText");
+        table.addColumn(createTextBoxes("Text2"), "DetailText");
+        table.addColumn(createImageSelectionDropDown("Image"), "Image");
+>>>>>>> ankriti/listview-layout
       }
 
       table.addColumn(createDeleteButton());
@@ -206,6 +260,12 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       add.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
+<<<<<<< HEAD
+=======
+          /*
+           * creates a row with default data for the corresponding layout type
+           */
+>>>>>>> ankriti/listview-layout
           JSONObject data = new JSONObject();
           if(layoutValue.equals("0")) {
             data.put("Text1", new JSONString(""));
@@ -214,18 +274,33 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
             data.put("Text2", new JSONString(""));
           } else if(layoutValue.equals("3")) {
             data.put("Text1", new JSONString(""));
+<<<<<<< HEAD
             data.put("Image", new JSONString(""));
           } else if(layoutValue.equals("4")) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
             data.put("Image", new JSONString(""));
+=======
+            data.put("Image", new JSONString("None"));
+          } else if(layoutValue.equals("4")) {
+            data.put("Text1", new JSONString(""));
+            data.put("Text2", new JSONString(""));
+            data.put("Image", new JSONString("None"));
+>>>>>>> ankriti/listview-layout
           }
           ITEMSCopy.add(data);
           table.setRowData(ITEMSCopy);
         }
       });
 
+<<<<<<< HEAD
       ok.addClickHandler(new ClickHandler() {
+=======
+      /*
+       * save the data for the corresponding layout type
+       */
+      save.addClickHandler(new ClickHandler() {
+>>>>>>> ankriti/listview-layout
         @Override
         public void onClick(ClickEvent clickEvent) {
           ITEMS.clear();
@@ -245,6 +320,12 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
         }
       });
 
+<<<<<<< HEAD
+=======
+      /*
+       * discards changes in the data for the corresponding layout type
+       */
+>>>>>>> ankriti/listview-layout
       cancel.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
@@ -255,11 +336,19 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       verticalPanel.add(table);
       verticalPanel.add(add);
+<<<<<<< HEAD
       actionButtons.add(ok);
+=======
+      actionButtons.add(save);
+>>>>>>> ankriti/listview-layout
       actionButtons.add(cancel);
       actionButtons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       verticalPanel.add(actionButtons);
       setWidget(verticalPanel);
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> ankriti/listview-layout

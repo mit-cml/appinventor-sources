@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -41,6 +41,10 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW_IMAGES = "Picture";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
+<<<<<<< HEAD
+=======
+  // to set color for secondary text of listview items
+>>>>>>> ankriti/listview-layout
   protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "DetailTextColor";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
