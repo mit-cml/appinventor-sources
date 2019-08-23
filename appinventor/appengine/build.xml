@@ -47,7 +47,7 @@
   </condition>
 
   <target name="all"
-          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
+          depends="AiServerLib,AiServerContribLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
   </target>
 
   <target name="tests"
@@ -189,6 +189,22 @@
   </target>
 
   <!-- =====================================================================
+       Copy jars needed by AiServerContribLib, that are either external
+       or built by other projects, to <build>/war/WEB-INF/lib.
+       ===================================================================== -->
+  <target name="WarContribLibs"
+          description="Copy libs to build/war/WEB-INF/lib"
+          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants"
+          if="enable.contrib">
+    <!-- PostgreSQL JDBC, requried by
+         com.google.appinventor.contrib.server.storage.PostgreSQLStorageIo -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/postgresql-jdbc/postgresql-42.2.5.jre7.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/mchange-commons-java-0.2.15.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/c3p0-oracle-thin-extras-0.9.5.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/c3p0/c3p0-0.9.5.3.jar" />
+  </target>
+
+  <!-- =====================================================================
        Define base package path.
        ===================================================================== -->
   <property name="appinventor.pkg" value="com/google/appinventor" />
@@ -219,6 +235,34 @@
     <jar basedir="${AiServerLib-class.dir}"
          destfile="${local.build.dir}/AiServerLib.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${local.build.dir}/AiServerLib.jar"/>
+  </target>
+
+  <!-- =====================================================================
+       AiServer Contrib library
+       ===================================================================== -->
+  <target name="AiServerContribLib"
+          description="App Inventor Server library"
+          depends="init,WarLibs,WarContribLibs,AiSharedLib,AiServerLib"
+          if="enable.contrib">
+    <property name="AiServerContribLib-class.dir" location="${class.dir}/AiServerContribLib" />
+    <mkdir dir="${AiServerContribLib-class.dir}" />
+    <copy todir="${AiServerContribLib-class.dir}/${appinventor.pkg}/contrib/server">
+      <fileset dir="src/${appinventor.pkg}/contrib/server/" includes="*.properties" />
+    </copy>
+    <ai.javac destdir="${AiServerContribLib-class.dir}"
+              source="1.7" target="1.7">
+      <include name="${appinventor.pkg}/contrib/server/**/*.java" />
+      <classpath>
+        <!-- jars that we put in <build>/war/WEB-INF/lib -->
+        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerContribLib.jar"/>
+        <!-- gwt lib needed only at compile time for javax.servlet.http.HttpServlet* -->
+        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+      </classpath>
+    </ai.javac>
+
+    <jar basedir="${AiServerContribLib-class.dir}"
+         destfile="${local.build.dir}/AiServerContribLib.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${local.build.dir}/AiServerContribLib.jar"/>
   </target>
 
   <!-- =====================================================================

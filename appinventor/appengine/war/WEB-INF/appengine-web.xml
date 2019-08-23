@@ -199,10 +199,27 @@
     <property name="http.keepAlive" value="true" />
     <property name="http.maxConnections" value="5" />
 
+    <!-- ############################################################ -->
+    <!-- Contrib features. These features are not officially maintained.
+         See misc/contrib/storage_backend.md for details.-->
+    <!-- ############################################################ -->
+
+
+    <!-- The storage back end. The default is "objectify".
+         If the server is deployed on Google Cloud Service, the default
+         back end works out of box. To enable alternative back end, run
+         ant with -Denable.contrib flag. Currently the contrib package
+         supports "postgresql" option. Note that additional configurations
+         maybe required. -->
+    <!-- <property name="storage.backend" value="objectify" /> -->
+
+    <!-- Required additional properties if storage.backend = "postgresql" -->
+    <!-- <property name="jdbc.url" value="jdbc:postgresql://localhost/appinventor" /> -->
+    <!-- <property name="jdbc.user" value="postgres" /> -->
+    <!-- <property name="jdbc.password" value="" /> -->
+
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->
   <threadsafe>true</threadsafe>
-
-
 </appengine-web-app>

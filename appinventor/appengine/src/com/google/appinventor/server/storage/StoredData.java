@@ -148,9 +148,9 @@ public class StoredData {
   //       memcache.
   @Cached
   @Unindexed
-  static final class FileData implements Serializable {
+  public static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
-    enum RoleEnum {
+    public enum RoleEnum {
       SOURCE,
       TARGET,
       TEMPORARY
