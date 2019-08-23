@@ -531,8 +531,10 @@ public class YaVersion {
   // - List join with separator block was added.
   // For BLOCKS_LANGUAGE_VERSION 26:
   // - Generic event handlers were added.
+  // For BLOCKS_LANGUAGE_VERSION 27:
+  // - The text compare block was modified to include the not-equal operator
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 26;
+  public static final int BLOCKS_LANGUAGE_VERSION = 27;
 
   // ................................. Component Version Numbers ..................................
 
