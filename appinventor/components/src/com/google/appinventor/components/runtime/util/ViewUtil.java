@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 
 /**
@@ -32,7 +33,7 @@ public final class ViewUtil {
    * @param sizeInDP the size (in DP) specified in the designer
    * @return size in Pixels for the particular device running the app.
    */
-  private static int calculatePixels(View view, int sizeInDP) {
+  public static int calculatePixels(View view, int sizeInDP) {
     return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
   }
 
@@ -175,6 +176,56 @@ public final class ViewUtil {
       view.requestLayout();
     } else {
       Log.e("ViewUtil", "The view does not have table layout parameters");
+    }
+  }
+  
+  //-TODO Not sure if this implementation has any problems, given that the weight parameter is 
+  // used in some places for vertical and horizontal linear layouts
+  public static void setChildWidthForRelativeLayout(View view, int width) {
+	// In a relative layout, if a child's width is set to fill parent, we must set the 
+	// RelativeParams width to MATCH_PARENT
+	Object layoutParams = view.getLayoutParams();
+	if (layoutParams instanceof RelativeLayout.LayoutParams) {
+      RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layoutParams;
+      switch (width) {
+        case Component.LENGTH_PREFERRED:
+ 		  relativeLayoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+ 		  break;
+ 		case Component.LENGTH_FILL_PARENT:
+ 		  relativeLayoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+ 		  break;
+ 		default:
+ 		  relativeLayoutParams.width = calculatePixels(view, width);
+ 		  break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have relative layout parameters");
+    }
+  }
+ 
+  //-TODO Not sure if this implementation has any problems, given that the weight parameter is 
+  // used in some places for vertical and horizontal linear layouts
+  public static void setChildHeightForRelativeLayout(View view, int height) {
+	// In a relative layout, if a child's height is set to fill parent, we must set the 
+	// RelativeParams width to MATCH_PARENT
+	Object layoutParams = view.getLayoutParams();
+	if (layoutParams instanceof RelativeLayout.LayoutParams) {
+      RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layoutParams;
+      switch (height) {
+        case Component.LENGTH_PREFERRED:
+		  relativeLayoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+		  break;
+		case Component.LENGTH_FILL_PARENT:
+		  relativeLayoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
+		  break;
+		default:
+		  relativeLayoutParams.height = calculatePixels(view, height);
+		  break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have relative layout parameters");
     }
   }
 

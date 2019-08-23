@@ -16,6 +16,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Underlying base class for all components with views; not accessible to Simple programmers.
@@ -35,6 +36,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
 
   private int column = ComponentConstants.DEFAULT_ROW_COLUMN;
   private int row = ComponentConstants.DEFAULT_ROW_COLUMN;
+  
+  private int xCoord = ComponentConstants.DEFAULT_X_Y;
+  private int yCoord = ComponentConstants.DEFAULT_X_Y;
 
   /**
    * Creates a new AndroidViewComponent.
@@ -265,6 +269,46 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @SimpleProperty(userVisible = false)
   public void Row(int row) {
     this.row = row;
+  }
+  
+  /**
+   * X property getter method. 
+   * 
+   * @return x property used by the absolute arrangement
+   */
+  @SimpleProperty(userVisible = false) // making it visible would probably be the better choice
+  public int XCoord() { 
+	return xCoord;
+  }
+  
+  /**
+   * X property setter method.
+   * 
+   * @param x x property used by the absolute arrangement
+   */
+  @SimpleProperty(userVisible = false) 
+  public void XCoord(int x) {
+	this.xCoord = x;
+  }
+  
+  /**
+   * Y property getter method. 
+   * 
+   * @return y property used by the absolute arrangement
+   */
+  @SimpleProperty(userVisible = false) // making it true would probably be the better choice
+  public int YCoord() { 
+	return yCoord;
+  }
+  
+  /**
+   * Y property setter method.
+   * 
+   * @param y y property used by the absolute arrangement
+   */
+  @SimpleProperty(userVisible = false)
+  public void YCoord(int y) {
+	this.yCoord = y;
   }
 
   // Component implementation

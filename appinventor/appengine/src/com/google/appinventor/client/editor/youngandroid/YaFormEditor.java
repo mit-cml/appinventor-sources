@@ -691,7 +691,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   /*
    * Show the given component's properties in the properties panel.
    */
-  private void updatePropertiesPanel(MockComponent component) {
+  public void updatePropertiesPanel(MockComponent component) {
     designProperties.setProperties(component.getProperties());
     // need to update the caption after the setProperties call, since
     // setProperties clears the caption!

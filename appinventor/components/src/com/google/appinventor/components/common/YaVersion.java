@@ -568,7 +568,12 @@ public class YaVersion {
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
-
+  
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
+  
+  public static final int VERTICALSCROLLABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
+  
+  public static final int HORIZONTALSCROLLABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:

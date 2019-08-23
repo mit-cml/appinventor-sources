@@ -50,6 +50,7 @@ import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
+import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
 
 import com.google.appinventor.shared.storage.StorageUtil;
 
@@ -430,6 +431,8 @@ public final class SimpleComponentDescriptor {
       return new MockScrollVerticalArrangement(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
+    } else if (name.equals(MockAbsoluteArrangement.TYPE)) {
+      return new MockAbsoluteArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {
       return new MockImageSprite(editor);
     } else if (name.equals(MockBall.TYPE)) {

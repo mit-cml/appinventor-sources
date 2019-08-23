@@ -455,6 +455,7 @@
                     <h1>Layout Components - App Inventor for Android</h1>
                     <h2>Table of Contents</h2>
                     <ul>
+                      <li> <a href="#AbsoluteArrangement"> AbsoluteArrangement </a> </li>
                       <li> <a href="#HorizontalArrangement">
                           HorizontalArrangement </a> </li>
                       <li><a href="#HorizontalScrollArrangement">HorizontalScrollArrangement</a></li>
@@ -464,6 +465,34 @@
                         </a> </li>
                       <li><a href="#VerticalScrollArrangement">VerticalScrollArrangement</a></li>
                     </ul>
+                    <h2 id="AbsoluteArrangement"> AbsoluteArrangement </h2>
+                    <p> Use an absolute arrangement component to display a group of
+                      components placed absolutely. </p>
+                    <p> This component is a formatting element in which you
+                      place components that should be displayed absolutely.
+                    </p>
+                    <p> In an AbsoluteArrangement, components are arranged absolutely, 
+                      with the possibility of components overlapping. Each visible child component 
+                      of an absolute arrangement has two extra properties: an x coordinate and a 
+                      y coordinate, which allow the user to properly arrange the children of an 
+                      absolute arrangement relative to each other.</b>
+                    </p>
+                    <p>
+                      The width and height of an absolute arrangement are determined by 
+                      the user only and do not depend on its children. If the width or 
+                      height (or both) of a child is set to fill parent, the child occupies 
+                      the entirety of the parent's width or height even if it overlaps with other 
+                      components inside the same arrangement.
+                    </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> Visible </code> </dt>
+                      <dd> If true, component and its contents are visible. </dd>
+                      <dt> <code> Height </code> </dt>
+                      <dd> Absolute arrangement height (y-size). </dd>
+                      <dt> <code> Width </code> </dt>
+                      <dd> Absolute arrangement width (x-size). </dd>
+                    </dl>
                     <h2 id="HorizontalArrangement"> HorizontalArrangement </h2>
                     <img alt="" src="images/horizontalarrangement.png">
                     <p> Use a horizontal arrangement component to display a
