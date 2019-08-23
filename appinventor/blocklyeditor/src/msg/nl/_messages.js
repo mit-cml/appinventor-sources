@@ -51,6 +51,7 @@ Blockly.Msg.nl.switch_language_to_dutch = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'zet om';
     Blockly.Msg.LANG_MATH_SINGLE_OP_EXP = 'e^';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = 'Geeft de vierkantswortel van een getal.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'tekst';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Voeg items toe aan het einde van een lijst.';
