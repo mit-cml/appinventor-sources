@@ -376,6 +376,9 @@ public final class RecyclerView extends AndroidViewComponent {
     return selectionIndex;
   }
 
+
+
+
   /**
    * Sets the index to the passed argument for selection
    * @param index the index to be selected
