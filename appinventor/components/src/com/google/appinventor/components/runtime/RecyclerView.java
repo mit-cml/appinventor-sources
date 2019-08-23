@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import android.widget.LinearLayout.LayoutParams;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -78,7 +79,6 @@ public final class RecyclerView extends AndroidViewComponent {
     private int backgroundColor;
     private static final int DEFAULT_BACKGROUND_COLOR = Color.BLACK;
 
-    // The text color of the ListView's items.  All items have the same text color
     private int textColor;
     private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
@@ -111,12 +111,11 @@ public final class RecyclerView extends AndroidViewComponent {
 
     ctx=container.$context();
     
-// initialize selectionIndex which also sets selection
-//    SelectionIndex(0);
-
     recyclerView = new android.support.v7.widget.RecyclerView(container.$context());
-    //recyclerView.setOnItemClickListener(this);
     recyclerView.setBackgroundColor(Color.WHITE);
+
+    android.support.v7.widget.RecyclerView.LayoutParams paramms=new android.support.v7.widget.RecyclerView.LayoutParams(android.support.v7.widget.RecyclerView.LayoutParams.FILL_PARENT,android.support.v7.widget.RecyclerView.LayoutParams.FILL_PARENT);
+    recyclerView.setLayoutParams(paramms);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -133,22 +132,17 @@ public final class RecyclerView extends AndroidViewComponent {
 
         @Override
         public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
-          // When user changed the Text
-         
-
+          
          if(cs!=null && cs.length()>0 && !currentItemsCopy.isEmpty()){
 
           currentItems.clear();
           int n=currentItemsCopy.size(),k=0;
           cs=cs.toString().toLowerCase();  
           for(int i=0;i<n;i++){
-           // JSONObject object = currentItemsCopy.get(i);
-          //  first[i]=object.has("Text1")?object.getString("Text1"):"";   
            
-            if(currentItemsCopy.get(i).getString("Text1").toLowerCase().contains(cs)){
-                currentItems.add(k,currentItemsCopy.get(i));
-                k++;
-            }
+          if(currentItemsCopy.get(i).getString("Text1").toLowerCase().contains(cs)){
+            currentItems.add(k,currentItemsCopy.get(i));
+            k++;}
             }
           setAdapterr();    
          }else if(cs!=null && cs.length()==0 && !currentItemsCopy.isEmpty()){
@@ -159,16 +153,7 @@ public final class RecyclerView extends AndroidViewComponent {
                 currentItems.add(i,currentItemsCopy.get(i)); 
             }
           setAdapterr();  
-
-
          }
-
-
-          /*if(!currentItems.isEmpty()) {
-            
-            //container.$context().adaptor.getFilter().filter(cs.toString());
-            //setAdapterr();
-          }*/
         }
 
         @Override
@@ -203,6 +188,7 @@ public final class RecyclerView extends AndroidViewComponent {
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
+    //recyclerView.requestLayout();
     container.$add(this);
 };
 
@@ -268,56 +254,35 @@ public final class RecyclerView extends AndroidViewComponent {
     return showFilter;
   }
 
-/**
-   * Set a list of text elements to build a ListView
-   * @param itemsList a YailList containing the strings to be added to the ListView
-
-  @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
-                "signal an error if the elements are not text strings.",
-      category = PropertyCategory.BEHAVIOR)
-  public void Elements(YailList input) {
-    input = ElementsUtil.elements(input, "RecyclerView");
-   setAdapterr();
-  }
-
-  /**
-   * Elements property getter method
-   *
-   * @return a YailList representing the list of strings to be picked from
-  
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public YailList Elements() {
-    return inputFirst;
-  }
-
-  /**
-   * Sets the items of the ListView through an adapter
-   */
  public void setAdapterr(){
 
     int size = currentItems.size();
 
     String[] first=new String[size];
     String[] second=new String[size];
+    boolean[] select=new boolean[size];
     
     ArrayList<Drawable> third = new ArrayList<Drawable>();
     
     if(layout==0){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
-      first[i]=object.has("Text1")?object.getString("Text1"):"";   
+      first[i]=object.has("Text1")?object.getString("Text1"):"";
+      select[i]=false;   
     } 
     }else if(layout==1){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";    
+      select[i]=false;
     } 
     }else if(layout==2){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";
+      select[i]=false;
     } 
     }else if(layout==3){
     for(int i=0;i<size;i++){
@@ -331,7 +296,9 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
+      select[i]=false;
     } 
+    
     }else if(layout==4){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
@@ -345,10 +312,12 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
+    select[i]=false;
     } 
+    
     }
     
-  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor);  
+  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor,select);  
    
    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
     @Override
@@ -359,10 +328,11 @@ public final class RecyclerView extends AndroidViewComponent {
       selectionIndex= position;
       //adb -d logcat System.out.print("jrneene");
       System.out.println("Spannable Adapter/..........."+position);
-     // this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
       AfterPicking();
     }
 
+//Long Press Function
+  
    /* @Override
     public void onItemLongClick(int position, View v) {
         //Log.d("efn", "onItemLongClick pos = " + position);
@@ -415,7 +385,6 @@ public final class RecyclerView extends AndroidViewComponent {
     // Now, we need to change Selection to correspond to SelectionIndex.
     selection = ElementsUtil.setSelectionFromIndex(index, inputFirst);
   }
-
    /**
   * Returns the text in the ListView at the position set by SelectionIndex
   
@@ -425,7 +394,6 @@ public final class RecyclerView extends AndroidViewComponent {
   public String Selection(){
       return selection;
   }
-
   /**
    * Selection property setter method.
    
@@ -437,8 +405,6 @@ public final class RecyclerView extends AndroidViewComponent {
     // Now, we need to change SelectionIndex to correspond to Selection.
     selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, inputFirst);
   }
-
-
 /**
    * Assigns a value to the backgroundColor
    * @param color  an alpha-red-green-blue integer for a color
@@ -446,8 +412,6 @@ public final class RecyclerView extends AndroidViewComponent {
 
   public void setBackgroundColor(int color) {
       backgroundColor = color;
-     // recyclerView.setBackgroundColor(backgroundColor);
-     // linearLayout.setBackgroundColor(backgroundColor);
       setAdapterr();
 
      }
@@ -637,33 +601,6 @@ public final class RecyclerView extends AndroidViewComponent {
     setAdapterr();
   }
 
-
-  /**
-   * Simple event to raise when the component is clicked. Implementation of
-   * AdapterView.OnItemClickListener
-   */
-/*  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    if(!currentItems.isEmpty()) {
-      JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
-      this.selection = item.has("Text1")?item.getString("Text1"):"";
-     // this.selectionDetailText = item.has("Text2")?item.getString("Text2"):"";
-      //this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
-      this.selectionIndex=position;
-    } //else {
-      //System.out.println("Spannable Adapter/...........");
-      //Spannable item = (Spannable) parent.getAdapter().getItem(position);
-      //this.selection = item.toString();
-      //this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
-    //}
-     setAdapterr(); 
-    AfterPicking();
-  }*/
-
-  /**
-   * Simple event to be raised after the an element has been chosen in the list.
-   * The selected element is available in the Selection property.
-   */
   @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the" +
       " list. The selected element is available in the Selection property.")
   public void AfterPicking() {

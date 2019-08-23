@@ -1,6 +1,3 @@
-
-
-
 package com.google.appinventor.components.runtime;
 
 import android.content.Context;
@@ -40,6 +37,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     private String[] firstItem;
     private String[] secondItem;
+    public boolean[] selection;
     private ArrayList<Drawable> images;
     private Context context;
     private int textColor;
@@ -48,12 +46,13 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private int backgroundColor;
     private int selectionColor;
  //   private int selectionIndex;
+    private int checkedPosition = -1;
 
     public boolean isSelected=false;
 
     private int idFirst,idSecond,idImages,idCard;
 
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor){//,int selectionIndex){
+    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor,boolean[] selection){//,int selectionIndex){
         this.firstItem = first;
         this.secondItem = second;   
         this.images=images;
@@ -63,6 +62,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         this.layoutType=layoutType;
         this.backgroundColor=backgroundColor;
         this.selectionColor=selectionColor;
+        this.selection=selection;
+
       //  this.selectionIndex=selectionIndex;
     }
 
@@ -72,6 +73,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         TextView textViewFirst=new TextView(context);
         TextView textViewSecond=new TextView(context);
         ImageView imageView = new ImageView(context);
+
+        boolean isSelected=false;
 
         CardView cardView=new CardView(context);
         cardView.setUseCompatPadding(true);
@@ -113,7 +116,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         layoutParamsImage.setMargins(5,25,5,25);
         imageView.setLayoutParams(layoutParamsImage);
 
-        LinearLayout.LayoutParams params1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        CardView.LayoutParams params1=new CardView.LayoutParams(CardView.LayoutParams.FILL_PARENT,CardView.LayoutParams.WRAP_CONTENT);
         params1.setMargins(30 ,30,30,30);
 
         //cardView.setBackgroundColor(Color.parseColor("#E9E9E9"));
@@ -132,7 +135,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
       if(layoutType==0){
         
         linearLayout2.addView(textViewFirst);
-        linearLayout1.addView(linearLayout2);
+        linearLayout1.addView(textViewFirst);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==1){
@@ -144,9 +147,9 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         cardView.addView(linearLayout1);
         }else if(layoutType==2){
         
-        linearLayout2.addView(textViewFirst);
-        linearLayout2.addView(textViewSecond);
-        linearLayout1.addView(linearLayout2);
+        linearLayout1.addView(textViewFirst);
+        linearLayout1.addView(textViewSecond);
+       // linearLayout1.addView(linearLayout2);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==3){
@@ -173,29 +176,32 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     @Override
     public void onBindViewHolder(final RvViewHolder holder, int position) {
          
-         /*   if(position == selectionIndex){
-                holder.cardView.setBackgroundColor(selectionColor);    
-            }
-            
-           if(isSelected){
-            holder.cardView.setBackgroundColor(selectionColor);}
-            else{
-            holder.cardView.setBackgroundColor(backgroundColor);}
-            */
+
+         final int pos=position;
+
             holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.onClick(v);
-                
-                    if(isSelected){
+                    holder.onClick(v);
+
+                   /* if(isSelected){
+                    holder.cardView.setBackgroundColor(backgroundColor);    
+                    }
+                    */
+
+                    //v.isSelected=!v.isSelected;    
+                    selection[pos]=!selection[pos];
+                    //isSelected=!isSelected;                   
+                    if(selection[pos]){
                     holder.cardView.setBackgroundColor(selectionColor);
+                    //holder.isSelected=false;
                     }else{
                     holder.cardView.setBackgroundColor(backgroundColor);
+                    //holder.isSelected=false;
                     }
-                isSelected=!isSelected;    
+                    //isSelected=!isSelected;
                 }
             });
-            
             if(layoutType==0){
             String first =firstItem[position];
             holder.textViewFirst.setText(first);

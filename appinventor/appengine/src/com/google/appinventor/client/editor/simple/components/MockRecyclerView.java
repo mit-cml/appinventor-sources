@@ -44,8 +44,6 @@ public final class MockRecyclerView extends MockVisibleComponent {
   
   private final VerticalPanel listViewWidgets;
   
-  //private AbsolutePanel absolutePanel;
-
   private Image image;
     
   private TextBox textBoxWidget;
@@ -228,7 +226,6 @@ public final class MockRecyclerView extends MockVisibleComponent {
 
   private InlineLabel createInlineLabel(String value, String color) {
     InlineLabel label = new InlineLabel(value);
-    //label.setSize("50%==", heightValue);
     MockComponentsUtil.setWidgetBackgroundColor(label, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(label, color);
     return label;
@@ -278,7 +275,6 @@ public final class MockRecyclerView extends MockVisibleComponent {
       refreshForm();
     }
     else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
-    // addNewPicture(newValue); // setUrl() triggers onLoad
       displayOnDesigner(newValue);
       refreshForm();
     
