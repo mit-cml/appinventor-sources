@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
@@ -7,9 +8,8 @@
     <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
     <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
     <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
-    <title>Components - App Inventor for Android</title>
+    <title>Chart Components - App Inventor for Android</title>
     <style>
-
       body{
       background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
       margin-top:0;
@@ -402,6 +402,42 @@
 
       address { font-style: normal; }
 
+      /* Documentation styles */
+      dt {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      dt:after, dt i:after {
+      font-size: 85%;
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: #444;
+      color: white;
+      padding: 1pt 4pt 1.5pt 3pt;
+      border-radius: 4pt;
+      user-select: none;
+      vertical-align: top;
+      font-style: normal;
+      margin-left: 4pt;
+      }
+      dt.ro:after { content: "read-only"; }
+      dt.wo:after { content: "write-only"; }
+      dt.bo:after { content: "blocks-only"; }
+      dt.do:after { content: "designer-only"; }
+      dt.ro.bo:after { content: "read-only, blocks-only"; }
+      dt.wo.bo:after { content: "write-only, blocks-only"; }
+      dt.wo.do:after { content: "write-only, designer-only"; }
+      dt.boolean i:after { background-color: #92b55f; content: "boolean"; }
+      dt.number i:after { background-color: #5c84bd; content: "number"; }
+      dt.text i:after { background-color: #b34d71; content: "text"; }
+      dt.list i:after { background-color: #70b3d8; content: "list"; }
+      dt.component i:after { background-color: #5a9773; content: "component"; }
+      dt.any i:after { background-color: #ce7947; content: "any"; }
+      dt.color i:after { background-color: #909090; content: "color"; }
+      span.list { background-color: #70b3d8; }
+      span.ro { background-color: #f88; color: black; }
+      span.wo { background-color: #8f8; color: black; }
+      span.bo { background-color: #88f; color: black; }
+      span.do { background-color: #ff8; color: black; }
 
 
     </style>
@@ -420,7 +456,6 @@
           <div id="menu-bar" class="nav clearfix">
 <nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
 <ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
-</nav>
           </div>
 
           <div class="region region-create">
@@ -444,30 +479,60 @@
               <section id="main-content" role="main">
                 <div id="content">  <div class="region region-content">
 
-                    <h1>Components - App Inventor for Android</h1>
+                    <h1>Chart Components - App Inventor for Android</h1>
 
-                    <h1> Component Reference </h1>
-                    <h2> Component Types </h2>
-                    <p>
-                      This document describes the components you can use in App Inventor to build your
-                      apps.
-                    </p>
-                    <p> Each component can have methods, events, and properties. Most properties can be changed by apps — these properties have blocks you can use to get and set the values. Some properties can't be changed by apps — these only have blocks you can use to get the values, not set them. In this document, read-only properties are shown in <i> italics </i>. A few properties are only available in the Designer.  </p>
+                    <!-- CONTENT -->
+                    <h2>Table of Contents</h2>
                     <ul>
-                      <li> <a href="userinterface.html"> User Interface components </a> </li>
-                      <li> <a href="layout.html"> Layout components </a> </li>
-                      <li> <a href="media.html"> Media components </a> </li>
-                      <li> <a href="animation.html"> Drawing and Animation components </a> </li>
-                      <li> <a href="maps.html"> Map components </a> </li>
-                      <li> <a href="charts.html"> Chart components </a> </li>
-                      <li> <a href="sensors.html"> Sensor components </a> </li>
-                      <li> <a href="social.html"> Social components </a> </li>
-                      <li> <a href="storage.html"> Storage components </a> </li>
-                      <li> <a href="connectivity.html"> Connectivity components </a> </li>
-                      <li> <a href="legomindstorms.html"> LEGO® MINDSTORMS® components </a> </li>
-                      <li> <a href="experimental.html"> Experimental components </a> </li>
+                      <li><a href="#Chart">Chart</a></li>
+                      <li><a href="#ChartData2D">ChartData2D</a></li>
                     </ul>
-                    <p> LEGO and MINDSTORMS are registered trademarks of the LEGO Group.</p>
+
+                 <h2 id="Chart">Chart</h2>
+                    <p>The Chart component plots data originating from it's attached Data components. Five different
+                      <a href="#Chart.Type">Chart types</a> are available, including Line, Area, Scatter,
+                      Bar and Pie. The Chart component itself has various properties that change the appearance
+                      of the Chart, such as <a href="#Chart.Labels">Labels</a>, <a href="#Chart.LegendEnabled">LegendEnabled</a>,
+                      <a href="#Chart.Description">Description</a> and <a href="#Chart.GridEnabled">GridEnabled</a>.
+                    </p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt class="color" id="Chart.BackgroundColor">BackgroundColor<i></i></dt>
+                   <dd>Sets or gets the background color of the chart.</dd>
+                   <dt class="text" id="Chart.Description">Description<i></i></dt>
+                   <dd>Sets or gets the title of the chart.</dd>
+                   <dt class="boolean" id="Chart.GridEnabled">GridEnabled<i></i></dt>
+                   <dd>Hides or shows the grid of the chart. Only applies to Charts which have axes.</dd>
+                   <dt class="number" id="Chart.Height">Height<i></i></dt>
+                   <dd>Sets or gets the height of the chart, in pixels.</dd>
+                   <dt class="boolean" id="Chart.LegendEnabled">LegendEnabled<i></i></dt>
+                   <dd>Hides or shows the legend of the chart.</dd>
+                   <!-- Add Type property -->
+                   <!-- Add Visible property -->
+                   <!-- Add Labels/LabelsFromString property -->
+                   <!-- Add PieRadius property -->
+                   <dt class="number" id="Chart.Width">Width<i></i></dt>
+                   <dd>Sets or gets the width of the chart, in pixels.</dd>
+                 </dl>
+
+                 <h2 id="ChartData2D">ChartData2D</h2>
+                    <p>A ChartData2D component represents a single two dimensional Data Series in the Chart component,
+                      for example a single Line in the case of a Line Chart, or a single Bar in the case of a Bar Chart.
+                      The Data component is responsible for handling all of the data of the Chart. The entries of the Data
+                      component correspond of an x and a y value.
+                    </p>
+                    <p>The component is attached directly to a Chart component by dragging it onto the Chart.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <!-- Add Properties -->
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <!-- Add Methods -->
+                 </dl>
                   </div>
                 </div>
               </section>
@@ -481,7 +546,7 @@
               <div class="block-content content no-title">
                 <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
                   This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
-                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2017 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
                 <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
               </div>
             </div>
