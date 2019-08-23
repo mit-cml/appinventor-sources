@@ -1381,6 +1381,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 11.
     11: "noUpgrade"
 
+    // ExtendMovesOutsideCanvas was added
+    // No blocks need to be modified to upgrade to version 12.
+    12: "noUpgrade"
+
   }, // End Canvas upgraders
 
   "CheckBox": {
