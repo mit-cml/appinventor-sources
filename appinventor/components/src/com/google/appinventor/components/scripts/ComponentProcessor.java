@@ -972,6 +972,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
+      Collections.addAll(componentInfo.permissions, usesPermissions.value());
     }
 
     // Gather library names.

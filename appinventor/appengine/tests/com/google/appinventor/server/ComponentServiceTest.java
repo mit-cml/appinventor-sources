@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017 MIT, All rights reserved
+// Copyright 2017-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -316,7 +316,8 @@ public class ComponentServiceTest {
   }
 
   private void assertAssetsWithPrefixRemoved(String prefix) {
-    List<String> files = StorageIoInstanceHolder.INSTANCE.getProjectSourceFiles("1", projectId);
+    List<String> files = StorageIoInstanceHolder.getInstance()
+        .getProjectSourceFiles("1", projectId);
     for (String name : files) {
       if (name.startsWith(prefix)) {
         fail("Expected for file " + name + " to be deleted.");
@@ -325,7 +326,8 @@ public class ComponentServiceTest {
   }
 
   private void assertAssetsOnServer(String path) {
-    List<String> files = StorageIoInstanceHolder.INSTANCE.getProjectSourceFiles("1", projectId);
+    List<String> files = StorageIoInstanceHolder.getInstance()
+        .getProjectSourceFiles("1", projectId);
     for (String name : files) {
       if (name.equals(path)) {
         return;

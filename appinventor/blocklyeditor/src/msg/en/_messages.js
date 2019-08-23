@@ -1302,6 +1302,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = '/reference/components/storage.html#TinyWebDB';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = '/reference/components/storage.html#TinyWebDB';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/storage.html#CloudDB";
+
 //Connectivity components
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "/reference/components/connectivity.html#ActivityStarter";
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = '/reference/components/connectivity.html#ActivityStarter';
@@ -1373,8 +1375,6 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_PROPERTIES_HELPURL = "/reference/components/experimental.html#FirebaseDB";
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_EVENTS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_METHODS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
-
-    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/experimental.html#CloudDB";
 
 //Internal components
     Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "/reference/components/internal.html#GameClient";
