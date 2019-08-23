@@ -828,7 +828,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
      * @param newValue  the new value of the observed value
      */
     @Override
-    public void onDataSourceValueChange(final ChartDataSource component, String key, final Object newValue) {
+    public void onDataSourceValueChange(final ChartDataSource component, final String key, final Object newValue) {
         if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
