@@ -458,10 +458,8 @@ public class YaVersion {
   // - Added Switch
   // For YOUNG_ANDROiD_VERSION 185:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
-  // For YOUNG_ANDROID_VERSION 186:
-  // - LIGHTSENSOR_COMPONENT_VERSION was set to 1.
 
-  public static final int YOUNG_ANDROID_VERSION = 186;
+  public static final int YOUNG_ANDROID_VERSION = 185;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1228,9 +1226,6 @@ public class YaVersion {
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
-  // For LIGHTSENSOR_COMPONENT_VERSION: Initial Version
-  public static final int LIGHTSENSOR_COMPONENT_VERSION = 1;
-
   // Rendezvous Server Location
 
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1260,8 +1255,8 @@ public class YaVersion {
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
   public static final String PREFERRED_COMPANION = "2.54 or 2.54u";
-  public static final String COMPANION_UPDATE_URL = "https://github.com/espertus/appinventor-sources/raw/c5b9efc9183ae57266cfe1516152572463b770c3/appinventor/build/buildserver/MIT%20AI2%20Companion.apk";
-  public static final String COMPANION_UPDATE_URL1 = "https://github.com/espertus/appinventor-sources/raw/c5b9efc9183ae57266cfe1516152572463b770c3/appinventor/build/buildserver/MIT%20AI2%20Companion.apk";
+  public static final String COMPANION_UPDATE_URL = "";
+  public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.54", "2.54u" };
 
