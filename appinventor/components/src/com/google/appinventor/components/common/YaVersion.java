@@ -1260,8 +1260,8 @@ public class YaVersion {
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
   public static final String PREFERRED_COMPANION = "2.54 or 2.54u";
-  public static final String COMPANION_UPDATE_URL = "https://github.com/espertus/appinventor-sources/raw/f6b66702a3dd28ffe113165525ce02cbe8072b70/appinventor/build/buildserver/MIT%20AI2%20Companion.apk"
-  public static final String COMPANION_UPDATE_URL1 = "https://github.com/espertus/appinventor-sources/raw/f6b66702a3dd28ffe113165525ce02cbe8072b70/appinventor/build/buildserver/MIT%20AI2%20Companion.apk"
+  public static final String COMPANION_UPDATE_URL = "https://github.com/espertus/appinventor-sources/raw/f6b66702a3dd28ffe113165525ce02cbe8072b70/appinventor/build/buildserver/MIT%20AI2%20Companion.apk";
+  public static final String COMPANION_UPDATE_URL1 = "https://github.com/espertus/appinventor-sources/raw/f6b66702a3dd28ffe113165525ce02cbe8072b70/appinventor/build/buildserver/MIT%20AI2%20Companion.apk";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.54", "2.54u" };
 
