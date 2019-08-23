@@ -99,6 +99,7 @@ public interface Component {
    */
   static final int LAYOUT_ORIENTATION_HORIZONTAL = ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
   static final int LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
+  static final int LAYOUT_ORIENTATION_GRID = ComponentConstants.LAYOUT_ORIENTATION_GRID;
 
   /*
    * Picture scaling constants.

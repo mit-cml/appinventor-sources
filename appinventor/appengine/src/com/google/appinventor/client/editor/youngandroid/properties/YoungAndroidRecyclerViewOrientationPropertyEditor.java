@@ -9,7 +9,8 @@ public class YoungAndroidRecyclerViewOrientationPropertyEditor extends ChoicePro
 
   private static final Choice[] orientation = new Choice[] {
     new Choice(MESSAGES.verticalOrientation(), "0"),
-    new Choice(MESSAGES.horisontalOrientation(), "1")
+    new Choice(MESSAGES.horisontalOrientation(), "1"),
+    new Choice(MESSAGES.gridOrientation(), "2")
   };
 
   public YoungAndroidRecyclerViewOrientationPropertyEditor() {

@@ -88,6 +88,9 @@ public final class RecyclerView extends AndroidViewComponent {
     private int textSize;
     private static final int DEFAULT_TEXT_SIZE = 22;
 
+    private int gridCount;
+    private static final int DEFAULT_GRID_COUNT = 2;
+
     private int layout;
     private String propertyValue;
     private ArrayList<JSONObject> currentItems;
@@ -184,6 +187,7 @@ public final class RecyclerView extends AndroidViewComponent {
   
     textColor = DEFAULT_TEXT_COLOR;
     textSize = DEFAULT_TEXT_SIZE;
+    gridCount=DEFAULT_GRID_COUNT;
     
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
@@ -351,10 +355,13 @@ public final class RecyclerView extends AndroidViewComponent {
     if(orientation == 1){
     layoutManager=new LinearLayoutManager(ctx,LinearLayoutManager.HORIZONTAL,false);
     recyclerView.setLayoutManager(layoutManager);}
-    else{//gridlayoutManager = new GridLayoutManager(ctx,2,GridLayoutManager.VERTICAL,false);
+    else if(orientation == 0){
     layoutManager=new LinearLayoutManager(ctx,LinearLayoutManager.VERTICAL,false);  
     recyclerView.setLayoutManager(layoutManager);}
-    
+    else{
+    gridlayoutManager = new GridLayoutManager(ctx,gridCount,GridLayoutManager.VERTICAL,false);  
+    recyclerView.setLayoutManager(gridlayoutManager);
+    }
     recyclerView.setAdapter(listAdapterWithRecyclerView);
   }
  
@@ -536,6 +543,32 @@ public final class RecyclerView extends AndroidViewComponent {
         textSize = fontSize;
       setAdapterr();
   }
+
+  /**
+   * Returns the recyclerview's grid count
+   *
+   * @return grid count as an int
+  */ 
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int GridCount() {
+    return gridCount;
+  }
+
+  /**
+   * Specifies the ListView item's text font size
+   *
+   * @param integer value for font size
+  */ 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue ="" + DEFAULT_GRID_COUNT )
+  @SimpleProperty
+  public void GridCount(int gridCnt) {
+      gridCount=gridCnt;
+      setAdapterr();
+  }
+  
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
   public String AddData() {
