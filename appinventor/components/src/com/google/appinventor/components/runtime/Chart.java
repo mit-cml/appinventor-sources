@@ -7,6 +7,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -17,9 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 
 @SimpleObject
-@DesignerComponent(version = 1,
-        category = ComponentCategory.CHARTS,
-        description = "A component that allows visualizing data")
+@DesignerComponent(version = YaVersion.CHART_COMPONENT_VERSION,
+    category = ComponentCategory.CHARTS,
+    description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
 public class Chart extends AndroidViewComponent implements ComponentContainer, OnInitializeListener {
     // Root layout of the Chart view. This is used to make Chart

@@ -681,6 +681,10 @@ public class YaVersion {
   // - DrawShape & DrawArc was added
   public static final int CANVAS_COMPONENT_VERSION = 11;
 
+  public static final int CHART_COMPONENT_VERSION = 1;
+
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
@@ -710,6 +714,8 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 6:
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
+
+  public static final int DATA_FILE_COMPONENT_VERSION = 1;
 
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date

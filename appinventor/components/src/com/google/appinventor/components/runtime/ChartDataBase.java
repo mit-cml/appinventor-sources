@@ -8,7 +8,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
-import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.OnBeforeInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnInitializeListener, ChartDataSourceChangeListener,
+public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, ChartDataSourceChangeListener,
     ChartDataSourceGetValueListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
@@ -76,7 +76,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
         DataSourceValue("");
 
         threadRunner = Executors.newSingleThreadExecutor();
-        container.$form().registerForOnInitialize(this);
+        container.$form().registerForOnBeforeInitialize(this);
     }
 
     /**
@@ -357,6 +357,10 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                 e.printStackTrace();
               } catch (ExecutionException e) {
                 e.printStackTrace();
+              }
+
+              if (webComponent == dataSource) {
+                  updateCurrentDataSourceValue(dataSource, null, null);
               }
 
                 // Import the data from the retrieved columns
@@ -793,7 +797,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * is fully initialized.
      */
     @Override
-    public void onInitialize() {
+    public void onBeforeInitialize() {
         initialized = true;
 
         // Data Source should only be imported after the Screen
@@ -824,7 +828,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param newValue  the new value of the observed value
      */
     @Override
-    public void onDataSourceValueChange(final ChartDataSource component, String key, final Object newValue) {
+    public void onDataSourceValueChange(final ChartDataSource component, final String key, final Object newValue) {
         if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
@@ -840,20 +844,7 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
                     chartDataModel.removeValues((List)currentDataSourceValue);
                 }
 
-                // Update currentDataSourceValue; Web component requires different handling
-                // from all other ObservableChartDataSource components.
-                if (component instanceof Web) {
-                    // Get the columns from the local webColumns properties
-                    YailList columns = ((Web)component).getColumns(YailList.makeList(webColumns));
-
-                    // Set the current Data Source Value to all the tuples from the columns.
-                    // This is needed to easily remove values later on when the value changes
-                    // again.
-                    currentDataSourceValue = chartDataModel.getTuplesFromColumns(columns);
-                } else {
-                    // Update current Data Source value
-                    currentDataSourceValue = newValue;
-                }
+                updateCurrentDataSourceValue(component, key, newValue);
 
                 // New value is a List; Import the value
                 if (currentDataSourceValue instanceof List) {
@@ -868,6 +859,11 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
 
     @Override
     public void onReceiveValue(RealTimeChartDataSource component, final String key, Object value) {
+        // Calling component is not the actual Data Source
+        if (component != dataSource) {
+            return;
+        }
+
         // Boolean to indicate whether data should be imported (conditions
         // for importing are satisfied)
         boolean importData = false;
@@ -929,11 +925,33 @@ public abstract class ChartDataBase implements Component, OnInitializeListener, 
      * @param key  Key of the updated value
      * @param newValue  The updated value
      */
-    private void updateCurrentDataSourceValue(ObservableChartDataSource source, Object key, Object newValue) {
+    private void updateCurrentDataSourceValue(ChartDataSource source, Object key, Object newValue) {
         if (source == dataSource // The source must be the same as the attached source
-            && key != null // The key must be non-null
-            && key.equals(dataSourceValue)) { // The key should equal the local key
-            currentDataSourceValue = newValue;
+            && (key == null || key.equals(dataSourceValue))) { // The key should equal the local key (or null)
+            if (source instanceof Web) {
+                // Get the columns from the local webColumns properties
+                YailList columns = ((Web)source).getColumns(YailList.makeList(webColumns));
+
+                // Set the current Data Source Value to all the tuples from the columns.
+                // This is needed to easily remove values later on when the value changes
+                // again.
+                currentDataSourceValue = chartDataModel.getTuplesFromColumns(columns);
+            } else {
+                // Update current Data Source value
+                currentDataSourceValue = newValue;
+            }
         }
+    }
+
+    /**
+     * Changes the underlying Executor Service of the threadRunner.
+     *
+     * Primarily used for testing to inject test/mock ExecutorService
+     * classes.
+     *
+     * @param service  new ExecutorService object to use..
+     */
+    public void setExecutorService(ExecutorService service) {
+        threadRunner = service;
     }
 }

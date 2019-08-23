@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.*;
 import org.json.JSONException;
 
@@ -10,11 +11,11 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-@DesignerComponent(version = 1,
-        description = "To be updated",
-        category = ComponentCategory.STORAGE,
-        nonVisible = true,
-        iconName = "images/file.png")
+@DesignerComponent(version = YaVersion.DATA_FILE_COMPONENT_VERSION,
+    description = "To be updated",
+    category = ComponentCategory.STORAGE,
+    nonVisible = true,
+    iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class DataFile extends FileBase implements ChartDataSource<YailList, Future<YailList>> {

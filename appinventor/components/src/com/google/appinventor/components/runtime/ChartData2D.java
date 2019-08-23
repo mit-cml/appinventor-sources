@@ -4,22 +4,23 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-@DesignerComponent(version = 1,
+@DesignerComponent(version = YaVersion.CHART_DATA_2D_COMPONENT_VERSION,
     description = "A component that holds (x, y)-coordinate based data",
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
-public final class CoordinateData extends ChartDataBase {
+public final class ChartData2D extends ChartDataBase {
     /**
      * Creates a new Coordinate Data component.
      */
-    public CoordinateData(Chart chartContainer) {
+    public ChartData2D(Chart chartContainer) {
         super(chartContainer);
         dataFileColumns = Arrays.asList("", ""); // Construct default dataFileColumns list with 2 entries
         webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
