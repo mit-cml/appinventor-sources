@@ -1,12 +1,15 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Utilities for Components that display a number of options on Screen such as ListPicker,
@@ -70,5 +73,45 @@ public class ElementsUtil {
     }
     return 0;
   }
+
+  public static int selectionIndex(int index, ArrayList<JSONObject> items) {
+    if (index<=0 || index > items.size()) {
+      return 0;
+    } else {
+      return index;
+    }
+  }
+
+  public static String setSelectionFromIndex(int index, JSONObject item) {
+    if (index == 0)
+      return "";
+    return item.has("Text1")?item.getString("Text1"):"";
+  }
+
+  public static String setDetailSelectionFromIndex(int index, JSONObject item) {
+    if (index == 0)
+      return "";
+    return item.has("Text2")?item.getString("Text2"):"";
+  }
+
+  public static int setSelectedIndexFromValue(String value, ArrayList<JSONObject> items) {
+    for (int i = 0; i < items.size(); ++i) {
+      JSONObject item = items.get(i);
+      if (item.has("Text1") && item.getString("Text1").equals(value)) {
+          return i+1;
+      }
+    }
+    return 0;
+  }
+
+    public static int setSelectedIndexFromDetailTextValue(String value, ArrayList<JSONObject> items) {
+        for (int i = 0; i < items.size(); ++i) {
+            JSONObject item = items.get(i);
+            if (item.has("Text2") && item.getString("Text2").equals(value)) {
+                return i+1;
+            }
+        }
+        return 0;
+    }
 
 }
