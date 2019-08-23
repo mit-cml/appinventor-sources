@@ -623,20 +623,87 @@
 
                  <h3>Methods</h3>
                  <dl>
-                   <!-- Add AddEntry method -->
-                   <!-- Add ChangeDataSource method -->
-                   <!-- Add Clear method -->
-                   <!-- Add DoesEntryExist method -->
-                   <!-- Add GetAllEntries method -->
-                   <!-- Add GetEntriesWithXValue method -->
-                   <!-- Add GetEntriesWithYValue method -->
-                   <!-- Add ImportFromCloudDB method -->
-                   <!-- Add ImportFromDataFile method -->
-                   <!-- Add ImportFromList method -->
-                   <!-- Add ImportFromTinyDB method -->
-                   <!-- Add ImportFromWeb method -->
-                   <!-- Add RemoveFromDataSource method -->
-                   <!-- Add RemoveEntry method -->
+                    <dt id="ChartData2D.AddEntry">AddEntry(text x, text y)</dt>
+                    <dd>Call this method to add an entry with the specified x and y value. Values
+                      can be specified as text, or as numbers. For Line, Scatter, Area and Bar Charts,
+                      both values should represent number. For Bar charts, the values are rounded
+                      to the nearest integer. For Pie Charts, the x value is a text value.
+                    </dd>
+                    <dt id="ChartData2D.ChangeDataSource">ChangeDataSource(component source, text keyValue)</dt>
+                    <dd>Changes the Data Source of the component to the specified component Source with the
+                      specified key value. See the <a href="#ChartData2D.Source">Source</a> property for
+                      applicable components. See the <a href="#ChartData2D.DataSourceValue">DataSourceValue</a>
+                      property for the interpretation of the keyValue. In the case of the DataFile and Web components,
+                      the keyValue is expected to be a CSV formatted string, where the first value corresponds to
+                      the x column, and the second value corresponds to the y value.
+                    </dd>
+                    <dt id="ChartData2D.Clear">Clear</dt>
+                    <dd>Call this method to remove all the entries from the data series.
+                    </dd>
+                    <dt id="ChartData2D.DoesEntryExist">boolean DoesEntryExist(text x, text y)</dt>
+                    <dd>Returns a boolean value specifying whether an entry with the specified x and y
+                      values exists. The boolean value of true is returned if the value exists,
+                      and a false value otherwise. See <a href="#ChartData2D.AddEntry">AddEntry</a>
+                      for an explanation of the valid entry values.
+                    </dd>
+                    <dt id="ChartData2D.GetAllEntries">list GetAllEntries</dt>
+                    <dd>Returns all entries of the data series.
+                      The returned value is a list, where each element of the list
+                      is a list containing 2 elements -- one for the x value, and one
+                      for the y value.
+                    </dd>
+                    <dt id="ChartData2D.GetEntriesWithXValue">list GetEntriesWithXValue(text x)</dt>
+                    <dd>Retruns all entries of the data series matching
+                      the specified x value. The returned value is a list, where each element of the
+                      list is a list containing 2 elements -- one for the x value, and one for the
+                      y value.
+                    </dd>
+                    <dt id="ChartData2D.GetEntriesWithYValue">list GetEntriesWithYValue(text y)</dt>
+                    <dd>Returns all entries of the data series matching
+                      the specified y value. The returned value is a list, where each element of the
+                      list is a list containing 2 elements -- one for the x value, and one for the
+                      y value.
+                    </dd>
+                    <dt id="ChartData2D.ImportFromCloudDB">ImportFromCloudDB(component clouddb, text tag)</dt>
+                    <dd>Imports data from the specified CLoudDB component by taking the value
+                      identfied by the specified tag value. The expected CloudDB value is
+                      a list formatted in the same way as described in the
+                      <a href="#ChartData2D.ImportFromList">ImportFromList</a> method description.
+                    </dd>
+                    <dt id="ChartData2D.ImportFromDataFile">ImportFromDataFile(component dataFile, text xValueColumn, text yValueColumn)</dt>
+                    <dd>Imports data from the specified DataFile component by taking the specified x column
+                      for the x values, and the specified y column for the y values. The DataFile's source file
+                      is expected to be either a CSV or a JSON file.
+                    </dd>
+                    <dt id="ChartData2D.ImportFromList">ImportFromList(list list)</dt>
+                    <dd>Imports the data from the specified list parameter to the data series.
+                      The list is expected to contain element which are also lists. Each
+                      list element is expected to have 2 values, the first one being
+                      the x value, and the second one being the y value.
+                      Invalid list entries are simply skipped.
+                    </dd>
+                    <dt id="ChartData2D.ImportFromTinyDB">ImportFromTinyDB(component tinydb, text tag)</dt>
+                    <dd>Imports data from the specified TinyDB component by taking the value
+                      identfied by the specified tag value. The expected TinyDB value is
+                      a list formatted in the same way as described in the
+                      <a href="#ChartData2D.ImportFromList">ImportFromList</a> method description.
+                    </dd>
+                    <dt id="ChartData2D.ImportFromWeb">ImportFromWeb(component web, text xValueColumn, text yValueColumn)</dt>
+                    <dd>Imports data from the specified Web component by taking the specified x column
+                      for the x values, and the specified y column for the y values. Prior to calling this method,
+                      the Web component's Get method has to be called. The expected response of the Web component
+                      is a JSON or CSV formatted file.
+                    </dd>
+                    <dt id="ChartData2D.RemoveDataSource">RemoveDataSource</dt>
+                    <dd>Call this method to remove the currently attached from the data series.
+                      Doing so will result in no more updates from the Data Source being sent
+                      to the data series on which the method was called.
+                    </dd>
+                    <dt id="ChartData2D.RemoveEntry">RemoveEntry(text x, text y)</dt>
+                    <dd>Call this method to remove an entry matching the specified x
+                      and y values. See <a href="#ChartData2D.AddEntry">AddEntry</a>
+                      for an explanation of the valid entry values.
+                    </dd>
                  </dl>
                   </div>
                 </div>
