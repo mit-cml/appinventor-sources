@@ -63,13 +63,15 @@ public abstract class Sprite extends VisibleComponent
   // can be used by subclasses and tests.
   protected int interval;      // number of milliseconds until next move
   protected boolean visible = true;
-  // TODO(user): Convert to have co-ordinates be center, not upper left.
-  // Note that this would simplify pointTowards to remove the adjustment
-  // to the center points
   protected double xLeft;      // leftmost x-coordinate
   protected double yTop;       // uppermost y-coordinate
   protected double zLayer;     // z-coordinate, higher values go in front
   protected float speed;       // magnitude in pixels
+
+  // Added to support having coordinates at center.
+  protected boolean coordsAtCorner;
+  protected double xCenter;
+  protected double yCenter;
 
   protected Form form;
 
@@ -292,11 +294,30 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
+  // TODO: Change description (if those are still used).
   @SimpleProperty(
       description = "The horizontal coordinate of the left edge of the sprite, " +
       "increasing as the sprite moves to the right.")
   public double X() {
-    return xLeft;
+    return coordsAtCorner ? xLeft : xCenter;
+  }
+
+  private double xLeftToCenter(double xLeft) {
+    return xLeft + Width() / 2;
+  }
+
+  private double xCenterToLeft(double xCenter) {
+    return xCenter - Width() / 2;
+  }
+
+  private void updateX(double x) {
+    if (coordsAtCorner) {
+      xLeft = x;
+      xCenter = xLeftToCenter(x);
+    } else {
+      xCenter = x;
+      xLeft = xCenterToLeft(x);
+    }
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -304,8 +325,26 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void X(double x) {
-    xLeft = x;
+    updateX(x);
     registerChange();
+  }
+
+  private double yTopToCenter(double yTop) {
+    return yTop + Width() / 2;
+  }
+
+  private double yCenterToTop(double yCenter) {
+    return yCenter - Width() / 2;
+  }
+
+  private void updateY(double y) {
+    if (coordsAtCorner) {
+      yTop = y;
+      yCenter = yTopToCenter(y);
+    } else {
+      yCenter = y;
+      yTop = yCenterToTop(y);
+    }
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -313,15 +352,16 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void Y(double y) {
-    yTop = y;
+    updateY(y);
     registerChange();
   }
 
+  // TODO: Update description
   @SimpleProperty(
       description = "The vertical coordinate of the top of the sprite, " +
       "increasing as the sprite moves down.")
   public double Y() {
-    return yTop;
+    return coordsAtCorner ? yTop : yCenter;
   }
 
   /**
@@ -610,8 +650,8 @@ public abstract class Sprite extends VisibleComponent
     description = "Moves the sprite so that its left top corner is at " +
     "the specfied x and y coordinates.")
   public void MoveTo(double x, double y) {
-    xLeft = x;
-    yTop = y;
+    updateX(x);
+    updateY(y);
     registerChange();
   }
 
@@ -625,11 +665,7 @@ public abstract class Sprite extends VisibleComponent
     "target sprite. The new heading will be parallel to the line joining " +
     "the centerpoints of the two sprites.")
   public void PointTowards(Sprite target) {
-    Heading(-Math.toDegrees(Math.atan2(
-        // we adjust for the fact that the sprites' X() and Y()
-        // are not the center points.
-        target.Y() - Y() + (target.Height() - Height()) / 2,
-        target.X() - X() + (target.Width() - Width()) / 2)));
+    Heading(-Math.toDegrees(Math.atan2(target.yCenter - yCenter, target.xCenter - xCenter)));
   }
 
   /**
@@ -642,11 +678,7 @@ public abstract class Sprite extends VisibleComponent
     description = "Turns the sprite to point towards the point " +
     "with coordinates as (x, y).")
   public void PointInDirection(double x, double y) {
-    Heading(-Math.toDegrees(Math.atan2(
-        // we adjust for the fact that the sprite's X() and Y()
-        // is not the center point.
-        y - Y() - Height() / 2,
-        x - X() - Width() / 2)));
+    Heading(-Math.toDegrees(Math.atan2(y - yCenter, x - xCenter)));
   }
 
   // Internal methods supporting move-related functionality
@@ -711,13 +743,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (xLeft != 0) {
         xLeft = 0;
+        xCenter = xLeftToCenter(xLeft);
         moved = true;
       }
     } else if (overWestEdge()) {
       xLeft = 0;
+      xCenter = xLeftToCenter(xLeft);
       moved = true;
     } else if (overEastEdge(canvasWidth)) {
       xLeft = canvasWidth - Width();
+      xCenter = xLeftToCenter(xLeft);
       moved = true;
     }
 
@@ -729,13 +764,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (yTop != 0) {
         yTop = 0;
+        yCenter = yTopToCenter(yTop);
         moved = true;
       }
     } else if (overNorthEdge()) {
       yTop = 0;
+      yCenter = yTopToCenter(yTop);
       moved = true;
     } else if (overSouthEdge(canvasHeight)) {
       yTop = canvasHeight - Height();
+      yCenter = yTopToCenter(yTop);
       moved = true;
     }
 
@@ -751,7 +789,9 @@ public abstract class Sprite extends VisibleComponent
    */
   protected void updateCoordinates() {
     xLeft += speed * headingCos;
+    xCenter = xLeftToCenter(xLeft);
     yTop += speed * headingSin;
+    yCenter = yTopToCenter(yTop);
   }
 
   // Methods for determining collisions with other Sprites and the edge
@@ -832,8 +872,8 @@ public abstract class Sprite extends VisibleComponent
    * @return the bounding box for this sprite
    */
   public BoundingBox getBoundingBox(int border) {
-    return new BoundingBox(X() - border, Y() - border,
-        X() + Width() - 1 + border, Y() + Height() - 1 + border);
+    return new BoundingBox(xLeft - border, yTop - border,
+        xLeft + Width() - 1 + border, yTop + Height() - 1 + border);
   }
 
   /**
