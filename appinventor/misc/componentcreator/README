@@ -1,0 +1,10 @@
+Python Script to create Visible and Non Visible Components boilerplate code.
+
+run: python misc/componentcreator/componentcreator.py
+
+PIL needs to be installed to resize icons automatically.
+
+Windows users should install python before using the script.
+
+Link to the design document:
+https://docs.google.com/document/d/1HetZsFh6x0n6J_9PW_OFUzU4icw0y2kdnzUvbqwtcBQ/edit

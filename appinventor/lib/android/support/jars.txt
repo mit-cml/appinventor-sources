@@ -11,6 +11,7 @@ customview.jar
 documentfile.jar
 drawerlayout.jar
 interpolator.jar
+lifecycle-common.jar
 livedata.jar
 livedata-core.jar
 loader.jar
