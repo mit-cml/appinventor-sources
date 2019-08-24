@@ -335,18 +335,6 @@ public final class RecyclerView extends AndroidViewComponent {
       AfterPicking();
     }
 
-//Long Press Function
-  
-   /* @Override
-    public void onItemLongClick(int position, View v) {
-        //Log.d("efn", "onItemLongClick pos = " + position);
-      System.out.println("Spannable Adapter"+position);
-      JSONObject item = currentItems.get(position);
-      selectionFirst = item.has("Text1")?item.getString("Text1"):"";
-      selectionSecond = item.has("Text2")?item.getString("Text2"):"";
-      selectionIndex= position;     
-      AfterPicking();
-    }*/
 });
 
     LinearLayoutManager layoutManager;
@@ -376,45 +364,6 @@ public final class RecyclerView extends AndroidViewComponent {
     return selectionIndex;
   }
 
-
-
-
-  /**
-   * Sets the index to the passed argument for selection
-   * @param index the index to be selected
-      
-  @SimpleProperty(description="Specifies the position of the selected item in the ListView. " +
-      "This could be used to retrieve" +
-      "the text at the chosen position. If an attempt is made to set this to a " +
-      "number less than 1 or greater than the number of items in the ListView, SelectionIndex " +
-      "will be set to 0, and Selection will be set to the empty text."
-      ,
-      category = PropertyCategory.BEHAVIOR)
-  public void SelectionIndex(int index){
-    selectionIndex = ElementsUtil.selectionIndex(index, inputFirst);
-    // Now, we need to change Selection to correspond to SelectionIndex.
-    selection = ElementsUtil.setSelectionFromIndex(index, inputFirst);
-  }
-   /**
-  * Returns the text in the ListView at the position set by SelectionIndex
-  
-  @SimpleProperty(description="Returns the text last selected in the ListView.",
-      category = PropertyCategory
-      .BEHAVIOR)
-  public String Selection(){
-      return selection;
-  }
-  /**
-   * Selection property setter method.
-   
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  @SimpleProperty
-  public void Selection(String value) {
-    selection = value;
-    // Now, we need to change SelectionIndex to correspond to Selection.
-    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, inputFirst);
-  }
 /**
    * Assigns a value to the backgroundColor
    * @param color  an alpha-red-green-blue integer for a color

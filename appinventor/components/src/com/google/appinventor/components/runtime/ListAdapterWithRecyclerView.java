@@ -45,7 +45,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private int layoutType;
     private int backgroundColor;
     private int selectionColor;
- //   private int selectionIndex;
     private int checkedPosition = -1;
 
     public boolean isSelected=false;
@@ -64,7 +63,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         this.selectionColor=selectionColor;
         this.selection=selection;
 
-      //  this.selectionIndex=selectionIndex;
     }
 
     @Override
@@ -119,8 +117,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         CardView.LayoutParams params1=new CardView.LayoutParams(CardView.LayoutParams.FILL_PARENT,CardView.LayoutParams.WRAP_CONTENT);
         params1.setMargins(30 ,30,30,30);
 
-        //cardView.setBackgroundColor(Color.parseColor("#E9E9E9"));
-
         ViewCompat.setElevation(cardView, 20);
 
         textViewFirst.setLayoutParams(layoutParams1);
@@ -149,7 +145,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         
         linearLayout1.addView(textViewFirst);
         linearLayout1.addView(textViewSecond);
-       // linearLayout1.addView(linearLayout2);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==3){
@@ -169,7 +164,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }
-     //   return new PersonViewHolder(cardView);
+
         return new RvViewHolder(cardView);
     }
 
@@ -183,23 +178,12 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             @Override
             public void onClick(View v) {
                     holder.onClick(v);
-
-                   /* if(isSelected){
-                    holder.cardView.setBackgroundColor(backgroundColor);    
-                    }
-                    */
-
-                    //v.isSelected=!v.isSelected;    
-                    selection[pos]=!selection[pos];
-                    //isSelected=!isSelected;                   
+                    selection[pos]=!selection[pos];                   
                     if(selection[pos]){
                     holder.cardView.setBackgroundColor(selectionColor);
-                    //holder.isSelected=false;
                     }else{
                     holder.cardView.setBackgroundColor(backgroundColor);
-                    //holder.isSelected=false;
                     }
-                    //isSelected=!isSelected;
                 }
             });
             if(layoutType==0){
@@ -252,7 +236,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             super(view);
 
             view.setOnClickListener(this);
-            //view.setOnLongClickListener(this);
 
             cardView=(CardView)view.findViewById(idCard);
 
@@ -282,13 +265,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         public void onClick(View v) {
             clickListener.onItemClick(getAdapterPosition(), v);
         }
-
-      /*  @Override
-        public boolean onLongClick(View v) {
-            clickListener.onItemLongClick(getAdapterPosition(), v);
-            return false;
-        }*/
-
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
@@ -297,6 +273,5 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     public interface ClickListener {
         void onItemClick(int position, View v);
-    //    void onItemLongClick(int position, View v);
     }
 };
