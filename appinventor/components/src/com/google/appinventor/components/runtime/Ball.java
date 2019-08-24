@@ -47,7 +47,7 @@ public final class Ball extends Sprite {
   private int paintColor;
   private Paint paint;
   static final int DEFAULT_RADIUS = 5;
-  private static final boolean DEFAULT_COORDS_AT_CORNER = false;
+  private static final boolean DEFAULT_ORIGIN_AT_CORNER = false;
 
   public Ball(ComponentContainer container) {
     super(container);
@@ -56,7 +56,7 @@ public final class Ball extends Sprite {
     // Set default properties.
     PaintColor(Component.COLOR_BLACK);
     Radius(DEFAULT_RADIUS);
-    CoordsAtCorner(DEFAULT_COORDS_AT_CORNER);
+    OriginAtCorner(DEFAULT_ORIGIN_AT_CORNER);
   }
 
   // Implement or override methods
@@ -160,17 +160,17 @@ public final class Ball extends Sprite {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-                    defaultValue = DEFAULT_COORDS_AT_CORNER ? "True" : "False")
+                    defaultValue = DEFAULT_ORIGIN_AT_CORNER ? "True" : "False")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
-  public void CoordsAtCorner(boolean b) {
-    coordsAtCorner = b;
+  public void OriginAtCorner(boolean b) {
+    originAtCorner = b;
   }
 
   @SimpleProperty(
       description = "Whether the (X, Y) coordinates should describe the upper left corner (deprecated) " +
       "or the center of the Ball")
-  public boolean CoordsAtCorner() {
-    return coordsAtCorner;
+  public boolean OriginAtCorner() {
+    return originAtCorner;
   }
 }
