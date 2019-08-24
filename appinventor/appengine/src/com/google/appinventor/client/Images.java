@@ -69,12 +69,6 @@ public interface Images extends Resources {
   ImageResource phonebar();
 
   /**
-   * Navigation bar shown below the form in the visual designer
-   */
-  @Source("com/google/appinventor/images/navigationbar.png")
-  ImageResource navigationbar();
-
-  /**
    * Spinning/wait graphic to indicate long-running operations.
    */
   @Source("com/google/appinventor/images/spin_16.gif")

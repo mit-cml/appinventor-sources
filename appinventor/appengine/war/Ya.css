@@ -988,6 +988,19 @@ select.ode-PropertyEditor[disabled] {
   height: auto !important;
   background-color: #d2e0a6;
   border: 2px solid black;
+  display: flex;
+}
+
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscapeTablet .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscapeMonitor .ode-SimpleMockForm {
+  flex-direction: row;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
+.ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
+.ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
+  flex-direction: column;
 }
 
 /* ==== start: skins for Android */
@@ -1085,6 +1098,27 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
   display: inline-block;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait,
+.ode-SimpleMockFormNavigationBarLandscape {
+  background-color: #000000;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait {
+  min-height: 44px;
+  min-width: 100%;
+  background-image: url(images/navigationbarPortrait.png);
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+.ode-SimpleMockFormNavigationBarLandscape {
+  min-height: 100%;
+  min-width: 44px;
+  background-image: url(images/navigationbarLandscape.png);
+  background-repeat: no-repeat;
+  background-position: right center;
 }
 
 .ode-SimpleMockContainer {
