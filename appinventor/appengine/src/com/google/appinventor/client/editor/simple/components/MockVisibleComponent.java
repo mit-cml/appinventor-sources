@@ -50,7 +50,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   protected static final String PROPERTY_NAME_COLUMN = "Column";
   protected static final String PROPERTY_NAME_ROW = "Row";
-  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "AddData";
+  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
 
   // Note: the values below are duplicated in Component.java

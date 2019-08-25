@@ -14,6 +14,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter class to populate ListView with single line of text
@@ -22,20 +23,60 @@ public class ListViewArrayAdapterSingleText {
 
   private int textSize, textColor;
   private ComponentContainer container;
-  private ArrayList<JSONObject> currentItems;
-  private ArrayList<JSONObject> filterCurrentItems;
+  private List<JSONObject> currentItems;
+  private List<JSONObject> filterCurrentItems;
+
+  private ArrayAdapter<JSONObject> itemAdapter;
+  private final Filter filter;
 
   public ListViewArrayAdapterSingleText(int textSize, int textColor, ComponentContainer container,
-      ArrayList<JSONObject> currentItems) {
+      List<JSONObject> items) {
     this.textSize = textSize;
     this.textColor = textColor;
     this.container = container;
-    this.currentItems = new ArrayList<>(currentItems);
-    this.filterCurrentItems = new ArrayList<>(currentItems);
+    this.currentItems = new ArrayList<>(items);
+    this.filterCurrentItems = new ArrayList<>(items);
+
+    filter = new Filter() {
+      @Override
+      protected FilterResults performFiltering(CharSequence charSequence) {
+        String filterQuery = charSequence.toString().toLowerCase();
+        FilterResults results = new FilterResults();
+
+        if (filterQuery == null || filterQuery.length() == 0) {
+          List<JSONObject> arrayList = new ArrayList<>(currentItems);
+          results.count = arrayList.size();
+          results.values = arrayList;
+        } else {
+          List<JSONObject> arrayList = new ArrayList<>(currentItems);
+          List<JSONObject> filteredList = new ArrayList<>();
+          for (int i = 0; i < arrayList.size(); ++i) {
+            JSONObject object = arrayList.get(i);
+            if (object.has("Text1") &&
+                object.getString("Text1").toLowerCase().contains(filterQuery)) {
+              filteredList.add(object);
+            }
+          }
+
+          results.count = filteredList.size();
+          results.values = filteredList;
+        }
+        return results;
+      }
+
+      @Override
+      protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+        filterCurrentItems = (List<JSONObject>) filterResults.values;
+        itemAdapter.clear();
+        for (int i = 0; i < filterCurrentItems.size(); ++i) {
+          itemAdapter.add(filterCurrentItems.get(i));
+        }
+      }
+    };
   }
 
   public ArrayAdapter<JSONObject> createAdapter() {
-    ArrayAdapter<JSONObject> itemAdapter = new ArrayAdapter<JSONObject>(container.$context(),
+    itemAdapter = new ArrayAdapter<JSONObject>(container.$context(),
         android.R.layout.simple_list_item_1, currentItems) {
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
@@ -58,42 +99,6 @@ public class ListViewArrayAdapterSingleText {
        */
       @Override
       public Filter getFilter() {
-        Filter filter = new Filter() {
-          @Override
-          protected FilterResults performFiltering(CharSequence charSequence) {
-            String filterQuery = charSequence.toString().toLowerCase();
-            FilterResults results = new FilterResults();
-
-            if(filterQuery == null || filterQuery.length() == 0) {
-              ArrayList<JSONObject> arrayList = new ArrayList<>(currentItems);
-              results.count = arrayList.size();
-              results.values = arrayList;
-            } else {
-              ArrayList<JSONObject> arrayList = new ArrayList<>(currentItems);
-              ArrayList<JSONObject> filteredList = new ArrayList<>();
-              for(int i = 0; i < arrayList.size(); ++i) {
-                JSONObject object = arrayList.get(i);
-                if (object.has("Text1") &&
-                    object.getString("Text1").toLowerCase().contains(filterQuery)) {
-                  filteredList.add(object);
-                }
-              }
-
-              results.count = filteredList.size();
-              results.values = filteredList;
-            }
-            return results;
-          }
-
-          @Override
-          protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            filterCurrentItems = (ArrayList<JSONObject>) filterResults.values;
-            clear();
-            for(int i = 0; i < filterCurrentItems.size(); ++i) {
-              add(filterCurrentItems.get(i));
-            }
-          }
-        };
         return filter;
       }
     };
