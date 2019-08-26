@@ -13,10 +13,11 @@
  */
 
 body, table td, select {
+  font-family: Arial Unicode MS, Arial, sans-serif;
   font-size: small;
 }
 pre {
-  
+  font-family: "courier new", courier;
   font-size: small;
 }
 body {
