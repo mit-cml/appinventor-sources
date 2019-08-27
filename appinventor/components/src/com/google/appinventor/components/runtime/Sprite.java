@@ -69,7 +69,7 @@ public abstract class Sprite extends VisibleComponent
   protected float speed;       // magnitude in pixels
 
   // Added to support having coordinates at center.
-  protected boolean originAtCorner;
+  protected boolean originAtCenter;
   protected double xCenter;
   protected double yCenter;
 
@@ -299,7 +299,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The horizontal coordinate of the left edge of the sprite, " +
       "increasing as the sprite moves to the right.")
   public double X() {
-    return originAtCorner ? xLeft : xCenter;
+    return originAtCenter ? xCenter : xLeft;
   }
 
   private double xLeftToCenter(double xLeft) {
@@ -311,12 +311,12 @@ public abstract class Sprite extends VisibleComponent
   }
 
   private void updateX(double x) {
-    if (originAtCorner) {
-      xLeft = x;
-      xCenter = xLeftToCenter(x);
-    } else {
+    if (originAtCenter) {
       xCenter = x;
       xLeft = xCenterToLeft(x);
+    } else {
+      xLeft = x;
+      xCenter = xLeftToCenter(x);
     }
   }
 
@@ -338,12 +338,12 @@ public abstract class Sprite extends VisibleComponent
   }
 
   private void updateY(double y) {
-    if (originAtCorner) {
-      yTop = y;
-      yCenter = yTopToCenter(y);
-    } else {
+    if (originAtCenter) {
       yCenter = y;
       yTop = yCenterToTop(y);
+    } else {
+      yTop = y;
+      yCenter = yTopToCenter(y);
     }
   }
 
@@ -361,7 +361,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The vertical coordinate of the top of the sprite, " +
       "increasing as the sprite moves down.")
   public double Y() {
-    return originAtCorner ? yTop : yCenter;
+    return originAtCenter ? yCenter : yTop;
   }
 
   /**

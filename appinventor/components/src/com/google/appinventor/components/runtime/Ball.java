@@ -47,7 +47,7 @@ public final class Ball extends Sprite {
   private int paintColor;
   private Paint paint;
   static final int DEFAULT_RADIUS = 5;
-  private static final boolean DEFAULT_ORIGIN_AT_CORNER = false;
+  private static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
 
   public Ball(ComponentContainer container) {
     super(container);
@@ -56,7 +56,7 @@ public final class Ball extends Sprite {
     // Set default properties.
     PaintColor(Component.COLOR_BLACK);
     Radius(DEFAULT_RADIUS);
-    OriginAtCorner(DEFAULT_ORIGIN_AT_CORNER);
+    OriginAtCenter(DEFAULT_ORIGIN_AT_CENTER);
   }
 
   // Implement or override methods
@@ -160,9 +160,9 @@ public final class Ball extends Sprite {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-                    defaultValue = DEFAULT_ORIGIN_AT_CORNER ? "True" : "False")
+                    defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible=false)
-  public void OriginAtCorner(boolean b) {
-    originAtCorner = b;
+  public void OriginAtCenter(boolean b) {
+    originAtCenter = b;
   }
 }
