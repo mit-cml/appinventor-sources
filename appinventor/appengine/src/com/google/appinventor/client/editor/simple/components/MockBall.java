@@ -81,6 +81,11 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       canvas.setCoordSize(diameter, diameter);
       canvas.setPixelSize(diameter, diameter);
       fillCircle();
+      if (originAtCenter) {
+        // Force the position of the ballWidget to be adjusted relative
+        // to the parent canvas.
+        refreshCanvas();
+      }
     } catch (NumberFormatException e) {
       // Ignore this. If we throw an exception here, the project is unrecoverable.
     }
