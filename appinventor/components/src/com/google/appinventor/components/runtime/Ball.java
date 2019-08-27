@@ -161,16 +161,8 @@ public final class Ball extends Sprite {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
                     defaultValue = DEFAULT_ORIGIN_AT_CORNER ? "True" : "False")
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(userVisible=false)
   public void OriginAtCorner(boolean b) {
     originAtCorner = b;
-  }
-
-  @SimpleProperty(
-      description = "Whether the (X, Y) coordinates should describe the upper left corner (deprecated) " +
-      "or the center of the Ball")
-  public boolean OriginAtCorner() {
-    return originAtCorner;
   }
 }
