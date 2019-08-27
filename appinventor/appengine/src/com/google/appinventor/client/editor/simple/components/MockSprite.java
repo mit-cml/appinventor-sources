@@ -17,4 +17,7 @@ public interface MockSprite {
   static final String PROPERTY_NAME_Z = "Z";
   static final String PROPERTY_NAME_X = "X";
   static final String PROPERTY_NAME_Y = "Y";
+
+  int getLeftX();
+  int getTopY();
 }

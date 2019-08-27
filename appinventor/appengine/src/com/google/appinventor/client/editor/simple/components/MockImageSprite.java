@@ -76,4 +76,24 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
       setYProperty(newValue);
     } 
   }
+
+  @Override
+  public int getLeftX() {
+    try {
+      return (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_X)));
+    } catch (NumberFormatException e) {
+      // Ignore this. If we throw an exception here, the project is unrecoverable.
+      return 0;
+    }
+  }
+
+  @Override
+  public int getTopY() {
+    try {
+      return (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_Y)));
+    } catch (NumberFormatException e) {
+      // Ignore this. If we throw an exception here, the project is unrecoverable.
+      return 0;
+    }
+  }
 }
