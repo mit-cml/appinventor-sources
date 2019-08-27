@@ -25,6 +25,7 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
 
   private static final String PROPERTY_NAME_RADIUS = "Radius";
   private static final String PROPERTY_NAME_PAINTCOLOR = "PaintColor";
+  private static final String PROPERTY_NAME_ORIGIN_AT_CENTER = "OriginAtCenter";
 
   private static final int DEFAULT_RADIUS = 5;
 
@@ -35,6 +36,7 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   private int radius = DEFAULT_RADIUS;
   private int diameter = 2 * radius;
   private Color color = Color.BLACK;
+  private boolean originAtCenter = false;
 
   /**
    * Creates a new MockBall component.
@@ -99,21 +101,26 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       mockCanvas.reorderComponents(this);
     }
   }
-  
-  private void setXProperty(String text) {
+
+  private void refreshCanvas() {
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockBall on the palette
     if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
+      mockCanvas.refreshForm();
     }
+  }
+
+  private void setXProperty(String text) {
+    refreshCanvas();
   }
   
   private void setYProperty(String text) {
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockBall on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
-    }
+    refreshCanvas();
+  }
+
+  private void setOriginAtCenterProperty(String text) {
+    originAtCenter = Boolean.valueOf(text);
+    refreshCanvas();
   }
 
   @Override
@@ -151,15 +158,22 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       setXProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_Y)) {
       setYProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_ORIGIN_AT_CENTER)) {
+      setOriginAtCenterProperty(newValue);
     }
   }
 
   @Override
   public int getLeftX() {
     try {
-      return (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_X)));
+      int x = (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_X)));
+      if (originAtCenter) {
+        return x - radius;
+      } else {
+        return x;
+      }
     } catch (NumberFormatException e) {
-      // Ignore this. If we throw an exception here, the project is unrecoverable.
+      // If an exception was thrown, the project is unrecoverable.
       return 0;
     }
   }
@@ -167,9 +181,14 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   @Override
   public int getTopY() {
     try {
-      return (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_Y)));
+      int y =  (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_Y)));
+      if (originAtCenter) {
+        return y - radius;
+      } else {
+        return y;
+      }
     } catch (NumberFormatException e) {
-      // Ignore this. If we throw an exception here, the project is unrecoverable.
+      // If an exception was thrown, the project is unrecoverable.
       return 0;
     }
   }
