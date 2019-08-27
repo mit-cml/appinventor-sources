@@ -113,6 +113,8 @@ You should now be up and running; you can test this by pointing your browser to:
 
     http://localhost:8888
 
+Before entering or scanning the QR code in the Companion, check the box labeled "Use Legacy Connection".
+
 ### Running tests
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
