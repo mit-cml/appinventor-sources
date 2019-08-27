@@ -37,7 +37,7 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.XML;
+import com.google.appinventor.components.runtime.repackaged.org.json.XML;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -807,9 +807,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   // HTML for the component documentation on the Web.  It's too long for a tooltip, anyway.
   public Object XMLTextDecode(String XmlText) {
     try {
-      JSONObject json = XML.toJSONObject(XmlText);
-      return JsonTextDecode(json.toString());
-    } catch (JSONException e) {
+      return JsonTextDecode(XML.toJSONObject(XmlText).toString());
+    } catch (com.google.appinventor.components.runtime.repackaged.org.json.JSONException e) {
       // We could be more precise and signal different errors for the conversion to JSON
       // versus the decoding of that JSON, but showing the actual error message should
       // be good enough.
