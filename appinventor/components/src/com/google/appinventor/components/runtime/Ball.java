@@ -116,10 +116,12 @@ public final class Ball extends Sprite {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "5")
-  @SimpleProperty(
-      // Kind of both categories: APPEARANCE and BEHAVIOR
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty()
   public void Radius(int radius) {
+    if (originAtCenter) {
+      xLeft -= (radius - this.radius);
+      yTop -= (radius - this.radius);
+    }
     this.radius = radius;
     registerChange();
   }
