@@ -1096,8 +1096,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                  propertyName);
     }
 
+    // Use Javadoc for property unless description is set to a non-empty string.
+    String description = elementUtils.getDocComment(element);
+    if (!simpleProperty.description().isEmpty()) {
+      description = simpleProperty.description();
+    }
+    if (description == null) {
+      description = "";
+    }
+    // Read only until the first javadoc parameter
+    description = description.split("[^\\\\][@{]")[0].trim();
+
     Property property = new Property(propertyName,
-                                     simpleProperty.description(),
+                                     description,
                                      simpleProperty.category(),
                                      simpleProperty.userVisible(),
                                      elementUtils.isDeprecated(element));
