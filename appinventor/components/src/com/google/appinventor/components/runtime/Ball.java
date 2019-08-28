@@ -118,9 +118,11 @@ public final class Ball extends Sprite {
       defaultValue = "5")
   @SimpleProperty()
   public void Radius(int radius) {
+    int dr = radius - this.radius;
+    // If the origin is at the center, the upper left corner moves to keep the center constant.
     if (originAtCenter) {
-      xLeft -= (radius - this.radius);
-      yTop -= (radius - this.radius);
+      xLeft -= dr;
+      yTop -= dr;
     }
     this.radius = radius;
     registerChange();
