@@ -458,8 +458,14 @@ public class YaVersion {
   // - Added Switch
   // For YOUNG_ANDROiD_VERSION 185:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 186:
+  // - BAROMETER_COMPONENT_VERSION was initialized to 1
+  // - HYGROMETER_COMPONENT_VERSION was initialized to 1
+  // - LIGHTSENSOR_COMPONENT_VERSION was initialized to 1
+  // - THERMOMETER_COMPONENT_VERSION was initialized to 1
 
-  public static final int YOUNG_ANDROID_VERSION = 185;
+
+  public static final int YOUNG_ANDROID_VERSION = 186;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1227,8 +1233,24 @@ public class YaVersion {
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
-
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
+
+  // For BAROMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For HYGROMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For LIGHTSENSOR_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For THERMOMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  public static final int BAROMETER_COMPONENT_VERSION = 1;
+  public static final int HYGROMETER_COMPONENT_VERSION = 1;
+  public static final int LIGHTSENSOR_COMPONENT_VERSION = 1;
+  public static final int THERMOMETER_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 

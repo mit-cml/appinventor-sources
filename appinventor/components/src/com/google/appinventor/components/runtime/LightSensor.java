@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -25,7 +26,7 @@ import android.hardware.SensorManager;
  * android.hardware.SensorListener
  * (http://developer.android.com/reference/android/hardware/SensorListener.html).
  */
-@DesignerComponent(version = 1,
+@DesignerComponent(version = YaVersion.LIGHTSENSOR_COMPONENT_VERSION,
                    description = "Non-visible component that can measure the light level.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,

@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
 
 import android.hardware.Sensor;
 
@@ -19,7 +20,7 @@ import android.hardware.Sensor;
  * Physical world component that can measure the relative ambient air 
  * humidity if supported by the hardware.
  */
-@DesignerComponent(version = 1,
+@DesignerComponent(version = YaVersion.HYGROMETER_COMPONENT_VERSION,
                    description = "Non-visible component that can measure the ambient humidity.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
