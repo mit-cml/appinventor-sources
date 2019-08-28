@@ -7,7 +7,6 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -57,7 +56,7 @@ public class Thermometer extends SingleValueSensor {
    *
    * @return the temperature in degrees Celsius
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
    public float Temperature() {
     return getValue();
   }

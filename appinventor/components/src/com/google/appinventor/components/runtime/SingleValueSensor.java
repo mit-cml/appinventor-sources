@@ -5,7 +5,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -69,7 +68,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
    * @return {@code true} indicates that a hygrometer is available,
    *         {@code false} that it isn't
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
   public boolean Available() {
     return isAvailable();
   }
@@ -81,7 +80,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
    * @return {@code true} indicates that the sensor generates events,
    *         {@code false} that it doesn't
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
   public boolean Enabled() {
     return enabled;
   }
@@ -109,8 +108,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   @SimpleProperty(
       description = "The requested minimum time in milliseconds between " +
       "changed values being reported. This is only a request, which the " +
-      "Android system is not guaranteed to respect.",
-      category = PropertyCategory.BEHAVIOR)
+      "Android system is not guaranteed to respect.")
   public int RefreshTime() {
     return refreshTime;
   }

@@ -6,7 +6,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -55,7 +54,7 @@ public class Barometer extends SingleValueSensor {
    *
    * @return the atmospheric pressure in hPa (millibar)
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
    public float AirPressure() {
       return getValue();
   }

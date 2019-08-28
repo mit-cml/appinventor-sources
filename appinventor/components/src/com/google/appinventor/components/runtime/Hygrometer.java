@@ -7,7 +7,6 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -56,7 +55,7 @@ public class Hygrometer extends SingleValueSensor {
    *
    * @return the relative ambient humidity as a percentage
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
    public float Humidity() {
       return getValue();
   }

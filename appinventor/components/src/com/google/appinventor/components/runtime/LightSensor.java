@@ -6,7 +6,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -63,7 +62,7 @@ public class LightSensor extends BufferedSingleValueSensor {
    *
    * @return lux
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
    public float Lux() {
     return getValue();
   }
@@ -74,7 +73,7 @@ public class LightSensor extends BufferedSingleValueSensor {
    *
    * @return lux
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
    public float AverageLux() {
     return getAverageValue();
   }
