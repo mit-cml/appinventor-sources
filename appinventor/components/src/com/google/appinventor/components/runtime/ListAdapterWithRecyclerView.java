@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import java.util.*;
 
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -62,8 +63,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         this.backgroundColor=backgroundColor;
         this.selectionColor=selectionColor;
         this.selection=selection;
-
-    }
+ }
 
     @Override
     public RvViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -128,26 +128,25 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         textViewFirst.setTextColor(textColor);
         textViewSecond.setTextColor(textColor);
       
-      if(layoutType==0){
+      if(layoutType==Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
         
-        linearLayout2.addView(textViewFirst);
         linearLayout1.addView(textViewFirst);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
-        }else if(layoutType==1){
+        }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT){
         
         linearLayout2.addView(textViewFirst);
         linearLayout2.addView(textViewSecond);
         linearLayout1.addView(linearLayout2);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
-        }else if(layoutType==2){
+        }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
         
         linearLayout1.addView(textViewFirst);
         linearLayout1.addView(textViewSecond);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
-        }else if(layoutType==3){
+        }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
         
         linearLayout2.addView(textViewFirst);
         linearLayout1.addView(imageView);
@@ -155,7 +154,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }
-      else if(layoutType==4){
+      else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
 
         linearLayout2.addView(textViewFirst);
         linearLayout2.addView(textViewSecond);
@@ -186,29 +185,29 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
                     }
                 }
             });
-            if(layoutType==0){
+            if(layoutType==Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
             String first =firstItem[position];
             holder.textViewFirst.setText(first);
-            }else if(layoutType==1){
-            String first =firstItem[position];
-            String second=secondItem[position];
-            
-            holder.textViewFirst.setText(first);
-            holder.textViewSecond.setText(second);
-            }else if(layoutType==2){
+            }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT){
             String first =firstItem[position];
             String second=secondItem[position];
             
             holder.textViewFirst.setText(first);
             holder.textViewSecond.setText(second);
-            }else if(layoutType==3){
+            }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
+            String first =firstItem[position];
+            String second=secondItem[position];
+            
+            holder.textViewFirst.setText(first);
+            holder.textViewSecond.setText(second);
+            }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             String first =firstItem[position];
             Drawable drawable = images.get(position);   
             ViewUtil.setImage(holder.imageVieww, drawable);
 
             holder.textViewFirst.setText(first);
             }
-            else if(layoutType==4){
+            else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
             String first =firstItem[position];
             String second=secondItem[position];
             Drawable drawable = images.get(position);   
@@ -225,7 +224,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         return (firstItem.length);
     }
 
-    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{//, View.OnLongClickListener{
+    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         
         public TextView textViewFirst;
         public TextView textViewSecond;
@@ -239,22 +238,22 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
             cardView=(CardView)view.findViewById(idCard);
 
-            if(layoutType == 0){
+            if(layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);
             }
-            else if(layoutType == 1){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            textViewSecond=(TextView)view.findViewById(idSecond);
-            }
-            else if(layoutType == 2){
+            else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);
             textViewSecond=(TextView)view.findViewById(idSecond);
             }
-            else if(layoutType == 3){
+            else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
+            textViewFirst = (TextView)view.findViewById(idFirst);
+            textViewSecond=(TextView)view.findViewById(idSecond);
+            }
+            else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);
             imageVieww = (ImageView)view.findViewById(idImages);
             }
-            else if(layoutType == 4){
+            else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);
             textViewSecond=(TextView)view.findViewById(idSecond);
             imageVieww = (ImageView)view.findViewById(idImages);

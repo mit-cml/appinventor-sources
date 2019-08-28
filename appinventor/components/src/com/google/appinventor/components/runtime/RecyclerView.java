@@ -25,6 +25,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
@@ -268,27 +269,27 @@ public final class RecyclerView extends AndroidViewComponent {
     
     ArrayList<Drawable> third = new ArrayList<Drawable>();
     
-    if(layout==0){
+    if(layout==Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       select[i]=false;   
     } 
-    }else if(layout==1){
+    }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";    
       select[i]=false;
     } 
-    }else if(layout==2){
+    }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";
       select[i]=false;
     } 
-    }else if(layout==3){
+    }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
@@ -303,7 +304,7 @@ public final class RecyclerView extends AndroidViewComponent {
       select[i]=false;
     } 
     
-    }else if(layout==4){
+    }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
@@ -340,10 +341,10 @@ public final class RecyclerView extends AndroidViewComponent {
     LinearLayoutManager layoutManager;
     GridLayoutManager gridlayoutManager;
 
-    if(orientation == 1){
+    if(orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL){
     layoutManager=new LinearLayoutManager(ctx,LinearLayoutManager.HORIZONTAL,false);
     recyclerView.setLayoutManager(layoutManager);}
-    else if(orientation == 0){
+    else if(orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL){
     layoutManager=new LinearLayoutManager(ctx,LinearLayoutManager.VERTICAL,false);  
     recyclerView.setLayoutManager(layoutManager);}
     else{

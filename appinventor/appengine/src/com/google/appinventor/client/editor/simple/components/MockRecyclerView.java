@@ -38,9 +38,6 @@ public final class MockRecyclerView extends MockVisibleComponent {
    * Component type name.
    */
   public static final String TYPE = "RecyclerView";
-  private static final String PROPERTY_NAME_PICTURE = "Picture";
-  protected static final String PROPERTY_NAME_RECYCLERVIEW_FIRST = "ElementsFromStringFirst";
-  protected static final String PROPERTY_NAME_RECYCLERVIEW_SECOND = "ElementsFromStringSecond";
   
   private final VerticalPanel listViewWidgets;
   
