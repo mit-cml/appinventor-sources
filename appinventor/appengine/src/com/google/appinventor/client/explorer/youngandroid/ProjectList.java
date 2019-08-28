@@ -330,8 +330,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       if(Ode.getGallerySettings().galleryEnabled()){
         if (project.isPublished()) {
           pw.publishedLabel.setText(PUBLISHED);
-        }
-        else {
+        } else {
           pw.publishedLabel.setText(NOT_PUBLISHED);
         }
       }

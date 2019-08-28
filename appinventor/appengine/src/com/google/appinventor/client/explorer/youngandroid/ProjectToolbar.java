@@ -246,7 +246,7 @@ public class ProjectToolbar extends Toolbar {
               MESSAGES.restoreProjectError()) {
             @Override
             public void onSuccess(UserProject project) {
-              if(project.getProjectId()== projectId){
+              if (project.getProjectId() == projectId) {
                 Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
                 if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                   Ode.getInstance().createEmptyTrashDialog(true);

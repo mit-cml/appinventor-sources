@@ -34,7 +34,7 @@ public class UserProject implements IsSerializable {
    */
   private long attributionId;
   /**
-   * The attribution ID.
+   * The moved to Trash flag.
    */
   private boolean projectMovedToTrashFlag;
 
@@ -81,7 +81,7 @@ public class UserProject implements IsSerializable {
     this.modificationDate = creationDate;
     this.galleryId = galleryId;
     this.attributionId = attributionId;
-    this.projectMovedToTrashFlag=projectMovedToTrashFlag;
+    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
   }
 
   /**
@@ -104,7 +104,7 @@ public class UserProject implements IsSerializable {
     this.modificationDate = modificationDate;
     this.galleryId = galleryId;
     this.attributionId = attributionId;
-    this.projectMovedToTrashFlag= projectMovedToTrashFlag;
+    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
   }
 
   /**

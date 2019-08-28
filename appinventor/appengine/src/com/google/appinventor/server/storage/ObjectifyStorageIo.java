@@ -762,7 +762,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<UserData> userKey = userKey(userId);
           datastore.delete(userProjectKey(userKey, projectId));
           // delete any FileData objects associated with this project
-          }
+        }
       }, true);
       // second job deletes the project files and ProjectData in the project's
       // entity group
