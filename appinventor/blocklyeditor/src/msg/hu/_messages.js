@@ -461,6 +461,7 @@ Blockly.Msg.hu.switch_language_to_hungarian = {
 	Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP = 'Igazzal tér vissza, ha a szöveg\nhossza 0, egyébként hamissal.';
 	Blockly.Msg.LANG_TEXT_COMPARE_LT = '<';
 	Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = '=';
+	Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
 	Blockly.Msg.LANG_TEXT_COMPARE_GT = '>';
 	Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#compare';
 	Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'szövegek összehasonlítása';

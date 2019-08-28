@@ -335,6 +335,7 @@ Blockly.Msg.ko.switch_language_to_korean = {
     Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP = '텍스트 길이가 0이면 참을, 그렇지 않으면 거짓을 반환합니다.';
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = '텍스트 비교하기';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = '텍스트1이 텍스트2보다 사전 순서 상 작은지 검사합니다.\n 만약 한 텍스트가 다른 텍스트의 접두사이면, 더 짧은 텍스트가 작은 것으로 간주됩니다. 대문자는 소문자보다 큽니다.';

@@ -347,6 +347,7 @@ Blockly.Msg.pl.switch_language_to_polish = {
     Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP = 'Zwraca prawdę jeśli długość tekstu\nwynosi 0, fałsz w innym przypadku.';
     Blockly.Msg.LANG_TEXT_COMPARE_LT = '<';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = '=';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = '>';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'porównaj tekst';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Sprawdza czy tekst1 jest leksykograficznie mniejszy niż tekst2.\nJeśli jeden tekst jest prefiksem innego, krótszy tekst jest\nuważany za mniejszy. Wielnie znaki poprzedzają małe znaki.';

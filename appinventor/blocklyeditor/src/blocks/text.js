@@ -160,6 +160,12 @@ Blockly.Blocks['text_compare'] = {
       value: 'EQUAL'
     }
   }, {
+    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + Blockly.Msg.LANG_TEXT_COMPARE_NEQ,
+    dropDown: {
+      titleName: 'OP',
+      value: 'NEQ'
+    }
+  }, {
     translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + Blockly.Msg.LANG_TEXT_COMPARE_GT,
     dropDown: {
       titleName: 'OP',
@@ -170,7 +176,7 @@ Blockly.Blocks['text_compare'] = {
 
 Blockly.Blocks.text_compare.OPERATORS = function () {
   return [
-    [Blockly.Msg.LANG_TEXT_COMPARE_LT, 'LT'], [Blockly.Msg.LANG_TEXT_COMPARE_EQUAL, 'EQUAL'], [Blockly.Msg.LANG_TEXT_COMPARE_GT, 'GT']
+    [Blockly.Msg.LANG_TEXT_COMPARE_LT, 'LT'], [Blockly.Msg.LANG_TEXT_COMPARE_EQUAL, 'EQUAL'], [Blockly.Msg.LANG_TEXT_COMPARE_NEQ, 'NEQ'], [Blockly.Msg.LANG_TEXT_COMPARE_GT, 'GT']
   ]
 };
 
@@ -178,6 +184,7 @@ Blockly.Blocks.text_compare.TOOLTIPS = function () {
   return {
     LT: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT,
     EQUAL: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL,
+    NEQ: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ,
     GT: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT
   }
 };
