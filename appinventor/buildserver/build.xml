@@ -268,6 +268,8 @@
       <arg value="--isForCompanion" />
       <arg value="--isForEmulator" />
       <arg value="--includeDangerousPermissions" />
+      <arg value="--extensions" />
+      <arg value="edu.mit.appinventor.companionextras.CompanionExtras" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
       <arg value="--outputFileName" />
