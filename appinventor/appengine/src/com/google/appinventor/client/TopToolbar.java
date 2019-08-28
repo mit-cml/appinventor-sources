@@ -642,12 +642,13 @@ public class TopToolbar extends Composite {
                       MESSAGES.moveToTrashProjectError()) {
                 @Override
                 public void onSuccess(UserProject project) {
-                  if(project.getProjectId()== projectId){
+                  if(project.getProjectId() == projectId){
                     Ode.getInstance().getProjectManager().removeProject(projectId);
                     Ode.getInstance().getProjectManager().addDeletedProject(project);
                     if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
                       Ode.getInstance().createEmptyTrashDialog(true);
-                    }}
+                    }
+                  }
                 }
               });
     }

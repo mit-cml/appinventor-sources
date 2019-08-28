@@ -445,17 +445,17 @@ public class Ode implements EntryPoint {
     Runnable next = new Runnable() {
         @Override
         public void run() {
-          if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+          if (currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
             ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
             ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
             //shifting back to show projects
-            if(currentView==TRASHCAN)  {
+            if (currentView == TRASHCAN)  {
               projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
               projectListPanel.setWidth("100%");
               projectListPanel.add(ProjectListBox.getProjectListBox());
               pVertPanel.add(projectListPanel);
             }
-        }
+          }
           currentView = PROJECTS;
           getTopToolbar().updateFileMenuButtons(currentView);
           deckPanel.showWidget(projectsTabIndex);
@@ -483,11 +483,11 @@ public class Ode implements EntryPoint {
 
   public void switchToTrash() {
     hideTutorials();
-    if(currentView!=TRASHCAN){
+    if (currentView != TRASHCAN){
       TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
       TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
     }
-    currentView=TRASHCAN;
+    currentView = TRASHCAN;
     projectListPane2.setWidth("100%");
     projectListPanel.remove(ProjectListBox.getProjectListBox());
     projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
