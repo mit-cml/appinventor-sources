@@ -184,6 +184,7 @@ Blockly.Blocks.text_compare.TOOLTIPS = function () {
   return {
     LT: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT,
     EQUAL: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL,
+    NEQ: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ,
     GT: Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT
   }
 };
