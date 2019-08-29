@@ -47,23 +47,29 @@
        ===================================================================== -->
 
         <target name="CheckBlocklyCompile">
+          <condition property="plover.script.filename" value="ploverConfigDebug.js" else="ploverConfigRelease.js">
+            <isset property="debug" />
+          </condition>
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
             <srcfiles dir="src/" includes="**/*.js" />
             <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
             <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-            <srcfiles dir="${basedir}" includes="ploverConfig.js" />
+            <srcfiles dir="${basedir}" includes="${plover.script.filename}" />
             <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
           </uptodate>
         </target>
 
-	<target name="BlocklyCompile"
-		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
-		      depends="init,CheckBlocklyCompile"
-                      unless="BlocklyCompile.uptodate">
-		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
-			<arg line="build ploverConfig.js" />
-		</java>
-	</target>
+        <target name="BlocklyCompile"
+	      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
+	      depends="init,CheckBlocklyCompile"
+                unless="BlocklyCompile.uptodate">
+          <condition property="build.arg" value="build ploverConfigDebug.js" else="build ploverConfigRelease.js">
+            <isset property="debug" />
+          </condition>
+	<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
+	  <arg line="${build.arg}" />
+	</java>
+        </target>
 
 	<!--  property name="js.tests.dir" location="./tests" /-->
 	<!-- Change as needed -->
