@@ -153,11 +153,4 @@ public interface Component {
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
 
-  // constants for type of ListViewLayout
-  static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
-  static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
-  static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
-  static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
-  static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
-
 }

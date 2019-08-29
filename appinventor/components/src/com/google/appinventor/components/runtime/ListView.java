@@ -27,6 +27,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
@@ -40,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ListView Component. Non-Visible component to create a ListView in the Screen from a series of
@@ -103,8 +105,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private String propertyValue;
 
   private ArrayAdapter<JSONObject> itemAdapter;
+  /*
+   * the copy is maintained to get the actual index of the selected item from the original list
+   * while the filter is applied, which filters the original list
+   */
   private ArrayAdapter<JSONObject> itemAdapterCopy;
-  private ArrayList<JSONObject> currentItems;
+  private List<JSONObject> currentItems;
 
   /**
    * Creates a new ListView component.
@@ -140,7 +146,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         @Override
         public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
           // When user changed the Text
-          if(!currentItems.isEmpty()) {
+          if (!currentItems.isEmpty()) {
             setAdapterData();
             itemAdapter.getFilter().filter(cs.toString());
           } else {
@@ -183,6 +189,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     TextSize(textSize);
     DetailTextSize(detailTextSize);
     imageWidth = DEFAULT_IMAGE_WIDTH;
+    // initially assuming that the image is of square shape
     imageHeight = DEFAULT_IMAGE_WIDTH;
     ImageWidth(imageWidth);
     ImageHeight(imageHeight);
@@ -192,8 +199,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     listViewLayout.addView(view);
     listViewLayout.requestLayout();
     container.$add(this);
-    ListViewLayout(Component.LISTVIEW_LAYOUT_SINGLE_TEXT);
-    AddData("");
+    ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
+    ListData("");
   }
 
   @Override
@@ -298,36 +305,36 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Sets the items of the ListView through an adapter
    */
   public void setAdapterData(){
-    if(!currentItems.isEmpty()) {
+    if (!currentItems.isEmpty()) {
       // if the data is available in AddData property
-      if(layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
+      if (layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
         ListViewArrayAdapterSingleText adapterSingleText = new ListViewArrayAdapterSingleText(textSize, textColor,
             container, currentItems);
         itemAdapter = adapterSingleText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_1);
-      } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
+      } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT) {
         ListViewArrayAdapterTwoText adapterTwoText = new ListViewArrayAdapterTwoText(textSize, detailTextSize,
             textColor, detailTextColor, container, currentItems);
         itemAdapter = adapterTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_2);
-      } else if(layout == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+      } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
         ListViewArrayAdapterTwoTextLinear adapterTwoTextLinear = new ListViewArrayAdapterTwoTextLinear(textSize,
             detailTextSize, textColor, detailTextColor, container, currentItems);
         itemAdapter = adapterTwoTextLinear.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
-      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
+      } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
         ListViewArrayAdapterImageSingleText adapterImageSingleText = new ListViewArrayAdapterImageSingleText(textSize,
             textColor, imageWidth, imageHeight, container, currentItems);
         itemAdapter = adapterImageSingleText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
-      } else if(layout == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+      } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         ListViewArrayAdapterImageTwoText adapterImageTwoText = new ListViewArrayAdapterImageTwoText(textSize,
             detailTextSize, textColor, detailTextColor, imageWidth, imageHeight, container, currentItems);
         itemAdapter = adapterImageTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
       }
       view.setAdapter(itemAdapter);
-      for(int i = 0; i < itemAdapter.getCount(); ++i) {
+      for (int i = 0; i < itemAdapter.getCount(); ++i) {
         itemAdapterCopy.insert(itemAdapter.getItem(i), i);
       }
     } else {
@@ -394,8 +401,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       ,
       category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index){
-    if(!currentItems.isEmpty()) {
-      selectionIndex = ElementsUtil.selectionIndex(index, currentItems);
+    if (!currentItems.isEmpty()) {
+      selectionIndex = ElementsUtil.selectionIndex(currentItems, index);
       selection = ElementsUtil.setSelectionFromIndex(selectionIndex, currentItems.get(selectionIndex-1));
       selectionDetailText = ElementsUtil.setDetailSelectionFromIndex(selectionIndex, currentItems.get(selectionIndex-1));
     } else {
@@ -426,8 +433,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    if(!currentItems.isEmpty()) {
-      selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, currentItems);
+    if (!currentItems.isEmpty()) {
+      selectionIndex = ElementsUtil.setSelectedIndexFromValue(currentItems, value);
       selectionDetailText = ElementsUtil.setDetailSelectionFromIndex(selectionIndex, currentItems.get(selectionIndex-1));
     } else {
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
@@ -447,13 +454,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * SelectionDetailText property setter method
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
   @SimpleProperty
   public void SelectionDetailText(String value){
     selectionDetailText = value;
-    if(!currentItems.isEmpty() && (selection == null || selection.equals(""))) {
-      selectionIndex = ElementsUtil.setSelectedIndexFromDetailTextValue(value, currentItems);
+    if (!currentItems.isEmpty() && (selection == null || selection.equals(""))) {
+      selectionIndex = ElementsUtil.setSelectedIndexFromDetailTextValue(currentItems, value);
       selection = ElementsUtil.setSelectionFromIndex(selectionIndex, currentItems.get(selectionIndex-1));
     } else {
       selectionIndex = 0;
@@ -467,13 +472,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    if(!currentItems.isEmpty()) {
+    if (!currentItems.isEmpty()) {
       JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
-      this.selection = item.has("Text1")?item.getString("Text1"):"";
-      this.selectionDetailText = item.has("Text2")?item.getString("Text2"):"";
+      this.selection = item.has("Text1") ? item.getString("Text1") : "";
+      this.selectionDetailText = item.has("Text2") ? item.getString("Text2") : "";
       this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
     } else {
-      System.out.println("Spannable Adapter/...........");
       Spannable item = (Spannable) parent.getAdapter().getItem(position);
       this.selection = item.toString();
       this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
@@ -646,7 +650,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void TextSize(int fontSize) {
-    if(fontSize>1000)
+    if (fontSize>1000 || fontSize<1)
       textSize = 999;
     else
       textSize = fontSize;
@@ -674,7 +678,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void DetailTextSize(int fontSize) {
-    if(fontSize>1000)
+    if (fontSize>1000 || fontSize<1)
       detailTextSize = 999;
     else
       detailTextSize = fontSize;
@@ -747,7 +751,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param value integer value to determine type of ListView layout
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
-      defaultValue = Component.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
+      defaultValue = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
   @SimpleProperty(userVisible = false)
   public void ListViewLayout(int value) {
     layout = value;
@@ -760,7 +764,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return string form of the array of JsonObject
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String AddData() {
+  public String ListData() {
     return propertyValue;
   }
 
@@ -771,11 +775,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
-  public void AddData(String propertyValue){
+  public void ListData(String propertyValue){
     this.propertyValue = propertyValue;
-    if(propertyValue != null && propertyValue != "") {
+    if (propertyValue != null && propertyValue != "") {
       JSONArray arr = new JSONArray(propertyValue);
-      for(int i = 0; i < arr.length(); ++i) {
+      for (int i = 0; i < arr.length(); ++i) {
         currentItems.add(i, arr.getJSONObject(i));
       }
     }
