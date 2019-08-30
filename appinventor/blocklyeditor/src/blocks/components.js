@@ -280,7 +280,7 @@ Blockly.Blocks.component_event = {
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
-      tooltipDescription = componentDb.getInternationalizedEventDescription(eventType.name);
+      tooltipDescription = componentDb.getInternationalizedEventDescription(eventType.name, eventType.description);
     }
     else {
       tooltipDescription = componentDb.getInternationalizedEventDescription(this.eventName);
@@ -708,7 +708,7 @@ Blockly.Blocks.component_method = {
 
     var tooltipDescription;
     if (methodTypeObject) {
-      tooltipDescription = componentDb.getInternationalizedMethodDescription(methodTypeObject.name);
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(methodTypeObject.name, methodTypeObject.description);
     } else {
       tooltipDescription = componentDb.getInternationalizedMethodDescription(this.typeName);
     }
@@ -995,7 +995,7 @@ Blockly.Blocks.component_set_get = {
     }
     var tooltipDescription;
     if (this.propertyName) {
-      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.propertyName);
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.propertyName, this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1011,7 +1011,7 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
         if (thisBlock.propertyName) {
-          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName));
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
         }

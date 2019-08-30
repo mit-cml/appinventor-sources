@@ -436,6 +436,7 @@ Blockly.Msg.ru.switch_language_to_russian = {
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Возвращает копию текста со строчными буквами.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = 'Возвращает копию текста с заглавными буквами. ';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = '=';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'сравнить тексты';
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';

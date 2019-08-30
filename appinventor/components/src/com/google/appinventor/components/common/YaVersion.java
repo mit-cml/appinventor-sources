@@ -458,8 +458,10 @@ public class YaVersion {
   // - Added Switch
   // For YOUNG_ANDROiD_VERSION 185:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 186:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 27
 
-  public static final int YOUNG_ANDROID_VERSION = 185;
+  public static final int YOUNG_ANDROID_VERSION = 186;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -531,8 +533,10 @@ public class YaVersion {
   // - List join with separator block was added.
   // For BLOCKS_LANGUAGE_VERSION 26:
   // - Generic event handlers were added.
+  // For BLOCKS_LANGUAGE_VERSION 27:
+  // - The text compare block was modified to include the not-equal operator
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 26;
+  public static final int BLOCKS_LANGUAGE_VERSION = 27;
 
   // ................................. Component Version Numbers ..................................
 
