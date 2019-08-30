@@ -68,12 +68,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     @Override
     public RvViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
-        TextView textViewFirst=new TextView(context);
-        TextView textViewSecond=new TextView(context);
-        ImageView imageView = new ImageView(context);
-
-        boolean isSelected=false;
-
         CardView cardView=new CardView(context);
         cardView.setUseCompatPadding(true);
         cardView.setContentPadding(30, 30, 30, 0);
@@ -83,78 +77,151 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         cardView.setMaxCardElevation(3f);
         cardView.setBackgroundColor(backgroundColor);
         cardView.setClickable(isSelected);
-
-        idFirst=View.generateViewId();
-        idSecond=View.generateViewId();
-        idImages=View.generateViewId();
         idCard=View.generateViewId();
-
-        textViewFirst.setId(idFirst);
-        textViewSecond.setId(idSecond);
-        imageView.setId(idImages);
         cardView.setId(idCard);
-
-        LinearLayout linearLayout1= new LinearLayout(context);
-        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        linearLayout1.setLayoutParams(layoutParamslinear1);
-        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
-
-        LinearLayout linearLayout2= new LinearLayout(context);
-        LinearLayout.LayoutParams layoutParamslinear2 = new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2);
-        linearLayout2.setLayoutParams(layoutParamslinear2);
-        linearLayout2.setOrientation(LinearLayout.VERTICAL);
-
-        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams1.topMargin = 10;
-    
-        LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams2.topMargin = 10;
-
-        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(200,200,1);
-        layoutParamsImage.setMargins(5,25,5,25);
-        imageView.setLayoutParams(layoutParamsImage);
 
         CardView.LayoutParams params1=new CardView.LayoutParams(CardView.LayoutParams.FILL_PARENT,CardView.LayoutParams.WRAP_CONTENT);
         params1.setMargins(30 ,30,30,30);
 
         ViewCompat.setElevation(cardView, 20);
-
-        textViewFirst.setLayoutParams(layoutParams1);
-        textViewSecond.setLayoutParams(layoutParams2);
-     
-        textViewFirst.setTextSize(textSize);
-        textViewSecond.setTextSize(textSize);
-
-        textViewFirst.setTextColor(textColor);
-        textViewSecond.setTextColor(textColor);
       
-      if(layoutType==Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
+        if(layoutType==Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
         
+        TextView textViewFirst=new TextView(context);
+        idFirst=View.generateViewId();
+        textViewFirst.setId(idFirst);
+        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams1.topMargin = 10;
+        textViewFirst.setLayoutParams(layoutParams1);
+        textViewFirst.setTextSize(textSize);
+        textViewFirst.setTextColor(textColor);      
+        
+        LinearLayout linearLayout1= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout1.setLayoutParams(layoutParamslinear1);
+        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
+
         linearLayout1.addView(textViewFirst);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT){
-        
+
+        TextView textViewFirst=new TextView(context);
+        idFirst=View.generateViewId();
+        textViewFirst.setId(idFirst);
+        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams1.topMargin = 10;
+        textViewFirst.setLayoutParams(layoutParams1);
+        textViewFirst.setTextSize(textSize);
+        textViewFirst.setTextColor(textColor);
+
+        TextView textViewSecond=new TextView(context);
+        idSecond=View.generateViewId();
+        textViewSecond.setId(idSecond);
+        LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams2.topMargin = 10;
+        textViewSecond.setLayoutParams(layoutParams2);
+        textViewSecond.setTextSize(textSize);       
+        textViewSecond.setTextColor(textColor);
+                
+        LinearLayout linearLayout2= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear2 = new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2);
+        linearLayout2.setLayoutParams(layoutParamslinear2);
+        linearLayout2.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout linearLayout1= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout1.setLayoutParams(layoutParamslinear1);
+        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
+     
         linearLayout2.addView(textViewFirst);
         linearLayout2.addView(textViewSecond);
         linearLayout1.addView(linearLayout2);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
+
+        TextView textViewFirst=new TextView(context);
+        idFirst=View.generateViewId();
+        textViewFirst.setId(idFirst);
+        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams1.topMargin = 10;
+        textViewFirst.setLayoutParams(layoutParams1);
+        textViewFirst.setTextSize(textSize);
+        textViewFirst.setTextColor(textColor);
+
+        LinearLayout linearLayout1= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout1.setLayoutParams(layoutParamslinear1);
+        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
         
         linearLayout1.addView(textViewFirst);
-        linearLayout1.addView(textViewSecond);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
+
+        TextView textViewFirst=new TextView(context);
+        idFirst=View.generateViewId();
+        textViewFirst.setId(idFirst);
+        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams1.topMargin = 10;
+        textViewFirst.setLayoutParams(layoutParams1);
+        textViewFirst.setTextSize(textSize);
+        textViewFirst.setTextColor(textColor);
+
+        ImageView imageView = new ImageView(context);
+        idImages=View.generateViewId();
+        imageView.setId(idImages);
+        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(200,200,1);
+        layoutParamsImage.setMargins(5,25,5,25);
+        imageView.setLayoutParams(layoutParamsImage);
+
+        LinearLayout linearLayout1= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout1.setLayoutParams(layoutParamslinear1);
+        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
         
-        linearLayout2.addView(textViewFirst);
         linearLayout1.addView(imageView);
-        linearLayout1.addView(linearLayout2);
+        linearLayout1.addView(textViewFirst);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }
       else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
+
+        TextView textViewFirst=new TextView(context);
+        idFirst=View.generateViewId();
+        textViewFirst.setId(idFirst);
+        LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams1.topMargin = 10;
+        textViewFirst.setLayoutParams(layoutParams1);
+        textViewFirst.setTextSize(textSize);
+        textViewFirst.setTextColor(textColor);
+
+        TextView textViewSecond=new TextView(context);
+        idSecond=View.generateViewId();
+        textViewSecond.setId(idSecond);
+        LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams2.topMargin = 10;
+        textViewSecond.setLayoutParams(layoutParams2);
+        textViewSecond.setTextSize(textSize);       
+        textViewSecond.setTextColor(textColor);
+                
+        ImageView imageView = new ImageView(context);
+        idImages=View.generateViewId();
+        imageView.setId(idImages);
+        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(200,200,1);
+        layoutParamsImage.setMargins(5,25,5,25);
+        imageView.setLayoutParams(layoutParamsImage);
+
+        LinearLayout linearLayout2= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear2 = new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2);
+        linearLayout2.setLayoutParams(layoutParamslinear2);
+        linearLayout2.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout linearLayout1= new LinearLayout(context);
+        LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout1.setLayoutParams(layoutParamslinear1);
+        linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
 
         linearLayout2.addView(textViewFirst);
         linearLayout2.addView(textViewSecond);
@@ -170,8 +237,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     @Override
     public void onBindViewHolder(final RvViewHolder holder, int position) {
          
-
-         final int pos=position;
+            final int pos=position;
 
             holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,9 +263,9 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
             String first =firstItem[position];
             String second=secondItem[position];
-            
-            holder.textViewFirst.setText(first);
-            holder.textViewSecond.setText(second);
+            String combined = first + second;
+
+            holder.textViewFirst.setText(combined);
             }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             String first =firstItem[position];
             Drawable drawable = images.get(position);   
@@ -247,7 +313,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             }
             else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
             textViewFirst = (TextView)view.findViewById(idFirst);
-            textViewSecond=(TextView)view.findViewById(idSecond);
             }
             else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);
