@@ -556,13 +556,13 @@ none
                       <dd> If enabled, then device will listen for changes in air pressure.</dd>
 
                       <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changed air pressure being
+                      <dd> The requested time in milliseconds between changes in air pressure being
                            reported. Android is not guaranteed to honor the request.
                            Setting this property has no effect on pre-Gingerbread devices.</dd>
                   </dl>
                   <h3> Events </h3>
                   <dl>
-                      <dt> <code> TemperatureChanged(temperature) </code> </dt>
+                      <dt> <code> AirPressureChanged(pressure) </code> </dt>
                       <dd> Called when a change is detected in the air pressure (in hPa).</dd>
                   </dl>
 
@@ -718,7 +718,7 @@ none
                            and enabled.</dd>
 
                       <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changed ambient air humidity being
+                      <dd> The requested time in milliseconds between changes in ambient air humidity being
                            reported. Android is not guaranteed to honor the request.
                            Setting this property has no effect on pre-Gingerbread devices.</dd>
                   </dl>
@@ -748,13 +748,13 @@ none
                            and enabled.</dd>
 
                       <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changed light levels being
+                      <dd> The requested time in milliseconds between changes in light level being
                            reported. Android is not guaranteed to honor the request.
                            Setting this property has no effect on pre-Gingerbread devices.</dd>
                   </dl>
                   <h3> Events </h3>
                   <dl>
-                      <dt> <code> LightChanged(temperature) </code> </dt>
+                      <dt> <code> LightChanged(lux) </code> </dt>
                       <dd> Called when a change is detected in the light level (in lux).</dd>
                   </dl>
 
@@ -1034,7 +1034,7 @@ none
                       <dd> If enabled, then device will listen for changes in temperature.</dd>
 
                       <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changed temperatures being
+                      <dd> The requested time in milliseconds between changes in temperature being
                            reported. Android is not guaranteed to honor the request.
                            Setting this property has no effect on pre-Gingerbread devices.</dd>
                       <dt> <code class="c2"> Temperature </code> </dt>
