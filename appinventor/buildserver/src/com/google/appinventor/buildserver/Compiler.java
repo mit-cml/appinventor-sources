@@ -9,6 +9,7 @@ package com.google.appinventor.buildserver;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -77,8 +78,6 @@ public final class Compiler {
    */
 
   public static int currentProgress = 10;
-
-  public static final int TARGET_SDK_VERSION = 28;
 
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
@@ -874,7 +873,7 @@ public final class Compiler {
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
       out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"" +
-          TARGET_SDK_VERSION + "\" />\n");
+          YaVersion.TARGET_SDK_VERSION + "\" />\n");
 
       out.write("  <application ");
 

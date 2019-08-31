@@ -538,6 +538,10 @@ public class YaVersion {
 
   public static final int BLOCKS_LANGUAGE_VERSION = 27;
 
+  // ................................. Target SDK Version Number ..................................
+
+  public static final int TARGET_SDK_VERSION = 28;
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
