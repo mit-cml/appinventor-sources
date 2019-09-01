@@ -493,6 +493,7 @@ public class Ode implements EntryPoint {
     projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
     pVertPanel.remove(projectListPanel);
     pVertPanel.add(projectListPane2);
+    deckPanel.showWidget(projectsTabIndex);
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setPublishOrUpdateButtonVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);

@@ -37,7 +37,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_TRASH = "Trash";
   private static final String WIDGET_NAME_PROJECT= "Projects";
   private static final String WIDGET_NAME_RESTORE= "Restore";
-  private static final String WIDGET_NAME_DELETE_FOREVER= "Delete Forever";
+  private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
 
   private boolean isReadOnly;
 
@@ -57,11 +57,11 @@ public class ProjectToolbar extends Toolbar {
         new PublishOrUpdateAction()));
     addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
         new TrashAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.projectsTabName(),
+    addButton(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.myProjectsButton(),
         new BackToProjectViewAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectMenuItem(),
+    addButton(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectButton(),
         new RestoreProjectAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE_FOREVER,MESSAGES.deleteForeverProjectMenuItem(),
+    addButton(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
         new DeleteForeverProjectAction()));
 
     setTrashTabButtonsVisible(false);
@@ -75,7 +75,7 @@ public class ProjectToolbar extends Toolbar {
   public void setTrashTabButtonsVisible(boolean visible) {
     setButtonVisible(WIDGET_NAME_PROJECT, visible);
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
-    setButtonVisible(WIDGET_NAME_DELETE_FOREVER, visible);
+    setButtonVisible(WIDGET_NAME_DELETE_FROM_TRASH, visible);
     updateTrashButtons();
   }
 
@@ -437,11 +437,11 @@ public class ProjectToolbar extends Toolbar {
     TrashProjectList trashProjectList = TrashProjectListBox.getTrashProjectListBox().getTrashProjectList();
     int numSelectedProjects = trashProjectList.getNumSelectedProjects();
     if (isReadOnly) {           // If we are read-only, we disable all buttons
-      setButtonEnabled(WIDGET_NAME_DELETE_FOREVER, false);
+      setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, false);
       setButtonEnabled(WIDGET_NAME_RESTORE, false);
       return;
     }
-    setButtonEnabled(WIDGET_NAME_DELETE_FOREVER, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
   }
 
