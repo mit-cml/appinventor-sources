@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.google.appinventor.components.runtime.ComponentContainer;
 import org.json.JSONObject;
 
@@ -87,18 +88,22 @@ public class ListViewArrayAdapterTwoTextLinear {
    */
   private View createView(){
     LinearLayout linearLayout = new LinearLayout(container.$context());
+    linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT));
     linearLayout.setId(1);
     linearLayout.setOrientation(LinearLayout.HORIZONTAL);
     linearLayout.setPadding(15,15,15,15);
     TextView textView1 = new TextView(container.$context());
     textView1.setPadding(10,10,10, 10);
     textView1.setGravity(Gravity.LEFT);
-    textView1.setLayoutParams(new LinearLayout.LayoutParams(450, ViewGroup.LayoutParams.WRAP_CONTENT));
+    textView1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     textView1.setId(2);
     TextView textView2 = new TextView(container.$context());
     textView2.setPadding(10,10,10, 10);
     textView2.setGravity(Gravity.RIGHT);
-    textView2.setLayoutParams(new LinearLayout.LayoutParams(450, ViewGroup.LayoutParams.WRAP_CONTENT));
+    textView2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     textView2.setId(3);
     linearLayout.addView(textView1);
     linearLayout.addView(textView2);
