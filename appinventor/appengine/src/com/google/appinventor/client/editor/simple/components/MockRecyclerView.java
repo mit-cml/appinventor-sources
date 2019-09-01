@@ -54,6 +54,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   //  Needed for background color of labelInItem
   private String backgroundColor;
   private String textColor;
+  private String detailTextColor;
   
   private String layout="4";
   private ArrayList<JSONObject> currentItems;
@@ -81,6 +82,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
     // textColor must be set before the component is initialized, because onPropertyChange
     // might call setSlementsFromString, which tries to set the item textcolor
     textColor  = DEFAULT_TEXT_COLOR;
+    detailTextColor = DEFAULT_TEXT_COLOR;
     initComponent(listViewWidgets);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidgets, DEFAULT_BACKGROUND_COLOR);
     }
@@ -163,7 +165,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
         String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
-        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text1, detailTextColor));
         listViewWidgets.add(verticalItemPanel);
       } 
       else if(layout.equals("1")) {
@@ -173,7 +175,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
         String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
         String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
-        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text1, detailTextColor));
         verticalItemPanel.add(createInlineLabel(text2, textColor));
         listViewWidgets.add(verticalItemPanel);
       }
@@ -184,7 +186,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
         String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
         String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
-        InlineLabel label1 = createInlineLabel(text1, textColor);
+        InlineLabel label1 = createInlineLabel(text1, detailTextColor);
         InlineLabel label2 = createInlineLabel(text2, textColor);
         horizontalItemPanel.add(label1);
         horizontalItemPanel.add(label2);
@@ -199,7 +201,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
         horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
-        horizontalItemPanel.add(createInlineLabel(text1, textColor));
+        horizontalItemPanel.add(createInlineLabel(text1, detailTextColor));
         listViewWidgets.add(horizontalItemPanel);
       } 
       else if(layout.equals("4")) {
@@ -211,7 +213,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
         String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
         String image = object.containsKey("Image")?object.get("Image").isString().stringValue():"None";
-        verticalItemPanel.add(createInlineLabel(text1, textColor));
+        verticalItemPanel.add(createInlineLabel(text1, detailTextColor));
         verticalItemPanel.add(createInlineLabel(text2, textColor));
         horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
@@ -268,6 +270,11 @@ public final class MockRecyclerView extends MockVisibleComponent {
     }
      else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       textColor = newValue;
+      createLabelItems(currentItems);
+      refreshForm();
+    }
+    else if (propertyName.equals(PROPERTY_NAME_DETAILTEXTCOLOR)) {
+      detailTextColor = newValue;
       createLabelItems(currentItems);
       refreshForm();
     }

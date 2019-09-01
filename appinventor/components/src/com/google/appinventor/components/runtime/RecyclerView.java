@@ -81,16 +81,22 @@ public final class RecyclerView extends AndroidViewComponent {
     private static final int DEFAULT_BACKGROUND_COLOR = Color.BLACK;
 
     private int textColor;
-    private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
+    private int detailTextColor;
+    private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;   
 
     private int selectionColor;
     private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
 
     private int textSize;
+    private int detailTextSize;
     private static final int DEFAULT_TEXT_SIZE = 22;
 
     private int gridCount;
     private static final int DEFAULT_GRID_COUNT = 2;
+
+    private int imageWidth;
+    private int imageHeight;
+    private static final int DEFAULT_IMAGE_WIDTH = 200;
 
     private int layout;
     private String propertyValue;
@@ -185,10 +191,17 @@ public final class RecyclerView extends AndroidViewComponent {
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    SelectionColor(DEFAULT_SELECTION_COLOR);
+    ImageWidth(DEFAULT_IMAGE_WIDTH);
+    ImageHeight(DEFAULT_IMAGE_WIDTH);
   
     textColor = DEFAULT_TEXT_COLOR;
+    detailTextColor = DEFAULT_TEXT_COLOR;
     textSize = DEFAULT_TEXT_SIZE;
+    detailTextSize = DEFAULT_TEXT_SIZE;
     gridCount=DEFAULT_GRID_COUNT;
+
+
     
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
@@ -322,7 +335,7 @@ public final class RecyclerView extends AndroidViewComponent {
     
     }
     
-  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,textSize,layout,backgroundColor,selectionColor,select);  
+  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,detailTextColor,textSize,detailTextSize,layout,backgroundColor,selectionColor,select,imageWidth,imageHeight);  
    
    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
     @Override
@@ -497,6 +510,66 @@ public final class RecyclerView extends AndroidViewComponent {
       setAdapterr();
   }
 
+
+/**
+   * Returns the listview's text item color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @return background color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(
+      description = "The text color of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int DetailTextColor() {
+    return detailTextColor;
+  }
+
+  /**
+   * Specifies the ListView item's text color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @param argb background color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void DetailTextColor(int argb) {
+      detailTextColor = argb;
+      setAdapterr();
+  }
+
+  /**
+   * Returns the listview's text font Size
+   *
+   * @return text size as an float
+  */ 
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int DetailTextSize() {
+    return detailTextSize;
+  }
+
+  /**
+   * Specifies the ListView item's text font size
+   *
+   * @param integer value for font size
+  */ 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue ="" + DEFAULT_TEXT_SIZE )
+  @SimpleProperty
+  public void DetailTextSize(int fontSize) {
+      if(fontSize>1000)
+        detailTextSize = 999;
+      else
+        detailTextSize = fontSize;
+      setAdapterr();
+  }
+
   /**
    * Returns the recyclerview's grid count
    *
@@ -593,5 +666,56 @@ public final class RecyclerView extends AndroidViewComponent {
     System.out.println("Spannable Adapter"+selectionIndex);
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
+
+  /**
+   * Returns the image width of RecyclerView layouts containing images
+   *
+   * @return width of image
+   */
+  @SimpleProperty(
+      description = "The image width of the Recyclerview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageWidth() {
+    return imageWidth;
+  }
+
+  /**
+   * Specifies the image width of RecyclerView layouts containing images
+   *
+   * @param width sets the width of image in the Recycleriew row
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageWidth(int width) {
+    imageWidth = width;
+    setAdapterr();
+  }
+
+  /**
+   * Returns the image height of RecyclerView layouts containing images
+   *
+   * @return height of image
+   */
+  @SimpleProperty(
+      description = "The image height of the Recyclerview image items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ImageHeight() {
+    return imageHeight;
+  }
+
+  /**
+   * Specifies the image height of RecyclerView layouts containing images
+   *
+   * @param height sets the height of image in the RecyclerView row
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+  @SimpleProperty
+  public void ImageHeight(int height) {
+    imageHeight = height;
+    setAdapterr();
+  }
+  
 
 }

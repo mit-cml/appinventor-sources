@@ -42,27 +42,35 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private ArrayList<Drawable> images;
     private Context context;
     private int textColor;
-    private int textSize; 
+    private int textSize;
+    private int detailTextColor;
+    private int detailTextSize; 
     private int layoutType;
     private int backgroundColor;
     private int selectionColor;
     private int checkedPosition = -1;
+    private int imageHeight;
+    private int imageWidth;
 
     public boolean isSelected=false;
 
     private int idFirst,idSecond,idImages,idCard;
 
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int textSize,int layoutType,int backgroundColor,int selectionColor,boolean[] selection){//,int selectionIndex){
+    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int detailTextColor,int textSize,int detailTextSize,int layoutType,int backgroundColor,int selectionColor,boolean[] selection,int imageWidth,int imageHeight){
         this.firstItem = first;
         this.secondItem = second;   
         this.images=images;
         this.context=context;
         this.textSize=textSize;
         this.textColor=textColor;
+        this.detailTextColor=detailTextColor;
+        this.detailTextSize=detailTextSize;
         this.layoutType=layoutType;
         this.backgroundColor=backgroundColor;
         this.selectionColor=selectionColor;
         this.selection=selection;
+        this.imageHeight=imageHeight;
+        this.imageWidth=imageWidth;
  }
 
     @Override
@@ -93,8 +101,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(textSize);
-        textViewFirst.setTextColor(textColor);      
+        textViewFirst.setTextSize(detailTextSize);
+        textViewFirst.setTextColor(detailTextColor);      
         
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -112,8 +120,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(textSize);
-        textViewFirst.setTextColor(textColor);
+        textViewFirst.setTextSize(detailTextSize);
+        textViewFirst.setTextColor(detailTextColor);
 
         TextView textViewSecond=new TextView(context);
         idSecond=View.generateViewId();
@@ -147,8 +155,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(textSize);
-        textViewFirst.setTextColor(textColor);
+        textViewFirst.setTextSize(detailTextSize);
+        textViewFirst.setTextColor(detailTextColor);
 
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -166,16 +174,15 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(textSize);
-        textViewFirst.setTextColor(textColor);
+        textViewFirst.setTextSize(detailTextSize);
+        textViewFirst.setTextColor(detailTextColor);
 
         ImageView imageView = new ImageView(context);
         idImages=View.generateViewId();
         imageView.setId(idImages);
-        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(200,200,1);
-        layoutParamsImage.setMargins(5,25,5,25);
+        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(imageWidth, imageHeight);
         imageView.setLayoutParams(layoutParamsImage);
-
+        
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         linearLayout1.setLayoutParams(layoutParamslinear1);
@@ -194,8 +201,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(textSize);
-        textViewFirst.setTextColor(textColor);
+        textViewFirst.setTextSize(detailTextSize);
+        textViewFirst.setTextColor(detailTextColor);
 
         TextView textViewSecond=new TextView(context);
         idSecond=View.generateViewId();
@@ -209,8 +216,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         ImageView imageView = new ImageView(context);
         idImages=View.generateViewId();
         imageView.setId(idImages);
-        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(200,200,1);
-        layoutParamsImage.setMargins(5,25,5,25);
+        LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(imageWidth, imageHeight);
         imageView.setLayoutParams(layoutParamsImage);
 
         LinearLayout linearLayout2= new LinearLayout(context);
