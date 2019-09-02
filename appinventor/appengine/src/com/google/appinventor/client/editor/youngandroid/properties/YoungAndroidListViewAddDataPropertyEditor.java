@@ -278,8 +278,24 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       cancel.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
-          itemsCopy.clear();
-          ClickHandle.this.hide();
+          final Cancel cancel = new Cancel();
+          cancel.center();
+          cancel.setStylePrimaryName("ode-DialogBox");
+          cancel.show();
+          cancel.yes.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+              itemsCopy.clear();
+              cancel.hide();
+              ClickHandle.this.hide();
+            }
+          });
+          cancel.no.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+              cancel.hide();
+            }
+          });
         }
       });
 
@@ -289,6 +305,26 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       actionButtons.add(cancel);
       actionButtons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       verticalPanel.add(actionButtons);
+      setWidget(verticalPanel);
+    }
+  }
+
+  class Cancel extends DialogBox {
+    VerticalPanel verticalPanel;
+    HorizontalPanel buttonPanel;
+    Button yes, no;
+
+    Cancel(){
+      verticalPanel = new VerticalPanel();
+      buttonPanel = new HorizontalPanel();
+      setText("Cancel");
+      verticalPanel.add(new Label("Are you sure you want to exit without saving data?"));
+      yes = new Button("YES");
+      no = new Button("NO");
+      buttonPanel.add(yes);
+      buttonPanel.add(no);
+      buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+      verticalPanel.add(buttonPanel);
       setWidget(verticalPanel);
     }
   }
