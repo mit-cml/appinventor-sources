@@ -150,6 +150,10 @@ public abstract class AxisChartTest<V extends AxisChartView,
    * @param labels  Labels List to apply to the Chart component.
    */
   private void setLabelsHelper(YailList labels) {
+    // Set x axis minimum to 0 to simulate the effects of
+    // having an x axis starting from 0.
+    chart.getXAxis().setAxisMinimum(0f);
+
     chartComponent.Labels(labels);
 
     assertEquals(labels, chartComponent.Labels());
