@@ -34,6 +34,14 @@ public abstract class AxisChartView<C extends BarLineChartBase,
         // Round the float value to an integer
         int integerValue = Math.round(value);
 
+        // Subtract the floored X Axis minimum value from the integer
+        // value. This is needed to start labelling x axis values from
+        // the beginning of the axis.
+        // For example, consider the x values: -5, -4, -3.
+        // The minimum of the x axis would be -5. We subtract -5 to get
+        // 0, which corresponds to the index of 0.
+        integerValue -= Math.floor(chart.getXAxis().getAxisMinimum());
+
         // Using the integer as an index (non-negative), check
         // whether the axis labels List is in range for the index
         if (integerValue >= 0 && integerValue < axisLabels.size()) {

@@ -41,12 +41,12 @@ public abstract class MockPointChartView extends MockAxisChartView<ScatterChart>
         // value is -5, then the index of 0 would apply to the -5 value. Due to
         // limited support of this in the MPAndroidChart library, we use our own
         // system of 0-value based indexing.
-        int indexValue = (int) Math.round(value);
+        // int indexValue = (int) Math.round(value);
 
         // Check if the index value is within the bound of the labels array.
         // If that is the case, then use the value from the labels array.
-        if (indexValue >= 0 && indexValue < labels.length) {
-          return labels[indexValue];
+        if (index >= 0 && index < labels.length) {
+          return labels[index];
         } else {
           // Otherwise, use the value itself.
           return value + "";
