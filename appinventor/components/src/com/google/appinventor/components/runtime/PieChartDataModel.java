@@ -99,6 +99,15 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
   }
 
   @Override
+  public void clearEntries() {
+    super.clearEntries();
+
+    // Remove all the corresponding legend entries
+    view.removeLegendEntries(legendEntries);
+    legendEntries.clear();
+  }
+
+  @Override
   public Entry getEntryFromTuple(YailList tuple) {
     try {
       // Tuple is expected to have at least 2 entries.
