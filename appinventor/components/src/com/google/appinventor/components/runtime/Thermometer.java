@@ -1,5 +1,4 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -23,7 +22,7 @@ import android.hardware.Sensor;
  * supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.THERMOMETER_COMPONENT_VERSION,
-                   description = "Non-visible component that can measure the ambient temperature.",
+    description = "Non-visible component that can measure the ambient temperature.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/thermometer.png")
@@ -44,7 +43,9 @@ public class Thermometer extends SingleValueSensor {
   }
   
   /**
-   * Indicates the temperature changed.
+   * Indicates a change of temperature, provided in degrees Celsius.
+   *
+   * @param the temperature in degrees Celsius
    */
   @SimpleEvent
   public void TemperatureChanged(float temperature) {

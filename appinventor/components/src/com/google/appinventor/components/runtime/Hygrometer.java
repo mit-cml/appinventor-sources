@@ -1,5 +1,4 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -22,7 +21,7 @@ import android.hardware.Sensor;
  * humidity if supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.HYGROMETER_COMPONENT_VERSION,
-                   description = "Non-visible component that can measure the ambient humidity.",
+    description = "Non-visible component that can measure the ambient humidity.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/hygrometer.png")
@@ -44,6 +43,8 @@ public class Hygrometer extends SingleValueSensor {
   
   /**
    * Indicates the relative humidity changed.
+   *
+   * @pram the new relative humidity
    */
   @SimpleEvent
   public void HumidityChanged(float humidity) {

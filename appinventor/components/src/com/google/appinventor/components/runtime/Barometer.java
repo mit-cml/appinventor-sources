@@ -1,5 +1,4 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -21,7 +20,7 @@ import android.hardware.Sensor;
  * supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.BAROMETER_COMPONENT_VERSION,
-                   description = "Non-visible component that can measure the ambient air pressure.",
+    description = "Non-visible component that can measure the ambient air pressure.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/barometer.png")
@@ -42,7 +41,9 @@ public class Barometer extends SingleValueSensor {
   }
   
   /**
-   * Indicates the air pressure changed.
+   * Indicates a change in air pressure, provided in hPa (millibar).
+   *
+   * @param the new air pressure in hPa (millibar)
    */
   @SimpleEvent
   public void AirPressureChanged(float pressure) {

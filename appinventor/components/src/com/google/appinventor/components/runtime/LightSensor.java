@@ -1,5 +1,4 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -27,7 +26,7 @@ import android.hardware.SensorManager;
  * (http://developer.android.com/reference/android/hardware/SensorListener.html).
  */
 @DesignerComponent(version = YaVersion.LIGHTSENSOR_COMPONENT_VERSION,
-                   description = "Non-visible component that can measure the light level.",
+    description = "Non-visible component that can measure the light level.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/lightsensor.png")
@@ -51,6 +50,8 @@ public class LightSensor extends BufferedSingleValueSensor {
   
   /**
    * Indicates the light level changed.
+   *
+   * @param lux the new light level in lux
    */
   @SimpleEvent
   public void LightChanged(float lux) {
