@@ -424,6 +424,36 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   }
 
   /**
+   * Test case to ensure that clearing the entries from
+   * the Data Series removes all the Legend entries.
+   */
+  @Test
+  public void testCheckLegendClearEntries() {
+    List<Integer> colorList = new ArrayList<Integer>() {{
+      add(Color.RED);
+      add(Color.GREEN);
+      add(Color.BLUE);
+      add(Color.CYAN);
+    }};
+
+    model.setColors(colorList);
+
+    List<YailList> tuples = new ArrayList<YailList>() {{
+      add(createTuple("Entry", 5f));
+      add(createTuple("Test", 5f));
+      add(createTuple("Random", 1f));
+      add(createTuple("Slice", 12f));
+    }};
+
+    model.importFromList(tuples);
+    model.clearEntries();
+
+    LegendEntry[] expectedEntries = new LegendEntry[0];
+
+    checkLegendHelper(expectedEntries);
+  }
+
+  /**
    * Test case to ensure that removing entries from
    * different Data Models properly changes the
    * Legend of the Data model.

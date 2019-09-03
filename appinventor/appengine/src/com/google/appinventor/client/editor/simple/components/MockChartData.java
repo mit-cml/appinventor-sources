@@ -282,6 +282,14 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
             chartDataModel instanceof MockLineChartBaseDataModel;
 
         showProperty(PROPERTY_LINE_TYPE, showLineBaseChartProperties);
+
+        // Handle Pie Chart related property hiding
+        boolean showPieChartProperties =
+            chartDataModel instanceof MockPieChartDataModel;
+
+        // The Label property has no effect on Pie Chart Data Series;
+        // Hide the property instead.
+        showProperty(PROPERTY_LABEL, !showPieChartProperties);
     }
 
     /**

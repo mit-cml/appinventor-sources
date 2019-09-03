@@ -415,6 +415,25 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   }
 
   /**
+   * Removes the specified Legend Entries from the Legend of the Pie Chart view
+   * @param entries  List of Legend Entries to remove
+   */
+  public void removeLegendEntries(List<LegendEntry> entries) {
+    // To prevent exceptions, Legend Entries have to be removed
+    // from the List on the UI thread.
+    // Since the passed in entries List will (in most cases) be cleared
+    // right away, a copy of the entries List has to be made.
+    final List<LegendEntry> entriesCopy = new ArrayList<LegendEntry>(entries);
+
+    uiHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        legendEntries.removeAll(entriesCopy); // Remove all of the Legend Entries from local reference list
+      }
+    });
+  }
+
+  /**
    * Sets the radius of the Pie Chart (in percentage)
    *
    * E.g. 100% - full Pie Chart, 50% - donut
