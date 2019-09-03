@@ -542,6 +542,8 @@ public class YaVersion {
 
   public static final int TARGET_SDK_VERSION = 28;
 
+  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
