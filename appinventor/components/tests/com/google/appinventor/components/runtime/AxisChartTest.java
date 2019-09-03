@@ -6,6 +6,8 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +86,6 @@ public abstract class AxisChartTest<V extends AxisChartView,
     assertEquals(expectedValue, value);
   }
 
-
   /**
    * Test case to ensure that setting the custom Labels
    * List with a single entry formats the x value of 0
@@ -142,6 +143,45 @@ public abstract class AxisChartTest<V extends AxisChartView,
   }
 
   /**
+   * Test case to ensure that getting a formatted value for
+   * a negative number which equals the x axis minimum value
+   * formats the value to the single existing custom x axis label.
+   */
+  @Test
+  public void testLabelFormattingNegativeNumberEqualMin() {
+    final float minValue = -1f;
+    final float checkValue = -1f;
+    checkSingleLabelHelper(minValue, checkValue, true);
+  }
+
+  /**
+   * Test case to ensure that getting a formatted value for
+   * a negative number which corresponds to the minimum
+   * x axis value integer representation properly formats
+   * the value to the single existing custom x axis label.
+   */
+  @Test
+  public void testLabelFormattingMinValueRounding() {
+    final float minValue = -1.6f;
+    final float checkValue = -1f;
+    checkSingleLabelHelper(minValue, checkValue, true);
+  }
+
+  /**
+   * Test case to ensure that getting a formatted value for
+   * a positive number which corresponds to the minimum
+   * x axis value integer representation properly formats
+   * the value to the single existing custom x axis label.
+   */
+  @Test
+  public void testLabelFormattingPositiveValueNonZero() {
+    final float minValue = 5.4f; // Floored to 5
+    final float checkValue = 5f;
+    checkSingleLabelHelper(minValue, checkValue, true);
+  }
+
+
+  /**
    * Helper method that sets the corresponding Labels
    * List property to the Chart component, asserts
    * that the property has been set successfully, and
@@ -164,5 +204,28 @@ public abstract class AxisChartTest<V extends AxisChartView,
 
       assertEquals(expectedLabel, actualLabel);
     }
+  }
+
+  /**
+   * Helper method that sets a single custom x axis label
+   * to the Chart component, sets the x axis minimum value
+   * to the specified value, and asserts that the specified
+   * value is (or is not) formatted to the custom label.
+   * @param minValue  Minimum x axis value to use
+   * @param formatValue  Value to format
+   * @param isLabel  True if the value should be formatted to the custom label
+   */
+  private void checkSingleLabelHelper(float minValue, float formatValue, boolean isLabel) {
+    // Set x axis minimum to the specified value to simulate
+    // the effects of having the x axis start from the specified value.
+    chart.getXAxis().setAxisMinimum(minValue);
+
+    // Create and set a single custom label to the Chart
+    String label = "Label";
+    YailList labels = YailList.makeList(Collections.singletonList(label));
+    chartComponent.Labels(labels);
+
+    String value = xAxisValueFormatter.getFormattedValue(formatValue);
+    assertEquals(isLabel, (label.equals(value)));
   }
 }
