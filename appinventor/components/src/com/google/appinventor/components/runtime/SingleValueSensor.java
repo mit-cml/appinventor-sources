@@ -39,7 +39,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
     super(container.$form());
     this.sensorType = sensorType;
     form.registerForOnResume(this);
-    form.registerForOnStop(this);
+    form.registerForOnPause(this);
 
     refreshTime = DEFAULT_REFRESH_TIME;
     enabled = true;
