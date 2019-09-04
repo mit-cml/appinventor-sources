@@ -21,7 +21,8 @@ import android.hardware.Sensor;
  * humidity if supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.HYGROMETER_COMPONENT_VERSION,
-    description = "Non-visible component that can measure the ambient humidity.",
+    description = "A sensor component that can measure the relative ambient air humidity. " +
+        "Most Android devices do not have this sensor.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/hygrometer.png")
@@ -46,7 +47,8 @@ public class Hygrometer extends SingleValueSensor {
    *
    * @pram the new relative humidity
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Called when a change is detected in the ambient air humidity (expressed as a percentage).")
   public void HumidityChanged(float humidity) {
     EventDispatcher.dispatchEvent(this, "HumidityChanged", humidity);
   }
@@ -58,7 +60,8 @@ public class Hygrometer extends SingleValueSensor {
    *
    * @return the relative ambient humidity as a percentage
    */
-  @SimpleProperty
+  @SimpleProperty(description = "The relative ambient humidity as a percentage, if the sensor is available " +
+      "and enabled.")
    public float Humidity() {
       return getValue();
   }

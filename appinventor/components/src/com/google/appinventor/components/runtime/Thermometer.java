@@ -22,7 +22,8 @@ import android.hardware.Sensor;
  * supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.THERMOMETER_COMPONENT_VERSION,
-    description = "Non-visible component that can measure the ambient temperature.",
+    description = "A sensor component that can measure the ambient (external) temperature. " +
+    "Most Android devices do not have this sensor.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/thermometer.png")
@@ -47,7 +48,7 @@ public class Thermometer extends SingleValueSensor {
    *
    * @param the temperature in degrees Celsius
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Called when a change is detected in the temperature (in degrees Celsius).")
   public void TemperatureChanged(float temperature) {
     EventDispatcher.dispatchEvent(this, "TemperatureChanged", temperature);
   }
@@ -59,7 +60,7 @@ public class Thermometer extends SingleValueSensor {
    *
    * @return the temperature in degrees Celsius
    */
-  @SimpleProperty
+  @SimpleProperty(description = "The temperature in degrees Celsius, if the sensor is available and enabled")
    public float Temperature() {
     return getValue();
   }

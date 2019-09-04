@@ -20,7 +20,7 @@ import android.hardware.Sensor;
  * supported by the hardware.
  */
 @DesignerComponent(version = YaVersion.BAROMETER_COMPONENT_VERSION,
-    description = "Non-visible component that can measure the ambient air pressure.",
+    description = "A sensor component that can measure the ambient air pressure.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/barometer.png")
@@ -41,7 +41,7 @@ public class Barometer extends SingleValueSensor {
   }
   
   /**
-   * Indicates a change in air pressure, provided in hPa (millibar).
+   * Called when a change is detected in the air pressure (provided in hPa).
    *
    * @param the new air pressure in hPa (millibar)
    */
@@ -51,9 +51,8 @@ public class Barometer extends SingleValueSensor {
   }
 
   /**
-   * Returns the atmospheridc pressure in hPa (millibar).
-   * The sensor must be enabled and available 
-   * to return meaningful values.
+   * The atmospheric pressure in hPa (millibar), if the sensor is available 
+   * and enabled.
    *
    * @return the atmospheric pressure in hPa (millibar)
    */

@@ -26,7 +26,7 @@ import android.hardware.SensorManager;
  * (http://developer.android.com/reference/android/hardware/SensorListener.html).
  */
 @DesignerComponent(version = YaVersion.LIGHTSENSOR_COMPONENT_VERSION,
-    description = "Non-visible component that can measure the light level.",
+    description = "A sensor component that can measure the light level.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/lightsensor.png")
@@ -53,7 +53,7 @@ public class LightSensor extends BufferedSingleValueSensor {
    *
    * @param lux the new light level in lux
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Called when a change is detected in the light level.")
   public void LightChanged(float lux) {
     EventDispatcher.dispatchEvent(this, "LightChanged", lux);
   }
@@ -64,7 +64,8 @@ public class LightSensor extends BufferedSingleValueSensor {
    *
    * @return lux
    */
-  @SimpleProperty
+  @SimpleProperty(description = "The most recent light level, in lux, if the sensor is available " +
+       "and enabled.")
    public float Lux() {
     return getValue();
   }
@@ -75,7 +76,7 @@ public class LightSensor extends BufferedSingleValueSensor {
    *
    * @return lux
    */
-  @SimpleProperty
+  @SimpleProperty(description = "The average of the 10 most recent light levels measured, in lux.")
    public float AverageLux() {
     return getAverageValue();
   }
