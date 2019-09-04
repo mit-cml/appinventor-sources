@@ -539,34 +539,30 @@ none
   <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
 </dl>
 
-                  <!-- ===== start: Barometer ==== -->
-                  <h2 id="Barometer">Barometer </h2>
-                  <p> A sensor component that can measure the ambient air pressure.</p>
-                  <h3> Properties </h3>
-                  <dl>
-                      <dt> <code class="c2"> AirPressure </code> </dt>
-                      <dd> The atmospheric pressure in hPa (millibar), if the sensor is available 
-                           and enabled.</dd>
+<h2 id="Barometer">Barometer</h2>
 
-                      <dt> <code class="c2"> Available </code> </dt>
-                      <dd> Specifies whether or not the device has an ambient air pressure sensor.</dd>
+<p>A sensor component that can measure the ambient air pressure.</p>
 
-                      <dt> <code class="c2"> Enabled </code> </dt>
-                      <dd> If enabled, then device will listen for changes in air pressure.</dd>
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>AirPressure</em></code></dt>
+  <dd></dd>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
 
-                      <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changes in air pressure being
-                           reported. Android is not guaranteed to honor the request. 
-                           Setting this property has no effect on pre-Gingerbread devices.</dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                      <dt> <code> AirPressureChanged(pressure) </code> </dt>
-                      <dd> Called when a change is detected in the air
-                      pressure (provided in hPa).</dd>
-                  </dl>
+<h3>Events</h3>
+<dl>
+  <dt><code>AirPressureChanged(number pressure)</code></dt>
+  <dd>Called when a change is detected in the air pressure (provided in hPa).</dd>
+</dl>
 
-                  <!-- ===== end: Barometer ==== -->
+<h3>Methods</h3>
+none
 
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
@@ -701,64 +697,58 @@ none
 
 <h3>Methods</h3>
 <p>none</p>
-                  <!-- ===== start: Hygrometer ==== -->
-                  <h2 id="Hygrometer">Hygrometer </h2>
-                  <p> A sensor component that can measure the relative ambient air humidity. 
-                      Most Android devices do not have this sensor.</p>       
-                  <h3> Properties </h3>
-                  <dl>
-                      <dt> <code class="c2"> Available </code> </dt>
-                      <dd> Reports whether or not the device has an ambient air humidity sensor.</dd>
 
-                      <dt> <code class="c2"> Enabled </code> </dt>
-                      <dd> If enabled, then device will listen for changes in ambient air humidity.</dd>
+<h2 id="Hygrometer">Hygrometer</h2>
 
-                      <dt> <code class="c2"> Humidity </code> </dt>
-                      <dd> The relative ambient humidity as a percentage, if the sensor is available 
-                           and enabled.</dd>
+<p>A sensor component that can measure the relative ambient air humidity. Most Android devices do not have this sensor.</p>
 
-                      <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changes in ambient air humidity being
-                           reported. Android is not guaranteed to honor the request.
-                           Setting this property has no effect on pre-Gingerbread devices.</dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                      <dt> <code> HumidityChanged(humidity) </code> </dt>
-                      <dd> Called when a change is detected in the ambient air humidity (expressed as a percentage).</dd>
-                  </dl>
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code><em>Humidity</em></code></dt>
+  <dd>The relative ambient humidity as a percentage, if the sensor is available and enabled.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
 
-                  <!-- ===== end: Hygrometer ==== -->
+<h3>Events</h3>
+<dl>
+  <dt><code>HumidityChanged(number humidity)</code></dt>
+  <dd>Called when a change is detected in the ambient air humidity (expressed as a percentage).</dd>
+</dl>
 
-                  <!-- ===== start: LightSensor ==== -->
-                  <h2 id="LightSensor">LightSensor </h2>
-                  <p> A sensor component that can measure the light level.</p>
-                  <h3> Properties </h3>
-                  <dl>
-                      <dt> <code class="c2"> Available </code> </dt>
-                      <dd> Reports whether or not the device has a light sensor.</dd>
+<h3>Methods</h3>
+none 
 
-                      <dt> <code class="c2"> AverageLux </code> </dt>
-                      <dd> The average of the 10 most recent light levels measured, in lux.</dd>
-                      <dt> <code class="c2"> Enabled </code> </dt>
-                      <dd> If enabled, then device will listen for changes in light level.</dd>
+<h2 id="LightSensor">LightSensor</h2>
 
-                      <dt> <code class="c2"> Lux </code> </dt>
-                      <dd> The most recent light level, in lux, if the sensor is available 
-                           and enabled.</dd>
+<p>A sensor component that can measure the light level.</p>
 
-                      <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changes in light level being
-                           reported. Android is not guaranteed to honor the request.
-                           Setting this property has no effect on pre-Gingerbread devices.</dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                      <dt> <code> LightChanged(lux) </code> </dt>
-                      <dd> Called when a change is detected in the light level.</dd>
-                  </dl>
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code><em>AverageLux</em></code></dt>
+  <dd>The average of the 10 most recent light levels measured, in lux.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code><em>Lux</em></code></dt>
+  <dd>The most recent light level, in lux, if the sensor is available and enabled.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
 
-                  <!-- ===== end: LightSensor ==== -->
+<h3>Events</h3>
+<dl>
+  <dt><code>LightChanged(number lux)</code></dt>
+  <dd>Called when a change is detected in the light level.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
@@ -1021,33 +1011,30 @@ none
 
                   <!-- ===== end: ProximitySensor ==== -->
 
-                  <!-- ===== start: Thermometer ==== -->
-                  <h2 id="Thermometer">Thermometer </h2>
-                  <p> A sensor component that can measure the ambient (external) temperature. 
-                      Most Android devices do not have this sensor.</p>       
-                  <h3> Properties </h3>
-                  <dl>
-                      <dt> <code class="c2"> Available </code> </dt>
-                      <dd> Reports whether or not the device has an ambient temperature sensor.</dd>
+<h2 id="Thermometer">Thermometer</h2>
 
-                      <dt> <code class="c2"> Enabled </code> </dt>
-                      <dd> If enabled, then device will listen for changes in temperature.</dd>
+<p>A sensor component that can measure the ambient (external) temperature. Most Android devices do not have this sensor.</p>
 
-                      <dt> <code class="c2"> RefreshTime </code> </dt>
-                      <dd> The requested time in milliseconds between changes in temperature being
-                           reported. Android is not guaranteed to honor the request.
-                           Setting this property has no effect on pre-Gingerbread devices.</dd>
-                      <dt> <code class="c2"> Temperature </code> </dt>
-                      <dd> The temperature in degrees Celsius, if the sensor is available 
-                           and enabled.</dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                      <dt> <code> TemperatureChanged(temperature) </code> </dt>
-                      <dd> Called when a change is detected in the temperature (in degrees Celsius).</dd>
-                  </dl>
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+  <dt><code><em>Temperature</em></code></dt>
+  <dd>The temperature in degrees Celsius, if the sensor is available and enabled</dd>
+</dl>
 
-                  <!-- ===== end: Thermometer ==== -->
+<h3>Events</h3>
+<dl>
+  <dt><code>TemperatureChanged(number temperature)</code></dt>
+  <dd>Called when a change is detected in the temperature (in degrees Celsius).</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
                   <!-- Content ----------------------- --> </div>
               </div>
