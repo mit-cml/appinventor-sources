@@ -25,7 +25,7 @@ import java.util.List;
  */
 @SimpleObject
 public abstract class SingleValueSensor extends AndroidNonvisibleComponent
-    implements OnStopListener, OnPauseListener, OnResumeListener, SensorComponent, 
+    implements OnPauseListener, OnResumeListener, SensorComponent,
     SensorEventListener, Deleteable {
   private static final int DEFAULT_REFRESH_TIME = 1000; // ms
   private Sensor sensor;
@@ -175,13 +175,6 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
-    }
-  }
-
-  @Override
-  public void onStop() {
-    if (enabled) {
-      stopListening();
     }
   }
 
