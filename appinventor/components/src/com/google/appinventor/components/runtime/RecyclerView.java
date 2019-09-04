@@ -278,7 +278,7 @@ public final class RecyclerView extends AndroidViewComponent {
 
     String[] first=new String[size];
     String[] second=new String[size];
-    boolean[] select=new boolean[size];
+    boolean[] selected=new boolean[size];
     
     ArrayList<Drawable> third = new ArrayList<Drawable>();
     
@@ -286,21 +286,21 @@ public final class RecyclerView extends AndroidViewComponent {
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
-      select[i]=false;   
+      selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";    
-      select[i]=false;
+      selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";
-      select[i]=false;
+      selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
     for(int i=0;i<size;i++){
@@ -314,7 +314,7 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
-      select[i]=false;
+      selected[i]=false;
     } 
     
     }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
@@ -330,12 +330,12 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
-    select[i]=false;
+    selected[i]=false;
     } 
     
     }
     
-  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,detailTextColor,textSize,detailTextSize,layout,backgroundColor,selectionColor,select,imageWidth,imageHeight);  
+  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,detailTextColor,textSize,detailTextSize,layout,backgroundColor,selectionColor,selected,imageWidth,imageHeight);
    
    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
     @Override
@@ -368,17 +368,39 @@ public final class RecyclerView extends AndroidViewComponent {
   }
  
   @SimpleProperty(
-      description = "The index of the currently selected item, starting at " +
-          "1.  If no item is selected, the value will be 0.  If an attempt is " +
-          "made to set this to a number less than 1 or greater than the number " +
-          "of items in the ListView, SelectionIndex will be set to 0, and " +
-          "Selection will be set to the empty text.",
+      description = "The index of the most recently clicked item, starting at " +
+          "1.  If no item has been clicked, the value will be 0.",
       category = PropertyCategory.BEHAVIOR)
-  public int SelectionIndex() {
+  public int ClickedIndex() {
     return selectionIndex;
   }
 
-/**
+  @SimpleProperty(
+          description = "The text of the most recently clicked item, starting at " +
+                  "1.  If no item is selected, the value will be 0.  If an attempt is " +
+                  "made to set this to a number less than 1 or greater than the number " +
+                  "of items in the ListView, SelectionIndex will be set to 0, and " +
+                  "Selection will be set to the empty text.",
+          category = PropertyCategory.BEHAVIOR)
+  public String LastClickedItem() {
+    JSONObject item = currentItems.get(selectionIndex);
+    String selectionText = item.has("Text1")?item.getString("Text1"):"";
+    return selectionText;
+  }
+
+  @SimpleProperty(
+          description = "The text of the most recently selected item, starting at " +
+                  "1.  If no item is selected, the value will be 0.  If an attempt is " +
+                  "made to set this to a number less than 1 or greater than the number " +
+                  "of items in the ListView, SelectionIndex will be set to 0, and " +
+                  "Selection will be set to the empty text.",
+          category = PropertyCategory.BEHAVIOR)
+  public YailList SelectedItems() {
+    String csv = listAdapterWithRecyclerView.getSelectedItems();
+    return ElementsUtil.elementsFromString(csv);
+  }
+
+  /**
    * Assigns a value to the backgroundColor
    * @param color  an alpha-red-green-blue integer for a color
  */  
@@ -610,7 +632,6 @@ public final class RecyclerView extends AndroidViewComponent {
       for(int i = 0; i < arr.length(); ++i) {
         currentItems.add(i, arr.getJSONObject(i));
         currentItemsCopy.add(i, arr.getJSONObject(i));
-
       }
     }
 

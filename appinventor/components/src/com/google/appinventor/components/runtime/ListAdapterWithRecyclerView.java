@@ -344,4 +344,14 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     public interface ClickListener {
         void onItemClick(int position, View v);
     }
+
+    public String getSelectedItems() {
+      String selectedItems = new String();
+      for (int i = 0; i < selection.length; ++i) {
+        if (selection[i]) {
+          selectedItems += "," + firstItem[i];
+        }
+      }
+      return selectedItems.length() > 0 ? selectedItems.substring(1) : "";
+    }
 };
