@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -44,6 +44,7 @@ public abstract class Sprite extends VisibleComponent
   private static final float DEFAULT_SPEED = 0.0f;   // pixels per interval
   private static final boolean DEFAULT_VISIBLE = true;
   private static final double DEFAULT_Z = 1.0;
+  protected static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
 
   protected final Canvas canvas;              // enclosing Canvas
   private final TimerInternal timerInternal;  // timer to control movement
@@ -120,6 +121,7 @@ public abstract class Sprite extends VisibleComponent
     this.form = container.$form();
 
     // Set default property values.
+    OriginAtCenter(DEFAULT_ORIGIN_AT_CENTER);
     Heading(0);  // Default initial heading
     Enabled(DEFAULT_ENABLED);
     Interval(DEFAULT_INTERVAL);
@@ -149,6 +151,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z)
+  // The SimpleProperty annotations for the getters appear in the concrete
+  // subclasses so each can have its own description.
 
   /**
    * Enabled property getter method.
@@ -156,9 +160,6 @@ public abstract class Sprite extends VisibleComponent
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
    */
-  @SimpleProperty(
-      description = "Controls whether the sprite moves when its speed is non-zero.",
-      category = PropertyCategory.BEHAVIOR)
   public boolean Enabled() {
     return timerInternal.Enabled();
   }
@@ -172,7 +173,7 @@ public abstract class Sprite extends VisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
-      public void Enabled(boolean enabled) {
+  public void Enabled(boolean enabled) {
     timerInternal.Enabled(enabled);
   }
 
@@ -183,8 +184,7 @@ public abstract class Sprite extends VisibleComponent
    *
    * @param userHeading degrees above the positive x-axis
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_HEADING + "")
@@ -204,10 +204,6 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return degrees above the positive x-axis
    */
-  @SimpleProperty(
-    description = "Returns the sprite's heading in degrees above the positive " +
-    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-    "top of the screen.")
   public double Heading() {
     return userHeading;
   }
@@ -217,11 +213,6 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  timer interval in ms
    */
-  @SimpleProperty(
-      description = "The interval in milliseconds at which the sprite's " +
-      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
-      "then the sprite will move 10 pixels every 50 milliseconds.",
-      category = PropertyCategory.BEHAVIOR)
   public int Interval() {
     return timerInternal.Interval();
   }
@@ -245,8 +236,7 @@ public abstract class Sprite extends VisibleComponent
    * @param speed the magnitude (in pixels) to move every {@link #interval}
    * milliseconds
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_SPEED + "")
@@ -260,9 +250,6 @@ public abstract class Sprite extends VisibleComponent
    * @return the magnitude (in pixels) the sprite moves every {@link #interval}
    *         milliseconds.
    */
-  @SimpleProperty(
-    description = "he speed at which the sprite moves.  The sprite moves " +
-    "this many pixels every interval.")
   public float Speed() {
     return speed;
   }
@@ -272,9 +259,6 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  {@code true} if the sprite is visible, {@code false} otherwise
    */
-  @SimpleProperty(
-      description = "True if the sprite is visible.",
-      category = PropertyCategory.APPEARANCE)
   public boolean Visible() {
     return visible;
   }
@@ -294,7 +278,6 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  // This is declared as a SimpleProperty in the subclasses so each has its own description.
   public double X() {
     return originAtCenter ? xCenter : xLeft;
   }
@@ -352,8 +335,6 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  // This gets declared as a SimpleProperty in the concrete subclasses (Ball and ImageSprite),
-  // for the most tailored description.
   public double Y() {
     return originAtCenter ? yCenter : yTop;
   }
@@ -366,8 +347,7 @@ public abstract class Sprite extends VisibleComponent
    *        in front of ones with lower numbers; if values are equal for
    *        sprites, either can go in front of the other
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = DEFAULT_Z + "")
   public void Z(double layer) {
@@ -380,6 +360,12 @@ public abstract class Sprite extends VisibleComponent
       "with higher-numbered layers in front of lower-numbered layers.")
   public double Z() {
     return zLayer;
+  }
+
+  // This gets overridden in Ball so it can be made a property for Ball
+  // but not for ImageSprite.
+  public void OriginAtCenter(boolean b) {
+    originAtCenter = b;
   }
 
   // Methods for event handling: general purpose method postEvent() and

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -211,7 +211,42 @@ public class ImageSprite extends Sprite {
     registerChange();
   }
 
-  // We need to override the X() and Y() methods to generate appropriate documentation.
+  // We need to override methods defined in the superclass to generate appropriate documentation.
+
+  @SimpleProperty(description = "Controls whether the ImageSprite moves when its speed is non-zero.")
+  @Override
+  public boolean Enabled() {
+    return super.Enabled();
+  }
+
+  @Override
+  @SimpleProperty(description = "Returns the ImageSprite's heading in degrees above the positive " +
+    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
+    "top of the screen.")
+  public double Heading() {
+    return super.Heading();
+  }
+
+  @SimpleProperty(description = "The interval in milliseconds at which the ImageSprite's " +
+      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
+      "then the ImageSprite will move 10 pixels every 50 milliseconds.")
+  @Override
+  public int Interval() {
+    return super.Interval();
+  }
+
+  @SimpleProperty(description = "The speed at which the ImageSprite moves. The ImageSprite moves " +
+    "this many pixels every interval.")
+  @Override
+  public float Speed() {
+    return super.Speed();
+  }
+
+  @SimpleProperty(description = "True if the ImageSprite is visible.")
+  @Override
+  public boolean Visible() {
+    return super.Visible();
+  }
 
   @SimpleProperty(description = "The horizontal coordinate of the left edge of the ImageSprite, " +
       "increasing as the ImageSprite moves right.")
@@ -221,7 +256,15 @@ public class ImageSprite extends Sprite {
 
   @SimpleProperty(description = "The vertical coordinate of the top edge of the ImageSprite, " +
       "increasing as the ImageSprite moves down.")
+  @Override
   public double Y() {
     return super.Y();
+  }
+
+  @SimpleProperty(description = "How the ImageSprite should be layered relative to other " +
+      "ImageSprites and Balls, with higher-numbered layers in front of lower-numbered layers.")
+  @Override
+  public double Z() {
+    return zLayer;
   }
 }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,7 +47,6 @@ public final class Ball extends Sprite {
   private int paintColor;
   private Paint paint;
   static final int DEFAULT_RADIUS = 5;
-  private static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
 
   public Ball(ComponentContainer container) {
     super(container);
@@ -56,7 +55,6 @@ public final class Ball extends Sprite {
     // Set default properties.
     PaintColor(Component.COLOR_BLACK);
     Radius(DEFAULT_RADIUS);
-    OriginAtCenter(DEFAULT_ORIGIN_AT_CENTER);
   }
 
   // Implement or override methods
@@ -164,13 +162,51 @@ public final class Ball extends Sprite {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-                    defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
-  @SimpleProperty(userVisible=false)
+      defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether the x- and y-coordinates should represent the center of the Ball (true) " +
+      "or the left and top edges, respectively (false).")
   public void OriginAtCenter(boolean b) {
-    originAtCenter = b;
+    super.OriginAtCenter(b);
   }
 
-  // We need to override the X() and Y() methods to generate appropriate documentation.
+  // We need to override methods defined in the superclass to generate appropriate documentation.
+
+  @Override
+  @SimpleProperty(description = "Controls whether the Ball moves when its speed is non-zero.")
+  public boolean Enabled() {
+    return super.Enabled();
+  }
+
+  @Override
+  @SimpleProperty(description = "Returns the Ball's heading in degrees above the positive " +
+    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
+    "top of the screen.")
+  public double Heading() {
+    return super.Heading();
+  }
+
+  @Override
+  @SimpleProperty(
+      description = "The interval in milliseconds at which the Ball's " +
+      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
+      "then the sprite will move 10 pixels every 50 milliseconds.")
+  public int Interval() {
+    return super.Interval();
+  }
+
+  @Override
+  @SimpleProperty(description = "The speed at which the Ball moves. The Ball moves " +
+    "this many pixels every interval.")
+  public float Speed() {
+    return super.Speed();
+  }
+
+  @Override
+  @SimpleProperty(description = "True if the Ball is visible.")
+  public boolean Visible() {
+    return super.Visible();
+  }
 
   @SimpleProperty(
       description = "The horizontal coordinate of the Ball, increasing as the Ball moves right. " +
@@ -187,5 +223,12 @@ public final class Ball extends Sprite {
   @Override
   public double Y() {
     return super.Y();
+  }
+
+  @SimpleProperty(description = "How the Ball should be layered relative to other Balls and ImageSprites, " +
+      "with higher-numbered layers in front of lower-numbered layers.")
+  @Override
+  public double Z() {
+    return zLayer;
   }
 }
