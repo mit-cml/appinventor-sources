@@ -146,7 +146,7 @@ def propescape(s):
 
 
 def read_block_translations(lang_code):
-    linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
+    linere = re.compile(r"(Blockly\.Msg\.[A-Z0-9_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
     continuation = re.compile(r'\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', lang_code, '_messages.js')) as js:
         comment = None
