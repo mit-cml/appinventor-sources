@@ -150,9 +150,10 @@ public abstract class Sprite extends VisibleComponent
     canvas.registerChange(this);
   }
 
-  // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z)
+  // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z, OriginAtCenter)
   // The SimpleProperty annotations for the getters appear in the concrete
-  // subclasses so each can have its own description.
+  // subclasses so each can have its own description. Currently, OriginAtCenter
+  // is a property of Ball only.
 
   /**
    * Enabled property getter method.
@@ -500,11 +501,10 @@ public abstract class Sprite extends VisibleComponent
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
-   * * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
+   * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
    * @param heading  the heading of the fling
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
-
    */
   @SimpleEvent
   public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
