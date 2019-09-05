@@ -210,4 +210,18 @@ public class ImageSprite extends Sprite {
     this.rotates = rotates;
     registerChange();
   }
+
+  // We need to override the X() and Y() methods to generate appropriate documentation.
+
+  @SimpleProperty(description = "The horizontal coordinate of the left edge of the ImageSprite, " +
+      "increasing as the ImageSprite moves right.")
+  public double X() {
+    return super.X();
+  }
+
+  @SimpleProperty(description = "The vertical coordinate of the top edge of the ImageSprite, " +
+      "increasing as the ImageSprite moves down.")
+  public double Y() {
+    return super.Y();
+  }
 }

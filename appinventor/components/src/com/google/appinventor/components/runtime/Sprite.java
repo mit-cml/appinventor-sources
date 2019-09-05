@@ -294,10 +294,7 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  // TODO: Change description (if those are still used).
-  @SimpleProperty(
-      description = "The horizontal coordinate of the left edge of the sprite, " +
-      "increasing as the sprite moves to the right.")
+  // This is declared as a SimpleProperty in the subclasses so each has its own description.
   public double X() {
     return originAtCenter ? xCenter : xLeft;
   }
@@ -349,17 +346,14 @@ public abstract class Sprite extends VisibleComponent
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty
   public void Y(double y) {
     updateY(y);
     registerChange();
   }
 
-  // TODO: Update description
-  @SimpleProperty(
-      description = "The vertical coordinate of the top of the sprite, " +
-      "increasing as the sprite moves down.")
+  // This gets declared as a SimpleProperty in the concrete subclasses (Ball and ImageSprite),
+  // for the most tailored description.
   public double Y() {
     return originAtCenter ? yCenter : yTop;
   }

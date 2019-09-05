@@ -169,4 +169,23 @@ public final class Ball extends Sprite {
   public void OriginAtCenter(boolean b) {
     originAtCenter = b;
   }
+
+  // We need to override the X() and Y() methods to generate appropriate documentation.
+
+  @SimpleProperty(
+      description = "The horizontal coordinate of the Ball, increasing as the Ball moves right. " +
+      "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
+      "otherwise, it is for the leftmost point of the Ball.")
+  @Override
+  public double X() {
+    return super.X();
+  }
+
+  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves right. " +
+      "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
+      "otherwise, it is for the uppermost point of the Ball.")
+  @Override
+  public double Y() {
+    return super.Y();
+  }
 }
