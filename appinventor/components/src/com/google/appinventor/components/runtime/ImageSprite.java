@@ -139,7 +139,7 @@ public class ImageSprite extends Sprite {
   // Fill Parent will be the width/height of the image.
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "The height of the ImageSprite in pixels.")
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
@@ -161,7 +161,7 @@ public class ImageSprite extends Sprite {
   }
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "The width of the ImageSprite in pixels.")
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.

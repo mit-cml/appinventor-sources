@@ -114,7 +114,7 @@ public final class Ball extends Sprite {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "5")
-  @SimpleProperty()
+  @SimpleProperty(description = "The distance from the edge of the Ball to its center.")
   public void Radius(int radius) {
     int dr = radius - this.radius;
     // If the origin is at the center, the upper left corner moves to keep the center constant.
@@ -136,8 +136,7 @@ public final class Ball extends Sprite {
    *
    * @return  paint RGB color with alpha
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The color of the Ball")
   public int PaintColor() {
     return paintColor;
   }
