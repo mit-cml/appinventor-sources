@@ -45,7 +45,7 @@ public class Hygrometer extends SingleValueSensor {
   /**
    * Indicates the relative humidity changed.
    *
-   * @pram the new relative humidity
+   * @param the new relative humidity
    */
   @SimpleEvent(
       description = "Called when a change is detected in the ambient air humidity (expressed as a percentage).")

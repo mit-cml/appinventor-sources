@@ -56,7 +56,8 @@ public class Barometer extends SingleValueSensor {
    *
    * @return the atmospheric pressure in hPa (millibar)
    */
-  @SimpleProperty
+  @SimpleProperty(description = "The air pressure in hPa (millibar), if the sensor is available " +
+      "and enabled.")
    public float AirPressure() {
       return getValue();
   }
