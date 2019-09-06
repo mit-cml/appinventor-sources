@@ -19,7 +19,6 @@ import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
 
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -405,13 +404,10 @@ public abstract class Sprite extends VisibleComponent
    */
   @SimpleEvent
   public void CollidedWith(Sprite other) {
-    if (registeredCollisions.contains(other)) {
-      Log.e(LOG_TAG, "Collision between sprites " + this + " and "
-          + other + " re-registered");
-      return;
+    if (!registeredCollisions.contains(other)) {
+      registeredCollisions.add(other);
+      postEvent(this, "CollidedWith", other);
     }
-    registeredCollisions.add(other);
-    postEvent(this, "CollidedWith", other);
   }
 
   /**
@@ -453,8 +449,8 @@ public abstract class Sprite extends VisibleComponent
     if (edge == Component.DIRECTION_NONE
         || edge < Component.DIRECTION_MIN
         || edge > Component.DIRECTION_MAX) {
-      throw new IllegalArgumentException("Illegal argument " + edge +
-          " to Sprite.EdgeReached()");
+      // This should never happen.
+      return;
     }
     postEvent(this, "EdgeReached", edge);
   }
@@ -472,10 +468,6 @@ public abstract class Sprite extends VisibleComponent
       description = "Event indicating that a pair of sprites are no longer " +
       "colliding.")
   public void NoLongerCollidingWith(Sprite other) {
-    if (!registeredCollisions.contains(other)) {
-      Log.e(LOG_TAG, "Collision between sprites " + this + " and "
-          + other + " removed but not present");
-    }
     registeredCollisions.remove(other);
     postEvent(this, "NoLongerCollidingWith", other);
   }
@@ -840,7 +832,8 @@ public abstract class Sprite extends VisibleComponent
       return Component.DIRECTION_SOUTH;
     }
 
-    throw new AssertionFailure("Unreachable code hit in Sprite.hitEdge()");
+    // This should never be reached.
+    return Component.DIRECTION_NONE;
   }
 
   /**
