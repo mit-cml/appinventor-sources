@@ -197,4 +197,14 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       return 0;
     }
   }
+
+  @Override
+  public int getXOffset() {
+    return originAtCenter ? radius : 0;
+  }
+
+  @Override
+  public int getYOffset() {
+    return originAtCenter ? radius : 0;
+  }
 }

@@ -96,4 +96,14 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
       return 0;
     }
   }
+
+  @Override
+  public int getXOffset() {
+    return 0;
+  }
+
+  @Override
+  public int getYOffset() {
+    return 0;
+  }
 }

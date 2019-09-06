@@ -124,9 +124,13 @@ final class MockCanvasLayout extends MockLayout {
 
   @Override
   boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
+    MockSprite sprite = (MockSprite) source;
+
     // Set position of component
-    source.changeProperty(MockSprite.PROPERTY_NAME_X, toIntegerString(x - offsetX));
-    source.changeProperty(MockSprite.PROPERTY_NAME_Y, toIntegerString(y - offsetY));
+    source.changeProperty(MockSprite.PROPERTY_NAME_X,
+        toIntegerString(x - offsetX + sprite.getXOffset()));
+    source.changeProperty(MockSprite.PROPERTY_NAME_Y,
+        toIntegerString(y - offsetY + sprite.getYOffset()));
 
     // Perform drop
     MockContainer srcContainer = source.getContainer();
@@ -136,7 +140,7 @@ final class MockCanvasLayout extends MockLayout {
       srcContainer.removeComponent(source, false);
     }
     container.addComponent(source);
-    ((MockCanvas) container).reorderComponents((MockSprite) source);
+                          ((MockCanvas) container).reorderComponents(sprite);
     return true;
   }
 
