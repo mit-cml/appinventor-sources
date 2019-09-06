@@ -174,25 +174,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       }
     }
   }
-  
-  @objc fileprivate func updateLayerWidth() {
-    let newWidth = _view.bounds.width
-    if newWidth >= 0 {
-      _view.frame.size.width = CGFloat(newWidth)
-    }
-
-    // Adjust all the shapeLayers transforms on the x-axis
-    let xScaleFactor = CGFloat(newWidth) / _oldWidth
-    for s in _shapeLayers {
-      transformLayerWidth(s, xScaleFactor)
-    }
-    
-    // Adjust all the textLayers transforms and positions on the x-axis
-    for s in _textLayers {
-      s.position.x *= xScaleFactor
-      transformLayerWidth(s, xScaleFactor)
-    }
-  }
     
   override open var Height: Int32 {
     get {
@@ -204,25 +185,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       if height != kLengthPreferred {
         setNestedViewHeight(nestedView: _view, height: height, shouldAddConstraints: true)
       }
-    }
-  }
-
-  @objc func updateLayerHeight() {
-    let newHeight = _view.bounds.height
-    if newHeight >= 0 {
-      _view.frame.size.height = CGFloat(newHeight)
-    }
-
-    // Adjust all the shapeLayers transforms on the y-axis
-    let yScaleFactor = CGFloat(newHeight) / _oldHeight
-    for s in _shapeLayers {
-      transformLayerHeight(s, yScaleFactor)
-    }
-    
-    // Adjust all the textLayers transforms and positions on the y-axis
-    for s in _textLayers {
-      s.position.y *= yScaleFactor
-      transformLayerHeight(s, yScaleFactor)
     }
   }
   
@@ -1012,8 +974,6 @@ open class CanvasView: UIView {
     super.draw(rect)
     _drawn = true
     if let c = _canvas {
-      c.updateLayerHeight()
-      c.updateLayerWidth()
       for sprite in c._sprites {
         sprite.updateWidth()
         sprite.updateHeight()
