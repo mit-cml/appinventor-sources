@@ -988,18 +988,21 @@ select.ode-PropertyEditor[disabled] {
   height: auto !important;
   background-color: #d2e0a6;
   border: 2px solid black;
+  -webkit-display: flex;
   display: flex;
 }
 
 .ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm,
 .ode-SimpleMockFormPhoneLandscapeTablet .ode-SimpleMockForm,
 .ode-SimpleMockFormPhoneLandscapeMonitor .ode-SimpleMockForm {
+  -webkit-flex-direction: row;
   flex-direction: row;
 }
 
 .ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
 .ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
 .ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
+  -webkit-flex-direction: column;
   flex-direction: column;
 }
 
