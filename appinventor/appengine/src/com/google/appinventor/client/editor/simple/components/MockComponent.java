@@ -1067,7 +1067,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   }
 
   public void delete() {
-    OdeLog.log("Got delete component for " + this.getName());
     this.editor.getProjectEditor().clearLocation(getName());
     getForm().select();
     // Pass true to indicate that the component is being permanently deleted.

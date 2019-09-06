@@ -530,6 +530,19 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
     loadComplete = true;
+
+    // Originally this was done in loadDesigner. However, this resulted in
+    // the form and blocks editor not being registered for events until after
+    // they were opened. This became problematic if the user deleted an extension
+    // prior to opening the screen as they would never trigger a save, resulting
+    // in a corrupt project.
+
+    // Listen to changes on the form.
+    form.addFormChangeListener(this);
+    // Also have the blocks editor listen to changes. Do this here instead
+    // of in the blocks editor so that we don't risk it missing any updates.
+    form.addFormChangeListener(((YaProjectEditor) projectEditor)
+        .getBlocksFileEditor(form.getName()));
   }
 
   public void reloadComponentPalette(String subsetjson) {
@@ -678,14 +691,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.setContent(designProperties);
     updatePropertiesPanel(selectedComponent);
     propertiesBox.setVisible(true);
-
-    // Listen to changes on the form.
-    form.addFormChangeListener(this);
-    // Also have the blocks editor listen to changes. Do this here instead
-    // of in the blocks editor so that we don't risk it missing any updates.
-    OdeLog.log("Adding blocks editor as a listener for " + form.getName());
-    form.addFormChangeListener(((YaProjectEditor) projectEditor)
-        .getBlocksFileEditor(form.getName()));
   }
 
   /*
