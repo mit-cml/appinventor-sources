@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
@@ -734,7 +733,6 @@ public final class MockForm extends MockContainer {
 
   private Timer refreshTimer = null;
   public final void refresh() {
-    Ode.CLog("MockForm: refresh() called.");
     if (refreshTimer != null) return;
     refreshTimer = new Timer() {
       @Override
@@ -755,7 +753,6 @@ public final class MockForm extends MockContainer {
    */
 
   public final void doRefresh() {
-    Ode.CLog("MockForm: doRefresh() called");
     Map<MockComponent, LayoutInfo> layoutInfoMap = new HashMap<MockComponent, LayoutInfo>();
 
     collectLayoutInfos(layoutInfoMap, this);
@@ -769,7 +766,6 @@ public final class MockForm extends MockContainer {
       layoutInfo.cleanUp();
     }
     layoutInfoMap.clear();
-    Ode.CLog("MockForm: doRefresh() done.");
   }
 
   /*
