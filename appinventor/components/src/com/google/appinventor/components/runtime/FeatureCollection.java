@@ -75,6 +75,29 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
     return source;
   }
 
+  /**
+   * Returns true iff the component is visible.
+   * @return  true iff the component is visible
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public boolean Visible() {
+    return getMap().getController().isFeatureCollectionVisible(this);
+  }
+
+  /**
+   * Specifies whether the component should be visible on the screen.  Value is true if the
+   * component is showing and false if hidden.
+   * @param  visibility desired state
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
+      defaultValue = "True")
+  @SimpleProperty(description = "Specifies whether the component should be visible on the screen. "
+      + "Value is true if the component is showing and false if hidden.")
+  public void Visible(boolean visibility) {
+    getMap().getController().setFeatureCollectionVisible(this, visibility);
+  }
+
   @Override
   public View getView() {
     // Even though we are an AndroidViewComponent, we don't actually have a view because the view
