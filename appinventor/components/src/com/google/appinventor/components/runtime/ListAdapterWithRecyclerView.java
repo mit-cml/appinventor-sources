@@ -38,13 +38,14 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     private String[] firstItem;
     private String[] secondItem;
-    public boolean[] selection;
+    public Boolean[] selection;
     private ArrayList<Drawable> images;
     private Context context;
-    private int textColor;
-    private int textSize;
-    private int detailTextColor;
-    private int detailTextSize; 
+    private int size;
+    private int textMainColor;
+    private int textMainSize;
+    private int textDetailColor;
+    private int textDetailSize; 
     private int layoutType;
     private int backgroundColor;
     private int selectionColor;
@@ -56,21 +57,25 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     private int idFirst,idSecond,idImages,idCard;
 
-    public ListAdapterWithRecyclerView(Context context,String[] first,String[] second,ArrayList<Drawable> images,int textColor,int detailTextColor,int textSize,int detailTextSize,int layoutType,int backgroundColor,int selectionColor,boolean[] selection,int imageWidth,int imageHeight){
+    public ListAdapterWithRecyclerView(Context context,int size,String[] first,String[] second,ArrayList<Drawable> images,int textMainColor,int textDetailColor,int textMainSize,int textDetailSize,int layoutType,int backgroundColor,int selectionColor,int imageWidth,int imageHeight){
         this.firstItem = first;
-        this.secondItem = second;   
+        this.secondItem = second;
         this.images=images;
+        this.size=size;
         this.context=context;
-        this.textSize=textSize;
-        this.textColor=textColor;
-        this.detailTextColor=detailTextColor;
-        this.detailTextSize=detailTextSize;
+        this.textMainSize=textMainSize;
+        this.textMainColor=textMainColor;
+        this.textDetailColor=textDetailColor;
+        this.textDetailSize=textDetailSize;
         this.layoutType=layoutType;
         this.backgroundColor=backgroundColor;
         this.selectionColor=selectionColor;
-        this.selection=selection;
+        //this.selection=selection;
         this.imageHeight=imageHeight;
         this.imageWidth=imageWidth;
+
+        this.selection = new Boolean[size];
+        Arrays.fill(selection, Boolean.FALSE);
  }
 
     @Override
@@ -101,8 +106,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(detailTextSize);
-        textViewFirst.setTextColor(detailTextColor);      
+        textViewFirst.setTextSize(textMainSize);
+        textViewFirst.setTextColor(textMainColor);      
         
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -120,8 +125,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(detailTextSize);
-        textViewFirst.setTextColor(detailTextColor);
+        textViewFirst.setTextSize(textMainSize);
+        textViewFirst.setTextColor(textMainColor);
 
         TextView textViewSecond=new TextView(context);
         idSecond=View.generateViewId();
@@ -129,8 +134,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams2.topMargin = 10;
         textViewSecond.setLayoutParams(layoutParams2);
-        textViewSecond.setTextSize(textSize);       
-        textViewSecond.setTextColor(textColor);
+        textViewSecond.setTextSize(textDetailSize);       
+        textViewSecond.setTextColor(textDetailColor);
                 
         LinearLayout linearLayout2= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear2 = new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2);
@@ -155,8 +160,20 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(detailTextSize);
-        textViewFirst.setTextColor(detailTextColor);
+        textViewFirst.setTextSize(textMainSize);
+        textViewFirst.setTextColor(textMainColor);
+
+        TextView textViewSecond=new TextView(context);
+        idSecond=View.generateViewId();
+        textViewSecond.setId(idSecond);
+        LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams2.setMargins(50, 10, 0, 0);
+        textViewSecond.setLayoutParams(layoutParams2);
+        textViewSecond.setTextSize(textDetailSize);       
+        textViewSecond.setTextColor(textDetailColor);
+        textViewSecond.setMaxLines(1); 
+        textViewSecond.setEllipsize(null);
+
 
         LinearLayout linearLayout1= new LinearLayout(context);
         LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -164,6 +181,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
         
         linearLayout1.addView(textViewFirst);
+        linearLayout1.addView(textViewSecond);
         cardView.setLayoutParams(params1);
         cardView.addView(linearLayout1);
         }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
@@ -174,8 +192,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(detailTextSize);
-        textViewFirst.setTextColor(detailTextColor);
+        textViewFirst.setTextSize(textMainSize);
+        textViewFirst.setTextColor(textMainColor);
 
         ImageView imageView = new ImageView(context);
         idImages=View.generateViewId();
@@ -201,8 +219,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams1=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams1.topMargin = 10;
         textViewFirst.setLayoutParams(layoutParams1);
-        textViewFirst.setTextSize(detailTextSize);
-        textViewFirst.setTextColor(detailTextColor);
+        textViewFirst.setTextSize(textMainSize);
+        textViewFirst.setTextColor(textMainColor);
 
         TextView textViewSecond=new TextView(context);
         idSecond=View.generateViewId();
@@ -210,8 +228,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         LinearLayout.LayoutParams layoutParams2=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams2.topMargin = 10;
         textViewSecond.setLayoutParams(layoutParams2);
-        textViewSecond.setTextSize(textSize);       
-        textViewSecond.setTextColor(textColor);
+        textViewSecond.setTextSize(textDetailSize);       
+        textViewSecond.setTextColor(textDetailColor);
                 
         ImageView imageView = new ImageView(context);
         idImages=View.generateViewId();
@@ -269,9 +287,9 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             }else if(layoutType==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
             String first =firstItem[position];
             String second=secondItem[position];
-            String combined = first + second;
 
-            holder.textViewFirst.setText(combined);
+            holder.textViewFirst.setText(first);
+            holder.textViewSecond.setText(second);
             }else if(layoutType==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             String first =firstItem[position];
             Drawable drawable = images.get(position);   
@@ -319,6 +337,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
             }
             else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
             textViewFirst = (TextView)view.findViewById(idFirst);
+            textViewSecond=(TextView)view.findViewById(idSecond);
             }
             else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
             textViewFirst = (TextView)view.findViewById(idFirst);

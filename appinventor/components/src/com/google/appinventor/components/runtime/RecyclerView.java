@@ -80,15 +80,15 @@ public final class RecyclerView extends AndroidViewComponent {
     private int backgroundColor;
     private static final int DEFAULT_BACKGROUND_COLOR = Color.BLACK;
 
-    private int textColor;
-    private int detailTextColor;
+    private int textMainColor;
+    private int textDetailColor;
     private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;   
 
     private int selectionColor;
     private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
 
-    private int textSize;
-    private int detailTextSize;
+    private int textMainSize;
+    private int textDetailSize;
     private static final int DEFAULT_TEXT_SIZE = 22;
 
     private int gridCount;
@@ -195,10 +195,10 @@ public final class RecyclerView extends AndroidViewComponent {
     ImageWidth(DEFAULT_IMAGE_WIDTH);
     ImageHeight(DEFAULT_IMAGE_WIDTH);
   
-    textColor = DEFAULT_TEXT_COLOR;
-    detailTextColor = DEFAULT_TEXT_COLOR;
-    textSize = DEFAULT_TEXT_SIZE;
-    detailTextSize = DEFAULT_TEXT_SIZE;
+    textMainColor = DEFAULT_TEXT_COLOR;
+    textDetailColor = DEFAULT_TEXT_COLOR;
+    textMainSize = DEFAULT_TEXT_SIZE;
+    textDetailSize = DEFAULT_TEXT_SIZE;
     gridCount=DEFAULT_GRID_COUNT;
 
 
@@ -206,7 +206,6 @@ public final class RecyclerView extends AndroidViewComponent {
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
-    //recyclerView.requestLayout();
     container.$add(this);
 };
 
@@ -278,7 +277,7 @@ public final class RecyclerView extends AndroidViewComponent {
 
     String[] first=new String[size];
     String[] second=new String[size];
-    boolean[] selected=new boolean[size];
+    //boolean[] selected=new boolean[size];
     
     ArrayList<Drawable> third = new ArrayList<Drawable>();
     
@@ -286,21 +285,21 @@ public final class RecyclerView extends AndroidViewComponent {
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
-      selected[i]=false;
+      //selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";    
-      selected[i]=false;
+      //selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
     for(int i=0;i<size;i++){
       JSONObject object = currentItems.get(i);
       first[i]=object.has("Text1")?object.getString("Text1"):"";
       second[i]=object.has("Text2")?object.getString("Text2"):"";
-      selected[i]=false;
+      //selected[i]=false;
     } 
     }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
     for(int i=0;i<size;i++){
@@ -314,7 +313,7 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
-      selected[i]=false;
+      //selected[i]=false;
     } 
     
     }else if(layout==Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
@@ -330,12 +329,12 @@ public final class RecyclerView extends AndroidViewComponent {
         Log.e("Image", "Unable to load " + imagee);
         third.add(null);
         }    
-    selected[i]=false;
+    //selected[i]=false;
     } 
     
     }
     
-  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),first,second,third,textColor,detailTextColor,textSize,detailTextSize,layout,backgroundColor,selectionColor,selected,imageWidth,imageHeight);
+  listAdapterWithRecyclerView =new ListAdapterWithRecyclerView(container.$context(),size,first,second,third,textMainColor,textDetailColor,textMainSize,textDetailSize,layout,backgroundColor,selectionColor,imageWidth,imageHeight);
    
    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
     @Override
@@ -484,8 +483,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleProperty(
       description = "The text color of the listview items.",
       category = PropertyCategory.APPEARANCE)
-  public int TextColor() {
-    return textColor;
+  public int TextMainColor() {
+    return textMainColor;
   }
 
   /**
@@ -499,8 +498,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
-  public void TextColor(int argb) {
-      textColor = argb;
+  public void TextMainColor(int argb) {
+      textMainColor = argb;
       setAdapterr();
   }
 
@@ -512,8 +511,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleProperty(
       description = "The text size of the listview items.",
       category = PropertyCategory.APPEARANCE)
-  public int TextSize() {
-    return textSize;
+  public int TextMainSize() {
+    return textMainSize;
   }
 
   /**
@@ -524,11 +523,11 @@ public final class RecyclerView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue ="" + DEFAULT_TEXT_SIZE )
   @SimpleProperty
-  public void TextSize(int fontSize) {
+  public void TextMainSize(int fontSize) {
       if(fontSize>1000)
-        textSize = 999;
+        textMainSize = 999;
       else
-        textSize = fontSize;
+        textMainSize = fontSize;
       setAdapterr();
   }
 
@@ -544,8 +543,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleProperty(
       description = "The text color of the listview items.",
       category = PropertyCategory.APPEARANCE)
-  public int DetailTextColor() {
-    return detailTextColor;
+  public int TextDetailColor() {
+    return textDetailColor;
   }
 
   /**
@@ -559,8 +558,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
-  public void DetailTextColor(int argb) {
-      detailTextColor = argb;
+  public void TextDetailColor(int argb) {
+      textDetailColor = argb;
       setAdapterr();
   }
 
@@ -572,8 +571,8 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleProperty(
       description = "The text size of the listview items.",
       category = PropertyCategory.APPEARANCE)
-  public int DetailTextSize() {
-    return detailTextSize;
+  public int TextDetailSize() {
+    return textDetailSize;
   }
 
   /**
@@ -584,11 +583,11 @@ public final class RecyclerView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue ="" + DEFAULT_TEXT_SIZE )
   @SimpleProperty
-  public void DetailTextSize(int fontSize) {
+  public void TextDetailSize(int fontSize) {
       if(fontSize>1000)
-        detailTextSize = 999;
+        textDetailSize = 999;
       else
-        detailTextSize = fontSize;
+        textDetailSize = fontSize;
       setAdapterr();
   }
 
