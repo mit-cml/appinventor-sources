@@ -164,7 +164,7 @@ public final class Ball extends Sprite {
       defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible = false,
       description = "Whether the x- and y-coordinates should represent the center of the Ball (true) " +
-      "or the left and top edges, respectively (false).")
+      "or the left and top edges (false).")
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
   }
@@ -216,7 +216,7 @@ public final class Ball extends Sprite {
     return super.X();
   }
 
-  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves right. " +
+  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves up. " +
       "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
       "otherwise, it is for the uppermost point of the Ball.")
   @Override

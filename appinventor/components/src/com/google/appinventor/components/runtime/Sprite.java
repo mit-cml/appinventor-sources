@@ -290,6 +290,8 @@ public abstract class Sprite extends VisibleComponent
     return xCenter - Width() / 2;
   }
 
+  // Note that this does not call registerChange(). This was pulled out of X()
+  // so both X and Y could be changed with only a single call to registerChange().
   private void updateX(double x) {
     if (originAtCenter) {
       xCenter = x;
@@ -317,6 +319,8 @@ public abstract class Sprite extends VisibleComponent
     return yCenter - Width() / 2;
   }
 
+  // Note that this does not call registerChange(). This was pulled out of Y()
+  // so both X and Y could be changed with only a single call to registerChange().
   private void updateY(double y) {
     if (originAtCenter) {
       yCenter = y;
@@ -362,14 +366,14 @@ public abstract class Sprite extends VisibleComponent
     return zLayer;
   }
 
-  // This gets overridden in Ball so it can be made a property for Ball
-  // but not for ImageSprite.
+  // This gets overridden in Ball with the @SimpleProperty and @DesignerProperty
+  // annotations so it can be made a property for Ball but not for ImageSprite.
   public void OriginAtCenter(boolean b) {
     originAtCenter = b;
   }
 
   // Methods for event handling: general purpose method postEvent() and
-  // Simple events: CollidedWith, Dragged, EdgeReached, Touched, NoLongeCollidingWith,
+  // Simple events: CollidedWith, Dragged, EdgeReached, Touched, NoLongerCollidingWith,
   // Flung, TouchUp, and TouchDown.
 
   /**
@@ -449,7 +453,7 @@ public abstract class Sprite extends VisibleComponent
     if (edge == Component.DIRECTION_NONE
         || edge < Component.DIRECTION_MIN
         || edge > Component.DIRECTION_MAX) {
-      // This should never happen.
+      // This should never be reached.
       return;
     }
     postEvent(this, "EdgeReached", edge);
