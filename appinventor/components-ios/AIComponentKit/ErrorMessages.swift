@@ -38,6 +38,9 @@ import Foundation
   // "Error message for when contact data cannot be used on the device."
   case ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107
 
+  // Canvas Errors
+  case ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT = 1004
+
   // Web Errors
   case ERROR_WEB_UNSUPPORTED_ENCODING = 1102
   case ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105
@@ -173,6 +176,10 @@ import Foundation
     // ContactPicker and PhoneNumberPicker Errors
     case .ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER:
       return "The software used in this app cannot extract contacts from this type of phone."
+
+    // Canvas Errors
+    case .ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT:
+      return "Canvas cannot draw the shape with a bad point list"
 
     // Web Errors
     case .ERROR_WEB_UNSUPPORTED_ENCODING:
