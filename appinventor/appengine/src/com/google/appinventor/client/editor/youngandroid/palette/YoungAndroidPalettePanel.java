@@ -7,7 +7,6 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -115,6 +114,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           arrayString.push(s);
         }
         sort();
+        // Refresh the list by repeating the search
+        doSearch(true);
         rebuild = null;
       }
     };
@@ -177,7 +178,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     searchText = new TextBox();
     searchText.setWidth("100%");
     searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
-    searchText.getElement().setAttribute("type", "search");
+    searchText.getElement().setAttribute("style", "width: 100%; box-sizing: border-box;");
 
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
@@ -264,12 +265,16 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       }
   }
 
+  private void doSearch() {
+    doSearch(false);
+  }
+
   /**
    *  User clicks on searchButton and results will be added to searchResults panel
    */
-  private void doSearch() {
+  private void doSearch(boolean force) {
     String search_str = searchText.getText().trim().toLowerCase();
-    if (search_str.equals(lastSearch)) {
+    if (search_str.equals(lastSearch) && !force) {
       // nothing to do here.
       return;
     }
@@ -287,7 +292,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           }
         }
       }
-      Ode.CLog("Search time for " + search_str + " was " + (System.currentTimeMillis() - start));
     } else {
       searchResults.clear();
     }
@@ -372,7 +376,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           dropTargetProvider);
       // Handle extensions
       if (external) {
-        translationMap.put(componentTypeName, componentTypeName);
+        translationMap.put(componentTypeName.toLowerCase(), componentTypeName);
         requestRebuildList();
       }
       searchSimplePaletteItems.put(componentTypeName, item);
