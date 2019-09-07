@@ -785,7 +785,8 @@ public class TopToolbar extends Composite {
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
       String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-          "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
+          "<BR/>" + MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u") +
+          "<BR/>" + MESSAGES.targetSdkVersion(YaVersion.TARGET_SDK_VERSION, YaVersion.TARGET_ANDROID_VERSION);
       Config config = Ode.getInstance().getSystemConfig();
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
