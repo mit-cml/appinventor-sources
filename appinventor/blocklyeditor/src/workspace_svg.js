@@ -677,17 +677,34 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   function comparisonName(block) {
     // Add trailing numbers to represent their sequence
     if (block.category == 'Variables') {
-      return ('1,' + block.type);
+      return ('a,' + block.type + ',' + block.getVars().join(','));
     }
     if (block.category === 'Procedures') {
-      return ('2,'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+      // sort procedure definitions before calls
+      if (block.type.indexOf('procedures_def') == 0) {
+        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+      } else {
+        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+      }
     }
     if (block.category == 'Component') {
-      var component = block.type + ',' + block.instanceName + ',' + block.eventName;
-      return ('3,' + component);
+      var component = block.type + ',' + block.typeName + ','
+        + (block.isGeneric ? '!GENERIC!' : block.instanceName) + ',';
+      // sort Component blocks first, then events, methods, getters, or setters
+      if (block.type == 'component_event') {
+        component += block.eventName;
+      } else if (block.type == 'component_method') {
+        component += block.methodName;
+      } else if (block.type == 'component_set_get') {
+        component += block.setOrGet + block.propertyName;
+      } else {
+        // component blocks
+        component += '.Component';
+      }
+      return ('c,' + component);
     }
     // Floating blocks that are not Component
-    return ('4,' + block.type);
+    return ('d,' + block.type);
   }
 
   /**
@@ -698,19 +715,19 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
    */
   function compareStrTextNum(strA,strB) {
     // Use Regular Expression to match text and numbers
-    var regexStrA = strA.match(/(.*?)([0-9]+)$/gi);
-    var regexStrB = strB.match(/(.*?)([0-9]+)$/gi);
+    var regexStrA = strA.match(/^(.*?)([0-9]+)/i);
+    var regexStrB = strB.match(/^(.*?)([0-9]+)/i);
 
     // There are numbers in the strings, compare numbers
     if (regexStrA != null && regexStrB != null) {
-      numStrA = strA.match(/([0-9]+)$/gi);
-      numStrB = strB.match(/([0-9]+)$/gi);
-      numA = parseInt(numStrA);
-      numB = parseInt(numStrB);
-      if (numA > numB) return +1;
-      else if (numA < numB) return -1;
-      else return 0;
-    }else {
+      if (regexStrA[1] < regexStrB[1]) {
+        return -1;
+      } else if (regexStrA[1] > regexStrB[1]) {
+        return 1;
+      } else {
+        return parseInt(regexStrA[2]) - parseInt(regexStrB[2]);
+      }
+    } else {
       return strA.localeCompare(strB, undefined, {numeric:true});
     }
   }
@@ -746,7 +763,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
           var nameB = b.svgGroup_.textContent;
           nameB = nameB.substring(17, nameB.length - 2);
           res = compareStrTextNum(nameA, nameB);
-        }else {
+        } else {
           var nameA = a.fieldVar_.text_;
           var nameB = b.fieldVar_.text_;
           if (nameA.includes("global") && nameB.includes("global")) {
@@ -765,6 +782,13 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     // type name, instance name, then event name
     if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName) {
       if (a.typeName == b.typeName) {
+        if (a.instanceName == b.instanceName) {
+          return 0;
+        } else if (!a.instanceName) {
+          return -1;
+        } else if (!b.instanceName) {
+          return 1;
+        }
         return compareStrTextNum(a.instanceName, b.instanceName);
       }
       return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
