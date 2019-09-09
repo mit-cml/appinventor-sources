@@ -543,6 +543,12 @@ public class YaVersion {
 
   public static final int BLOCKS_LANGUAGE_VERSION = 27;
 
+  // ................................. Target SDK Version Number ..................................
+
+  public static final int TARGET_SDK_VERSION = 28;
+
+  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
@@ -1279,7 +1285,7 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.55 or 2.55u";
+  public static final String PREFERRED_COMPANION = "2.55";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
