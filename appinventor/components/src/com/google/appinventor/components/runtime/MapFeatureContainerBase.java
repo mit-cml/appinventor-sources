@@ -123,7 +123,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
    * @return A YailList of map features, e.g., Marker, LineString
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The list of features placed on this map. This list also includes any " +
+      description = "The list of features placed on this %type%. This list also includes any " +
           "features created by calls to FeatureFromDescription")
   public YailList Features() {
     return YailList.makeList(features);
