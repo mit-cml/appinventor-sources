@@ -37,6 +37,7 @@ import java.io.Writer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -971,6 +972,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
+      Collections.addAll(componentInfo.permissions, usesPermissions.value());
     }
 
     // Gather library names.
@@ -979,6 +981,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String library : usesLibraries.libraries().split(",")) {
         updateWithNonEmptyValue(componentInfo.libraries, library);
       }
+      Collections.addAll(componentInfo.libraries, usesLibraries.value());
     }
 
     // Gather native library names.
@@ -1093,8 +1096,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                  propertyName);
     }
 
+    // Use Javadoc for property unless description is set to a non-empty string.
+    String description = elementUtils.getDocComment(element);
+    if (!simpleProperty.description().isEmpty()) {
+      description = simpleProperty.description();
+    }
+    if (description == null) {
+      description = "";
+    }
+    // Read only until the first javadoc parameter
+    description = description.split("[^\\\\][@{]")[0].trim();
+
     Property property = new Property(propertyName,
-                                     simpleProperty.description(),
+                                     description,
                                      simpleProperty.category(),
                                      simpleProperty.userVisible(),
                                      elementUtils.isDeprecated(element));

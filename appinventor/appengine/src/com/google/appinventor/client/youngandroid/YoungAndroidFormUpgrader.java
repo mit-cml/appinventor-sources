@@ -317,6 +317,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SoundRecorder")) {
         srcCompVersion = upgradeSoundRecorderProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("SpeechRecognizer")) {
+        srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
@@ -705,6 +708,11 @@ public final class YoungAndroidFormUpgrader {
       componentProperties.put("TextAlignment", def);
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // No properties need to be modified to upgrade to version 11.
+      // DrawShape & DrawArc was added.
+      srcCompVersion = 11;
+    }
     return srcCompVersion;
   }
 
@@ -721,12 +729,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // (2) The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
       // No properties need to be modified to upgrade to version 2.
       // (3) Duration Support was added
       // No properties need to be added to upgrade to version 3.
-      srcCompVersion = 3;
+      // (4) Added MakeDate, MakeTime, MakeInstantFromParts methods
+      // No properties need to be added to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1298,6 +1308,17 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeSpeechRecognizerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SpeechRecognizer.UseLegacy property was added.
+      // The Stop method was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
 
   private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
@@ -1368,6 +1389,10 @@ public final class YoungAndroidFormUpgrader {
       // Added TextInputCanceled & ChoosingCanceled event
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added PasswordDialog
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1391,10 +1416,15 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
-        // The Volume property (setter only) was created.
-        // No properties need to be modified to upgrade to version 4.
-        srcCompVersion = 5;
-      }
+      // The Volume property (setter only) was created.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The Stop method was created.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 

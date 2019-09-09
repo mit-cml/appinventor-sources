@@ -26,6 +26,10 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_BUTTONSHAPE= "Shape";
   protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = "BackgroundColor";
   protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = "BackgroundImage";
+  protected static final String PROPERTY_NAME_THUMBCOLORACTIVE = "ThumbColorActive";
+  protected static final String PROPERTY_NAME_THUMBCOLORINACTIVE = "ThumbColorInactive";
+  protected static final String PROPERTY_NAME_TRACKCOLORACTIVE = "TrackColorActive";
+  protected static final String PROPERTY_NAME_TRACKCOLORINACTIVE = "TrackColorInactive";
   protected static final String PROPERTY_NAME_ENABLED = "Enabled";
   protected static final String PROPERTY_NAME_FONTBOLD = "FontBold";
   protected static final String PROPERTY_NAME_FONTITALIC = "FontItalic";
@@ -36,6 +40,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
+  protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
   protected static final String PROPERTY_NAME_HINT = "Hint";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";

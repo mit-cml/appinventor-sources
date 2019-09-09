@@ -78,7 +78,12 @@ Blockly.ReplStateObj.prototype = {
     'rendezvouscode' : null,            // Code used for Rendezvous (hash of replcode)
     'dialog' : null,                    // The Dialog Box with the code and QR Code
     'count' : 0,                        // Count of number of reads from rendezvous server
-    'didversioncheck' : false
+    'didversioncheck' : false,
+    'isUSB' : false,            // True if using a USB connection
+    'rendezvous2' : 'http://rendezvous.appinventor.mit.edu/rendezvous2/',
+    'iceservers' : { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
+                                        'username' : 'oh',
+                                        'credential' : 'boy' }]}
 };
 
 // Blockly is only loaded once now, so we can init this here.
@@ -263,11 +268,6 @@ Blockly.ReplMgr.putYail = (function() {
     var webrtcpeer;
     var webrtcisopen = false;
     var webrtcforcestop = false;
-    // var iceservers = { 'iceServers' : [ { 'urls' : ['stun:stun.l.google.com:19302']}]};
-    var iceservers = { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
-                                          'username' : 'oh',
-                                          'credential' : 'boy' }]};
-    var webrtcrendezvous = 'http://rendezvous.appinventor.mit.edu/rendezvous2/';
     var webrtcdata;
     var seennonce = {};
     var engine = {
@@ -335,12 +335,30 @@ Blockly.ReplMgr.putYail = (function() {
             var offer;
             var key = rs.replcode;
             var haveoffer = false;
+            var connectionstate = "none";
+            var webrtcerror = function(doalert, msg) {
+              webrtcdata = null;
+              webrtcstarting = false;
+              webrtcrunning = false;
+              webrtcforcestop = true;
+              top.BlocklyPanel_indicateDisconnect();
+              top.ConnectProgressBar_hide();
+              if (!webrtcpeer) {
+                webrtcpeer.close();
+              }
+              if (doalert) {
+                  var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, msg, Blockly.Msg.REPL_OK, false, null, 0,
+                      function() {
+                          dialog.hide();
+                      });
+              }
+            };
             webrtcisopen = false;
             webrtcforcestop = false;
             top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
             var poll = function() {
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', webrtcrendezvous + key + '-r', true);
+                xhr.open('GET', top.ReplState.rendezvous2 + key + '-r', true);
                 xhr.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
                         if (this.response[0] == '[') {
@@ -353,7 +371,13 @@ Blockly.ReplMgr.putYail = (function() {
                                     var nonce = hunk['nonce'];
                                     if (!seennonce[nonce]) {
                                         seennonce[nonce] = true;
-                                        webrtcpeer.addIceCandidate(candidate);
+                                        console.log("addIceCandidate: signalingState = " + webrtcpeer.signalingState +
+                                                    " iceConnectionState = " + webrtcpeer.iceConnectionState);
+                                        console.log("addIceCandidate: candidate = " + JSON.stringify(candidate));
+                                        webrtcpeer.addIceCandidate(candidate)["catch"](function(e) {
+                                            console.error(e);
+                                            webrtcerror(true, Bockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + e);
+                                        });
                                     } else {
                                         console.log("Seen nonce " + nonce);
                                     }
@@ -369,29 +393,29 @@ Blockly.ReplMgr.putYail = (function() {
                         if (!webrtcisopen && !webrtcforcestop) {
                             setTimeout(poll, 1000); // Try again in one second
                         }
+                    } else if (this.readyState == 4) { // Done, but didn't get a 200 back
+                        webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "Rendezvous Fail: " + this.status);
                     }
                 };
                 xhr.send();
             };
-            webrtcpeer = new RTCPeerConnection(iceservers);
+            webrtcpeer = new RTCPeerConnection(top.ReplState.iceservers);
             webrtcpeer.oniceconnectionstatechange = function(evt) {
-                console.log("oniceconnectionstatechange: evt.type = " + evt.type);
-                if (this.iceConnectionState == "disconnected" ||
-                    this.iceConnectionState == "failed") {
-                    webrtcdata = null;
-                    webrtcstarting = false;
-                    webrtcrunning = false;
-                    top.BlocklyPanel_indicateDisconnect();
-                    webrtcpeer.close();
+                console.log("oniceconnectionstatechange: evt.type = " + evt.type + " connection state = " + this.iceConnectionState);
+                connectionstate = this.iceConnectionState;
+                if (connectionstate == "disconnected" ||
+                    connectionstate == "failed") {
+                    webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "state = " + connectionstate);
                 }
             };
             webrtcpeer.onsignalingstatechange = function(evt) {
                 console.log("onsignalingstatechange: evt.type = " + evt.type);
+                console.log("onsignalingstatechange: signalingstate = " + this.signalingState);
             };
             webrtcpeer.onicecandidate = function(evt) {
                 if (evt.type == 'icecandidate') {
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', webrtcrendezvous, true);
+                    xhr.open('POST', top.ReplState.rendezvous2, true);
                     xhr.send(JSON.stringify({'key' : key + '-s',
                                              'webrtc' : true,
                                              'nonce' : Math.floor(Math.random() * 10000) + 1,
@@ -435,14 +459,17 @@ Blockly.ReplMgr.putYail = (function() {
             webrtcpeer.createOffer().then(function(desc) {
                 offer = desc;
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', webrtcrendezvous, true);
+                xhr.open('POST', top.ReplState.rendezvous2, true);
                 xhr.send(JSON.stringify({'key' : key + '-s',
                                          'webrtc' : true,
                                          'offer' : desc}));
                 webrtcpeer.setLocalDescription(desc);
             });
-            poll();
-
+            top.ConnectProgressBar_setProgress(15, Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING);
+            setTimeout(function() {
+              top.ConnectProgressBar_setProgress(20, Blockly.Msg.DIALOG_SECURE_ESTABLISHING);
+              poll();
+            }, 5000);           // Wait 5 seconds for Rendezvous server to gather all ice candidates
         },
         'chunker' : (function() {
             var seq = 0;
@@ -763,7 +790,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             if (installer === undefined)
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
-            if (installer != "com.android.vending" && top.COMPANION_UPDATE_URL) {
+            if (installer != "com.android.vending" && top.COMPANION_UPDATE_URL && !rs.isUSB) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE,
@@ -837,6 +864,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
         rs.state = Blockly.ReplMgr.rsState.IDLE;
         rs.connection = null;
         rs.didversioncheck = false;
+        rs.isUSB = false;
         context.resetYail(false);
         top.BlocklyPanel_indicateDisconnect();
         // End reset companion state
@@ -854,6 +882,11 @@ Blockly.ReplMgr.triggerUpdate = function() {
 
     if (top.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
         showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_CONNECTION);
+        return;
+    }
+
+    if (top.ReplState.replcode != 'emulator' || top.ReplState.isUSB == true) {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_EMULATOR_ONLY);
         return;
     }
 
@@ -883,7 +916,8 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                                          console.log("Update: _package success");
                                                          reset(); //  New companion, no connection left!
                                                      } else if (this.readyState == 4) {
-                                                         console.log("Update: _package state = 4 probably ok");
+                                                         console.log("Update: _package state = 4 probably ok (status = " + this.status +
+                                                                     ")");
                                                          reset();
                                                      }
                                                  };
@@ -1274,6 +1308,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
+    rs.isUSB = usb;
     var RefreshAssets = top.AssetManager_refreshAssets;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
@@ -1369,6 +1404,22 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                                            // via HTTP because we may be using webrtc and there is no
                                            // HTTP
 
+                // Let's see if the Rendezvous server gave us a second level to contact
+                // as well as a list of ice servers to override our defaults
+
+                if (json.rendezvous2) {
+                  rs.rendezvous2 = json.rendezvous2;
+                }
+                if (json.iceservers) {
+                  var serverlist = [];
+                  for (var i = 0; i < json.iceservers.length; i++) {
+                    serverlist.push({ 'urls' : [json.iceservers[i].server],
+                                      'username' : json.iceservers[i].username,
+                                      'credential' : json.iceservers[i].password });
+                  }
+                  rs.iceservers = { 'iceServers' : serverlist };
+                }
+
                 // The code below really gets things going. We will
                 // either call it shortly, if the Companion version is acceptable
                 // or in the dialog response handler below if the Companion
@@ -1393,7 +1444,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 // say that an update is advisable (or needed)
                 var installer = json.installer;
                 if (!json.version || !Blockly.ReplMgr.acceptableVersion(json.version)) {
-                    if (top.COMPANION_UPDATE_URL1) {
+                    if (top.COMPANION_UPDATE_URL1 && !rs.isUSB) {
                         var url = top.location.origin + top.COMPANION_UPDATE_URL1;
                         var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                          Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2 + '<br/>' +
@@ -1497,7 +1548,7 @@ Blockly.ReplMgr.rendPoll = function() {
 
 Blockly.ReplMgr.makeDialogMessage = function(code) {
     var scancode;
-    if (top.rendezvousServer != 'rendezvous.appinventor.mit.edu') { // Should really get this from YAV
+    if (top.includeQRcode) { // Should we include the Rendezvous server name in the QR Code?
         scancode = top.rendezvousServer + ";" + code;
     } else {
         scancode = code;
