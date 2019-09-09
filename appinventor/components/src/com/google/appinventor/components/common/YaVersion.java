@@ -873,8 +873,10 @@ public class YaVersion {
   // - The HasMargins property was added
   // For LABEL_COMPONENT_VERSION 4:
   // - The HTML format is defined.
+  // For LABEL_COMPONENT_VERSION 5:
+  // - The HTMLContent property is defined.
 
-  public static final int LABEL_COMPONENT_VERSION = 4;
+  public static final int LABEL_COMPONENT_VERSION = 5;
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
