@@ -1372,7 +1372,111 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
-/* would pop more with a white border around their normal green border */
+
+/* Start of NoProjectsDialogBox. */
+.ode-noDialogDiv {
+  box-shadow: 0 0 10px gray;
+  min-width: 700px;
+  width: 60%;
+  background-color: white;
+  padding-bottom: 25px;
+}
+
+.ode-noDialogDivHeader {
+  background-color: #a5cf47;
+  height: 10%;
+  padding: 10px;
+  border-bottom: 1px #e9e9e9 solid;
+}
+
+.ode-noDialogDivInnerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#ode-codiLogoDiv {
+  max-width: 160px;
+  max-height: 90px;
+  margin-left: 15px;
+}
+
+.ode-headerTitle {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 16px;
+  text-align: center;
+}
+
+.ode-tutorialsTitle {
+  color: black;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.ode-noDialogExampleDivs {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-evenly;
+}
+
+.ode-noDialogExampleDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 25%;
+  min-width: 182px;
+  min-height: 300px;
+  box-shadow: 0 0 2px #808080;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 10px 0px;
+}
+
+.ode-noDialogExampleTitle {
+  margin-top: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.ode-noDialogExampleImage {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ode-noDialogExampleAbout {
+  font-size: 12px;
+}
+
+.ode-noDialogUpperDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 90%;
+}
+
+.ode-bottomRow {
+  margin-top: 10pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 799px) {
+  .ode-noDialogExampleDivs {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* End of NoProjectsDialogBox. */
 
 .ode-DialogBox {
   background-color: white;
