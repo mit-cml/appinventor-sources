@@ -25,6 +25,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -52,6 +53,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -656,7 +658,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param url A string of the form "http://... .asc
    * @param onSuccessCommand
    */
-  private static void openTemplateProject(String url, final NewProjectCommand onSuccessCommand) {
+  private static void openTemplateProject(final String url, final NewProjectCommand onSuccessCommand) {
     final Ode ode = Ode.getInstance();
 
     // This Async callback is called after the project is input and created
@@ -703,9 +705,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         // Response received from the GET
         @Override
         public void onResponseReceived(Request request, Response response) {
-         // The response.getText is the zip data used to create a new project.
-         // The callback opens the project
-         ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
+          // The response.getText is the zip data used to create a new project.
+          // The callback opens the project
+          if (response != null && response.getStatusCode() == 200 && response.getText() != null && !response.getText().isEmpty()) {
+            ode.getProjectService().newProjectFromExternalTemplate(projectName, response.getText(), callback);
+          } else if (url.startsWith("http:")) {
+            openTemplateProject(url.replaceFirst("http:", "https:"), onSuccessCommand);
+          }
         }
       });
     } catch (RequestException e) {
@@ -783,12 +789,17 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
 
       panel = new VerticalPanel();
       panel.add(title);
+      title.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
       panel.add(subtitle);
       descriptionHtml.setHTML(info.description);
       panel.add(descriptionHtml);
       panel.add(image);
-      initWidget(panel);
+      SimplePanel wrapper = new SimplePanel();
+      wrapper.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
+      wrapper.add(panel);
+      initWidget(wrapper);
       setStylePrimaryName("ode-ContextMenu");
+      setHeight("355px");
     }
 
     public static void setTemplate(TemplateInfo info, String hostUrl) {
@@ -831,10 +842,10 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       public void render(Context context, TemplateInfo template, SafeHtmlBuilder sb) {
       if (template == null)
         return;
-      sb.appendHtmlConstant("<table>");
+      sb.appendHtmlConstant("<table style='margin: 4pt 0;'>");
 
       // Add the thumbnail image, if available, or a default image.
-      sb.appendHtmlConstant("<tr><td rowspan='3'>");
+      sb.appendHtmlConstant("<tr><td rowspan='3' width=\"32px\">");
       if ( !template.thumbStr.equals("") )   {
         String src = hostUrl + TEMPLATES_ROOT_DIRECTORY +   template.name + "/" + template.thumbStr;
         sb.appendHtmlConstant("<img style='width:32px' src='" + src + "'>");
@@ -847,9 +858,9 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       sb.appendHtmlConstant("</td>");
 
       // Add the name and description.
-      sb.appendHtmlConstant("<td style='font-size:95%;'>");
+      sb.appendHtmlConstant("<td style='font-size:95%;'><b>");
       sb.appendEscaped(template.name);
-      sb.appendHtmlConstant("</td></tr><tr><td>");
+      sb.appendHtmlConstant("</b></td></tr><tr><td>");
       sb.appendEscaped(template.subtitle);
       sb.appendHtmlConstant("</td></tr></table>");
     }
@@ -868,8 +879,9 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     templateCellList.setPageSize(list.size() + 10);
     templateCellList.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
     templateCellList.setWidth("250px");
-    templateCellList.setHeight("400px");
+    templateCellList.setHeight("355px");
     templateCellList.setVisible(true);
+    templateCellList.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
 
     // Add a selection model to handle user selection.
     final SingleSelectionModel<TemplateInfo> selectionModel =
@@ -904,11 +916,11 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     super.show();
     // Wizard size (having it resize between page changes is quite annoying)
     int width = 640;
-    int height = 600;
+    int height = 458;
     this.center();
 
     setPixelSize(width, height);
-    super.setPagePanelHeight(580);
+    super.setPagePanelHeight(400);
   }
 
   /**

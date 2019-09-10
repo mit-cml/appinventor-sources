@@ -50,7 +50,6 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -70,6 +69,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -86,6 +86,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -113,9 +114,6 @@ import java.util.Set;
     androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar, animated-vector-drawable.aar, " +
-    "runtime.aar, support-compat.aar, support-core-ui.aar, support-core-utils.aar, " +
-    "support-fragment.aar, support-vector-drawable.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
 public class Form extends AppInventorCompatActivity
@@ -251,6 +249,10 @@ public class Form extends AppInventorCompatActivity
   private ProgressDialog progress;
   private static boolean _initialized = false;
 
+  // It should be changed from 100000 to 65535 if the functionality to extend
+  // FragmentActivity is added in future.
+  public static final int MAX_PERMISSION_NONCE = 100000;
+
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
@@ -265,7 +267,8 @@ public class Form extends AppInventorCompatActivity
     int length;
     Dim dim;
   }
-  private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+  // private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+  private LinkedHashMap<Integer, PercentStorageRecord> dimChanges = new LinkedHashMap();
 
   private static class MultiDexInstaller extends AsyncTask<Form, Void, Boolean> {
     Form ourForm;
@@ -360,8 +363,8 @@ public class Form extends AppInventorCompatActivity
     // process (onCreateFinish2). Sigh.
 
     boolean needSdcardWrite = doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
-        // Don't ask permission if we are REPL and using the splash screen
-        !(isRepl() && AppInventorFeatures.doCompanionSplashScreen());
+        // Only ask permission if we are in the REPL and not using the splash screen
+        isRepl() && !AppInventorFeatures.doCompanionSplashScreen();
     if (needSdcardWrite) {
       askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
         new PermissionResultHandler() {
@@ -682,11 +685,10 @@ public class Form extends AppInventorCompatActivity
     // We first make a copy of the existing dimChanges list
     // because while we are replaying it, it is being appended to
     Log.d(LOG_TAG, "ReplayFormOrientation()");
-    ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
+    LinkedHashMap<Integer, PercentStorageRecord> temp = (LinkedHashMap<Integer, PercentStorageRecord>) dimChanges.clone();
     dimChanges.clear();         // Empties it out
-    for (int i = 0; i < temp.size(); i++) {
-      // Iterate over the list...
-      PercentStorageRecord r = temp.get(i);
+    // Iterate temp
+    for (PercentStorageRecord r : temp.values()) {
       if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
         r.component.Height(r.length);
       } else {
@@ -695,8 +697,23 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  private Integer generateHashCode(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
+    if (dim == PercentStorageRecord.Dim.HEIGHT) {
+      return component.hashCode() * 2 + 1;
+    } else {
+      return component.hashCode() * 2;
+    }
+  }
+
   public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
-    dimChanges.add(new PercentStorageRecord(component, length, dim));
+    PercentStorageRecord r = new PercentStorageRecord(component, length, dim);
+    Integer key = generateHashCode(component, dim);
+    dimChanges.put(key, r);
+  }
+
+  public void unregisterPercentLength(AndroidViewComponent component, PercentStorageRecord.Dim dim) {
+    // iterate map, remove all entry match this
+    dimChanges.remove(generateHashCode(component, dim));
   }
 
   private static int generateNewRequestCode() {
@@ -827,9 +844,9 @@ public class Form extends AppInventorCompatActivity
    * Compiler-generated method to initialize and add application components to
    * the form.  We just provide an implementation here to artificially make
    * this class concrete so that it is included in the documentation and
-   * Codeblocks language definition file generated by
+   * App Inventor component definition file generated by
    * {@link com.google.appinventor.components.scripts.DocumentationGenerator} and
-   * {@link com.google.appinventor.components.scripts.LangDefXmlGenerator},
+   * {@link com.google.appinventor.components.scripts.ComponentDescriptorGenerator},
    * respectively.  The actual implementation appears in {@code runtime.scm}.
    */
   protected void $define() {    // This must be declared protected because we are called from Screen1 which subclasses
@@ -855,9 +872,9 @@ public class Form extends AppInventorCompatActivity
   /**
    * A trivial implementation to artificially make this class concrete so
    * that it is included in the documentation and
-   * Codeblocks language definition file generated by
+   * App Inventor component definition file generated by
    * {@link com.google.appinventor.components.scripts.DocumentationGenerator} and
-   * {@link com.google.appinventor.components.scripts.LangDefXmlGenerator},
+   * {@link com.google.appinventor.components.scripts.ComponentDescriptorGenerator},
    * respectively.  The actual implementation appears in {@code runtime.scm}.
    */
   @Override
@@ -866,6 +883,11 @@ public class Form extends AppInventorCompatActivity
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void dispatchGenericEvent(Component component, String eventName,
+      boolean notAlreadyHandled, Object[] args) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Initialize event handler.
@@ -1859,6 +1881,15 @@ public class Form extends AppInventorCompatActivity
     // project properties file
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "A JSON string representing the subset for the screen")
+  public void BlocksToolkit(String json) {
+    // We don't actually do anything. This property is stored in the
+    // project properties file
+  }
+
   /**
    * Display a new form.
    *
@@ -2282,52 +2313,28 @@ public class Form extends AppInventorCompatActivity
 
   public void deleteComponent(Object component) {
     if (component instanceof OnStopListener) {
-      OnStopListener onStopListener = (OnStopListener) component;
-      if (onStopListeners.contains(onStopListener)) {
-        onStopListeners.remove(onStopListener);
-      }
+      onStopListeners.remove(component);
     }
     if (component instanceof OnNewIntentListener) {
-      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
-      if (onNewIntentListeners.contains(onNewIntentListener)) {
-        onNewIntentListeners.remove(onNewIntentListener);
-      }
+      onNewIntentListeners.remove(component);
     }
     if (component instanceof OnResumeListener) {
-      OnResumeListener onResumeListener = (OnResumeListener) component;
-      if (onResumeListeners.contains(onResumeListener)) {
-        onResumeListeners.remove(onResumeListener);
-      }
+      onResumeListeners.remove(component);
     }
     if (component instanceof OnPauseListener) {
-      OnPauseListener onPauseListener = (OnPauseListener) component;
-      if (onPauseListeners.contains(onPauseListener)) {
-        onPauseListeners.remove(onPauseListener);
-      }
+      onPauseListeners.remove(component);
     }
     if (component instanceof OnDestroyListener) {
-      OnDestroyListener onDestroyListener = (OnDestroyListener) component;
-      if (onDestroyListeners.contains(onDestroyListener)) {
-        onDestroyListeners.remove(onDestroyListener);
-      }
+      onDestroyListeners.remove(component);
     }
     if (component instanceof OnInitializeListener) {
-      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
-      if (onInitializeListeners.contains(onInitializeListener)) {
-        onInitializeListeners.remove(onInitializeListener);
-      }
+      onInitializeListeners.remove(component);
     }
     if (component instanceof OnCreateOptionsMenuListener) {
-      OnCreateOptionsMenuListener onCreateOptionsMenuListener = (OnCreateOptionsMenuListener) component;
-      if (onCreateOptionsMenuListeners.contains(onCreateOptionsMenuListener)) {
-        onCreateOptionsMenuListeners.remove(onCreateOptionsMenuListener);
-      }
+      onCreateOptionsMenuListeners.remove(component);
     }
     if (component instanceof OnOptionsItemSelectedListener) {
-      OnOptionsItemSelectedListener onOptionsItemSelectedListener = (OnOptionsItemSelectedListener) component;
-      if (onOptionsItemSelectedListeners.contains(onOptionsItemSelectedListener)) {
-        onOptionsItemSelectedListeners.remove(onOptionsItemSelectedListener);
-      }
+      onOptionsItemSelectedListeners.remove(component);
     }
     if (component instanceof Deleteable) {
       ((Deleteable) component).onDelete();
@@ -2442,7 +2449,7 @@ public class Form extends AppInventorCompatActivity
       view = frameLayout;
     }
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
   protected void updateTitle() {
@@ -2517,7 +2524,7 @@ public class Form extends AppInventorCompatActivity
     androidUIHandler.post(new Runnable() {
         @Override
         public void run() {
-          int nonce = permissionRandom.nextInt(100000);
+          int nonce = permissionRandom.nextInt(MAX_PERMISSION_NONCE);
           Log.d(LOG_TAG, "askPermission: permission = " + permission +
             " requestCode = " + nonce);
           permissionHandlers.put(nonce, responseRequestor);
@@ -2525,6 +2532,53 @@ public class Form extends AppInventorCompatActivity
             new String[] {permission}, nonce);
         }
       });
+  }
+
+  /**
+   * Evaluates the request for bulk permissions and asks the user for any ungranted permissions.
+   *
+   * @param request the request to evaluate
+   */
+  public void askPermission(final BulkPermissionRequest request) {
+    final List<String> permissionsToAsk = request.getPermissions();
+    Iterator<String> it = permissionsToAsk.iterator();
+    while (it.hasNext()) {
+      if (!isDeniedPermission(it.next())) {
+        it.remove();
+      }
+    }
+    if (permissionsToAsk.size() == 0) {
+      // We already have all the necessary permissions
+      request.onGranted();
+    }  else {
+      // Make sure we ask for permissions on the UI thread
+      androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          final Iterator<String> it = permissionsToAsk.iterator();
+          final PermissionResultHandler handler = new PermissionResultHandler() {
+            final List<String> deniedPermissions = new ArrayList<String>();
+
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (!granted) {
+                deniedPermissions.add(permission);
+              }
+              if (it.hasNext()) {
+                askPermission(it.next(), this);
+              } else {
+                if (deniedPermissions.size() == 0) {
+                  request.onGranted();
+                } else {
+                  request.onDenied(deniedPermissions.toArray(new String[] {}));
+                }
+              }
+            }
+          };
+          askPermission(it.next(), handler);
+        }
+      });
+    }
   }
 
   @Override

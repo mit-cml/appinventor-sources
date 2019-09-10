@@ -413,6 +413,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   declaredNames: function() { // [lyn, 10/11/13] return the names of all parameters of this procedure
      return this.getVars();
   },
+  declaredVariables: function() {
+    return this.getVars();
+  },
   renameVar: function(oldName, newName) {
     this.renameVars(Blockly.Substitution.simpleSubstitution(oldName,newName));
   },
@@ -466,6 +469,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       ' ' + Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO }],
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
+    Blockly.BlocklyEditor.addPngExportOption(this, options);
   },
   getParameters: function() {
     return this.arguments_;
@@ -506,6 +510,7 @@ Blockly.Blocks['procedures_defreturn'] = {
   getProcedureDef: Blockly.Blocks.procedures_defnoreturn.getProcedureDef,
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
+  declaredVariables: Blockly.Blocks.procedures_defnoreturn.declaredVariables,
   renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
   renameVars: Blockly.Blocks.procedures_defnoreturn.renameVars,
   renameBound: Blockly.Blocks.procedures_defnoreturn.renameBound,
@@ -845,20 +850,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       var def = Blockly.Procedures.getDefinition(name, workspace);
       if (def) {
         def.select();
-        var event = new AI.Events.WorkspaceMove(workspace.id);
-
-        // Attempt to center the definition block, but preserve a minimum X, Y position so that
-        // the definition of the block always appears on screen for visually large procedures
-        var xy = def.getRelativeToSurfaceXY();
-        var wh = def.getHeightWidth();
-        var metrics = def.workspace.getMetrics();
-        var minTop = xy.y - metrics.contentTop;
-        var minLeft = xy.x - metrics.contentLeft;
-        var midX = minLeft + (wh.width - metrics.viewWidth) / 2;
-        var midY = minTop + (wh.height - metrics.viewHeight) / 2;
-        def.workspace.scrollbar.set(Math.min(minLeft, midX), Math.min(minTop, midY));
-        event.recordNew();
-        Blockly.Events.fire(event);
+        workspace.centerOnBlock(def.id);
         workspace.getParentSvg().parentElement.focus();
       }
     };

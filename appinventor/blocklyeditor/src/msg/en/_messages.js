@@ -44,6 +44,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.UNDO = 'Undo';
     Blockly.Msg.REDO = 'Redo';
     Blockly.Msg.CLEAN_UP = 'Clean up Blocks';
+    Blockly.Msg.HIDE = 'Hide Workspace Controls';
+    Blockly.Msg.SHOW = 'Show Workspace Controls';
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
@@ -92,25 +94,28 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
     Blockly.Msg.HIDE_ALL_COMMENTS = 'Hide All Comments';
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Show All Comments';
+    Blockly.Msg.GENERICIZE_BLOCK = 'Make Generic';
+    Blockly.Msg.UNGENERICIZE_BLOCK = 'Make Specific';
+    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Download Blocks as PNG';
 
 // Variable renaming.
-    Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
-    Blockly.MSG_NEW_VARIABLE = 'New variable...';
-    Blockly.MSG_NEW_VARIABLE_TITLE = 'New variable name:';
-    Blockly.MSG_RENAME_VARIABLE = 'Rename variable...';
-    Blockly.MSG_RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
+    Blockly.Msg.CHANGE_VALUE_TITLE = 'Change value:';
+    Blockly.Msg.NEW_VARIABLE = 'New variable...';
+    Blockly.Msg.NEW_VARIABLE_TITLE = 'New variable name:';
+    Blockly.Msg.RENAME_VARIABLE = 'Rename variable...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
 
 // Toolbox.
-    Blockly.MSG_VARIABLE_CATEGORY = 'Variables';
-    Blockly.MSG_PROCEDURE_CATEGORY = 'Procedures';
+    Blockly.Msg.VARIABLE_CATEGORY = 'Variables';
+    Blockly.Msg.PROCEDURE_CATEGORY = 'Procedures';
 
 // Warnings/Errors
-    Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
-    Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
-    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
-    Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
-    Blockly.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
+    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
+    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
+    Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
@@ -595,6 +600,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = '/reference/blocks/text.html#compare';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'compare texts';
@@ -605,6 +611,10 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'characters in the same order. This is different from ordinary =\n'
         + 'in the case where the text strings are numbers: 123 and 0123 are =\n'
         + 'but not text =.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Tests whether text strings are different, ie., don\'t have the same\n'
+        + 'characters in the same order. This is different from ordinary ≠\n'
+        + 'in the case where the text strings are numbers: 123 and 0123 are text ≠\n'
+        + 'but are mathematically =.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Reports whether text1 is lexicographically greater than text2.\n'
         + 'if one text is the prefix of the other, the shorter text is considered smaller.\n'
         + 'Uppercase characters precede lowercase characters.';
@@ -841,6 +851,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_LISTS_IS_LIST_INPUT_THING = 'thing';
     Blockly.Msg.LANG_LISTS_IS_LIST_TOOLTIP = 'Tests if something is a list.';
 
+    Blockly.Msg.LANG_LISTS_REVERSE_HELPURL = '/reference/blocks/lists.html#reverse';
+    Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE = 'reverse list';
+    Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST = 'list';
+    Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP = 'Reverses the order of input list and returns it as a new list.';
+
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_HELPURL = '/reference/blocks/lists.html#listtocsvrow';
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV = 'list to csv row';
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_INPUT_LIST = 'list';
@@ -896,6 +911,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT = 'look up in pairs  key %1 pairs %2 notFound %3';
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP = 'Returns the value associated with the key in the list of pairs';
 
+    // Join With Separator block
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_HELPURL = '/reference/blocks/lists.html#joinwithseparator';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE = 'join with separator';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_SEPARATOR = 'separator';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_LIST = 'list';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT = 'join items using separator %1 list %2';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP = 'Returns text with list elements joined with separator';
+
     /*Blockly.Msg.LANG_LISTS_INDEX_OF_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
      Blockly.Msg.LANG_LISTS_INDEX_OF_TITLE_FIND = 'find';
      Blockly.Msg.LANG_LISTS_INDEX_OF_INPUT_OCCURRENCE = 'occurrence of item';
@@ -924,6 +947,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Creates a global variable and gives it the value of the attached blocks.';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'global';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = '/reference/blocks/variables.html#get';
     Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = 'get';
@@ -1022,6 +1046,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'when ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'do';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE = 'when any ';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = 'call ';
@@ -1075,6 +1100,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#ListPicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#ListPicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#ListPicker';
+
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SWITCH_HELPURL = '/reference/components/userinterface.html#Switch';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_TIMEPICKER_HELPURL = '/reference/components/userinterface.html#TimePicker';
     Blockly.Msg.LANG_COMPONENT_BLOCK_DATEPICKER_HELPURL = '/reference/components/userinterface.html#DatePicker';
@@ -1280,6 +1307,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = '/reference/components/storage.html#TinyWebDB';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = '/reference/components/storage.html#TinyWebDB';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/storage.html#CloudDB";
+
 //Connectivity components
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "/reference/components/connectivity.html#ActivityStarter";
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = '/reference/components/connectivity.html#ActivityStarter';
@@ -1352,8 +1381,6 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_EVENTS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_METHODS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
 
-    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/experimental.html#CloudDB";
-
 //Internal components
     Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "/reference/components/internal.html#GameClient";
     Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = '/reference/components/internal.html#GameClient';
@@ -1425,6 +1452,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_YOUR_CODE_IS = "Your code is";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Are you sure you want to delete all %1 of these blocks?";
@@ -1432,6 +1461,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
     Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
@@ -1447,10 +1477,15 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.TIME_DURATION = "Duration";
 
 // Connection Dialog Messages
+    Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "15 Rendezvous (please wait)";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHING = "20 Establishing Secure Connection";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "30 Secure Connection Established";
     Blockly.Msg.DIALOG_FOUND_COMPANION = "10 Found the Companion";
 
+//Blockly.Util.Dialog Messages
+    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
+    Blockly.Msg.DIALOG_SUBMIT = 'Submit';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
   }
 };
 

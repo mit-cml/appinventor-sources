@@ -49,6 +49,7 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -113,6 +114,9 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private ZoomControlView zoomControls = null;
   private float lastAzimuth = Float.NaN;
   private ScaleBarOverlay scaleBar;
+
+  private static final float[] ANCHOR_HORIZONTAL = { Float.NaN, 0.0f, 1.0f, 0.5f };
+  private static final float[] ANCHOR_VERTICAL = { Float.NaN, 0.0f, 0.5f, 1.0f };
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -263,6 +267,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private final AppInventorLocationSensorAdapter locationProvider;
 
   NativeOpenStreetMapController(final Form form) {
+    OpenStreetMapTileProviderConstants.setUserAgentValue(form.getApplication().getPackageName());
     File osmdroid = new File(form.getCacheDir(), "osmdroid");
     if (osmdroid.exists() || osmdroid.mkdirs()) {
       Configuration.getInstance().setOsmdroidBasePath(osmdroid);
@@ -718,6 +723,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void updateFeaturePosition(MapMarker aiMarker) {
     Marker marker = (Marker)featureOverlays.get(aiMarker);
     if (marker != null) {
+      marker.setAnchor(ANCHOR_HORIZONTAL[aiMarker.AnchorHorizontal()],
+          ANCHOR_VERTICAL[aiMarker.AnchorVertical()]);
       marker.setPosition(new GeoPoint(aiMarker.Latitude(), aiMarker.Longitude()));
       view.invalidate();
     }

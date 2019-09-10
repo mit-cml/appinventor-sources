@@ -416,6 +416,7 @@ public class DesignToolbar extends Toolbar {
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
       }
       projectNameLabel.setText(projectName);
+      YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project
     } else {
       ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +
           " with id " + projectId);

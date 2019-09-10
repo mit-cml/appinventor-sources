@@ -63,6 +63,12 @@ Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
  */
 Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 
+/** 
+ * Whether the workspace elements are hidden
+ * @type {boolean}
+ */
+Blockly.WorkspaceSvg.prototype.chromeHidden = false;
+
 /**
  * Wrap the onMouseClick_ event to handle additional behaviors.
  */
@@ -115,7 +121,64 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
     return func;
   } else {
     var f = function() {
-      return func.apply(this, Array.prototype.slice.call(arguments));
+      var self = /** @type {Blockly.WorkspaceSvg} */ this;
+      var result = func.apply(this, Array.prototype.slice.call(arguments));
+      // BEGIN: Configure drag and drop of blocks images to workspace
+      result.addEventListener('dragenter', function(e) {
+        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
+            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+          e.dataTransfer.dropEffect = 'copy';
+          e.preventDefault();
+        }
+      }, true);
+      result.addEventListener('dragover', function(e) {
+        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
+            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+          e.dataTransfer.dropEffect = 'copy';
+          e.preventDefault();
+        }
+      }, true);
+      result.addEventListener('dragleave', function(e) {
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+      }, true);
+      result.addEventListener('dragexit', function(e) {
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+      }, true);
+      result.addEventListener('drop', function(e) {
+        self.setGridSettings(self.options.gridOptions['enabled'], self.options.gridOptions['snap']);
+        if (e.dataTransfer.types.indexOf('Files') >= 0) {
+          if (e.dataTransfer.files.item(0).type === 'image/png') {
+            e.preventDefault();
+            var metrics = Blockly.mainWorkspace.getMetrics();
+            var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+            point.x = (point.x + metrics.viewLeft) / self.scale;
+            point.y = (point.y + metrics.viewTop) / self.scale;
+            Blockly.importPngAsBlock(self, point, e.dataTransfer.files.item(0));
+          }
+        } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+          var data = e.dataTransfer.getData('text/uri-list')
+          if (data.match(/\.png$/)) {
+            e.preventDefault();
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4 && xhr.status === 200) {
+                var metrics = Blockly.mainWorkspace.getMetrics();
+                var point = Blockly.utils.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
+                point.x = (point.x + metrics.viewLeft) / self.scale;
+                point.y = (point.y + metrics.viewTop) / self.scale;
+                Blockly.importPngAsBlock(self, point, xhr.response);
+              }
+            };
+            xhr.responseType = 'blob';
+            xhr.open('GET', data, true);
+            xhr.send();
+          }
+        }
+      });
+      // END: Configure drag and drop of blocks images to workspace
+      return result;
     };
     f.isWrapper = true;
     return f;
@@ -508,6 +571,10 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
     if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration') {
       map.globals.push(block);
     } else if (block.category == 'Component' && block.type == 'event') {
+      if (block.isGeneric) {
+        map.globals.push(block);
+        continue;
+      }
       var instanceName = block.instanceName;
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];
@@ -568,6 +635,19 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.splice(3, 0, exportOption);
 
+  //Show or hide workspace SVG elements backpack, zoom, and trashcan
+  var workspaceOption = {enabled: true};
+  workspaceOption.text = this.chromeHidden ? Blockly.Msg.SHOW : Blockly.Msg.HIDE;
+  var displayStyle = this.chromeHidden ? 'block' : 'none';
+  workspaceOption.callback= function() {
+    self.backpack_.svgGroup_.style.display=displayStyle;
+    self.trashcan.svgGroup_.style.display=displayStyle;
+    self.zoomControls_.svgGroup_.style.display=displayStyle;
+    self.warningIndicator_.svgGroup_.style.display=displayStyle;
+    self.chromeHidden = !self.chromeHidden;
+  };
+  menuOptions.push(workspaceOption);
+
   // Arrange blocks in row order.
   var arrangeOptionH = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_HORIZONTAL)};
   arrangeOptionH.text = Blockly.Msg.ARRANGE_H;
@@ -589,19 +669,69 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   /**
    * Function that returns a name to be used to sort blocks.
    * The general comparator is the block.category attribute.
-   * In the case of 'Components' the comparator is the instanceName of the component if it exists
-   * (it does not exist for generic components).
    * In the case of Procedures the comparator is the NAME(for definitions) or PROCNAME (for calls)
+   * In the case of 'Components' the comparator is the type name, instance name, then event name
    * @param {!Blockly.Block} block the block that will be compared in the sortByCategory function
    * @returns {string} text to be used in the comparison
    */
-  function comparisonName(block){
-    if (block.category === 'Component' && block.instanceName)
-      return block.instanceName;
-    if (block.category === 'Procedures')
-      return (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME'));
-    return block.category;
+  function comparisonName(block) {
+    // Add trailing numbers to represent their sequence
+    if (block.category == 'Variables') {
+      return ('a,' + block.type + ',' + block.getVars().join(','));
+    }
+    if (block.category === 'Procedures') {
+      // sort procedure definitions before calls
+      if (block.type.indexOf('procedures_def') == 0) {
+        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+      } else {
+        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+      }
+    }
+    if (block.category == 'Component') {
+      var component = block.type + ',' + block.typeName + ','
+        + (block.isGeneric ? '!GENERIC!' : block.instanceName) + ',';
+      // sort Component blocks first, then events, methods, getters, or setters
+      if (block.type == 'component_event') {
+        component += block.eventName;
+      } else if (block.type == 'component_method') {
+        component += block.methodName;
+      } else if (block.type == 'component_set_get') {
+        component += block.setOrGet + block.propertyName;
+      } else {
+        // component blocks
+        component += '.Component';
+      }
+      return ('c,' + component);
+    }
+    // Floating blocks that are not Component
+    return ('d,' + block.type);
   }
+
+  /**
+   * Function used to compare two strings with text and numbers
+   * @param {string} a first string to be compared
+   * @param {string} b second string to be compared
+   * @returns {number} returns 0 if the strings are equal, and -1 or 1 if they are not
+   */
+  function compareStrTextNum(strA,strB) {
+    // Use Regular Expression to match text and numbers
+    var regexStrA = strA.match(/^(.*?)([0-9]+)/i);
+    var regexStrB = strB.match(/^(.*?)([0-9]+)/i);
+
+    // There are numbers in the strings, compare numbers
+    if (regexStrA != null && regexStrB != null) {
+      if (regexStrA[1] < regexStrB[1]) {
+        return -1;
+      } else if (regexStrA[1] > regexStrB[1]) {
+        return 1;
+      } else {
+        return parseInt(regexStrA[2]) - parseInt(regexStrB[2]);
+      }
+    } else {
+      return strA.localeCompare(strB, undefined, {numeric:true});
+    }
+  }
+
 
   /**
    * Function used to sort blocks by Category.
@@ -613,9 +743,93 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var comparatorA = comparisonName(a).toLowerCase();
     var comparatorB = comparisonName(b).toLowerCase();
 
-    if (comparatorA < comparatorB) return -1;
-    else if (comparatorA > comparatorB) return +1;
-    else return 0;
+    if (a.category != b.category) {
+      return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
+    }
+
+    // Sort by Category First, also handles other floating blocks
+    if (a.category == b.category && a.category != "Component") {
+      // Remove '1,'
+      comparatorA = comparatorA.substr(2);
+      comparatorB = comparatorB.substr(2);
+      var res = compareStrTextNum(comparatorA, comparatorB);
+      if (a.category == "Variables" && a.type == b.type) {
+        // Sort Variables
+        if (a.type == "global_declaration") {
+          // initialize variables, extract just global variable names
+          var nameA = a.svgGroup_.textContent;
+          // remove substring "initialize global<varname>to" and only keep <varname>
+          nameA = nameA.substring(17, nameA.length - 2);
+          var nameB = b.svgGroup_.textContent;
+          nameB = nameB.substring(17, nameB.length - 2);
+          res = compareStrTextNum(nameA, nameB);
+        } else {
+          var nameA = a.fieldVar_.text_;
+          var nameB = b.fieldVar_.text_;
+          if (nameA.includes("global") && nameB.includes("global")) {
+            // Global Variables and get variable names, remove "global"
+            res = compareStrTextNum(nameA.substring(6), nameB.substring(6));
+          }else {
+            // Other floating variables
+            res = compareStrTextNum(nameA, nameB);
+          }
+        }
+      }
+      return res;
+    }
+
+    // 3.Component event handlers, lexicographically sorted by 
+    // type name, instance name, then event name
+    if (a.category == "Component" && b.category == "Component" && a.eventName && b.eventName) {
+      if (a.typeName == b.typeName) {
+        if (a.instanceName == b.instanceName) {
+          return 0;
+        } else if (!a.instanceName) {
+          return -1;
+        } else if (!b.instanceName) {
+          return 1;
+        }
+        return compareStrTextNum(a.instanceName, b.instanceName);
+      }
+      return comparatorA.localeCompare(comparatorB, undefined, {numeric:true});
+    }
+
+    // 4. For Component blocks, sorted internally first by type, 
+    // whether they are generic (generics precede specifics), 
+    // then by instance name (for specific blocks), 
+    // then by method/property name.
+    if (a.category == "Component" && b.category == "Component") {
+      var geneA = ',2';
+      if (a.isGeneric) {
+        geneA = ',1';
+      }
+
+      var geneB = ',2';
+      if (b.isGeneric) {
+        geneB = ',1';
+      }
+
+      var componentA = a.type + geneA;
+      var componentB = b.type + geneB;
+
+      var res = componentA.localeCompare(componentB, undefined, {numeric:true});
+      if (res == 0) {
+        // compare type names
+        res = compareStrTextNum(a.typeName, b.typeName);
+      }
+      //the comparator is the type name, instance name, then event name
+      if (res == 0) {
+        if (a.instanceName && b.instanceName) {
+          res = compareStrTextNum(a.instanceName, b.instanceName);
+        } 
+        // Compare property names
+        var prop_method_A = a.propertyName || a.methodName;
+        var prop_method_B = b.propertyName || b.methodName;
+        res = prop_method_A.toLowerCase().localeCompare(prop_method_B.toLowerCase(), undefined, {numeric:true});
+      }
+      return res;
+    }
+
   }
 
   // Arranges block in layout (Horizontal or Vertical).
@@ -770,17 +984,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(hideAll);
 
-  // Retrieve from backpack option.
-  var backpackRetrieve = {enabled: true};
-  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
-    Blockly.getMainWorkspace().getBackpack().count() + ")";
-  backpackRetrieve.callback = function() {
-    if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
-    }
-  };
-  menuOptions.push(backpackRetrieve);
-
   // Copy all blocks to backpack option.
   var backpackCopyAll = {enabled: true};
   backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
@@ -791,16 +994,16 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(backpackCopyAll);
 
-  // Clear backpack.
-  var backpackClear = {enabled: true};
-  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
-  backpackClear.callback = function() {
+  // Retrieve from backpack option.
+  var backpackRetrieve = {enabled: true};
+  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
+    Blockly.getMainWorkspace().getBackpack().count() + ")";
+  backpackRetrieve.callback = function() {
     if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().clear();
+      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
     }
-    backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
   };
-  menuOptions.push(backpackClear);
+  menuOptions.push(backpackRetrieve);
 
   // Enable grid
   var gridOption = {enabled: true};
@@ -954,6 +1157,10 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
       if(block.blockType != "event") {
         continue;
       }
+      if (block.isGeneric) {
+        map.globals.push(block);
+        continue;
+      }
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];  // first block we've found for this component
       }
@@ -990,6 +1197,26 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
       block = this.blockDB_[event.blockId];
     oldParent && this.requestErrorChecking(oldParent);
     block && this.requestErrorChecking(block);
+  }
+
+  // Double-click to collapse/expand blocks
+  if (event instanceof Blockly.Events.Ui && event.element === 'click') {
+    if (this.doubleClickPid_) {
+      clearTimeout(this.doubleClickPid_);
+      this.doubleClickPid_ = undefined;
+      if (event.blockId === this.doubleClickBlock_) {
+        // double click
+        var block = this.getBlockById(this.doubleClickBlock_);
+        block.setCollapsed(!block.isCollapsed());
+        return;
+      }
+    }
+    if (!this.doubleClickPid_) {
+      this.doubleClickBlock_ = event.blockId;
+      this.doubleClickPid_ = setTimeout(function() {
+        this.doubleClickPid_ = undefined;
+      }.bind(this), 500);  // windows uses 500ms as the default speed; seems reasonable enough
+    }
   }
 };
 
@@ -1113,8 +1340,69 @@ Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
 };
 
 /**
- * Refresh the state of the backpack. Called from BlocklyPanel.java
+ * Scroll the workspace to center on the given block.
+ * @param {?string} id ID of block center on.
+ * @public
  */
+// TODO: This is code from a later version of Blockly. Remove on next Blockly update.
+Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
+  if (!this.scrollbar) {
+    console.warn('Tried to scroll a non-scrollable workspace.');
+    return;
+  }
+
+  var block = this.getBlockById(id);
+  if (!block) {
+    return;
+  }
+
+  // XY is in workspace coordinates.
+  var xy = block.getRelativeToSurfaceXY();
+  // Height/width is in workspace units.
+  var heightWidth = block.getHeightWidth();
+
+  // Find the enter of the block in workspace units.
+  var blockCenterY = xy.y + heightWidth.height / 2;
+
+  // In RTL the block's position is the top right of the block, not top left.
+  var multiplier = this.RTL ? -1 : 1;
+  var blockCenterX = xy.x + (multiplier * heightWidth.width / 2);
+
+  // Workspace scale, used to convert from workspace coordinates to pixels.
+  var scale = this.scale;
+
+  // Center in pixels.  0, 0 is at the workspace origin.  These numbers may
+  // be negative.
+  var pixelX = blockCenterX * scale;
+  var pixelY = blockCenterY * scale;
+
+  var metrics = this.getMetrics();
+
+  // Scrolling to here would put the block in the top-left corner of the
+  // visible workspace.
+  var scrollToBlockX = pixelX - metrics.contentLeft;
+  var scrollToBlockY = pixelY - metrics.contentTop;
+
+  // viewHeight and viewWidth are in pixels.
+  var halfViewWidth = metrics.viewWidth / 2;
+  var halfViewHeight = metrics.viewHeight / 2;
+
+  // Put the block in the center of the visible workspace instead.
+  var scrollToCenterX = scrollToBlockX - halfViewWidth;
+  var scrollToCenterY = scrollToBlockY - halfViewHeight;
+
+  Blockly.hideChaff();
+  var event = new AI.Events.WorkspaceMove(this.id);
+  this.scrollbar.set(scrollToCenterX, scrollToCenterY);
+  event.recordNew();
+  Blockly.Events.fire(event);
+
+};
+
+/*
+* Refresh the state of the backpack. Called from BlocklyPanel.java
+*/
+
 Blockly.WorkspaceSvg.prototype.refreshBackpack = function() {
   if (this.backpack_) {
     this.backpack_.resize();

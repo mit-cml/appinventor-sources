@@ -104,9 +104,12 @@ Blockly.ComponentDatabase = function() {
   // Internationalization support
   this.i18nComponentTypes_ = {};
   this.i18nEventNames_ = {};
+  this.i18nEventDescriptions_ = {};
   this.i18nMethodNames_ = {};
+  this.i18nMethodDescriptions_ = {};
   this.i18nParamNames_ = {};
   this.i18nPropertyNames_ = {};
+  this.i18nPropertyDescriptions_ = {};
 };
 
 /**
@@ -345,6 +348,15 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
         info.setPropertyList.push(property.name);
       }
     }
+    // Copy the designer property information to the block information
+    for (j = 0; property = componentInfo.properties[j]; ++j) {
+      var target = info.properties[property['name']];
+      // All designer properties should have setters, but if not...
+      if (!target) continue;
+      Object.keys(property).forEach(function(k) {
+        target[k] = property[k];
+      });
+    }
   }
 };
 
@@ -366,6 +378,12 @@ Blockly.ComponentDatabase.prototype.populateTranslations = function(translations
         this.i18nMethodNames_[parts[1]] = translations[key];
       } else if (parts[0] == 'PARAM') {
         this.i18nParamNames_[parts[1]] = translations[key];
+      } else if (parts[0] == 'EVENTDESC') {
+        this.i18nEventDescriptions_[parts[1]] = translations[key];
+      } else if (parts[0] == 'METHDESC') {
+        this.i18nMethodDescriptions_[parts[1]] = translations[key];
+      } else if (parts[0] == 'PROPDESC') {
+        this.i18nPropertyDescriptions_[parts[1]] = translations[key];
       }
     }
   }
@@ -480,44 +498,79 @@ Blockly.ComponentDatabase.prototype.getGetterNamesForType = function(typeName) {
 /**
  * Get the internationalized string for the given component type.
  * @param {!string} name String naming a component type
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedComponentType = function(name) {
-  return this.i18nComponentTypes_[name] || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedComponentType = function(name, opt_default) {
+  return this.i18nComponentTypes_[name] || opt_default || name;
 };
 
 /**
  * Get the internationalized string for the given event name.
  * @param {!string} name String naming a component event
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(name) {
-  return this.i18nEventNames_[name] || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(name, opt_default) {
+  return this.i18nEventNames_[name] || opt_default || name;
+};
+
+/**
+ * Get the internationalized string for the given event description tooltip.
+ * @param {!string} name String naming a component event
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedEventDescription = function(name, opt_default) {
+  return this.i18nEventDescriptions_[name] || opt_default || name;
 };
 
 /**
  * Get the internationalized string for the given method name.
  * @param {!string} name String naming a component method
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(name) {
-  return this.i18nMethodNames_[name] || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(name, opt_default) {
+  return this.i18nMethodNames_[name] || opt_default || name;
+};
+
+/**
+ * Get the internationalized string for the given method name.
+ * @param {!string} name String naming a component method
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedMethodDescription = function(name, opt_default) {
+  return this.i18nMethodDescriptions_[name] || opt_default || name;
 };
 
 /**
  * Get the internationalized string for the given parameter name.
  * @param {!string} name String naming a component event or method parameter
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedParameterName = function(name) {
-  return this.i18nParamNames_[name] || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedParameterName = function(name, opt_default) {
+  return this.i18nParamNames_[name] || opt_default || name;
 };
 
 /**
  * Get the internationalized string for the given property name.
  * @param {!string} name String naming a component property
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(name) {
-  return this.i18nPropertyNames_[name] || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(name, opt_default) {
+  return this.i18nPropertyNames_[name] || opt_default || name;
+};
+
+/**
+ * Get the internationalized string for the given property description tooltip.
+ * @param {!string} name String naming a component property
+ * @param {?string=name} opt_default Optional default value (default: name parameter)
+ * @returns {string} The localized string if available, otherwise the unlocalized name.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(name, opt_default) {
+  return this.i18nPropertyDescriptions_[name] || opt_default || name;
 };
