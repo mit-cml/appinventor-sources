@@ -52,20 +52,20 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  open override var Height: Int32 {
+  @objc open override var Height: Int32 {
     get {
       return super.Height
     }
-    set(newHeight){
+    set(newHeight) {
       setNestedViewHeight(nestedView: _controller.view, height: newHeight, shouldAddConstraints: _added)
     }
   }
 
-  open override var Width: Int32 {
+  @objc open override var Width: Int32 {
     get {
       return super.Width
     }
-    set(newWidth){
+    set(newWidth) {
       setNestedViewWidth(nestedView: _controller.view, width: newWidth, shouldAddConstraints: _added)
     }
   }
@@ -80,21 +80,16 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       let url = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(path))
-      do {
-        if try url.checkResourceIsReachable() {
-          _controller.player = AVPlayer(url: url)
-          if !_added {
-            _view.addSubview(_controller.view)
-            _added = true
-          }
-          resetNestedViewConstraints(for: _controller.view, width: Width, height: Height, shouldAddConstraint: true)
-          NotificationCenter.default.addObserver(self, selector: #selector(Completed), name: .AVPlayerItemDidPlayToEndTime, object: _controller.player?.currentItem)
-        } else {
-          _container.form.dispatchErrorOccurredEvent(self, "Source", ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code, ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message)
-        }
-      } catch {
-        _container.form.dispatchErrorOccurredEvent(self, "Source", ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code, ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message)
+      _controller.player = AVPlayer(url: url)
+      if !_added {
+        _view.addSubview(_controller.view)
+        _controller.view.topAnchor.constraint(equalTo: _view.topAnchor).isActive = true
+        _controller.view.leadingAnchor.constraint(equalTo: _view.leadingAnchor).isActive = true
+        _controller.view.widthAnchor.constraint(equalTo: _view.widthAnchor).isActive = true
+        _controller.view.heightAnchor.constraint(equalTo: _view.heightAnchor).isActive = true
+        _added = true
       }
+      NotificationCenter.default.addObserver(self, selector: #selector(Completed), name: .AVPlayerItemDidPlayToEndTime, object: _controller.player?.currentItem)
     }
   }
 
@@ -133,12 +128,6 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
 
-  @objc open func Pause() {
-    if let player = _controller.player {
-      player.pause()
-    }
-  }
-
   @objc open func SeekTo(_ ms: Int32) {
     if let player = _controller.player {
       player.seek(to: CMTime(seconds: Double(ms), preferredTimescale: 1))
@@ -149,6 +138,19 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
   @objc open func Start() {
     if let player = _controller.player {
       player.play()
+    }
+  }
+
+  @objc open func Pause() {
+    if let player = _controller.player {
+      player.pause()
+    }
+  }
+
+  @objc open func Stop() {
+    if let player = _controller.player {
+      player.pause()
+      player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
     }
   }
 
