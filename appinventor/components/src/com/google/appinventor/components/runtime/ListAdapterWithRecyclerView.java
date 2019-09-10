@@ -31,7 +31,6 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     public Boolean[] selection;
     private ArrayList<Drawable> images;
     private Context context;
-    private int size;
     private int textMainColor;
     private int textMainSize;
     private int textDetailColor;
@@ -39,19 +38,17 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     private int layoutType;
     private int backgroundColor;
     private int selectionColor;
-    private int checkedPosition = -1;
     private int imageHeight;
     private int imageWidth;
 
     public boolean isSelected=false;
 
-    private int idFirst,idSecond,idImages,idCard;
+    private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
 
     public ListAdapterWithRecyclerView(Context context,int size,String[] first,String[] second,ArrayList<Drawable> images,int textMainColor,int textDetailColor,int textMainSize,int textDetailSize,int layoutType,int backgroundColor,int selectionColor,int imageWidth,int imageHeight){
         this.firstItem = first;
         this.secondItem = second;
         this.images=images;
-        this.size=size;
         this.context=context;
         this.textMainSize=textMainSize;
         this.textMainColor=textMainColor;
@@ -87,6 +84,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
       ViewCompat.setElevation(cardView, 20);
 
+      // All layouts have a textview containing MainText
       TextView textViewFirst = new TextView(context);
       idFirst = ViewCompat.generateViewId();
       textViewFirst.setId(idFirst);
@@ -101,6 +99,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
       linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
 
       if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
+        // Create ImageView for layouts containing an image
         ImageView imageView = new ImageView(context);
         idImages = ViewCompat.generateViewId();
         imageView.setId(idImages);
@@ -111,9 +110,11 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
       }
 
       if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
+        // All layouts containing just MainText
         linearLayout1.addView(textViewFirst);
 
       } else {
+        // All layouts containing MainText and DetailText
         TextView textViewSecond = new TextView(context);
         idSecond = ViewCompat.generateViewId();
         textViewSecond.setId(idSecond);
@@ -134,6 +135,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
           linearLayout1.addView(linearLayout2);
 
         } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
+          // Unlike the other two text layouts, linear does not wrap
           layoutParams2.setMargins(50, 10, 0, 0);
           textViewSecond.setLayoutParams(layoutParams2);
           textViewSecond.setMaxLines(1);
@@ -205,46 +207,35 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         return (firstItem.length);
     }
 
-    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        
-        public TextView textViewFirst;
-        public TextView textViewSecond;
-        public ImageView imageVieww;
-        public CardView cardView;
+    class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public RvViewHolder(View view){
-            super(view);
+      public TextView textViewFirst;
+      public TextView textViewSecond;
+      public ImageView imageVieww;
+      public CardView cardView;
 
-            view.setOnClickListener(this);
+      public RvViewHolder(View view) {
+        super(view);
 
-            cardView=(CardView)view.findViewById(idCard);
+        view.setOnClickListener(this);
 
-            if(layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            }
-            else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            textViewSecond=(TextView)view.findViewById(idSecond);
-            }
-            else if(layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            textViewSecond=(TextView)view.findViewById(idSecond);
-            }
-            else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            imageVieww = (ImageView)view.findViewById(idImages);
-            }
-            else if(layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT){
-            textViewFirst = (TextView)view.findViewById(idFirst);
-            textViewSecond=(TextView)view.findViewById(idSecond);
-            imageVieww = (ImageView)view.findViewById(idImages);
-            }
+        cardView = view.findViewById(idCard);
+        textViewFirst = view.findViewById(idFirst);
+
+        if (idSecond != -1) {
+          textViewSecond = view.findViewById(idSecond);
         }
 
-         @Override
-        public void onClick(View v) {
-            clickListener.onItemClick(getAdapterPosition(), v);
+        if (idImages != -1) {
+          imageVieww = view.findViewById(idImages);
         }
+      }
+
+
+      @Override
+      public void onClick(View v) {
+        clickListener.onItemClick(getAdapterPosition(), v);
+      }
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
