@@ -27,6 +27,7 @@ public class SettingsConstants {
   // a particular message to a particular user.
   public static final String DISABLED_USER_URL = "DisabledUserUrl";
   public static final String USER_LAST_LOCALE = "LastLocale";
+  public static final String USER_DYSLEXIC_FONT = "DyslexicFont";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 

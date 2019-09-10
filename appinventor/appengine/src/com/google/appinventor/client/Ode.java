@@ -1216,6 +1216,10 @@ public class Ode implements EntryPoint {
       }
     }, MouseWheelEvent.getType());
 
+    if (getUserDyslexicFont()) {
+      RootPanel.get().addStyleName("dyslexic");
+    }
+
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
     // not lose any work because of this. We hook into the window closing  event to detect the
@@ -1485,6 +1489,29 @@ public class Ode implements EntryPoint {
    */
   public User getUser() {
     return user;
+  }
+
+  /**
+   * Returns user dyslexic font setting.
+   *
+   * @return user default font
+   */
+  public static boolean getUserDyslexicFont() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user dyslexic font setting.
+   *
+   * @param isTrue new value for the user default font
+   */
+  public static void setUserDyslexicFont(boolean dyslexicFont) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
+                    "" + dyslexicFont);
+    userSettings.saveSettings(null);
   }
 
   /**
