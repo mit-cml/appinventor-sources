@@ -916,6 +916,7 @@ a, a:visited, a:hover {
 
 .gwt-TextBox {
   padding: 2px;
+  box-sizing: border-box;
 }
 .gwt-TextBox-readonly {
   color: #888;
