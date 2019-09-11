@@ -1649,7 +1649,9 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // AI2: Add HTMLFormat property
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    5: "noUpgrade"
 
   }, // End Label upgraders
 
