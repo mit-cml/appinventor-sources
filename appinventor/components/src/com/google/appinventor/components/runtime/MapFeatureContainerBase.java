@@ -281,6 +281,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
     getMap().removeFeature(feature);
   }
 
+  @Override
+  public Iterator<MapFeature> iterator() {
+    return features.iterator();
+  }
+
   void addFeature(MapFactory.MapMarker marker) {
     features.add(marker);
     getMap().addFeature(marker);
