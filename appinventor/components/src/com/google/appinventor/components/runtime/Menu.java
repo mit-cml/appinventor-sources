@@ -5,9 +5,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import android.app.Activity;
+import android.view.MenuItem.OnMenuItemClickListener;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,8 +18,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import android.app.Activity;
-import android.view.MenuItem.OnMenuItemClickListener;
+import java.util.ArrayList;
+import java.util.List;
 
 @DesignerComponent(version = YaVersion.MENU_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
@@ -28,7 +27,8 @@ import android.view.MenuItem.OnMenuItemClickListener;
     "Menu is located on the action bar and is not accessible in classic theme.",
     showOnPalette = false)
 @SimpleObject
-public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuListener, OnOptionsItemSelectedListener {
+public class Menu implements Component, ComponentContainer, OnPrepareOptionsMenuListener,
+    OnOptionsItemSelectedListener, OnClearListener {
   private static final String LOG_TAG = "Menu";
 
   private ComponentContainer container;
@@ -47,20 +47,20 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   public Menu(ComponentContainer container) {
     this.container = container;
     context = container.$context();
-    items = new LinkedList<MenuItem>();
-    container.$form().registerForOnCreateOptionsMenu(this);
+    items = new ArrayList<>();
+    createAboutItem();
+    createStopItem();
+    container.$form().registerForOnPrepareOptionsMenu(this);
     container.$form().registerForOnOptionsItemSelected(this);
+    container.$form().registerForOnClear(this);
   }
 
   @Override
-  public void onCreateOptionsMenu(android.view.Menu menu) {
+  public void onPrepareOptionsMenu(android.view.Menu menu) {
     this.menu = menu;
     for (MenuItem item : items) {
       item.addToMenu(menu);
     }
-    addAboutItemToMenu();
-    addStopItemToMenu();
-    Initialize();
   }
 
   public void addMenuItem(MenuItem item) {
@@ -70,7 +70,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     }
   }
 
-  private void addAboutItemToMenu() {
+  private void createAboutItem() {
     aboutItem = new MenuItem(this);
     aboutItem.Text("About this application");
     aboutItem.setIcon(android.R.drawable.sym_def_app_icon);
@@ -83,7 +83,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     });
   }
 
-  private void addStopItemToMenu() {
+  private void createStopItem() {
     stopItem = new MenuItem(this);
     stopItem.Text("Stop this application");
     stopItem.setIcon(android.R.drawable.ic_notification_clear_all);
@@ -151,6 +151,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
    */
   @SimpleEvent(description = "Menu created (occurs after screen initialization)")
   public void Initialize() {
+    $form().invalidateOptionsMenu();
     EventDispatcher.dispatchEvent(this, "Initialize");
   }
 
@@ -227,4 +228,16 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     return 0;
   }
 
+  @Override
+  public void onClear() {
+    for (MenuItem item : items) {
+      item.ShowOnActionBar(false);
+    }
+    items.clear();
+    if (menu != null) {
+      for (int i = 0; i < menu.size(); i++) {
+        menu.removeItem(0);
+      }
+    }
+  }
 }

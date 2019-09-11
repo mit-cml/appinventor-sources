@@ -226,6 +226,7 @@ public class Form extends AppInventorCompatActivity
 
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
+  private final Set<OnPrepareOptionsMenuListener> onPrepareOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
 
   // Listeners for permission results
@@ -820,6 +821,10 @@ public class Form extends AppInventorCompatActivity
 
   public void registerForOnCreateOptionsMenu(OnCreateOptionsMenuListener component) {
     onCreateOptionsMenuListeners.add(component);
+  }
+
+  public void registerForOnPrepareOptionsMenu(OnPrepareOptionsMenuListener component) {
+    onPrepareOptionsMenuListeners.add(component);
   }
 
   public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
@@ -2307,12 +2312,13 @@ public class Form extends AppInventorCompatActivity
   // information
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
+  public boolean onPrepareOptionsMenu(Menu menu) {
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
-    super.onCreateOptionsMenu(menu);
-    for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
-      onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
+    menu.clear();
+    super.onPrepareOptionsMenu(menu);
+    for (OnPrepareOptionsMenuListener listener : onPrepareOptionsMenuListeners) {
+      listener.onPrepareOptionsMenu(menu);
     }
     return true;
   }
@@ -2383,6 +2389,7 @@ public class Form extends AppInventorCompatActivity
     onDestroyListeners.clear();
     onInitializeListeners.clear();
     onCreateOptionsMenuListeners.clear();
+    onPrepareOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
     // Notifiy those who care
@@ -2420,6 +2427,9 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnCreateOptionsMenuListener) {
       onCreateOptionsMenuListeners.remove(component);
+    }
+    if (component instanceof OnPrepareOptionsMenuListener) {
+      onPrepareOptionsMenuListeners.remove(component);
     }
     if (component instanceof OnOptionsItemSelectedListener) {
       onOptionsItemSelectedListeners.remove(component);
