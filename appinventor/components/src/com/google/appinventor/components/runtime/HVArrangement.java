@@ -36,10 +36,6 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * A container for components that arranges them linearly, either
  * horizontally or vertically.
@@ -217,12 +213,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // The numeric encodings are defined Component Constants
 
   /**
-   * Returns a number that encodes how contents of the arrangement are aligned horizontally.
+   * Returns a number that encodes how contents of the %type% are aligned horizontally.
    * The choices are: 1 = left aligned, 2 = right aligned, 3 = horizontally centered
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "A number that encodes how contents of the arrangement are aligned " +
+      description = "A number that encodes how contents of the %type% are aligned " +
           " horizontally. The choices are: 1 = left aligned, 2 = right aligned, " +
           " 3 = horizontally centered.  Alignment has no effect if the arrangement's width is " +
           "automatic.")
@@ -251,13 +247,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   /**
-   * Returns a number that encodes how contents of the arrangement are aligned vertically.
+   * Returns a number that encodes how contents of the %type% are aligned vertically.
    * The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.
    * Alignment has no effect if the arrangement's height is automatic.
    */
    @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "A number that encodes how the contents of the arrangement are aligned " +
+      description = "A number that encodes how the contents of the %type% are aligned " +
           " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
           "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
           "is automatic.")
@@ -286,19 +282,19 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
     /**
-     * Returns the component's background color as an alpha-red-green-blue
+     * Returns the background color of the %type% as an alpha-red-green-blue
      * integer.
      *
      * @return  background RGB color with alpha
      */
     @SimpleProperty(category = PropertyCategory.APPEARANCE,
-            description = "Returns the component's background color")
+            description = "Returns the background color of the %type%")
     public int BackgroundColor() {
         return backgroundColor;
     }
 
     /**
-     * Specifies the button's background color as an alpha-red-green-blue
+     * Specifies the background color of the %type% as an alpha-red-green-blue
      * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
      * original beveling is restored.  If an Image has been set, the color
      * change will not be visible until the Image is removed.
@@ -307,7 +303,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
             defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-    @SimpleProperty(description = "Specifies the component's background color. " +
+    @SimpleProperty(description = "Specifies the background color of the %type%. " +
             "The background color will not be visible if an Image is being displayed.")
     public void BackgroundColor(int argb) {
         backgroundColor = argb;
@@ -317,9 +313,9 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     }
 
     /**
-     * Returns the path of the button's image.
+     * Returns the path of the background image of the %type%.
      *
-     * @return  the path of the button's image
+     * @return  the path of the background image
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
@@ -328,15 +324,15 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     }
 
     /**
-     * Specifies the path of the button's image.
+     * Specifies the path of the background image of the %type%.
      *
      * <p/>See {@link com.google.appinventor.components.runtime.util.MediaUtil#determineMediaSource} for information about what
      * a path can be.
      *
-     * @param path  the path of the button's image
+     * @param path  the path of the background image
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    @SimpleProperty(description = "Specifies the path of the component's image.  " +
+    @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be visible.")
     public void Image(String path) {
         // If it's the same as on the prior call and the prior load was successful,

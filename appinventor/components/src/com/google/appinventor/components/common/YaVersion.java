@@ -465,8 +465,10 @@ public class YaVersion {
   // - HYGROMETER_COMPONENT_VERSION was initialized to 1
   // - LIGHTSENSOR_COMPONENT_VERSION was initialized to 1
   // - THERMOMETER_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 188:
+  // - Label component version incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 187;
+  public static final int YOUNG_ANDROID_VERSION = 188;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -542,6 +544,12 @@ public class YaVersion {
   // - The text compare block was modified to include the not-equal operator
 
   public static final int BLOCKS_LANGUAGE_VERSION = 27;
+
+  // ................................. Target SDK Version Number ..................................
+
+  public static final int TARGET_SDK_VERSION = 28;
+
+  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
 
   // ................................. Component Version Numbers ..................................
 
@@ -867,8 +875,10 @@ public class YaVersion {
   // - The HasMargins property was added
   // For LABEL_COMPONENT_VERSION 4:
   // - The HTML format is defined.
+  // For LABEL_COMPONENT_VERSION 5:
+  // - The HTMLContent property is defined.
 
-  public static final int LABEL_COMPONENT_VERSION = 4;
+  public static final int LABEL_COMPONENT_VERSION = 5;
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
@@ -1279,7 +1289,7 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.55 or 2.55u";
+  public static final String PREFERRED_COMPANION = "2.55";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";

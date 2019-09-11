@@ -1104,6 +1104,9 @@ public final class YoungAndroidFormUpgrader {
       componentProperties.put("HasMargins", new ClientJsonString("False"));
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
