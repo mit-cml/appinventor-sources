@@ -112,14 +112,13 @@ public class AssetList extends Composite implements ProjectChangeListener {
         String fileSuffix = node.getProjectId() + "/" + node.getFileId();
         String treeItemText = "<span style='cursor: pointer'>";
         if (StorageUtil.isImageFile(fileSuffix)) {
-          treeItemText += new Image(images.mediaIconImg()) + nodeName + "</span>";
+          treeItemText += new Image(images.mediaIconImg());
         } else if (StorageUtil.isAudioFile(fileSuffix )) {
-          treeItemText += new Image(images.mediaIconAudio()) + nodeName + "</span>";
+          treeItemText += new Image(images.mediaIconAudio());
         } else if (StorageUtil.isVideoFile(fileSuffix )) {
-          treeItemText += new Image(images.mediaIconVideo()) + nodeName + "</span>";
-        } else {
-          treeItemText += nodeName + "</span>";
+          treeItemText += new Image(images.mediaIconVideo());
         }
+        treeItemText += nodeName + "</span>";
         TreeItem treeItem = new TreeItem(new HTML(treeItemText));
         // keep a pointer from the tree item back to the actual node
         treeItem.setUserObject(node);
