@@ -2113,6 +2113,39 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Display a dialog box with a provided warning message.
+   *
+   * @param message The message to display
+   */
+
+  public void genericWarning(String inputMessage) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.warningDialogTitle());
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>" + inputMessage + "</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    holder.add(okButton);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
    * Display a Dialog box that explains that you cannot connect a
    * device or the emulator to App Inventor until you have a project
    * selected.
