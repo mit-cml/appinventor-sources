@@ -413,6 +413,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   declaredNames: function() { // [lyn, 10/11/13] return the names of all parameters of this procedure
      return this.getVars();
   },
+  declaredVariables: function() {
+    return this.getVars();
+  },
   renameVar: function(oldName, newName) {
     this.renameVars(Blockly.Substitution.simpleSubstitution(oldName,newName));
   },
@@ -466,6 +469,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       ' ' + Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO }],
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
+    Blockly.BlocklyEditor.addPngExportOption(this, options);
   },
   getParameters: function() {
     return this.arguments_;
@@ -506,6 +510,7 @@ Blockly.Blocks['procedures_defreturn'] = {
   getProcedureDef: Blockly.Blocks.procedures_defnoreturn.getProcedureDef,
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
+  declaredVariables: Blockly.Blocks.procedures_defnoreturn.declaredVariables,
   renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
   renameVars: Blockly.Blocks.procedures_defnoreturn.renameVars,
   renameBound: Blockly.Blocks.procedures_defnoreturn.renameBound,

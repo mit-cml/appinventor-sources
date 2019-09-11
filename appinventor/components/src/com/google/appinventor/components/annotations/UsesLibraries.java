@@ -24,7 +24,13 @@ public @interface UsesLibraries {
    * The names of the libraries separated by commas.
    *
    * @return  the library name
-   * @see android.Manifest.permission
    */
   String libraries() default "";
+
+  /**
+   * The names of the libraries (as an array)
+   *
+   * @return  the array of library names
+   */
+  String[] value() default {};
 }

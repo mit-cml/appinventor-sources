@@ -53,6 +53,7 @@ Blockly.Msg.pt.switch_language_to_portuguese = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'converter';
     Blockly.Msg.LANG_MATH_SINGLE_OP_EXP = 'e^';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = 'Retornar a raiz quadrada do número.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'texto';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Adicionar elementos ao final de uma lista.';

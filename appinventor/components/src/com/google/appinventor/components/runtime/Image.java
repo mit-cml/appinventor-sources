@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -41,7 +42,8 @@ import java.io.IOException;
     "and other aspects of the Image's appearance, can be specified in the " +
     "Designer or in the Blocks Editor.")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions(permissionNames = "android.permission.INTERNET," +
+    "android.permission.READ_EXTERNAL_STORAGE")
 public final class Image extends AndroidViewComponent {
 
   private final ImageView view;
@@ -101,7 +103,22 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(String path) {
+  public void Picture(final String path) {
+    if (MediaUtil.isExternalFile(path) &&
+        container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+          new PermissionResultHandler() {
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (granted) {
+                Picture(path);
+              } else {
+                container.$form().dispatchPermissionDeniedEvent(Image.this, "Picture", permission);
+              }
+            }
+          });
+      return;
+    }
     picturePath = (path == null) ? "" : path;
 
     Drawable drawable;

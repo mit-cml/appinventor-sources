@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -33,7 +33,7 @@ public class AndroidServlet extends OdeServlet {
   // Content type for response header (to avoid security vulnerabilities)
   private static final String CONTENT_TYPE = "text/html; charset=utf-8";
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -78,6 +78,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       Button okButton = new Button(MESSAGES.okButton());
       okButton.addClickHandler(buttonHandler);
       HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
+      HTML linkQrcode = new HTML("<center><a href=\"" + appInstallUrl + "\" target=\"_blank\">" + appInstallUrl + "</a></center>");
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
@@ -98,6 +99,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       buttonPanel.setSize("100%", "24px");
       VerticalPanel contentPanel = new VerticalPanel();
       contentPanel.add(barcodeQrcode);
+      contentPanel.add(linkQrcode);
       contentPanel.add(buttonPanel);
       contentPanel.add(warningPanel);
 //      contentPanel.setSize("320px", "100%");

@@ -34,8 +34,26 @@ public class ShadowEventDispatcher {
 
   private static Map<Component, Set<EventWithArgs>> firedEvents = new HashMap<>();
 
+  private static Map<Component, Set<String>> unhandledEvents = new HashMap<>();
+
   public static void clearEvents() {
     firedEvents.clear();
+    unhandledEvents.clear();
+  }
+
+  /**
+   * Registers a (component, eventName) pair that the EventDispatcher should report as not having
+   * an event handler defined. This can be used to test default handling behavior for those events
+   * that may do alternative handling if the developer has not provided blocks to handle the
+   * event.
+   * @param component the component to watch
+   * @param eventName the event to report as not handled
+   */
+  public static void doNotHandleEvent(Component component, String eventName) {
+    if (!unhandledEvents.containsKey(component)) {
+      unhandledEvents.put(component, new HashSet<String>());
+    }
+    unhandledEvents.get(component).add(eventName);
   }
 
   @Implementation
@@ -44,7 +62,7 @@ public class ShadowEventDispatcher {
       firedEvents.put(component, new HashSet<EventWithArgs>());
     }
     firedEvents.get(component).add(new EventWithArgs(eventName, args));
-    return true;
+    return !unhandledEvents.containsKey(component) || !unhandledEvents.get(component).contains(eventName);
   }
 
   public static void assertEventFired(Component component, String eventName, Object... args) {
@@ -129,5 +147,26 @@ public class ShadowEventDispatcher {
       }
     }
     throw new AssertionError(String.format("Form did not receive PermissionDenied event for permission %s.", permission));
+  }
+
+  /**
+   * Retrieves the arguments passed when an event was dispatched. This can be used to perform
+   * further assertions on the event data.
+   *
+   * @param component The component that raised the event
+   * @param eventName The name of the event raised
+   * @return An array of arguments passed for the event.
+   * @throws AssertionError if the specified event has not occurred for the given component
+   */
+  public static Object[] getArgumentsForEventFired(Component component, String eventName) {
+    Set<EventWithArgs> events = firedEvents.get(component);
+    if (events != null) {
+      for (EventWithArgs e : events) {
+        if (e.eventName.equals(eventName)) {
+          return e.args;
+        }
+      }
+    }
+    throw new AssertionError(String.format("Component %s did not receive event %s.", component, eventName));
   }
 }

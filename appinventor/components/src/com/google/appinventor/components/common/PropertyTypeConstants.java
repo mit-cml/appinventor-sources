@@ -242,6 +242,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_TEXTAREA = "textArea";
 
   /**
+   * The Subset JSON property editor pops up a web form for the selection of
+   * components and blocks to be included in the subset.
+   */
+  public static final String PROPERTY_TYPE_SUBSET_JSON = "subset_json";
+
+  /**
    * Choices of text alignment (left, center, right) offered by {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAlignmentChoicePropertyEditor}.
    */

@@ -96,10 +96,11 @@ Blockly.Blocks['global_declaration'] = {
     this.setTooltip(Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP);
   },
   getVars: function() {
-    return [this.getFieldValue('NAME')];
+    var field = this.getField('NAME');
+    return field ? [field.getText()] : [];
   },
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
       this.setFieldValue(newName, 'NAME');
     }
   },
@@ -144,7 +145,7 @@ Blockly.Blocks['lexical_variable_get'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only rename lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       var newName = freeSubstitution.apply(oldName);
       if (newName !== oldName) {
@@ -156,7 +157,7 @@ Blockly.Blocks['lexical_variable_get'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only return lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       return new Blockly.NameSet([oldName])
     } else {
@@ -201,7 +202,7 @@ Blockly.Blocks['lexical_variable_set'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only rename lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       var newName = freeSubstitution.apply(oldName);
       if (newName !== oldName) {
@@ -218,7 +219,7 @@ Blockly.Blocks['lexical_variable_set'] = {
     var prefixPair = Blockly.unprefixName(this.getFieldValue('VAR'));
     var prefix = prefixPair[0];
     // Only return lexical (nonglobal) names
-    if (prefix !== Blockly.globalNamePrefix) {
+    if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
       var oldName = prefixPair[1];
       result.insert(oldName);
     }
@@ -453,12 +454,15 @@ Blockly.Blocks['local_declaration_statement'] = {
   },
   getVars: function() {
     var varList = [];
-    for (var i = 0, input; input = this.getFieldValue('VAR' + i); i++) {
-      varList.push(input);
+    for (var i = 0, input; input = this.getField('VAR' + i); i++) {
+      varList.push(input.getText());
     }
     return varList;
   },
   declaredNames: function () { // Interface with Blockly.LexicalVariable.renameParam
+    return this.getVars();
+  },
+  declaredVariables: function () {
     return this.getVars();
   },
   initializerConnections: function() { // [lyn, 11/16/13 ] Return all the initializer connections
@@ -588,6 +592,7 @@ Blockly.Blocks['local_declaration_expression'] = {
   saveConnections: Blockly.Blocks.local_declaration_statement.saveConnections,
   getVars: Blockly.Blocks.local_declaration_statement.getVars,
   declaredNames: Blockly.Blocks.local_declaration_statement.declaredNames,
+  declaredVariables: Blockly.Blocks.local_declaration_statement.declaredVariables,
   renameVar: Blockly.Blocks.local_declaration_statement.renameVar,
   renameVars: Blockly.Blocks.local_declaration_statement.renameVars,
   renameBound: Blockly.Blocks.local_declaration_statement.renameBound,

@@ -98,6 +98,10 @@ public class Sharing extends AndroidNonvisibleComponent {
       String fileExtension = file.substring(file.lastIndexOf(".")+1).toLowerCase();
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String type = mime.getMimeTypeFromExtension(fileExtension);
+      if (type == null) {
+        // Fix for #1701: We don't know what it is, but it's at least a sequence of bytes (we hope)
+        type = "application/octet-stream";
+      }
 
       Uri shareableUri = NougatUtil.getPackageUri(form, imageFile);
       Intent shareIntent = new Intent(Intent.ACTION_SEND);

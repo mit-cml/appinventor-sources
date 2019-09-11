@@ -33,6 +33,7 @@ import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
@@ -1215,6 +1216,10 @@ public class Ode implements EntryPoint {
       }
     }, MouseWheelEvent.getType());
 
+    if (getUserDyslexicFont()) {
+      RootPanel.get().addStyleName("dyslexic");
+    }
+
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
     // not lose any work because of this. We hook into the window closing  event to detect the
@@ -1487,6 +1492,29 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns user dyslexic font setting.
+   *
+   * @return user default font
+   */
+  public static boolean getUserDyslexicFont() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.USER_DYSLEXIC_FONT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user dyslexic font setting.
+   *
+   * @param isTrue new value for the user default font
+   */
+  public static void setUserDyslexicFont(boolean dyslexicFont) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
+                    "" + dyslexicFont);
+    userSettings.saveSettings(null);
+  }
+
+  /**
    * Helper method to create push buttons.
    *
    * @param img  image to shown on face of push button
@@ -1588,55 +1616,12 @@ public class Ode implements EntryPoint {
    * @return The created and optionally displayed Dialog box.
    */
   public DialogBox createNoProjectsDialog(boolean showDialog) {
-    // Create the UI elements of the DialogBox
-    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
-    dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText(MESSAGES.createNoProjectsDialogText());
-
-    Grid mainGrid = new Grid(2, 2);
-    mainGrid.getCellFormatter().setAlignment(0,
-        0,
-        HasHorizontalAlignment.ALIGN_CENTER,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(0,
-        1,
-        HasHorizontalAlignment.ALIGN_CENTER,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(1,
-        1,
-        HasHorizontalAlignment.ALIGN_RIGHT,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-
-    Image dialogImage = new Image(Ode.getImageBundle().codiVert());
-
-    Grid messageGrid = new Grid(2, 1);
-    messageGrid.getCellFormatter().setAlignment(0,
-        0,
-        HasHorizontalAlignment.ALIGN_JUSTIFY,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-    messageGrid.getCellFormatter().setAlignment(1,
-        0,
-        HasHorizontalAlignment.ALIGN_LEFT,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-
-    Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
-
-    messageChunk1.setWidth("23em");
-    Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
-
-    // Add the elements to the grids and DialogBox.
-    messageGrid.setWidget(0, 0, messageChunk1);
-    messageGrid.setWidget(1, 0, messageChunk2);
-    mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, messageGrid);
-
-    dialogBox.setWidget(mainGrid);
-    dialogBox.center();
-
+    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
+    
     if (showDialog) {
       dialogBox.show();
     }
-
+  
     return dialogBox;
   }
 

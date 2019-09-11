@@ -49,7 +49,7 @@ public class StorageUtilTest extends TestCase {
     assertEquals("image/jpeg", StorageUtil.getContentTypeForFilePath("kitty.jpg"));
     assertEquals("image/jpeg", StorageUtil.getContentTypeForFilePath("kitty.jpeg"));
     assertEquals("image/png", StorageUtil.getContentTypeForFilePath("kitty.png"));
-    assertEquals("application/vnd.android.package-archive; charset=utf-8",
+    assertEquals("application/vnd.android.package-archive",
         StorageUtil.getContentTypeForFilePath("HelloPurr.apk"));
     assertEquals("application/zip; charset=utf-8",
         StorageUtil.getContentTypeForFilePath("HelloPurr.aia"));

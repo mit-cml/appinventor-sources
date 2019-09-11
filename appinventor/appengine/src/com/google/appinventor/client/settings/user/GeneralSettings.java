@@ -33,6 +33,8 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.USER_LAST_LOCALE, "en",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_DYSLEXIC_FONT, "false",
+        EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override

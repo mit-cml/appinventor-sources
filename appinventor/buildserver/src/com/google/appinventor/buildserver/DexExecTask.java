@@ -140,16 +140,7 @@ public class DexExecTask  {
     }
 
     private String getDexFileName(File inputFile) {
-        // get the filename
-        String name = inputFile.getName();
-        // remove the extension
-        int pos = name.lastIndexOf('.');
-        if (pos != -1) {
-            name = name.substring(0, pos);
-        }
-
         String hashed = getHashFor(inputFile);
-
         return "dex-cached-" + hashed + ".jar";
     }
 

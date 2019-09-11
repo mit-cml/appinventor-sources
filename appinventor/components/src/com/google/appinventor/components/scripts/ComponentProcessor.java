@@ -37,6 +37,7 @@ import java.io.Writer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -144,6 +145,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String ARM64_V8A_SUFFIX = "-v8a";
   // Must match buildserver.compiler.X86_64_SUFFIX
   private static final String X86_64_SUFFIX = "-x8a";
+
+  private static final String TYPE_PLACEHOLDER = "%type%";
 
   // The next two fields are set in init().
   /**
@@ -896,9 +899,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * superclass.
      */
   private void processComponent(Element element) {
+    boolean isForDesigner = element.getAnnotation(DesignerComponent.class) != null;
     // If the element is not a component (e.g., Float), return early.
-    if (element.getAnnotation(SimpleObject.class) == null &&
-        element.getAnnotation(DesignerComponent.class) == null) {
+    if (element.getAnnotation(SimpleObject.class) == null && !isForDesigner) {
       return;
     }
 
@@ -971,6 +974,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
+      Collections.addAll(componentInfo.permissions, usesPermissions.value());
     }
 
     // Gather library names.
@@ -979,6 +983,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String library : usesLibraries.libraries().split(",")) {
         updateWithNonEmptyValue(componentInfo.libraries, library);
       }
+      Collections.addAll(componentInfo.libraries, usesLibraries.value());
     }
 
     // Gather native library names.
@@ -1075,8 +1080,27 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Build up method information.
     processMethods(componentInfo, element);
 
+    if (isForDesigner) {
+      processDescriptions(componentInfo);
+    }
+
     // Add it to our components map.
     components.put(longComponentName, componentInfo);
+  }
+
+  private void processDescriptions(ComponentInfo info) {
+    final String name = info.displayName;
+    info.description = info.description.replaceAll(TYPE_PLACEHOLDER, name);
+    info.helpUrl = info.description.replaceAll(TYPE_PLACEHOLDER, name);
+    for (Property property : info.properties.values()) {
+      property.description = property.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
+    for (Event event : info.events.values()) {
+      event.description = event.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
+    for (Method method : info.methods.values()) {
+      method.description = method.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
   }
 
   private boolean isPublicMethod(Element element) {
@@ -1093,8 +1117,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                  propertyName);
     }
 
+    // Use Javadoc for property unless description is set to a non-empty string.
+    String description = elementUtils.getDocComment(element);
+    if (!simpleProperty.description().isEmpty()) {
+      description = simpleProperty.description();
+    }
+    if (description == null) {
+      description = "";
+    }
+    // Read only until the first javadoc parameter
+    description = description.split("[^\\\\][@{]")[0].trim();
+
     Property property = new Property(propertyName,
-                                     simpleProperty.description(),
+                                     description,
                                      simpleProperty.category(),
                                      simpleProperty.userVisible(),
                                      elementUtils.isDeprecated(element));
@@ -1357,7 +1392,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
 
           // Merge newProperty into priorProperty, which is already in the properties map.
-          if (priorProperty.description.isEmpty() && !newProperty.description.isEmpty()) {
+          if ((priorProperty.description.isEmpty() || element.getAnnotation(Override.class) != null)
+              && !newProperty.description.isEmpty()) {
             priorProperty.description = newProperty.description;
           }
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {

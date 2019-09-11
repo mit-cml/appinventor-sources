@@ -8,8 +8,8 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
-import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -27,6 +27,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,11 +36,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -110,21 +114,8 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
-  private static final String[] SUPPORT_JARS = new String[] {
-      RUNTIME_FILES_DIR + "animated-vector-drawable.jar",
-      RUNTIME_FILES_DIR + "appcompat-v7.jar",
-      RUNTIME_FILES_DIR + "core-common.jar",
-      RUNTIME_FILES_DIR + "lifecycle-common.jar",
-      RUNTIME_FILES_DIR + "runtime.jar",
-      RUNTIME_FILES_DIR + "support-annotations.jar",
-      RUNTIME_FILES_DIR + "support-compat.jar",
-      RUNTIME_FILES_DIR + "support-core-ui.jar",
-      RUNTIME_FILES_DIR + "support-core-utils.jar",
-      RUNTIME_FILES_DIR + "support-fragment.jar",
-      RUNTIME_FILES_DIR + "support-media-compat.jar",
-      RUNTIME_FILES_DIR + "support-v4.jar",
-      RUNTIME_FILES_DIR + "support-vector-drawable.jar"
-  };
+  private static final String[] SUPPORT_JARS;
+  private static final String[] SUPPORT_AARS;
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
   private static final String DX_JAR =
@@ -229,6 +220,41 @@ public final class Compiler {
       "Error: Your build failed because %s cannot be used as the application icon.\n";
   private static final String NO_USER_CODE_ERROR =
       "Error: No user code exists.\n";
+
+  static {
+    List<String> aars = new ArrayList<>();
+    List<String> jars = new ArrayList<>();
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(Compiler.class.getResourceAsStream(RUNTIME_FILES_DIR + "aars.txt")))) {
+      String line;
+      while ((line = in.readLine()) != null) {
+        if (!line.isEmpty()) {
+          aars.add(line);
+        } else {
+          break;
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Fatal error on startup reading aars.txt");
+      e.printStackTrace();
+      System.exit(1);
+    }
+    SUPPORT_AARS = aars.toArray(new String[0]);
+    try (BufferedReader in = new  BufferedReader(new InputStreamReader(Compiler.class.getResourceAsStream(RUNTIME_FILES_DIR + "jars.txt")))) {
+      String line;
+      while ((line = in.readLine()) != null) {
+        if (!line.isEmpty()) {
+          jars.add(RUNTIME_FILES_DIR + line);
+        } else {
+          break;
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Fatal error on startup reading jars.txt");
+      e.printStackTrace();
+      System.exit(1);
+    }
+    SUPPORT_JARS = jars.toArray(new String[0]);
+  }
 
   private final int childProcessRamMb;  // Maximum ram that can be used by a child processes, in MB.
   private final boolean isForCompanion;
@@ -554,9 +580,10 @@ public final class Compiler {
    * @param out The writer the style will be written to.
    * @param name The name of the new style.
    * @param parent The parent style to inherit from.
+   * @param sdk The SDK version that the theme overlays
    * @throws IOException if the writer cannot be written to.
    */
-  private static void writeTheme(Writer out, String name, String parent, boolean holo) throws IOException {
+  private static void writeTheme(Writer out, String name, String parent, int sdk) throws IOException {
     out.write("<style name=\"");
     out.write(name);
     out.write("\" parent=\"");
@@ -565,6 +592,8 @@ public final class Compiler {
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
     out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    boolean holo = sdk >= 11 && sdk < 21;
+    boolean needsClassicSwitch = false;
     if (!parent.equals("android:Theme")) {
       out.write("<item name=\"windowActionBar\">true</item>\n");
       out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
@@ -576,8 +605,20 @@ public final class Compiler {
       out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
+    } else {
+      out.write("<item name=\"switchStyle\">@style/ClassicSwitch</item>\n");
+      needsClassicSwitch = true;
     }
     out.write("</style>\n");
+    if (needsClassicSwitch) {
+      out.write("<style name=\"ClassicSwitch\" parent=\"Widget.AppCompat.CompoundButton.Switch\">\n");
+      if (sdk == 23) {
+        out.write("<item name=\"android:background\">@drawable/abc_control_background_material</item>\n");
+      } else {
+        out.write("<item name=\"android:background\">@drawable/abc_item_background_holo_light</item>\n");
+      }
+      out.write("</style>\n");
+    }
   }
 
   private static void writeActionBarStyle(Writer out, String name, String parent,
@@ -626,6 +667,7 @@ public final class Compiler {
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
     boolean needsBlackTitleText = false;
+    boolean holo = "-v11".equals(suffix) || "-v14".equals(suffix);
     if (isClassicTheme) {
       parentTheme = "android:Theme";
     } else {
@@ -670,9 +712,10 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
 
-      writeTheme(out, "AppTheme", parentTheme, suffix.equals("-v11"));
+      writeTheme(out, "AppTheme", parentTheme,
+          suffix.isEmpty() ? 7 : Integer.parseInt(suffix.substring(2)));
       if (!isClassicTheme) {
-        if ("-v11".equals(suffix)) {  // Handle Holo
+        if (holo) {  // Handle Holo
           if (parentTheme.contains("Light")) {
             writeActionBarStyle(out, "AIActionBar", "android:Widget.Holo.Light.ActionBar", needsBlackTitleText);
           } else {
@@ -693,6 +736,23 @@ public final class Compiler {
       out.write("</style>\n");
       out.write("</resources>\n");
       out.close();
+    } catch(IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean createNetworkConfigXml(File configDir) {
+    File networkConfig = new File(configDir, "network_security_config.xml");
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(networkConfig)))) {
+      out.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+      out.println("<network-security-config>");
+      out.println("<base-config cleartextTrafficPermitted=\"true\">");
+      out.println("<trust-anchors>");
+      out.println("<certificates src=\"system\"/>");
+      out.println("</trust-anchors>");
+      out.println("</base-config>");
+      out.println("</network-security-config>");
     } catch(IOException e) {
       return false;
     }
@@ -748,7 +808,7 @@ public final class Compiler {
           "package=\"" + packageName + "\" " +
           // TODO(markf): uncomment the following line when we're ready to enable publishing to the
           // Android Market.
-         "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
+          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
 
       // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
@@ -766,7 +826,11 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
-          out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+          if (isForEmulator) {
+            out.write("  <uses-feature android:name=\"android.hardware.wifi\" android:required=\"false\" />\n"); // We actually require wifi
+          } else {
+            out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+          }
       }
 
       int minSdk = Integer.parseInt((project.getMinSdk() == null) ? DEFAULT_MIN_SDK : project.getMinSdk());
@@ -808,7 +872,8 @@ public final class Compiler {
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
-      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"26\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"" +
+          YaVersion.TARGET_SDK_VERSION + "\" />\n");
 
       out.write("  <application ");
 
@@ -825,6 +890,7 @@ public final class Compiler {
       } else {
         out.write("android:label=\"" + aName + "\" ");
       }
+      out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
       out.write("android:icon=\"@drawable/ya\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
@@ -837,6 +903,8 @@ public final class Compiler {
         out.write("android:theme=\"@style/AppTheme\" ");
       }
       out.write(">\n");
+
+      out.write("<uses-library android:name=\"org.apache.http.legacy\" android:required=\"false\" />");
 
       for (Project.SourceDescriptor source : project.getSources()) {
         String formClassName = source.getQualifiedName();
@@ -868,7 +936,6 @@ public final class Compiler {
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
         out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
-
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
@@ -1056,16 +1123,23 @@ public final class Compiler {
     File style11Dir = createDir(resDir, "values-v11");
     File style14Dir = createDir(resDir, "values-v14");
     File style21Dir = createDir(resDir, "values-v21");
+    File style23Dir = createDir(resDir, "values-v23");
     if (!compiler.createValuesXml(styleDir, "") ||
         !compiler.createValuesXml(style11Dir, "-v11") ||
         !compiler.createValuesXml(style14Dir, "-v14") ||
-        !compiler.createValuesXml(style21Dir, "-v21")) {
+        !compiler.createValuesXml(style21Dir, "-v21") ||
+        !compiler.createValuesXml(style23Dir, "-v23")) {
       return false;
     }
 
     out.println("________Creating provider_path xml");
     File providerDir = createDir(resDir, "xml");
     if (!compiler.createProviderXml(providerDir)) {
+      return false;
+    }
+
+    out.println("________Creating network_security_config xml");
+    if (!compiler.createNetworkConfigXml(providerDir)) {
       return false;
     }
 
@@ -1843,6 +1917,9 @@ public final class Compiler {
     explodedAarLibs = new AARLibraries(genSrcDir);
     final Set<String> processedLibs = new HashSet<>();
 
+    // Attach the Android support libraries (needed by every app)
+    libsNeeded.put("ANDROID", new HashSet<>(Arrays.asList(SUPPORT_AARS)));
+
     // walk components list for libraries ending in ".aar"
     try {
       for (Set<String> libs : libsNeeded.values()) {
@@ -1988,6 +2065,8 @@ public final class Compiler {
         resources.put(resourcePath, file);
       }
       return file.getAbsolutePath();
+    } catch (NullPointerException e) {
+      throw new IllegalStateException("Unable to find required library: " + resourcePath, e);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

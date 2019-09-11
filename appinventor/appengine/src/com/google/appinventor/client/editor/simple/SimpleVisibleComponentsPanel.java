@@ -150,25 +150,26 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   }
 
   private void changeFormPreviewSize(int idx, int width, int height) {
-    if (form != null) {
-      form.changePreviewSize(width, height);
-      String info = " (" + height + "," + width + ")";
-      if (idx == 0) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
-        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
-      } else if (idx == 1) {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
-        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-        listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
 
-      } else {
-        listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
-        listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
-        listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
-      }
-      // change settings
+    if (form == null)
+      return;
+
+    form.changePreviewSize(width, height, idx);
+    String info = " (" + height + "," + width + ")";
+    if (idx == 0) {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewPhoneSize() + info);
+      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
+      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+    } else if (idx == 1) {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewTabletSize() + info);
+      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+      listboxPhoneTablet.setItemText(2, MESSAGES.previewMonitorSize());
+    } else {
+      listboxPhoneTablet.setItemText(idx, MESSAGES.previewMonitorSize() + info);
+      listboxPhoneTablet.setItemText(0, MESSAGES.previewPhoneSize());
+      listboxPhoneTablet.setItemText(1, MESSAGES.previewTabletSize());
     }
+    // change settings
   }
 
   public void enableTabletPreviewCheckBox(boolean enable){

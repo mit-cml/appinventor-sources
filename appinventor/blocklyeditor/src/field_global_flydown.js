@@ -37,7 +37,7 @@ Blockly.FieldGlobalFlydown.prototype.flyoutCSSClassName = 'blocklyFieldParameter
  *  @return {!Array.<string>} List of two XML elements.
  **/
 Blockly.FieldGlobalFlydown.prototype.flydownBlocksXML_ = function() {
-  var name = Blockly.globalNamePrefix + " " + this.getText(); // global name for this parameter field.
+  var name = Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + " " + this.getText(); // global name for this parameter field.
   var getterSetterXML =
       '<xml>' +
         '<block type="lexical_variable_get">' +

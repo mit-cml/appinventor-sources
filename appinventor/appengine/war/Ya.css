@@ -14,13 +14,24 @@ they get cut off in Windows.
 
 @font-face {
   font-family: Roboto;
-  src: url('/fonts/Roboto-Regular.ttf') format("truetype");
+  src: url('/fonts/Roboto-Regular.ttf');
 }
 
 @font-face {
   font-weight: bold;
   font-family: Roboto;
-  src: url('/fonts/Roboto-Bold.ttf') format("truetype");
+  src: url('/fonts/Roboto-Bold.ttf');
+}
+
+@font-face {
+  font-family: OpenDyslexic;
+  src: url('/fonts/OpenDyslexic-Regular.otf');
+}
+
+@font-face {
+  font-weight: bold;
+  font-family: OpenDyslexic;
+  src: url('/fonts/OpenDyslexic-Bold.otf');
 }
 
 body, html {
@@ -29,15 +40,15 @@ body, html {
 
 body {
   background-color: lightgrey;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   /* TODO(opensource): Change to commented version below once we're ready */
   background: url(images/squairy_light.png);
-  font-family: Roboto, Helvetica, Arial, sans-serif;
 }
 
-table td,
-select {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+.dyslexic * {
+  font-family: OpenDyslexic, Roboto, Helvetica, Arial, sans-serif;
 }
+
 /* For the TOS Form*/
 .floatingBox {
   width: 300px;
@@ -344,7 +355,6 @@ select {
 .ode-TopPanelLinks .gwt-TitleLabel {
   cursor: pointer;
   color: rgb(100, 100, 100);
-  font-family: Roboto, Helvetica, Arial, sans-serif;
   font-weight: 300;
   font-size: 12px;
   margin-right: 16px;
@@ -363,7 +373,6 @@ select {
 
 .ode-TopPanelLabel {
   color: #888;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
   font-size: 15px;
 }
 
@@ -625,8 +634,10 @@ select {
 
 .gwt-Tree .gwt-TreeItem span {
   padding: 8px 4px 4px 4px;
+  cursor: pointer;
 }
 
+.gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
 }
@@ -988,7 +999,71 @@ select.ode-PropertyEditor[disabled] {
   height: auto !important;
   background-color: #d2e0a6;
   border: 2px solid black;
+  -webkit-display: flex;
+  display: flex;
 }
+
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscapeTablet .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscapeMonitor .ode-SimpleMockForm {
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
+.ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
+.ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+/* ==== start: skins for Android */
+.ode-SimpleMockFormPhoneLandscape {
+    background: url(images/phoneLandscape.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 100% 100%;
+    padding: 11px 43px 7px 48px;
+}
+
+.ode-SimpleMockFormPhonePortrait {
+  background: url(images/phonePortrait.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 50px 11px 43px 7px;
+}
+
+.ode-SimpleMockFormPhoneLandscapeTablet {
+    background: url(images/phoneLandscapeTablet.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 100% 100%;
+    padding: 15px 56px 12px 64px;;
+}
+.ode-SimpleMockFormPhonePortraitTablet {
+  background: url(images/phonePortraitTablet.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 64px 13px 55px 13px;
+}
+.ode-SimpleMockFormPhoneLandscapeMonitor {
+  background: url(images/phoneLandscapeMonitor.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 44px 43px 39px 48px;
+}
+
+.ode-SimpleMockFormPhonePortraitMonitor {
+  background: url(images/phonePortraitMonitor.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 99px 36px 75px 34px;
+}
+/* ==== end: skins for Android */
 
 .ode-SimpleMockForm-selected {
   border: 2px solid #8fc202;
@@ -1030,13 +1105,35 @@ select.ode-PropertyEditor[disabled] {
   position: absolute;
   border: 0;
   background-color: transparent;
-  font: 20px Roboto bold;
+  font-size: 20px;
+  font-weight: bold;
   color: white;
   display: none;
 }
 
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
   display: inline-block;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait,
+.ode-SimpleMockFormNavigationBarLandscape {
+  background-color: #000000;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait {
+  min-height: 44px;
+  min-width: 100%;
+  background-image: url(images/navigationbarPortrait.png);
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+.ode-SimpleMockFormNavigationBarLandscape {
+  min-height: 100%;
+  min-width: 44px;
+  background-image: url(images/navigationbarLandscape.png);
+  background-repeat: no-repeat;
+  background-position: right center;
 }
 
 .ode-SimpleMockContainer {
@@ -1285,7 +1382,111 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* All dialog boxes */
-/* would pop more with a white border around their normal green border */
+
+/* Start of NoProjectsDialogBox. */
+.ode-noDialogDiv {
+  box-shadow: 0 0 10px gray;
+  min-width: 700px;
+  width: 60%;
+  background-color: white;
+  padding-bottom: 25px;
+}
+
+.ode-noDialogDivHeader {
+  background-color: #a5cf47;
+  height: 10%;
+  padding: 10px;
+  border-bottom: 1px #e9e9e9 solid;
+}
+
+.ode-noDialogDivInnerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#ode-codiLogoDiv {
+  max-width: 160px;
+  max-height: 90px;
+  margin-left: 15px;
+}
+
+.ode-headerTitle {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 16px;
+  text-align: center;
+}
+
+.ode-tutorialsTitle {
+  color: black;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.ode-noDialogExampleDivs {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-evenly;
+}
+
+.ode-noDialogExampleDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 25%;
+  min-width: 182px;
+  min-height: 300px;
+  box-shadow: 0 0 2px #808080;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 10px 0px;
+}
+
+.ode-noDialogExampleTitle {
+  margin-top: 0;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.ode-noDialogExampleImage {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ode-noDialogExampleAbout {
+  font-size: 12px;
+}
+
+.ode-noDialogUpperDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 90%;
+}
+
+.ode-bottomRow {
+  margin-top: 10pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 799px) {
+  .ode-noDialogExampleDivs {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* End of NoProjectsDialogBox. */
 
 .ode-DialogBox {
   background-color: white;

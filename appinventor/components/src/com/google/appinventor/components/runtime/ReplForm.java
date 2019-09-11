@@ -54,7 +54,7 @@ import kawa.standard.Scheme;
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
  * via the Repl
  *
- * @author markf@google.com (Your Name Here)
+ * @author markf@google.com (Mark Friedman)
  */
 
 public class ReplForm extends Form {

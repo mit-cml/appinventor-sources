@@ -377,7 +377,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   @SuppressWarnings("squid:S00100")
-  @SimpleFunction(description = "Compute the distance, in meters, between a map feature and a " +
+  @SimpleFunction(description = "Compute the distance, in meters, between a Marker and a " +
       "latitude, longitude point.")
   public double DistanceToPoint(double latitude, double longitude) {
     return GeometryUtil.distanceBetween(this, new GeoPoint(latitude, longitude));

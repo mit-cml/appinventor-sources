@@ -119,7 +119,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Event raised when this component is selected for input, such as by
+   * Event raised when the %type% is selected for input, such as by
    * the user touching it.
    */
   @SimpleEvent
@@ -128,7 +128,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Event raised when this component is no longer selected for input, such
+   * Event raised when the %type% is no longer selected for input, such
    * as if the user touches a different text box.
    */
   @SimpleEvent
@@ -183,7 +183,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the textbox's background color as an alpha-red-green-blue
+   * Returns the background color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @return  background RGB color with alpha
@@ -198,7 +198,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the textbox's background color as an alpha-red-green-blue
+   * Specifies the background color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @param argb  background RGB color with alpha
@@ -216,20 +216,20 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the textbox is active and useable.
+   * Returns true if the %type% is active and useable.
    *
    * @return  {@code true} indicates enabled, {@code false} disabled
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "Whether the user can enter text into this input box.  " +
+      description = "Whether the user can enter text into the %type%.  " +
       "By default, this is true.")
   public boolean Enabled() {
     return TextViewUtil.isEnabled(view);
   }
 
   /**
-   * Specifies whether the textbox should be active and useable.
+   * Specifies whether the %type% should be active and usable.
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
@@ -241,7 +241,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the textbox's text should be bold.
+   * Returns true if the text of the %type% should be bold.
    * If bold has been requested, this property will return true, even if the
    * font does not support bold.
    *
@@ -257,7 +257,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies whether the textbox's text should be bold.
+   * Specifies whether the text of the %type% should be bold.
    * Some fonts do not support bold.
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
@@ -272,7 +272,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the textbox's text should be italic.
+   * Returns true if the text of the %type% should be italic.
    * If italic has been requested, this property will return true, even if the
    * font does not support italic.
    *
@@ -288,7 +288,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies whether the textbox's text should be italic.
+   * Specifies whether the text of the %type% should be italic.
    * Some fonts do not support italic.
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
@@ -302,7 +302,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the textbox's text's font size, measured in sp(scale-independent pixels).
+   * Returns the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @return  font size in sp(scale-independent pixels).
    */
@@ -315,7 +315,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the textbox's text's font size, measured in sp(scale-independent pixels).
+   * Specifies the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @param size  font size in pixel
    */
@@ -327,7 +327,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the textbox's text's font face as default, serif, sans
+   * Returns the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
@@ -345,7 +345,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the textbox's text's font face as default, serif, sans
+   * Specifies the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
@@ -369,7 +369,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Text that should appear faintly in the input box to " +
+      description = "Text that should appear faintly in the %type% to " +
       "provide a hint as to what the user should enter.  This can only be " +
       "seen if the <code>Text</code> property is empty.")
   public String Hint() {
@@ -401,7 +401,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the textbox contents.
+   * Specifies the %type% contents.
    *
    * @param text  new text in text box
    */
@@ -410,7 +410,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(
       // This kind of breaks the appearance/behavior dichotomy
       category = PropertyCategory.BEHAVIOR,
-      description = "The text in the input box, which can be set by the " +
+      description = "The text in the %type%, which can be set by the " +
       "programmer in the Designer or Blocks Editor, or it can be entered by " +
       "the user (unless the <code>Enabled</code> property is false).")
   public void Text(String text) {
@@ -418,7 +418,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the textbox's text color as an alpha-red-green-blue
+   * Returns the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @return  text RGB color with alpha
@@ -433,7 +433,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the textbox's text color as an alpha-red-green-blue
+   * Specifies the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha
@@ -451,10 +451,10 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Request focus to current textbox.
+   * Request focus to current %type%.
    */
   @SimpleFunction(
-    description = "Sets the textbox active.")
+    description = "Sets the %type% active.")
   public void RequestFocus() {
     view.requestFocus();
   }

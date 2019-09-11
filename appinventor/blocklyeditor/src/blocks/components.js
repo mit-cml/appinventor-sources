@@ -280,10 +280,10 @@ Blockly.Blocks.component_event = {
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
-      tooltipDescription = eventType.description;
+      tooltipDescription = componentDb.getInternationalizedEventDescription(eventType.name, eventType.description);
     }
     else {
-      tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
+      tooltipDescription = componentDb.getInternationalizedEventDescription(this.eventName);
     }
     this.setTooltip(tooltipDescription);
     this.setPreviousStatement(false, null);
@@ -440,7 +440,22 @@ Blockly.Blocks.component_event = {
   },
 
   declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
-    return this.getVars();
+    var names = [];
+    for (var i = 0, param; param = this.getField('VAR' + i); i++) {
+      names.push(param.getText());
+      if (param.eventparam && param.eventparam != param.getText()) {
+        names.push(param.eventparam);
+      }
+    }
+    return names;
+  },
+
+  declaredVariables: function() {
+    var names = [];
+    for (var i = 0, param; param = this.getField('VAR' + i); i++) {
+      names.push(param.getText());
+    }
+    return names;
   },
 
   blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
@@ -499,6 +514,7 @@ Blockly.Blocks.component_event = {
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
+    Blockly.BlocklyEditor.addPngExportOption(this, options);
   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
@@ -547,9 +563,6 @@ Blockly.Blocks.component_event = {
 
     if (isDefined) {
       this.notBadBlock();
-      if (this.getEventTypeObject()) {
-        this.setTooltip(this.getEventTypeObject().description); // update the tooltipDescription, if block is defined
-      }
     } else {
       this.badBlock();
     }
@@ -695,9 +708,9 @@ Blockly.Blocks.component_method = {
 
     var tooltipDescription;
     if (methodTypeObject) {
-      tooltipDescription = methodTypeObject.description;
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(methodTypeObject.name, methodTypeObject.description);
     } else {
-      tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.typeName);
     }
     this.setTooltip(tooltipDescription);
 
@@ -896,9 +909,6 @@ Blockly.Blocks.component_method = {
     var isDefined = validate.call(this);
     if (isDefined) {
       this.notBadBlock();
-      if (this.getMethodTypeObject()) {
-        this.setTooltip(this.getMethodTypeObject().description); // update the tooltipDescription, if block is defined
-      }
     } else {
       this.badBlock();
     }
@@ -984,8 +994,8 @@ Blockly.Blocks.component_set_get = {
       this.setColour(Blockly.ComponentBlock.COLOUR_GET);
     }
     var tooltipDescription;
-    if (this.propertyObject) {
-      tooltipDescription = this.propertyObject.description;
+    if (this.propertyName) {
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.propertyName, this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1000,8 +1010,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
-        if (thisBlock.propertyObject) {
-          thisBlock.setTooltip(thisBlock.propertyObject.description);
+        if (thisBlock.propertyName) {
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
         }
@@ -1235,9 +1245,6 @@ Blockly.Blocks.component_set_get = {
     var isDefined = validate.call(this);
     if (isDefined) {
       this.notBadBlock();
-      if (this.propertyObject) {
-        this.setTooltip(this.propertyObject.description); // update the tooltipDescription, if block is defined
-      }
     } else {
       this.badBlock(true);
     }

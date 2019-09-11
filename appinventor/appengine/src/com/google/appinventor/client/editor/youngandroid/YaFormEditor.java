@@ -46,6 +46,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -55,9 +56,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -519,10 +523,66 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     visibleComponentsPanel.setForm(form);
     form.select();
 
+    String subsetjson = form.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
+    if (subsetjson.length() > 0) {
+      reloadComponentPalette(subsetjson);
+    }
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
     loadComplete = true;
+
+    // Originally this was done in loadDesigner. However, this resulted in
+    // the form and blocks editor not being registered for events until after
+    // they were opened. This became problematic if the user deleted an extension
+    // prior to opening the screen as they would never trigger a save, resulting
+    // in a corrupt project.
+
+    // Listen to changes on the form.
+    form.addFormChangeListener(this);
+    // Also have the blocks editor listen to changes. Do this here instead
+    // of in the blocks editor so that we don't risk it missing any updates.
+    form.addFormChangeListener(((YaProjectEditor) projectEditor)
+        .getBlocksFileEditor(form.getName()));
   }
+
+  public void reloadComponentPalette(String subsetjson) {
+    OdeLog.log(subsetjson);
+    Set<String> shownComponents = new HashSet<String>();
+    if (subsetjson.length() > 0) {
+      try {
+        String shownComponentsStr = getShownComponents(subsetjson);
+        if (shownComponentsStr.length() > 0) {
+          shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        }
+      } catch (Exception e) {
+        OdeLog.log("invalid subset string");
+      }
+      // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
+      palettePanel.clearComponentsExceptExtension();
+    } else {
+      shownComponents = COMPONENT_DATABASE.getComponentNames();
+      palettePanel.clearComponents();
+    }
+    for (String component : shownComponents) {
+      palettePanel.addComponent(component);
+    }
+  }
+
+  private native String getShownComponents(String subsetString)/*-{
+    var jsonObj = JSON.parse(subsetString);
+    var shownComponentTypes = jsonObj["shownComponentTypes"];
+    var shownString = "";
+    for (var category in shownComponentTypes) {
+      var categoryArr = shownComponentTypes[category];
+      for (var i = 0; i < categoryArr.length; i++) {
+        shownString = shownString + "," + categoryArr[i]["type"];
+        //console.log(categoryArr[i]["type"]);
+      }
+    }
+    var shownCompStr = shownString.substring(1);
+    //console.log(shownCompStr);
+    return shownCompStr;
+  }-*/;
 
   /*
    * Parses the JSON properties and creates the form and its component structure.
@@ -631,14 +691,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.setContent(designProperties);
     updatePropertiesPanel(selectedComponent);
     propertiesBox.setVisible(true);
-
-    // Listen to changes on the form.
-    form.addFormChangeListener(this);
-    // Also have the blocks editor listen to changes. Do this here instead
-    // of in the blocks editor so that we don't risk it missing any updates.
-    OdeLog.log("Adding blocks editor as a listener for " + form.getName());
-    form.addFormChangeListener(((YaProjectEditor) projectEditor)
-        .getBlocksFileEditor(form.getName()));
   }
 
   /*

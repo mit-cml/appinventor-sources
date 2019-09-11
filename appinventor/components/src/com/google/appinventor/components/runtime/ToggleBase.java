@@ -6,15 +6,12 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 import android.view.View;
@@ -23,15 +20,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
- * Check box with the ability to detect initialization, focus
+ * Abstract base class for toggleable items with the ability to detect initialization, focus
  * change (mousing on or off of it), and user clicks.
  *
  */
-@DesignerComponent(version = YaVersion.CHECKBOX_COMPONENT_VERSION,
-        description = "Checkbox that raises an event when the user clicks on it. " +
-                "There are many properties affecting its appearance that can be set in " +
-                "the Designer or Blocks Editor.",
-        category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewComponent
         implements OnCheckedChangeListener, OnFocusChangeListener {
@@ -54,14 +46,16 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   private int textColor;
 
   /**
-   * Creates a new CheckBox component.
+   * Creates a new ToggleBase component.
    *
    * @param container  container, component will be placed in
    */
+  @SuppressWarnings("WeakerAccess")  // Could be used by extensions
   public ToggleBase(ComponentContainer container) {
     super(container);
   }
 
+  @SuppressWarnings("WeakerAccess")  // Could be used by extensions
   protected void initToggle() {
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
@@ -109,7 +103,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns the checkbox's background color as an alpha-red-green-blue
+   * Returns the background color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @return  background RGB color with alpha
@@ -121,7 +115,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies the checkbox's background color as an alpha-red-green-blue
+   * Specifies the background color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @param argb  background RGB color with alpha
@@ -139,7 +133,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns true if the checkbox is active and clickable.
+   * Returns true if the %type% is active and clickable.
    *
    * @return  {@code true} indicates enabled, {@code false} disabled
    */
@@ -150,7 +144,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies whether the checkbox should be active and clickable.
+   * Specifies whether the %type% should be active and clickable.
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
@@ -162,7 +156,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns true if the checkbox's text should be bold.
+   * Returns true if the text of the %type% should be bold.
    * If bold has been requested, this property will return true, even if the
    * font does not support bold.
    *
@@ -176,7 +170,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies whether the checkbox's text should be bold.
+   * Specifies whether the text of the %type% should be bold.
    * Some fonts do not support bold.
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
@@ -191,7 +185,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns true if the checkbox's text should be italic.
+   * Returns true if the text of the %type% should be italic.
    * If italic has been requested, this property will return true, even if the
    * font does not support italic.
    *
@@ -205,7 +199,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies whether the checkbox's text should be italic.
+   * Specifies whether the text of the %type% should be italic.
    * Some fonts do not support italic.
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
@@ -220,7 +214,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns the checkbox's text's font size, measured in sp(scale-independent pixels).
+   * Returns the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @return  font size in sp (scale-independent pixels)
    */
@@ -231,7 +225,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies the checkbox's text's font size, measured in sp(scale-independent pixels).
+   * Specifies the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @param size  font size in sp(scale-independent pixels)
    */
@@ -243,7 +237,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns the checkbox's text's font face as default, serif, sans
+   * Returns the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
@@ -259,7 +253,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies the checkbox's text's font face as default, serif, sans
+   * Specifies the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
@@ -277,9 +271,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Returns the text displayed by the checkbox.
+   * Returns the text displayed by the %type%.
    *
-   * @return  checkbox caption
+   * @return  toggle's caption
    */
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE)
@@ -288,19 +282,18 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies the text displayed by the checkbox.
+   * Specifies the text displayed by the %type%.
    *
-   * @param text  new caption for checkbox
+   * @param text  new caption for toggleable button
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-          defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
   public void Text(String text) {
     TextViewUtil.setText(view, text);
   }
 
   /**
-   * Returns the checkbox's text color as an alpha-red-green-blue
+   * Returns the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @return  text RGB color with alpha
@@ -312,7 +305,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   }
 
   /**
-   * Specifies the checkbox's text color as an alpha-red-green-blue
+   * Specifies the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha

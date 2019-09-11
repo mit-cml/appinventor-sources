@@ -29,6 +29,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.Iterator;
+
 /**
  * Property editor for selecting an asset for a property.
  *

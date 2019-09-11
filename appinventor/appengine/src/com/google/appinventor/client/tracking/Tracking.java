@@ -27,6 +27,8 @@ public class Tracking {
       "DeleteProject-YA";
   public static final String PROJECT_ACTION_DELETE_FILE_YA = PROJECT_ACTION_PREFIX +
       "DeleteFile-YA";
+  public static final String PROJECT_ACTION_PREVIEW_FILE_YA = PROJECT_ACTION_PREFIX +
+      "PreviewFile-YA";
   public static final String PROJECT_ACTION_BUILD_BARCODE_YA = PROJECT_ACTION_PREFIX +
       "BuildBarcode-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +

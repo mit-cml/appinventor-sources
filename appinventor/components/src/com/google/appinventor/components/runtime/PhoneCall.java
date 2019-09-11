@@ -19,8 +19,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.PermissionException;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
 
 import android.Manifest;
@@ -59,7 +58,6 @@ import android.telephony.TelephonyManager;
     nonVisible = true,
     iconName = "images/phoneCall.png")
 @SimpleObject
-@UsesPermissions(Manifest.permission.READ_PHONE_STATE)
 public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener, ActivityResultListener {
 
   private static final String LOG_TAG = PhoneCall.class.getSimpleName();
@@ -91,15 +89,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   @SuppressWarnings({"unused"})
   public void Initialize() {
     if (form.doesAppDeclarePermission(Manifest.permission.PROCESS_OUTGOING_CALLS)) {
-      form.askPermission(Manifest.permission.PROCESS_OUTGOING_CALLS, new PermissionResultHandler() {
+      form.askPermission(new BulkPermissionRequest(this, "Initialize",
+          Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE) {
         @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            registerCallStateMonitor();
-          } else {
-            form.dispatchPermissionDeniedEvent(PhoneCall.this, "Initialize",
-                Manifest.permission.PROCESS_OUTGOING_CALLS);
-          }
+        public void onGranted() {
+          registerCallStateMonitor();
         }
       });
     }
@@ -176,7 +170,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               " If status is 1, incoming call is ringing; " +
               "if status is 2, outgoing call is dialled. " +
               "phoneNumber is the incoming/outgoing phone number.")
-  @UsesPermissions(Manifest.permission.PROCESS_OUTGOING_CALLS)
+  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
   public void PhoneCallStarted(int status, String phoneNumber) {
     // invoke the application's "PhoneCallStarted" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status, phoneNumber);
@@ -196,7 +190,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               "if status is 2, incoming call is answered before hanging up; " +
               "if status is 3, outgoing call is hung up. " +
               "phoneNumber is the ended call phone number.")
-  @UsesPermissions(Manifest.permission.PROCESS_OUTGOING_CALLS)
+  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
   public void PhoneCallEnded(int status, String phoneNumber) {
     // invoke the application's "PhoneCallEnded" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status, phoneNumber);
@@ -211,7 +205,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
       description =
           "Event indicating that an incoming phone call is answered. " +
               "phoneNumber is the incoming call phone number.")
-  @UsesPermissions(Manifest.permission.PROCESS_OUTGOING_CALLS)
+  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
   public void IncomingCallAnswered(String phoneNumber) {
     // invoke the application's "IncomingCallAnswered" event handler.
     EventDispatcher.dispatchEvent(this, "IncomingCallAnswered", phoneNumber);

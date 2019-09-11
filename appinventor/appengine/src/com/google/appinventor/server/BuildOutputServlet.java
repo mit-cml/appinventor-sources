@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2013 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -48,13 +48,23 @@ public class BuildOutputServlet extends OdeServlet {
 
   private final FileExporter fileExporter = new FileExporterImpl();
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     // Set a default http header to avoid security vulnerabilities.
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
+    if ("store=1".equals(req.getQueryString())) {  // Play Store companion adds this for Chrome to
+                                                   // do the right thing w.r.t. the download
+      String body = "<!DOCTYPE html><html><head><meta http-equiv=\"refresh\" content=\"0; url=" +
+          req.getRequestURI() + "\" /></head><body></body></html>";
+      resp.setContentLength(body.length());
+      ServletOutputStream os = resp.getOutputStream();
+      os.write(body.getBytes());
+      os.close();
+      return;
+    }
 
     RawFile downloadableFile;
 

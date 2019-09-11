@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
@@ -18,12 +19,14 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -93,6 +96,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
    * Populate the asset tree with files from the project's assets folder.
    */
   private void refreshAssetList() {
+    final Images images = Ode.getImageBundle();
     OdeLog.log("AssetList: refreshing for project " + projectId);
     assetList.clear();
 
@@ -104,8 +108,18 @@ public class AssetList extends Composite implements ProjectChangeListener {
         if (nodeName.length() > 20)
           nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
               nodeName.length());
-        TreeItem treeItem = new TreeItem(
-            new HTML("<span>" + nodeName + "</span>"));
+
+        String fileSuffix = node.getProjectId() + "/" + node.getFileId();
+        String treeItemText = "<span style='cursor: pointer'>";
+        if (StorageUtil.isImageFile(fileSuffix)) {
+          treeItemText += new Image(images.mediaIconImg());
+        } else if (StorageUtil.isAudioFile(fileSuffix )) {
+          treeItemText += new Image(images.mediaIconAudio());
+        } else if (StorageUtil.isVideoFile(fileSuffix )) {
+          treeItemText += new Image(images.mediaIconVideo());
+        }
+        treeItemText += nodeName + "</span>";
+        TreeItem treeItem = new TreeItem(new HTML(treeItemText));
         // keep a pointer from the tree item back to the actual node
         treeItem.setUserObject(node);
         assetList.addItem(treeItem);

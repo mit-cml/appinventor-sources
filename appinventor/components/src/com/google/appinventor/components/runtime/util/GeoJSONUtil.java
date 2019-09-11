@@ -249,8 +249,8 @@ public final class GeoJSONUtil {
     }
   }
 
-  public static Object processGeoJSONFeature(final String logTag, final MapFactory.MapFeatureContainer container,
-      final YailList descriptions) {
+  public static MapFactory.MapFeature processGeoJSONFeature(final String logTag,
+      final MapFactory.MapFeatureContainer container, final YailList descriptions) {
     String type = null;
     YailList geometry = null;
     YailList properties = null;
@@ -347,6 +347,7 @@ public final class GeoJSONUtil {
     if (i.hasNext()) {
       polygon.HolePoints(YailList.makeList(swapNestedCoordinates((LList) ((Pair)coordinates.getCdr()).getCdr())));
     }
+    polygon.Initialize();
     return polygon;
   }
 
@@ -364,6 +365,7 @@ public final class GeoJSONUtil {
     }
     polygon.Points(YailList.makeList(points));
     polygon.HolePoints(YailList.makeList(holePoints));
+    polygon.Initialize();
     return polygon;
   }
 

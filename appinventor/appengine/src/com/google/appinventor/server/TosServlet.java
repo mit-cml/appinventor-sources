@@ -28,7 +28,7 @@ public class TosServlet extends OdeServlet {
   // Logging support
   private static final Logger LOG = Logger.getLogger(TosServlet.class.getName());
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
   private static final long serialVersionUID = 8099788377554316289L;
 
   // An URL to redirect requests to the first time they access App Inventor.

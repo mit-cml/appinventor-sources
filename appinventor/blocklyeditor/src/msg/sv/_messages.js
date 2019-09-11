@@ -52,6 +52,7 @@ Blockly.Msg.sv.switch_language_to_swedish = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = "omvandla"
     Blockly.Msg.LANG_MATH_SINGLE_OP_EXP = "e^"
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = "  ="
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = "Ger kvadratroten ur ett tal."
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = "text"
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = "Lägger till element i slutet av en lista."

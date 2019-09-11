@@ -48,7 +48,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   // Functions
 
   /**
-   * Opens the picker, as though the user clicked on it.
+   * Opens the %type%, as though the user clicked on it.
    */
   @SimpleFunction(description = "Opens the picker, as though the user clicked on it.")
   public void Open() {
@@ -58,7 +58,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   // Events
 
   /**
-   * Event to raise when the button of the component is clicked or the list is shown
+   * Event to raise when the %type% is clicked or the list is shown
    * using the Open block.  This event occurs before the list of items is displayed, and 
    * can be used to prepare the list before it is shown.
    */

@@ -87,16 +87,16 @@ Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
  * Update the eventparam mutation associated with the field's source block.
  */
 Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
-  var text = this.getValue();
+  var text = this.getText();
   if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
     this.sourceBlock_.eventparam = undefined;
-    if (text.indexOf(Blockly.globalNamePrefix + ' ') === 0) {
+    if (text.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + ' ') === 0) {
       this.sourceBlock_.eventparam = null;
       return;
     }
     var i, parent = this.sourceBlock_.getParent();
     while (parent) {
-      var variables = parent.getVars();
+      var variables = parent.declaredVariables ? parent.declaredVariables() : [];
       if (parent.type != 'component_event') {
         for (i = 0; i < variables.length; i++) {
           if (variables[i] == text) {
@@ -205,22 +205,25 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
 
 /**
  * @param block
- * @returns {list} A list of all global and lexical names in scope at the given block.
- *   Global names are listed in sorted order before lexical names in sorted order.
+ * @returns {Array.<Array.<string>>} A list of pairs representing the translated
+ * and untranslated name of every variable in the scope of the current block.
  */
 // [lyn, 11/15/13] Refactored to work on any block
 Blockly.FieldLexicalVariable.getNamesInScope = function (block) {
   var globalNames = Blockly.FieldLexicalVariable.getGlobalNames(); // from global variable declarations
   // [lyn, 11/24/12] Sort and remove duplicates from namespaces
   globalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(globalNames);
+  globalNames = globalNames.map(Blockly.prefixGlobalMenuName).map(function(name) {
+    return [name, name];
+  });
   var allLexicalNames = Blockly.FieldLexicalVariable.getLexicalNamesInScope(block);
   // Return a list of all names in scope: global names followed by lexical ones.
-  return globalNames.map( Blockly.prefixGlobalMenuName ).concat(allLexicalNames);
+  return globalNames.concat(allLexicalNames);
 }
 
 /**
  * @param block
- * @returns {list} A list of all lexical names (in sorted order) in scope at the point of the given block
+ * @returns {Array.<Array.<string>>} A list of all lexical names (in sorted order) in scope at the point of the given block
  *   If Blockly.usePrefixInYail is true, returns names prefixed with labels like "param", "local", "index";
  *   otherwise returns unprefixed names.
  */
@@ -257,9 +260,9 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
             for (i = 0; i < params.length; i++) {
               rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix);
             }
-          } else if (parent.category === "Component" && parent.getEventTypeObject && parent.declaredNames) {
+          } else if (parent.category === "Component" && parent.getEventTypeObject && parent.getParameters) {
             // Parameter names in event handlers
-            params = parent.declaredNames();
+            params = parent.getParameters().map(function(entry) { return entry['name'] });
             for (var j = 0; j < params.length; j++) {
               rememberName(params[j], handlerParamNames, Blockly.handlerParameterPrefix);
             }
@@ -290,8 +293,7 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
   }
 
   if(!Blockly.usePrefixInYail){ // Only a single namespace
-    allLexicalNames = procedureParamNames.concat(handlerParamNames)
-                                         .concat(loopNames)
+    allLexicalNames = procedureParamNames.concat(loopNames)
                                          .concat(rangeNames)
                                          .concat(localNames);
     allLexicalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(allLexicalNames);
@@ -306,13 +308,21 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
            // note: correctly handles case where some prefixes are the same
     allLexicalNames = 
        procedureParamNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.procedureParameterPrefix) )
-       .concat(handlerParamNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.handlerParameterPrefix) ))
        .concat(loopNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.loopParameterPrefix) ))
        .concat(rangeNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.loopRangeParameterPrefix) ))
        .concat(localNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.localNamePrefix) ));
     allLexicalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(allLexicalNames);
   }
-  return allLexicalNames;
+  return allLexicalNames.map(function(name) {
+    return [name, name]
+  }).concat(
+    handlerParamNames.map(function(name) {
+      var translatedName = block.workspace.getTopWorkspace().getComponentDatabase()
+        .getInternationalizedParameterName(name);
+      var prefix = Blockly.usePrefixInYail ? Blockly.handlerParameterPrefix : innermostPrefix[name];
+      return [Blockly.possiblyPrefixMenuNameWith(prefix)(translatedName), name];
+    })
+  );
 }
 
 /**
@@ -322,15 +332,7 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
  */
 Blockly.FieldLexicalVariable.dropdownCreate = function() {
   var variableList = this.getNamesInScope(); // [lyn, 11/10/12] Get all global, parameter, and local names
-  // Variables are not language-specific, use the name as both the user-facing
-  // text and the internal representation.
-  var options = [];
-  // [lyn, 11/10/12] Ensure variable list isn't empty
-  if (variableList.length == 0) variableList = [" "];
-  for (var x = 0; x < variableList.length; x++) {
-    options[x] = [variableList[x], variableList[x]];
-  }
-  return options;
+  return variableList.length == 0 ? [[" ", " "]] : variableList;
 };
 
 /**
@@ -457,8 +459,8 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
         var renamingFunction = block.renameLexicalVar;
         if (renamingFunction) {
             renamingFunction.call(block,
-                                  Blockly.globalNamePrefix + Blockly.menuSeparator + oldName,
-                                  Blockly.globalNamePrefix + Blockly.menuSeparator + newName);
+                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
+                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
         }
       }
     }
@@ -561,7 +563,15 @@ Blockly.LexicalVariable.renameParamRenamingCapturables = function (sourceBlock, 
       throw "Blockly.LexicalVariable.renamingCapturables: oldName " + oldName +
           " is not in declarations {" + namesDeclaredHere.join(',') + "}";
     }
-    var namesDeclaredAbove = Blockly.FieldLexicalVariable.getNamesInScope(sourceBlock);
+    var namesDeclaredAbove = [];
+    Blockly.FieldLexicalVariable.getNamesInScope(sourceBlock)
+      .map(function(pair) {
+        if (pair[0] == pair[1]) {
+          namesDeclaredAbove.push(pair[0]);
+        } else {
+          namesDeclaredAbove.push(pair[0], pair[1]);
+        }
+      });  // uses translated param names
     var declaredNames = namesDeclaredHere.concat(namesDeclaredAbove);
     // Should really check which forbidden names are free vars in the body of declBlock.
     if (declaredNames.indexOf(newName) != -1) {
@@ -890,13 +900,13 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
   }
   // Base case: getters/setters is where all the interesting action occurs
   if ((block.type === "lexical_variable_get") || (block.type === "lexical_variable_set")) {
-    var possiblyPrefixedReferenceName = block.getFieldValue('VAR');
+    var possiblyPrefixedReferenceName = block.getField('VAR').getText();
     var unprefixedPair = Blockly.unprefixName(possiblyPrefixedReferenceName);
     var referencePrefix = unprefixedPair[0];
     var referenceName = unprefixedPair[1];
     var referenceNotInEnv = ((Blockly.usePrefixInYail && (env.indexOf(possiblyPrefixedReferenceName) == -1))
                              || ((!Blockly.usePrefixInYail) && (env.indexOf(referenceName) == -1)))
-    if (!(referencePrefix === Blockly.globalNamePrefix)) {
+    if (!(referencePrefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX)) {
       if ((referenceName === name) && referenceNotInEnv) {
         // if referenceName refers to name and not some intervening declaration, it's a reference to be renamed:
         blocksToRename.push(block);
@@ -917,6 +927,9 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
         // When Blockly.usePrefixInYail is true, only consider names with same prefix to be capturable
         capturables.push(referenceName);
       }
+    }
+    if (block.eventparam) {  // also capture untranslated param names
+      capturables.push(block.eventparam);
     }
   }
   /* console.log("referenceResult from block of type " + block.type + 
@@ -1019,7 +1032,7 @@ Blockly.LexicalVariable.getEventParam = function (block) {
                                 // evaluated it.
   var prefixPair = Blockly.unprefixName(block.getFieldValue("VAR"));
   var prefix = prefixPair[0];
-  if (prefix !== Blockly.globalNamePrefix) {
+  if (prefix !== Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
     var name = prefixPair[1];
     var child = block;
     var parent = block.getParent();
@@ -1043,7 +1056,7 @@ Blockly.LexicalVariable.getEventParam = function (block) {
           || ( parent.type === "local_declaration_statement"
           && parent.getInputTargetBlock('STACK') == child ) // only body is in scope of names
            ) {
-          var params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not localNames_ instance var
+          var params = parent.getVars(); // [lyn, 10/13/13] Names from block, not localNames_ instance var
           if (params.indexOf(name) != -1) {
             return null; // Name is locally bound, not an event parameter.
           }
@@ -1076,6 +1089,16 @@ Blockly.LexicalVariable.eventParamDomToMutation = function (block, xmlElement) {
     if (childNode.nodeName.toLowerCase() == 'eventparam') {
       var untranslatedEventName = childNode.getAttribute('name');
       block.eventparam = untranslatedEventName; // special property viewed by Blockly.LexicalVariable.eventParameterDict
+      if (!Blockly.Events.isEnabled() && !block.isInFlyout) {  // Loading or flyout
+        setTimeout(function() {
+          Blockly.Events.disable();  // we don't want to save this change since it is visual
+          block.fieldVar_.setValue(untranslatedEventName);
+          block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
+          block.eventparam = untranslatedEventName;
+          block.workspace.requestErrorChecking(block);
+          Blockly.Events.enable();
+        }, 0);
+      }
     }
   }
 }

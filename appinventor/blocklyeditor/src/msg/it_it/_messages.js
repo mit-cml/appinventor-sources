@@ -298,6 +298,7 @@ Blockly.Msg.it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = 'è vuoto';
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'confronta testi';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Restituisce un testo che non può essere facilmente individuato \n"

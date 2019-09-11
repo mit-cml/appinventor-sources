@@ -49,6 +49,7 @@ import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
+import com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor;
 import com.google.appinventor.client.widgets.properties.LanguageChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor;
@@ -198,6 +199,8 @@ public class PropertiesUtil {
       return new YoungAndroidGeographicPointPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_GEOJSON_TYPE)) {
       return new YoungAndroidGeoJSONPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON)) {
+      return new SubsetJSONPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_INTEGER)) {
       return new IntegerPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LATITUDE)) {

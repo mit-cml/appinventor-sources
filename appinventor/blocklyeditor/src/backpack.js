@@ -380,13 +380,12 @@ Blockly.Backpack.prototype.removeFromBackpack = function(ids) {
   var p = this;
   this.getContents(function(/** @type {string[]} */ contents) {
     if (contents && contents.length) {
-      for (var i = 0; i < contents.length; i++) {
-        var xml = Blockly.Xml.textToDom(contents[i]);
-        var blockID = xml.firstElementChild.getAttribute("id");
-        if (ids.indexOf(blockID) >= 0) {
-          contents.splice(i, 1);
-          i--;
-        }
+      var blockInBackPack = p.flyout_.workspace_.getTopBlocks(true).map(function(elt) {
+        return elt.id;
+      });
+      var index = blockInBackPack.indexOf(ids[0]);
+      if (index >= 0) {
+        contents.splice(index, 1);
       }
       p.setContents(contents, true);
       if (contents.length === 0) {
@@ -453,7 +452,7 @@ Blockly.Backpack.prototype.openBackpackMenu = function(e) {
     }
   };
   options.push(backpackClear);
-  
+
   Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();

@@ -96,6 +96,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Show All Comments';
     Blockly.Msg.GENERICIZE_BLOCK = 'Make Generic';
     Blockly.Msg.UNGENERICIZE_BLOCK = 'Make Specific';
+    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Download Blocks as PNG';
 
 // Variable renaming.
     Blockly.Msg.CHANGE_VALUE_TITLE = 'Change value:';
@@ -599,6 +600,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = '/reference/blocks/text.html#compare';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'compare texts';
@@ -609,6 +611,10 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'characters in the same order. This is different from ordinary =\n'
         + 'in the case where the text strings are numbers: 123 and 0123 are =\n'
         + 'but not text =.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Tests whether text strings are different, ie., don\'t have the same\n'
+        + 'characters in the same order. This is different from ordinary ≠\n'
+        + 'in the case where the text strings are numbers: 123 and 0123 are text ≠\n'
+        + 'but are mathematically =.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Reports whether text1 is lexicographically greater than text2.\n'
         + 'if one text is the prefix of the other, the shorter text is considered smaller.\n'
         + 'Uppercase characters precede lowercase characters.';
@@ -941,6 +947,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Creates a global variable and gives it the value of the attached blocks.';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'global';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = '/reference/blocks/variables.html#get';
     Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = 'get';
@@ -1300,6 +1307,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = '/reference/components/storage.html#TinyWebDB';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = '/reference/components/storage.html#TinyWebDB';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/storage.html#CloudDB";
+
 //Connectivity components
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "/reference/components/connectivity.html#ActivityStarter";
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = '/reference/components/connectivity.html#ActivityStarter';
@@ -1372,8 +1381,6 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_EVENTS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
     Blockly.Msg.LANG_COMPONENT_BLOCK_FIREBASE_METHODS_HELPURL = "/reference/components/experimental.html#FirebaseDB";
 
-    Blockly.Msg.LANG_COMPONENT_BLOCK_CLOUDDB_HELPURL = "/reference/components/experimental.html#CloudDB";
-
 //Internal components
     Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "/reference/components/internal.html#GameClient";
     Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = '/reference/components/internal.html#GameClient';
@@ -1445,6 +1452,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_YOUR_CODE_IS = "Your code is";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Are you sure you want to delete all %1 of these blocks?";
@@ -1468,10 +1477,15 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.TIME_DURATION = "Duration";
 
 // Connection Dialog Messages
+    Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "15 Rendezvous (please wait)";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHING = "20 Establishing Secure Connection";
     Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "30 Secure Connection Established";
     Blockly.Msg.DIALOG_FOUND_COMPANION = "10 Found the Companion";
 
+//Blockly.Util.Dialog Messages
+    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
+    Blockly.Msg.DIALOG_SUBMIT = 'Submit';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
   }
 };
 
