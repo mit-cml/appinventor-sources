@@ -467,8 +467,10 @@ public class YaVersion {
   // - THERMOMETER_COMPONENT_VERSION was initialized to 1
   // For YOUNG_ANDROID_VERSION 188:
   // - Label component version incremented to 5
+  // For YOUNG_ANDROID_VERSION 189:
+  // - FORM_COMPONENT_VERSION was incremented to 25
 
-  public static final int YOUNG_ANDROID_VERSION = 188;
+  public static final int YOUNG_ANDROID_VERSION = 189;
 
   // ............................... Blocks Language Version Number ...............................
 
