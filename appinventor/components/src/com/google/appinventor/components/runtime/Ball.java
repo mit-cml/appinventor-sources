@@ -136,7 +136,7 @@ public final class Ball extends Sprite {
    *
    * @return  paint RGB color with alpha
    */
-  @SimpleProperty(description = "The color of the Ball")
+  @SimpleProperty(description = "The color of the Ball.")
   public int PaintColor() {
     return paintColor;
   }
@@ -160,6 +160,8 @@ public final class Ball extends Sprite {
     registerChange();
   }
 
+  // We need to override methods defined in the superclass to generate appropriate documentation.
+
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible = false,
@@ -167,44 +169,6 @@ public final class Ball extends Sprite {
       "or the left and top edges (false).")
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
-  }
-
-  // We need to override methods defined in the superclass to generate appropriate documentation.
-
-  @Override
-  @SimpleProperty(description = "Controls whether the Ball moves when its speed is non-zero.")
-  public boolean Enabled() {
-    return super.Enabled();
-  }
-
-  @Override
-  @SimpleProperty(description = "Returns the Ball's heading in degrees above the positive " +
-    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-    "top of the screen.")
-  public double Heading() {
-    return super.Heading();
-  }
-
-  @Override
-  @SimpleProperty(
-      description = "The interval in milliseconds at which the Ball's " +
-      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
-      "then the sprite will move 10 pixels every 50 milliseconds.")
-  public int Interval() {
-    return super.Interval();
-  }
-
-  @Override
-  @SimpleProperty(description = "The speed at which the Ball moves. The Ball moves " +
-    "this many pixels every interval.")
-  public float Speed() {
-    return super.Speed();
-  }
-
-  @Override
-  @SimpleProperty(description = "True if the Ball is visible.")
-  public boolean Visible() {
-    return super.Visible();
   }
 
   @SimpleProperty(
@@ -216,18 +180,11 @@ public final class Ball extends Sprite {
     return super.X();
   }
 
-  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves up. " +
-      "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
+  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves " +
+      "up. If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
       "otherwise, it is for the uppermost point of the Ball.")
   @Override
   public double Y() {
     return super.Y();
-  }
-
-  @SimpleProperty(description = "How the Ball should be layered relative to other Balls and ImageSprites, " +
-      "with higher-numbered layers in front of lower-numbered layers.")
-  @Override
-  public double Z() {
-    return zLayer;
   }
 }

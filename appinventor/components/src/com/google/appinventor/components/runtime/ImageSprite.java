@@ -106,7 +106,7 @@ public class ImageSprite extends Sprite {
    * @return  the path of the sprite's picture
    */
   @SimpleProperty(
-      description = "The picture that determines the sprite's appearence",
+      description = "The picture that determines the sprite's appearance.",
       category = PropertyCategory.APPEARANCE)
   public String Picture() {
     return picturePath;
@@ -213,41 +213,6 @@ public class ImageSprite extends Sprite {
 
   // We need to override methods defined in the superclass to generate appropriate documentation.
 
-  @SimpleProperty(description = "Controls whether the ImageSprite moves when its speed is non-zero.")
-  @Override
-  public boolean Enabled() {
-    return super.Enabled();
-  }
-
-  @Override
-  @SimpleProperty(description = "Returns the ImageSprite's heading in degrees above the positive " +
-    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-    "top of the screen.")
-  public double Heading() {
-    return super.Heading();
-  }
-
-  @SimpleProperty(description = "The interval in milliseconds at which the ImageSprite's " +
-      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
-      "then the ImageSprite will move 10 pixels every 50 milliseconds.")
-  @Override
-  public int Interval() {
-    return super.Interval();
-  }
-
-  @SimpleProperty(description = "The speed at which the ImageSprite moves. The ImageSprite moves " +
-    "this many pixels every interval.")
-  @Override
-  public float Speed() {
-    return super.Speed();
-  }
-
-  @SimpleProperty(description = "True if the ImageSprite is visible.")
-  @Override
-  public boolean Visible() {
-    return super.Visible();
-  }
-
   @SimpleProperty(description = "The horizontal coordinate of the left edge of the ImageSprite, " +
       "increasing as the ImageSprite moves right.")
   public double X() {
@@ -259,12 +224,5 @@ public class ImageSprite extends Sprite {
   @Override
   public double Y() {
     return super.Y();
-  }
-
-  @SimpleProperty(description = "How the ImageSprite should be layered relative to other " +
-      "ImageSprites and Balls, with higher-numbered layers in front of lower-numbered layers.")
-  @Override
-  public double Z() {
-    return zLayer;
   }
 }

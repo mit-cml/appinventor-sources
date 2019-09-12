@@ -150,7 +150,7 @@ public abstract class Sprite extends VisibleComponent
   }
 
   // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z, OriginAtCenter)
-  // The SimpleProperty annotations for the getters appear in the concrete
+  // The SimpleProperty annotations for X and Y appear in the concrete
   // subclasses so each can have its own description. Currently, OriginAtCenter
   // is a property of Ball only.
 
@@ -160,6 +160,7 @@ public abstract class Sprite extends VisibleComponent
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
    */
+  @SimpleProperty(description = "Controls whether the %type% moves and generates collision events.")
   public boolean Enabled() {
     return timerInternal.Enabled();
   }
@@ -184,7 +185,6 @@ public abstract class Sprite extends VisibleComponent
    *
    * @param userHeading degrees above the positive x-axis
    */
-  @SimpleProperty
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_HEADING + "")
@@ -204,6 +204,9 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return degrees above the positive x-axis
    */
+  @SimpleProperty(description = "Returns the %type%'s heading in degrees above the positive " +
+    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
+    "top of the screen.")
   public double Heading() {
     return userHeading;
   }
@@ -213,6 +216,9 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  timer interval in ms
    */
+  @SimpleProperty(description = "The interval in milliseconds at which the %type%'s " +
+      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
+      "then the sprite will move 10 pixels every 50 milliseconds.")
   public int Interval() {
     return timerInternal.Interval();
   }
@@ -250,6 +256,8 @@ public abstract class Sprite extends VisibleComponent
    * @return the magnitude (in pixels) the sprite moves every {@link #interval}
    *         milliseconds.
    */
+  @SimpleProperty(description = "The speed at which the %type% moves. The ImageSprite moves " +
+    "this many pixels every interval if enabled.")
   public float Speed() {
     return speed;
   }
@@ -259,6 +267,7 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  {@code true} if the sprite is visible, {@code false} otherwise
    */
+  @SimpleProperty(description = "True if the %type% is visible.")
   public boolean Visible() {
     return visible;
   }
@@ -351,7 +360,6 @@ public abstract class Sprite extends VisibleComponent
    *        in front of ones with lower numbers; if values are equal for
    *        sprites, either can go in front of the other
    */
-  @SimpleProperty
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = DEFAULT_Z + "")
   public void Z(double layer) {
@@ -360,8 +368,9 @@ public abstract class Sprite extends VisibleComponent
   }
 
   @SimpleProperty(
-      description = "How the sprite should be layered relative to other sprits, " +
+      description = "How the %type% should be layered relative to other Balls and ImageSprites, " +
       "with higher-numbered layers in front of lower-numbered layers.")
+  @DesignerProperty
   public double Z() {
     return zLayer;
   }
