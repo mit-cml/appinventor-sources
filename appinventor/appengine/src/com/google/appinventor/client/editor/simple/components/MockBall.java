@@ -38,6 +38,9 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   private Color color = Color.BLACK;
   private boolean originAtCenter = false;
 
+  int x;
+  int y;
+
   /**
    * Creates a new MockBall component.
    *
@@ -66,9 +69,7 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
     canvas.clear();
     canvas.setFillStyle(color);
     canvas.beginPath();
-    int x = radius;
-    int y = radius;
-    canvas.arc(x, y, radius, 0, Math.PI * 2, true);
+    canvas.arc(radius, radius, radius, 0, Math.PI * 2, true);
     canvas.fill();
   }
 
@@ -116,10 +117,20 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   }
 
   private void setXProperty(String text) {
+    try {
+      x = (int) Math.round(Double.parseDouble(text));
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
     refreshCanvas();
   }
   
   private void setYProperty(String text) {
+    try {
+      y = (int) Math.round(Double.parseDouble(text));
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
     refreshCanvas();
   }
 
@@ -170,32 +181,12 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
 
   @Override
   public int getLeftX() {
-    try {
-      int x = (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_X)));
-      if (originAtCenter) {
-        return x - radius;
-      } else {
-        return x;
-      }
-    } catch (NumberFormatException e) {
-      // If an exception was thrown, the project is unrecoverable.
-      return 0;
-    }
+    return x - getXOffset();
   }
 
   @Override
   public int getTopY() {
-    try {
-      int y =  (int) Math.round(Double.parseDouble(getPropertyValue(PROPERTY_NAME_Y)));
-      if (originAtCenter) {
-        return y - radius;
-      } else {
-        return y;
-      }
-    } catch (NumberFormatException e) {
-      // If an exception was thrown, the project is unrecoverable.
-      return 0;
-    }
+    return y - getYOffset();
   }
 
   @Override
