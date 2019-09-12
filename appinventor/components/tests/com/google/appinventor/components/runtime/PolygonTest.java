@@ -40,6 +40,7 @@ public class PolygonTest extends MapTestBase {
   public void setUp() {
     super.setUp();
     polygon = new Polygon(getMap());
+    polygon.Initialize();
   }
 
   @Test

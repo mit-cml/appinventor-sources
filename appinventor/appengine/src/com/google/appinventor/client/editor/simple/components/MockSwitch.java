@@ -9,6 +9,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -84,7 +85,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       isInitialized = true;
     }
     switchGraphic = new SVGPanel();
-    int switchHeight = Math.round(Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE)));
+    int switchHeight = 14;  // pixels (Android asset is 28 px at 160 dpi)
 
     int switchWidth = (int) Math.round(switchHeight * 2);
     switchGraphic.setWidth(switchWidth + "px");
@@ -98,6 +99,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
     panel.add(switchGraphic);
     panel.setCellWidth(switchGraphic, switchWidth + "px");
     panel.setCellHorizontalAlignment(switchGraphic, HasHorizontalAlignment.ALIGN_RIGHT);
+    panel.setCellVerticalAlignment(switchGraphic, HasVerticalAlignment.ALIGN_MIDDLE);
     toggleWidget = panel;
     refreshForm();
   }

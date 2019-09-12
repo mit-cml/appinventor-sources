@@ -36,6 +36,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapController;
 import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureCollection;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
@@ -114,6 +115,21 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   private ZoomControlView zoomControls = null;
   private float lastAzimuth = Float.NaN;
   private ScaleBarOverlay scaleBar;
+
+  /**
+   * This set stores feature collections that are hidden (Visible = False).
+   */
+  private Set<MapFeatureCollection> hiddenFeatureCollections = new HashSet<>();
+
+  /**
+   * This set stores the features contained within feature collections captured by
+   * {@link #hiddenFeatureCollections}. This is used to test whether the features should be
+   * displayed when toggling their Visible property.
+   */
+  private Set<MapFeature> hiddenFeatures = new HashSet<>();
+
+  private static final float[] ANCHOR_HORIZONTAL = { Float.NaN, 0.0f, 1.0f, 0.5f };
+  private static final float[] ANCHOR_VERTICAL = { Float.NaN, 0.0f, 0.5f, 1.0f };
 
   private static class AppInventorLocationSensorAdapter implements IMyLocationProvider,
       LocationSensor.LocationSensorListener {
@@ -720,6 +736,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public void updateFeaturePosition(MapMarker aiMarker) {
     Marker marker = (Marker)featureOverlays.get(aiMarker);
     if (marker != null) {
+      marker.setAnchor(ANCHOR_HORIZONTAL[aiMarker.AnchorHorizontal()],
+          ANCHOR_VERTICAL[aiMarker.AnchorVertical()]);
       marker.setPosition(new GeoPoint(aiMarker.Latitude(), aiMarker.Longitude()));
       view.invalidate();
     }
@@ -1142,7 +1160,9 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   @Override
   public void showFeature(MapFeature feature) {
-    showOverlay(featureOverlays.get(feature));
+    if (!hiddenFeatures.contains(feature)) {
+      showOverlay(featureOverlays.get(feature));
+    }
   }
 
   protected void showOverlay(OverlayWithIW overlay) {
@@ -1164,6 +1184,35 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   public boolean isFeatureVisible(MapFeature feature) {
     OverlayWithIW overlay = featureOverlays.get(feature);
     return overlay != null && view.getOverlayManager().contains(overlay);
+  }
+
+  @Override
+  public boolean isFeatureCollectionVisible(MapFeatureCollection collection) {
+    return !hiddenFeatureCollections.contains(collection);
+  }
+
+  @Override
+  public void setFeatureCollectionVisible(MapFeatureCollection collection, boolean visible) {
+    if ((!visible && hiddenFeatureCollections.contains(collection))
+        || (visible && !hiddenFeatureCollections.contains(collection))) {
+      // Nothing to do
+      return;
+    }
+    if (visible) {
+      hiddenFeatureCollections.remove(collection);
+      for (MapFeature feature : collection) {
+        hiddenFeatures.remove(feature);
+        if (feature.Visible()) {
+          showFeature(feature);
+        }
+      }
+    } else {
+      hiddenFeatureCollections.add(collection);
+      for (MapFeature feature : collection) {
+        hiddenFeatures.add(feature);
+        hideFeature(feature);
+      }
+    }
   }
 
   @Override

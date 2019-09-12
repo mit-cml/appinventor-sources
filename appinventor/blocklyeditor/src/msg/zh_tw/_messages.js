@@ -481,6 +481,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = '文字比較';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = '判斷左邊文字的首字母順序是否低於右邊文字，\n'

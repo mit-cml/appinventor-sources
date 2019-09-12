@@ -620,6 +620,10 @@
             ;; We have to explicity write #!null here, rather than
             ;; *the-null-value* because that external defintion hasn't happened yet
             (add-to-global-vars '*the-null-value* (lambda () #!null))
+            ;; The Form has been created (we're in its code), so we should run
+            ;; do-after-form-creation thunks now. This is important because we
+            ;; need the theme set before creating components.
+            (for-each force (reverse form-do-after-creation))
             (create-components components)
             ;; These next three clauses need to be in this order:
             ;; Properties can't be set until after the global variables are
@@ -627,7 +631,6 @@
             ;; created: For example, the form's layout can't be changed after the
             ;; components have been installed.  (This gives an error.)
             (init-global-variables (reverse global-vars-to-create))
-            (for-each force (reverse form-do-after-creation))
             ;; Now that all the components are constructed we can call
             ;; their init-thunk and their Initialize methods.  We need
             ;; to do this after all the construction steps because the

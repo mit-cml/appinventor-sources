@@ -26,6 +26,7 @@ public class SettingsConstants {
   // disable someone's account. The URL can be user specific in order to deliver
   // a particular message to a particular user.
   public static final String DISABLED_USER_URL = "DisabledUserUrl";
+  public static final String USER_LAST_LOCALE = "LastLocale";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 
@@ -51,6 +52,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   public static final String YOUNG_ANDROID_SETTINGS_TUTORIAL_URL = "TutorialURL";
+  public static final String YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET = "BlocksToolkit";
   public static final String YOUNG_ANDROID_SETTINGS_ACTIONBAR = "ActionBar";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR = "PrimaryColor";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";

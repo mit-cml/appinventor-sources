@@ -401,8 +401,12 @@ Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, co
   propsToSend.forEach(function(prop) {
     var info = type['properties'][prop];
     if (shouldSendProperty(prop, info)) {
+      var value = componentJson[prop];
+      if (!Boolean(value) && value !== '') {
+        value = info['defaultValue'];
+      }
       code.push(Blockly.Yail.getPropertySetterString(componentName, componentJson['$Type'], prop,
-        componentJson[prop] || info['defaultValue'], componentDb));
+        value, componentDb));
     }
   });
   return code;

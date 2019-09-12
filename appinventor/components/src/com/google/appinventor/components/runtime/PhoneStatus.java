@@ -8,12 +8,14 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
+import android.content.Intent;
+
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 
 import android.os.Build;
@@ -38,10 +40,11 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
-import com.google.appinventor.components.runtime.util.PackageInstaller;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 
 import java.util.Formatter;
@@ -160,14 +163,18 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
     firstSeed = seed;
 
-    /* Setup communications via WebRTC */
-    if (useWebRTC) {
-      WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer);
-      webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, seed);
-      ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
-    } else {
+    /*
+     * Set the HMAC seed, but only if we are doing the legacy HTTP
+     * thing.  Note: Currently we *always* start the HTTP Daemon, even
+     * in WebRTC mode By not setting the seed, we ensure that the HTTP
+     * Daemon cannot accept any blocks
+     *
+     */
+
+    if (!useWebRTC) {
       AppInvHTTPD.setHmacKey(seed);
     }
+
     MessageDigest Sha1;
     try {
       Sha1 = MessageDigest.getInstance("SHA1");
@@ -202,6 +209,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     }
   }
 
+  @SimpleFunction(description = "Start the WebRTC engine")
+  public void startWebRTC(String rendezvousServer, String iceServers) {
+    WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer, iceServers);
+    webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, firstSeed);
+    ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
+  }
+
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")
   public void startHTTPD(boolean secure) {
     ReplForm.topform.startHTTPD(secure);
@@ -226,9 +240,19 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     // t.start();
   }
 
-  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package")
+  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package via the installed browser")
   public void installURL(String url) {
-    PackageInstaller.doPackageInstall(form, url);
+    try {
+      Class<?> clazz = Class.forName("edu.mit.appinventor.companionextras.CompanionExtras");
+      Object o = clazz.getConstructor(Form.class).newInstance(form);
+      Method m = clazz.getMethod("Extra1", String.class);
+      m.invoke(o, url);
+    } catch (Exception e) {
+      // Fall back to using the browser
+      Uri uri = Uri.parse(url + "?store=1");
+      Intent intent = new Intent(Intent.ACTION_VIEW).setData(uri);
+      form.startActivity(intent);
+    }
   }
 
   @SimpleFunction(description = "Really Exit the Application")
@@ -316,6 +340,11 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       return "unknown";
     }
+  }
+
+  @SimpleFunction(description = "Return the ACRA Installation ID")
+  public String InstallationId() {
+    return org.acra.util.Installation.id(Form.getActiveForm());
   }
 
   /* Static context way to get the useWebRTC flag */

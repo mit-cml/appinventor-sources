@@ -1,5 +1,0 @@
-<module>
-<inherits name="com.google.gwt.user.User" />
-<source path="jsonp"/>
-<source path="youngandroid"/>
-</module>

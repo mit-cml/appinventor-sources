@@ -11,16 +11,22 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -70,8 +76,7 @@ public final class BlockSelectorBox extends Box {
   // Starts out not visible. call setVisible(true) to make it visible
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
-  private static final String BUILTIN_DRAWER_NAMES[] = { "Control", "Logic", "Math", "Text",
-      "Lists", "Colors", "Variables", "Procedures" };
+  private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
   private static final Map<String, ImageResource> bundledImages = Maps.newHashMap();
@@ -86,6 +91,25 @@ public final class BlockSelectorBox extends Box {
    *
    * @return block selector box
    */
+
+  /**
+   * getSubsetDrawerNames
+   * @param form
+   * @return array of built-in block drawers for the blocks editor that contain blocks included in
+   * the subset parameter. This keeps empty drawers from displaying in the Blocks Editor
+   */
+  private Set<String> getSubsetDrawerNames(MockForm form) {
+    String subsetJsonString = form.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
+    if (subsetJsonString.length() > 0) {
+      JSONObject subsetJSON = JSONParser.parseStrict(subsetJsonString).isObject();
+      Set<String> subsetDrawers = new HashSet<String>(subsetJSON.get("shownBlockTypes").isObject().keySet());
+      subsetDrawers.retainAll(BUILTIN_DRAWER_NAMES);
+      return subsetDrawers;
+    } else {
+      return BUILTIN_DRAWER_NAMES;
+    }
+  }
+
   public static BlockSelectorBox getBlockSelectorBox() {
     return INSTANCE;
   }
@@ -130,11 +154,11 @@ public final class BlockSelectorBox extends Box {
    *
    * @return tree item
    */
-  public TreeItem getBuiltInBlocksTree() {
+  public TreeItem getBuiltInBlocksTree(MockForm form) {
     initBundledImages();
     TreeItem builtinNode = new TreeItem(new HTML("<span>" + MESSAGES.builtinBlocksLabel()
         + "</span>"));
-    for (final String drawerName : BUILTIN_DRAWER_NAMES) {
+    for (final String drawerName : getSubsetDrawerNames(form)) {
       Image drawerImage = new Image(bundledImages.get(drawerName));
       TreeItem itemNode = new TreeItem(new HTML("<span>" + drawerImage
           + getBuiltinDrawerNames(drawerName) + "</span>"));

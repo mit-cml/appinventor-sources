@@ -1649,7 +1649,9 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // AI2: Add HTMLFormat property
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    5: "noUpgrade"
 
   }, // End Label upgraders
 
@@ -1787,7 +1789,10 @@ Blockly.Versioning.AllUpgradeMaps =
     25: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 27, Added not-equal to text compare block
+    27: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2322,7 +2327,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "SpeechRecognizer": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+    // The Stop method was added. No blocks need to be changed.
+    // The SpeechRecognizer.UseLegacy property was added.
+    2: "noUpgrade"
 
   }, // End SpeechRecognizer upgraders
 
