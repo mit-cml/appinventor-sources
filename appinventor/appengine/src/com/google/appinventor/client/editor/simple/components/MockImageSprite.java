@@ -15,6 +15,8 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
  *
  */
 public final class MockImageSprite extends MockImageBase implements MockSprite {
+  int x;
+  int y;
 
   /**
    * Component type name.
@@ -41,15 +43,12 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
 
   // Support for Z layers
 
-  private void setZProperty(String text) {
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockImageSprite on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
-    }
-  }
-  
   private void setXProperty(String text) {
+    try {
+      x = (int) Math.round(Double.parseDouble(text));
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockImageSprite on the palette
     if (mockCanvas != null) {
@@ -58,6 +57,19 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
   }
   
   private void setYProperty(String text) {
+    try {
+      y = (int) Math.round(Double.parseDouble(text));
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockImageSprite on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
+  }
+
+  private void setZProperty(String text) {
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockImageSprite on the palette
     if (mockCanvas != null) {
