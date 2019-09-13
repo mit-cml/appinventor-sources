@@ -448,16 +448,19 @@
                   <h1>Sensor Components - App Inventor for Android</h1>
                   <h2>Table of Contents</h2>
                   <ul>
-                    <li> <a href="#AccelerometerSensor"> AccelerometerSensor </a>
-                    </li>
+                    <li> <a href="#AccelerometerSensor"> AccelerometerSensor </a> </li>
                     <li> <a href="#BarcodeScanner"> BarcodeScanner </a> </li>
+                    <li> <a href="#Barometer"> Barometer </a></li>
                     <li> <a href="#Clock"> Clock </a> </li>
                     <li> <a href="#GyroscopeSensor"> GyroscopeSensor </a></li>
+                    <li> <a href="#Hygrometer"> Hygrometer </a></li>
+                    <li> <a href="#LightSensor"> LightSensor </a></li>
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
-                    <li> <a href="#OrientationSensor"> OrientationSensor </a>
+                    <li> <a href="#OrientationSensor"> OrientationSensor </a></li>
                     <li> <a href="#Pedometer">Pedometer</a></li>
-                    <li> <a href="#ProximitySensor"> ProximitySensor </a>
+                    <li> <a href="#ProximitySensor"> ProximitySensor </a></li>
+                    <li> <a href="#Thermometer"> Thermometer </a></li>
                     </li>
                   </ul>
 
@@ -535,6 +538,31 @@ none
   <dt><code>DoScan()</code></dt>
   <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
 </dl>
+
+<h2 id="Barometer">Barometer</h2>
+
+<p>A sensor component that can measure the ambient air pressure.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>AirPressure</em></code></dt>
+  <dd>The air pressure in hPa (millibar), if the sensor is available and enabled.</dd>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AirPressureChanged(number pressure)</code></dt>
+  <dd>Called when a change is detected in the air pressure (provided in hPa).</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
@@ -670,6 +698,57 @@ none
 <h3>Methods</h3>
 <p>none</p>
 
+<h2 id="Hygrometer">Hygrometer</h2>
+
+<p>A sensor component that can measure the relative ambient air humidity. Most Android devices do not have this sensor.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code><em>Humidity</em></code></dt>
+  <dd>The relative ambient humidity as a percentage, if the sensor is available and enabled.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>HumidityChanged(number humidity)</code></dt>
+  <dd>Called when a change is detected in the ambient air humidity (expressed as a percentage).</dd>
+</dl>
+
+<h3>Methods</h3>
+none 
+
+<h2 id="LightSensor">LightSensor</h2>
+
+<p>A sensor component that can measure the light level.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code><em>AverageLux</em></code></dt>
+  <dd>The average of the 10 most recent light levels measured, in lux.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code><em>Lux</em></code></dt>
+  <dd>The most recent light level, in lux, if the sensor is available and enabled.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>LightChanged(number lux)</code></dt>
+  <dd>Called when a change is detected in the light level.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
@@ -931,6 +1010,31 @@ none
                   </dl>
 
                   <!-- ===== end: ProximitySensor ==== -->
+
+<h2 id="Thermometer">Thermometer</h2>
+
+<p>A sensor component that can measure the ambient (external) temperature. Most Android devices do not have this sensor.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Specifies whether or not the device has an ambient air pressure sensor.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt><code>RefreshTime</code></dt>
+  <dd>The requested minimum time in milliseconds between changes in air pressure being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+  <dt><code><em>Temperature</em></code></dt>
+  <dd>The temperature in degrees Celsius, if the sensor is available and enabled</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>TemperatureChanged(number temperature)</code></dt>
+  <dd>Called when a change is detected in the temperature (in degrees Celsius).</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
                   <!-- Content ----------------------- --> </div>
               </div>

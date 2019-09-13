@@ -460,8 +460,17 @@ public class YaVersion {
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 186:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 27
+  // For YOUNG_ANDROID_VERSION 187:
+  // - BAROMETER_COMPONENT_VERSION was initialized to 1
+  // - HYGROMETER_COMPONENT_VERSION was initialized to 1
+  // - LIGHTSENSOR_COMPONENT_VERSION was initialized to 1
+  // - THERMOMETER_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 188:
+  // - Label component version incremented to 5
+  // For YOUNG_ANDROID_VERSION 189:
+  // - FORM_COMPONENT_VERSION was incremented to 25
 
-  public static final int YOUNG_ANDROID_VERSION = 186;
+  public static final int YOUNG_ANDROID_VERSION = 189;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -537,6 +546,12 @@ public class YaVersion {
   // - The text compare block was modified to include the not-equal operator
 
   public static final int BLOCKS_LANGUAGE_VERSION = 27;
+
+  // ................................. Target SDK Version Number ..................................
+
+  public static final int TARGET_SDK_VERSION = 28;
+
+  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
 
   // ................................. Component Version Numbers ..................................
 
@@ -799,7 +814,9 @@ public class YaVersion {
   // - Added the AskForPermission method
   // - Added the PermissionDenied event
   // - Added the PermissionGranted event
-  public static final int FORM_COMPONENT_VERSION = 24;
+  // For FORM_COMOPONENT_VERSION 25:
+  // - Sizing default value changed from Fixed to Responsive
+  public static final int FORM_COMPONENT_VERSION = 25;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -862,8 +879,10 @@ public class YaVersion {
   // - The HasMargins property was added
   // For LABEL_COMPONENT_VERSION 4:
   // - The HTML format is defined.
+  // For LABEL_COMPONENT_VERSION 5:
+  // - The HTMLContent property is defined.
 
-  public static final int LABEL_COMPONENT_VERSION = 4;
+  public static final int LABEL_COMPONENT_VERSION = 5;
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
@@ -1231,8 +1250,24 @@ public class YaVersion {
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
-
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
+
+  // For BAROMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For HYGROMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For LIGHTSENSOR_COMPONENT_VERSION 1:
+  // - Initial version
+
+  // For THERMOMETER_COMPONENT_VERSION 1:
+  // - Initial version
+
+  public static final int BAROMETER_COMPONENT_VERSION = 1;
+  public static final int HYGROMETER_COMPONENT_VERSION = 1;
+  public static final int LIGHTSENSOR_COMPONENT_VERSION = 1;
+  public static final int THERMOMETER_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 
@@ -1258,7 +1293,7 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.55 or 2.55u";
+  public static final String PREFERRED_COMPANION = "2.55";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";

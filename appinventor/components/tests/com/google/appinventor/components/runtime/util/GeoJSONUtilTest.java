@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import gnu.lists.FString;
 import gnu.lists.LList;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
@@ -294,7 +295,7 @@ public class GeoJSONUtilTest extends MapTestBase {
   }
 
   @Test
-  public void testWriteFeaturesAsGeoJSON() throws IOException {
+  public void testWriteFeaturesAsGeoJSON() throws IOException, JSONException {
     MarkerTest.createMarker(getMap(), 42.0, -71.0);
     defaultLineEW(new LineString(getMap()));
     defaultPolygon(new Polygon(getMap()));
@@ -308,7 +309,7 @@ public class GeoJSONUtilTest extends MapTestBase {
   }
 
   @Test
-  public void testWriteFeaturesAsGeoJSONNoFeatures() throws IOException {
+  public void testWriteFeaturesAsGeoJSONNoFeatures() throws IOException, JSONException {
     String contents = saveMapToString();
     JSONObject json = new JSONObject(contents);
     assertEquals(0, json.getJSONArray("features").length());

@@ -976,6 +976,19 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 24;
     }
 
+    if (srcCompVersion < 25) {
+      // Sizing default value changed from Fixed to Responsive
+      if (componentProperties.containsKey("Sizing")) {
+        String value = ((ClientJsonString)componentProperties.get("Sizing")).getString();
+        if (value.equals("Responsive")) {
+          componentProperties.remove("Sizing");
+        }
+      } else {
+        componentProperties.put("Sizing", new ClientJsonString("Fixed"));
+      }
+      srcCompVersion = 25;
+    }
+
     return srcCompVersion;
   }
 
@@ -1103,6 +1116,9 @@ public final class YoungAndroidFormUpgrader {
       // The HasMargins property was added. (4)
       componentProperties.put("HasMargins", new ClientJsonString("False"));
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
