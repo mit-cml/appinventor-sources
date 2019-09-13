@@ -323,7 +323,7 @@ open class Notifier: NonvisibleComponent {
       _activeAlert?.stack.addArrangedSubview(button1)
       _activeAlert?.stack.addArrangedSubview(button2)
       if cancelable {
-        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(afterChoosing(sender:)))
+        let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(cancelChoosing(sender:)))
         makeBorder(for: cancel, vertical: false)
         cancel.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
         _activeAlert?.stack.addArrangedSubview(cancel)
@@ -436,6 +436,7 @@ open class Notifier: NonvisibleComponent {
       if let field = button.value as? UITextField {
         AfterTextInput(field.text ?? "")
       } else {
+        TextInputCanceled()
         AfterTextInput("Cancel")
       }
     }
@@ -444,9 +445,17 @@ open class Notifier: NonvisibleComponent {
 
   @objc fileprivate func afterChoosing(sender: UIButton) {
     if let button = sender as? CustomButton, let choice = button.value as? String {
+      if choice == "Cancel" {
+        ChoosingCanceled()
+      }
       AfterChoosing(choice)
     }
     DismissProgressDialog()
+  }
+
+  @objc fileprivate func cancelChoosing(sender: UIButton) {
+    ChoosingCanceled()
+    afterChoosing(sender: sender)
   }
 
   // MARK: Notifier Events
@@ -456,5 +465,13 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func AfterTextInput(_ response: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterTextInput", arguments: response as NSString)
+  }
+
+  @objc open func ChoosingCanceled() {
+    EventDispatcher.dispatchEvent(of: self, called: "ChoosingCanceled")
+  }
+
+  @objc open func TextInputCanceled() {
+    EventDispatcher.dispatchEvent(of: self, called: "TextInputCanceled")
   }
 }
