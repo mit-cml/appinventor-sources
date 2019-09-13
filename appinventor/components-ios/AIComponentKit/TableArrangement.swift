@@ -187,6 +187,9 @@ fileprivate enum ConstraintUpdate {
      */
     for ref in _components.reversed() {
       if let component = ref.value {
+        guard component.Row < rows && component.Column < columns else {
+          continue
+        }
         let cell = _cells[Int(component.Row)][Int(component.Column)]
         if cell.subviews.count == 0 {
           cell.component = component
