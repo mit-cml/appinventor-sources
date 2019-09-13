@@ -77,9 +77,11 @@ let AutomaticHuggingPriority = UILayoutPriority.defaultLow  //UILayoutPriority(2
 public class LinearView: UIView {
   fileprivate var _outer = UIStackView()
   fileprivate var _inner = UIStackView()
+  fileprivate var _scrollview = UIScrollView()
   fileprivate var _horizontalAlign = HorizontalGravity.left
   fileprivate var _verticalAlign = VerticalGravity.top
   fileprivate var _orientation = HVOrientation.vertical
+  fileprivate var _scrollable = false
   fileprivate var _items = [LinearViewItem]()
   fileprivate var _head = HelperView()
   fileprivate var _tail = HelperView()
@@ -90,7 +92,7 @@ public class LinearView: UIView {
   fileprivate var _outerEqualConstraint: NSLayoutConstraint!
   fileprivate var _innerEqualConstraint: NSLayoutConstraint!
   fileprivate var _equalConstraint: NSLayoutConstraint!
-  fileprivate var _backgroundView = UIView()
+  fileprivate var _backgroundView = UIView()  // View for background color
   fileprivate var _fillParentView = UIView()
   private var widthConstraints = [UIView:Length]()
   private var widthFillParent = 0
@@ -103,7 +105,7 @@ public class LinearView: UIView {
     super.init(frame: aRect)
     setup()
   }
-  
+
   required public init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     setup()
@@ -114,6 +116,7 @@ public class LinearView: UIView {
     translatesAutoresizingMaskIntoConstraints = false
     _outer.translatesAutoresizingMaskIntoConstraints = false
     _inner.translatesAutoresizingMaskIntoConstraints = false
+    _scrollview.translatesAutoresizingMaskIntoConstraints = false
     _backgroundView.translatesAutoresizingMaskIntoConstraints = false
     _fillParentView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(_backgroundView)
@@ -147,9 +150,44 @@ public class LinearView: UIView {
   @objc open var scrollEnabled: Bool {
     @objc(isScrollEnabled)
     get {
-      return false
+      return _scrollable
     }
     set(scroll) {
+      if _scrollable != scroll {
+        _scrollable = scroll
+        if _scrollable {
+          _scrollview.isScrollEnabled = true
+          _outer.removeFromSuperview()
+          _scrollview.addSubview(_outer)
+          addSubview(_scrollview)
+          if _orientation == .horizontal {
+            _scrollview.showsHorizontalScrollIndicator = true
+            _scrollview.showsVerticalScrollIndicator = false
+            _outer.heightAnchor.constraint(equalTo: _scrollview.heightAnchor).isActive = true
+            _scrollview.trailingAnchor.constraint(equalTo: _outer.trailingAnchor).isActive = true
+            _scrollview.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+          } else if _orientation == .vertical {
+            _scrollview.showsVerticalScrollIndicator = true
+            _scrollview.showsHorizontalScrollIndicator = false
+            _outer.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+            _outer.trailingAnchor.constraint(equalTo: _scrollview.trailingAnchor).isActive = true
+            _scrollview.bottomAnchor.constraint(equalTo: _outer.bottomAnchor).isActive = true
+            _scrollview.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+          }
+          _scrollview.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+          _scrollview.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+          _scrollview.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+          _scrollview.topAnchor.constraint(equalTo: topAnchor).isActive = true
+          _outer.leadingAnchor.constraint(equalTo: _scrollview.leadingAnchor).isActive = true
+          _outer.topAnchor.constraint(equalTo: _scrollview.topAnchor).isActive = true
+          updatePositioningConstraints()
+          updatePriorities()
+        } else {
+          _scrollview.removeFromSuperview()
+          _outer.removeFromSuperview()
+          addSubview(_outer)
+        }
+      }
     }
   }
 
@@ -438,7 +476,9 @@ public class LinearView: UIView {
     _innerEqualConstraint.identifier = "Inner equality constraint"
     _innerHeadZero.identifier = "Inner head zero"
     _innerTailZero.identifier = "Inner tail zero"
-    addConstraint(_equalConstraint)
+    if _scrollable == false {
+      addConstraint(_equalConstraint)
+    }
     addConstraint(_outerEqualConstraint)
     _inner.addConstraint(_innerEqualConstraint)
   }

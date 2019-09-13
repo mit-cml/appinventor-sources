@@ -137,6 +137,8 @@
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
+		C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */; };
+		C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */; };
 		CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */; };
 		CB8539252075549A009E9030 /* ClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8539242075549A009E9030 /* ClockTests.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
@@ -337,6 +339,8 @@
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C41392912280708000DBA8C6 /* Switch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Switch.swift; sourceTree = "<group>"; };
+		C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalScrollArrangement.swift; sourceTree = "<group>"; };
+		C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalScrollArrangement.swift; sourceTree = "<group>"; };
 		CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Matches+isNumber.swift"; sourceTree = "<group>"; };
 		CB8539242075549A009E9030 /* ClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockTests.swift; sourceTree = "<group>"; };
 		CB9660841F69BC8C009746C3 /* TinyWebDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TinyWebDB.swift; sourceTree = "<group>"; };
@@ -548,6 +552,8 @@
 				06D151E91DC6ED5200FC981E /* HVArrangement.swift */,
 				06B215FB1DB95109000B3366 /* VerticalArrangement.swift */,
 				0680ED581E012A2100732883 /* TableArrangement.swift */,
+				C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */,
+				C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */,
 			);
 			name = layout;
 			sourceTree = "<group>";
@@ -1072,6 +1078,7 @@
 				CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */,
 				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
 				DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */,
+				C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */,
@@ -1103,6 +1110,7 @@
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,
 				06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */,
 				0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */,
+				C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */,
 				0417585720098EE0007D2C31 /* LinkedList.swift in Sources */,
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,

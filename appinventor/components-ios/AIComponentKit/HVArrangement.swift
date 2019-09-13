@@ -24,7 +24,6 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     _orientation = orientation
     super.init(parent)
     _view.translatesAutoresizingMaskIntoConstraints = false
-    _view.scrollEnabled = scrollable
     _view.orientation = orientation
     _view.scrollEnabled = scrollable
     super.setDelegate(self)
