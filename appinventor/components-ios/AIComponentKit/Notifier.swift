@@ -347,11 +347,14 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc open func ShowProgressDialog(_ message: String, _ title: String) {
-    let alert = CustomAlertView(title: title, message: message)
-    let spinner = UIActivityIndicatorView(style: .gray)
-    spinner.startAnimating()
-    alert.stack.addArrangedSubview(spinner)
-    alert.show(animated: true)
+    if _activeAlert == nil {
+      let alert = CustomAlertView(title: title, message: message)
+      let spinner = UIActivityIndicatorView(style: .gray)
+      spinner.startAnimating()
+      alert.stack.addArrangedSubview(spinner)
+      alert.show(animated: true)
+      _activeAlert = alert
+    }
   }
 
   @objc open func ShowTextDialog(_ message: String, _ title: String, _ cancelable: Bool) {
