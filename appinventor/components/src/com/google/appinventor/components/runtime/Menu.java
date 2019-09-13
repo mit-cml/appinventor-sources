@@ -27,8 +27,8 @@ import java.util.List;
     "Menu is located on the action bar and is not accessible in classic theme.",
     showOnPalette = false)
 @SimpleObject
-public class Menu implements Component, ComponentContainer, OnPrepareOptionsMenuListener,
-    OnOptionsItemSelectedListener, OnClearListener {
+public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuListener,
+    OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener, OnClearListener {
   private static final String LOG_TAG = "Menu";
 
   private ComponentContainer container;
@@ -50,9 +50,14 @@ public class Menu implements Component, ComponentContainer, OnPrepareOptionsMenu
     items = new ArrayList<>();
     createAboutItem();
     createStopItem();
+    container.$form().registerForOnCreateOptionsMenu(this);
     container.$form().registerForOnPrepareOptionsMenu(this);
     container.$form().registerForOnOptionsItemSelected(this);
     container.$form().registerForOnClear(this);
+  }
+
+  public void onCreateOptionsMenu(android.view.Menu menu) {
+    this.menu = menu;
   }
 
   @Override
