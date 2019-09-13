@@ -38,7 +38,7 @@ open class PolygonMarker: Marker {
     overlay = _overlay
   }
 
-  open func Initialize() {
+  @objc open func Initialize() {
     makeShape()
     initialized = true
   }
@@ -58,13 +58,13 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open override var Description: String {
+  @objc open override var Description: String {
     didSet {
       _marker.Description = _description
     }
   }
 
-  open override var EnableInfobox: Bool {
+  @objc open override var EnableInfobox: Bool {
     get {
       return _calloutEnabled
     }
@@ -73,7 +73,7 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open var FillColor: Int32 {
+  @objc open var FillColor: Int32 {
     get {
       return _fillColor
     }
@@ -83,7 +83,7 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open override var StrokeColor: Int32 {
+  @objc open override var StrokeColor: Int32 {
     get {
       return _strokeColor
     }
@@ -93,7 +93,7 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open override var StrokeWidth: Int32 {
+  @objc open override var StrokeWidth: Int32 {
     get {
       return _strokeWidth
     }
@@ -103,13 +103,13 @@ open class PolygonMarker: Marker {
     }
   }
 
-  open override var Title: String? {
+  @objc open override var Title: String? {
     didSet {
       _marker.Title = _title
     }
   }
 
-  open override var Visible: Bool {
+  @objc open override var Visible: Bool {
     didSet {
       _visible = Visible
       _overlay?.visible = Visible
@@ -157,11 +157,11 @@ open class PolygonMarker: Marker {
   internal func makeShape() {}
 
   // MARK: shared methods
-  open override func HideInfobox() {
+  @objc open override func HideInfobox() {
     _marker.HideInfobox()
   }
   
-  open override func ShowInfobox() {
+  @objc open override func ShowInfobox() {
     _marker.SetLocation(Centroid.latitude, Centroid.longitude)
     _map?.removeFeature(_marker)
     _map?.addFeature(_marker)

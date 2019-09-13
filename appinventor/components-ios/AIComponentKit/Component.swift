@@ -90,7 +90,7 @@ public enum ToastLength: Int32 {
   case long
 }
 
-public enum Direction: Int32 {
+@objc public enum Direction: Int32 {
   case north = 1
   case northeast = 2
   case east = 3

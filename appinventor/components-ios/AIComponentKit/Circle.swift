@@ -18,7 +18,7 @@ let kNumCircleEdges = 60
   }
 
   // MARK: properties
-  open var Latitude: Double {
+  @objc open var Latitude: Double {
     get {
       return overlay?.coordinate.latitude ?? 0
     }
@@ -34,7 +34,7 @@ let kNumCircleEdges = 60
     }
   }
 
-  open var Longitude: Double {
+  @objc open var Longitude: Double {
     get {
       return overlay?.coordinate.longitude ?? 0
     }
@@ -50,7 +50,7 @@ let kNumCircleEdges = 60
     }
   }
 
-  open var Radius: Double {
+  @objc open var Radius: Double {
     get {
       return _radius
     }
@@ -63,7 +63,7 @@ let kNumCircleEdges = 60
   }
 
   // MARK: methods
-  open override func DistanceToFeature(_ mapFeature: MapFeatureBase, _ centroids: Bool) -> Double {
+  @objc open override func DistanceToFeature(_ mapFeature: MapFeatureBase, _ centroids: Bool) -> Double {
     if centroids {
       return super.DistanceToFeature(mapFeature, true)
     } else {
@@ -71,11 +71,11 @@ let kNumCircleEdges = 60
     }
   }
 
-  open override func DistanceToPoint(_ latitude: Double, _ longitude: Double, _ centroids: Bool) -> Double {
+  @objc open override func DistanceToPoint(_ latitude: Double, _ longitude: Double, _ centroids: Bool) -> Double {
     return max(super.DistanceToPoint(latitude, longitude, false) - (centroids ? 0: Radius), 0)
   }
 
-  public func SetLocation(_ latitude: Double, _ longitude: Double) {
+  @objc public func SetLocation(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
       _container?.form.dispatchErrorOccurredEvent(self, "SetLocation", ErrorMessage.ERROR_INVALID_LATITUDE.code, ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return

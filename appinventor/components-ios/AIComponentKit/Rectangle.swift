@@ -18,19 +18,19 @@ import GEOSwift
   }
 
   // MARK: properties
-  open var Bounds: [[Double]] {
+  @objc open var Bounds: [[Double]] {
     get {
       return [[_north, _west], [_south, _east]]
     }
   }
 
-  open var Center: [Double] {
+  @objc open var Center: [Double] {
     get {
       return [Centroid.latitude, Centroid.longitude]
     }
   }
 
-  public var EastLongitude: Double {
+  @objc public var EastLongitude: Double {
     get {
       return _east
     }
@@ -44,7 +44,7 @@ import GEOSwift
     }
   }
 
-  public var NorthLatitude: Double {
+  @objc public var NorthLatitude: Double {
     get {
       return _north
     }
@@ -58,7 +58,7 @@ import GEOSwift
     }
   }
 
-  public var SouthLatitude: Double {
+  @objc public var SouthLatitude: Double {
     get {
       return _south
     }
@@ -72,7 +72,7 @@ import GEOSwift
     }
   }
 
-  public var WestLongitude: Double {
+  @objc public var WestLongitude: Double {
     get {
       return _west
     }
@@ -87,7 +87,7 @@ import GEOSwift
   }
 
   // MARK: Methods
-  open func SetCenter(_ latitude: Double, _ longitude: Double) {
+  @objc open func SetCenter(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
       _map?.form.dispatchErrorOccurredEvent(self, "SetCenter", ErrorMessage.ERROR_INVALID_LATITUDE.code, ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return

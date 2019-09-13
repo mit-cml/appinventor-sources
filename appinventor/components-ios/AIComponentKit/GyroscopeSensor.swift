@@ -21,13 +21,13 @@ open class GyroscopeSensor: NonvisibleComponent {
     Enabled = true
   }
 
-  open var Available: Bool {
+  @objc open var Available: Bool {
     get {
       return _motion.isGyroAvailable
     }
   }
 
-  open var Enabled: Bool {
+  @objc open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -43,19 +43,19 @@ open class GyroscopeSensor: NonvisibleComponent {
     }
   }
 
-  open var XAngularVelocity: Float32 {
+  @objc open var XAngularVelocity: Float32 {
     get {
       return _xAngularVelocity
     }
   }
 
-  open var YAngularVelocity: Float32 {
+  @objc open var YAngularVelocity: Float32 {
     get {
       return _yAngularVelocity
     }
   }
 
-  open var ZAngularVelocity: Float32 {
+  @objc open var ZAngularVelocity: Float32 {
     get {
       return _zAngularVelocity
     }
@@ -71,12 +71,15 @@ open class GyroscopeSensor: NonvisibleComponent {
       changed = significant(&_zAngularVelocity, gyroData.rotationRate.z) || changed
       if changed
          {
-        GyroscopeChanged(xAngularVelocity: _xAngularVelocity, yAngularVelocity: _yAngularVelocity, zAngularVelocity: _zAngularVelocity, timestamp: UInt64(gyroData.timestamp * 10E9))
+        GyroscopeChanged(_xAngularVelocity, _yAngularVelocity, _zAngularVelocity, UInt64(gyroData.timestamp * 10E9))
       }
     }
   }
 
-  open func GyroscopeChanged(xAngularVelocity: Float32, yAngularVelocity: Float32, zAngularVelocity: Float32, timestamp: UInt64) {
+  @objc open func GyroscopeChanged(_ xAngularVelocity: Float32,
+                                   _ yAngularVelocity: Float32,
+                                   _ zAngularVelocity: Float32,
+                                   _ timestamp: UInt64) {
     EventDispatcher.dispatchEvent(of: self, called: "GyroscopeChanged", arguments: NSNumber(value: xAngularVelocity)
       , NSNumber(value: yAngularVelocity), NSNumber(value: zAngularVelocity), NSNumber(value: timestamp))
 

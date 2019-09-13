@@ -226,7 +226,7 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     EventDispatcher.dispatchEvent(of: self, called: "NoLongerCollidingWith", arguments: other as AnyObject)
   }
   
-  open func EdgeReached(_ edge: Direction) {
+  @objc open func EdgeReached(_ edge: Direction) {
     EventDispatcher.dispatchEvent(of: self, called: "EdgeReached", arguments: edge.rawValue as NSNumber)
   }
   

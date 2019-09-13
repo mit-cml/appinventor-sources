@@ -35,7 +35,7 @@ class Ev3Motors: NonvisibleComponent {
   /* BluetoothClient is unnecessary for Ev3Motors in iOS. The user just needs to connect
      the phone's bluetooth to the EV3 in settings before launching the app.
    */
-  open var BluetoothClient: BluetoothClient {
+  @objc open var BluetoothClient: BluetoothClient {
     get {
       return _bluetoothClient!
     }
@@ -44,7 +44,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var MotorPorts: String {
+  @objc open var MotorPorts: String {
     get {
       return _motorPorts
     }
@@ -60,7 +60,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var WheelDiameter: Double {
+  @objc open var WheelDiameter: Double {
     get {
       return _wheelDiameter
     }
@@ -69,7 +69,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var ReverseDirection: Bool {
+  @objc open var ReverseDirection: Bool {
     get {
       return _directionReversed
     }
@@ -78,7 +78,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var EnableSpeedRegulation: Bool {
+  @objc open var EnableSpeedRegulation: Bool {
     get {
       return _regulationEnabled
     }
@@ -87,7 +87,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var StopBeforeDisconnect: Bool {
+  @objc open var StopBeforeDisconnect: Bool {
     get {
       return _stopBeforeDisconnect
     }
@@ -96,7 +96,7 @@ class Ev3Motors: NonvisibleComponent {
     }
   }
   
-  open var TachoCountChangedEventEnabled: Bool {
+  @objc open var TachoCountChangedEventEnabled: Bool {
     get {
       return _tachoCountChangedEventEnabled
     }
@@ -109,7 +109,7 @@ class Ev3Motors: NonvisibleComponent {
 
   /*   Start to rotate the motors.
    */
-  open func RotateIndefinitely (_ power: Int32) {
+  @objc open func RotateIndefinitely (_ power: Int32) {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
     if _regulationEnabled {
       command.setOutputPower(power, _portsValue)
@@ -122,7 +122,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /* Rotate the motors in a number of tacho counts.
    */
-  open func RotateInTachoCounts (_ power: Int32, _ tachoCounts: Int32, _ useBrake: Bool) {
+  @objc open func RotateInTachoCounts (_ power: Int32, _ tachoCounts: Int32, _ useBrake: Bool) {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
     if _regulationEnabled {
       command.setOutputStepSpeed(power, 0, tachoCounts, 0, useBrake, _portsValue)
@@ -135,7 +135,7 @@ class Ev3Motors: NonvisibleComponent {
  
   /*   Rotate the motors in a period of time.
    */
-  open func RotateInDuration (_ power: Int32, _ milliseconds: Int32, _ useBrake: Bool) {
+  @objc open func RotateInDuration (_ power: Int32, _ milliseconds: Int32, _ useBrake: Bool) {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
 //    command.rotateInDuration(power, milliseconds, useBrake, _portsValue)
     if _regulationEnabled {
@@ -149,14 +149,14 @@ class Ev3Motors: NonvisibleComponent {
 
   /*   Rotate the motors in a distance.
    */
-  open func RotateInDistance (_ power: Int32, _ distance: Int32, _ useBrake: Bool) {
+  @objc open func RotateInDistance (_ power: Int32, _ distance: Int32, _ useBrake: Bool) {
     let tachoCounts = Int32(Double(distance) * 360.0 / _wheelDiameter / Double.pi)
     RotateInTachoCounts(power, tachoCounts, useBrake)
   }
   
   /*   Start to rotate the motors at the same speed.
    */
-  open func RotateSyncIndefinitely (_ power: Int32, _ turnRatio: Int32) {
+  @objc open func RotateSyncIndefinitely (_ power: Int32, _ turnRatio: Int32) {
     if _portsValue != 0 {
       if isOneShotInteger(_portsValue) {
         RotateIndefinitely(power)
@@ -175,7 +175,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*    Rotate the motors at the same speed for a distance in cm.
    */
-  open func RotateSyncInDistance (_ power: Int32, _ distance: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
+  @objc open func RotateSyncInDistance (_ power: Int32, _ distance: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
     let tachoCounts = Int32(Double(distance) * 360.0 / _wheelDiameter / Double.pi)
     if _portsValue != 0 {
       if isOneShotInteger(_portsValue) {
@@ -191,7 +191,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*   Rotate the motors at the same speed in a period of time.
    */
-  open func RotateSyncInDuration (_ power: Int32, _ milliseconds: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
+  @objc open func RotateSyncInDuration (_ power: Int32, _ milliseconds: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
     if _portsValue != 0 {
       if isOneShotInteger(_portsValue) {
         RotateInDuration(power, milliseconds, useBrake)
@@ -206,7 +206,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*   Rotate the motors at the same speed in a number of tacho counts.
    */
-  open func RotateSyncInTachoCounts (_ power: Int32, _ tachoCounts: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
+  @objc open func RotateSyncInTachoCounts (_ power: Int32, _ tachoCounts: Int32, _ turnRatio: Int32, _ useBrake: Bool) {
     if _portsValue != 0 {
       if isOneShotInteger(_portsValue) {
         RotateInTachoCounts(power, tachoCounts, useBrake)
@@ -221,7 +221,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*   Stop the motors of the robot.
    */
-  open func Stop (_ useBrake: Bool) {
+  @objc open func Stop (_ useBrake: Bool) {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
     command.stopMotor(useBrake, _portsValue)
     _connection.write(command)
@@ -229,7 +229,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*   Toggle the direction of motors.
    */
-  open func ToggleDirection () {
+  @objc open func ToggleDirection () {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
     command.toggleDirection(_portsValue)
     _connection.write(command)
@@ -237,7 +237,7 @@ class Ev3Motors: NonvisibleComponent {
   
   /*  Set the current tacho count to zero.
    */
-  open func ResetTachoCount () {
+  @objc open func ResetTachoCount () {
     let command = Ev3Command(commandType: CommandType.directNoReply, globalSize: 0, localSize: 0)
     command.resetTachoCount(_portsValue)
     _connection.write(command)
@@ -265,7 +265,7 @@ class Ev3Motors: NonvisibleComponent {
   /*  Get the current tacho count.
    */
   // TODO: Fix because this always returns 0
-  open func GetTachoCount () -> Int32 {
+  @objc open func GetTachoCount () -> Int32 {
     getTacho({ (count: Data?) in
       if let data = count {
         let res = data.scanValue(at: 0, endianess: .LittleEndian) as UInt32

@@ -15,7 +15,7 @@ import GEOSwift
   }
 
   // MARK: properties
-  open var HolePoints: [Any] {
+  @objc open var HolePoints: [Any] {
     get {
       return _holePoints.array
     }
@@ -28,7 +28,7 @@ import GEOSwift
     }
   }
 
-  open var HolePointsFromString: String {
+  @objc open var HolePointsFromString: String {
     get {
       return ""
     }

@@ -107,7 +107,7 @@ open class PasswordTextBox: TextBoxBase {
     super.init(parent, _adapter)
   }
 
-  open var PasswordVisible: Bool = false {
+  @objc open var PasswordVisible: Bool = false {
     didSet {
       _adapter.togggleVisible(PasswordVisible)
       // maintain proper type face

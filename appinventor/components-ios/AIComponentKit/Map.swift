@@ -910,7 +910,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     mapView.removeOverlay(oldShape)
   }
 
-  open func FeatureFromDescription(_ description: [Any]) -> Any  {
+  @objc open func FeatureFromDescription(_ description: [Any]) -> Any  {
     do {
       return try GeoJSONUtil.processGeoJSONFeature(container: self, description: description)
     } catch let err {
@@ -922,7 +922,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
 
-  open func LoadFromURL(_ url: String) {
+  @objc open func LoadFromURL(_ url: String) {
     Alamofire.request(url).validate(statusCode: 200...200).responseJSON { response in
       switch response.result {
       case .success(let data):

@@ -313,7 +313,7 @@ open class Notifier: NonvisibleComponent {
     Notifier.notices.addAlert(notice, for: duration)
   }
 
-  open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
+  @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
     if _activeAlert == nil {
       _activeAlert = CustomAlertView(title: title, message: message)
       let button1 = makeButton(button1text, with: button1text as NSString, action: #selector(afterChoosing(sender:)))

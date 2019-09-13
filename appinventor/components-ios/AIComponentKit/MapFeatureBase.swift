@@ -127,7 +127,7 @@ import GEOSwift
     set(enabled) {}
   }
 
-  open var StrokeColor: Int32 {
+  @objc open var StrokeColor: Int32 {
     get {
       guard let borderColor = _view.layer.borderColor else {
         return 0
@@ -138,7 +138,7 @@ import GEOSwift
     }
   }
 
-  open var StrokeWidth: Int32 {
+  @objc open var StrokeWidth: Int32 {
     get {
       return Int32(_view.layer.borderWidth)
     }
@@ -203,7 +203,7 @@ import GEOSwift
   }
 
   // MARK: Methods
-  open func DistanceToFeature(_ mapFeature: MapFeatureBase, _ centroids: Bool) -> Double {
+  @objc open func DistanceToFeature(_ mapFeature: MapFeatureBase, _ centroids: Bool) -> Double {
     if centroids {
       return distance(from: Centroid, to: mapFeature.Centroid)
     } else {
@@ -217,7 +217,7 @@ import GEOSwift
     }
   }
 
-  open func DistanceToPoint(_ latitude: Double, _ longitude: Double, _ centroids: Bool) -> Double {
+  @objc open func DistanceToPoint(_ latitude: Double, _ longitude: Double, _ centroids: Bool) -> Double {
     let target = CLLocationCoordinate2DMake(latitude,longitude)
     if centroids {
       if let thisShape = _shape, let point = Waypoint(latitude: latitude, longitude: longitude) {
@@ -231,9 +231,9 @@ import GEOSwift
     }
   }
 
-  open func HideInfobox() {}
+  @objc open func HideInfobox() {}
 
-  open func ShowInfobox() {}
+  @objc open func ShowInfobox() {}
 
   // MARK: drag helpers
   open func startDrag() {

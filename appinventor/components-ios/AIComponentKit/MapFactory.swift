@@ -56,7 +56,7 @@ public protocol HasStroke {
   var StrokeWidth: Int32 { get set }
 }
 
-public protocol MapFeatureCollection: MapFeatureContainer {
+@objc public protocol MapFeatureCollection: MapFeatureContainer {
   var Source: String { get set }
   var Visible: Bool { get set }
 

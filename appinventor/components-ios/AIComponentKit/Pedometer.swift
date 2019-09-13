@@ -115,13 +115,13 @@ open class Pedometer: NonvisibleComponent {
               _foundNonStep = false
             }
             _numWalkingSteps += 1
-            WalkStep(steps: _numWalkingSteps, distance: _totalDistance)
+            WalkStep(_numWalkingSteps, _totalDistance)
             _totalDistance += StrideLength
           } else {
             _foundNonStep = true
           }
           _numRawSteps += 1
-          SimpleStep(steps: _numRawSteps, distance: _totalDistance)
+          SimpleStep(_numRawSteps, _totalDistance)
           _foundValley = false
         }
       }
@@ -171,11 +171,11 @@ open class Pedometer: NonvisibleComponent {
     return  (_winPos + kWindowSize / 2) % kWindowSize
   }
 
-  @objc open func SimpleStep(steps: Int32, distance: Double) {
+  @objc open func SimpleStep(_ steps: Int32, _ distance: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "SimpleStep", arguments: NSNumber(value: steps), NSNumber(floatLiteral: distance))
   }
 
-  @objc open func WalkStep(steps: Int32, distance: Double) {
+  @objc open func WalkStep(_ steps: Int32, _ distance: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "WalkStep", arguments: NSNumber(value: steps), NSNumber(floatLiteral: distance))
   }
 
@@ -257,7 +257,7 @@ open class Pedometer: NonvisibleComponent {
 
   @objc open func StoppedMoving() {}
 
-  @objc open func UseGPS(_ gps: Bool) {}
+  @objc open var UseGPS: Bool = false
 
   @objc open func CalibrationFailed() {}
 

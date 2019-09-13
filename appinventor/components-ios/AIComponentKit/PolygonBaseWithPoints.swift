@@ -126,7 +126,7 @@ public struct NestedArray {
   }
 
   // MARK: properties
-  open var Points: [Any] {
+  @objc open var Points: [Any] {
     get {
       return _points.array
     }
@@ -139,7 +139,7 @@ public struct NestedArray {
     }
   }
 
-  open var PointsFromString: String {
+  @objc open var PointsFromString: String {
     get {
       return ""
     }
