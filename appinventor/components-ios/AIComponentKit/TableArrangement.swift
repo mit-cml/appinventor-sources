@@ -4,8 +4,8 @@
 import Foundation
 
 // Custom priorities for TableCellCollection
-let DefaultTableSizingPriority = UILayoutPriority(8)
-let CellSizingPriority = UILayoutPriority(9)
+let DefaultTableSizingPriority = UILayoutPriority(500)
+let CellSizingPriority = UILayoutPriority(501)
 
 /**
  * A struct used to hold a weak reference to an object
@@ -34,13 +34,24 @@ fileprivate enum ConstraintUpdate {
  * A view used to represent a cell in TableArrangement
  * Handles adding and removing constraints for a view
  */
-fileprivate class TableCell: UIView {
+@objc public class TableCell: UIView {
   /**
    * The width and height constraints for the component's view
    * We store these so that they can be removed and added as necessary without breaking constraints
    */
   private var _heightConstraint: NSLayoutConstraint? = nil
   private var _widthConstraint: NSLayoutConstraint? = nil
+
+  init() {
+    super.init(frame: .zero)
+    translatesAutoresizingMaskIntoConstraints = false
+    setContentHuggingPriority(.defaultHigh, for: .horizontal)
+    setContentHuggingPriority(.defaultHigh, for: .vertical)
+  }
+
+  required public init?(coder aDecoder: NSCoder) {
+    fatalError()
+  }
 
   /**
    * The component that should be displayed for this cell
@@ -113,7 +124,7 @@ fileprivate class TableCell: UIView {
 /**
  * This class is used to manage all cells for a TableArrangement
  */
-fileprivate class TableCellCollection: UIView {
+@objc public class TableCellCollection: UIView {
   // stores all the cells for the TableArrangement. Mapped from components
   private var _cells = [[TableCell]]()
   // stores all the components for the TableArrangement, including ones that are not visible
@@ -162,7 +173,6 @@ fileprivate class TableCellCollection: UIView {
       var row = [TableCell]()
       for _ in 0..<columns {
         let cell = TableCell()
-        cell.translatesAutoresizingMaskIntoConstraints = false
         row.append(cell)
         addSubview(cell)
       }
@@ -215,31 +225,46 @@ fileprivate class TableCellCollection: UIView {
         }
       }
     }
+
+    _initialized = true
+    if _automaticWidth {
+      addConstraints(_rightConstraints)
+    }
+    if _automaticHeight {
+      addConstraints(_bottomConstraints)
+    }
   }
 
-  /**
-   * These functions are used to update the height and width respectively
-   * Should only be called after the view has been initialized
-   * If there are no components, the automatic width and height should be 100
-   */
-  fileprivate func updateHeight(from oldVal: Int32, to newVal: Int32) {
-    if oldVal != newVal {
-      let constraints = _components.count == 0 ? [_emptyConstraints[0]]: _bottomConstraints
-      if oldVal == kLengthPreferred {
-        removeConstraints(constraints)
-      } else if newVal == kLengthPreferred {
-        addConstraints(constraints)
+  private var _initialized = false
+  private var _automaticWidth = false
+  private var _automaticHeight = false
+
+  var automaticWidth: Bool {
+    get {
+      return _automaticWidth
+    }
+    set(newValue) {
+      _automaticWidth = newValue
+      guard _initialized else { return }
+      if newValue {
+        addConstraints(_rightConstraints)
+      } else {
+        removeConstraints(_rightConstraints)
       }
     }
   }
 
-  fileprivate func updateWidth(from oldVal: Int32, to newVal: Int32) {
-    if oldVal != newVal {
-      let constraints = _components.count == 0 ? [_emptyConstraints[1]]: _rightConstraints
-      if oldVal == kLengthPreferred {
-        removeConstraints(constraints)
-      } else if newVal == kLengthPreferred {
-        addConstraints(constraints)
+  var automaticHeight: Bool {
+    get {
+      return _automaticHeight
+    }
+    set(newValue) {
+      _automaticHeight = newValue
+      guard _initialized else { return }
+      if newValue {
+        addConstraints(_bottomConstraints)
+      } else {
+        removeConstraints(_bottomConstraints)
       }
     }
   }
@@ -258,9 +283,20 @@ fileprivate class TableCellCollection: UIView {
 
   // a helper for adding a constraint with a custom priority
   private func constrain(_ anchor: NSLayoutDimension, to otherAnchor: NSLayoutDimension, with priority: UILayoutPriority, for parent: UIView) {
-    let constraint = priority == CellSizingPriority ? anchor.constraint(greaterThanOrEqualTo: otherAnchor): anchor.constraint(equalTo: otherAnchor)
+    if priority == CellSizingPriority {
+      let constraint = anchor.constraint(greaterThanOrEqualTo: otherAnchor)
+      constraint.priority = priority
+      parent.addConstraint(constraint)
+    }
+    let constraint = anchor.constraint(equalTo: otherAnchor)
     constraint.priority = priority
     parent.addConstraint(constraint)
+  }
+
+  @objc override public var intrinsicContentSize: CGSize {
+    get {
+      return CGSize(width: 100, height: 100)
+    }
   }
 }
 
@@ -274,32 +310,36 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     _view.translatesAutoresizingMaskIntoConstraints = false
     super.setDelegate(self)
     parent.add(self)
+    self.Height = kLengthPreferred
+    self.Width = kLengthPreferred
   }
 
   @objc open func Initialize() {
     _view.initialize()
-    if Height == kLengthPreferred {
-      _view.updateHeight(from: 0, to: kLengthPreferred)
-    }
-    if Width == kLengthPreferred {
-      _view.updateWidth(from: 0, to: kLengthPreferred)
-    }
     _initialized = true
   }
 
   @objc open var Columns: Int32 = 2
 
   @objc open override var Height: Int32 {
-    didSet(height) {
-      _view.updateHeight(from: height, to: Height)
+    get {
+      return super.Height
+    }
+    set(newHeight) {
+      super.Height = newHeight
+      _view.automaticHeight = newHeight == kLengthPreferred
     }
   }
 
   @objc open var Rows: Int32 = 2
 
   @objc open override var Width: Int32 {
-    didSet(width) {
-      _view.updateWidth(from: width, to: Width)
+    get {
+      return super.Width
+    }
+    set(newWidth) {
+      super.Width = newWidth
+      _view.automaticWidth = newWidth == kLengthPreferred
     }
   }
 
