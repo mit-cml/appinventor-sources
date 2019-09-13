@@ -438,7 +438,7 @@ public class Form extends AppInventorCompatActivity
       ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
-    Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
+    Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
@@ -1696,7 +1696,7 @@ public class Form extends AppInventorCompatActivity
    * @param
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
-      defaultValue = "Fixed")
+      defaultValue = "Responsive", alwaysSend = true)
   @SimpleProperty(userVisible = false,
   // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
   description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +

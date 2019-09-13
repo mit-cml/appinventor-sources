@@ -467,8 +467,10 @@ public class YaVersion {
   // - THERMOMETER_COMPONENT_VERSION was initialized to 1
   // For YOUNG_ANDROID_VERSION 188:
   // - Label component version incremented to 5
+  // For YOUNG_ANDROID_VERSION 189:
+  // - FORM_COMPONENT_VERSION was incremented to 25
 
-  public static final int YOUNG_ANDROID_VERSION = 188;
+  public static final int YOUNG_ANDROID_VERSION = 189;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -812,7 +814,9 @@ public class YaVersion {
   // - Added the AskForPermission method
   // - Added the PermissionDenied event
   // - Added the PermissionGranted event
-  public static final int FORM_COMPONENT_VERSION = 24;
+  // For FORM_COMOPONENT_VERSION 25:
+  // - Sizing default value changed from Fixed to Responsive
+  public static final int FORM_COMPONENT_VERSION = 25;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
