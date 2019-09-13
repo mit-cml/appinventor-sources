@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -25,21 +26,20 @@ import android.graphics.Paint;
  */
 @DesignerComponent(version = YaVersion.BALL_COMPONENT_VERSION,
     description = "<p>A round 'sprite' that can be placed on a " +
-    "<code>Canvas</code>, where it can react to touches and drags, " +
-    "interact with other sprites (<code>ImageSprite</code>s and other " +
-    "<code>Ball</code>s) and the edge of the Canvas, and move according " +
-    "to its property values.</p>" +
-    "<p>For example, to have a <code>Ball</code> move 4 pixels toward the " +
-    "top of a <code>Canvas</code> every 500 milliseconds (half second), " +
-    "you would set the <code>Speed</code> property to 4 [pixels], the " +
-    "<code>Interval</code> property to 500 [milliseconds], the " +
-    "<code>Heading</code> property to 90 [degrees], and the " +
-    "<code>Enabled</code> property to <code>True</code>.  These and its " +
-    "other properties can be changed at any time.</p>" +
-    "<p>The difference between a Ball and an <code>ImageSprite</code> is " +
-    "that the latter can get its appearance from an image file, while a " +
-    "Ball's appearance can only be changed by varying its " +
-    "<code>PaintColor</code> and <code>Radius</code> properties.</p>",
+        "<code>Canvas</code>, where it can react to touches and drags, " +
+        "interact with other sprites (<code>ImageSprite</code>s and other " +
+        "<code>Ball</code>s) and the edge of the Canvas, and move according " +
+        "to its property values.</p>" +
+        "<p>For example, to have a <code>Ball</code> move 4 pixels toward the " +
+        "top of a <code>Canvas</code> every 500 milliseconds (half second), " +
+        "you would set the <code>Speed</code> property to 4 [pixels], the " +
+        "<code>Interval</code> property to 500 [milliseconds], the " +
+        "<code>Heading</code> property to 90 [degrees], and the " +
+        "<code>Enabled</code> property to <code>True</code>.</p>" +
+        "<p>The difference between a <code>Ball</code> and an <code>ImageSprite</code> is " +
+        "that the latter can get its appearance from an image file, while a " +
+        "<code>Ball</code>'s appearance can be changed only by varying its " +
+        "<code>PaintColor</code> and <code>Radius</code> properties.</p>",
     category = ComponentCategory.ANIMATION)
 @SimpleObject
 public final class Ball extends Sprite {
@@ -165,26 +165,36 @@ public final class Ball extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ORIGIN_AT_CENTER ? "True" : "False")
   @SimpleProperty(userVisible = false,
-      description = "Whether the x- and y-coordinates should represent the center of the Ball (true) " +
-      "or the left and top edges (false).")
+      description = "Whether the x- and y-coordinates should represent the center of the Ball " +
+          "(<code>true</code>) or its left and top edges (<code>false</code>).")
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
   }
 
   @SimpleProperty(
       description = "The horizontal coordinate of the Ball, increasing as the Ball moves right. " +
-      "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
-      "otherwise, it is for the leftmost point of the Ball.")
+          "If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
+          "otherwise, it is for the leftmost point of the Ball.")
   @Override
   public double X() {
     return super.X();
   }
 
-  @SimpleProperty(description = "The vertical coordinate of the Ball, increasing as the Ball moves " +
-      "up. If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
-      "otherwise, it is for the uppermost point of the Ball.")
+  @SimpleProperty(
+      description = "The vertical coordinate of the Ball, increasing as the Ball moves " +
+          "down. If the property OriginAtCenter is true, the coodinate is for the center of the Ball; " +
+          "otherwise, it is for the uppermost point of the Ball.")
   @Override
   public double Y() {
     return super.Y();
+  }
+
+  @SimpleFunction(
+      description = "Sets the x and y coordinates of the Ball. If CenterAtOrigin is " +
+          "true, the center of the Ball will be placed here. Otherwise, the top left edge of the Ball " +
+          "will be placed at the specified coordinates.")
+  @Override
+  public void MoveTo(double x, double y) {
+    super.MoveTo(x, y);
   }
 }

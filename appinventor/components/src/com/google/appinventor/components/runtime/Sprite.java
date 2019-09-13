@@ -160,7 +160,9 @@ public abstract class Sprite extends VisibleComponent
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
    */
-  @SimpleProperty(description = "Controls whether the %type% moves and generates collision events.")
+  @SimpleProperty(
+      description = "Controls whether the %type% moves and can be interacted with " +
+          "through collisions, dragging, touching, and flinging.")
   public boolean Enabled() {
     return timerInternal.Enabled();
   }
@@ -204,9 +206,10 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return degrees above the positive x-axis
    */
-  @SimpleProperty(description = "Returns the %type%'s heading in degrees above the positive " +
-    "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-    "top of the screen.")
+  @SimpleProperty(
+    description = "Returns the %type%'s heading in degrees above the positive " +
+        "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
+        "top of the screen.")
   public double Heading() {
     return userHeading;
   }
@@ -216,9 +219,10 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  timer interval in ms
    */
-  @SimpleProperty(description = "The interval in milliseconds at which the %type%'s " +
-      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
-      "then the sprite will move 10 pixels every 50 milliseconds.")
+  @SimpleProperty(
+      description = "The interval in milliseconds at which the %type%'s " +
+          "position is updated.  For example, if the interval is 50 and the speed is 10, " +
+          "then every 50 milliseconds the sprite will move 10 pixels in the heading direction.")
   public int Interval() {
     return timerInternal.Interval();
   }
@@ -242,7 +246,8 @@ public abstract class Sprite extends VisibleComponent
    * @param speed the magnitude (in pixels) to move every {@link #interval}
    * milliseconds
    */
-  @SimpleProperty
+  @SimpleProperty(
+      description = "The number of pixels that the %type% should move every interval, if enabled.")
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_SPEED + "")
@@ -256,8 +261,9 @@ public abstract class Sprite extends VisibleComponent
    * @return the magnitude (in pixels) the sprite moves every {@link #interval}
    *         milliseconds.
    */
-  @SimpleProperty(description = "The speed at which the %type% moves. The ImageSprite moves " +
-    "this many pixels every interval if enabled.")
+  @SimpleProperty(
+    description = "The speed at which the %type% moves. The %type% moves " +
+        "this many pixels every interval if enabled.")
   public float Speed() {
     return speed;
   }
@@ -267,7 +273,7 @@ public abstract class Sprite extends VisibleComponent
    *
    * @return  {@code true} if the sprite is visible, {@code false} otherwise
    */
-  @SimpleProperty(description = "True if the %type% is visible.")
+  @SimpleProperty(description = "Whether the %type% is visible.")
   public boolean Visible() {
     return visible;
   }
@@ -369,7 +375,7 @@ public abstract class Sprite extends VisibleComponent
 
   @SimpleProperty(
       description = "How the %type% should be layered relative to other Balls and ImageSprites, " +
-      "with higher-numbered layers in front of lower-numbered layers.")
+          "with higher-numbered layers in front of lower-numbered layers.")
   @DesignerProperty
   public double Z() {
     return zLayer;
@@ -407,9 +413,9 @@ public abstract class Sprite extends VisibleComponent
 
   // TODO(halabelson): Fix collision detection for rotated sprites.
   /**
-   * Handler for CollidedWith events, called when two sprites collide.
-   * Note that checking for collisions with a rotated ImageSprite currently
-   * checks against the sprite's unrotated position.  Therefore, collision
+   * Event handler called when two enabled sprites (Balls or ImageSprites)
+   * collide. Note that checking for collisions with a rotated ImageSprite currently
+   * checks against its unrotated position. Therefore, collision
    * checking will be inaccurate for tall narrow or short wide sprites that are
    * rotated.
    *
@@ -429,7 +435,7 @@ public abstract class Sprite extends VisibleComponent
    * describe the endpoint of the current line segment.  On the first call
    * within a given drag, the "previous" coordinates are the same as the
    * starting coordinates; subsequently, they are the "current" coordinates
-   * from the prior call.  Note that the Sprite won't actually move
+   * from the prior call. Note that the Sprite won't actually move
    * anywhere in response to the Dragged event unless MoveTo is
    * specifically called.
    *
@@ -440,7 +446,17 @@ public abstract class Sprite extends VisibleComponent
    * @param currentX the current x-coordinate
    * @param currentY the current y-coordinate
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Event handler called when a %type% is dragged. " +
+          "On all calls, the starting coordinates " +
+          "are where the screen was first touched, and the \"current\" coordinates " +
+          "describe the endpoint of the current line segment. On the first call " +
+          "within a given drag, the \"previous\" coordinates are the same as the " +
+          "starting coordinates; subsequently, they are the \"current\" coordinates " +
+          "from the prior call. Note that the %type% won't actually move " +
+          "anywhere in response to the Dragged event unless MoveTo is explicitly called. " +
+          "For smooth movement, each of its coordinates should be set to the sum of its " +
+          "initial value and the difference between its current and previous values.")
   public void Dragged(float startX, float startY,
                       float prevX, float prevY,
                       float currentX, float currentY) {
@@ -453,11 +469,11 @@ public abstract class Sprite extends VisibleComponent
    * bounce off of the edge it reached.
    */
   @SimpleEvent(
-      description = "Event handler called when the sprite reaches an edge of the screen. " +
-        "If Bounce is then called with that edge, the sprite will appear to " +
-        "bounce off of the edge it reached.  Edge here is represented as an integer that " +
-        "indicates one of eight directions north(1), northeast(2), east(3), southeast(4), " +
-        "south (-1), southwest(-2), west(-3), and northwest(-4).")
+      description = "Event handler called when the %type% reaches an edge of the screen. " +
+          "If Bounce is then called with that edge, the %type% will appear to " +
+          "bounce off of the edge it reached. Edge here is represented as an integer that " +
+          "indicates one of eight directions north (1), northeast (2), east (3), southeast (4), " +
+          "south (-1), southwest (-2), west (-3), and northwest (-4).")
   public void EdgeReached(int edge) {
     if (edge == Component.DIRECTION_NONE
         || edge < Component.DIRECTION_MIN
@@ -478,8 +494,8 @@ public abstract class Sprite extends VisibleComponent
    * @param other the sprite formerly colliding with this sprite
    */
   @SimpleEvent(
-      description = "Event indicating that a pair of sprites are no longer " +
-      "colliding.")
+      description = "Event handler called when a pair of sprites (Balls and ImageSprites) are no " +
+          "longer colliding.")
   public void NoLongerCollidingWith(Sprite other) {
     registeredCollisions.remove(other);
     postEvent(this, "NoLongerCollidingWith", other);
@@ -487,13 +503,16 @@ public abstract class Sprite extends VisibleComponent
 
   /**
    * When the user touches the sprite and then immediately lifts finger: provides
-   * the (x,y) position of the touch, relative to the upper left of the canvas
+   * the (x,y) position of the touch, relative to the upper left of the canvas.
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    */
-  @SimpleEvent
-  public void Touched(float x, float y) {
+  @SimpleEvent(
+    description = "Event handler called when the user touches an enabled " +
+        "%type% and then immediately lifts their finger. The provided x and y coordinates " +
+        "are relative to the upper left of the canvas.")
+   public void Touched(float x, float y) {
     postEvent(this, "Touched", x, y);
   }
 
@@ -511,7 +530,12 @@ public abstract class Sprite extends VisibleComponent
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Event handler called when a fling gesture (quick swipe) is made on " +
+          "an enabled %type%. This provides the x and y coordinates of the start of the " +
+          "fling (relative to the upper left of the canvas), the speed (pixels per millisecond), " +
+          "the heading (0-360 degrees), and the x and y velocity components of " +
+          "the fling's vector.")
   public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
     postEvent(this, "Flung", x, y, speed, heading, xvel, yvel);
   }
@@ -519,12 +543,15 @@ public abstract class Sprite extends VisibleComponent
   /**
    * When the user stops touching the sprite (lifts finger after a
    * TouchDown event): provides the (x,y) position of the touch, relative
-   * to the upper left of the canvas
+   * to the upper left of the canvas.
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Event handler called when the user stops touching an enabled %type% " +
+          "(lifting their finger after a TouchDown event). This provides the " +
+          "x and y coordinates of the touch, relative to the upper left of the canvas.")
   public void TouchUp(float x, float y) {
     postEvent(this, "TouchUp", x, y);
   }
@@ -537,7 +564,10 @@ public abstract class Sprite extends VisibleComponent
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Event handler called when the user begins touching an enabled %type% " +
+          "(placing their finger on a %type% and leaving it there). This provides the " +
+          "x and y coordinates of the touch, relative to the upper left of the canvas.")
   public void TouchDown(float x, float y) {
     postEvent(this, "TouchDown", x, y);
   }
@@ -562,8 +592,9 @@ public abstract class Sprite extends VisibleComponent
    *    {@link com.google.appinventor.components.runtime.Component#DIRECTION_WEST}, or
    *    {@link com.google.appinventor.components.runtime.Component#DIRECTION_NORTHWEST}.
    */
-  @SimpleFunction(description = "Makes this sprite bounce, as if off a wall.  " +
-      "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
+  @SimpleFunction(
+    description = "Makes the %type% bounce, as if off a wall. " +
+        "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
   public void Bounce (int edge) {
     MoveIntoBounds();
 
@@ -608,7 +639,9 @@ public abstract class Sprite extends VisibleComponent
    * @return {@code true} if a collision event has been raised for the pair of
    *         sprites and they still are in collision, {@code false} otherwise.
    */
-  @SimpleFunction
+  @SimpleFunction(
+      description = "Indicates whether a collision has been registered between this %type% " +
+          "and the passed sprite (Ball or ImageSprite).")
   public boolean CollidingWith(Sprite other) {
     return registeredCollisions.contains(other);
   }
@@ -620,20 +653,23 @@ public abstract class Sprite extends VisibleComponent
    * canvas. If the sprite is too tall to fit on the canvas, this aligns the
    * top side of the sprite with the top side of the canvas.
    */
-  @SimpleFunction
+  @SimpleFunction(
+      description = "Moves the %type% back in bounds if part of it extends out of bounds, " +
+          "having no effect otherwise. If the %type% is too wide to fit on the " +
+          "canvas, this aligns the left side of the %type% with the left side of the " +
+          "canvas. If the %type% is too tall to fit on the canvas, this aligns the " +
+          "top side of the %type% with the top side of the canvas.")
   public void MoveIntoBounds() {
     moveIntoBounds(canvas.Width(), canvas.Height());
   }
 
+  // Description is different for Ball and ImageSprite so overridden and described in subclasses.
   /**
    * Moves sprite directly to specified point.
    *
    * @param x the x-coordinate
    * @param y the y-coordinate
    */
-  @SimpleFunction(
-    description = "Moves the sprite so that its left top corner is at " +
-    "the specfied x and y coordinates.")
   public void MoveTo(double x, double y) {
     updateX(x);
     updateY(y);
@@ -646,9 +682,9 @@ public abstract class Sprite extends VisibleComponent
    * @param target the other sprite to point towards
    */
   @SimpleFunction(
-    description = "Turns the sprite to point towards a designated " +
-    "target sprite. The new heading will be parallel to the line joining " +
-    "the centerpoints of the two sprites.")
+    description = "Turns the %type% to point towards a designated " +
+        "target sprite (Ball or ImageSprite). The new heading will be parallel to the line joining " +
+        "the centerpoints of the two sprites.")
   public void PointTowards(Sprite target) {
     Heading(-Math.toDegrees(Math.atan2(target.yCenter - yCenter, target.xCenter - xCenter)));
   }
@@ -660,8 +696,8 @@ public abstract class Sprite extends VisibleComponent
    * @param y parameter of the point to turn to
    */
   @SimpleFunction(
-    description = "Turns the sprite to point towards the point " +
-    "with coordinates as (x, y).")
+    description = "Sets the heading of the %type% toward the point " +
+        "with the coordinates (x, y).")
   public void PointInDirection(double x, double y) {
     Heading(-Math.toDegrees(Math.atan2(y - yCenter, x - xCenter)));
   }
@@ -714,7 +750,12 @@ public abstract class Sprite extends VisibleComponent
    * canvas. If the sprite is too tall to fit on the canvas, this aligns the
    * top side of the sprite with the top side of the canvas.
    */
-  @SimpleFunction
+  @SimpleFunction(
+     description = "Moves the %type% back in bounds if part of it extends out of bounds, " +
+         "having no effect otherwise. If the %type% is too wide to fit on the " +
+         "canvas, this aligns the left side of the %type% with the left side of the " +
+         "canvas. If the %type% is too tall to fit on the canvas, this aligns the " +
+         "top side of the %type% with the top side of the canvas.")
   protected final void moveIntoBounds(int canvasWidth, int canvasHeight) {
     boolean moved = false;
 
