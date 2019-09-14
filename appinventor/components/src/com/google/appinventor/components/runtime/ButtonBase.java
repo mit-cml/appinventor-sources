@@ -66,22 +66,22 @@ public abstract class ButtonBase extends AndroidViewComponent
   private int textAlignment;
 
   // Backing for background color
-  private int backgroundColor;
+  protected int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  protected int fontTypeface;
 
   // Backing for font bold
-  private boolean bold;
+  protected boolean bold;
 
   // Used for determining if visual feedback should be provided for buttons that have images
   private boolean showFeedback=true;
 
   // Backing for font italic
-  private boolean italic;
+  protected boolean italic;
 
   // Backing for text color
-  private int textColor;
+  protected int textColor;
 
   // Backing for button shape
   private int shape;

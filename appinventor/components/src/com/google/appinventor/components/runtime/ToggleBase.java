@@ -25,25 +25,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 @SimpleObject
-public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewComponent
+public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase
         implements OnCheckedChangeListener, OnFocusChangeListener {
 
   protected T view;
-
-  // Backing for background color
-  private int backgroundColor;
-
-  // Backing for font typeface
-  private int fontTypeface;
-
-  // Backing for font bold
-  private boolean bold;
-
-  // Backing for font italic
-  private boolean italic;
-
-  // Backing for text color
-  private int textColor;
 
   /**
    * Creates a new ToggleBase component.
@@ -72,6 +57,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
     TextColor(Component.COLOR_DEFAULT);
 
   }
+
+  @Override
+  public void click() {}
 
   @Override
   public View getView() {
