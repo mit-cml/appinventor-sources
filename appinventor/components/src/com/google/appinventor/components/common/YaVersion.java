@@ -822,7 +822,9 @@ public class YaVersion {
   // - Added the PermissionGranted event
   // For FORM_COMOPONENT_VERSION 25:
   // - Sizing default value changed from Fixed to Responsive
-  public static final int FORM_COMPONENT_VERSION = 25;
+  // For FORM_COMPONENT_VERSION 26:
+  // - Updated the default value of ShowListsAsJson from false -> true
+  public static final int FORM_COMPONENT_VERSION = 26;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

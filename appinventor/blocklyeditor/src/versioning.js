@@ -2278,7 +2278,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 25:
     // - Sizing default value changed from Fixed to Responsive
-    25: "noUpgrade"
+    25: "noUpgrade",
+
+    // For FORM_COMPONENT_VERISON 26:
+    // - ShowListsAsJson default value changed from False to True
+    26: "noUpgrade"
 
 
   }, // End Screen

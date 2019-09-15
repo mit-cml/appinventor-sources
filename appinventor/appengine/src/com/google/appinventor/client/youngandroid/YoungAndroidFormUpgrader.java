@@ -993,6 +993,19 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 25;
     }
 
+    if (srcCompVersion < 26) {
+      // ShowListsAsJson changed from False to True
+      if (componentProperties.containsKey("ShowListsAsJson")) {
+        final String value = componentProperties.get("ShowListsAsJson").asString().getString();
+        if (value.equals("True")) {
+            componentProperties.remove("ShowListsAsJson");
+        }
+      } else {
+        componentProperties.put("ShowListsAsJson", new ClientJsonString("False"));
+      }
+      srcCompVersion = 26;
+    }
+
     return srcCompVersion;
   }
 
