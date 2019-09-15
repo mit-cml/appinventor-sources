@@ -1762,7 +1762,7 @@
          (exact->inexact (/ n d)))))
 
 ;;; Trigonometric functions
-(define *pi* 3.14159265)
+(define *pi* java.lang.Math:PI)
 
 ;; Direct conversion from degrees to radians with no restrictions on range
 (define (degrees->radians-internal degrees)
