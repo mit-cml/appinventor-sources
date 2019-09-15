@@ -21,6 +21,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -51,6 +52,7 @@ import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -100,27 +102,42 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * BuildRequestDataException can be thrown from buildRequestData.
-   * It is thrown if the list passed to buildRequestData contains an item that is not a list.
-   * It is thrown if the list passed to buildRequestData contains an item that is a list whose size is
-   * not 2.
-   */
-  // VisibleForTesting
-  static class BuildRequestDataException extends Exception {
-    /*
-     * errorNumber could be:
-     * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST
-     * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS
+     * BuildRequestDataException can be thrown from buildRequestData.
+     * It is thrown if the list passed to buildRequestData contains an item that is not a list.
+     * It is thrown if the list passed to buildRequestData contains an item that is a list whose size is
+     * not 2.
      */
-    final int errorNumber;
-    final int index;         // the index of the invalid header
+    // VisibleForTesting
+    static class BuildRequestDataException extends Exception {
+        /*
+         * errorNumber could be:
+         * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST
+         * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS
+         */
+        final int errorNumber;
+        final int index;         // the index of the invalid header
 
-    BuildRequestDataException(int errorNumber, int index) {
-      super();
-      this.errorNumber = errorNumber;
-      this.index = index;
+        BuildRequestDataException(int errorNumber, int index) {
+            super();
+            this.errorNumber = errorNumber;
+            this.index = index;
+        }
     }
-  }
+
+    /**
+     * RequestTimeoutException can be thrown from performRequest.
+     * It is thrown if the timeout property is non-zero, and the time since the application's web connection
+     * has been opened has exceeded the timeout period without receiving any data.
+     */
+    // VisibleForTesting
+    static class RequestTimeoutException extends Exception {
+        final int errorNumber;
+
+        RequestTimeoutException() {
+            super();
+            this.errorNumber = ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT;
+        }
+    }
 
   /**
    * The CapturedProperties class captures the current property values from a Web component before
@@ -133,6 +150,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     final boolean allowCookies;
     final boolean saveResponse;
     final String responseFileName;
+    final int timeout;
     final Map<String, List<String>> requestHeaders;
     final Map<String, List<String>> cookies;
 
@@ -142,6 +160,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       allowCookies = web.allowCookies;
       saveResponse = web.saveResponse;
       responseFileName = web.responseFileName;
+      timeout = web.timeout;
       requestHeaders = processRequestHeaders(web.requestHeaders);
 
       Map<String, List<String>> cookiesTemp = null;
@@ -186,6 +205,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private YailList requestHeaders = new YailList();
   private boolean saveResponse;
   private String responseFileName = "";
+  private int timeout = 0;
 
   /**
    * Creates a new Web component.
@@ -325,6 +345,31 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     this.responseFileName = responseFileName;
   }
 
+  /**
+   * Returns the number of milliseconds that each request will wait for a response before they time out.
+   * If set to 0, then the request will wait for a response indefinitely.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The number of milliseconds that a web request will wait for a response before giving up." +
+              "If set to 0, then there is no time limit on how long the request will wait.")
+  public int Timeout() {
+    return timeout;
+  }
+
+  /**
+   * Returns the number of milliseconds that each request will wait for a response before they time out.
+   * If set to 0, then the request will wait for a response indefinitely.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+          defaultValue = "0")
+  @SimpleProperty
+  public void Timeout(int timeout) {
+    if (timeout < 0){
+      throw new IllegalArgumentError("Web Timeout must be a non-negative integer.");
+    }
+    this.timeout = timeout;
+  }
+
   @SimpleFunction(description = "Clears all cookies for this Web component.")
   public void ClearCookies() {
     if (cookieHandler != null) {
@@ -364,6 +409,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                  ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
@@ -438,6 +486,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                  ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -511,6 +562,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                  ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -548,6 +602,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+                  ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
@@ -605,6 +662,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+                  ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
@@ -612,7 +672,6 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       }
     });
   }
-
 
   /**
    * Event indicating that a request has finished.
@@ -643,6 +702,16 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     EventDispatcher.dispatchEvent(this, "GotFile", url, responseCode, responseType, fileName);
   }
 
+  /**
+   * Event indicating that a request has timed out.
+   *
+   * @param url the URL used for the request
+   */
+  @SimpleEvent
+  public void TimedOut(String url) {
+    // invoke the application's "TimedOut" event handler.
+    EventDispatcher.dispatchEvent(this, "TimedOut", url);
+  }
 
   /**
    * Converts a list of two-element sublists, representing name and value pairs, to a
@@ -870,7 +939,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @throws IOException
    */
   private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile, String httpVerb)
-      throws IOException {
+      throws RequestTimeoutException, IOException {
 
     // Open the connection.
     HttpURLConnection connection = openConnection(webProps, httpVerb);
@@ -888,8 +957,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         processResponseCookies(connection);
 
         if (saveResponse) {
-          final String path = saveResponseContent(connection, webProps.responseFileName,
-              responseType);
+          final String path = saveResponseContent(connection, webProps.responseFileName, responseType);
 
           // Dispatch the event.
           activity.runOnUiThread(new Runnable() {
@@ -910,6 +978,15 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           });
         }
 
+      } catch (SocketTimeoutException e){
+        // Dispatch timeout event.
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            TimedOut(webProps.urlString);
+          }
+        });
+        throw new RequestTimeoutException();
       } finally {
         connection.disconnect();
       }
@@ -930,6 +1007,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       throws IOException, ClassCastException, ProtocolException {
 
     HttpURLConnection connection = (HttpURLConnection) webProps.url.openConnection();
+    connection.setReadTimeout(webProps.timeout);
 
     if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
       // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
@@ -1075,14 +1153,16 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     return file.getAbsolutePath();
   }
 
-  private static InputStream getConnectionStream(HttpURLConnection connection) {
+  private static InputStream getConnectionStream(HttpURLConnection connection) throws SocketTimeoutException {
     // According to the Android reference documentation for HttpURLConnection: If the HTTP response
     // indicates that an error occurred, getInputStream() will throw an IOException. Use
     // getErrorStream() to read the error response.
     try {
       return connection.getInputStream();
+    } catch (SocketTimeoutException e) {
+      throw e; //Rethrow exception - should not attempt to read stream for timeouts
     } catch (IOException e1) {
-      // Use the error response.
+      // Use the error response for all other IO Exceptions.
       return connection.getErrorStream();
     }
   }
