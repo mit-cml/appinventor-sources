@@ -43,12 +43,12 @@ import java.io.IOException;
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public abstract class ButtonBase extends AndroidViewComponent
+public abstract class ButtonBase<T extends android.widget.Button> extends AndroidViewComponent
     implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
 
   private static final String LOG_TAG = "ButtonBase";
 
-  private final android.widget.Button view;
+  protected T view;
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
@@ -121,7 +121,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   public ButtonBase(ComponentContainer container) {
     super(container);
-    view = new android.widget.Button(container.$context());
+    view = (T)(new android.widget.Button(container.$context()));
 
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();

@@ -1386,7 +1386,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Properties Image, Shape, ShowFeedback, and TextAlignment were added.
+    // Event Click was added.
+    3: "noUpgrade"
 
   }, // End CheckBox upgraders
 
@@ -2340,6 +2344,16 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade"
 
   }, // End Spinner upgraders
+
+  "Switch": {
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // Properties Image, Shape, ShowFeedback, and TextAlignment were added.
+    // Event Click was added.
+    2: "noUpgrade"
+
+  },
 
   "TableArrangement": {
 

@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Abstract base class for toggleable items with the ability to detect initialization, focus
@@ -25,11 +26,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 @SimpleObject
-public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase
+public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase<T>
         implements OnCheckedChangeListener, OnFocusChangeListener {
-
-  protected T view;
-
   /**
    * Creates a new ToggleBase component.
    *
@@ -66,40 +64,66 @@ public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase
     return view;
   }
 
+  @Override
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Image to display on button.")
+  public String Image() {
+    return null;
+  }
+
+  @Override
+  @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
+      "If there is both an Image and a BackgroundColor, only the Image will be " +
+      "visible.")
+  public void Image(String path) {}
+
+  @Override
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int Shape() {
+    return 0;
+  }
+
+  @Override
+  @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
+      " rectangular, oval). The shape will not be visible if an Image is being displayed.",
+      userVisible = false)
+  public void Shape(int shape) {}
+
+  @Override
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "Returns the visual feedback state of the %type%")
+  public boolean ShowFeedback() {
+      return false;
+  }
+
+  @Override
+  @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
+          " for a %type% that as an image as background.")
+  public void ShowFeedback(boolean showFeedback) {}
+
+  @Override
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Left, center, or right.",
+      userVisible = false)
+  public int TextAlignment() {
+    return 0;
+  }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public void TextAlignment(int alignment) {}
+
   /**
    * Default Changed event handler.
    */
   @SimpleEvent
   public void Changed() {
     EventDispatcher.dispatchEvent(this, "Changed");
-  }
-
-  /**
-   * Default GotFocus event handler.
-   */
-  @SimpleEvent
-  public void GotFocus() {
-    EventDispatcher.dispatchEvent(this, "GotFocus");
-  }
-
-  /**
-   * Default LostFocus event handler.
-   */
-  @SimpleEvent
-  public void LostFocus() {
-    EventDispatcher.dispatchEvent(this, "LostFocus");
-  }
-
-  /**
-   * Returns the background color of the %type% as an alpha-red-green-blue
-   * integer.
-   *
-   * @return  background RGB color with alpha
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE)
-  public int BackgroundColor() {
-    return backgroundColor;
   }
 
   /**
@@ -131,198 +155,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase
     return view.isEnabled();
   }
 
-  /**
-   * Specifies whether the %type% should be active and clickable.
-   *
-   * @param enabled  {@code true} for enabled, {@code false} disabled
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "True")
-  @SimpleProperty
-  public void Enabled(boolean enabled) {
-    TextViewUtil.setEnabled(view, enabled);
-  }
-
-  /**
-   * Returns true if the text of the %type% should be bold.
-   * If bold has been requested, this property will return true, even if the
-   * font does not support bold.
-   *
-   * @return  {@code true} indicates bold, {@code false} normal
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE,
-          userVisible = false)
-  public boolean FontBold() {
-    return bold;
-  }
-
-  /**
-   * Specifies whether the text of the %type% should be bold.
-   * Some fonts do not support bold.
-   *
-   * @param bold  {@code true} indicates bold, {@code false} normal
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "False")
-  @SimpleProperty(
-          userVisible = false)
-  public void FontBold(boolean bold) {
-    this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
-  }
-
-  /**
-   * Returns true if the text of the %type% should be italic.
-   * If italic has been requested, this property will return true, even if the
-   * font does not support italic.
-   *
-   * @return  {@code true} indicates italic, {@code false} normal
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE,
-          userVisible = false)
-  public boolean FontItalic() {
-    return italic;
-  }
-
-  /**
-   * Specifies whether the text of the %type% should be italic.
-   * Some fonts do not support italic.
-   *
-   * @param italic  {@code true} indicates italic, {@code false} normal
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "False")
-  @SimpleProperty(
-          userVisible = false)
-  public void FontItalic(boolean italic) {
-    this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
-  }
-
-  /**
-   * Returns the text font size of the %type%, measured in sp(scale-independent pixels).
-   *
-   * @return  font size in sp (scale-independent pixels)
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE)
-  public float FontSize() {
-    return TextViewUtil.getFontSize(view, container.$context());
-  }
-
-  /**
-   * Specifies the text font size of the %type%, measured in sp(scale-independent pixels).
-   *
-   * @param size  font size in sp(scale-independent pixels)
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-          defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty
-  public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
-  }
-
-  /**
-   * Returns the text font face of the %type% as default, serif, sans
-   * serif, or monospace.
-   *
-   * @return  one of {@link Component#TYPEFACE_DEFAULT},
-   *          {@link Component#TYPEFACE_SERIF},
-   *          {@link Component#TYPEFACE_SANSSERIF} or
-   *          {@link Component#TYPEFACE_MONOSPACE}
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE,
-          userVisible = false)
-  public int FontTypeface() {
-    return fontTypeface;
-  }
-
-  /**
-   * Specifies the text font face of the %type% as default, serif, sans
-   * serif, or monospace.
-   *
-   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
-   *                  {@link Component#TYPEFACE_SERIF},
-   *                  {@link Component#TYPEFACE_SANSSERIF} or
-   *                  {@link Component#TYPEFACE_MONOSPACE}
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
-          defaultValue = Component.TYPEFACE_DEFAULT + "")
-  @SimpleProperty(
-          userVisible = false)
-  public void FontTypeface(int typeface) {
-    fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
-  }
-
-  /**
-   * Returns the text displayed by the %type%.
-   *
-   * @return  toggle's caption
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE)
-  public String Text() {
-    return TextViewUtil.getText(view);
-  }
-
-  /**
-   * Specifies the text displayed by the %type%.
-   *
-   * @param text  new caption for toggleable button
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty
-  public void Text(String text) {
-    TextViewUtil.setText(view, text);
-  }
-
-  /**
-   * Returns the text color of the %type% as an alpha-red-green-blue
-   * integer.
-   *
-   * @return  text RGB color with alpha
-   */
-  @SimpleProperty(
-          category = PropertyCategory.APPEARANCE)
-  public int TextColor() {
-    return textColor;
-  }
-
-  /**
-   * Specifies the text color of the %type% as an alpha-red-green-blue
-   * integer.
-   *
-   * @param argb  text RGB color with alpha
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-          defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
-  @SimpleProperty
-  public void TextColor(int argb) {
-    textColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      TextViewUtil.setTextColor(view, argb);
-    } else {
-      TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
-    }
-  }
-
   // OnCheckedChangeListener implementation
 
   public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
     Changed();
-  }
-
-  // OnFocusChangeListener implementation
-
-  public void onFocusChange(View previouslyFocused, boolean gainFocus) {
-    if (gainFocus) {
-      GotFocus();
-    } else {
-      LostFocus();
-    }
   }
 }
