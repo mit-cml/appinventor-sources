@@ -66,21 +66,24 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.
-        boolean showHiddenComponents = Boolean.parseBoolean(
-            projectEditor.getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
-        checkboxShowHiddenComponents.setValue(showHiddenComponents);
+        // boolean showHiddenComponents = Boolean.parseBoolean(
+        //     projectEditor.getProjectSettingsProperty(
+        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
+        Boolean isChecked = projectEditor.getScreenComponentVisibility(phoneScreen.getTitle());
+        checkboxShowHiddenComponents.setValue(isChecked == null ? false : isChecked);
       }
     };
     checkboxShowHiddenComponents.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
-        boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-        projectEditor.changeProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
-            isChecked ? "True" : "False");
+        // boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
+        // projectEditor.changeProjectSettingsProperty(
+        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
+        //     isChecked ? "True" : "False");
+        Boolean isChecked = event.getValue();
+        projectEditor.updateScreenComponentVisiblity(phoneScreen.getTitle(), isChecked);
         if (form != null) {
           form.refresh();
         }

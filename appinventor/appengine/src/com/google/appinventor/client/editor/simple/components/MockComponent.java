@@ -995,11 +995,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // If this component's visible property is false, we need to check whether to show hidden
       // components.
       if (!visible) {
-        boolean showHiddenComponents = Boolean.parseBoolean(
-            editor.getProjectEditor().getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
-        return showHiddenComponents;
+        Boolean showHiddenComponents = editor.getProjectEditor().getCurrentScreenComponentVisibility();
+        return (showHiddenComponents != null) ? showHiddenComponents : false;
+        // boolean showHiddenComponents = Boolean.parseBoolean(
+        //     editor.getProjectEditor().getProjectSettingsProperty(
+        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
+        // return showHiddenComponents;
       }
     }
     return true;
