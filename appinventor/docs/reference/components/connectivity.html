@@ -707,6 +707,8 @@ delimiter byte value is received. </dd>
   <dd>Whether the response should be saved in a file.</dd>
   <dt><code>Url</code></dt>
   <dd>The URL for the web request.</dd>
+  <dt><code>Timeout</code></dt>
+  <dd>The number of milliseconds that the Web component will wait for a response to a web request. If 0, then the Web component will wait indefinitely.</dd>
 </dl>
 
 <h3>Events</h3>
@@ -715,6 +717,8 @@ delimiter byte value is received. </dd>
   <dd>Event indicating that a request has finished.</dd>
   <dt><code>GotText(text url, number responseCode, text responseType, text responseContent)</code></dt>
   <dd>Event indicating that a request has finished.</dd>
+  <dt><code>TimedOut(text url)</code></dt>
+  <dd>Event indicating that a request has timed out before completing.</dd>
 </dl>
 
 <h3>Methods</h3>

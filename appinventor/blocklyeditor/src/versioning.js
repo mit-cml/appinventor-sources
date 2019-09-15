@@ -2577,7 +2577,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
       
     // AI2: Added method UriDecode
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Added property Timeout and event TimedOut
+    6: "noUpgrade"
 
   }, // End Web upgraders
 

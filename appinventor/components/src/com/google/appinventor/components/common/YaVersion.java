@@ -469,8 +469,10 @@ public class YaVersion {
   // - Label component version incremented to 5
   // For YOUNG_ANDROID_VERSION 189:
   // - FORM_COMPONENT_VERSION was incremented to 25
+  // For YOUNG_ANDROID_VERSION 190:
+  // - WEB_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 189;
+  public static final int YOUNG_ANDROID_VERSION = 190;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1222,7 +1224,10 @@ public class YaVersion {
   // - Added method XMLTextDecode
   // For WEB_COMPONENT_VERSION 5:
   // - Added method UriDecode
-  public static final int WEB_COMPONENT_VERSION = 5;
+  // For WEB_COMPONENT_VERSION 6:
+  // - The Timeout property was added.
+  // - The TimedOut event was added for timed out web requests.
+  public static final int WEB_COMPONENT_VERSION = 6;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

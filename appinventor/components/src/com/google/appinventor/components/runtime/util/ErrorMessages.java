@@ -138,6 +138,7 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113;
   public static final int ERROR_WEB_UNABLE_TO_DELETE = 1114;
   public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115;
+  public static final int ERROR_WEB_REQUEST_TIMED_OUT = 1117; //Continuing from number after contact picker
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -501,7 +502,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS,
         "Unable to build request data: element %s does not contain two elements");
     errorMessages.put(ERROR_WEB_UNABLE_TO_DELETE,
-            "Unable to delete a resource with the specified URL: %s");
+        "Unable to delete a resource with the specified URL: %s");
+    errorMessages.put(ERROR_WEB_REQUEST_TIMED_OUT,
+        "Took longer then timeout period to receive data from the URL: %s");
     // Contact picker (and PhoneNumberPicker) errors
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER,
         "The software used in this app cannot extract contacts from this type of phone.");
