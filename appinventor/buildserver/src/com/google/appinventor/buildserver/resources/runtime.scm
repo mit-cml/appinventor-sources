@@ -1789,12 +1789,14 @@
           360))
 
 (define (sin-degrees degrees)
-  (if (or (= degrees 180) (= degrees 360)) 0
-    (sin (degrees->radians-internal degrees))))
+  (if (= mod 180) 0
+    (sin (degrees->radians-internal degrees)))
 
 (define (cos-degrees degrees)
   (if (or (= degrees 90) (= degrees 270)) 0
     (cos (degrees->radians-internal degrees))))
+
+
 
 (define (tan-degrees degrees)
   (tan (degrees->radians-internal degrees)))
