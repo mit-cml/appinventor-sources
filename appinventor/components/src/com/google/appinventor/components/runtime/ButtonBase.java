@@ -43,12 +43,12 @@ import java.io.IOException;
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public abstract class ButtonBase extends AndroidViewComponent
+public abstract class ButtonBase<T extends android.widget.Button> extends AndroidViewComponent
     implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
 
   private static final String LOG_TAG = "ButtonBase";
 
-  private final android.widget.Button view;
+  protected T view;
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
@@ -119,9 +119,9 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param container  container, component will be placed in
    */
-  public ButtonBase(ComponentContainer container) {
+  public ButtonBase(ComponentContainer container, T view) {
     super(container);
-    view = new android.widget.Button(container.$context());
+    this.view = view;
 
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
@@ -153,6 +153,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     Text("");
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
+  }
+
+  public ButtonBase(ComponentContainer container) {
+    this(container, (T) (new android.widget.Button(container.$context())));
   }
 
     /**
@@ -240,7 +244,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE,
       description = "Left, center, or right.",
       userVisible = false)
-  public int TextAlignment() {
+  protected int TextAlignment() {
     return textAlignment;
   }
 
@@ -256,7 +260,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
-  public void TextAlignment(int alignment) {
+  protected void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
   }
@@ -272,7 +276,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public int Shape() {
+  protected int Shape() {
     return shape;
   }
 
@@ -291,7 +295,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.",
       userVisible = false)
-  public void Shape(int shape) {
+  protected void Shape(int shape) {
     this.shape = shape;
     updateAppearance();
   }
@@ -304,7 +308,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Image to display on button.")
-  public String Image() {
+  protected String Image() {
     return imagePath;
   }
 
@@ -321,7 +325,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
-  public void Image(String path) {
+  protected void Image(String path) {
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
@@ -530,7 +534,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
           " for a %type% that as an image as background.")
 
-  public void ShowFeedback(boolean showFeedback) {
+  protected void ShowFeedback(boolean showFeedback) {
     this.showFeedback =showFeedback;
   }
 
@@ -545,7 +549,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
             description = "Returns the visual feedback state of the %type%")
-    public boolean ShowFeedback() {
+    protected boolean ShowFeedback() {
         return showFeedback;
     }
 
