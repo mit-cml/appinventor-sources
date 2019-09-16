@@ -187,6 +187,7 @@ public abstract class Sprite extends VisibleComponent
    *
    * @param userHeading degrees above the positive x-axis
    */
+  @SimpleProperty
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_HEADING + "")
@@ -366,6 +367,7 @@ public abstract class Sprite extends VisibleComponent
    *        in front of ones with lower numbers; if values are equal for
    *        sprites, either can go in front of the other
    */
+  @SimpleProperty
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = DEFAULT_Z + "")
   public void Z(double layer) {
@@ -383,7 +385,7 @@ public abstract class Sprite extends VisibleComponent
 
   // This gets overridden in Ball with the @SimpleProperty and @DesignerProperty
   // annotations so it can be made a property for Ball but not for ImageSprite.
-  public void OriginAtCenter(boolean b) {
+  protected void OriginAtCenter(boolean b) {
     originAtCenter = b;
   }
 
