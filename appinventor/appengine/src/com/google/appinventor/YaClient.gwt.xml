@@ -135,6 +135,8 @@
   <extend-property name="locale" values="de"/>
   <!-- Polish -->
   <extend-property name="locale" values="pl"/>
+  <!-- Arabic -->
+  <extend-property name="locale" values="ar"/>
 
   <set-property-fallback name="locale" value="en"/>
   <collapse-all-properties/>
