@@ -731,6 +731,7 @@
 			baseConfigurationReference = FE5CAE0EE58EBC32C4E5ADFC /* Pods-AICompanionApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = AICompanionApp/Info.plist;
