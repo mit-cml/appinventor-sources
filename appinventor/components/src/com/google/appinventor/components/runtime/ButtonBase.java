@@ -63,7 +63,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   private static final int SHAPED_DEFAULT_BACKGROUND_COLOR = Color.LTGRAY;
 
   // Backing for text alignment
-  private int textAlignment;
+  protected int textAlignment;
 
   // Backing for background color
   protected int backgroundColor;
@@ -244,7 +244,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
       category = PropertyCategory.APPEARANCE,
       description = "Left, center, or right.",
       userVisible = false)
-  protected int TextAlignment() {
+  public int TextAlignment() {
     return textAlignment;
   }
 
@@ -260,7 +260,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
-  protected void TextAlignment(int alignment) {
+  public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
   }
@@ -276,7 +276,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  protected int Shape() {
+  public int Shape() {
     return shape;
   }
 
@@ -295,7 +295,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.",
       userVisible = false)
-  protected void Shape(int shape) {
+  public void Shape(int shape) {
     this.shape = shape;
     updateAppearance();
   }
@@ -308,7 +308,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Image to display on button.")
-  protected String Image() {
+  public String Image() {
     return imagePath;
   }
 
@@ -325,7 +325,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
-  protected void Image(String path) {
+  public void Image(String path) {
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
@@ -534,7 +534,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
           " for a %type% that as an image as background.")
 
-  protected void ShowFeedback(boolean showFeedback) {
+  public void ShowFeedback(boolean showFeedback) {
     this.showFeedback =showFeedback;
   }
 
@@ -549,7 +549,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
             description = "Returns the visual feedback state of the %type%")
-    protected boolean ShowFeedback() {
+    public boolean ShowFeedback() {
         return showFeedback;
     }
 

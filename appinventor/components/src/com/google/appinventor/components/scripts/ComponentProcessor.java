@@ -67,6 +67,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
 
+import java.lang.Override;
+
 import java.lang.annotation.Annotation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -1365,6 +1367,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             // name. This is an overridden property without the SimpleProperty annotation and we
             // need to remove it.
             componentInfo.properties.remove(propertyName);
+            Override override = element.getAnnotation(Override.class);
+            if (override != null) {
+              componentInfo.designerProperties.remove(propertyName);
+            }
           }
         }
       } else {
@@ -1386,8 +1392,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             } else if (priorProperty.writable) {
               // TODO(user): handle lang_def and document generation for multiple setters.
               throw new RuntimeException("Inconsistent types " + priorProperty.type +
-                                         " and " + newProperty.type + " for property " +
-                                         propertyName + " in component " + componentInfo.name);
+                                        " and " + newProperty.type + " for property " +
+                                        propertyName + " in component " + componentInfo.name);
             }
           }
 
@@ -1399,7 +1405,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {
             priorProperty.propertyCategory = newProperty.propertyCategory;
           } else if (newProperty.propertyCategory != priorProperty.propertyCategory &&
-                     newProperty.propertyCategory != PropertyCategory.UNSET) {
+                    newProperty.propertyCategory != PropertyCategory.UNSET) {
             throw new RuntimeException(
                 "Property " + propertyName + " has inconsistent categories " +
                 priorProperty.propertyCategory + " and " +
@@ -1427,8 +1433,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (!propertyNames.isEmpty()) {
       for (String propertyName : propertyNames) {
         messager.printMessage(Kind.ERROR,
-            String.format(MISSING_SIMPLE_PROPERTY_ANNOTATION, propertyName),
-            propertyElementsToCheck.get(propertyName));
+        String.format(MISSING_SIMPLE_PROPERTY_ANNOTATION, propertyName),
+        propertyElementsToCheck.get(propertyName));
       }
     }
   }

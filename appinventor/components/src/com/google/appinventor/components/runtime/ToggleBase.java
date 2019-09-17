@@ -73,6 +73,31 @@ public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase<T>
   public void Image(String path) {}
 
   @Override
+  public int Shape() {
+    return 0;
+  }
+
+  @Override
+  public void Shape(int shape) {}
+
+  @Override
+  public boolean ShowFeedback() {
+    return false;
+  }
+
+  @Override
+  public void ShowFeedback(boolean showFeedback) {}
+
+  @Override
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Left, center, or right.",
+      userVisible = false)
+  public int TextAlignment() {
+    return textAlignment;
+  }
+
+  @Override
   @SimpleProperty(userVisible = false)
   public void TextAlignment(int alignment) {}
 
