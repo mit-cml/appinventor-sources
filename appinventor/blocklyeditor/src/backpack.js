@@ -54,6 +54,7 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
     opt_options = opt_options || {};
     this.options = new Blockly.Options(opt_options);
   }
+  this.options.RTL = targetWorkspace.RTL;
   this.workspace_ = targetWorkspace;
   this.flyout_ = new Blockly.BackpackFlyout(this.options);
   // NoAsync_: A flag for getContents(). If true, getContents will use the

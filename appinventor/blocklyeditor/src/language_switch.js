@@ -89,6 +89,10 @@ Blockly.language_switch = {
         Blockly.Msg.pl.switch_blockly_language_to_pl.init();
         Blockly.Msg.pl.switch_language_to_polish.init();
         break;
+      case 'ar':
+        Blockly.Msg.ar.switch_blockly_language_to_ar.init();
+        Blockly.Msg.ar.switch_language_to_arabic.init();
+        break;
       case 'en_US':
       case 'en':
       default:
