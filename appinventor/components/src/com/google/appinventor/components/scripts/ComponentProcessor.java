@@ -111,9 +111,9 @@ import javax.tools.StandardLocation;
 public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String OUTPUT_PACKAGE = "";
 
-  public static final String MISSING_SIMPLE_PROPERTY_ANNOTATION =
+  private static final String MISSING_SIMPLE_PROPERTY_ANNOTATION =
       "Designer property %s does not have a corresponding @SimpleProperty annotation.";
-  public static final String BOXED_TYPE_ERROR =
+  private static final String BOXED_TYPE_ERROR =
       "Found use of boxed type %s. Please use the primitive type %s instead";
 
   // Returned by getSupportedAnnotationTypes()
