@@ -6,7 +6,7 @@ import MapKit
 import GEOSwift
 
 @objc open class LineString: PolygonBaseWithPoints, MapLineString {
-  public init(_ container: MapFeatureContainer) {
+  @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
     StrokeWidth = 3
     StrokeColor = colorToArgb(UIColor.black)

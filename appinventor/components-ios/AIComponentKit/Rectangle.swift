@@ -11,7 +11,7 @@ import GEOSwift
   fileprivate var _south = 0.0
   fileprivate var _west = 0.0
 
-  public init(_ container: MapFeatureContainer) {
+  @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
     FillColor = colorToArgb(UIColor.red)
     Type = MapFeatureType.TYPE_RECTANGLE.rawValue

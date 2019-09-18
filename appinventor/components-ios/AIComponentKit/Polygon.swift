@@ -8,7 +8,7 @@ import GEOSwift
 @objc open class Polygon: PolygonBaseWithPoints, MapPolygon {
   fileprivate var _holePoints = NestedArray()
 
-  public init(_ container: MapFeatureContainer) {
+  @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
     Type = MapFeatureType.TYPE_POLYGON.rawValue
     FillColor = colorToArgb(UIColor.red)

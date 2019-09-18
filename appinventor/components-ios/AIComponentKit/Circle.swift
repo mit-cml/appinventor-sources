@@ -11,7 +11,7 @@ let kNumCircleEdges = 60
 @objc open class Circle: PolygonBase, MapCircle {
   fileprivate var _radius: Double = 0
 
-  public init(_ container: MapFeatureContainer) {
+  @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
     Type = MapFeatureType.TYPE_CIRCLE.rawValue
     FillColor = colorToArgb(UIColor.red)
