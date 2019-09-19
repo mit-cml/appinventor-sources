@@ -29,7 +29,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private boolean isEnabled;
     //private String RecordingBuffer = [];
     private static final int audioSource = MIC;
-    private static final int sampleRateInHz = 441000;
+    private static final int sampleRateInHz = 44100;
     private static final int channelConfig = CHANNEL_IN_MONO;
     private static final int audioFormat = ENCODING_PCM_16BIT;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
