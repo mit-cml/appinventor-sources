@@ -185,7 +185,7 @@ Blockly.ReplMgr.buildYail = function(workspace) {
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
             continue;           // Errors, unless they were errors signaled by the repl
         }
-        if (block.disabled) {   // Don't send disabled blocks
+        if (block.disabled) {
             if (block.type == 'component_event') {
                 // We do need do remove disabled event handlers, though
                 var code = Blockly.Yail.disabledEventBlockToCode(block);
@@ -194,6 +194,7 @@ Blockly.ReplMgr.buildYail = function(workspace) {
                     phoneState.blockYail[block.id] = code;
                 }
             }
+            // Skip normal code generation for disabled blocks
             continue;
         }
         if (block.blockType != "event" &&
