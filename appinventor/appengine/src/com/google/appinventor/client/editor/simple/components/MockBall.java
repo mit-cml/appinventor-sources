@@ -100,19 +100,11 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
     fillCircle();
   }
 
-  private void setZProperty(String text) {
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockBall on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
-    }
-  }
-
   private void refreshCanvas() {
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockBall on the palette
     if (mockCanvas != null) {
-      mockCanvas.refreshForm();
+      mockCanvas.reorderComponents(this); //refreshForm();
     }
   }
 
@@ -132,6 +124,14 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       // Don't change value if unparseable (should not happen).
     }
     refreshCanvas();
+  }
+
+  private void setZProperty(String text) {
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockBall on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
   }
 
   private void setOriginAtCenterProperty(String text) {

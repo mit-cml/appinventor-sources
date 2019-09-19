@@ -752,12 +752,6 @@ public abstract class Sprite extends VisibleComponent
    * canvas. If the sprite is too tall to fit on the canvas, this aligns the
    * top side of the sprite with the top side of the canvas.
    */
-  @SimpleFunction(
-     description = "Moves the %type% back in bounds if part of it extends out of bounds, " +
-         "having no effect otherwise. If the %type% is too wide to fit on the " +
-         "canvas, this aligns the left side of the %type% with the left side of the " +
-         "canvas. If the %type% is too tall to fit on the canvas, this aligns the " +
-         "top side of the %type% with the top side of the canvas.")
   protected final void moveIntoBounds(int canvasWidth, int canvasHeight) {
     boolean moved = false;
 

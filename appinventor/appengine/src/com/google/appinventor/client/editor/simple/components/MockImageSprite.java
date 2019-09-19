@@ -41,8 +41,6 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
         new YoungAndroidLengthPropertyEditor(false));
   }
 
-  // Support for Z layers
-
   private void setXProperty(String text) {
     try {
       x = (int) Math.round(Double.parseDouble(text));
