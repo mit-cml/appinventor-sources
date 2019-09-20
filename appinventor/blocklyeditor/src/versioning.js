@@ -2308,6 +2308,12 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Sound upgraders
 
+  "SoundPressureLevel":{
+
+    // This is initial version. Placeholder for future upgrades
+    1:"noUpgrade"
+  }
+
   "SoundRecorder": {
 
     //This is initial version. Placeholder for future upgrades
