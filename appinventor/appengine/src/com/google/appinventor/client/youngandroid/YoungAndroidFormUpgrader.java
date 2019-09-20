@@ -713,6 +713,10 @@ public final class YoungAndroidFormUpgrader {
       // DrawShape & DrawArc was added.
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // The ExtendMovesOutsideCanvas property was added in version 12.
+      srcCompVersion = 12;
+    }
     return srcCompVersion;
   }
 
