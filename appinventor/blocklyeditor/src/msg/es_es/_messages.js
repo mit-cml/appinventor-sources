@@ -444,6 +444,7 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'comparar textos';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Compara si texto1 es lexicográficamente menor que texto2.\n'

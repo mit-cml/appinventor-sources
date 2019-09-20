@@ -1653,7 +1653,9 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // AI2: Add HTMLFormat property
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    5: "noUpgrade"
 
   }, // End Label upgraders
 
@@ -1791,7 +1793,10 @@ Blockly.Versioning.AllUpgradeMaps =
     25: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 26, Added generic event handlers
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 27, Added not-equal to text compare block
+    27: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2269,7 +2274,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 24:
     // - The AskForPermissions method, PermissionDenied event, and PermissionGranted event were added. No blocks need to be changed.
-    24: "noUpgrade"
+    24: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 25:
+    // - Sizing default value changed from Fixed to Responsive
+    25: "noUpgrade"
 
 
   }, // End Screen
@@ -2572,7 +2581,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
       
     // AI2: Added method UriDecode
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Added property Timeout and event TimedOut
+    6: "noUpgrade"
 
   }, // End Web upgraders
 

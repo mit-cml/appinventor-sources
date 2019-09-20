@@ -35,7 +35,7 @@ public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements H
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The paint color used to fill in the map feature.")
+      description = "The paint color used to fill in the %type%.")
   @Override
   public int FillColor() {
     return fillColor;

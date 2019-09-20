@@ -98,7 +98,8 @@ Blockly.Yail['text_compare'] = function() {
 Blockly.Yail['text_compare'].OPERATORS = {
   LT: ['string<?', 'text<', Blockly.Yail.ORDER_NONE],
   GT: ['string>?', 'text>', Blockly.Yail.ORDER_NONE],
-  EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE]
+  EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE],
+  NEQ: ['yail-not-equal?', 'not =', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail['text_trim'] = function() {

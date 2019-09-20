@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -705,5 +705,16 @@ public interface StorageIo {
   public void storeBuildStatus(String userId, long projectId, int progress);
 
   public int getBuildStatus(String userId, long projectId);
+
+  /**
+   * Checks that the user identified by {@code userId} has a reference to the project identified
+   * by {@code projectId}. If a corresponding UserProjectData is not found, this function throws
+   * a SecurityException to indicate unauthorized access.
+   *
+   * @param userId id for the user
+   * @param projectId id for the project
+   * @throws SecurityException if the user doesn't have access to the project
+   */
+  void assertUserHasProject(String userId, long projectId);
 
 }

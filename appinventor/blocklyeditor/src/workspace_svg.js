@@ -1064,6 +1064,26 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
     oldParent && this.requestErrorChecking(oldParent);
     block && this.requestErrorChecking(block);
   }
+
+  // Double-click to collapse/expand blocks
+  if (event instanceof Blockly.Events.Ui && event.element === 'click') {
+    if (this.doubleClickPid_) {
+      clearTimeout(this.doubleClickPid_);
+      this.doubleClickPid_ = undefined;
+      if (event.blockId === this.doubleClickBlock_) {
+        // double click
+        var block = this.getBlockById(this.doubleClickBlock_);
+        block.setCollapsed(!block.isCollapsed());
+        return;
+      }
+    }
+    if (!this.doubleClickPid_) {
+      this.doubleClickBlock_ = event.blockId;
+      this.doubleClickPid_ = setTimeout(function() {
+        this.doubleClickPid_ = undefined;
+      }.bind(this), 500);  // windows uses 500ms as the default speed; seems reasonable enough
+    }
+  }
 };
 
 /**

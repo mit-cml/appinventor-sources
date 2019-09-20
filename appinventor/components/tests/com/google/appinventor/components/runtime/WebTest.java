@@ -9,10 +9,18 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 /**
@@ -20,14 +28,17 @@ import java.util.List;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class WebTest extends TestCase {
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 23, manifest="tests/AndroidManifest.xml")
+public class WebTest {
   private Web web;
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     web = new Web();
   }
 
+  @Test
   public void testDecodeJsonText() throws Exception {
     // String values.
     assertEquals("\t tab \t tab \t",
@@ -42,8 +53,6 @@ public class WebTest extends TestCase {
         web.decodeJsonText("\"\\\" quote \\\" quote \\\"\""));
     assertEquals("~ encoded tilda ~ encoded tilda ~",
         web.decodeJsonText("\"\\u007E encoded tilda \\u007E encoded tilda \\u007E\""));
-    assertEquals("A normal string without quotes.",
-        web.decodeJsonText("A normal string without quotes."));
 
     // Boolean values.
     assertEquals(Boolean.TRUE, web.decodeJsonText("True"));
@@ -90,6 +99,7 @@ public class WebTest extends TestCase {
     }
   }
 
+  @Test
   public void testDecodeXMLText() throws Exception {
     Object decodedObject = web.XMLTextDecode("<foo>123</foo>");
     // should be the list of one element, which is a pair of "foo" and 123
@@ -105,6 +115,7 @@ public class WebTest extends TestCase {
     assertEquals(123, pair.get(1));
   }
 
+  @Test
   public void testDecodeXMLText2() throws Exception {
     Object decodedObject = web.XMLTextDecode("<a><foo>1 2 3</foo><bar>456</bar></a>");
     // should be the list of one element, which is a pair of "a" and a list X.
@@ -136,6 +147,22 @@ public class WebTest extends TestCase {
     assertEquals("1 2 3", secondPair.get(1));
   }
 
+  @Test
+  public void testDecodeXMLCDATA() throws Exception {
+    Object decodedObject = web.XMLTextDecode("<xml><![CDATA[foo < bar || bar > baz]]></xml>");
+    assertTrue(decodedObject instanceof List);
+    List outerList = (List) decodedObject;
+    assertEquals(1, outerList.size());
+    assertTrue(outerList.get(0) instanceof List);
+    List tagValuePair = (List) ((List) decodedObject).get(0);
+    assertEquals(2, tagValuePair.size());
+    // tag should be xml
+    assertEquals("xml", tagValuePair.get(0));
+    // value should be decoded CDATA
+    assertEquals("foo < bar || bar > baz", tagValuePair.get(1));
+  }
+
+  @Test
   public void testbuildRequestData() throws Exception {
     List<Object> list = new ArrayList<Object>();
     list.add(YailList.makeList(new String[] { "First Name", "Barack" }));

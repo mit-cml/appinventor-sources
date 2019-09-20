@@ -131,7 +131,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "Specifies whether the component should be visible on the screen. "
+      description = "Specifies whether the %type% should be visible on the screen. "
           + "Value is true if the component is showing and false if hidden.")
   public boolean Visible() {
     return visible;
@@ -148,7 +148,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The paint color used to outline the map feature.")
+      description = "The paint color used to outline the %type%.")
   public int StrokeColor() {
     return strokeColor;
   }
@@ -164,7 +164,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The width of the stroke used to outline the map feature.")
+      description = "The width of the stroke used to outline the %type%.")
   public int StrokeWidth() {
     return strokeWidth;
   }
@@ -180,7 +180,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
 
   @Override
   @SimpleProperty(description = "The Draggable property is used to set whether or not the user " +
-      "can drag the Marker by long-pressing and then dragging the marker to a new location.")
+      "can drag the %type% by long-pressing and then dragging the %type% to a new location.")
   public boolean Draggable() {
     return this.draggable;
   }
@@ -196,7 +196,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The title displayed in the info window that appears when the user clicks " +
-      "on the map feature.")
+      "on the %type%.")
   public String Title() {
     return title;
   }
@@ -212,7 +212,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The description displayed in the info window that appears when the user " +
-      "clicks on the map feature.")
+      "clicks on the %type%.")
   public String Description() {
     return description;
   }
@@ -228,14 +228,14 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
 
   @Override
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-  description = "Enable or disable the infobox window display when the user taps the feature.")
+  description = "Enable or disable the infobox window display when the user taps the %type%.")
   public boolean EnableInfobox() {
     return infobox;
   }
 
   @Override
-  @SimpleFunction(description = "Show the infobox for the feature. This will show the infobox " +
-      "even if {@link #EnableInfobox} is set to false.")
+  @SimpleFunction(description = "Show the infobox for the %type%. This will show the infobox " +
+      "even if EnableInfobox is set to false.")
   public void ShowInfobox() {
     map.getController().showInfobox(this);
   }
@@ -253,7 +253,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   }
 
   @SuppressWarnings("squid:S00100")
-  @SimpleFunction(description = "Compute the distance, in meters, between a map feature and a " +
+  @SimpleFunction(description = "Compute the distance, in meters, between a %type% and a " +
       "latitude, longitude point.")
   public double DistanceToPoint(double latitude, double longitude, boolean centroid) {
     return accept(distanceToPoint, new GeoPoint(latitude, longitude), centroid);
@@ -267,14 +267,14 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
 
   // Component Events
   @Override
-  @SimpleEvent(description = "The user clicked on the feature.")
+  @SimpleEvent(description = "The user clicked on the %type%.")
   public void Click() {
     EventDispatcher.dispatchEvent(this, "Click");
     container.FeatureClick(this);
   }
 
   @Override
-  @SimpleEvent(description = "The user long-pressed on the feature. This event will only " +
+  @SimpleEvent(description = "The user long-pressed on the %type%. This event will only " +
       "trigger if Draggable is false.")
   public void LongClick() {
     EventDispatcher.dispatchEvent(this, "LongClick");
@@ -289,7 +289,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   }
 
   @Override
-  @SimpleEvent(description = "The user dragged the map feature.")
+  @SimpleEvent(description = "The user dragged the %type%.")
   public void Drag() {
     EventDispatcher.dispatchEvent(this, "Drag");
     container.FeatureDrag(this);

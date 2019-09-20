@@ -976,6 +976,19 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 24;
     }
 
+    if (srcCompVersion < 25) {
+      // Sizing default value changed from Fixed to Responsive
+      if (componentProperties.containsKey("Sizing")) {
+        String value = ((ClientJsonString)componentProperties.get("Sizing")).getString();
+        if (value.equals("Responsive")) {
+          componentProperties.remove("Sizing");
+        }
+      } else {
+        componentProperties.put("Sizing", new ClientJsonString("Fixed"));
+      }
+      srcCompVersion = 25;
+    }
+
     return srcCompVersion;
   }
 
@@ -1103,6 +1116,9 @@ public final class YoungAndroidFormUpgrader {
       // The HasMargins property was added. (4)
       componentProperties.put("HasMargins", new ClientJsonString("False"));
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1529,6 +1545,13 @@ public final class YoungAndroidFormUpgrader {
       // The UriDecode method was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The Timeout property and TimedOut event were added.
+      // No properties need to be modified to upgrade to version 6.
+      // Timeout defaults to 0, so prior components will maintain the same web request
+      // timeout behavior.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
