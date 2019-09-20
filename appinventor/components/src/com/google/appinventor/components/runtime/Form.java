@@ -1738,7 +1738,7 @@ public class Form extends AppInventorCompatActivity
    */
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "True")
+    defaultValue = "True", alwaysSend = true)
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
     description = "If false, lists will be converted to strings using Lisp "

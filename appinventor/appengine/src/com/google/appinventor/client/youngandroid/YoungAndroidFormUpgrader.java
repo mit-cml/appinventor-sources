@@ -998,7 +998,7 @@ public final class YoungAndroidFormUpgrader {
       if (componentProperties.containsKey("ShowListsAsJson")) {
         final String value = componentProperties.get("ShowListsAsJson").asString().getString();
         if (value.equals("True")) {
-            componentProperties.remove("ShowListsAsJson");
+          componentProperties.remove("ShowListsAsJson");
         }
       } else {
         componentProperties.put("ShowListsAsJson", new ClientJsonString("False"));
