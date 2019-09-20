@@ -6,6 +6,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import android.Manifest;
 import android.media.MediaRecorder;
@@ -16,13 +17,17 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Environment;
 
-@DesignerComponent(version = YaVersion.SOUNDPRESSURELEVEL_COMPONENT_VERION,
+import static android.media.AudioFormat.CHANNEL_IN_MONO;
+import static android.media.AudioFormat.ENCODING_PCM_16BIT;
+import static android.media.MediaRecorder.AudioSource.MIC;
+
+@DesignerComponent(version = YaVersion.SOUNDPRESSURELEVEL_COMPONENT_VERSION,
         description = "Non-visible component that can collect sound pressure level data",
         category = ComponentCategory.SENSORS,
         nonVisible = true,
         iconName = "images/extension.png")
 @SimpleObject(external = true)
-@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO");
+@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO")
 public class SoundPressureLevel extends AndroidNonvisibleComponent
         implements OnStopListener, OnResumeListener, Deleteable {
 
@@ -33,10 +38,11 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private static final int sampleRateInHz = 44100;
     private static final int channelConfig = CHANNEL_IN_MONO;
     private static final int audioFormat = ENCODING_PCM_16BIT;
+    private AudioRecord recorder;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
     private double currentSoundPressureLevel = 0;
 
-    public SoundPressureLevelRecorder(ComponentContainer container) {
+    public SoundPressureLevel(ComponentContainer container) {
         super(container.$form());
 
         recorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
@@ -67,7 +73,6 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         }
     }
 
-    @Override
     public void onSoundPressureLevelChanged(double audioData) {
         if (isEnabled) {
             SoundPressureLevelChanged(audioData);
@@ -125,7 +130,11 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public boolean Available() {
-        return (AudioRecord.getActiveMicrophones.size() > 0);
+        recorder.startRecording();
+        boolean isAvailable = recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
+        recorder.stop();
+        recorder.release();
+        return isAvailable;
     }
 
     /**
