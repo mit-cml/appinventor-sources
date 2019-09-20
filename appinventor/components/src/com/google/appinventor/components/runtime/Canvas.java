@@ -279,15 +279,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           isDrag = true;
           drag = true;
 
-	  // Don't let MOVE extend beyond the bounds of the canvas
-	  // uf ExtendMovesOutsideCanvas is false
-	  if (
-	      ((x <= 0) || (x > width) || (y <= 0) || (y > height))
-	      && (! extendMovesOutsideCanvas)
-	      )
-	    {
-	      break;
-	    }
+          // Don't let MOVE extend beyond the bounds of the canvas
+          // if ExtendMovesOutsideCanvas is false
+          if (((x <= 0) || (x > width) || (y <= 0) || (y > height))
+              && (! extendMovesOutsideCanvas)) {
+            break;
+          }
 
           // Update draggedSprites by adding any that are currently being
           // touched.
@@ -1129,7 +1126,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       "is provided for backwards compatibility.",
       category = PropertyCategory.BEHAVIOR,
       userVisible = true)
-        public boolean ExtendMovesOutsideCanvas() {
+  public boolean ExtendMovesOutsideCanvas() {
     return extendMovesOutsideCanvas;
   }
 
