@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -523,6 +524,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     properties.addProperty(name, defaultValue, caption, editor, type);
   }
 
+  public SimpleEditor getEditor() {
+    return editor;
+  }
+
   /**
    * Returns the component name.
    * <p>
@@ -995,13 +1000,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // If this component's visible property is false, we need to check whether to show hidden
       // components.
       if (!visible) {
-        Boolean showHiddenComponents = editor.getProjectEditor().getCurrentScreenComponentVisibility();
+        ProjectEditor projectEditor = editor.getProjectEditor();
+        VerticalPanel screen = projectEditor.getScreen(this);
+        Boolean showHiddenComponents = (screen != null) ? editor.getProjectEditor().getScreenComponentVisibility(screen) : false;
         return (showHiddenComponents != null) ? showHiddenComponents : false;
-        // boolean showHiddenComponents = Boolean.parseBoolean(
-        //     editor.getProjectEditor().getProjectSettingsProperty(
-        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
-        // return showHiddenComponents;
       }
     }
     return true;

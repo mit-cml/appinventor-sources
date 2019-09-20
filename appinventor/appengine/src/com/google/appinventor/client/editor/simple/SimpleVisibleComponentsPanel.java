@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.ListBox;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,25 +66,20 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     checkboxShowHiddenComponents = new CheckBox(MESSAGES.showHiddenComponentsCheckbox()) {
       @Override
       protected void onLoad() {
-        // onLoad is called immediately after a widget becomes attached to the browser's document.
-        // boolean showHiddenComponents = Boolean.parseBoolean(
-        //     projectEditor.getProjectSettingsProperty(
-        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
-        Boolean isChecked = projectEditor.getScreenComponentVisibility(phoneScreen.getTitle());
+        Boolean isChecked = projectEditor.getScreenComponentVisibility(phoneScreen);
+        List<MockComponent> components = new ArrayList<MockComponent>(form.getEditor().getComponents().values());
+        projectEditor.setScreen(phoneScreen, components);
+        projectEditor.setScreenComponentVisiblity(phoneScreen, isChecked == null ? false : isChecked);
         checkboxShowHiddenComponents.setValue(isChecked == null ? false : isChecked);
       }
     };
     checkboxShowHiddenComponents.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
-        // boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-        // projectEditor.changeProjectSettingsProperty(
-        //     SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        //     SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
-        //     isChecked ? "True" : "False");
         Boolean isChecked = event.getValue();
-        projectEditor.updateScreenComponentVisiblity(phoneScreen.getTitle(), isChecked);
+        List<MockComponent> components = new ArrayList<MockComponent>(form.getEditor().getComponents().values());
+        projectEditor.setScreen(phoneScreen, components);
+        projectEditor.setScreenComponentVisiblity(phoneScreen, isChecked);
         if (form != null) {
           form.refresh();
         }

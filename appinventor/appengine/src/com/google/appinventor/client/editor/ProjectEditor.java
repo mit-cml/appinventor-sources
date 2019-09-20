@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
@@ -50,8 +51,8 @@ public abstract class ProjectEditor extends Composite {
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
-  private HashMap<String, Boolean> screenHashMap = new HashMap<String, Boolean>();
-  private String currentScreen;
+  HashMap<VerticalPanel, Boolean> screenHashMap = new HashMap<VerticalPanel, Boolean>();
+  HashMap<VerticalPanel, List<MockComponent>> componentHashMap = new HashMap<VerticalPanel, List<MockComponent>>();
 
   /**
    * Creates a {@code ProjectEditor} instance.
@@ -250,19 +251,25 @@ public abstract class ProjectEditor extends Composite {
     }
   }
 
-  public final Boolean getScreenComponentVisibility(String screen) {
+  public final VerticalPanel getScreen(MockComponent component) {
+    for (VerticalPanel screen : componentHashMap.keySet()) {
+      List<MockComponent> components = componentHashMap.get(screen);
+      if (components.contains(component)) {
+        return screen;
+      }
+    }
+    return null;
+  }
+
+  public final void setScreen(VerticalPanel screen, List<MockComponent> components) {
+    componentHashMap.put(screen, components);
+  }
+
+  public final Boolean getScreenComponentVisibility(VerticalPanel screen) {
     return screenHashMap.get(screen);
   }
 
-  public final Boolean getCurrentScreenComponentVisibility() {
-    if (currentScreen == null) {
-      return null;
-    }
-    return screenHashMap.get(currentScreen);
-  }
-
-  public final void updateScreenComponentVisiblity(String screen, Boolean showVisibleComponents) {
-    currentScreen = screen;
+  public final void setScreenComponentVisiblity(VerticalPanel screen, Boolean showVisibleComponents) {
     screenHashMap.put(screen, showVisibleComponents);
   }
 
