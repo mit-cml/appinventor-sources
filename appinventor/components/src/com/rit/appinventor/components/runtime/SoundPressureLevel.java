@@ -6,7 +6,7 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
 import android.Manifest;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
@@ -22,19 +22,21 @@ import android.os.Environment;
         nonVisible = true,
         iconName = "images/extension.png")
 @SimpleObject(external = true)
+@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO");
 public class SoundPressureLevel extends AndroidNonvisibleComponent
         implements OnStopListener, OnResumeListener, Deleteable {
 
     private final static String LOG_TAG = "SoundPressureLevel";
     private boolean isEnabled;
-    //private String RecordingBuffer = [];
+    private short audioData [] = new short[minBufferSize];
     private static final int audioSource = MIC;
     private static final int sampleRateInHz = 44100;
     private static final int channelConfig = CHANNEL_IN_MONO;
     private static final int audioFormat = ENCODING_PCM_16BIT;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
+    private double currentSoundPressureLevel = 0;
 
-    public BarometerSensor(ComponentContainer container) {
+    public SoundPressureLevelRecorder(ComponentContainer container) {
         super(container.$form());
 
         recorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
@@ -66,15 +68,16 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     }
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
+    public void onSoundPressureLevelChanged(double audioData) {
         if (isEnabled) {
-            BarometerChanged(sensorEvent.values[0]);
+            SoundPressureLevelChanged(audioData);
         }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-        // TODO(markf): Figure out if we actually need to do something here.
+    public void analyzeSoundData(AudioRecord recorder) {
+        double spldata = 0;
+        recorder.read(audioData, 0, minBufferSize);
+        this.onSoundPressureLevelChanged(spldata);
     }
 
     /**
@@ -85,18 +88,18 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     }
 
     /**
-     * Assumes that audioRecorder has been initialized, which happens in constructor
+     * Assumes that audioRecord has been initialized, which happens in constructor
      */
     private void stopListening() {
         recorder.stop();
     }
 
     /**
-     * Specifies whether the sensor should generate events.  If true,
-     * the sensor will generate events.  Otherwise, no events are
-     * generated even if the device is accelerated or shaken.
+     * Specifies whether the recorder should start recording audio.  If true,
+     * the recorder will record audio.  Otherwise, no data is
+     * recorded even if the device microphone is active.
      *
-     * @param enabled {@code true} enables sensor event generation,
+     * @param enabled {@code true} enables audio recording,
      *                {@code false} disables it
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
@@ -116,13 +119,13 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     /**
      * Available property getter method (read-only property).
      *
-     * @return {@code true} indicates that an accelerometer sensor is available,
+     * @return {@code true} indicates that the device has a microphone,
      * {@code false} that it isn't
      */
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public boolean Available() {
-        return (sensorManager.getSensorList(Sensor.TYPE_PRESSURE).size() > 0);
+        return (AudioRecord.getActiveMicrophones.size() > 0);
     }
 
     /**
@@ -140,16 +143,16 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
 
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
-    public float Millibar() {
-        return currentMillibar;
+    public double SoundPressureLevel() {
+        return currentSoundPressureLevel;
     }
 
     /**
-     * Indicates the barometer changed.
+     * Indicates the sound pressure level has changed
      */
     @SimpleEvent
-    public void BarometerChanged(float mbar) {
-        this.currentMillibar = mbar;
-        EventDispatcher.dispatchEvent(this, "BarometerChanged", this.currentMillibar);
+    public void SoundPressureLevelChanged(double decibels) {
+        this.currentSoundPressureLevel = decibels;
+        EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
     }
 }
