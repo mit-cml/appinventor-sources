@@ -113,6 +113,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int backgroundColor;
   private String backgroundImagePath = "";
   private int textAlignment;
+  private boolean extendMovesOutsideCanvas = false;
 
   // Default values
   private static final int MIN_WIDTH_HEIGHT = 1;
@@ -277,6 +278,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           // Otherwise, it's a drag.
           isDrag = true;
           drag = true;
+
+          // Don't let MOVE extend beyond the bounds of the canvas
+          // if ExtendMovesOutsideCanvas is false
+          if (((x <= 0) || (x > width) || (y <= 0) || (y > height))
+              && (! extendMovesOutsideCanvas)) {
+            break;
+          }
 
           // Update draggedSprites by adding any that are currently being
           // touched.
@@ -1112,6 +1120,21 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
+  @SimpleProperty(description = 
+      "Determines whether moves can extend beyond the canvas borders.  "  +
+      " Default is false. This should normally be false, and the property " +
+      "is provided for backwards compatibility.",
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = true)
+  public boolean ExtendMovesOutsideCanvas() {
+    return extendMovesOutsideCanvas;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(userVisible = true)
+  public void ExtendMovesOutsideCanvas(boolean extend){
+    extendMovesOutsideCanvas = extend;   
+  }
 
   // Methods supporting event handling
 
