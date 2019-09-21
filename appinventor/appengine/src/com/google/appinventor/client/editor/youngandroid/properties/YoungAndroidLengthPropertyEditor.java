@@ -16,6 +16,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
@@ -34,10 +35,8 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
   private final RadioButton automaticRadioButton;
   private final RadioButton fillParentRadioButton;
   private final RadioButton customLengthRadioButton;
-  private final RadioButton percentfillRadioButton;
   private final TextBox customLengthField;
-  private final TextBox percentLengthField;
-
+  private final ListBox customLengthListValues;
 
   public YoungAndroidLengthPropertyEditor() {
     this(true);
@@ -46,7 +45,7 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
   /**
    * Creates a new length property editor.
    *
-   * @param includePercent  whether to include percent of screen option
+   * @param includePercent whether to include percent of screen option
    */
   public YoungAndroidLengthPropertyEditor(boolean includePercent) {
     // The radio button group cannot be shared across all instances, so we append a unique id.
@@ -54,54 +53,46 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     String radioButtonGroup = "LengthType-" + uniqueId;
     automaticRadioButton = new RadioButton(radioButtonGroup, MESSAGES.automaticCaption());
     fillParentRadioButton = new RadioButton(radioButtonGroup, MESSAGES.fillParentCaption());
-    percentfillRadioButton = new RadioButton(radioButtonGroup);
     customLengthRadioButton = new RadioButton(radioButtonGroup);
     customLengthField = new TextBox();
     customLengthField.setVisibleLength(4);
     customLengthField.setMaxLength(4);
-    percentLengthField = new TextBox();
-    percentLengthField.setVisibleLength(4);
-    percentLengthField.setMaxLength(4);
+
+    customLengthListValues = new ListBox();
+    customLengthListValues.addItem("px");
+
+    if (includePercent) {
+      customLengthListValues.addItem("%");
+    }
 
     Panel customRow = new HorizontalPanel();
     customRow.add(customLengthRadioButton);
     customRow.add(customLengthField);
-    Label pixels = new Label(MESSAGES.pixelsCaption());
-    pixels.setStylePrimaryName("ode-PixelsLabel");
-    customRow.add(pixels);
-
-    Panel percentRow = new HorizontalPanel();
-    percentRow.add(percentfillRadioButton);
-    percentRow.add(percentLengthField);
-    Label percent = new Label(MESSAGES.percentCaption());
-    percent.setStylePrimaryName("ode-PixelsLabel"); // recycle css definition
-    percentRow.add(percent);
+    customRow.add(customLengthListValues);
 
     Panel panel = new VerticalPanel();
     panel.add(automaticRadioButton);
     panel.add(fillParentRadioButton);
     panel.add(customRow);
 
-    if ( includePercent ) {
-      panel.add(percentRow);
-    }
-
     automaticRadioButton.addValueChangeHandler(new ValueChangeHandler() {
       @Override
       public void onValueChange(ValueChangeEvent event) {
-        // Clear the custom and percent length fields.
+        // Clear the custom length fields.
         customLengthField.setText("");
-        percentLengthField.setText("");
+        customLengthListValues.setSelectedIndex(0);
       }
     });
+
     fillParentRadioButton.addValueChangeHandler(new ValueChangeHandler() {
       @Override
       public void onValueChange(ValueChangeEvent event) {
-        // Clear the custom and percent length fields.
+        // Clear the custom length fields.
         customLengthField.setText("");
-        percentLengthField.setText("");
+        customLengthListValues.setSelectedIndex(0);
       }
     });
+
     customLengthField.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -109,19 +100,6 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
         // is not checked, check it.
         if (!customLengthRadioButton.isChecked()) {
           customLengthRadioButton.setChecked(true);
-          percentLengthField.setText("");
-        }
-      }
-    });
-
-    percentLengthField.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        // If the user clicks on the percent length field, but the radio button for a custom length
-        // is not checked, check it.
-        if (!percentfillRadioButton.isChecked()) {
-          percentfillRadioButton.setChecked(true);
-          customLengthField.setText("");
         }
       }
     });
@@ -142,10 +120,12 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
       int v = Integer.parseInt(propertyValue);
       if (v <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         v = (-v) + MockVisibleComponent.LENGTH_PERCENT_TAG;
-        percentfillRadioButton.setChecked(true);
-        percentLengthField.setText("" + v);
+        customLengthRadioButton.setChecked(true);
+        customLengthListValues.setSelectedIndex(1);
+        customLengthField.setText("" + v);
       } else {
         customLengthRadioButton.setChecked(true);
+        customLengthListValues.setSelectedIndex(0);
         customLengthField.setText(propertyValue);
       }
     }
@@ -176,38 +156,43 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     } else if (fillParentRadioButton.isChecked()) {
       property.setValue(CONST_FILL_PARENT);
     } else if (customLengthRadioButton.isChecked()) {
-      // Custom length
       String text = customLengthField.getText();
-      // Make sure it's a non-negative number.  It is important
-      // that this check stay within the custom length case because
-      // CONST_AUTOMATIC and CONST_FILL_PARENT are deliberately negative.
-      boolean success = false;
-      try {
-        if (Integer.parseInt(text) >= 0) {
-          success = true;
+      if (customLengthListValues.getSelectedItemText().equals("px")) { // Customlength
+        // Make sure it's a non-negative number. It is important
+        // that this check stay within the custom length case because
+        // CONST_AUTOMATIC and CONST_FILL_PARENT are deliberately
+        // negative.
+        boolean success = false;
+        try {
+          if (Integer.parseInt(text) >= 0) {
+            success = true;
+          }
+        } catch (NumberFormatException e) {
+          // fall though with success == false
         }
-      } catch (NumberFormatException e) {
-        // fall through with success == false
-      }
-      if (!success) {
-        Window.alert(MESSAGES.nonnumericInputError());
-        return false;
-      }
-      property.setValue(text);
-    } else {                    // Percent field!
-      String text = percentLengthField.getText();
-      boolean success = false;
-      try {
-        int v = Integer.parseInt(text);
-        if (v > 0 && v <= 100) {
-          success = true;
-          property.setValue("" + (-v + MockVisibleComponent.LENGTH_PERCENT_TAG));
+        if (!success) {
+          Window.alert(MESSAGES.nonnumericInputError());
+          return false;
         }
-      } catch (NumberFormatException e) {
-        // fall through with success == false
-      }
-      if (!success) {
-        Window.alert(MESSAGES.nonvalidPercentValue());
+        property.setValue(text);
+      } else if (customLengthListValues.getSelectedItemText().equals("%")) {
+        // Field
+        boolean success = false;
+        try {
+          int v = Integer.parseInt(text);
+          if (v > 0 && v <= 100) {
+            success = true;
+            property.setValue("" + (-v + MockVisibleComponent.LENGTH_PERCENT_TAG));
+          }
+        } catch (NumberFormatException e) {
+          // fall through with success == false
+        }
+        if (!success) {
+          Window.alert(MESSAGES.nonvalidPercentValue());
+          return false;
+        }
+      } else {
+        Window.alert(MESSAGES.unSupportedLengthInputValue());
         return false;
       }
     }
