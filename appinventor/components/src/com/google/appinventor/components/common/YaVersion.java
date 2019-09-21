@@ -471,8 +471,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 25
   // For YOUNG_ANDROID_VERSION 190:
   // - WEB_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 191:
+  // - CANVAS_COMPONENT_VERSION was incremented to 12
 
-  public static final int YOUNG_ANDROID_VERSION = 190;
+  public static final int YOUNG_ANDROID_VERSION = 191;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -700,7 +702,9 @@ public class YaVersion {
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
   // For CANVAS_COMPONENT_VERSION 11:
   // - DrawShape & DrawArc was added
-  public static final int CANVAS_COMPONENT_VERSION = 11;
+  // For CANVAS_COMPONENT_VERSION 12
+  // - ExtendMovesOutsideCanvas was added
+  public static final int CANVAS_COMPONENT_VERSION = 12;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
