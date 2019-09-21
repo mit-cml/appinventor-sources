@@ -378,7 +378,6 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       description = "How the %type% should be layered relative to other Balls and ImageSprites, " +
           "with higher-numbered layers in front of lower-numbered layers.")
-  @DesignerProperty
   public double Z() {
     return zLayer;
   }
