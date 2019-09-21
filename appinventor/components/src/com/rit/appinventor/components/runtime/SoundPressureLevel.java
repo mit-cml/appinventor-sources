@@ -1,6 +1,7 @@
 package com.rit.appinventor.components.runtime;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -39,8 +40,12 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private static final int channelConfig = CHANNEL_IN_MONO;
     private static final int audioFormat = ENCODING_PCM_16BIT;
     private AudioRecord recorder;
+    Handler splHandler;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
-    private double currentSoundPressureLevel = 0;
+    private short currentSoundPressureLevel = 0;
+    private int counter = 0;
+    private Runnable call;
+    private Runnable callback;
 
     public SoundPressureLevel(ComponentContainer container) {
         super(container.$form());
@@ -49,6 +54,26 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         form.registerForOnResume(this);
         form.registerForOnStop(this);
         Enabled(true);
+        splHandler = new Handler();
+        call = new Runnable() {
+            @Override
+            public void run() {
+                analyzeSoundData();
+		try {
+			Thread.sleep(500);
+		}
+		catch (InterruptedException e) {
+		
+		}
+            }
+        };
+        callback = new Runnable() {
+            @Override
+            public void run() {
+                onSoundPressureLevelChanged();
+            }
+        };
+        AsynchUtil.runAsynchronously(splHandler,call, callback);
         Log.d(LOG_TAG, "spl created");
     }
 
@@ -73,16 +98,17 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         }
     }
 
-    public void onSoundPressureLevelChanged(double audioData) {
+    public void onSoundPressureLevelChanged() {
         if (isEnabled) {
-            SoundPressureLevelChanged(audioData);
+            for (short data:audioData) {
+                SoundPressureLevelChanged(data);
+            }
         }
     }
 
-    public void analyzeSoundData(AudioRecord recorder) {
-        double spldata = 0;
+    public void analyzeSoundData() {
+        short spldata = 0;
         recorder.read(audioData, 0, minBufferSize);
-        this.onSoundPressureLevelChanged(spldata);
     }
 
     /**
@@ -156,11 +182,17 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         return currentSoundPressureLevel;
     }
 
+    @SimpleProperty(
+            category = PropertyCategory.BEHAVIOR)
+    public double SoundPressureLevelCounter() {
+        return counter;
+    }
+
     /**
      * Indicates the sound pressure level has changed
      */
     @SimpleEvent
-    public void SoundPressureLevelChanged(double decibels) {
+    public void SoundPressureLevelChanged(short decibels) {
         this.currentSoundPressureLevel = decibels;
         EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
     }
