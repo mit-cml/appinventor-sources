@@ -508,6 +508,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 6) {
       // The OriginAtCenter property was added.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
