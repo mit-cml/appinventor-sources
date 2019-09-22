@@ -473,6 +473,8 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 191:
   // - CANVAS_COMPONENT_VERSION was incremented to 12
+  // For YOUNG_ANDROID_VERSION 191:
+  // - BALL_COMPONENT_VERSION was incremented to 6
 
   public static final int YOUNG_ANDROID_VERSION = 191;
 
@@ -481,9 +483,7 @@ public class YaVersion {
   // NOTE(lizlooney,user) - when the blocks language changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
-  // 3. ***Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
-  // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
-  // *** BlockSaveFile is no longer used in App Inventor 2 (Feb. 2014)
+  // 3. Add code in YoungAndroidFormUpgrader to upgrade the source file
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -629,7 +629,9 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For BALL_COMPONENT_VERSION 5:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int BALL_COMPONENT_VERSION = 5;
+  // For BALL_COMPONENT_VERSION 6:
+  // - The CenterAtOrigin property was added
+  public static final int BALL_COMPONENT_VERSION = 6;
 
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
