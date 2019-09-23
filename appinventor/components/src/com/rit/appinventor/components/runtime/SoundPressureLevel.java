@@ -69,7 +69,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
 	                    onSoundPressureLevelChanged(data);
 	                }
 	                try {
-	                    Thread.sleep(2000);
+	                    Thread.sleep(500);
         	        } catch (InterruptedException e) {
         		    Log.d(LOG_TAG, "spl thread sleep error");
                 	}
@@ -80,7 +80,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         if (isListening == false) {
             startListening();
         }
-        soundChecker.run();
+        soundChecker.start();
         Log.d(LOG_TAG, "spl created");
     }
 
