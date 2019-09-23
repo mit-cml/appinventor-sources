@@ -90,4 +90,10 @@
  */
 + (SCMMethod *)setterForProperty:(const char *)name inClass:(Class)clazz withType:(NSString *)type;
 
+/**
+ * Register a protocol for a given name. This was introduced for iOS 13 where for some reason
+ * NSProtocolFromString no longer returns protocols in production.
+ */
++ (void)registerProtocol:(Protocol *)proto forName:(NSString *)name;
+
 @end

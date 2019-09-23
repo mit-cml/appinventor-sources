@@ -13,6 +13,7 @@
 static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod *> *> *methodLookupDict = nil;
 static NSString *JAVA_PACKAGE = @"com.google.appinventor.components.runtime";
 static NSString *SWIFT_PACKAGE = @"AIComponentKit";
+static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil;
 
 @implementation SCMNameResolver
 
@@ -91,7 +92,11 @@ static NSString *SWIFT_PACKAGE = @"AIComponentKit";
   if ([localName hasPrefix:JAVA_PACKAGE]) {
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
   }
-  return NSProtocolFromString(localName);
+  Protocol *result = NSProtocolFromString(localName);
+  if (preregisteredProtocols && !result) {
+    result = preregisteredProtocols[[NSString stringWithCString:name encoding:NSUTF8StringEncoding]];
+  }
+  return result;
 }
 
 
@@ -139,6 +144,13 @@ static NSString *SWIFT_PACKAGE = @"AIComponentKit";
   SCMMethod *method = methods[setterName];
   // TODO(ewpatton): Implement logic to check argument type
   return method;
+}
+
++ (void)registerProtocol:(Protocol *)proto forName:(NSString *)name {
+  if (!preregisteredProtocols) {
+    preregisteredProtocols = [[NSMutableDictionary alloc] init];
+  }
+  preregisteredProtocols[name] = proto;
 }
 
 @end
