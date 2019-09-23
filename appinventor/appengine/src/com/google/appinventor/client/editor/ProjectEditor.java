@@ -51,8 +51,6 @@ public abstract class ProjectEditor extends Composite {
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
-  HashMap<VerticalPanel, Boolean> screenHashMap = new HashMap<VerticalPanel, Boolean>();
-  HashMap<VerticalPanel, List<MockComponent>> componentHashMap = new HashMap<VerticalPanel, List<MockComponent>>();
 
   /**
    * Creates a {@code ProjectEditor} instance.
@@ -249,28 +247,6 @@ public abstract class ProjectEditor extends Composite {
       }
       ode.getEditorManager().scheduleAutoSave(projectSettings);
     }
-  }
-
-  public final VerticalPanel getScreen(MockComponent component) {
-    for (VerticalPanel screen : componentHashMap.keySet()) {
-      List<MockComponent> components = componentHashMap.get(screen);
-      if (components.contains(component)) {
-        return screen;
-      }
-    }
-    return null;
-  }
-
-  public final void setScreen(VerticalPanel screen, List<MockComponent> components) {
-    componentHashMap.put(screen, components);
-  }
-
-  public final Boolean getScreenComponentVisibility(VerticalPanel screen) {
-    return screenHashMap.get(screen);
-  }
-
-  public final void setScreenComponentVisiblity(VerticalPanel screen, Boolean showVisibleComponents) {
-    screenHashMap.put(screen, showVisibleComponents);
   }
 
   /**

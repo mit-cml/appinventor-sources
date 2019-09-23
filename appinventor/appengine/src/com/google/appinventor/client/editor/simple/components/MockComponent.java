@@ -1000,10 +1000,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // If this component's visible property is false, we need to check whether to show hidden
       // components.
       if (!visible) {
-        ProjectEditor projectEditor = editor.getProjectEditor();
-        VerticalPanel screen = projectEditor.getScreen(this);
-        Boolean showHiddenComponents = (screen != null) ? editor.getProjectEditor().getScreenComponentVisibility(screen) : false;
-        return (showHiddenComponents != null) ? showHiddenComponents : false;
+        YaFormEditor formEditor = (YaFormEditor) editor;
+        return formEditor.shouldDisplayHiddenComponents();
       }
     }
     return true;

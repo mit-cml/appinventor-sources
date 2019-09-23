@@ -36,7 +36,7 @@ import java.util.Map;
 public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
   // UI elements
   private final VerticalPanel phoneScreen;
-  private final CheckBox checkboxShowHiddenComponents;
+  public final CheckBox checkboxShowHiddenComponents;
   private final ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
 
@@ -65,21 +65,11 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
 
     checkboxShowHiddenComponents = new CheckBox(MESSAGES.showHiddenComponentsCheckbox()) {
       @Override
-      protected void onLoad() {
-        Boolean isChecked = projectEditor.getScreenComponentVisibility(phoneScreen);
-        List<MockComponent> components = new ArrayList<MockComponent>(form.getEditor().getComponents().values());
-        projectEditor.setScreen(phoneScreen, components);
-        projectEditor.setScreenComponentVisiblity(phoneScreen, isChecked == null ? false : isChecked);
-        checkboxShowHiddenComponents.setValue(isChecked == null ? false : isChecked);
-      }
+      protected void onLoad() {}
     };
     checkboxShowHiddenComponents.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
-        Boolean isChecked = event.getValue();
-        List<MockComponent> components = new ArrayList<MockComponent>(form.getEditor().getComponents().values());
-        projectEditor.setScreen(phoneScreen, components);
-        projectEditor.setScreenComponentVisiblity(phoneScreen, isChecked);
         if (form != null) {
           form.refresh();
         }
