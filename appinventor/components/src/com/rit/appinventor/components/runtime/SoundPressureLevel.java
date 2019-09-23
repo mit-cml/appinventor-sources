@@ -3,6 +3,7 @@ package com.rit.appinventor.components.runtime;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -61,20 +62,25 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         soundChecker = new Thread(new Runnable(){
             @Override
             public void run() {
-		while(threadRunning){
-        		Log.d(LOG_TAG, "spl thread loop");
-	                if (isRecording) {
-        		    Log.d(LOG_TAG, "spl thread isRecording");
-	                    short[] data = analyzeSoundData();
-	                    onSoundPressureLevelChanged(data);
-	                }
-	                try {
-	                    Thread.sleep(500);
-        	        } catch (InterruptedException e) {
-        		    Log.d(LOG_TAG, "spl thread sleep error");
-                	}
-		}
-        	Log.d(LOG_TAG, "spl thread end");
+                while(threadRunning){
+                Log.d(LOG_TAG, "spl thread loop");
+                    if (isRecording) {
+                        Log.d(LOG_TAG, "spl thread isRecording");
+                        final Pair<short[], Integer> tuple = analyzeSoundData();
+                        form.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                onSoundPressureLevelChanged(tuple);
+                            }
+                        });
+                    }
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Log.d(LOG_TAG, "spl thread sleep error");
+                    }
+                }
+                Log.d(LOG_TAG, "spl thread end");
             }
         });
         if (isListening == false) {
@@ -88,13 +94,12 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     public void onDelete() {
         if (isEnabled) {
             try {
-        	Log.d(LOG_TAG, "spl joining thread");
-		threadRunning = false;
+                Log.d(LOG_TAG, "spl joining thread");
+                threadRunning = false;
                 soundChecker.join();
             }
-            catch (InterruptedException e)
-            {
-
+            catch (InterruptedException e) {
+                Log.d(LOG_TAG,"spl error joining thread");
             }
             stopListening();
         }
@@ -105,7 +110,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         if (isEnabled) {
             startListening();
             if (threadSuspended) {
-        	Log.d(LOG_TAG, "spl restarting thread");
+                Log.d(LOG_TAG, "spl restarting thread");
                 soundChecker.start();
                 threadSuspended = false;
             }
@@ -116,29 +121,39 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     public void onStop() {
         if (isEnabled) {
             stopListening();
-	    if (!threadSuspended) {
-        	Log.d(LOG_TAG, "spl suspend thrad");
-            	threadSuspended = true;
-            	soundChecker.suspend();
-	    }
-        }
-    }
-
-    public void onSoundPressureLevelChanged(short[] soundData) {
-        if (isEnabled) {
-            Log.d(LOG_TAG, "spl onSoundPressueLevelChange");
-            for (short data:soundData) {
-                SoundPressureLevelChanged(data);
+            if (!threadSuspended) {
+                Log.d(LOG_TAG, "spl suspend thrad");
+                threadSuspended = true;
+                soundChecker.suspend();
             }
         }
     }
 
-    public short[] analyzeSoundData() {
+    public void onSoundPressureLevelChanged(Pair<short[], Integer> tuple) {
+        if (isEnabled) {
+            Log.d(LOG_TAG, "spl onSoundPressueLevelChange");
+            short[] soundData = tuple.first;
+            Integer length = tuple.second;
+            short data = 100;
+            Log.d(LOG_TAG,"About to add all sound data");
+            //for (int i = 0; i < length; i++) { TODO Bug causing app to crash in here. Pass on '100' as the average sound value collected for now.
+            //    data+=soundData[length];
+            //    Log.d(LOG_TAG,String.format("spl data: %d item %d of %d",data,i,length));
+            //}
+            //Log.d(LOG_TAG,"spl found 'total' sound data to be " + String.valueOf(data));
+            //data = (short) (data/length);
+            Log.d(LOG_TAG,String.format("spl average sound data %d from length of buffer %d",data,length));
+            SoundPressureLevelChanged(data);
+        }
+    }
+
+    public Pair<short[], Integer> analyzeSoundData() {
         Log.d(LOG_TAG, "spl analyzeSoundData");
         short spldata = 0;
         short recAudioData [] = new short[minBufferSize];
-        recorder.read(recAudioData, 0, minBufferSize);
-        return recAudioData;
+        int length = recorder.read(recAudioData, 0, minBufferSize);
+        Pair<short[], Integer> tuple = new Pair<short[],Integer>(recAudioData,length);
+        return tuple;
     }
 
     /**
@@ -192,19 +207,14 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public boolean Available() {
-	
+
         Log.d(LOG_TAG, "spl Available call");
         AudioRecord testRecorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
         testRecorder.startRecording();
         boolean isAvailable = testRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
         testRecorder.stop();
         testRecorder.release();
-	if(isAvailable){ //TODO Clean up with String concat
-	        Log.d(LOG_TAG, "spl is Available");
-	}
-	else {
-        	Log.d(LOG_TAG, "spl is not Available");
-	}
+        Log.d(LOG_TAG,"spl Availability: " + String.valueOf(isAvailable));
         return isAvailable;
     }
 
