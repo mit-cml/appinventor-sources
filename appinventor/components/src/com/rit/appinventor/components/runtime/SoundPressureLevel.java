@@ -134,14 +134,16 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             Log.d(LOG_TAG, "spl onSoundPressueLevelChange");
             short[] soundData = tuple.first;
             Integer length = tuple.second;
-            short data = 100;
+            short data = 0;
             Log.d(LOG_TAG,"About to add all sound data");
-            //for (int i = 0; i < length; i++) { TODO Bug causing app to crash in here. Pass on '100' as the average sound value collected for now.
-            //    data+=soundData[length];
-            //    Log.d(LOG_TAG,String.format("spl data: %d item %d of %d",data,i,length));
-            //}
-            //Log.d(LOG_TAG,"spl found 'total' sound data to be " + String.valueOf(data));
-            //data = (short) (data/length);
+            for (int i = 0; i < length; i++) {
+                //Log.d(LOG_TAG,String.format("data point number %d",i));
+                //Log.d(LOG_TAG,String.format("spl adding %d to %d",soundData[i],data));
+                data+=soundData[i];
+                //Log.d(LOG_TAG,String.format("spl data: %d item %d of %d",data,i,length));
+            }
+            Log.d(LOG_TAG,"spl found 'total' sound data to be " + String.valueOf(data));
+            data = (short) (data/length);
             Log.d(LOG_TAG,String.format("spl average sound data %d from length of buffer %d",data,length));
             SoundPressureLevelChanged(data);
         }
