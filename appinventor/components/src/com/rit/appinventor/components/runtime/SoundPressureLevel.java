@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Environment;
+import android.content.pm.PackageManager;
 
 import static android.media.AudioFormat.CHANNEL_IN_MONO;
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
@@ -34,7 +35,6 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
 
     private final static String LOG_TAG = "SoundPressureLevel";
     private boolean isEnabled;
-    private short audioData [] = new short[minBufferSize];
     private static final int audioSource = MIC;
     private static final int sampleRateInHz = 44100;
     private static final int channelConfig = CHANNEL_IN_MONO;
@@ -44,8 +44,11 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
     private short currentSoundPressureLevel = 0;
     private int counter = 0;
-    private Runnable call;
-    private Runnable callback;
+    private boolean isListening;
+    Thread soundChecker;
+    private boolean threadSuspended;
+    private boolean isRecording;
+    private boolean threadRunning = true;
 
     public SoundPressureLevel(ComponentContainer container) {
         super(container.$form());
@@ -55,31 +58,44 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         form.registerForOnStop(this);
         Enabled(true);
         splHandler = new Handler();
-        call = new Runnable() {
+        soundChecker = new Thread(new Runnable(){
             @Override
             public void run() {
-                analyzeSoundData();
-		try {
-			Thread.sleep(500);
+		while(threadRunning){
+        		Log.d(LOG_TAG, "spl thread loop");
+	                if (isRecording) {
+        		    Log.d(LOG_TAG, "spl thread isRecording");
+	                    short[] data = analyzeSoundData();
+	                    onSoundPressureLevelChanged(data);
+	                }
+	                try {
+	                    Thread.sleep(2000);
+        	        } catch (InterruptedException e) {
+        		    Log.d(LOG_TAG, "spl thread sleep error");
+                	}
 		}
-		catch (InterruptedException e) {
-		
-		}
+        	Log.d(LOG_TAG, "spl thread end");
             }
-        };
-        callback = new Runnable() {
-            @Override
-            public void run() {
-                onSoundPressureLevelChanged();
-            }
-        };
-        AsynchUtil.runAsynchronously(splHandler,call, callback);
+        });
+        if (isListening == false) {
+            startListening();
+        }
+        soundChecker.run();
         Log.d(LOG_TAG, "spl created");
     }
 
     @Override
     public void onDelete() {
         if (isEnabled) {
+            try {
+        	Log.d(LOG_TAG, "spl joining thread");
+		threadRunning = false;
+                soundChecker.join();
+            }
+            catch (InterruptedException e)
+            {
+
+            }
             stopListening();
         }
     }
@@ -88,6 +104,11 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     public void onResume() {
         if (isEnabled) {
             startListening();
+            if (threadSuspended) {
+        	Log.d(LOG_TAG, "spl restarting thread");
+                soundChecker.start();
+                threadSuspended = false;
+            }
         }
     }
 
@@ -95,34 +116,49 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     public void onStop() {
         if (isEnabled) {
             stopListening();
+	    if (!threadSuspended) {
+        	Log.d(LOG_TAG, "spl suspend thrad");
+            	threadSuspended = true;
+            	soundChecker.suspend();
+	    }
         }
     }
 
-    public void onSoundPressureLevelChanged() {
+    public void onSoundPressureLevelChanged(short[] soundData) {
         if (isEnabled) {
-            for (short data:audioData) {
+            Log.d(LOG_TAG, "spl onSoundPressueLevelChange");
+            for (short data:soundData) {
                 SoundPressureLevelChanged(data);
             }
         }
     }
 
-    public void analyzeSoundData() {
+    public short[] analyzeSoundData() {
+        Log.d(LOG_TAG, "spl analyzeSoundData");
         short spldata = 0;
-        recorder.read(audioData, 0, minBufferSize);
+        short recAudioData [] = new short[minBufferSize];
+        recorder.read(recAudioData, 0, minBufferSize);
+        return recAudioData;
     }
 
     /**
      * Assumes that audioRecord has been initialized, which happens in constructor
      */
     private void startListening() {
-        recorder.startRecording();
+        if(recorder != null) {
+            recorder.startRecording();
+            isRecording = true;
+        }
     }
 
     /**
      * Assumes that audioRecord has been initialized, which happens in constructor
      */
     private void stopListening() {
-        recorder.stop();
+        if (recorder != null) {
+            recorder.stop();
+            isRecording = false;
+        }
     }
 
     /**
@@ -156,10 +192,19 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public boolean Available() {
-        recorder.startRecording();
-        boolean isAvailable = recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
-        recorder.stop();
-        recorder.release();
+	
+        Log.d(LOG_TAG, "spl Available call");
+        AudioRecord testRecorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
+        testRecorder.startRecording();
+        boolean isAvailable = testRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
+        testRecorder.stop();
+        testRecorder.release();
+	if(isAvailable){ //TODO Clean up with String concat
+	        Log.d(LOG_TAG, "spl is Available");
+	}
+	else {
+        	Log.d(LOG_TAG, "spl is not Available");
+	}
         return isAvailable;
     }
 
