@@ -26,7 +26,7 @@ import static android.media.MediaRecorder.AudioSource.MIC;
 
 @DesignerComponent(version = YaVersion.SOUNDPRESSURELEVEL_COMPONENT_VERSION,
         description = "Non-visible component that can collect sound pressure level data",
-        category = ComponentCategory.SENSORS,
+        category = ComponentCategory.EXTENSION,
         nonVisible = true,
         iconName = "images/extension.png")
 @SimpleObject(external = true)
