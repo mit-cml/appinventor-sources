@@ -42,6 +42,25 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     //pushViewController(form, animated: false);
     ViewController.controller = self
   }
+
+  // We override this function to handle the Form's ScreenOrientation setting.
+  open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    guard form != nil else {
+      return .all
+    }
+    switch form.ScreenOrientation {
+    case "portrait":
+      return .portrait
+    case "landscape":
+      return .landscape
+    default:
+      return .all
+    }
+  }
+
+  open override var shouldAutorotate: Bool {
+    return true
+  }
   
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)

@@ -39,6 +39,7 @@ import Toast_Swift
   // For screen switching
   var lastFormName = ""
   var formResult: AnyObject?
+  private var _orientation = "unspecified"
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -249,6 +250,7 @@ import Toast_Swift
     ShowStatusBar = true
     TitleVisible = true
     ShowListsAsJson = false
+    ScreenOrientation = "unspecified"
   }
   
   // MARK: Form Properties
@@ -421,10 +423,18 @@ import Toast_Swift
 
   @objc open var ScreenOrientation: String {
     get {
-      return "portrait"
+      return _orientation
     }
     set(orientation) {
-      
+      _orientation = orientation
+      if _orientation == "portrait" {
+        UIDevice.current.setValue(UIDeviceOrientation.portrait.rawValue, forKey: "orientation")
+      } else if _orientation == "landscape" {
+        UIDevice.current.setValue(UIDeviceOrientation.landscapeLeft.rawValue, forKey: "orientation")
+      } else {
+        UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
+      }
+      UINavigationController.attemptRotationToDeviceOrientation()
     }
   }
 
