@@ -144,7 +144,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
 
             //Find SPL of sound.
             double dBs = calcDeciBels(rms);
-            Log.d(LOG_TAG,String.format("spl %f dBs",rms));
+            Log.d(LOG_TAG,String.format("spl %f dBs",dBs));
 
             //Round to the tenths decimal place.
             dBs = Math.round(dBs*10)/10;
