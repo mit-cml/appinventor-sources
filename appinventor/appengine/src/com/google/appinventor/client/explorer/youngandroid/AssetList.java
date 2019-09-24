@@ -22,8 +22,11 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
@@ -47,6 +50,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
   private long projectId;
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
+  private int clientX;
+  private int clientY;
 
   /**
    * Creates a new AssetList
@@ -81,6 +86,15 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
     initWidget(panel);
 
+    assetList.setScrollOnSelectEnabled(false);
+    assetList.sinkEvents(Event.ONMOUSEMOVE);
+    assetList.addMouseMoveHandler(new MouseMoveHandler() {
+      @Override
+      public void onMouseMove(MouseMoveEvent event) {
+        clientX = event.getClientX();
+        clientY = event.getClientY();
+      }
+    });
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
@@ -88,7 +102,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         ProjectNode node = (ProjectNode) selected.getUserObject();
         // The actual menu is determined by what is registered for the filenode
         // type in CommandRegistry.java
-        ProjectNodeContextMenu.show(node, selected.getWidget());
+        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
       }});
   }
 
