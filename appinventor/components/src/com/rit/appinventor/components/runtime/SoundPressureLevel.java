@@ -43,7 +43,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private AudioRecord recorder;
     Handler splHandler;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
-    private short currentSoundPressureLevel = 0;
+    private double currentSoundPressureLevel = 0;
     private int counter = 0;
     private boolean isListening;
     Thread soundChecker;
@@ -134,19 +134,50 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             Log.d(LOG_TAG, "spl onSoundPressueLevelChange");
             short[] soundData = tuple.first;
             Integer length = tuple.second;
-            short data = 0;
-            Log.d(LOG_TAG,"About to add all sound data");
-            for (int i = 0; i < length; i++) {
-                //Log.d(LOG_TAG,String.format("data point number %d",i));
-                //Log.d(LOG_TAG,String.format("spl adding %d to %d",soundData[i],data));
-                data+=soundData[i];
-                //Log.d(LOG_TAG,String.format("spl data: %d item %d of %d",data,i,length));
-            }
-            Log.d(LOG_TAG,"spl found 'total' sound data to be " + String.valueOf(data));
-            data = (short) (data/length);
-            Log.d(LOG_TAG,String.format("spl average sound data %d from length of buffer %d",data,length));
-            SoundPressureLevelChanged(data);
+            double data = 0;
+
+            //Find root mean square of sound.
+            double rms = calcRootMeanSquare(soundData,length);
+            Log.d(LOG_TAG,String.format("spl RMS %f",rms));
+
+            //Find SPL of sound.
+            double dBs = calcDeciBels(rms);
+            Log.d(LOG_TAG,String.format("spl %f dBs",rms));
+
+            SoundPressureLevelChanged(dBs);
         }
+    }
+
+    /**
+     * Calculates the root mean square of sound data.
+     * Follows the formula rms=sqrt((p^2)_average)
+     * @param soundData
+     * @param numSamples
+     * @return
+     */
+    private double calcRootMeanSquare(short[] soundData, int numSamples) {
+        //Find Root Square Mean of sound clip.
+        double rms;
+        double data = 0;
+        for (int i = 0; i < numSamples; i++) {
+            data+=Math.pow(soundData[i],2);
+        }
+        data = (data/numSamples);
+        rms = Math.sqrt(data);
+        return rms;
+    }
+
+    /**
+     * Calculates the Sound Pressure Level in dBs of the sound pressue in pascals.
+     * Follows the formula spl = 20*log10(p/pRef) where p is the current pressue in pascals,
+     * pRef is smallest sound humans can hear at 2*10^-5 pascals.
+     * @param p
+     * @return
+     */
+    private double calcDeciBels(double p) {
+        double pRef = 2*Math.pow(10,-5);
+        double dBs = 20*Math.log10(p/pRef);
+        return dBs;
     }
 
     public Pair<short[], Integer> analyzeSoundData() {
@@ -249,7 +280,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * Indicates the sound pressure level has changed
      */
     @SimpleEvent
-    public void SoundPressureLevelChanged(short decibels) {
+    public void SoundPressureLevelChanged(double decibels) {
         this.currentSoundPressureLevel = decibels;
         EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
     }
