@@ -44,7 +44,6 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     Handler splHandler;
     private static final int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz,channelConfig,audioFormat);
     private double currentSoundPressureLevel = 0;
-    private int counter = 0;
     private boolean isListening;
     Thread soundChecker;
     private boolean threadSuspended;
@@ -136,16 +135,40 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             Integer length = tuple.second;
             double data = 0;
 
+            //Convert data from mic to pressure in pascals.
+            double[] soundSamplePressure = convertMicVoltageToPressure(soundData);
+
             //Find root mean square of sound.
-            double rms = calcRootMeanSquare(soundData,length);
+            double rms = calcRootMeanSquare(soundSamplePressure,length);
             Log.d(LOG_TAG,String.format("spl RMS %f",rms));
 
             //Find SPL of sound.
             double dBs = calcDeciBels(rms);
             Log.d(LOG_TAG,String.format("spl %f dBs",rms));
 
+            //Round to the tenths decimal place.
+            dBs = Math.round(dBs*10)/10;
+
             SoundPressureLevelChanged(dBs);
         }
+    }
+
+    /**
+     * Converts Mic Voltage represented by a short to the pressure experienced by the mic.
+     *
+     * Max short value is 32,767, most smartphone microphones are accurate until about
+     * 90dB or 0.6325 pascals. 32,767/0.6325 = 51,805.5336, which will be the value used
+     * to convert between microphone data and pascals.
+     *
+     * @param soundData
+     * @return
+     */
+    private double[] convertMicVoltageToPressure(short[] soundData) {
+        double[] soundPressures = new double[soundData.length];
+        for (int i = 0; i < soundData.length; i++) {
+            soundPressures[i] = soundData[i]/51805.5336;
+        }
+        return soundPressures;
     }
 
     /**
@@ -155,7 +178,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * @param numSamples
      * @return
      */
-    private double calcRootMeanSquare(short[] soundData, int numSamples) {
+    private double calcRootMeanSquare(double[] soundData, int numSamples) {
         //Find Root Square Mean of sound clip.
         double rms;
         double data = 0;
@@ -268,12 +291,6 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             category = PropertyCategory.BEHAVIOR)
     public double SoundPressureLevel() {
         return currentSoundPressureLevel;
-    }
-
-    @SimpleProperty(
-            category = PropertyCategory.BEHAVIOR)
-    public double SoundPressureLevelCounter() {
-        return counter;
     }
 
     /**
