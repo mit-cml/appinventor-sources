@@ -25,7 +25,7 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     super.init(parent)
     super.setDelegate(self)
     
-    _viewController = getDateTimePickerController(self, isDatePicker: false, isPhone: _isPhone)
+    _viewController = getDateTimePickerController(self, screen: parent.form, isDatePicker: false, isPhone: _isPhone)
     _viewController?.setDateTime(calendar)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)

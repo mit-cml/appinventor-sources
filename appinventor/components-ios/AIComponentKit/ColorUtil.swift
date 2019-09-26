@@ -48,3 +48,23 @@ public func rgbArrayToInt32(_ rgb: [Int]) -> Int32 {
   argb |= ((Int32)(b & 0xFF))
   return argb
 }
+
+public func preferredBackgroundColor(_ form: Form) -> UIColor {
+  if #available(iOS 13.0, *) {
+    return UIColor.systemBackground
+  } else if form.Theme == "Dark" {
+    return UIColor.black
+  } else {
+    return UIColor.white
+  }
+}
+
+public func preferredTextColor(_ form: Form) -> UIColor {
+  if #available(iOS 13.0, *) {
+    return UIColor.label
+  } else if form.Theme == "Dark" {
+    return UIColor.white
+  } else {
+    return UIColor.black
+  }
+}

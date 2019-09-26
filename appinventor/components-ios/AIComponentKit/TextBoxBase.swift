@@ -44,6 +44,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     widthConstraint.priority = UILayoutPriority.defaultHigh
     widthConstraint.isActive = true
     FontSize = 14.0
+    TextColor = Color.default.int32
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForTextBox) {
@@ -170,7 +171,11 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
     set(argb) {
       _textColor = argb
-      _delegate?.textColor = argbToColor(argb)
+      if _textColor == Color.default.int32 {
+        _delegate?.textColor = preferredTextColor(_container.form)
+      } else {
+        _delegate?.textColor = argbToColor(argb)
+      }
     }
   }
   

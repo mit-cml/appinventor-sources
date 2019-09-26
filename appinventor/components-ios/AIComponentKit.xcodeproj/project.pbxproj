@@ -45,6 +45,7 @@
 		0644F7031F38EDF200642E4D /* LinearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F7021F38EDF200642E4D /* LinearView.swift */; };
 		06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06473B841F327E5400A9A29B /* TextToSpeech.swift */; };
 		064884D621E682EA0086411C /* iOS9Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064884D521E682EA0086411C /* iOS9Util.swift */; };
+		064E097E233BDBE400884FEF /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 064E097D233BDBE400884FEF /* Media.xcassets */; };
 		06500854208E331900AC1327 /* UIView+AIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06500853208E331900AC1327 /* UIView+AIHelpers.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
@@ -258,6 +259,7 @@
 		0644F7021F38EDF200642E4D /* LinearView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearView.swift; sourceTree = "<group>"; };
 		06473B841F327E5400A9A29B /* TextToSpeech.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextToSpeech.swift; sourceTree = "<group>"; };
 		064884D521E682EA0086411C /* iOS9Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS9Util.swift; sourceTree = "<group>"; };
+		064E097D233BDBE400884FEF /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		06500853208E331900AC1327 /* UIView+AIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+AIHelpers.swift"; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
@@ -506,6 +508,7 @@
 				061DC7AF223C34A900539213 /* classic_button.png */,
 				060395431F342ADE006D6E66 /* language-codes.plist */,
 				060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */,
+				064E097D233BDBE400884FEF /* Media.xcassets */,
 				06B2161E1DBDA4B4000B3366 /* runtime.scm */,
 				DE6D5A0E20FEA8D9003B2C67 /* checked.svg */,
 				DE6D5A0A20FE9E8C003B2C67 /* unchecked.svg */,
@@ -998,6 +1001,7 @@
 				DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */,
 				DE962F5F20ADCD2C004AA45A /* comodo_usrtrust.der in Resources */,
 				DE962F6420ADCDA0004AA45A /* pop_script in Resources */,
+				064E097E233BDBE400884FEF /* Media.xcassets in Resources */,
 				06B216201DBDACBF000B3366 /* runtime.scm in Resources */,
 				061DC7B0223C34A900539213 /* classic_button.png in Resources */,
 				061DC7B4223C396000539213 /* classic_button.disabled.png in Resources */,

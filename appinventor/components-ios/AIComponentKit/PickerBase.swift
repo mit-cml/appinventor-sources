@@ -33,7 +33,7 @@ class PickerPhoneController: UIViewController {
   private var _toolBar = UIToolbar()
   private var _contentView: UIView
 
-  @objc public init(contentView: UIView) {
+  @objc public init(contentView: UIView, screen form: Form) {
     _contentView = contentView
     super.init(nibName: nil, bundle: nil)
     modalPresentationStyle = .custom
@@ -44,7 +44,7 @@ class PickerPhoneController: UIViewController {
     _toolBar.setItems([doneButton, flexibleSpace, cancelButton], animated: true)
     _toolBar.isUserInteractionEnabled = true
     _toolBar.sizeToFit()
-    _contentView.backgroundColor = .white
+    _contentView.backgroundColor = preferredBackgroundColor(form)
   }
 
   public override func viewDidLoad() {

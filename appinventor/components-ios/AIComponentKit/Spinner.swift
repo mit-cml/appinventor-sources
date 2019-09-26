@@ -59,10 +59,10 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
   fileprivate var _pickerView: UIPickerView
   fileprivate var _delegate: SpinnerDelegate
 
-  public init(_ delegateDataSource: SpinnerDelegate) {
+  public init(_ delegateDataSource: SpinnerDelegate, screen form: Form) {
     _pickerView = UIPickerView()
     _delegate = delegateDataSource
-    super.init(contentView: _pickerView)
+    super.init(contentView: _pickerView, screen: form)
     _pickerView.delegate = delegateDataSource
     _pickerView.dataSource = delegateDataSource
   }
@@ -104,7 +104,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     super.init(parent)
     super.setDelegate(self)
     if _isPhone {
-      _viewController = SpinnerPhoneController(self)
+      _viewController = SpinnerPhoneController(self, screen: parent.form)
     } else {
       _viewController = SpinnerPadController(self)
     }

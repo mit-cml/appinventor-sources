@@ -28,6 +28,7 @@ import Toast_Swift
   fileprivate var _title = "Screen1"
   fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
   fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
+  private var _backgroundColor: Int32 = Color.default.int32
   fileprivate var _backgroundImage = ""
   fileprivate var _screenInitialized = false
   fileprivate var _startText = ""
@@ -243,7 +244,7 @@ import Toast_Swift
     Sizing = "Fixed"
     BackgroundImage = ""
     AboutScreen = ""
-    BackgroundColor = Int32(bitPattern: Color.white.rawValue)
+    BackgroundColor = Int32(bitPattern: Color.default.rawValue)
     AlignHorizontal = HorizontalGravity.left.rawValue
     AlignVertical = VerticalGravity.top.rawValue
     self.title = ""
@@ -320,10 +321,15 @@ import Toast_Swift
 
   @objc open var BackgroundColor: Int32 {
     get {
-      return colorToArgb(self.view.backgroundColor!)
+      return _backgroundColor
     }
     set(argb) {
-      self.view.backgroundColor = argbToColor(argb)
+      _backgroundColor = argb
+      if argb == Color.default.int32 {
+        view.backgroundColor = preferredBackgroundColor(self)
+      } else {
+        self.view.backgroundColor = argbToColor(argb)
+      }
     }
   }
 
@@ -492,6 +498,9 @@ import Toast_Swift
       let newTheme = AIComponentKit.Theme.fromString(value)
       if _theme != newTheme {
         _theme = newTheme
+      }
+      if _backgroundColor == Color.default.int32 {
+        view.backgroundColor = preferredBackgroundColor(self)
       }
       updateNavbar()
     }

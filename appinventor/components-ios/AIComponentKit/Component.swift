@@ -44,6 +44,10 @@ public enum Color: UInt32 {
   public var int32: Int32 {
     return Int32(bitPattern: self.rawValue)
   }
+
+  public var uiColor: UIColor {
+    return argbToColor(self.int32)
+  }
 }
 
 public enum DefaultValueColor: String {

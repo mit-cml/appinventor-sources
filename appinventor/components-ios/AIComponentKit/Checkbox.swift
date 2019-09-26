@@ -9,8 +9,6 @@ private let CHECKBOX_VERTICAL_MARGIN: CGFloat = 19.0 * 30.0 / 55.0
 private let CHECKBOX_SIZE: CGFloat = 30.0
 private let CHECKBOX_TEXT_MARGIN_BOTTOM: CGFloat = 5 * 30.0 / 55.0
 private let CHECKBOX_CHECKED_COLOR = UIColor(red: 0, green: 150.0 / 255.0, blue: 136.0 / 255.0, alpha: 1.0).cgColor
-private let CHECKBOX_ENABLED_COLOR = UIColor.black.withAlphaComponent(138.0 / 255.0).cgColor
-private let CHECKBOX_DISABLED_COLOR = UIColor.black.withAlphaComponent(36.0 / 255.0).cgColor
 
 private var checked: SVGLayer!
 private var unchecked: SVGLayer!
@@ -141,11 +139,23 @@ class CheckBoxView: UIView {
   private func updateColor() {
     if let layer = Checked ? _checked : _unchecked {
       if !Enabled {
-        layer.fillColor = CHECKBOX_DISABLED_COLOR
+        if #available(iOS 11.0, *) {
+          layer.fillColor = UIColor(named: "CheckBoxDisabled", in: Bundle(for: CheckBox.self),
+                                    compatibleWith: _button.traitCollection)?.cgColor
+        } else {
+          // Fallback on earlier versions
+          layer.fillColor = UIColor.black.withAlphaComponent(38.0/255.0).cgColor
+        }
       } else if Checked {
         layer.fillColor = CHECKBOX_CHECKED_COLOR
       } else {
-        layer.fillColor = CHECKBOX_ENABLED_COLOR
+        if #available(iOS 11.0, *) {
+          layer.fillColor = UIColor(named: "CheckBoxEnabled", in: Bundle(for: CheckBox.self),
+                                    compatibleWith: _button.traitCollection)?.cgColor
+        } else {
+          // Fallback on earlier versions
+          layer.fillColor = UIColor.black.withAlphaComponent(138.0/255.0).cgColor
+        }
       }
       setNeedsDisplay()
     }
@@ -166,6 +176,11 @@ class CheckBoxView: UIView {
 
   class override var requiresConstraintBasedLayout: Bool {
     return true
+  }
+
+  // Called when dark mode is enabled/disabled (could be time-of-day dependent)
+  override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    updateColor()
   }
 }
 

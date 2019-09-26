@@ -32,7 +32,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     Width = kLengthFillParent
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
-    _view.backgroundColor = UIColor.black
+    _view.backgroundColor = preferredTextColor(parent.form)
 
     // The intrinsic height of the ListView needs to be explicit because UITableView does not
     // provide a value. We use a low priority constraint to configure the height, and size it based
@@ -166,24 +166,25 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   // MARK: UITableViewDataSource
 
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    if let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) {
-      cell.textLabel?.text = _elements[indexPath.row]
-      cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
-      cell.backgroundColor = argbToColor(_backgroundColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue) : _backgroundColor)
-      cell.textLabel?.textColor = argbToColor(_textColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultTextColor.rawValue) : _textColor)
-      cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
-      return cell
+    let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
+      UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
+    cell.textLabel?.text = _elements[indexPath.row]
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+    if _backgroundColor == Color.default.int32 {
+      cell.backgroundColor = preferredTextColor(_container.form)
     } else {
-      let cell = UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
-      cell.textLabel?.text = _elements[indexPath.row]
-      cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
-      cell.backgroundColor = argbToColor(_backgroundColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue) : _backgroundColor)
-      cell.textLabel?.textColor = argbToColor(_textColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultTextColor.rawValue) : _textColor)
-      let cellSelection = UIView()
-      cellSelection.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
-      cell.selectedBackgroundView = cellSelection
-      return cell
+      cell.backgroundColor = argbToColor(_backgroundColor)
     }
+    if _textColor == Color.default.int32 {
+      cell.textLabel?.textColor = preferredBackgroundColor(_container.form)
+    } else {
+      cell.textLabel?.textColor = argbToColor(_textColor)
+    }
+    if cell.selectedBackgroundView == nil {
+      cell.selectedBackgroundView = UIView()
+    }
+    cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+    return cell
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
