@@ -5,7 +5,7 @@ import Foundation
 
 extension String {
   public init(format: String, messageArgs: [Any]) {
-    var formatted = "", next = format.index(of: "%"), i = 0, f = format
+    var formatted = "", next = format.firstIndex(of: "%"), i = 0, f = format
     while (next != nil) {
       formatted += f[..<next!]
       switch f[f.index(next!, offsetBy: 1)] {
@@ -21,7 +21,7 @@ extension String {
         break
       }
       f = String(f[f.index(next!, offsetBy: 2)...])
-      next = f.index(of: "%")
+      next = f.firstIndex(of: "%")
     }
     formatted += f
     self.init(formatted)

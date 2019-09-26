@@ -190,7 +190,7 @@ open class FusiontablesControl: NonvisibleComponent {
     var request = URLRequest(url: urlComponent.url!)
     request.httpMethod = "POST"
     
-    if let start = query.index(of: "("), let end = query.index(of: ")"), start < end {
+    if let start = query.firstIndex(of: "("), let end = query.firstIndex(of: ")"), start < end {
       let columns = String(query[query.index(after: start)..<end]).split(", ")
       for i in 0..<columns.count {
         let item = columns[i].split(":")
@@ -199,7 +199,7 @@ open class FusiontablesControl: NonvisibleComponent {
         }
       }
       let parameters: Parameters = [
-        "name": query[query.index(query.startIndex, offsetBy: "CREATE TABLE".count + 2)..<(query.index(of: "(") ?? query.endIndex)].trimmingCharacters(in: .whitespaces),
+        "name": query[query.index(query.startIndex, offsetBy: "CREATE TABLE".count + 2)..<(query.firstIndex(of: "(") ?? query.endIndex)].trimmingCharacters(in: .whitespaces),
         "isExportable": true,
         "columns": columnNames
       ]

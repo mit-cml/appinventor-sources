@@ -208,7 +208,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
     set(value) {
       _selection = value
-      if let i = _items.index(of: value) {
+      if let i = _items.firstIndex(of: value) {
         self.Text = _selection
         _viewController!.selectItem(i)
         _selectionIndex = Int32(i) + 1

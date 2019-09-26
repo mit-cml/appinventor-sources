@@ -280,7 +280,7 @@ open class HTMLEntities: NSObject {
   }
 
   public static func decodeHTMLText(_ htmlText: String) -> String? {
-    if htmlText.count == 0 || htmlText.index(of: "&") == nil {
+    if htmlText.count == 0 || htmlText.firstIndex(of: "&") == nil {
       return htmlText
     }
 

@@ -92,7 +92,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _elements.index(of: selection) {
+      if let index = _elements.firstIndex(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)

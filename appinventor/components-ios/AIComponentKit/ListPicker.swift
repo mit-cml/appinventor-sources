@@ -115,7 +115,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
     set(value) {
       _selection = value
-      if let i = _items.index(of: value) {
+      if let i = _items.firstIndex(of: value) {
         _selectionIndex = Int32(i) + 1
       } else {
         _selectionIndex = 0
