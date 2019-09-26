@@ -10,7 +10,7 @@ labels: 'feature request, status: new'
 Describe the feature that you'd like to see implemented for App Inventor. More detail is useful as it allows us to better understand the complexity of the task.
 -->
 
-**Describe a use case for the feature**
+**Give an example of how this feature would be used**
 
 <!--
 How would a teacher or student use this feature?
