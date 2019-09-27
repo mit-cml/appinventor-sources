@@ -49,6 +49,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private boolean threadSuspended;
     private boolean isRecording;
     private boolean threadRunning = true;
+    private int listenIntervalMilliSeconds = 200;
 
     public SoundPressureLevel(ComponentContainer container) {
         super(container.$form());
@@ -74,7 +75,7 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
                         });
                     }
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep( (long) listenIntervalMilliSeconds);
                     } catch (InterruptedException e) {
                         Log.d(LOG_TAG, "spl thread sleep error");
                     }
@@ -300,5 +301,34 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     public void SoundPressureLevelChanged(double decibels) {
         this.currentSoundPressureLevel = decibels;
         EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
+    }
+
+
+
+    /**
+     * Set the current wait time for the thread that reads the mic data.
+     * The wait time will be in milliseconds (ms).
+     * @param milliSeconds
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+            defaultValue = "200")
+    @SimpleProperty (
+            description = "Set the interval of time to listen in milliseconds.",
+            category = PropertyCategory.BEHAVIOR)
+    public void ListenIntervalMilliseconds(int milliSeconds) {
+        if (milliSeconds > 0 && milliSeconds < Integer.MAX_VALUE) {
+            this.listenIntervalMilliSeconds = milliSeconds;
+        }
+    }
+
+    /**
+     * Get the current wait time for the thread that reads the mic data.
+     * The current wait time will be in milliseconds (ms).
+     */
+    @SimpleProperty (
+            description = "Get the current interval of time spent listening in milliseconds.",
+            category = PropertyCategory.BEHAVIOR)
+    public int ListenIntervalMilliseconds() {
+        return listenIntervalMilliSeconds;
     }
 }
