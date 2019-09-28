@@ -63,6 +63,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -739,6 +740,28 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return container;
   }
 
+  private final Focusable nullFocusable = new Focusable() {
+    @Override
+    public int getTabIndex() {
+      return 0;
+    }
+
+    @Override
+    public void setAccessKey(char key) {
+
+    }
+
+    @Override
+    public void setFocus(boolean focused) {
+
+    }
+
+    @Override
+    public void setTabIndex(int index) {
+
+    }
+  };
+
   /**
    * Constructs a tree item for the component which will be displayed in the
    * source structure explorer.
@@ -751,7 +774,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
     TreeItem itemNode = new TreeItem(
-        new HTML("<span>" + iconImage.getElement().getString() + getName() + "</span>"));
+        new HTML("<span>" + iconImage.getElement().getString() + getName() + "</span>")) {
+      @Override
+      protected Focusable getFocusable() {
+        return nullFocusable;
+      }
+    };
     itemNode.setUserObject(sourceStructureExplorerItem);
     return itemNode;
   }
