@@ -1209,8 +1209,11 @@ Blockly.Versioning.AllUpgradeMaps =
       for (Element block : getAllMatchingGenusBlocks("Ball-Flung")) {
         markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
     */
-    5: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    5: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
+    // The CenterAtOrigin property was added.
+    // The default value of false is correct for upgraded apps.
+    6: "noUpgrade"
   }, // End Ball upgraders
 
   "BarcodeScanner": {
