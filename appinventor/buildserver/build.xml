@@ -190,6 +190,7 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--childProcessRamMb" />
       <arg value="1024" />
       <arg value="--inputZipFile" />
@@ -222,6 +223,7 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--childProcessRamMb" />
       <arg value="1024" />
       <arg value="--inputZipFile" />
@@ -259,6 +261,7 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--childProcessRamMb" />
       <arg value="1024" />
       <arg value="--inputZipFile" />
@@ -303,6 +306,7 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
       <arg value="--shutdownToken" />
