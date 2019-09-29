@@ -26,6 +26,8 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 
+import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -778,6 +780,41 @@ public final class Compiler {
     return true;
   }
 
+  private boolean writeICLauncher(File adaptiveIconFile) {
+    String mainClass = project.getMainClass();
+    String packageName = Signatures.getPackageName(mainClass);
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(adaptiveIconFile), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
+      out.write("<background android:drawable=\"@xml/ic_launcher_background\" />\n");
+      out.write("<foreground android:drawable=\"@drawable/ya\" />\n");
+      out.write("</adaptive-icon>\n");
+      out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "ic launcher"));
+      return false;
+    }
+    return true;
+  }
+
+  private boolean writeICLauncherBackground(File icBackgroundFile) {
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(icBackgroundFile), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      out.write("<color name=\"ic_launcher_background\">#F48C3F</color>\n");
+      out.write("</resources>\n");
+      out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "ic launcher background"));
+      return false;
+    }
+    return true;
+  }
+
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
@@ -891,7 +928,8 @@ public final class Compiler {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
-      out.write("android:icon=\"@drawable/ya\" ");
+      out.write("android:icon=\"@xml/ic_launcher\" ");
+      out.write("android:roundIcon=\"@xml/ic_launcher\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       } else {
@@ -1103,7 +1141,7 @@ public final class Compiler {
     out.println("________Preparing application icon");
     File resDir = createDir(buildDir, "res");
     File drawableDir = createDir(resDir, "drawable");
-    if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
+    if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"), new File(drawableDir, "round_ya.png"))) {
       return false;
     }
     if (reporter != null) {
@@ -1140,6 +1178,20 @@ public final class Compiler {
 
     out.println("________Creating network_security_config xml");
     if (!compiler.createNetworkConfigXml(providerDir)) {
+      return false;
+    }
+
+    // Generate ic_launcher.xml
+    out.println("________Generating adaptive icon file");
+    File icLauncher = new File(providerDir, "ic_launcher.xml");
+    if (!compiler.writeICLauncher(icLauncher)) {
+      return false;
+    }
+
+    // Generate ic_launcher_background.xml
+    out.println("________Generating adaptive icon background file");
+    File icBackgroundColor = new File(providerDir, "ic_launcher_background.xml");
+    if (!compiler.writeICLauncherBackground(icBackgroundColor)) {
       return false;
     }
 
@@ -1628,27 +1680,44 @@ public final class Compiler {
   }
 
   /*
+   * Creates the circle image of an icon
+   */
+  private BufferedImage produceRoundIcon(BufferedImage icon) {
+    int imageWidth = icon.getWidth();
+    BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = roundIcon.createGraphics();
+    g2.setClip(new Ellipse2D.Float(0, 0, imageWidth, imageWidth));
+    g2.drawImage(icon, 0, 0, 2 * imageWidth, imageWidth, null);
+    return roundIcon;
+  }
+
+  /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(File outputPngFile) {
+  private boolean prepareApplicationIcon(File outputPngFile, File roundOutputPngFile) {
     String userSpecifiedIcon = Strings.nullToEmpty(project.getIcon());
     try {
       BufferedImage icon;
+      BufferedImage roundIcon;
       if (!userSpecifiedIcon.isEmpty()) {
         File iconFile = new File(project.getAssetsDirectory(), userSpecifiedIcon);
         icon = ImageIO.read(iconFile);
+        roundIcon = produceRoundIcon(icon);
         if (icon == null) {
           // This can happen if the iconFile isn't an image file.
           // For example, icon is null if the file is a .wav file.
-          // TODO(lizlooney) - This happens if the user specifies a .ico file. We should fix that.
+          // TODO(lizlooney) - This happens if the user specifies a .ico file. We should
+          // fix that.
           userErrors.print(String.format(ICON_ERROR, userSpecifiedIcon));
           return false;
         }
       } else {
         // Load the default image.
         icon = ImageIO.read(Compiler.class.getResource(DEFAULT_ICON));
+        roundIcon = produceRoundIcon(icon);
       }
       ImageIO.write(icon, "png", outputPngFile);
+      ImageIO.write(roundIcon, "png", roundOutputPngFile);
     } catch (Exception e) {
       e.printStackTrace();
       // If the user specified the icon, this is fatal.
