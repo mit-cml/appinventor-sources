@@ -1789,7 +1789,7 @@
           360))
 
 (define (sin-degrees degrees)
-  (if (= mod 180) 0
+  (if (mod degrees 180) 0
     (sin (degrees->radians-internal degrees)))
 
 (define (cos-degrees degrees)
