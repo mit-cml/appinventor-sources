@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -195,7 +195,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     public static final int FINGER_WIDTH = 24;
 
     /**
-     * The width of a finger.  This is used in determining whether a sprite is
+     * The height of a finger.  This is used in determining whether a sprite is
      * touched.  Specifically, this is used to determine the vertical extent
      * of a bounding box that is tested for collision with each sprite.  The
      * horizontal extent is determined by {@link #FINGER_WIDTH}.

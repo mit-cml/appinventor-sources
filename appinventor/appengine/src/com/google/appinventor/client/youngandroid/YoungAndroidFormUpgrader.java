@@ -490,11 +490,11 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeBallProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-      // The Heading property was changed from int to double
+      // The Heading property was changed from int to double.
       srcCompVersion = 2;
     }
     if (srcCompVersion < 3) {
-      // The Z property was added
+      // The Z property was added.
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
@@ -505,6 +505,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 5) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The OriginAtCenter property was added.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
