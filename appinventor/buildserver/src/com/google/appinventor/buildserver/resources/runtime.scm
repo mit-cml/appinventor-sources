@@ -1793,8 +1793,8 @@
     (sin (degrees->radians-internal degrees)))
 
 (define (cos-degrees degrees)
-  (if (or (= degrees 90) (= degrees 270)) 0
-    (cos (degrees->radians-internal degrees))))
+  (if (mod degreees 180) 90
+    (cos (degrees->radians-internal degrees)))
 
 (define (tan-degrees degrees)
   (tan (degrees->radians-internal degrees)))
