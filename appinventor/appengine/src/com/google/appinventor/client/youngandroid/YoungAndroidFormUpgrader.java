@@ -358,8 +358,16 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradePedometerProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Map")) {
         srcCompVersion = upgradeMapProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Circle")) {
+        srcCompVersion = upgradeCircleProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("LineString")) {
+        srcCompVersion = upgradeLineStringProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Marker")) {
         srcCompVersion = upgradeMarkerProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Polygon")) {
+        srcCompVersion = upgradePolygonProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Rectangle")) {
+        srcCompVersion = upgradeRectangleProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("FeatureCollection")) {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
       }
@@ -1631,14 +1639,56 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
+  
+  private static int upgradeCircleProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeLineStringProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The StrokeOpacity property was added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static int upgradeMarkerProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
       // The ShowShadow property was removed.
       if (componentProperties.containsKey("ShowShadow")) {
         componentProperties.remove("ShowShadow");
       }
+      // Verison 3
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradePolygonProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeRectangleProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
       srcCompVersion = 2;
     }
     return srcCompVersion;
