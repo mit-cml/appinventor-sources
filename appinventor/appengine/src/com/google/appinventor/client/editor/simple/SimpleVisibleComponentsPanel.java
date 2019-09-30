@@ -25,7 +25,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.ListBox;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import java.util.Map;
 public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
   // UI elements
   private final VerticalPanel phoneScreen;
-  public final CheckBox checkboxShowHiddenComponents;
+  private final CheckBox checkboxShowHiddenComponents;
   private final ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
 
@@ -112,6 +111,10 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     phoneScreen.add(listboxPhoneTablet);
 
     initWidget(phoneScreen);
+  }
+
+  public CheckBox getCheckboxShowHiddenComponents() {
+    return checkboxShowHiddenComponents;
   }
 
   // get width and height stored in user settings, and change the preview size.

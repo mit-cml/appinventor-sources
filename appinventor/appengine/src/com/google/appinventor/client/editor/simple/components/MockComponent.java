@@ -524,10 +524,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     properties.addProperty(name, defaultValue, caption, editor, type);
   }
 
-  public SimpleEditor getEditor() {
-    return editor;
-  }
-
   /**
    * Returns the component name.
    * <p>
