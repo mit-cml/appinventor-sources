@@ -58,7 +58,7 @@ class PickerPhoneController: UIViewController {
   private func addLayoutConstraints() {
     _contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.5 / 7).isActive = true
     _toolBar.bottomAnchor.constraint(equalTo: _contentView.topAnchor).isActive = true
-    _toolBar.heightAnchor.constraint(equalToConstant: 50)
+    _toolBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
     _toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
     _toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     _toolBar.translatesAutoresizingMaskIntoConstraints = false
