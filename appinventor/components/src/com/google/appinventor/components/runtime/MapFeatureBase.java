@@ -161,7 +161,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   @SimpleProperty
   public void StrokeOpacity(float opacity) {
     strokeOpacity = opacity;
-    strokeColor = strokeColor & 0x00FFFFFF + Math.round(0xFF * opacity) << 24;
+    strokeColor = (strokeColor & 0x00FFFFFF) | (Math.round(0xFF * opacity) << 24);
     map.getController().updateFeatureStroke(this);
   }
 
