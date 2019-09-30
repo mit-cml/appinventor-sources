@@ -50,6 +50,8 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     private boolean isRecording;
     private boolean threadRunning = true;
     private int listenIntervalMilliSeconds = 200;
+    private boolean hasPermission = false;
+    private Object recordingLock = new Object();
 
     public SoundPressureLevel(ComponentContainer container) {
         super(container.$form());
@@ -63,16 +65,24 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             @Override
             public void run() {
                 while(threadRunning){
-                Log.d(LOG_TAG, "spl thread loop");
-                    if (isRecording) {
-                        Log.d(LOG_TAG, "spl thread isRecording");
-                        final Pair<short[], Integer> tuple = analyzeSoundData();
-                        form.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onSoundPressureLevelChanged(tuple);
-                            }
-                        });
+                    Log.d(LOG_TAG, "spl thread loop");
+                    if (checkPermissions()) {
+                        if (getRecording()) {
+                            Log.d(LOG_TAG, "spl thread isRecording");
+                            final Pair<short[], Integer> tuple = analyzeSoundData();
+                            form.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onSoundPressureLevelChanged(tuple);
+                                }
+                            });
+                        }
+                        else {
+                            Log.d(LOG_TAG,"spl recording not enabled");
+                        }
+                    }
+                    else {
+                        Log.d(LOG_TAG,"spl Permission to record audio not granted, cannot calculate sound pressure level.");
                     }
                     try {
                         Thread.sleep( (long) listenIntervalMilliSeconds);
@@ -217,9 +227,18 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * Assumes that audioRecord has been initialized, which happens in constructor
      */
     private void startListening() {
-        if(recorder != null) {
-            recorder.startRecording();
-            isRecording = true;
+        if (checkPermissions() && recorder != null) {
+            Log.d(LOG_TAG,"spl start listening");
+            int RecordingState;
+            int initState = recorder.getState();
+            if(initState == AudioRecord.STATE_UNINITIALIZED){
+                recorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
+            }
+            RecordingState = recorder.getRecordingState();
+            if(RecordingState == AudioRecord.RECORDSTATE_STOPPED){
+                recorder.startRecording();
+            }
+            setRecording(true);
         }
     }
 
@@ -227,9 +246,18 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * Assumes that audioRecord has been initialized, which happens in constructor
      */
     private void stopListening() {
-        if (recorder != null) {
-            recorder.stop();
-            isRecording = false;
+        if (checkPermissions() && recorder != null) {
+            Log.d(LOG_TAG,"spl stop listening");
+            int RecordingState;
+            int initState = recorder.getState();
+            if(initState == AudioRecord.STATE_UNINITIALIZED){
+                recorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
+            }
+            RecordingState = recorder.getRecordingState();
+            if(RecordingState == AudioRecord.RECORDSTATE_RECORDING){
+                recorder.stop();
+            }
+            setRecording(false);
         }
     }
 
@@ -245,7 +273,9 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             defaultValue = "True")
     @SimpleProperty
     public void Enabled(boolean enabled) {
+        Log.d(LOG_TAG,"spl is enabled call");
         if (this.isEnabled != enabled) {
+            Log.d(LOG_TAG,"spl change enabled status");
             this.isEnabled = enabled;
             if (enabled) {
                 startListening();
@@ -264,14 +294,19 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public boolean Available() {
-
-        Log.d(LOG_TAG, "spl Available call");
-        AudioRecord testRecorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
-        testRecorder.startRecording();
-        boolean isAvailable = testRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
-        testRecorder.stop();
-        testRecorder.release();
-        Log.d(LOG_TAG,"spl Availability: " + String.valueOf(isAvailable));
+        boolean isAvailable = false;
+        if (checkPermissions()) {
+            Log.d(LOG_TAG, "spl Available call");
+            AudioRecord testRecorder = new AudioRecord(MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize);
+            testRecorder.startRecording();
+            isAvailable = testRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING; //Would be RECORDSTATE_STOPPED if no mic is available
+            testRecorder.stop();
+            testRecorder.release();
+            Log.d(LOG_TAG, "spl Availability: " + String.valueOf(isAvailable));
+        }
+        else{
+            Log.d(LOG_TAG,"spl Permission to record audio not granted, cannot check if microphone is available.");
+        }
         return isAvailable;
     }
 
@@ -291,7 +326,14 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     @SimpleProperty(
             category = PropertyCategory.BEHAVIOR)
     public double SoundPressureLevel() {
-        return currentSoundPressureLevel;
+        double currSPL;
+        if (checkPermissions()) {
+            currSPL = currentSoundPressureLevel;
+        }
+        else {
+            currSPL = -1;
+        }
+        return currSPL;
     }
 
     /**
@@ -302,8 +344,6 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
         this.currentSoundPressureLevel = decibels;
         EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
     }
-
-
 
     /**
      * Set the current wait time for the thread that reads the mic data.
@@ -330,5 +370,44 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
             category = PropertyCategory.BEHAVIOR)
     public int ListenIntervalMilliseconds() {
         return listenIntervalMilliSeconds;
+    }
+
+    private boolean checkPermissions() {
+        PackageManager pm = form.getPackageManager();
+        int permissionCode = pm.checkPermission(Manifest.permission.RECORD_AUDIO,form.getPackageName());
+        boolean isPermissionGranted = permissionCode == PackageManager.PERMISSION_GRANTED;
+        if (isPermissionGranted != hasPermission && isPermissionGranted == true) {
+            //Change in permissions from false to true
+            Log.d(LOG_TAG,"spl permission recently granted.");
+            hasPermission = true;
+            Enabled(isPermissionGranted);
+        }
+        else if (isPermissionGranted != hasPermission && isPermissionGranted == false){
+            //Change in permissions from true to false
+            Log.d(LOG_TAG,"spl permission recently revoked.");
+            hasPermission = false;
+            Enabled(isPermissionGranted);
+        }
+        return isPermissionGranted;
+    }
+
+    /**
+     * Set whether or not recorder is listening in a thread-safe way.
+     * @param recording
+     */
+    private void setRecording(boolean recording) {
+        synchronized (recordingLock) {
+            this.isRecording = recording;
+        }
+    }
+
+    /**
+     * Set whether or not recorder is listening in a thread-safe way.
+     * @return
+     */
+    private boolean getRecording() {
+        synchronized (recordingLock) {
+            return this.isRecording;
+        }
     }
 }
