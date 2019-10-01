@@ -8,7 +8,39 @@ import GEOSwift
 let kDefaultMarkerWidth: CGFloat = 32
 let kDefaultMarkerHeight: CGFloat = 39
 
-open class Marker: MapFeatureBase, MapMarker {
+/**
+ * MKAnnotationView does not appear to allow a UILongPressGestureRecognizer to
+ * fire if it's isDraggable property is set to false. We use this delegate to
+ * override this behavior so that we can detect LongPress events even if we
+ * are not dragging the Marker.
+ */
+class LCHelper : NSObject, UIGestureRecognizerDelegate {
+  func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
+  }
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive press: UIPress) -> Bool {
+    return true
+  }
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    return true
+  }
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return false
+  }
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return false
+  }
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
+  }
+}
+
+@objc open class Marker: MapFeatureBase, MapMarker {
   fileprivate var _imageView = MKAnnotationView()
   fileprivate var _pinView = MKPinAnnotationView()
 
@@ -21,6 +53,7 @@ open class Marker: MapFeatureBase, MapMarker {
   fileprivate var _imagePath: String = "empty"
   fileprivate var _strokeColor: Int32 = colorToArgb(UIColor.black)
   fileprivate var _strokeWidth: Int32 = 1
+  fileprivate static let _lchelper = LCHelper()
 
   typealias View = MKAnnotationView
 
@@ -32,9 +65,7 @@ open class Marker: MapFeatureBase, MapMarker {
     intializeConstraints()
     AnchorHorizontal = HorizontalGravity.center.rawValue
     AnchorVertical = VerticalGravity.bottom.rawValue
-    Type = MapFeatureType.TYPE_MARKER.rawValue
     ImageAsset = ""
-    Type = MapFeatureType.TYPE_MARKER.rawValue
     FillColor = colorToArgb(UIColor.red)
   }
 
@@ -46,7 +77,9 @@ open class Marker: MapFeatureBase, MapMarker {
     _pinView.topAnchor.constraint(equalTo: _imageView.topAnchor).isActive = true
     _pinView.bottomAnchor.constraint(equalTo: _imageView.bottomAnchor).isActive = true
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
-    _view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
+    let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+    gesture.delegate = Marker._lchelper
+    _view.addGestureRecognizer(gesture)
   }
 
   // used for resizing the Marker when the parent Map size changes
@@ -337,7 +370,10 @@ open class Marker: MapFeatureBase, MapMarker {
   }
 
   @objc fileprivate func handleLongPress(gesture: UILongPressGestureRecognizer) {
-    if gesture.state == .ended {
+    // On Android, LongClick won't fire if we are able to Drag (it causes a
+    // DragStart/DragEnd event pair). We implement this check here to match
+    // the behavior.
+    if gesture.state == .ended && !Draggable {
       LongClick()
     }
   }
