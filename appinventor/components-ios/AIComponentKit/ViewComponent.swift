@@ -49,6 +49,7 @@ import Foundation
 
   @objc open var Width: Int32 {
     get {
+      view.layoutIfNeeded()
       return Int32(view.bounds.width)
     }
     set(width) {
@@ -69,6 +70,7 @@ import Foundation
 
   @objc open var Height: Int32 {
     get {
+      view.layoutIfNeeded()
       return Int32(view.bounds.height)
     }
     set(height) {
