@@ -208,6 +208,7 @@ public class BuildServer {
   // otherwise still accepting jobs. This avoids having people get an error if the load
   // balancer sends a job our way because it hasn't decided we are down.
   private static volatile long shuttingTime = 0;
+  private static volatile long turningOnTime = 0;
 
   private static String shutdownToken = null;
 
@@ -255,6 +256,9 @@ public class BuildServer {
     variables.put("state", getShutdownState() + "");
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
+    }
+    if (turningOnTime != 0) {
+      variables.put("turnon-time", dateTimeFormat.format(new Date(turningOnTime)));
     }
     variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
     variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
@@ -341,6 +345,37 @@ public class BuildServer {
       shuttingTime = shutdownTime;
       DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
       return Response.ok("ok: Will shutdown at " + dateTimeFormat.format(new Date(shuttingTime)),
+          MediaType.TEXT_PLAIN_TYPE).build();
+    }
+  }
+
+  /**
+   * Indicate that the server is shutting down.
+   *
+   * @param token -- secret token used like a password to authenticate the shutdown command
+   * @param delay -- the delay in seconds before jobs are no longer accepted
+   */
+
+  @GET
+  @Path("turnon")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response turnon(@QueryParam("token") String token, @QueryParam("delay") String delay) throws IOException {
+    if (commandLineOptions.shutdownToken == null || token == null) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("No Shutdown Token").build();
+    } else if (!token.equals(commandLineOptions.shutdownToken)) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
+    } else {
+      long turnonTime = System.currentTimeMillis();
+      if (delay != null) {
+        try {
+          turnonTime += Integer.parseInt(delay) *1000;
+        } catch (NumberFormatException e) {
+          // XXX Ignore
+        }
+      }
+      turningOnTime = turnonTime;
+      DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+      return Response.ok("ok: Will turnon at " + dateTimeFormat.format(new Date(turningOnTime)),
           MediaType.TEXT_PLAIN_TYPE).build();
     }
   }
@@ -760,7 +795,7 @@ public class BuildServer {
   }
 
   private ShutdownState getShutdownState() {
-    if (shuttingTime == 0) {
+    if (shuttingTime == 0 || (System.currentTimeMillis() > turningOnTime && turningOnTime > shuttingTime)) {
       int max = buildExecutor.getMaxActiveTasks();
       if (max < 10) {           // Only do this scheme if we are not unlimited
                                 // (unlimited == 0) and allow more then 10 max builds
