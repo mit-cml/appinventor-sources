@@ -271,7 +271,9 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
             defaultValue = "True")
-    @SimpleProperty
+    @SimpleProperty(
+            description = "Set whether or not the Sound Pressure Level is enabled and listening."
+    )
     public void Enabled(boolean enabled) {
         Log.d(LOG_TAG,"spl is enabled call");
         if (this.isEnabled != enabled) {
@@ -292,7 +294,8 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * {@code false} that it isn't
      */
     @SimpleProperty(
-            category = PropertyCategory.BEHAVIOR)
+            category = PropertyCategory.BEHAVIOR,
+            description = "Returns true if there is a microphone available to listen with.")
     public boolean Available() {
         boolean isAvailable = false;
         if (checkPermissions()) {
@@ -318,13 +321,15 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
      * {@code false} that it doesn't
      */
     @SimpleProperty(
-            category = PropertyCategory.BEHAVIOR)
+            category = PropertyCategory.BEHAVIOR,
+            description = "Returns whether the Sound Pressure Level is enabled and listening.")
     public boolean Enabled() {
         return isEnabled;
     }
 
     @SimpleProperty(
-            category = PropertyCategory.BEHAVIOR)
+            category = PropertyCategory.BEHAVIOR,
+            description = "Gets the last measured sound pressure level in decibels.")
     public double SoundPressureLevel() {
         double currSPL;
         if (checkPermissions()) {
@@ -339,7 +344,9 @@ public class SoundPressureLevel extends AndroidNonvisibleComponent
     /**
      * Indicates the sound pressure level has changed
      */
-    @SimpleEvent
+    @SimpleEvent(
+            description = "Event that is called on a set time period to update the sound pressure level."
+    )
     public void SoundPressureLevelChanged(double decibels) {
         this.currentSoundPressureLevel = decibels;
         EventDispatcher.dispatchEvent(this, "SoundPressureLevelChanged", this.currentSoundPressureLevel);
