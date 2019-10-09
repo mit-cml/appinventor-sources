@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tensorflow.js Extension</title>
+    <script type="text/javascript">
+        if (!window.PosenetExtension) {
+          window.PosenetExtension = { ready: function() {}, error: function(code, msg) {}, reportResult(result) {} };
+        }
+    </script>
+</head>
+<body style="margin: 0">
+    <div id="main">
+        <video id="video" playsinline style="-moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); display: none;"></video>
+        <canvas id="output"></canvas>
+    </div>
+    <script src="tf-core.min.js"></script>
+    <script src="tf-converter.min.js"></script>
+    <script src="posenet.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
