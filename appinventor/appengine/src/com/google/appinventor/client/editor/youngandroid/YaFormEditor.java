@@ -187,6 +187,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     setSize("100%", "100%");
   }
 
+  public boolean shouldDisplayHiddenComponents() {
+    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
+  }
+
   // FileEditor methods
 
   @Override
