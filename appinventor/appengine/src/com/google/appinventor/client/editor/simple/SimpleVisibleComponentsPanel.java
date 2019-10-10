@@ -131,8 +131,8 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
     initWidget(phoneScreen);
   }
 
-  public CheckBox getCheckboxShowHiddenComponents() {
-    return checkboxShowHiddenComponents;
+  public boolean isHiddenComponentsCheckboxChecked() {
+    return checkboxShowHiddenComponents.getValue();
   }
 
   // get width and height stored in user settings, and change the preview size.

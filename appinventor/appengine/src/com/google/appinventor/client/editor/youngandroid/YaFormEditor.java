@@ -188,7 +188,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   public boolean shouldDisplayHiddenComponents() {
-    return visibleComponentsPanel.getCheckboxShowHiddenComponents().getValue();
+    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
   }
 
   // FileEditor methods
