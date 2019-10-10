@@ -64,11 +64,29 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
 
     checkboxShowHiddenComponents = new CheckBox(MESSAGES.showHiddenComponentsCheckbox()) {
       @Override
-      protected void onLoad() {}
+      protected void onLoad() {
+        // Get project settings
+        String screenCheckboxMap = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, 
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+        );
+        if (screenCheckboxMap != null && !screenCheckboxMap.equals("")) {
+          projectEditor.buildScreenHashMap(screenCheckboxMap);
+          Boolean isChecked = projectEditor.getScreenCheckboxState(form.getTitle());
+          checkboxShowHiddenComponents.setValue(isChecked);
+        }
+      }
     };
     checkboxShowHiddenComponents.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
+        boolean isChecked = event.getValue();
+        projectEditor.setScreenCheckboxState(form.getTitle(), isChecked);
+        projectEditor.changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, 
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP, 
+          projectEditor.getScreenCheckboxMapString()
+        );
         if (form != null) {
           form.refresh();
         }
