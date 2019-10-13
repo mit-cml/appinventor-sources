@@ -316,8 +316,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   @Override
-  public void onRemoved()
-  {
+  public void delete() {
     // Traverse list backwards to make removal easier
     for (int i = children.size() - 1; i >= 0; --i) {
       MockComponent child = children.get(i);
@@ -326,6 +325,8 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // completely removed from the Designer.
       child.delete();
     }
+
+    super.delete();
   }
 
   @Override
