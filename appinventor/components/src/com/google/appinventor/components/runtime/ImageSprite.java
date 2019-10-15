@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,7 @@ import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -29,24 +30,24 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
  */
 @DesignerComponent(version = YaVersion.IMAGESPRITE_COMPONENT_VERSION,
     description = "<p>A 'sprite' that can be placed on a " +
-    "<code>Canvas</code>, where it can react to touches and drags, " +
-    "interact with other sprites (<code>Ball</code>s and other " +
-    "<code>ImageSprite</code>s) and the edge of the Canvas, and move " +
-    "according to its property values.  Its appearance is that of the " +
-    "image specified in its <code>Picture</code> property (unless its " +
-    "<code>Visible</code> property is <code>False</code>.</p> " +
-    "<p>To have an <code>ImageSprite</code> move 10 pixels to the left " +
-    "every 1000 milliseconds (one second), for example, " +
-    "you would set the <code>Speed</code> property to 10 [pixels], the " +
-    "<code>Interval</code> property to 1000 [milliseconds], the " +
-    "<code>Heading</code> property to 180 [degrees], and the " +
-    "<code>Enabled</code> property to <code>True</code>.  A sprite whose " +
-    "<code>Rotates</code> property is <code>True</code> will rotate its " +
-    "image as the sprite's <code>Heading</code> changes.  Checking for collisions " +
-    "with a rotated sprite currently checks the sprite's unrotated position " +
-    "so that collision checking will be inaccurate for tall narrow or short " +
-    "wide sprites that are rotated.  Any of the sprite properties " +
-    "can be changed at any time under program control.</p> ",
+        "<code>Canvas</code>, where it can react to touches and drags, " +
+        "interact with other sprites (<code>Ball</code>s and other " +
+        "<code>ImageSprite</code>s) and the edge of the Canvas, and move " +
+        "according to its property values.  Its appearance is that of the " +
+        "image specified in its <code>Picture</code> property (unless its " +
+        "<code>Visible</code> property is <code>False</code>).</p> " +
+        "<p>To have an <code>ImageSprite</code> move 10 pixels to the left " +
+        "every 1000 milliseconds (one second), for example, " +
+        "you would set the <code>Speed</code> property to 10 [pixels], the " +
+        "<code>Interval</code> property to 1000 [milliseconds], the " +
+        "<code>Heading</code> property to 180 [degrees], and the " +
+        "<code>Enabled</code> property to <code>True</code>.  A sprite whose " +
+        "<code>Rotates</code> property is <code>True</code> will rotate its " +
+        "image as the sprite's <code>Heading</code> changes.  Checking for collisions " +
+        "with a rotated sprite currently checks the sprite's unrotated position " +
+        "so that collision checking will be inaccurate for tall narrow or short " +
+        "wide sprites that are rotated.  Any of the sprite properties " +
+        "can be changed at any time under program control.</p> ",
     category = ComponentCategory.ANIMATION)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
@@ -106,7 +107,7 @@ public class ImageSprite extends Sprite {
    * @return  the path of the sprite's picture
    */
   @SimpleProperty(
-      description = "The picture that determines the sprite's appearence",
+      description = "The picture that determines the ImageSprite's appearance.",
       category = PropertyCategory.APPEARANCE)
   public String Picture() {
     return picturePath;
@@ -139,7 +140,7 @@ public class ImageSprite extends Sprite {
   // Fill Parent will be the width/height of the image.
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "The height of the ImageSprite in pixels.")
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
@@ -161,7 +162,7 @@ public class ImageSprite extends Sprite {
   }
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "The width of the ImageSprite in pixels.")
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
@@ -189,9 +190,8 @@ public class ImageSprite extends Sprite {
    * {@code false} indicates that the sprite image doesn't rotate.
    */
   @SimpleProperty(
-      description = "If true, the sprite image rotates to match the sprite's heading. " +
-      "If false, the sprite image does not rotate when the sprite changes heading. " +
-      "The sprite rotates around its centerpoint.",
+      description = "Whether the image should rotate to match the ImageSprite's heading. " +
+          "The sprite rotates around its centerpoint.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Rotates() {
     return rotates;
@@ -209,5 +209,31 @@ public class ImageSprite extends Sprite {
     public void Rotates(boolean rotates) {
     this.rotates = rotates;
     registerChange();
+  }
+
+  // We need to override methods defined in the superclass to generate appropriate documentation.
+
+  @SimpleProperty(
+      description = "The horizontal coordinate of the left edge of the ImageSprite, " +
+          "increasing as the ImageSprite moves right.")
+  @Override
+  public double X() {
+    return super.X();
+  }
+
+  @SimpleProperty(
+      description = "The vertical coordinate of the top edge of the ImageSprite, " +
+          "increasing as the ImageSprite moves down.")
+  @Override
+  public double Y() {
+    return super.Y();
+  }
+
+  @SimpleFunction(
+      description = "Moves the ImageSprite so that its left top corner is at " +
+          "the specfied x and y coordinates.")
+  @Override
+  public void MoveTo(double x, double y) {
+    super.MoveTo(x, y);
   }
 }

@@ -51,6 +51,7 @@ Blockly.Msg.nl.switch_language_to_dutch = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'zet om';
     Blockly.Msg.LANG_MATH_SINGLE_OP_EXP = 'e^';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = 'Geeft de vierkantswortel van een getal.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'tekst';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Voeg items toe aan het einde van een lijst.';
@@ -115,6 +116,7 @@ Blockly.Msg.nl.switch_language_to_dutch = {
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_ITEM = 'item';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE = 'sluit scherm';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Test of stukken tekst identiek zijn, of ze dezelfde karakters hebben\n in dezelfde volgorde. Dit verschilt van de normale=\nin het geval waarin de stukken tekst getallen zijn: 123 en 0123 zijn=\nmaar niet tekst =.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Test of stukken tekst verschillend zijn, of ze niet dezelfde karakters hebben\n in dezelfde volgorde. Dit verschilt van de normale≠\nin het geval waarin de stukken tekst getallen zijn: 123 en 0123 zijn tekst ≠\nmaar wiskundig =.';
     Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND = 'Rond een nummer af naar boven of beneden.';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'tot';
     Blockly.Msg.LANG_COLOUR_ORANGE = 'oranje';

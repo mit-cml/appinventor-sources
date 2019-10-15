@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.server;
@@ -65,7 +65,7 @@ import org.owasp.html.PolicyFactory;
 @SuppressWarnings("unchecked")
 public class LoginServlet extends HttpServlet {
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
   private static final Logger LOG = Logger.getLogger(LoginServlet.class.getName());
   private static final Flag<String> mailServer = Flag.createFlag("localauth.mailserver", "");
   private static final Flag<String> password = Flag.createFlag("localauth.mailserver.password", "");

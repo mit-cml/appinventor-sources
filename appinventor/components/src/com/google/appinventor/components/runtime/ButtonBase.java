@@ -194,7 +194,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   /**
    * Indicates when a button is touch down
    */
-  @SimpleEvent(description = "Indicates that the button was pressed down.")
+  @SimpleEvent(description = "Indicates that the %type% was pressed down.")
   public void TouchDown() {
     EventDispatcher.dispatchEvent(this, "TouchDown");
   }
@@ -202,7 +202,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   /**
    * Indicates when a button touch ends
    */
-  @SimpleEvent(description = "Indicates that a button has been released.")
+  @SimpleEvent(description = "Indicates that the %type% has been released.")
   public void TouchUp() {
     EventDispatcher.dispatchEvent(this, "TouchUp");
   }
@@ -211,7 +211,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * Indicates the cursor moved over the button so it is now possible
    * to click it.
    */
-  @SimpleEvent(description = "Indicates the cursor moved over the button so " +
+  @SimpleEvent(description = "Indicates the cursor moved over the %type% so " +
       "it is now possible to click it.")
   public void GotFocus() {
     EventDispatcher.dispatchEvent(this, "GotFocus");
@@ -222,7 +222,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * longer possible to click it.
    */
   @SimpleEvent(description = "Indicates the cursor moved away from " +
-      "the button so it is now no longer possible to click it.")
+      "the %type% so it is now no longer possible to click it.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
   }
@@ -288,7 +288,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
-  @SimpleProperty(description = "Specifies the button's shape (default, rounded," +
+  @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.",
       userVisible = false)
   public void Shape(int shape) {
@@ -318,7 +318,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
-  @SimpleProperty(description = "Specifies the path of the button's image.  " +
+  @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
   public void Image(String path) {
@@ -371,7 +371,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
                     defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the button's background color. " +
+  @SimpleProperty(description = "Specifies the background color of the %type%. " +
       "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
@@ -466,19 +466,19 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the button is active and clickable.
+   * Returns true if the %type% is active and clickable.
    *
    * @return  {@code true} indicates enabled, {@code false} disabled
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "If set, user can tap check box to cause action.")
+      description = "If set, user can tap %type% to cause action.")
   public boolean Enabled() {
     return TextViewUtil.isEnabled(view);
   }
 
   /**
-   * Specifies whether the button should be active and clickable.
+   * Specifies whether the %type% should be active and clickable.
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
@@ -490,7 +490,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the button's text should be bold.
+   * Returns true if the text of the %type% should be bold.
    * If bold has been requested, this property will return true, even if the
    * font does not support bold.
    *
@@ -498,13 +498,13 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "If set, button text is displayed in bold.")
+      description = "If set, %type% text is displayed in bold.")
   public boolean FontBold() {
     return bold;
   }
 
   /**
-   * Specifies whether the button's text should be bold.
+   * Specifies whether the text of the %type% should be bold.
    * Some fonts do not support bold.
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
@@ -519,7 +519,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies if a visual feedback should be shown when a button with an assigned image
+   * Specifies if a visual feedback should be shown when a %type% with an assigned image
    * is pressed.
    *
    * @param showFeedback  {@code true} enables showing feedback,
@@ -528,14 +528,14 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
           defaultValue = "True")
   @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
-          " for a button that as an image as background.")
+          " for a %type% that as an image as background.")
 
   public void ShowFeedback(boolean showFeedback) {
     this.showFeedback =showFeedback;
   }
 
     /**
-     * Returns true if the button's text should be bold.
+     * Returns true if the text of the %type% should be bold.
      * If bold has been requested, this property will return true, even if the
      * font does not support bold.
      *
@@ -544,13 +544,13 @@ public abstract class ButtonBase extends AndroidViewComponent
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Returns the button's visual feedback state")
+            description = "Returns the visual feedback state of the %type%")
     public boolean ShowFeedback() {
         return showFeedback;
     }
 
     /**
-   * Returns true if the button's text should be italic.
+   * Returns true if the text of the %type% should be italic.
    * If italic has been requested, this property will return true, even if the
    * font does not support italic.
    *
@@ -558,13 +558,13 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "If set, button text is displayed in italics.")
+      description = "If set, %type% text is displayed in italics.")
   public boolean FontItalic() {
     return italic;
   }
 
   /**
-   * Specifies whether the button's text should be italic.
+   * Specifies whether the text of the %type% should be italic.
    * Some fonts do not support italic.
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
@@ -579,19 +579,19 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text's font size, measured in sp(scale-independent pixels).
+   * Returns the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Point size for button text.")
+      description = "Point size for %type% text.")
   public float FontSize() {
     return TextViewUtil.getFontSize(view, container.$context());
   }
 
   /**
-   * Specifies the button's text's font size, measured in sp(scale-independent pixels).
+   * Specifies the text font size of the %type%, measured in sp(scale-independent pixels).
    *
    * @param size  font size in sp(scale-independent pixels)
    */
@@ -604,7 +604,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text's font face as default, serif, sans
+   * Returns the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
@@ -614,14 +614,14 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Font family for button text.",
+      description = "Font family for %type% text.",
       userVisible = false)
   public int FontTypeface() {
     return fontTypeface;
   }
 
   /**
-   * Specifies the button's text's font face as default, serif, sans
+   * Specifies the text font face of the %type% as default, serif, sans
    * serif, or monospace.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
@@ -639,13 +639,13 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the text displayed by the button.
+   * Returns the text displayed by the %type%.
    *
    * @return  button caption
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Text to display on button.")
+      description = "Text to display on %type%.")
   public String Text() {
     return TextViewUtil.getText(view);
   }
@@ -663,7 +663,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text color as an alpha-red-green-blue
+   * Returns the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @return  text RGB color with alpha
@@ -676,7 +676,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the button's text color as an alpha-red-green-blue
+   * Specifies the text color of the %type% as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha

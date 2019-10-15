@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015 MIT, All rights reserved
+// Copyright 2015-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -33,7 +33,7 @@ import com.google.appinventor.server.util.PasswordHash;
 public class AdminInfoServiceImpl extends OdeRemoteServiceServlet implements AdminInfoService {
 
   // Storage of user settings
-  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   /**
    * Returns a list of AdminUsers, up to 20, based on the starting

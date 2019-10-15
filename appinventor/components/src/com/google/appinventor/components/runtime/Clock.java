@@ -47,7 +47,7 @@ import android.app.TimePickerDialog;
     nonVisible = true,
     iconName = "images/clock.png")
 @SimpleObject
-public final class Clock extends AndroidNonvisibleComponent
+public class Clock extends AndroidNonvisibleComponent
     implements Component, AlarmHandler, OnStopListener, OnResumeListener, OnDestroyListener,
                Deleteable {
   private static final int DEFAULT_INTERVAL = 1000;  // ms

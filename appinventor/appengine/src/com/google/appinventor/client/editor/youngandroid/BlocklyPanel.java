@@ -71,7 +71,8 @@ public class BlocklyPanel extends HTMLPanel {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
-    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL,
+    setPreferredCompanion(MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
+      YaVersion.COMPANION_UPDATE_URL,
       YaVersion.COMPANION_UPDATE_URL1,
       YaVersion.COMPANION_UPDATE_EMULATOR_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
@@ -417,6 +418,10 @@ public class BlocklyPanel extends HTMLPanel {
     return YaBlocksEditor.getComponentInstanceTypeName(formName, instanceName);
   }
 
+  public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName) {
+    return YaBlocksEditor.getComponentInstancePropertyValue(formName, instanceName, propertyName);
+  }
+
   public static int getYaVersion() {
     return YaVersion.YOUNG_ANDROID_VERSION;
   }
@@ -591,6 +596,8 @@ public class BlocklyPanel extends HTMLPanel {
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstanceTypeName =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_getComponentInstancePropertyValue =
+        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInstancePropertyValue(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInfo =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInfo(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentsJSONString =
@@ -658,7 +665,7 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
     Blockly.mainWorkspace.refreshBackpack();
     // Trigger a screen switch to send new YAIL.
-    var parts = Blockly.mainWorkspace.formName.split(/_/);
+    var parts = Blockly.mainWorkspace.formName.split(/_(.+)/);  // Split string on first _
     if (Blockly.ReplMgr.isConnected()) {
       Blockly.ReplMgr.pollYail(Blockly.mainWorkspace);
     }

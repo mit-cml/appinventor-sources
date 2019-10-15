@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -2939,6 +2939,27 @@ public class ObjectifyStorageIo implements  StorageIo {
       return 50;
     } else {
       return ival.intValue();
+    }
+  }
+
+  @Override
+  public void assertUserHasProject(final String userId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @SuppressWarnings("RedundantThrows")
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          Key<UserData> userKey = userKey(userId);
+          Key<UserProjectData> userProjectKey = userProjectKey(userKey, projectId);
+          UserProjectData data = datastore.find(userProjectKey);
+          if (data == null) {  // User doesn't have the corresponding project.
+            throw new SecurityException("Unauthorized access");
+          }
+          // User has data for project, so everything checks out.
+        }
+      }, false);
+    } catch(ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 }

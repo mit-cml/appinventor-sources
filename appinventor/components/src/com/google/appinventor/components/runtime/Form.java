@@ -50,7 +50,6 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -70,6 +69,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -114,9 +114,6 @@ import java.util.Set;
     androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar, animated-vector-drawable.aar, " +
-    "runtime.aar, support-compat.aar, support-core-ui.aar, support-core-utils.aar, " +
-    "support-fragment.aar, support-vector-drawable.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
 public class Form extends AppInventorCompatActivity
@@ -202,7 +199,7 @@ public class Form extends AppInventorCompatActivity
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
 
-  private static boolean showListsAsJson = false;
+  private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
 
@@ -441,7 +438,7 @@ public class Form extends AppInventorCompatActivity
       ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
-    Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
+    Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
@@ -450,7 +447,7 @@ public class Form extends AppInventorCompatActivity
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
-    ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
+    ShowListsAsJson(true);  // Note: Only the Screen1 value is used as this is per-project
     ActionBar(false);
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
@@ -1699,7 +1696,7 @@ public class Form extends AppInventorCompatActivity
    * @param
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
-      defaultValue = "Fixed")
+      defaultValue = "Responsive", alwaysSend = true)
   @SimpleProperty(userVisible = false,
   // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
   description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
@@ -1741,7 +1738,7 @@ public class Form extends AppInventorCompatActivity
    */
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "False")
+    defaultValue = "True", alwaysSend = true)
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
     description = "If false, lists will be converted to strings using Lisp "
@@ -1749,13 +1746,11 @@ public class Form extends AppInventorCompatActivity
       + "d). If true, lists will appear as in Json or Python, e.g.  [\"a\", 1, "
       + "\"b\", 2, [\"c\", \"d\"]].  This property appears only in Screen 1, "
       + "and the value for Screen 1 determines the behavior for all "
-      + "screens. The property defaults to \"false\" meaning that the App "
-      + "Inventor programmer must explicitly set it to \"true\" if JSON/Python "
-      + "syntax is desired. At some point in the future we will alter the "
-      + "system so that new projects are created with this property set to "
-      + "\"true\" by default. Existing projects will not be impacted. The App "
-      + "Inventor programmer can also set it back to \"false\" in newer "
-      + "projects if desired. "
+      + "screens. The property defaults to \"true\" meaning that the App "
+      + "Inventor programmer must explicitly set it to \"false\" if Lisp "
+      + "syntax is desired. In older versions of App Inventor, this setting "
+      + "defaulted to false. Older projects should not have been affected by "
+      + "this default settings update."
     )
   public void ShowListsAsJson(boolean asJson) {
     showListsAsJson = asJson;
@@ -1881,6 +1876,15 @@ public class Form extends AppInventorCompatActivity
     + "editing a project. Used as a teaching aid.")
   public void TutorialURL(String url) {
     // We don't actually do anything This property is stored in the
+    // project properties file
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "A JSON string representing the subset for the screen")
+  public void BlocksToolkit(String json) {
+    // We don't actually do anything. This property is stored in the
     // project properties file
   }
 
@@ -2307,52 +2311,28 @@ public class Form extends AppInventorCompatActivity
 
   public void deleteComponent(Object component) {
     if (component instanceof OnStopListener) {
-      OnStopListener onStopListener = (OnStopListener) component;
-      if (onStopListeners.contains(onStopListener)) {
-        onStopListeners.remove(onStopListener);
-      }
+      onStopListeners.remove(component);
     }
     if (component instanceof OnNewIntentListener) {
-      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
-      if (onNewIntentListeners.contains(onNewIntentListener)) {
-        onNewIntentListeners.remove(onNewIntentListener);
-      }
+      onNewIntentListeners.remove(component);
     }
     if (component instanceof OnResumeListener) {
-      OnResumeListener onResumeListener = (OnResumeListener) component;
-      if (onResumeListeners.contains(onResumeListener)) {
-        onResumeListeners.remove(onResumeListener);
-      }
+      onResumeListeners.remove(component);
     }
     if (component instanceof OnPauseListener) {
-      OnPauseListener onPauseListener = (OnPauseListener) component;
-      if (onPauseListeners.contains(onPauseListener)) {
-        onPauseListeners.remove(onPauseListener);
-      }
+      onPauseListeners.remove(component);
     }
     if (component instanceof OnDestroyListener) {
-      OnDestroyListener onDestroyListener = (OnDestroyListener) component;
-      if (onDestroyListeners.contains(onDestroyListener)) {
-        onDestroyListeners.remove(onDestroyListener);
-      }
+      onDestroyListeners.remove(component);
     }
     if (component instanceof OnInitializeListener) {
-      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
-      if (onInitializeListeners.contains(onInitializeListener)) {
-        onInitializeListeners.remove(onInitializeListener);
-      }
+      onInitializeListeners.remove(component);
     }
     if (component instanceof OnCreateOptionsMenuListener) {
-      OnCreateOptionsMenuListener onCreateOptionsMenuListener = (OnCreateOptionsMenuListener) component;
-      if (onCreateOptionsMenuListeners.contains(onCreateOptionsMenuListener)) {
-        onCreateOptionsMenuListeners.remove(onCreateOptionsMenuListener);
-      }
+      onCreateOptionsMenuListeners.remove(component);
     }
     if (component instanceof OnOptionsItemSelectedListener) {
-      OnOptionsItemSelectedListener onOptionsItemSelectedListener = (OnOptionsItemSelectedListener) component;
-      if (onOptionsItemSelectedListeners.contains(onOptionsItemSelectedListener)) {
-        onOptionsItemSelectedListeners.remove(onOptionsItemSelectedListener);
-      }
+      onOptionsItemSelectedListeners.remove(component);
     }
     if (component instanceof Deleteable) {
       ((Deleteable) component).onDelete();
@@ -2550,6 +2530,53 @@ public class Form extends AppInventorCompatActivity
             new String[] {permission}, nonce);
         }
       });
+  }
+
+  /**
+   * Evaluates the request for bulk permissions and asks the user for any ungranted permissions.
+   *
+   * @param request the request to evaluate
+   */
+  public void askPermission(final BulkPermissionRequest request) {
+    final List<String> permissionsToAsk = request.getPermissions();
+    Iterator<String> it = permissionsToAsk.iterator();
+    while (it.hasNext()) {
+      if (!isDeniedPermission(it.next())) {
+        it.remove();
+      }
+    }
+    if (permissionsToAsk.size() == 0) {
+      // We already have all the necessary permissions
+      request.onGranted();
+    }  else {
+      // Make sure we ask for permissions on the UI thread
+      androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          final Iterator<String> it = permissionsToAsk.iterator();
+          final PermissionResultHandler handler = new PermissionResultHandler() {
+            final List<String> deniedPermissions = new ArrayList<String>();
+
+            @Override
+            public void HandlePermissionResponse(String permission, boolean granted) {
+              if (!granted) {
+                deniedPermissions.add(permission);
+              }
+              if (it.hasNext()) {
+                askPermission(it.next(), this);
+              } else {
+                if (deniedPermissions.size() == 0) {
+                  request.onGranted();
+                } else {
+                  request.onDenied(deniedPermissions.toArray(new String[] {}));
+                }
+              }
+            }
+          };
+          askPermission(it.next(), handler);
+        }
+      });
+    }
   }
 
   @Override
