@@ -702,6 +702,10 @@
                     (left, right, top, bottom) are the same.  This
                     property has no effect in the designer,
                     where labels are always shown with margins.</dd>
+                    <dt> <code> HTMLContent </code> </dt>
+                    <dd> Retrieves the HTML content of the Label if the
+                    HTMLFormat property is true and the Text property was set to
+                    HTML. </dd>
                     <dt> <code> HTMLFormat </code> </dt>
                     <dd> If true, sets text of label to html format else it is plain text format. Note: Not all HTML is supported.</dd>
                     <dt> <code> Height </code> </dt>
@@ -1011,13 +1015,11 @@ none
     i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d)). If true,
     lists will appear as in Json or Python, e.g.  ["a", 1, "b", 2, ["c",
     "d"]].  This property appears only in Screen 1, and the value for
-    Screen 1 determines the behavior for all screens. The property
-    defaults to "false" meaning that the App Inventor programmer must
-    explicitly set it to “true” if JSON/Python syntax is desired. At some
-    point in the future we will alter the system so that new projects are
-    created with this property set to "true" by default. Existing projects
-    will not be impacted. The App Inventor programmer can also set it back
-    to "false" in newer projects if desired.
+    Screen 1 determines the behavior for all screens. The property defaults to true
+    meaning that the App Inventor programmer must explicitly set it to false
+    if Lisp syntax is desired. In older versions of App Inventor, this setting
+    defaulted to false. Older projects should not have been affected by
+    this default settings update.
   </dd>
   <dt><code><em>ShowStatusBar</em></code></dt>
   <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.</dd>

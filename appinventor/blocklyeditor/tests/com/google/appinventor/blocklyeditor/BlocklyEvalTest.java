@@ -3,10 +3,10 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.blocklyeditor;
-import java.io.IOException;
-import com.google.appinventor.blocklyeditor.BlocklyTestUtils;
+
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
+import java.io.IOException;
 import junit.framework.TestCase;
 
 /**
@@ -259,6 +259,20 @@ public class BlocklyEvalTest extends TestCase {
     }
 
     assertEquals("true", result.toString());
+  }
+
+  /**
+   * Runs regression tests for internationalization functionality on the component database.
+   *
+   * @throws IOException if running the test is unable to execute
+   */
+  public void testTooltipInternationalization() throws IOException {
+    String[] params = {
+      "phantomjs",
+      testpath + "/tests/com/google/appinventor/blocklyeditor/component_database_tests.js"
+    };
+    String result = CodeBlocksProcessHelper.exec(params, true).trim();
+    assertEquals("true", result);
   }
 
 }

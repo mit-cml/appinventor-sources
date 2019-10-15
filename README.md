@@ -30,7 +30,7 @@ This is a quick guide to get started with the sources. More detailed instruction
 ### Dependencies
 You will need a full Java JDK (version 8, OpenJDK preferred; JRE is not enough) and Python to compile and run the servers.
 
-You will also need a copy of the [App Engine SDK](https://developers.google.com/appengine/downloads) for Java and [ant](http://ant.apache.org/).
+You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) for Java and [ant](http://ant.apache.org/).
 
 If you want to make changes to the source, you are going to need to run an automated test suite, and for that you will also need [phantomjs](http://phantomjs.org/). Have a look at the testing section for more information.
 
@@ -95,10 +95,10 @@ There are two servers in App Inventor, the main server that deals with project i
 
 #### Running the main server
 
-    $ your-appengine-SDK-folder/bin/dev_appserver.sh
+    $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh
             --port=8888 --address=0.0.0.0 appengine/build/war/
 
-Make sure you change *your-appengine-SDK-folder* to wherever in your hard drive you have placed the App Engine SDK.
+Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard drive you have placed the Google Cloud SDK.
 
 #### Running the build server
 The build server can be run from the terminal by typing:
@@ -112,6 +112,8 @@ Note that you will only need to run the build server if you are going to build a
 You should now be up and running; you can test this by pointing your browser to:
 
     http://localhost:8888
+
+Before entering or scanning the QR code in the Companion, check the box labeled "Use Legacy Connection".
 
 ### Running tests
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:

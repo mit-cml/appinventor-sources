@@ -455,61 +455,8 @@
 <h1>Experimental Components - App Inventor for Android</h1>
 <h2>Table of Contents</h2>
 <ul>
-  <li> <a href="#CloudDB">CloudDB</a</li>
   <li> <a href="#FirebaseDB">FirebaseDB</a></li>
 </ul>
-<h2 id="CloudDB">CloudDB</h2>
-
-<p>Non-visible component allowing you to store data on a Internet connected database server (using Redis software). This allows the users of your App to share data with each other. By default data will be stored in a server maintained by MIT, however you can setup and run your own server. Set the "RedisServer" property and "RedisPort" Property to access your own server.</p>
-
-<h3>Properties</h3>
-<dl>
-  <dt><code><em>ProjectID</em></code></dt>
-  <dd>Gets the ProjectID for this CloudDB project.</dd>
-  <dt><code><em>RedisPort</em></code></dt>
-  <dd>The Redis Server port to use. Defaults to 6381</dd>
-  <dt><code><em>RedisServer</em></code></dt>
-  <dd>The Redis Server to use to store data. A setting of "DEFAULT" means that the MIT server will be used.</dd>
-  <dt><code>Token</code> (designer only)</dt>
-  <dd>This field contains the authentication token used to login to the backed Redis server. For the "DEFAULT" server, do not edit this value, the system will fill it in for you. A system administrator may also provide a special value to you which can be used to share data between multiple projects from multiple people. If using your own Redis server, set a password in the server's config and enter it here.</dd>
-  <dt><code>UseSSL</code> (designer only)</dt>
-  <dd>Set to true to use SSL to talk to CloudDB/Redis server. This should be set to True for the "DEFAULT" server.</dd>
-</dl>
-
-<h3>Events</h3>
-<dl>
-  <dt><code>CloudDBError(text message)</code></dt>
-  <dd>Indicates that an error occurred while communicating with the CloudDB Redis server.</dd>
-  <dt><code>DataChanged(text tag, any value)</code></dt>
-  <dd>Indicates that the data in the CloudDB project has changed.
- Launches an event with the tag and value that have been updated.</dd>
-  <dt><code>FirstRemoved(any value)</code></dt>
-  <dd>Event triggered by the "RemoveFirstFromList" function. The argument "value" is the object that was the first in the list, and which is now removed.</dd>
-  <dt><code>GotValue(text tag, any value)</code></dt>
-  <dd>Indicates that a GetValue request has succeeded.</dd>
-  <dt><code>TagList(list value)</code></dt>
-  <dd>Event triggered when we have received the list of known tags. Used with the "GetTagList" Function.</dd>
-</dl>
-
-<h3>Methods</h3>
-<dl>
-  <dt><code>AppendValueToList(text tag, any itemToAdd)</code></dt>
-  <dd>Append a value to the end of a list atomically. If two devices use this function simultaneously, both will be appended and no data lost.</dd>
-  <dt><code>ClearTag(text tag)</code></dt>
-  <dd>Remove the tag from CloudDB</dd>
-  <dt><code>boolean CloudConnected()</code></dt>
-  <dd>returns True if we are on the network and will likely be able to connect to the CloudDB server.</dd>
-  <dt><code>GetTagList()</code></dt>
-  <dd>Get the list of tags for this application. When complete a "TagList" event will be triggered with the list of known tags.</dd>
-  <dt><code>GetValue(text tag, any valueIfTagNotThere)</code></dt>
-  <dd>GetValue asks CloudDB to get the value stored under the given tag.
- It will pass valueIfTagNotThere to GotValue if there is no value stored
- under the tag.</dd>
-  <dt><code>RemoveFirstFromList(text tag)</code></dt>
-  <dd>Return the first element of a list and atomically remove it. If two devices use this function simultaneously, one will get the first element and the the other will get the second element, or an error if there is no available element. When the element is available, the "FirstRemoved" event will be triggered.</dd>
-  <dt><code>StoreValue(text tag, any valueToStore)</code></dt>
-  <dd>Asks CloudDB to store the given value under the given tag. If the value begins with "file:///" or "/storage/", CloudDB will interpret the value as a filename and send the contents of the named file. The file extension must be 3 characters (e.g., ".png", ".wav"). When received via GotValue or DataChanged, the file will be saved onto the device's public storage and the value will reflect the new location.</dd>
-</dl>
 <h2 id="FirebaseDB">FirebaseDB</h2>
 
 <p>Non-visible component that communicates with Firebase to store and retrieve information.</p>
