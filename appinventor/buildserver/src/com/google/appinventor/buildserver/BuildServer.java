@@ -795,7 +795,12 @@ public class BuildServer {
   }
 
   private ShutdownState getShutdownState() {
-    if (shuttingTime == 0 || (System.currentTimeMillis() > turningOnTime && turningOnTime > shuttingTime)) {
+    if (turningOnTime != 0 && System.currentTimeMillis() > turningOnTime && turningOnTime > shuttingTime) {
+      turningOnTime = 0;
+      shuttingTime = 0;
+    }
+
+    if (shuttingTime == 0) {
       if (System.currentTimeMillis() > shuttingTime && shuttingTime != 0) {
         shuttingTime = 0;
       }
