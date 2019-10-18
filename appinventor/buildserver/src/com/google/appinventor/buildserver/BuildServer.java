@@ -368,6 +368,9 @@ public class BuildServer {
     } else if (!token.equals(commandLineOptions.shutdownToken)) {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
     } else {
+      if (shuttingTime == 0) {
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Buildserver is not expected to be shutted down").build();
+      }
       long turnonTime = System.currentTimeMillis();
       if (delay != null) {
         try {
