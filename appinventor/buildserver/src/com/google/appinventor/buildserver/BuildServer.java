@@ -350,7 +350,7 @@ public class BuildServer {
   }
 
   /**
-   * Indicate that the server is shutting down.
+   * Indicate that the server is turning on.
    *
    * @param token -- secret token used like a password to authenticate the shutdown command
    * @param delay -- the delay in seconds before jobs are no longer accepted
