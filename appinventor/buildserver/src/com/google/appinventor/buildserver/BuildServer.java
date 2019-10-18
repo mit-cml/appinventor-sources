@@ -219,7 +219,7 @@ public class BuildServer {
   //                DRAINING:   We have reached > 2/3 of max permitted jobs
   //                            We return bad health (but accept jobs) until
   //                            the number of active jobs is < 1/3 of max
-  private enum ShutdownState { UP, SHUTTING, DOWN, DRAINING };
+  private enum ShutdownState { UP, SHUTTING, TURNING, DOWN, DRAINING };
 
   private static volatile boolean draining = false; // We have exceeded 2/3 max load, waiting for
                                                     // the load to become < 1/3 max load
@@ -238,6 +238,9 @@ public class BuildServer {
     } else if (shut == ShutdownState.DRAINING) {
       LOG.info("Healthcheck: DRAINING");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is draining").build();
+    } else if (shut == ShutdownState.TURNING) {
+      LOG.info("Healthcheck: TURNING");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is turning on").build();
     } else {
       LOG.info("Healthcheck: SHUTTING");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
@@ -821,10 +824,12 @@ public class BuildServer {
       } else {
         return ShutdownState.UP;
       }
-    } else if (System.currentTimeMillis() > shuttingTime) {
-      return ShutdownState.DOWN;
-    } else {
+    } else if (turningOnTime >= System.currentTimeMillis()) {
+      return ShutdownState.TURNING;
+    } else if (shuttingTime >= System.currentTimeMillis()) {
       return ShutdownState.SHUTTING;
+    } else {
+      return ShutdownState.DOWN;
     }
   }
 }
