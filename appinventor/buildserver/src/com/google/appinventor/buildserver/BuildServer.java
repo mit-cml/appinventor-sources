@@ -801,9 +801,6 @@ public class BuildServer {
     }
 
     if (shuttingTime == 0) {
-      if (System.currentTimeMillis() > shuttingTime && shuttingTime != 0) {
-        shuttingTime = 0;
-      }
       int max = buildExecutor.getMaxActiveTasks();
       if (max < 10) {           // Only do this scheme if we are not unlimited
                                 // (unlimited == 0) and allow more then 10 max builds
@@ -825,9 +822,6 @@ public class BuildServer {
         return ShutdownState.UP;
       }
     } else if (System.currentTimeMillis() > shuttingTime) {
-      if (System.currentTimeMillis() > turningOnTime && turningOnTime != 0) {
-        turningOnTime = 0;
-      }
       return ShutdownState.DOWN;
     } else {
       return ShutdownState.SHUTTING;
