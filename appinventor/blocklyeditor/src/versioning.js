@@ -2369,7 +2369,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: Added RequestFocus method
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI3: Added ReadOnly property
+    6: "noUpgrade"
 
   }, // End TextBox upgraders
 
