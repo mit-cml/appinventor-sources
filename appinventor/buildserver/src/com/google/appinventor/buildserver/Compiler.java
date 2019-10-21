@@ -1156,9 +1156,15 @@ public final class Compiler {
             new File(drawableDir, "round_ya.png"),
             new File(drawableDir, "round_rect_ya.png"),
             new File(mipmapHdpi, "ic_launcher_round.png"),
+            new File(mipmapHdpi, "ic_launcher.png"),
             new File(mipmapMdpi, "ic_launcher_round.png"),
+            new File(mipmapMdpi, "ic_launcher.png"),
             new File(mipmapXhdpi, "ic_launcher_round.png"),
-            new File(mipmapXxhdpi, "ic_launcher_round.png"))) {
+            new File(mipmapXhdpi, "ic_launcher.png"),
+            new File(mipmapXxhdpi, "ic_launcher_round.png"),
+            new File(mipmapXxhdpi, "ic_launcher.png"),
+            new File(mipmapXxxhdpi, "ic_launcher.png")
+            )) {
       return false;
     }
     if (reporter != null) {
@@ -1736,25 +1742,35 @@ public final class Compiler {
   /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(File outputPngFile, File roundOutputPngFile, File roundRectOutputPngFile, File hdpiRound, File mdpiRound, File xhdpiRound, File xxhdpiRound) {
+  private boolean prepareApplicationIcon(File outputPngFile, File roundOutputPngFile, File roundRectOutputPngFile, File hdpiRound, File hdpiRoundRect, File mdpiRound, File mdpiRoundRect, File xhdpiRound, File xhdpiRoundRect, File xxhdpiRound, File xxhdpiRoundRect, File xxxhdpiRoundRect) {
     String userSpecifiedIcon = Strings.nullToEmpty(project.getIcon());
     try {
       BufferedImage icon;
       BufferedImage roundIcon;
       BufferedImage roundRectIcon;
       BufferedImage roundIconHdpi;
+      BufferedImage roundRectIconHdpi;
       BufferedImage roundIconMdpi;
+      BufferedImage roundRectIconMdpi;
       BufferedImage roundIconXhdpi;
+      BufferedImage roundRectIconXhdpi;
       BufferedImage roundIconXxhdpi;
+      BufferedImage roundRectIconXxhdpi;
+      BufferedImage roundRectIconXxxhdpi;
       if (!userSpecifiedIcon.isEmpty()) {
         File iconFile = new File(project.getAssetsDirectory(), userSpecifiedIcon);
         icon = ImageIO.read(iconFile);
         roundIcon = produceRoundIcon(icon);
         roundRectIcon = produceRoundedCornerIcon(icon);
         roundIconHdpi = resizeImage(roundIcon,72,72);
+        roundRectIconHdpi = resizeImage(roundRectIcon,72,72);
         roundIconMdpi = resizeImage(roundIcon,48,48);
+        roundRectIconMdpi = resizeImage(roundRectIcon,48,48);
         roundIconXhdpi = resizeImage(roundIcon,96,96);
+        roundRectIconXhdpi = resizeImage(roundRectIcon,96,96);
         roundIconXxhdpi = resizeImage(roundIcon,144,144);
+        roundRectIconXxhdpi = resizeImage(roundRectIcon,144,144);
+        roundRectIconXxxhdpi = resizeImage(roundRectIcon,192,192);
         if (icon == null) {
           // This can happen if the iconFile isn't an image file.
           // For example, icon is null if the file is a .wav file.
@@ -1769,17 +1785,27 @@ public final class Compiler {
         roundIcon = produceRoundIcon(icon);
         roundRectIcon = produceRoundedCornerIcon(icon);
         roundIconHdpi = resizeImage(roundIcon,72,72);
+        roundRectIconHdpi = resizeImage(roundRectIcon,72,72);
         roundIconMdpi = resizeImage(roundIcon,48,48);
+        roundRectIconMdpi = resizeImage(roundRectIcon,48,48);
         roundIconXhdpi = resizeImage(roundIcon,96,96);
+        roundRectIconXhdpi = resizeImage(roundRectIcon,96,96);
         roundIconXxhdpi = resizeImage(roundIcon,144,144);
+        roundRectIconXxhdpi = resizeImage(roundRectIcon,144,144);
+        roundRectIconXxxhdpi = resizeImage(roundRectIcon,192,192);
       }
       ImageIO.write(icon, "png", outputPngFile);
       ImageIO.write(roundIcon, "png", roundOutputPngFile);
       ImageIO.write(roundRectIcon, "png", roundRectOutputPngFile);
       ImageIO.write(roundIconHdpi, "png", hdpiRound);
+      ImageIO.write(roundRectIconHdpi, "png", hdpiRoundRect);
       ImageIO.write(roundIconMdpi, "png", mdpiRound);
+      ImageIO.write(roundRectIconMdpi, "png", mdpiRoundRect);
       ImageIO.write(roundIconXhdpi, "png", xhdpiRound);
+      ImageIO.write(roundRectIconXhdpi, "png", xhdpiRoundRect);
       ImageIO.write(roundIconXxhdpi, "png", xxhdpiRound);
+      ImageIO.write(roundRectIconXxhdpi, "png", xxhdpiRoundRect);
+      ImageIO.write(roundRectIconXxxhdpi, "png", xxxhdpiRoundRect);
     } catch (Exception e) {
       e.printStackTrace();
       // If the user specified the icon, this is fatal.
