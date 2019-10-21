@@ -1084,7 +1084,9 @@ public class YaVersion {
   // - The MultiLine property was added.
   // For TEXTBOX_COMPONENT_VERSION 5:
   // - RequestFocus method was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 5;
+  // For TEXTBOX_COMPONENT_VERSION 6:
+  // - ReadOnly property was added
+  public static final int TEXTBOX_COMPONENT_VERSION = 6;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
