@@ -1517,6 +1517,10 @@ public final class YoungAndroidFormUpgrader {
       // RequestFocus method was added
       srcCompVersion = 5;
     }
+    if (scrCompVersion < 6) {
+      // ReadOnly property was added
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 

@@ -79,6 +79,9 @@ public final class TextBox extends TextBoxBase {
   // If true, then text box is multiline
   private boolean multiLine;
 
+  // If true, then text box is read-only
+  private boolean readOnly;
+
   /**
    * Creates a new TextBox component.
    *
@@ -88,6 +91,7 @@ public final class TextBox extends TextBoxBase {
     super(container, new EditText(container.$context()));
     NumbersOnly(false);
     MultiLine(false);
+    ReadOnly(false);
 
     // We need to set the IME options here.  Otherwise, Android's default
     // behavior is that the action button will be Done or Next, depending on
@@ -181,6 +185,24 @@ public final class TextBox extends TextBoxBase {
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;
     view.setSingleLine(!multiLine);
+  }
+
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR,
+    description = "Whether the %type% is read-only. By default, this is true."
+  )
+  public boolean ReadOnly() {
+    return readOnly;
+  }
+
+  @DesignerProperty(
+    editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False"
+  )
+  @SimpleProperty
+  public void ReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+    view.setEnabled(!readOnly);
   }
 
   // TODO(halabelson): We might also want a method to show the keyboard.
