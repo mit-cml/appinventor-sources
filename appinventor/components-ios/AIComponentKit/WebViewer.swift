@@ -120,12 +120,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   fileprivate func processURL(_ url: String){
     _wantLoad = true
     if url.starts(with: "file:///android_asset/"), let fileURL = URL(string: url) {
-      if let assetURL = Bundle.main.url(forResource: fileURL.lastPathComponent, withExtension: nil, subdirectory: "assets"){
+      let assetPath = AssetManager.shared.pathForExistingFileAsset(fileURL.lastPathComponent)
+      if !assetPath.isEmpty {
+        let assetURL = URL(fileURLWithPath: assetPath)
         _view.loadFileURL(assetURL, allowingReadAccessTo: assetURL.deletingLastPathComponent())
       } else {
         _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code, ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
-    } else if url.starts(with: "file:///mnt/sdcard") {
+    } else if url.starts(with: "file:///mnt/sdcard") || url.starts(with: "file:///sdcard") {
       if let fileURL = URL(string: url){
         do {
           let assetURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("AppInventor/\(fileURL.lastPathComponent)")
@@ -182,6 +184,10 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     processURL(url)
   }
 
+  @objc open func WebViewStringChange(_ value: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "WebViewStringChange", arguments: value as NSString)
+  }
+
   open func webView(_ webView: WKWebView, didFail: WKNavigation!, withError: Error) {
     _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_UNKNOWN_ERROR.code, withError.localizedDescription)
   }
@@ -223,6 +229,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
     if let string = message.body as? String {
       _webViewString = string
+      DispatchQueue.main.async {
+        self.WebViewStringChange(string)
+      }
     }
   }
 

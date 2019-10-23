@@ -5,11 +5,13 @@ window.AppInventor = (function(){
     return webViewString;
   }
   obj.setWebViewString = function(newString) {
-    webViewString = webViewString;
-    window.webkit.messageHandlers.webString.postMessage(string);
+    webViewString = newString;
+    window.webkit.messageHandlers.webString.postMessage(newString);
   }
   obj.updateFromBlocks = function(newString) {
     webViewString = newString;
+    obj.onSetWebViewString(newString);
   }
+  obj.onSetWebViewString = function(newString) {}
   return obj;
 })();
