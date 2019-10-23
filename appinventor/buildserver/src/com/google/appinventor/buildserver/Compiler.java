@@ -782,7 +782,7 @@ public final class Compiler {
     return true;
   }
 
-  // Creates ic_launcher.xml to initialize adaptive icon
+  // Writes ic_launcher.xml to initialize adaptive icon
   private boolean writeICLauncher(File adaptiveIconFile) {
     String mainClass = project.getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
