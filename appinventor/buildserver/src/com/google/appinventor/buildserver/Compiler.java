@@ -782,6 +782,7 @@ public final class Compiler {
     return true;
   }
 
+  // Creates ic_launcher.xml to initialize adaptive icon
   private boolean writeICLauncher(File adaptiveIconFile) {
     String mainClass = project.getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
@@ -801,12 +802,13 @@ public final class Compiler {
     return true;
   }
 
+  // Writes ic_launcher_background.xml to indicate background color of adaptive icon
   private boolean writeICLauncherBackground(File icBackgroundFile) {
     try {
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(icBackgroundFile), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      out.write("<color name=\"ic_launcher_background\">#F48C3F</color>\n");
+      out.write("<color name=\"ic_launcher_background\">#000000</color>\n");
       out.write("</resources>\n");
       out.close();
     } catch (IOException e) {
@@ -1144,6 +1146,7 @@ public final class Compiler {
     File resDir = createDir(buildDir, "res");
     File drawableDir = createDir(resDir, "drawable");
 
+    // Create mipmap directories
     File mipmapV26 = createDir(resDir, "mipmap-anydpi-v26");
     File mipmapHdpi = createDir(resDir,"mipmap-hdpi");
     File mipmapMdpi = createDir(resDir,"mipmap-mdpi");
@@ -1151,20 +1154,12 @@ public final class Compiler {
     File mipmapXxhdpi = createDir(resDir,"mipmap-xxhdpi");
     File mipmapXxxhdpi = createDir(resDir,"mipmap-xxxhdpi");
 
-    if (!compiler.prepareApplicationIcon(
-            new File(drawableDir, "ya.png"),
-            new File(drawableDir, "round_ya.png"),
-            new File(drawableDir, "round_rect_ya.png"),
-            new File(mipmapHdpi, "ic_launcher_round.png"),
-            new File(mipmapHdpi, "ic_launcher.png"),
-            new File(mipmapMdpi, "ic_launcher_round.png"),
-            new File(mipmapMdpi, "ic_launcher.png"),
-            new File(mipmapXhdpi, "ic_launcher_round.png"),
-            new File(mipmapXhdpi, "ic_launcher.png"),
-            new File(mipmapXxhdpi, "ic_launcher_round.png"),
-            new File(mipmapXxhdpi, "ic_launcher.png"),
-            new File(mipmapXxxhdpi, "ic_launcher.png")
-            )) {
+    // Create list of mipmaps for all icon types with respective sizes
+    List<File> mipmapDirectoriesForIcons = Arrays.asList(mipmapMdpi, mipmapHdpi, mipmapXhdpi, mipmapXxhdpi, mipmapXxxhdpi);
+    List<Integer> standardICSizesForMipmaps = Arrays.asList(48,72,96,144,192);
+    List<Integer> foregroundICSizesForMipmaps = Arrays.asList(108,162,216,324,432);
+
+    if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"), mipmapDirectoriesForIcons, standardICSizesForMipmaps, foregroundICSizesForMipmaps)) {
       return false;
     }
     if (reporter != null) {
@@ -1726,12 +1721,12 @@ public final class Compiler {
   }
 
   /*
-   * Creates the rounded corner image of an icon
+   * Creates the image of an icon with rounded corners
    */
   private BufferedImage produceRoundedCornerIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Corner radius of roundedCornerIcon needs to be 8.33% of width according to Android material guidelines
-    float cornerRadius = (float)0.0833*imageWidth;
+    // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android material guidelines
+    float cornerRadius = imageWidth / 12;
     BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundedCornerIcon.createGraphics();
     g2.setClip(new RoundRectangle2D.Float(0, 0, imageWidth, imageWidth, cornerRadius, cornerRadius));
@@ -1742,35 +1737,13 @@ public final class Compiler {
   /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(File outputPngFile, File roundOutputPngFile, File roundRectOutputPngFile, File hdpiRound, File hdpiRoundRect, File mdpiRound, File mdpiRoundRect, File xhdpiRound, File xhdpiRoundRect, File xxhdpiRound, File xxhdpiRoundRect, File xxxhdpiRoundRect) {
+  private boolean prepareApplicationIcon(File outputPngFile, List<File> mipmapDirectories, List<Integer> standardICSizes, List<Integer> foregroundICSizes) {
     String userSpecifiedIcon = Strings.nullToEmpty(project.getIcon());
     try {
       BufferedImage icon;
-      BufferedImage roundIcon;
-      BufferedImage roundRectIcon;
-      BufferedImage roundIconHdpi;
-      BufferedImage roundRectIconHdpi;
-      BufferedImage roundIconMdpi;
-      BufferedImage roundRectIconMdpi;
-      BufferedImage roundIconXhdpi;
-      BufferedImage roundRectIconXhdpi;
-      BufferedImage roundIconXxhdpi;
-      BufferedImage roundRectIconXxhdpi;
-      BufferedImage roundRectIconXxxhdpi;
       if (!userSpecifiedIcon.isEmpty()) {
         File iconFile = new File(project.getAssetsDirectory(), userSpecifiedIcon);
         icon = ImageIO.read(iconFile);
-        roundIcon = produceRoundIcon(icon);
-        roundRectIcon = produceRoundedCornerIcon(icon);
-        roundIconHdpi = resizeImage(roundIcon,72,72);
-        roundRectIconHdpi = resizeImage(roundRectIcon,72,72);
-        roundIconMdpi = resizeImage(roundIcon,48,48);
-        roundRectIconMdpi = resizeImage(roundRectIcon,48,48);
-        roundIconXhdpi = resizeImage(roundIcon,96,96);
-        roundRectIconXhdpi = resizeImage(roundRectIcon,96,96);
-        roundIconXxhdpi = resizeImage(roundIcon,144,144);
-        roundRectIconXxhdpi = resizeImage(roundRectIcon,144,144);
-        roundRectIconXxxhdpi = resizeImage(roundRectIcon,192,192);
         if (icon == null) {
           // This can happen if the iconFile isn't an image file.
           // For example, icon is null if the file is a .wav file.
@@ -1782,30 +1755,30 @@ public final class Compiler {
       } else {
         // Load the default image.
         icon = ImageIO.read(Compiler.class.getResource(DEFAULT_ICON));
-        roundIcon = produceRoundIcon(icon);
-        roundRectIcon = produceRoundedCornerIcon(icon);
-        roundIconHdpi = resizeImage(roundIcon,72,72);
-        roundRectIconHdpi = resizeImage(roundRectIcon,72,72);
-        roundIconMdpi = resizeImage(roundIcon,48,48);
-        roundRectIconMdpi = resizeImage(roundRectIcon,48,48);
-        roundIconXhdpi = resizeImage(roundIcon,96,96);
-        roundRectIconXhdpi = resizeImage(roundRectIcon,96,96);
-        roundIconXxhdpi = resizeImage(roundIcon,144,144);
-        roundRectIconXxhdpi = resizeImage(roundRectIcon,144,144);
-        roundRectIconXxxhdpi = resizeImage(roundRectIcon,192,192);
+      }
+
+      BufferedImage roundIcon = produceRoundIcon(icon);
+      BufferedImage roundRectIcon = produceRoundedCornerIcon(icon);
+
+      // For each mipmap directory, create all types of ic_launcher photos with respective mipmap sizes
+      for(int i=0; i < mipmapDirectories.size(); i++){
+        File mipmapDirectory = mipmapDirectories.get(i);
+        Integer standardSize = standardICSizes.get(i);
+        Integer foregroundSize = foregroundICSizes.get(i);
+
+        BufferedImage round = resizeImage(roundIcon,standardSize,standardSize);
+        BufferedImage roundRect = resizeImage(roundRectIcon,standardSize,standardSize);
+        BufferedImage foreground = resizeImage(icon,foregroundSize,foregroundSize);
+
+        File roundIconPng = new File(mipmapDirectory,"ic_launcher_round.png");
+        File roundRectIconPng = new File(mipmapDirectory,"ic_launcher.png");
+        File foregroundPng = new File(mipmapDirectory,"ic_launcher_foreground.png");
+
+        ImageIO.write(round, "png", roundIconPng);
+        ImageIO.write(roundRect, "png", roundRectIconPng);
+        ImageIO.write(foreground, "png", foregroundPng);
       }
       ImageIO.write(icon, "png", outputPngFile);
-      ImageIO.write(roundIcon, "png", roundOutputPngFile);
-      ImageIO.write(roundRectIcon, "png", roundRectOutputPngFile);
-      ImageIO.write(roundIconHdpi, "png", hdpiRound);
-      ImageIO.write(roundRectIconHdpi, "png", hdpiRoundRect);
-      ImageIO.write(roundIconMdpi, "png", mdpiRound);
-      ImageIO.write(roundRectIconMdpi, "png", mdpiRoundRect);
-      ImageIO.write(roundIconXhdpi, "png", xhdpiRound);
-      ImageIO.write(roundRectIconXhdpi, "png", xhdpiRoundRect);
-      ImageIO.write(roundIconXxhdpi, "png", xxhdpiRound);
-      ImageIO.write(roundRectIconXxhdpi, "png", xxhdpiRoundRect);
-      ImageIO.write(roundRectIconXxxhdpi, "png", xxxhdpiRoundRect);
     } catch (Exception e) {
       e.printStackTrace();
       // If the user specified the icon, this is fatal.
