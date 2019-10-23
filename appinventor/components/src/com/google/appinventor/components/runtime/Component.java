@@ -166,6 +166,4 @@ public interface Component {
   static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
-
-
 }

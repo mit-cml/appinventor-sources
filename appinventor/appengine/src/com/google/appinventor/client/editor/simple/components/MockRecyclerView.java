@@ -58,7 +58,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   private String textMainColor;
   private String textDetailColor;
   
-  private String layout="4";
+  private int layout;
   private ArrayList<JSONObject> currentItems;
 
   private int orientation = 1;
@@ -161,7 +161,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
     for(int i = 0; i < arrayList.size(); ++i) {
       JSONObject object = arrayList.get(i);
       
-      if(layout.equals("0")) {
+      if(layout == 0) {
         VerticalPanel verticalItemPanel = new VerticalPanel();
         verticalItemPanel.setStylePrimaryName("listViewItemStyle");
         verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -170,7 +170,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         verticalItemPanel.add(createInlineLabel(text1, textMainColor));
         listViewWidgets.add(verticalItemPanel);
       } 
-      else if(layout.equals("1")) {
+      else if(layout == 1) {
         VerticalPanel verticalItemPanel = new VerticalPanel();
         verticalItemPanel.setStylePrimaryName("listViewItemStyle");
         verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -181,7 +181,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         verticalItemPanel.add(createInlineLabel(text2, textDetailColor));
         listViewWidgets.add(verticalItemPanel);
       }
-      else if(layout.equals("2")) {
+      else if(layout == 2) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -194,7 +194,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         horizontalItemPanel.add(label2);
         listViewWidgets.add(horizontalItemPanel);
       } 
-      else if (layout.equals("3")) {
+      else if (layout == 3) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -206,7 +206,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         horizontalItemPanel.add(createInlineLabel(text1, textMainColor));
         listViewWidgets.add(horizontalItemPanel);
       } 
-      else if(layout.equals("4")) {
+      else if(layout == 4) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -246,7 +246,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
   }
 
   private void updateLayoutType(String value) {
-    layout = value;
+    layout = Integer.parseInt(value);
     YoungAndroidListViewAddDataPropertyEditor editor =
         (YoungAndroidListViewAddDataPropertyEditor) properties.getProperty(PROPERTY_NAME_LISTVIEW_ADD_DATA).getEditor();
     editor.setLayout(layout);
@@ -283,7 +283,6 @@ public final class MockRecyclerView extends MockVisibleComponent {
     else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
       displayOnDesigner(newValue);
       refreshForm();
-    
     }else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_LAYOUT)) {
       updateLayoutType(newValue);
       refreshForm();

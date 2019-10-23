@@ -40,11 +40,9 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW = "ElementsFromString";
   protected static final String PROPERTY_NAME_LISTVIEW_IMAGES = "Picture";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
-  protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
-
+  protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColorMain";
   // to set color for secondary text of listview items
-
-  protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "DetailTextColor";
+  protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
   protected static final String PROPERTY_NAME_HINT = "Hint";
@@ -54,7 +52,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   protected static final String PROPERTY_NAME_COLUMN = "Column";
   protected static final String PROPERTY_NAME_ROW = "Row";
-  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "AddData";
+  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
 
   // Note: the values below are duplicated in Component.java

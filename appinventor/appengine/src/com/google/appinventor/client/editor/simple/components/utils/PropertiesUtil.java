@@ -271,9 +271,9 @@ public class PropertiesUtil {
       return new ScalingChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FIREBASE_URL)) {
       return new YoungAndroidDefaultURLPropertyEditor("DEFAULT");
-    } else if(editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)) {
       return new YoungAndroidListViewAddDataPropertyEditor(editor);
-    } else if(editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT)) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT)) {
       return new YoungAndroidListViewLayoutChoicePropertyEditor();
     } else if (editorType.startsWith(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":")) {
       String type = editorType.substring(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT.length() + 2);

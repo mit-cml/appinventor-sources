@@ -577,13 +577,13 @@ public final class RecyclerView extends AndroidViewComponent {
 
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String AddData() {
+  public String ListData() {
     return propertyValue;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
-  public void AddData(String propertyValue) {
+  public void ListData(String propertyValue) {
     this.propertyValue = propertyValue;
     if (propertyValue != null && propertyValue != "") {
       JSONArray arr = new JSONArray(propertyValue);

@@ -10,6 +10,7 @@ import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AddData property in the ListView component. It is used to add/delete data
@@ -46,15 +48,15 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
   private Button addData;
 
-  private String layout;
-  private ArrayList<JSONObject> ITEMS;
-  private ArrayList<JSONObject> ITEMSCopy;
+  private int layout;
+  private List<JSONObject> items;
+  private List<JSONObject> itemsCopy;
 
   private YaFormEditor editor;
 
   public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {
-    ITEMS = new ArrayList<>();
-    ITEMSCopy = new ArrayList<>();
+    items = new ArrayList<>();
+    itemsCopy = new ArrayList<>();
     addData = new Button("Click to Add/Delete Data");
     this.editor = editor;
 
@@ -65,11 +67,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   protected void updateValue() {
     String value = property.getValue();
     JSONValue jsonValue = value.isEmpty() ? null : JSONParser.parseStrict(value);
-    if(jsonValue != null) {
+    if (jsonValue != null) {
       JSONArray array = jsonValue.isArray();
-      ITEMS.clear();
-      for(int i = 0; i < array.size(); ++i) {
-        ITEMS.add(i, array.get(i).isObject());
+      items.clear();
+      for (int i = 0; i < array.size(); ++i) {
+        items.add(i, array.get(i).isObject());
       }
     }
   }
@@ -93,8 +95,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   /**
    * set layout type of ListView so as to display contents AddData dialog box accordingly
    */
-
-  public void setLayout(String layout) {
+  public void setLayout(int layout) {
     this.layout = layout;
   }
 
@@ -121,10 +122,10 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
         @Override
         public void update(int i, JSONObject jsonObject, String s) {
-          ITEMSCopy.remove(i);
+          itemsCopy.remove(i);
           model.refresh();
           table.setRowCount(0);
-          table.setRowData(0, ITEMSCopy);
+          table.setRowData(0, itemsCopy);
         }
       });
       return column;
@@ -134,7 +135,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       Column<JSONObject, String> column = new Column<JSONObject, String>(new TextInputCell()) {
         @Override
         public String getValue(JSONObject jsonObject) {
-          if(jsonObject.containsKey(columnKey)) {
+          if (jsonObject.containsKey(columnKey)) {
             JSONString stringVal = (JSONString)jsonObject.get(columnKey);
             return (stringVal.stringValue());
           } else {
@@ -155,7 +156,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     Column<JSONObject, String> createImageSelectionDropDown(final String columnKey) {
       Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
       YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
-      ArrayList<String> choices = new ArrayList<>();
+      List<String> choices = new ArrayList<>();
       choices.add(0, "None");
       if (assetsFolder != null) {
         for (ProjectNode node : assetsFolder.getChildren()) {
@@ -165,7 +166,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       Column<JSONObject, String> column = new Column<JSONObject, String>(new SelectionCell(choices)) {
         @Override
         public String getValue(JSONObject jsonObject) {
-          if(jsonObject.containsKey(columnKey)) {
+          if (jsonObject.containsKey(columnKey)) {
             JSONString stringVal = (JSONString)jsonObject.get(columnKey);
             return (stringVal.stringValue());
           } else {
@@ -183,12 +184,12 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       return column;
     }
 
-    ClickHandle(final String layoutValue) {
+    ClickHandle(final int layoutValue) {
 
       verticalPanel = new VerticalPanel();
       actionButtons = new HorizontalPanel();
-      ITEMSCopy = new ArrayList<>();
-      model = new ListDataProvider(ITEMSCopy);
+      itemsCopy = new ArrayList<>();
+      model = new ListDataProvider(itemsCopy);
       table = new CellTable<>();
       rows = new JSONArray();
       add  = new Button("Click to Add Row Data");
@@ -197,25 +198,26 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       setText("Add Data to the ListView");
 
-      for(int i = 0; i < ITEMS.size(); ++i) {
-        ITEMSCopy.add(i, ITEMS.get(i));
+      for (int i = 0; i < items.size(); ++i) {
+        itemsCopy.add(i, items.get(i));
       }
 
-      table.setRowData(ITEMSCopy);
+      table.setRowData(itemsCopy);
       table.setEmptyTableWidget(new Label("No row data available yet!"));
       model.addDataDisplay(table);
       /*
        * create table columns and type of each column according to the type of ListView layout
        */
-      if (layoutValue.equals("0")) {
+      if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
-      } else if (layoutValue.equals("1") || layoutValue.equals("2")) {
+      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
+            layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
         table.addColumn(createTextBoxes("Text2"), "DetailText");
-      } else if(layoutValue.equals("3")) {
+      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
         table.addColumn(createImageSelectionDropDown("Image"), "Image");
-      } else if(layoutValue.equals("4")) {
+      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         table.addColumn(createTextBoxes("Text1"), "MainText");
         table.addColumn(createTextBoxes("Text2"), "DetailText");
         table.addColumn(createImageSelectionDropDown("Image"), "Image");
@@ -231,23 +233,24 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
            */
 
           JSONObject data = new JSONObject();
-          if(layoutValue.equals("0")) {
+          if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
             data.put("Text1", new JSONString(""));
-          } else if(layoutValue.equals("1") || layoutValue.equals("2")) {
+          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
+                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
-          } else if(layoutValue.equals("3")) {
+          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
             data.put("Text1", new JSONString(""));
 
             data.put("Image", new JSONString("None"));
-          } else if(layoutValue.equals("4")) {
+          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
             data.put("Image", new JSONString("None"));
 
           }
-          ITEMSCopy.add(data);
-          table.setRowData(ITEMSCopy);
+          itemsCopy.add(data);
+          table.setRowData(itemsCopy);
         }
       });
 
@@ -258,17 +261,19 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
         @Override
         public void onClick(ClickEvent clickEvent) {
-          ITEMS.clear();
-          for(int i = 0; i < ITEMSCopy.size(); ++i) {
-            JSONObject obj = ITEMSCopy.get(i);
-            if((layoutValue.equals("0") || layoutValue.equals("3")) && obj.containsKey("Text2")) {
+          items.clear();
+          for (int i = 0; i < itemsCopy.size(); ++i) {
+            JSONObject obj = itemsCopy.get(i);
+            if ((layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT ||
+                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) && obj.containsKey("Text2")) {
               obj.put("Text2", null);
             }
-            if((layoutValue.equals("1") || layoutValue.equals("2")) && obj.containsKey("Image")) {
+            if ((layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
+                layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) && obj.containsKey("Image")) {
               obj.put("Image", null);
             }
             rows.set(i, obj);
-            ITEMS.add(i, obj);
+            items.add(i, obj);
           }
           property.setValue(rows.toString());
           ClickHandle.this.hide();
@@ -281,8 +286,24 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       cancel.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
-          ITEMSCopy.clear();
-          ClickHandle.this.hide();
+          final Cancel cancel = new Cancel();
+          cancel.center();
+          cancel.setStylePrimaryName("ode-DialogBox");
+          cancel.show();
+          cancel.yes.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+              itemsCopy.clear();
+              cancel.hide();
+              ClickHandle.this.hide();
+            }
+          });
+          cancel.no.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+              cancel.hide();
+            }
+          });
         }
       });
 
@@ -298,5 +319,24 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     }
   }
 
+  class Cancel extends DialogBox {
+    VerticalPanel verticalPanel;
+    HorizontalPanel buttonPanel;
+    Button yes, no;
+
+    Cancel(){
+      verticalPanel = new VerticalPanel();
+      buttonPanel = new HorizontalPanel();
+      setText("Cancel");
+      verticalPanel.add(new Label("Are you sure you want to exit without saving data?"));
+      yes = new Button("YES");
+      no = new Button("NO");
+      buttonPanel.add(yes);
+      buttonPanel.add(no);
+      buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+      verticalPanel.add(buttonPanel);
+      setWidget(verticalPanel);
+    }
+  }
 }
 

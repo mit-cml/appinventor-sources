@@ -12,10 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.google.appinventor.components.runtime.ComponentContainer;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter class to populate ListView with two lines of text in a single main line
@@ -24,18 +26,59 @@ public class ListViewArrayAdapterTwoTextLinear {
 
   private int textSize, detailTextSize, textColor, detailTextColor;
   private static ComponentContainer container;
-  private ArrayList<JSONObject> currentItems;
-  private ArrayList<JSONObject> filterCurrentItems;
+  private List<JSONObject> currentItems;
+  private List<JSONObject> filterCurrentItems;
+
+  private ArrayAdapter<JSONObject> itemAdapter;
+  private final Filter filter;
 
   public ListViewArrayAdapterTwoTextLinear(int textSize, int detailTextSize, int textColor, int detailTextColor,
-      ComponentContainer container, ArrayList<JSONObject> currentItems) {
+      ComponentContainer container, List<JSONObject> items) {
     this.textSize = textSize;
     this.detailTextSize = detailTextSize;
     this.textColor = textColor;
     this.detailTextColor = detailTextColor;
     this.container = container;
-    this.currentItems = new ArrayList<>(currentItems);
-    this.filterCurrentItems = new ArrayList<>(currentItems);
+    this.currentItems = new ArrayList<>(items);
+    this.filterCurrentItems = new ArrayList<>(items);
+
+    filter = new Filter() {
+      @Override
+      protected FilterResults performFiltering(CharSequence charSequence) {
+        String filterQuery = charSequence.toString().toLowerCase();
+        FilterResults results = new FilterResults();
+
+        if (filterQuery == null || filterQuery.length() == 0) {
+          List<JSONObject> arrayList = new ArrayList<>(currentItems);
+          results.count = arrayList.size();
+          results.values = arrayList;
+        } else {
+          List<JSONObject> arrayList = new ArrayList<>(currentItems);
+          List<JSONObject> filteredList = new ArrayList<>();
+          for (int i = 0; i < arrayList.size(); ++i) {
+            JSONObject object = arrayList.get(i);
+            if ((object.has("Text1") && object.getString("Text1").toLowerCase()
+                .contains(charSequence.toString())) || (object.has("Text2")) && object.getString("Text2")
+                .toLowerCase().contains(charSequence.toString())) {
+              filteredList.add(object);
+            }
+          }
+
+          results.count = filteredList.size();
+          results.values = filteredList;
+        }
+        return results;
+      }
+
+      @Override
+      protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+        filterCurrentItems = (List<JSONObject>) filterResults.values;
+        itemAdapter.clear();
+        for (int i = 0; i < filterCurrentItems.size(); ++i) {
+          itemAdapter.add(filterCurrentItems.get(i));
+        }
+      }
+    };
   }
 
   /**
@@ -45,18 +88,22 @@ public class ListViewArrayAdapterTwoTextLinear {
    */
   private View createView(){
     LinearLayout linearLayout = new LinearLayout(container.$context());
+    linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT));
     linearLayout.setId(1);
     linearLayout.setOrientation(LinearLayout.HORIZONTAL);
     linearLayout.setPadding(15,15,15,15);
     TextView textView1 = new TextView(container.$context());
     textView1.setPadding(10,10,10, 10);
     textView1.setGravity(Gravity.LEFT);
-    textView1.setLayoutParams(new LinearLayout.LayoutParams(450, ViewGroup.LayoutParams.WRAP_CONTENT));
+    textView1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     textView1.setId(2);
     TextView textView2 = new TextView(container.$context());
     textView2.setPadding(10,10,10, 10);
     textView2.setGravity(Gravity.RIGHT);
-    textView2.setLayoutParams(new LinearLayout.LayoutParams(450, ViewGroup.LayoutParams.WRAP_CONTENT));
+    textView2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
     textView2.setId(3);
     linearLayout.addView(textView1);
     linearLayout.addView(textView2);
@@ -64,7 +111,7 @@ public class ListViewArrayAdapterTwoTextLinear {
   }
 
   public ArrayAdapter<JSONObject> createAdapter() {
-    ArrayAdapter<JSONObject> itemAdapter = new ArrayAdapter<JSONObject>(container.$context(), 0, currentItems) {
+    itemAdapter = new ArrayAdapter<JSONObject>(container.$context(), 0, currentItems) {
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
         View view = createView();
@@ -93,43 +140,6 @@ public class ListViewArrayAdapterTwoTextLinear {
        */
       @Override
       public Filter getFilter() {
-        Filter filter = new Filter() {
-          @Override
-          protected FilterResults performFiltering(CharSequence charSequence) {
-            String filterQuery = charSequence.toString().toLowerCase();
-            FilterResults results = new FilterResults();
-
-            if(filterQuery == null || filterQuery.length() == 0) {
-              ArrayList<JSONObject> arrayList = new ArrayList<>(currentItems);
-              results.count = arrayList.size();
-              results.values = arrayList;
-            } else {
-              ArrayList<JSONObject> arrayList = new ArrayList<>(currentItems);
-              ArrayList<JSONObject> filteredList = new ArrayList<>();
-              for(int i = 0; i < arrayList.size(); ++i) {
-                JSONObject object = arrayList.get(i);
-                if ((object.has("Text1") && object.getString("Text1").toLowerCase()
-                    .contains(charSequence.toString())) || (object.has("Text2")) && object.getString("Text2")
-                        .toLowerCase().contains(charSequence.toString())) {
-                  filteredList.add(object);
-                }
-              }
-
-              results.count = filteredList.size();
-              results.values = filteredList;
-            }
-            return results;
-          }
-
-          @Override
-          protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            filterCurrentItems = (ArrayList<JSONObject>) filterResults.values;
-            clear();
-            for(int i = 0; i < filterCurrentItems.size(); ++i) {
-              add(filterCurrentItems.get(i));
-            }
-          }
-        };
         return filter;
       }
     };
