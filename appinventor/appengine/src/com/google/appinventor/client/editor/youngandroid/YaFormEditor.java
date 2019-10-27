@@ -36,6 +36,7 @@ import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
 import com.google.appinventor.components.common.YaVersion;
@@ -51,9 +52,15 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,6 +143,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
+  private boolean shouldSelectMultipleComponents = false;
+  private EditableProperties selectedProperties = null;
+
   /**
    * Creates a new YaFormEditor.
    *
@@ -162,6 +172,24 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     componentsPanel.add(visibleComponentsPanel, DockPanel.NORTH);
     componentsPanel.add(nonVisibleComponentsPanel, DockPanel.SOUTH);
     componentsPanel.setSize("100%", "100%");
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_SHIFT) {
+          shouldSelectMultipleComponents = true;
+        }
+      }
+    }, KeyDownEvent.getType());
+    RootPanel.get().addDomHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_SHIFT) {
+          shouldSelectMultipleComponents = false;
+        }
+      }
+    }, KeyUpEvent.getType());
 
     // Create palettePanel, which will be used as the content of the PaletteBox.
     palettePanel = new YoungAndroidPalettePanel(this);
@@ -323,6 +351,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (loadComplete) {
       // If the property isn't actually persisted to the .scm file, we don't need to do anything.
       if (component.isPropertyPersisted(propertyName)) {
+        selectedProperties = component.getProperties();
         Ode.getInstance().getEditorManager().scheduleAutoSave(this);
         updatePhone();          // Push changes to the phone if it is connected
       }
@@ -367,7 +396,23 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       if (selected) {
         // Select the item in the source structure explorer.
         sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-
+        EditableProperties componentProperties = component.getProperties();
+        String type = component.getType();
+        if (type != "Form") {
+          if (selectedProperties != null && shouldSelectMultipleComponents) {
+            for (EditableProperty property : selectedProperties) {
+              String name = property.getName();
+              if (name == "Name" || name == "Uuid") {
+                continue;
+              }
+              if (componentProperties.hasProperty(name)) {
+                componentProperties.changePropertyValue(name, property.getValue());
+              }
+            }
+          } else {
+            selectedProperties = componentProperties;
+          }
+        }
         // Show the component properties in the properties panel.
         updatePropertiesPanel(component);
       } else {
