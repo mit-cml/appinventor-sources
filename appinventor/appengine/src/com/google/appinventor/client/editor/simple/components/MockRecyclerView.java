@@ -6,20 +6,14 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -38,10 +32,8 @@ public final class MockRecyclerView extends MockVisibleComponent {
    * Component type name.
    */
   public static final String TYPE = "RecyclerView";
-  public static final String PROPERTY_NAME_TEXTCOLOR = "TextMainColor";
-  public static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextDetailColor";
-  
-  private final VerticalPanel listViewWidgets;
+
+  private final VerticalPanel listViewWidget;
   
   private Image image;
     
@@ -57,36 +49,37 @@ public final class MockRecyclerView extends MockVisibleComponent {
   private String backgroundColor;
   private String textMainColor;
   private String textDetailColor;
-  
+  private String currentElements;
+
   private int layout;
   private ArrayList<JSONObject> currentItems;
 
   private int orientation = 1;
 
   /**
-  * Creates a new MockImage component.
+  * Creates a new MockRecyclerView component.
   *
   * @param editor  editor of source file the component belongs to
   */
   public MockRecyclerView(SimpleEditor editor) {
     super(editor, TYPE, images.recyclerview());
 
-    listViewWidgets = new VerticalPanel();
+    listViewWidget = new VerticalPanel();
     //TODO (Jose) extract magic numbers as ComponentConstants.java
-    listViewWidgets.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
-    listViewWidgets.setStylePrimaryName("ode-SimpleMockComponent");
-    listViewWidgets.setStyleName("listViewComponentStyle", true);
+    listViewWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
+    listViewWidget.setStylePrimaryName("ode-SimpleMockComponent");
+    listViewWidget.setStyleName("listViewComponentStyle", true);
 
     currentItems = new ArrayList<>();
 
     createFilterBox();
 
     // textColor must be set before the component is initialized, because onPropertyChange
-    // might call setSlementsFromString, which tries to set the item textcolor
+    // might call setElementsFromString, which tries to set the item textcolor
     textMainColor  = DEFAULT_TEXT_COLOR;
     textDetailColor = DEFAULT_TEXT_COLOR;
-    initComponent(listViewWidgets);
-    MockComponentsUtil.setWidgetBackgroundColor(listViewWidgets, DEFAULT_BACKGROUND_COLOR);
+    initComponent(listViewWidget);
+    MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
     }
 
      @Override
@@ -102,7 +95,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
       text = "&HFF000000";  // black
     }
     backgroundColor = text;
-    MockComponentsUtil.setWidgetBackgroundColor(listViewWidgets, text);
+    MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, text);
   }
 
 
@@ -122,13 +115,13 @@ public final class MockRecyclerView extends MockVisibleComponent {
     }
   }
 
-    private void createFilterBox() {
+  private void createFilterBox() {
     textBoxWidget = new TextBox();
     textBoxWidget.setText("Search list...");
     textBoxWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
         ComponentConstants.LISTVIEW_FILTER_PREFERRED_HEIGHT + "px");
     textBoxWidget.setVisible(false);
-    listViewWidgets.add(textBoxWidget);
+    listViewWidget.add(textBoxWidget);
   }
 
 
@@ -147,9 +140,35 @@ public final class MockRecyclerView extends MockVisibleComponent {
     }
   }
 
+  /**
+   * Sets the text to be added in the listview
+   */
+  private void setElementsFromStringProperty(String text){
+    String[] currentList = text.split(",");
+    ArrayList<JSONObject> arrayList = new ArrayList<JSONObject>();
+
+    if (currentItems.isEmpty()) {
+      listViewWidget.clear();
+      createFilterBox();
+
+      if (filterShowing) {
+        textBoxWidget.setVisible(true);
+      } else {
+        textBoxWidget.setVisible(false);
+      }
+
+      for (int i = 0; i < currentList.length; ++i){
+        JSONObject jo = new JSONObject();
+        jo.put("Text1", new JSONString(currentList[i]));
+        arrayList.add(jo);
+      }
+
+      createLabelItems(arrayList);
+    }
+  }
 
   private void createLabelItems(ArrayList<JSONObject> arrayList) {
-    listViewWidgets.clear();
+    listViewWidget.clear();
     createFilterBox();
     
     if (filterShowing) {
@@ -161,16 +180,16 @@ public final class MockRecyclerView extends MockVisibleComponent {
     for(int i = 0; i < arrayList.size(); ++i) {
       JSONObject object = arrayList.get(i);
       
-      if(layout == 0) {
+      if(layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
         VerticalPanel verticalItemPanel = new VerticalPanel();
         verticalItemPanel.setStylePrimaryName("listViewItemStyle");
         verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px");
         String text1 = object.containsKey("Text1")?object.get("Text1").isString().stringValue():"";
         verticalItemPanel.add(createInlineLabel(text1, textMainColor));
-        listViewWidgets.add(verticalItemPanel);
+        listViewWidget.add(verticalItemPanel);
       } 
-      else if(layout == 1) {
+      else if(layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT) {
         VerticalPanel verticalItemPanel = new VerticalPanel();
         verticalItemPanel.setStylePrimaryName("listViewItemStyle");
         verticalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -179,9 +198,9 @@ public final class MockRecyclerView extends MockVisibleComponent {
         String text2 = object.containsKey("Text2")?object.get("Text2").isString().stringValue():"";
         verticalItemPanel.add(createInlineLabel(text1, textMainColor));
         verticalItemPanel.add(createInlineLabel(text2, textDetailColor));
-        listViewWidgets.add(verticalItemPanel);
+        listViewWidget.add(verticalItemPanel);
       }
-      else if(layout == 2) {
+      else if(layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -192,9 +211,9 @@ public final class MockRecyclerView extends MockVisibleComponent {
         InlineLabel label2 = createInlineLabel(text2, textDetailColor);
         horizontalItemPanel.add(label1);
         horizontalItemPanel.add(label2);
-        listViewWidgets.add(horizontalItemPanel);
+        listViewWidget.add(horizontalItemPanel);
       } 
-      else if (layout == 3) {
+      else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -204,9 +223,9 @@ public final class MockRecyclerView extends MockVisibleComponent {
         horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
         horizontalItemPanel.add(createInlineLabel(text1, textMainColor));
-        listViewWidgets.add(horizontalItemPanel);
+        listViewWidget.add(horizontalItemPanel);
       } 
-      else if(layout == 4) {
+      else if(layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         HorizontalPanel horizontalItemPanel = new HorizontalPanel();
         horizontalItemPanel.setStylePrimaryName("listViewItemStyle");
         horizontalItemPanel.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
@@ -220,7 +239,7 @@ public final class MockRecyclerView extends MockVisibleComponent {
         horizontalItemPanel.add(createImage(image, ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px",
         ComponentConstants.LISTVIEW_PREFERRED_HEIGHT + "px"));
         horizontalItemPanel.add(verticalItemPanel);
-        listViewWidgets.add(horizontalItemPanel);
+        listViewWidget.add(horizontalItemPanel);
       }
     }
   }
