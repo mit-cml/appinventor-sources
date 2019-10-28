@@ -1108,8 +1108,8 @@ public class YailEvalTest extends TestCase {
   }
 
    public void testSine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 0,  1,  0,   -1 };
+     double[] args = { 0, 90, 180, 270, 360 };
+     double[] vals = { 0,  1,  0,   -1, 0 };
      testUnaryDoubleFunction("sin-degrees", args, vals);
    }
 
