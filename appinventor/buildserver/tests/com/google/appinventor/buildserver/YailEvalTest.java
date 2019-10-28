@@ -1114,8 +1114,8 @@ public class YailEvalTest extends TestCase {
    }
 
    public void testCosine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 1,  0,  -1,   0 };
+     double[] args = { 0, 90, 180, 270, 360 };
+     double[] vals = { 1,  0,  -1,   0, 1};
      testUnaryDoubleFunction("cos-degrees", args, vals);
    }
 
