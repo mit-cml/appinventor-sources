@@ -133,10 +133,14 @@ Blockly.FieldFlydown.prototype.onMouseOut_ = function(e) {
 Blockly.FieldFlydown.prototype.showFlydownMaker_ = function() {
   var field = this; // Name receiver in variable so can close over this variable in returned thunk
   return function() {
-    if (Blockly.FieldFlydown.showPid_ != 0) {
-      field.showFlydown_();
-      Blockly.FieldFlydown.showPid_ = 0;
+    if (Blockly.FieldFlydown.showPid_ !== 0 && Blockly.dragMode_ === Blockly.DRAG_NONE) {
+      try {
+        field.showFlydown_();
+      } catch (e) {
+        console.error('Failed to show flydown', e);
+      }
     }
+    Blockly.FieldFlydown.showPid_ = 0;
   };
 };
 
