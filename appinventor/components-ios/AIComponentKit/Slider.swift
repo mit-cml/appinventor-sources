@@ -22,6 +22,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     ThumbPosition = kSliderThumbValue
     MinValue = kSliderMinValue
     MaxValue = kSliderMaxValue
+    Width = 50
   }
   
   private func setupSliderView() {
