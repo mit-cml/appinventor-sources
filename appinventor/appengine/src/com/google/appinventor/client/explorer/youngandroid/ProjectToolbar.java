@@ -411,26 +411,18 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
-      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
-        numSelectedProjects > 0);
-      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-        numSelectedProjects > 0);
+      Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
       return;
     }
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
-    if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
+    if (numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
         .getSelectedProjects().get(0).isPublished()){
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.updateGalleryAppButton());
-    }else{
+    } else {
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
     }
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
-        numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
-        numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-        numSelectedProjects > 0);
+    Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
   }
 
   public void updateTrashButtons() {
