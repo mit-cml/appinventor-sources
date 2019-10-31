@@ -29,7 +29,7 @@
     <sequential>
       <exec executable="xcodebuild" osfamily="mac" failonerror="@{failonerror}">
         <arg value="-sdk" />
-        <arg value="iphoneos13.0"/>
+        <arg value="iphoneos"/>
         <arg value="-scheme" />
         <arg value="@{scheme}" />
         <arg value="-workspace" />
@@ -51,15 +51,15 @@
   <target name="tests" depends="components-ios,Companion">
     <ai.xcbuild scheme="SchemeKit" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X,OS=13.0" />
+      <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
     <ai.xcbuild scheme="AIComponentKit" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X,OS=13.0" />
+      <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
     <ai.xcbuild scheme="AICompanionApp" action="test">
       <arg value="-destination" />
-      <arg value="platform=iOS Simulator,name=iPhone X,OS=13.0" />
+      <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
   </target>
 
