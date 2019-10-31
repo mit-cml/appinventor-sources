@@ -870,7 +870,9 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                openPreviousProject();
+                if (shouldAutoloadLastProject()) {
+                  openPreviousProject();
+                }
 
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
@@ -1531,6 +1533,23 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Checks whether autoloading of the user's previous project should be
+   * performed.
+   *
+   * @return true if autoloading should be performed, otherwise false.
+   */
+  public boolean shouldAutoloadLastProject() {
+    String autoloadParam = Window.Location.getParameter("autoload");
+    if ("false".equalsIgnoreCase(autoloadParam)) {
+      return false;
+    } else if ("true".equalsIgnoreCase(autoloadParam)) {
+      return true;
+    }
+    return getUserAutoloadProject();
+  }
+
+
+  /**
    * Returns user dyslexic font setting.
    *
    * @return user default font
@@ -1550,6 +1569,28 @@ public class Ode implements EntryPoint {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
                     "" + dyslexicFont);
+    userSettings.saveSettings(null);
+  }
+
+  /**
+   * Checks whether the user has autoloading enabled in their settings.
+   *
+   * @return true if autoloading is enabled, otherwise false.
+   */
+  public static boolean getUserAutoloadProject() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Sets whether to use autoloading for the current user.
+   *
+   * @param enable true if autoloading should be enabled or false if it should be disabled.
+   */
+  public static void setUserAutoloadProject(boolean enable) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));
     userSettings.saveSettings(null);
   }
 
