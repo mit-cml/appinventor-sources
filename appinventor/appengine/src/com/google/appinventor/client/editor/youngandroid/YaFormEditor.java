@@ -38,6 +38,7 @@ import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
+import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -79,7 +80,7 @@ import java.util.Set;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener {
+public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
 
   private static class FileContentHolder {
     private String content;
@@ -145,6 +146,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   private boolean shouldSelectMultipleComponents = false;
   private EditableProperties selectedProperties = null;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>();
 
   /**
    * Creates a new YaFormEditor.
@@ -343,6 +345,15 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return formNode.isScreen1();
   }
 
+  // PropertyChangeListener implementation
+
+  @Override
+  public void onPropertyChange(String propertyName, String propertyValue) {
+    for (MockComponent selectedComponent : selectedComponents) {
+      selectedComponent.changeProperty(propertyName, propertyValue);
+    }
+  }
+
   // FormChangeListener implementation
 
   @Override
@@ -351,7 +362,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (loadComplete) {
       // If the property isn't actually persisted to the .scm file, we don't need to do anything.
       if (component.isPropertyPersisted(propertyName)) {
-        selectedProperties = component.getProperties();
         Ode.getInstance().getEditorManager().scheduleAutoSave(this);
         updatePhone();          // Push changes to the phone if it is connected
       }
@@ -360,10 +370,42 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
+  private boolean isIntersectedProperty(String propertyName) {
+    for (MockComponent selectedComponent : selectedComponents) {
+      if (!selectedComponent.hasProperty(propertyName)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (loadComplete) {
       if (permanentlyDeleted) {
+        if (isSelectedComponent(component)) {
+          selectedComponents.remove(component);
+          EditableProperties propertyIntersection = new EditableProperties(true);
+          for (MockComponent selectedComponent : selectedComponents) {
+            for (EditableProperty property : selectedComponent.getProperties()) {
+              String propertyName = property.getName();
+              if (propertyName == "Uuid") {
+                continue;
+              }
+              if (isIntersectedProperty(propertyName)) {
+                propertyIntersection.addProperty(
+                  propertyName, 
+                  property.getDefaultValue(),
+                  property.getCaption(), 
+                  property.getEditor(), 
+                  property.getType()
+                );
+              }
+            }
+          }
+          selectedProperties = propertyIntersection;
+          selectedProperties.addPropertyChangeListener(this);
+        }
         onFormStructureChange();
       }
     } else {
@@ -374,6 +416,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public void onComponentAdded(MockComponent component) {
     if (loadComplete) {
+      selectedProperties = component.getProperties();
+      selectedComponents = new ArrayList<MockComponent>();
       onFormStructureChange();
     } else {
       OdeLog.elog("onComponentAdded called when loadComplete is false");
@@ -390,6 +434,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
+  private boolean isSelectedComponent(MockComponent component) {
+    String name = component.getName();
+    for (MockComponent selectedComponent : selectedComponents) {
+      if (selectedComponent.getName() == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
@@ -397,21 +451,35 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         // Select the item in the source structure explorer.
         sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
         EditableProperties componentProperties = component.getProperties();
-        String type = component.getType();
-        if (type != "Form") {
-          if (selectedProperties != null && shouldSelectMultipleComponents) {
-            for (EditableProperty property : selectedProperties) {
-              String name = property.getName();
-              if (name == "Name" || name == "Uuid") {
-                continue;
-              }
-              if (componentProperties.hasProperty(name)) {
-                componentProperties.changePropertyValue(name, property.getValue());
-              }
-            }
-          } else {
-            selectedProperties = componentProperties;
+        if (selectedProperties != null && shouldSelectMultipleComponents) {
+          // Update selectedProperties with its intersection with the properties
+          // of this component
+          if (!isSelectedComponent(component)) {
+            selectedComponents.add(component);
           }
+          EditableProperties propertyIntersection = new EditableProperties(true);
+          for (EditableProperty property : componentProperties) {
+            String propertyName = property.getName();
+            if (propertyName == "Uuid") {
+              continue;
+            }
+            if (selectedProperties.hasProperty(propertyName)) {
+              String value = selectedProperties.getPropertyValue(propertyName);
+              propertyIntersection.addProperty(
+                propertyName, 
+                value,
+                property.getCaption(), 
+                property.getEditor(), 
+                property.getType()
+              );
+            }
+          }
+          selectedProperties = propertyIntersection;
+          selectedProperties.addPropertyChangeListener(this);
+        } else {
+          selectedComponents = new ArrayList<MockComponent>();
+          selectedComponents.add(component);
+          selectedProperties = componentProperties;
         }
         // Show the component properties in the properties panel.
         updatePropertiesPanel(component);
@@ -742,10 +810,15 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Show the given component's properties in the properties panel.
    */
   private void updatePropertiesPanel(MockComponent component) {
-    designProperties.setProperties(component.getProperties());
-    // need to update the caption after the setProperties call, since
-    // setProperties clears the caption!
-    designProperties.setPropertiesCaption(component.getName());
+    if (selectedComponents.size() > 1) {
+      designProperties.setProperties(selectedProperties);
+      designProperties.setPropertiesCaption("Multiple Components");
+    } else {
+      designProperties.setProperties(component.getProperties());
+      // need to update the caption after the setProperties call, since
+      // setProperties clears the caption!
+      designProperties.setPropertiesCaption(component.getName());
+    }
   }
 
   private void onFormStructureChange() {
