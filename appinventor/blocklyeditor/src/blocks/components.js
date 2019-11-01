@@ -591,6 +591,9 @@ Blockly.Blocks.component_method = {
       var mode = this.typeName === "Form" ? "Screen" : this.typeName;
       return Blockly.ComponentBlock.METHODS_HELPURLS[mode];
   },
+  init: function() {
+    this.genericComponentInput = Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT;
+  },
 
   mutationToDom : function() {
 
@@ -745,7 +748,8 @@ Blockly.Blocks.component_method = {
       this.setNextStatement(true);
     }
 
-    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
+      {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
     // mark the block bad if the method isn't defined or is marked deprecated
     var method = this.getMethodTypeObject();
@@ -939,6 +943,7 @@ Blockly.Blocks.component_set_get = {
 
   init: function() {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
+    this.genericComponentInput = Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT;
   },
 
   mutationToDom : function() {
@@ -1085,7 +1090,9 @@ Blockly.Blocks.component_set_get = {
 
     this.setTooltip(tooltipDescription);
 
-    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
+      {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
+      {name: 'checkEmptySetterSocket'}];
 
     if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       // [lyn, 2015/12/27] mark deprecated properties as bad

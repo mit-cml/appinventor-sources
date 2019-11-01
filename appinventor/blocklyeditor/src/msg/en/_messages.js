@@ -1397,6 +1397,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.HIDE_WARNINGS = "Hide Warnings";
     Blockly.Msg.MISSING_SOCKETS_WARNINGS = "You should fill all of the sockets with blocks";
     Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "This block should be connected to an event block or a procedure definition";
+    Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'This block needs a value block connected to its socket.';
+    Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'You need to provide a valid component to this block\'s "%1" socket.';
 
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Error from Companion";

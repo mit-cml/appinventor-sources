@@ -604,6 +604,29 @@ Blockly.WarningHandler.prototype.checkDisposedBlock = function(block){
   }
 };
 
+Blockly.WarningHandler.prototype['checkEmptySetterSocket'] = function(block) {
+  if (block.setOrGet === 'set') {
+    var value = block.getInputTargetBlock('VALUE');
+    if (!value) {
+      block.setErrorIconText(Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE);
+      return true;
+    }
+  }
+  return false;
+};
+
+Blockly.WarningHandler.prototype['checkGenericComponentSocket'] = function(block) {
+  if (block.isGeneric) {
+    var value = block.getInputTargetBlock('COMPONENT');
+    if (!value) {
+      block.setErrorIconText(Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT
+        .replace(/%1/, block.genericComponentInput));
+      return true;
+    }
+  }
+  return false;
+};
+
 //Warnings
 
 //Warnings indicate that there is a problem with the project, but it will not run
