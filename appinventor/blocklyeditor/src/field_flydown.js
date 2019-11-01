@@ -153,7 +153,6 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
   // much of the code in Blockly.Flydown.prototype.show.
   // alert("FieldFlydown show Flydown");
   Blockly.hideChaff(); // Hide open context menus, dropDowns, flyouts, and other flydowns
-  Blockly.FieldFlydown.openFieldFlydown_ = this; // Remember field to which flydown is attached
   var flydown = Blockly.getMainWorkspace().getFlydown();
   // Add flydown to top-level svg, *not* to main workspace svg
   // This is essential for correct positioning of flydown via translation
@@ -178,6 +177,7 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
     x = x + borderBBox.width * flydown.workspace_.scale;
   }
   flydown.showAt(blocksXMLList, x, y);
+  Blockly.FieldFlydown.openFieldFlydown_ = this; // Remember field to which flydown is attached
 };
 
 /**
