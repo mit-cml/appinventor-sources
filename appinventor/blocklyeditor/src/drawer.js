@@ -152,6 +152,7 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   if (!blockSet) {
     throw "no such drawer: " + drawerName;
   }
+  Blockly.hideChaff();
   var xmlList = this.blockListToXMLArray(blockSet);
   this.flyout_.show(xmlList);
 };
@@ -164,7 +165,7 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
 Blockly.Drawer.prototype.showComponent = function(instanceName) {
   var component = this.workspace_.getComponentDatabase().getInstance(instanceName);
   if (component) {
-    this.flyout_.hide();
+    Blockly.hideChaff();
     this.flyout_.show(this.instanceRecordToXMLArray(component));
     this.lastComponent = instanceName;
   } else {
@@ -182,8 +183,7 @@ Blockly.Drawer.prototype.showComponent = function(instanceName) {
  */
 Blockly.Drawer.prototype.showGeneric = function(typeName) {
   if (this.workspace_.getComponentDatabase().hasType(typeName)) {
-    this.flyout_.hide();
-
+    Blockly.hideChaff();
     var xmlList = this.componentTypeToXMLArray(typeName);
     this.flyout_.show(xmlList);
   } else {
