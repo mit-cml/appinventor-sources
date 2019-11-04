@@ -479,6 +479,7 @@ Blockly.Backpack.prototype.openBackpack = function(e) {
       for (var i = 0; i < len; i++) {
         newBackpack[i] = Blockly.Xml.textToDom(backpack[i]).firstChild;
       }
+      Blockly.hideChaff();
       p.flyout_.show(newBackpack);
     });
   }

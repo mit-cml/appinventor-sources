@@ -224,6 +224,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public boolean getShouldSelectMultipleComponents() {
     return shouldSelectMultipleComponents;
   }
+  
+  public boolean shouldDisplayHiddenComponents() {
+    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
+  }
 
   // FileEditor methods
 

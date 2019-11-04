@@ -37,6 +37,7 @@ public class SourceStructureExplorer extends Composite {
     // Initialize UI elements
     tree = new Tree(Ode.getImageBundle());
     tree.setAnimationEnabled(true);
+    tree.setScrollOnSelectEnabled(false);
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {

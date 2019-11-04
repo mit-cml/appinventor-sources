@@ -104,7 +104,7 @@ public final class WebViewer extends AndroidViewComponent {
     webview.getSettings().setJavaScriptEnabled(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
-    wvInterface = new WebViewInterface(webview.getContext());
+    wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
@@ -472,12 +472,10 @@ public final class WebViewer extends AndroidViewComponent {
    * in the WebView
    */
   public class WebViewInterface {
-    Context mContext;
     String webViewString;
 
-    /** Instantiate the interface and set the context */
-    WebViewInterface(Context c) {
-      mContext = c;
+    /** Instantiate the interface */
+    WebViewInterface() {
       webViewString = " ";
     }
 
