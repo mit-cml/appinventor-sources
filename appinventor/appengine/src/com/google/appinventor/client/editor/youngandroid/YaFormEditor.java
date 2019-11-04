@@ -217,6 +217,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     setSize("100%", "100%");
   }
 
+  public List<MockComponent> getSelectedComponents() {
+    return selectedComponents;
+  }
+
+  public boolean getShouldSelectMultipleComponents() {
+    return shouldSelectMultipleComponents;
+  }
+
   // FileEditor methods
 
   @Override
@@ -452,8 +460,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
         EditableProperties componentProperties = component.getProperties();
         if (selectedProperties != null && shouldSelectMultipleComponents) {
-          // Update selectedProperties with its intersection with the properties
-          // of this component
           if (!isSelectedComponent(component)) {
             selectedComponents.add(component);
           }
@@ -483,9 +489,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         }
         // Show the component properties in the properties panel.
         updatePropertiesPanel(component);
-      } else {
-        // Unselect the item in the source structure explorer.
-        sourceStructureExplorer.unselectItem(component.getSourceStructureExplorerItem());
       }
     } else {
       OdeLog.elog("onComponentSelectionChange called when loadComplete is false");
@@ -812,7 +815,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private void updatePropertiesPanel(MockComponent component) {
     if (selectedComponents.size() > 1) {
       designProperties.setProperties(selectedProperties);
-      designProperties.setPropertiesCaption("Multiple Components");
+      designProperties.setPropertiesCaption(selectedComponents.size() + " components selected");
     } else {
       designProperties.setProperties(component.getProperties());
       // need to update the caption after the setProperties call, since

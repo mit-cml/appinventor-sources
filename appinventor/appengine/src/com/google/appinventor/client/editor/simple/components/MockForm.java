@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -916,9 +917,17 @@ public final class MockForm extends MockContainer {
     }
 
     selectedComponent = newSelectedComponent;
+    YaFormEditor formEditor = (YaFormEditor) editor;
+    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    Map<String, MockComponent> componentsMap = formEditor.getComponents();
+    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
 
-    if (oldSelectedComponent != null) {     // Can be null initially
-      oldSelectedComponent.onSelectedChange(false);
+    if (oldSelectedComponent != null && !shouldSelectMultipleComponents) {     // Can be null initially
+      for (MockComponent component : componentsMap.values()) {
+        if (component.getName() != selectedComponent.getName()) {
+          component.onSelectedChange(false);
+        }
+      }
     }
     newSelectedComponent.onSelectedChange(true);
   }
