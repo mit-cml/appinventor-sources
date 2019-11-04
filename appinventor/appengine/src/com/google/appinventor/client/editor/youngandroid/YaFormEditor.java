@@ -452,6 +452,19 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return false;
   }
 
+  private boolean isIntersectedValue(String propertyName) {
+    String value = null;
+    for (MockComponent selectedComponent : selectedComponents) {
+      String propertyValue = selectedComponent.getPropertyValue(propertyName);
+      if (value == null) {
+        value = propertyValue;
+      } else if (!value.equals(propertyValue)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
@@ -470,10 +483,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
               continue;
             }
             if (selectedProperties.hasProperty(propertyName)) {
-              String value = selectedProperties.getPropertyValue(propertyName);
               propertyIntersection.addProperty(
                 propertyName, 
-                value,
+                (isIntersectedValue(propertyName)) ? property.getValue() : property.getDefaultValue(),
                 property.getCaption(), 
                 property.getEditor(), 
                 property.getType()
