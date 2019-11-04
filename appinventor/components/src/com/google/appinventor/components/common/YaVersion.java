@@ -477,8 +477,15 @@ public class YaVersion {
   // - BALL_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 193:
   // - FORM_COMPONENT_VERSION was incremented to 26
+  // For YOUNG_ANDROID_VERSION 194:
+  // - CIRCLE_COMPONENT_VERSION was incremented to 2
+  // - LINESTRING_COMPONENT_VERSION was incremented to 2
+  // - MARKER_COMPONENT_VERSION was incremented to 3
+  // - POLYGON_COMPONENT_VERSION was incremented to 2
+  // - RECTANGLE_COMPONENT_VERSION was incremented to 2
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 193;
+  public static final int YOUNG_ANDROID_VERSION = 194;
 
   // ............................... Blocks Language Version Number ...............................
 
