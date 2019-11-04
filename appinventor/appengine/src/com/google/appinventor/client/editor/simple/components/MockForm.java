@@ -62,6 +62,10 @@ public final class MockForm extends MockContainer {
     private boolean actionBar;
     private String backgroundColor;
 
+    public String getTitle() {
+      return title.getText();
+    }
+
     /*
      * Creates a new title bar.
      */

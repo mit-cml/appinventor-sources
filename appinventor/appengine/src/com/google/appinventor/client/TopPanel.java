@@ -139,6 +139,17 @@ public class TopPanel extends Composite {
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
+    // View Trash Link
+    TextButton viewTrash = new TextButton(MESSAGES.viewTrashTabName());
+    viewTrash.setStyleName("ode-TopPanelButton");
+    viewTrash.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        ode.switchToTrash();
+      }
+    });
+    links.add(viewTrash);
+
     // Code on gallerydev branch
     // Gallery Link
     gallery = new TextButton(MESSAGES.tabNameGallery());
