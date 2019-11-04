@@ -201,8 +201,10 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
    * draggable becomes Draggable;
    * infobox becomes EnableInfobox;
    * fill becomes FillColor;
+   * fill-opacity becomes FillOpacity;
    * image becomes ImageAsset;
    * stroke becomes StrokeColor;
+   * stroke-opacity becomes StrokeOpacity;
    * stroke-width becomes StrokeWidth;
    * title becomes Title;
    * visible becomes Visible

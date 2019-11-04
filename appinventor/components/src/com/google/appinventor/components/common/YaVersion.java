@@ -714,7 +714,9 @@ public class YaVersion {
 
   // For CIRCLE_COMPONENT_VERSION 1:
   // - Initial implementation of Circle for Maps
-  public static final int CIRCLE_COMPONENT_VERSION = 1;
+  // For CIRCLE_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int CIRCLE_COMPONENT_VERSION = 2;
 
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
@@ -896,7 +898,9 @@ public class YaVersion {
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
-  public static final int LINESTRING_COMPONENT_VERSION = 1;
+  // For LINESTRING_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int LINESTRING_COMPONENT_VERSION = 2;
 
   // For LISTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -956,7 +960,9 @@ public class YaVersion {
   // - Initial Marker implementation using OpenStreetMap
   // For MARKER_COMPONENT_VERSION 2:
   // - The ShowShadow property was removed
-  public static final int MARKER_COMPONENT_VERSION = 2;
+  // For MARKER_COMPONENT_VERSION 3:
+  // - Added fill and stroke opacity properties
+  public static final int MARKER_COMPONENT_VERSION = 3;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
@@ -1059,11 +1065,15 @@ public class YaVersion {
 
   // For POLYGON_COMPONENT_VERSION 1:
   // - Initial Polygon implementation for Maps
-  public static final int POLYGON_COMPONENT_VERSION = 1;
+  // For POLYGON_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int POLYGON_COMPONENT_VERSION = 2;
 
   // For RECTANGLE_COMPONENT_VERSION 1:
   // - Initial Rectangle implementation for Maps
-  public static final int RECTANGLE_COMPONENT_VERSION = 1;
+  // For RECTANGLE_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

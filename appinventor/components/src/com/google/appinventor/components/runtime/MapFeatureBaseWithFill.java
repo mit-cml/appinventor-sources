@@ -18,11 +18,13 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisit
 @SimpleObject
 public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements HasFill {
   private int fillColor = COLOR_RED;
+  private float fillOpacity = 1;
 
   public MapFeatureBaseWithFill(MapFactory.MapFeatureContainer container,
       MapFeatureVisitor<Double> distanceComputation) {
     super(container, distanceComputation);
     FillColor(Color.RED);
+    FillOpacity(1);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
@@ -39,5 +41,22 @@ public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements H
   @Override
   public int FillColor() {
     return fillColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "1.0")
+  @SimpleProperty
+  @Override
+  public void FillOpacity(float opacity) {
+    fillOpacity = opacity;
+    fillColor = (fillColor & 0x00FFFFFF) | (Math.round(0xFF * opacity) << 24);
+    map.getController().updateFeatureFill(this);
+  }
+
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The opacity of the interior of the map feature.")
+  @Override
+  public float FillOpacity() {
+    return fillOpacity;
   }
 }

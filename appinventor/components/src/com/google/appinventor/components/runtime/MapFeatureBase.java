@@ -33,6 +33,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   protected Map map = null;
   private boolean visible = true;
   private int strokeColor = COLOR_BLACK;
+  private float strokeOpacity = 1;
   private int strokeWidth = 1;
   private String title = "";
   private String description = "";
@@ -99,6 +100,7 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     Draggable(false);
     EnableInfobox(false);
     StrokeColor(COLOR_BLACK);
+    StrokeOpacity(1);
     StrokeWidth(1);
     Title("");
     Visible(true);
@@ -151,6 +153,23 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
       description = "The paint color used to outline the %type%.")
   public int StrokeColor() {
     return strokeColor;
+  }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "1.0")
+  @SimpleProperty
+  public void StrokeOpacity(float opacity) {
+    strokeOpacity = opacity;
+    strokeColor = (strokeColor & 0x00FFFFFF) | (Math.round(0xFF * opacity) << 24);
+    map.getController().updateFeatureStroke(this);
+  }
+
+  @Override
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The opacity of the stroke used to outline the map feature.")
+  public float StrokeOpacity() {
+    return strokeOpacity;
   }
 
   @Override

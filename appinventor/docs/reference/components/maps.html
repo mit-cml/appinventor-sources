@@ -516,6 +516,8 @@
                    <dd>Enables or disables the infobox window display when the user taps the circle.</dd>
                    <dt class="color" id="Circle.FillColor">FillColor<i></i></dt>
                    <dd>Sets or gets the color used to fill in the circle.</dd>
+                   <dt class="color" id="Circle.FillOpacity">FillOpacity<i></i></dt>
+                    <dd>Sets or gets the opacity of the interior of the circle on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                    <dt class="number" id="Circle.Latitude">Latitude<i></i></dt>
                    <dd>Sets or gets the latitude of the center of the circle, in degrees. Positive values representing
                      north of the equator and negative values representing south of the equator. To update the latitude
@@ -530,6 +532,8 @@
                    <dd>Sets or gets the radius of the circle, in meters.</dd>
                    <dt class="color" id="Circle.StrokeColor">StrokeColor<i></i></dt>
                    <dd>Sets or gets the color used to outline the circle.</dd>
+                   <dt class="number" id="Circle.StrokeOpacity">StrokeOpacity<i></i></dt>
+                   <dd>Sets or gets the opacity of the outline of the circle on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                    <dt class="number" id="Circle.StrokeWidth">StrokeWidth<i></i></dt>
                    <dd>Sets or gets the width of the stroke used to outline the circle.</dd>
                    <dt class="text" id="Circle.Title">Title<i></i></dt>
@@ -647,8 +651,10 @@
                        <li>draggable &rarr; Draggable</li>
                        <li>infobox &rarr; EnableInfobox</li>
                        <li>fill &rarr; FillColor</li>
+                       <li>fill-opacity &rarr; FillOpacity</li>
                        <li>image &rarr; ImageAsset</li>
                        <li>stroke &rarr; StrokeColor</li>
+                       <li>stroke-opacity &rarr; StrokeOpacity</li>
                        <li>stroke-width &rarr; StrokeWidth</li>
                        <li>title &rarr; Title</li>
                        <li>visible &rarr; Visible</li>
@@ -685,6 +691,8 @@
                      designer will update this property.</dd>
                    <dt class="color" id="LineString.StrokeColor">StrokeColor<i></i></dt>
                    <dd>The paint color used to outline the map feature.</dd>
+                   <dt class="float" id="LineString.StrokeOpacity">StrokeOpacity<i></i></dt>
+                   <dd>The opacity of the stroke used to outline the map feature on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                    <dt class="number" id="LineString.StrokeWidth">StrokeWidth<i></i></dt>
                    <dd>The width of the stroke used to outline the map feature.</dd>
                    <dt class="text" id="LineString.Title">Title<i></i></dt>
@@ -938,6 +946,9 @@
                    <dt class="color" id="Marker.FillColor">FillColor<i></i></dt>
                    <dd>Sets or gets the color used to fill in the marker. This property only applies for markers using
                      vector image assets, including the default icon.</dd>
+                   <dt class="number" id="Marker.FillOpacity">FillOpacity<i></i></dt>
+                   <dd>Sets or gets the opacity of the interior of the marker on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid. This property only applies for markers using
+                     vector image assets, including the default icon.</dd>
                    <dt class="number" id="Marker.Height">Height<i></i></dt>
                    <dd>Sets or gets the height of the marker, in pixels.</dd>
                    <dt class="number wo bo" id="Marker.HeightPercent">HeightPercent<i></i></dt>
@@ -957,6 +968,8 @@
                      the <a href="#Marker.SetLocation"><code>SetLocation</code></a> method.</dd>
                    <dt class="color" id="Marker.StrokeColor">StrokeColor<i></i></dt>
                    <dd>Sets or gets the color used to outline the marker.</dd>
+                   <dt class="number" id="Marker.StrokeOpacity">StrokeOpacity<i></i></dt>
+                   <dd>Sets or gets the opacity of the outline of the marker on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                    <dt class="number" id="Marker.StrokeWidth">StrokeWidth<i></i></dt>
                    <dd>Sets or gets the width of the stroke used to outline the marker.</dd>
                    <dt class="text" id="Marker.Title">Title<i></i></dt>
@@ -1037,6 +1050,8 @@
                     <dd>Enables or disables the infobox window display when the user taps the polygon.</dd>
                     <dt class="color" id="Polygon.FillColor">FillColor<i></i></dt>
                     <dd>Sets or gets the color used to fill in the polygon.</dd>
+                    <dt class="color" id="Polygon.FillOpacity">FillOpacity<i></i></dt>
+                    <dd>Sets or gets the opacity of the interior of the polygon on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                     <dt class="list" id="Polygon.HolePoints">HolePoints<i></i></dt>
                     <dd>Sets or gets the lists of points that comprise the polygon's holes. Points are given as <code>(Latitude Longitude)</code> pairs and should be given counterclockwise.</dd>
                     <dt class="text wo" id="Polygon.HolePointsFromString">HolePointsFromString<i></i></dt>
@@ -1115,6 +1130,8 @@
                     <dd>Enables or disables the infobox window display when the user taps the rectangle.</dd>
                     <dt class="color" id="Rectangle.FillColor">FillColor<i></i></dt>
                     <dd>Sets or gets the color used to fill in the rectangle.</dd>
+                    <dt class="color" id="Rectangle.FillOpacity">FillOpacity<i></i></dt>
+                    <dd>Sets or gets the opacity of the interior of the rectangle on a 0 to 1 scale. 0 is completely transparent. 1 is completely solid.</dd>
                     <dt class="number" id="Rectangle.NorthLatitude">NorthLatitude<i></i></dt>
                     <dd>Sets or gets the latitude, in degrees, bounding the rectangle on the north. Range: [-90, 90]</dd>
                     <dt class="number" id="Rectangle.SouthLatitude">SouthLatitude<i></i></dt>
