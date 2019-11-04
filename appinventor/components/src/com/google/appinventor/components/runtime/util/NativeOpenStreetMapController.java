@@ -1000,6 +1000,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
       @Override
       public void onSuccess(BitmapDrawable result) {
+        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
         callback.onSuccess(result);
       }
     });
@@ -1052,6 +1053,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         path.baseStyle.stroke = new SVG.Colour(strokePaint.getColor());
         path.baseStyle.strokeOpacity = strokePaint.getAlpha()/255.0f;
         path.baseStyle.strokeWidth = strokeWidth;
+        path.baseStyle.specifiedFlags = 0x3d;
         if (path.style != null) {
           if ((path.style.specifiedFlags & SPECIFIED_FILL) == 0) {
             path.style.fill = new SVG.Colour(fillPaint.getColor());
