@@ -791,7 +791,7 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
       out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
-      out.write("<foreground android:drawable=\"@drawable/ya\" />\n");
+      out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
       out.write("</adaptive-icon>\n");
       out.close();
     } catch (IOException e) {
@@ -808,7 +808,7 @@ public final class Compiler {
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(icBackgroundFile), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      out.write("<color name=\"ic_launcher_background\">#000000</color>\n");
+      out.write("<color name=\"ic_launcher_background\">#ffffff</color>\n");
       out.write("</resources>\n");
       out.close();
     } catch (IOException e) {
@@ -1713,10 +1713,14 @@ public final class Compiler {
    */
   private BufferedImage produceRoundIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
+    // Ratio of icon size to png image size for round is 0.80
+    int iconWidth = (int)(imageWidth * 0.80);
+    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - iconWidth) / 2);
     BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundIcon.createGraphics();
-    g2.setClip(new Ellipse2D.Float(0, 0, imageWidth, imageWidth));
-    g2.drawImage(icon, 0, 0, imageWidth, imageWidth, null);
+    g2.setClip(new Ellipse2D.Float(marginWidth, marginWidth, iconWidth, iconWidth));
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
     return roundIcon;
   }
 
@@ -1725,13 +1729,32 @@ public final class Compiler {
    */
   private BufferedImage produceRoundedCornerIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
+    // Ratio of icon size to png image size for foreground is 0.93
+    int iconWidth = (int)(imageWidth * 0.93);
+    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - iconWidth) / 2);
     // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android material guidelines
-    float cornerRadius = imageWidth / 12;
+    float cornerRadius = iconWidth / 12;
     BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundedCornerIcon.createGraphics();
-    g2.setClip(new RoundRectangle2D.Float(0, 0, imageWidth, imageWidth, cornerRadius, cornerRadius));
-    g2.drawImage(icon, 0, 0, imageWidth, imageWidth, null);
+    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, iconWidth, iconWidth, cornerRadius, cornerRadius));
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
     return roundedCornerIcon;
+  }
+
+  /*
+   * Creates the foreground image of an icon
+   */
+  private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
+    int imageWidth = icon.getWidth();
+    // Ratio of icon size to png image size for foreground is 0.55
+    int iconWidth = (int)(imageWidth * 0.55);
+    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - iconWidth) / 2);
+    BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = foregroundImageIcon.createGraphics();
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
+    return foregroundImageIcon;
   }
 
   /*
@@ -1759,6 +1782,7 @@ public final class Compiler {
 
       BufferedImage roundIcon = produceRoundIcon(icon);
       BufferedImage roundRectIcon = produceRoundedCornerIcon(icon);
+      BufferedImage foregroundIcon = produceForegroundImageIcon(icon);
 
       // For each mipmap directory, create all types of ic_launcher photos with respective mipmap sizes
       for(int i=0; i < mipmapDirectories.size(); i++){
@@ -1768,7 +1792,7 @@ public final class Compiler {
 
         BufferedImage round = resizeImage(roundIcon,standardSize,standardSize);
         BufferedImage roundRect = resizeImage(roundRectIcon,standardSize,standardSize);
-        BufferedImage foreground = resizeImage(icon,foregroundSize,foregroundSize);
+        BufferedImage foreground = resizeImage(foregroundIcon,foregroundSize,foregroundSize);
 
         File roundIconPng = new File(mipmapDirectory,"ic_launcher_round.png");
         File roundRectIconPng = new File(mipmapDirectory,"ic_launcher.png");
