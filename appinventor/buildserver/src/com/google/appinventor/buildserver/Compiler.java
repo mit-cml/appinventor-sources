@@ -1713,7 +1713,7 @@ public final class Compiler {
    */
   private BufferedImage produceRoundIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Ratio of icon size to png image size for round is 0.80
+    // Ratio of icon size to png image size for round icon is 0.80
     int iconWidth = (int)(imageWidth * 0.80);
     Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - iconWidth) / 2);
@@ -1729,7 +1729,7 @@ public final class Compiler {
    */
   private BufferedImage produceRoundedCornerIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Ratio of icon size to png image size for foreground is 0.93
+    // Ratio of icon size to png image size for roundRect icon is 0.93
     int iconWidth = (int)(imageWidth * 0.93);
     Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - iconWidth) / 2);
