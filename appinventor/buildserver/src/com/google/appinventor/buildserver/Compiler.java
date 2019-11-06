@@ -783,7 +783,7 @@ public final class Compiler {
   }
 
   // Writes ic_launcher.xml to initialize adaptive icon
-  private boolean writeICLauncher(File adaptiveIconFile) {
+  private boolean writeICLauncher(File adaptiveIconFile, boolean isRound) {
     String mainClass = project.getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
     try {
@@ -791,7 +791,11 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
       out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
-      out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
+      if (isRound) {
+        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_round\" />\n");
+      }else{
+        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
+      }
       out.write("</adaptive-icon>\n");
       out.close();
     } catch (IOException e) {
@@ -1202,7 +1206,14 @@ public final class Compiler {
     // Generate ic_launcher.xml
     out.println("________Generating adaptive icon file");
     File icLauncher = new File(mipmapV26, "ic_launcher.xml");
-    if (!compiler.writeICLauncher(icLauncher)) {
+    if (!compiler.writeICLauncher(icLauncher, false)) {
+      return false;
+    }
+
+    // Generate ic_launcher_round.xml
+    out.println("________Generating round adaptive icon file");
+    File icLauncherRound = new File(mipmapV26, "ic_launcher_round.xml");
+    if (!compiler.writeICLauncher(icLauncherRound, true)) {
       return false;
     }
 
@@ -1747,8 +1758,8 @@ public final class Compiler {
    */
   private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Ratio of icon size to png image size for foreground is 0.55
-    int iconWidth = (int)(imageWidth * 0.55);
+    // Ratio of icon size to png image size for foreground/round icon is 0.80
+    int iconWidth = (int)(imageWidth * 0.80);
     Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
     int marginWidth = ((imageWidth - iconWidth) / 2);
     BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
