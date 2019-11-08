@@ -14,11 +14,12 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
    */
   fileprivate var _enabled = true
 
+  fileprivate var _hasPendingUpdate = false
   fileprivate var _azimuth: Double = 0.0
   fileprivate var _pitch: Double = 0.0
   fileprivate var _roll: Double = 0.0
 
-  public override init(_ parent: ComponentContainer) {
+  @objc public override init(_ parent: ComponentContainer) {
     super.init(parent)
     _location.delegate = self
   }
@@ -86,6 +87,7 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
 
   public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
     _azimuth = newHeading.magneticHeading
+    registerUpdate()
   }
 
   fileprivate func processUpdate(_ orientationData: CMDeviceMotion?, _ error: Error?) {
@@ -106,9 +108,30 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       default:
         break
       }
-      OrientationChanged(_azimuth, _pitch, _roll)
+      registerUpdate()
     } else if error != nil {
+      if let error = error as NSError? {
+        if error.domain == CMErrorDomain &&
+            error.code == CMErrorDeviceRequiresMovement.rawValue {
+          return  // ignore this
+        }
+      }
       Enabled = false
+      _form.dispatchErrorOccurredEvent(self, "OrientationChanged",
+          Int32(ErrorMessage.ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR.rawValue),
+          "\(error!)")
+    }
+  }
+
+  private func registerUpdate() {
+    if !_hasPendingUpdate {
+      self._hasPendingUpdate = true
+      DispatchQueue.main.async {
+        defer {
+          self._hasPendingUpdate = false
+        }
+        self.OrientationChanged(self._azimuth, self._pitch, self._roll)
+      }
     }
   }
 

@@ -116,12 +116,15 @@ import Foundation
   case ERROR_CANNOT_ENCODE_TEXT_AS_UTF8 = 100002
 
   // iOS Specific SpeechRecognizer Errors
-  case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100010
-  case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100011
-  case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100012
+  case ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED = 100100
+  case ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE = 100101
+  case ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR = 100102
 
   // iOS Specific GyroscopeSensor Errors
-  case ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR = 100020
+  case ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR = 100200
+
+  // iOS Specific OrientationSensor Errors
+  case ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR = 100300
   
   var code: Int32 {
     return Int32(self.rawValue)
@@ -313,6 +316,9 @@ import Foundation
 
     case .ERROR_IOS_GYROSCOPE_SENSOR_DATA_ERROR:
       return "The gyroscope is no longer recording data due to the following error %s"
+
+    case .ERROR_IOS_ORIENTATION_SENSOR_DATA_ERROR:
+      return "The orientation sensor is no longer recording data due to the following error %s"
     }
   }
 }
