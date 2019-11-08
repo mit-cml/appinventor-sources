@@ -86,6 +86,25 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     }
   }
 
+  public void toggleSelection(int pos) {
+    // With single select, clicked item becomes the only selected item
+    Arrays.fill(selection, Boolean.FALSE);
+    for (int i = 0; i < itemViews.length; i++) {
+      itemViews[i].setBackgroundColor(backgroundColor);
+    }
+    selection[pos] = true;
+    itemViews[pos].setBackgroundColor(selectionColor);
+  }
+
+  public void changeSelections(int pos) {
+    // With multi select, clicking an item toggles its selection status on and off
+    selection[pos] = !selection[pos];
+    if (selection[pos]) {
+      itemViews[pos].setBackgroundColor(selectionColor);
+    } else {
+      itemViews[pos].setBackgroundColor(backgroundColor);
+    }
+  }
 
   @Override
   public RvViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -177,29 +196,10 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
   @Override
   public void onBindViewHolder(final RvViewHolder holder, int position) {
 
-    final int pos = position;
-
     holder.cardView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         holder.onClick(v);
-        if (multiSelect) {
-          // With multi select, clicking an item toggles its selection status on and off
-          selection[pos] = !selection[pos];
-          if (selection[pos]) {
-            holder.cardView.setBackgroundColor(selectionColor);
-          } else {
-            holder.cardView.setBackgroundColor(backgroundColor);
-          }
-        } else {
-          // With single select, clicked item becomes the only selected item
-          Arrays.fill(selection, Boolean.FALSE);
-          for (int i = 0; i < itemViews.length; i++) {
-            itemViews[i].setBackgroundColor(backgroundColor);
-          }
-          selection[pos] = true;
-          holder.cardView.setBackgroundColor(selectionColor);
-        }
       }
     });
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
