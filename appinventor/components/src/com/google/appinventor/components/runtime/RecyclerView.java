@@ -30,7 +30,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.Manifest;
+
 import java.io.IOException;
 import java.util.*;
 //
@@ -42,21 +42,22 @@ import org.json.JSONObject;
  * elements added from a comma separated set of text elements. It is similar to the ListPicker
  * component but this one is placed on screen instead of opening a new Activity.
  * TOFO(hal): Think about generalizing this to include more than text/
+ *
  * @author halabelson@google.com (Hal Abelson)
  * @author osmidy@mit.edu (Olivier Midy)
  */
 
 @DesignerComponent(version = YaVersion.RECYCLERVIEW_COMPONENT_VERSION,
-    description = "<p>This is a visible component that displays a list of text elements." +
-        " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
-    category = ComponentCategory.USERINTERFACE,
-    nonVisible = false,
-    iconName = "images/recyclerView.png")
+        description = "<p>This is a visible component that displays a list of text elements." +
+                " <br> The list can be set using the ElementsFromString property" +
+                " or using the Elements block in the blocks editor. </p>",
+        category = ComponentCategory.USERINTERFACE,
+        nonVisible = false,
+        iconName = "images/recyclerView.png")
 @SimpleObject
-@UsesLibraries(libraries ="RecyclerView.jar, CardView.jar, CardView.aar")
+@UsesLibraries(libraries = "RecyclerView.jar, CardView.jar, CardView.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
-    "android.permission.READ_EXTERNAL_STORAGE")
+        "android.permission.READ_EXTERNAL_STORAGE")
 public final class RecyclerView extends AndroidViewComponent {
 
   private static final String LOG_TAG = "RecyclerView";
@@ -66,9 +67,9 @@ public final class RecyclerView extends AndroidViewComponent {
   private final LinearLayout linearLayout;
   private android.support.v7.widget.RecyclerView recyclerView;
   private Context ctx;
-  private int selectionIndex;
-  private String selectionFirst = "", selectionSecond = "";
+  private int clickedIndex;
   private boolean showFilter = false;
+  private boolean multiSelect = false;
   private static final boolean DEFAULT_ENABLED = false;
 
   private ListAdapterWithRecyclerView listAdapterWithRecyclerView;
@@ -97,6 +98,7 @@ public final class RecyclerView extends AndroidViewComponent {
   private int layout;
   private String propertyValue;
   private ArrayList<JSONObject> currentItems;
+  private YailList items;
   private ArrayList<JSONObject> currentItemsCopy;
 
   private int orientation;
@@ -267,9 +269,39 @@ public final class RecyclerView extends AndroidViewComponent {
    * @return true or false (visibility)
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Returns current state of ShowFilterBar for visibility.")
-  public boolean ShowFilterBar() {
+          description = "Allow multiple selections from List.")
+  public boolean MultiSelect() {
     return showFilter;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = DEFAULT_ENABLED ? "True" : "False")
+  @SimpleProperty(description = "Allow multiple selections from List.")
+  public void MultiSelect(boolean value) {
+    this.multiSelect = value;
+    setAdapterr();
+  }
+
+
+  /**
+   * Specifies the text elements of the ListView.
+   *
+   * @param itemstring a string containing a comma-separated list of the strings to be picked from
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "The TextView elements specified as a string with the " +
+          "items separated by commas " +
+          "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
+          "list.", category = PropertyCategory.BEHAVIOR)
+  public void ElementsFromString(String itemstring) {
+    items = ElementsUtil.elementsFromString(itemstring);
+    currentItems.clear();
+    for (int i = 0; i < items.size(); ++i) {
+      JSONObject jo = new JSONObject();
+      jo.put("Text1", items.getString(i));
+      currentItems.add(jo);
+    }
+    setAdapterr();
   }
 
   public void setAdapterr() {
@@ -294,15 +326,12 @@ public final class RecyclerView extends AndroidViewComponent {
       }
     }
 
-    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container.$context(), size, first, second, third, textMainColor, textDetailColor, textMainSize, textDetailSize, layout, backgroundColor, selectionColor, imageWidth, imageHeight);
+    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container.$context(), size, first, second, third, textMainColor, textDetailColor, textMainSize, textDetailSize, layout, backgroundColor, selectionColor, imageWidth, imageHeight, multiSelect);
 
     listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
       @Override
       public void onItemClick(int position, View v) {
-        JSONObject item = currentItems.get(position);
-        selectionFirst = item.has("Text1") ? item.getString("Text1") : "";
-        selectionSecond = item.has("Text2") ? item.getString("Text2") : "";
-        selectionIndex = position;
+        clickedIndex = position;
         System.out.println("Spannable Adapter/..........." + position);
         AfterPicking();
       }
@@ -329,7 +358,7 @@ public final class RecyclerView extends AndroidViewComponent {
                   "1.  If no item has been clicked, the value will be 0.",
           category = PropertyCategory.BEHAVIOR)
   public int ClickedIndex() {
-    return selectionIndex;
+    return clickedIndex;
   }
 
   @SimpleProperty(
@@ -340,9 +369,9 @@ public final class RecyclerView extends AndroidViewComponent {
                   "Selection will be set to the empty text.",
           category = PropertyCategory.BEHAVIOR)
   public String LastClickedItem() {
-    JSONObject item = currentItems.get(selectionIndex);
-    String selectionText = item.has("Text1") ? item.getString("Text1") : "";
-    return selectionText;
+    JSONObject item = currentItems.get(clickedIndex);
+    String clickedText = item.has("Text1") ? item.getString("Text1") : "";
+    return clickedText;
   }
 
   @SimpleProperty(
@@ -355,6 +384,32 @@ public final class RecyclerView extends AndroidViewComponent {
   public YailList SelectedItems() {
     String csv = listAdapterWithRecyclerView.getSelectedItems();
     return ElementsUtil.elementsFromString(csv);
+  }
+
+  /**
+   * Returns the text in the ListView at the position set by SelectionIndex
+   */
+  @SimpleProperty(description = "Returns the text last selected in the ListView.",
+          category = PropertyCategory
+                  .BEHAVIOR)
+  public String Selection() {
+    return listAdapterWithRecyclerView.getSelectedItems();
+  }
+
+  /**
+   * Selection property setter method.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+          defaultValue = "")
+  @SimpleProperty
+  public void Selection(String value) {
+    if (value.length() > 0) {
+      String[] textValues = value.split(",");
+      listAdapterWithRecyclerView.clearSelections();
+      for (int i = 0; i < textValues.length; i++) {
+        listAdapterWithRecyclerView.selectFromText(textValues[i].trim());
+      }
+    }
   }
 
   /**
@@ -585,11 +640,15 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public void ListData(String propertyValue) {
     this.propertyValue = propertyValue;
-    if (propertyValue != null && propertyValue != "") {
+    if (propertyValue.length() > 0) {
       JSONArray arr = new JSONArray(propertyValue);
-      for (int i = 0; i < arr.length(); ++i) {
-        currentItems.add(i, arr.getJSONObject(i));
-        currentItemsCopy.add(i, arr.getJSONObject(i));
+      if (arr.length() > 0) {
+        currentItems.clear();
+        currentItemsCopy.clear();
+        for (int i = 0; i < arr.length(); ++i) {
+          currentItems.add(i, arr.getJSONObject(i));
+          currentItemsCopy.add(i, arr.getJSONObject(i));
+        }
       }
     }
 
@@ -641,7 +700,7 @@ public final class RecyclerView extends AndroidViewComponent {
   @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the" +
           " list. The selected element is available in the Selection property.")
   public void AfterPicking() {
-    System.out.println("Spannable Adapter" + selectionIndex);
+    System.out.println("Spannable Adapter" + clickedIndex);
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
 
