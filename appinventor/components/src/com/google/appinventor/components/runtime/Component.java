@@ -49,7 +49,7 @@ public interface Component {
   static final int BUTTON_SHAPE_OVAL = 3;
 
   /*
-   * RecyclerView Orientation.
+   * ListView Orientation.
    */
   static final int VERTICAL_ORIENTATION = 0;
   static final int HORISONTAL_ORIENTATION = 1;

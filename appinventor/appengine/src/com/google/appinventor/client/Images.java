@@ -280,7 +280,7 @@ public interface Images extends Resources {
   ImageResource listview();
 
   /**
- * Designer palette item: RecyclerView component
+ * Designer palette item: ListView component
  */
 
  @Source("com/google/appinventor/images/recyclerView.png")

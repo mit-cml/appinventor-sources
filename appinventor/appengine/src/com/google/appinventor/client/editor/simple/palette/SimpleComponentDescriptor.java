@@ -32,7 +32,6 @@ import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockLineString;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
-import com.google.appinventor.client.editor.simple.components.MockRecyclerView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.simple.components.MockMarker;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
@@ -404,8 +403,8 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
-    } else if (name.equals(MockRecyclerView.TYPE)) {
-      return new MockRecyclerView(editor);   
+    } else if (name.equals(MockListView.TYPE)) {
+      return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {

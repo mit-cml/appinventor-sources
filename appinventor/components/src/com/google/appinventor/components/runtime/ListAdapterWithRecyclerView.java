@@ -111,7 +111,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     CardView cardView = new CardView(context);
     cardView.setUseCompatPadding(true);
-    cardView.setContentPadding(30, 30, 30, 0);
+    cardView.setContentPadding(10, 10, 10, 10);
     cardView.setPreventCornerOverlap(true);
     cardView.setCardElevation(2.1f);
     cardView.setRadius(0);
@@ -122,7 +122,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     cardView.setId(idCard);
 
     CardView.LayoutParams params1 = new CardView.LayoutParams(CardView.LayoutParams.FILL_PARENT, CardView.LayoutParams.WRAP_CONTENT);
-    params1.setMargins(30, 30, 30, 30);
+    params1.setMargins(0, 0, 0, 0);
 
     ViewCompat.setElevation(cardView, 20);
 
