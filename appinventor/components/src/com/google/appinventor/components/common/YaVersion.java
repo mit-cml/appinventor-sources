@@ -484,8 +484,10 @@ public class YaVersion {
   // - POLYGON_COMPONENT_VERSION was incremented to 2
   // - RECTANGLE_COMPONENT_VERSION was incremented to 2
   // - TEXTBOX_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 195:
+  // - PEDOMETER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 194;
+  public static final int YOUNG_ANDROID_VERSION = 195;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1032,7 +1034,9 @@ public class YaVersion {
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
   // - The GPS related functionality was removed.
-  public static final int PEDOMETER_COMPONENT_VERSION = 2;
+  // For PEDOMETER_COMPONENT_VERSION 3:
+  // - The Resume and Pause methods were removed.
+  public static final int PEDOMETER_COMPONENT_VERSION = 3;
 
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
