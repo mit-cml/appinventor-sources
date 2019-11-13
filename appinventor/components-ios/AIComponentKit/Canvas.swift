@@ -278,6 +278,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
 
     var touchedAnySprite = false
 
+    TouchDown(Float(x), Float(y))
+
     for sprite in _sprites {
       if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
         sprite.Touched(Float(x), Float(y))
@@ -286,6 +288,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
 
     Touched(Float(x), Float(y), touchedAnySprite)
+    TouchUp(Float(x), Float(y))
   }
 
   @objc func onLongTouch(gesture: UILongPressGestureRecognizer) {
