@@ -446,7 +446,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
-  private boolean isSelectedComponent(MockComponent component) {
+  public boolean isSelectedComponent(MockComponent component) {
     String name = component.getName();
     for (MockComponent selectedComponent : selectedComponents) {
       if (selectedComponent.getName() == name) {
@@ -505,6 +505,28 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         }
         // Show the component properties in the properties panel.
         updatePropertiesPanel(component);
+      } else if (isSelectedComponent(component) && selectedComponents.size() > 1) {
+        selectedComponents.remove(component);
+        EditableProperties propertyIntersection = new EditableProperties(true);
+        for (EditableProperty property : selectedComponents.get(0).getProperties()) {
+          String propertyName = property.getName();
+          if (propertyName == "Uuid") {
+            continue;
+          }
+          if (isIntersectedProperty(propertyName)) {
+            propertyIntersection.addProperty(
+              propertyName, 
+              (isIntersectedValue(propertyName)) ? property.getValue() : property.getDefaultValue(),
+              property.getCaption(), 
+              property.getEditor(), 
+              property.getType()
+            );
+          }
+        }
+        selectedProperties = propertyIntersection;
+        selectedProperties.addPropertyChangeListener(this);
+        updatePropertiesPanel(selectedComponents.size() == 1 ? selectedComponents.get(0) : null);
+        onFormStructureChange();
       }
     } else {
       OdeLog.elog("onComponentSelectionChange called when loadComplete is false");

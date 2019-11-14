@@ -916,15 +916,18 @@ public final class MockForm extends MockContainer {
     if (newSelectedComponent == null) {
       throw new IllegalArgumentException("at least one component must always be selected");
     }
-    if (newSelectedComponent == oldSelectedComponent) {
+    YaFormEditor formEditor = (YaFormEditor) editor;
+    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
+    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    if (shouldSelectMultipleComponents && selectedComponents.size() > 1 && formEditor.isSelectedComponent(newSelectedComponent)) {
+      int index = selectedComponents.indexOf(newSelectedComponent);
+      selectedComponent = selectedComponents.get((index == 0) ? 1 : index - 1);
+      newSelectedComponent.onSelectedChange(false);
       return;
     }
 
     selectedComponent = newSelectedComponent;
-    YaFormEditor formEditor = (YaFormEditor) editor;
-    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
     Map<String, MockComponent> componentsMap = formEditor.getComponents();
-    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
 
     if (oldSelectedComponent != null && !shouldSelectMultipleComponents) {     // Can be null initially
       for (MockComponent component : componentsMap.values()) {
