@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 
@@ -114,35 +115,24 @@ public class Camera extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void TakePicture() {
-    Date date = new Date();
-    String state = Environment.getExternalStorageState();
     if (!havePermission) {
       final Camera me = this;
-      form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            form.askPermission(Manifest.permission.CAMERA,
-                               new PermissionResultHandler() {
-                                 @Override
-                                 public void HandlePermissionResponse(String permission, boolean granted) {
-                                   if (granted) {
-                                     me.havePermission = true;
-                                     me.TakePicture();
-                                   } else {
-                                     form.dispatchPermissionDeniedEvent(me, "TakePicture",
-                                         Manifest.permission.CAMERA);
-                                   }
-                                 }
-                               });
-          }
-        });
+      form.askPermission(new BulkPermissionRequest(this, "TakePicture",
+          Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+        @Override
+        public void onGranted() {
+          me.havePermission = true;
+          me.TakePicture();
+        }
+      });
       return;
     }
+    String state = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CameraComponent", "External storage is available and writable");
 
       imageFile = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-        "/Pictures/app_inventor_" + date.getTime()
+        "/Pictures/app_inventor_" + new Date().getTime()
         + ".jpg"));
 
       ContentValues values = new ContentValues();
