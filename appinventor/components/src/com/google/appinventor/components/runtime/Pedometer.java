@@ -138,6 +138,24 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
+   * Resumes the counting of steps.
+   */
+  @Deprecated
+  @SimpleFunction(description = "Resumes counting, synonym of Start.")
+  public void Resume() {
+    Start();
+  }
+
+  /**
+   * Pauses the counting of steps.
+   */
+  @Deprecated
+  @SimpleFunction(description = "Pause counting of steps and distance.")
+  public void Pause() {
+    Stop();
+  }
+
+  /**
    * Saves the pedometer state to shared preferences.
    */
   @SimpleFunction(description = "Saves the pedometer state to the phone. Permits " +
@@ -476,20 +494,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleProperty
   public boolean Moving() {
     return false;
-  }
-
-  // Methods
-
-  @Deprecated
-  @SimpleFunction(description = "Resumes counting, synonym of Start.")
-  public void Resume() {
-    Start();
-  }
-
-  @Deprecated
-  @SimpleFunction(description = "Pause counting of steps and distance.")
-  public void Pause() {
-    Stop();
   }
 
 }
