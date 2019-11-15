@@ -268,7 +268,13 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
     @Override
     public void onClick(View v) {
-      clickListener.onItemClick(getAdapterPosition(), v);
+      int position = getAdapterPosition();
+      if (multiSelect) {
+        changeSelections(position);
+      } else {
+        toggleSelection(position);
+      }
+      clickListener.onItemClick(position, v);
     }
   }
 

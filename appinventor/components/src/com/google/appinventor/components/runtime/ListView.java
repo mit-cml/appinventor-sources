@@ -332,12 +332,6 @@ public final class ListView extends AndroidViewComponent {
       @Override
       public void onItemClick(int position, View v) {
         clickedIndex = position;
-        if (multiSelect) {
-          listAdapterWithRecyclerView.changeSelections(position);
-        } else {
-          listAdapterWithRecyclerView.toggleSelection(position);
-        }
-        System.out.println("Spannable Adapter/..........." + position);
         AfterPicking();
       }
     });
