@@ -53,13 +53,13 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -177,18 +177,20 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     RootPanel.get().addDomHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        int keyCode = event.getNativeKeyCode();
-        if (keyCode == KeyCodes.KEY_SHIFT) {
-          shouldSelectMultipleComponents = true;
+        if (Navigator.getPlatform().toLowerCase().startsWith("mac")) {
+          shouldSelectMultipleComponents = event.isMetaKeyDown();
+        } else {
+          shouldSelectMultipleComponents = event.isControlKeyDown();
         }
       }
     }, KeyDownEvent.getType());
     RootPanel.get().addDomHandler(new KeyUpHandler() {
       @Override
       public void onKeyUp(KeyUpEvent event) {
-        int keyCode = event.getNativeKeyCode();
-        if (keyCode == KeyCodes.KEY_SHIFT) {
-          shouldSelectMultipleComponents = false;
+        if (Navigator.getPlatform().toLowerCase().startsWith("mac")) {
+          shouldSelectMultipleComponents = event.isMetaKeyDown();
+        } else {
+          shouldSelectMultipleComponents = event.isControlKeyDown();
         }
       }
     }, KeyUpEvent.getType());
