@@ -841,6 +841,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "Form".equals(componentTypeName) ? "Screen" : componentTypeName;
     }
 
+    protected String getName() {
+      if (name.equals("Form")) {
+        return "Screen";
+      } else {
+        return name;
+      }
+    }
+
   }
 
   /**

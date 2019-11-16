@@ -283,10 +283,11 @@ Blockly.Blocks.component_event = {
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
-      tooltipDescription = componentDb.getInternationalizedEventDescription(eventType.name, eventType.description);
+      tooltipDescription = componentDb.getInternationalizedEventDescription(this.getTypeName(), eventType.name,
+          eventType.description);
     }
     else {
-      tooltipDescription = componentDb.getInternationalizedEventDescription(this.eventName);
+      tooltipDescription = componentDb.getInternationalizedEventDescription(this.getTypeName(), this.eventName);
     }
     this.setTooltip(tooltipDescription);
     this.setPreviousStatement(false, null);
@@ -308,6 +309,10 @@ Blockly.Blocks.component_event = {
     this.verify(); // verify the block and mark it accordingly
 
     this.rendered = oldRendered;
+  },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
@@ -418,11 +423,10 @@ Blockly.Blocks.component_event = {
     }
   },
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    var url = Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.EVENTS_HELPURLS[this.getTypeName()];
     if (url && url[0] == '/') {
       var parts = url.split('#');
-      parts[1] = this.typeName + '.' + this.eventName;
+      parts[1] = this.getTypeName() + '.' + this.eventName;
       url = parts.join('#');
     }
     return url;
@@ -599,17 +603,13 @@ Blockly.Blocks.component_event = {
 Blockly.Blocks.component_method = {
   category : 'Component',
   helpUrl : function() {
-      var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-      var url = Blockly.ComponentBlock.METHODS_HELPURLS[mode];
+      var url = Blockly.ComponentBlock.METHODS_HELPURLS[this.getTypeName()];
       if (url && url[0] == '/') {
         var parts = url.split('#');
-        parts[1] = this.typeName + '.' + this.methodName;
+        parts[1] = this.getTypeName() + '.' + this.methodName;
         url = parts.join('#');
       }
       return url;
-  },
-  init: function() {
-    this.genericComponentInput = Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT;
   },
 
   mutationToDom : function() {
@@ -728,9 +728,10 @@ Blockly.Blocks.component_method = {
 
     var tooltipDescription;
     if (methodTypeObject) {
-      tooltipDescription = componentDb.getInternationalizedMethodDescription(methodTypeObject.name, methodTypeObject.description);
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.getTypeName(), methodTypeObject.name,
+          methodTypeObject.description);
     } else {
-      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.typeName);
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.getTypeName(), this.methodName);
     }
     this.setTooltip(tooltipDescription);
 
@@ -779,6 +780,10 @@ Blockly.Blocks.component_method = {
     this.verify(); // verify the block and mark it accordingly
 
     this.rendered = oldRendered;
+  },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -957,11 +962,10 @@ Blockly.Blocks.component_set_get = {
   category : 'Component',
   //this.blockType = 'getter',
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    var url = Blockly.ComponentBlock.PROPERTIES_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.PROPERTIES_HELPURLS[this.getTypeName()];
     if (url && url[0] == '/') {
       var parts = url.split('#');
-      parts[1] = this.typeName + '.' + this.propertyName;
+      parts[1] = this.getTypeName() + '.' + this.propertyName;
       url = parts.join('#');
     }
     return url;
@@ -1026,7 +1030,8 @@ Blockly.Blocks.component_set_get = {
     }
     var tooltipDescription;
     if (this.propertyName) {
-      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.propertyName, this.propertyObject.description);
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.getTypeName(), this.propertyName,
+          this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1042,7 +1047,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
         if (thisBlock.propertyName) {
-          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName, thisBlock.propertyObject.description));
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTabCatcherElement(),
+              thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
         }
@@ -1133,6 +1139,10 @@ Blockly.Blocks.component_set_get = {
     }
 
     this.rendered = oldRendered;
+  },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
   },
 
   setTypeCheck : function() {
@@ -1304,8 +1314,7 @@ Blockly.Blocks.component_component_block = {
   category : 'Component',
 
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.HELPURLS[mode];
+    return Blockly.ComponentBlock.HELPURLS[this.getTypeName()];
   },  // TODO: fix
 
   mutationToDom : function() {
@@ -1329,6 +1338,11 @@ Blockly.Blocks.component_component_block = {
     this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkComponentNotExistsError"}];
   },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
+  },
+
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {

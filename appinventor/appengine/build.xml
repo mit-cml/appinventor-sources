@@ -569,7 +569,7 @@
         <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx1G"/>
+      <jvmarg value="-Xmx2G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
