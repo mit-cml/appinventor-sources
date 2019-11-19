@@ -59,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.Math;
 
 import javax.imageio.ImageIO;
 
@@ -1725,12 +1726,14 @@ public final class Compiler {
   private BufferedImage produceRoundIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
     // Ratio of icon size to png image size for round icon is 0.80
-    int iconWidth = (int)(imageWidth * 0.80);
-    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
-    int marginWidth = ((imageWidth - iconWidth) / 2);
+    double iconWidth = imageWidth * 0.80;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
     BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundIcon.createGraphics();
-    g2.setClip(new Ellipse2D.Float(marginWidth, marginWidth, iconWidth, iconWidth));
+    g2.setClip(new Ellipse2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth));
     g2.drawImage(tmp, marginWidth, marginWidth, null);
     return roundIcon;
   }
@@ -1741,14 +1744,16 @@ public final class Compiler {
   private BufferedImage produceRoundedCornerIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
     // Ratio of icon size to png image size for roundRect icon is 0.93
-    int iconWidth = (int)(imageWidth * 0.93);
-    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
-    int marginWidth = ((imageWidth - iconWidth) / 2);
+    double iconWidth = imageWidth * 0.93;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
     // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android material guidelines
-    float cornerRadius = iconWidth / 12;
+    float cornerRadius = intIconWidth / 12;
     BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = roundedCornerIcon.createGraphics();
-    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, iconWidth, iconWidth, cornerRadius, cornerRadius));
+    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth, cornerRadius, cornerRadius));
     g2.drawImage(tmp, marginWidth, marginWidth, null);
     return roundedCornerIcon;
   }
@@ -1759,9 +1764,11 @@ public final class Compiler {
   private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
     // Ratio of icon size to png image size for foreground/round icon is 0.80
-    int iconWidth = (int)(imageWidth * 0.80);
-    Image tmp = icon.getScaledInstance(iconWidth, iconWidth, Image.SCALE_SMOOTH);
-    int marginWidth = ((imageWidth - iconWidth) / 2);
+    double iconWidth = imageWidth * 0.80;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
     BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = foregroundImageIcon.createGraphics();
     g2.drawImage(tmp, marginWidth, marginWidth, null);
