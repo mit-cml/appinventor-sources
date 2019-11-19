@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -30,6 +30,7 @@ class CsvParser {
     var result = [String]()
     var start = pos
     var quoted = false
+    var inString = false
     var cr = false
     var cellStart = true
     while pos < input.endIndex {
@@ -56,19 +57,27 @@ class CsvParser {
         cellStart = true
         quoted = false
       } else if input[pos] == "," {
-        if quoted {
-          result.append(unquotify(cell: String(input[start..<input.index(before: pos)])))
-        } else {
-          result.append(unquotify(cell: String(input[start..<pos])))
+        if !inString {
+          if quoted {
+            result.append(unquotify(cell: String(input[start..<input.index(before: pos)])))
+          } else {
+            result.append(unquotify(cell: String(input[start..<pos])))
+          }
+          cellStart = true
+          quoted = false
+          start = input.index(after: pos)
         }
-        cellStart = true
-        quoted = false
       } else if input[pos] == "\"" {
         if cellStart {
           // Start of quoted cell
           quoted = true
           start = input.index(after: pos)
+          cellStart = false
+          inString = true
+        } else if quoted {
+          inString = !inString
         }
+      } else {
         cellStart = false
       }
       pos = input.index(after: pos)

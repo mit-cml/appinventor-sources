@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import XCTest
@@ -7,8 +7,28 @@ import XCTest
 
 class CsvUtilTests: XCTestCase {
   func testFromCsvRow() throws {
-    let result = try CsvUtil.fromCsvRow("\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"")
-    XCTAssertEqual(["Entry", "5", "true", "[\"Sample List\"]"], result)
+    XCTAssertEqual(["Entry", "5", "true", "[\"Sample List\"]"],
+                   try CsvUtil.fromCsvRow("\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\""))
+  }
+
+  func testFromCsvRowUnquoted() throws {
+    XCTAssertEqual(["Hello", "World"],
+                   try CsvUtil.fromCsvRow("Hello,World"))
+  }
+
+  func testFromCsvRowWithEmbeddedCommas() throws  {
+    XCTAssertEqual(["quoted string,with comma"],
+                   try CsvUtil.fromCsvRow("\"quoted string,with comma\""))
+  }
+
+  func testFromCsvRowWithEmbeddedCommasAndStrings() throws {
+    XCTAssertEqual(["string \"with\" quotes, and commas!", "hello!"],
+                   try CsvUtil.fromCsvRow("\"string \"\"with\"\" quotes, and commas!\",hello!"))
+  }
+
+  func testFromCsvRowWithQuotesNotStarting() throws {
+    XCTAssertEqual(["test 14'6\" height", "good"],
+                   try CsvUtil.fromCsvRow("test 14'6\" height,good"))
   }
 
   func testFromCsvTable() throws {
