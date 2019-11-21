@@ -13,6 +13,11 @@ public protocol BarcodeScannerDelegate {
   func canceled()
 }
 
+fileprivate let kLeftMargin = CGFloat(3.0/32.0)
+fileprivate let kTopMargin = CGFloat(11.0/48.0)
+fileprivate let kWidth = CGFloat(13.0/16.0)
+fileprivate let kHeight = CGFloat(13.0/24.0)
+
 class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   fileprivate var _capture: ZXCapture!
   fileprivate var _barcodeDelegate: BarcodeScannerDelegate!
@@ -63,10 +68,10 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
 
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    _scanViewRect.frame = CGRect(x: (3.0/32.0)*self.view.frame.width,
-                                 y: (11.0/48.0)*self.view.frame.height,
-                                 width: (13.0/16.0)*self.view.frame.width,
-                                 height: (13.0/24.0)*self.view.frame.height)
+    _scanViewRect.frame = CGRect(x: kLeftMargin * self.view.frame.width,
+                                 y: kTopMargin * self.view.frame.height,
+                                 width: kWidth * self.view.frame.width,
+                                 height: kHeight * self.view.frame.height)
     _scanViewRect.autoresizingMask = UIView.AutoresizingMask.flexibleHeight.union(.flexibleWidth).union(.flexibleTopMargin).union(.flexibleBottomMargin)
     view.layer.addSublayer(self._capture.layer)
     self.view.addSubview(_scanViewRect)
@@ -151,37 +156,27 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   }
   
   @objc func applyRectOfInterest(_ orientation: UIInterfaceOrientation) {
-    var scaleVideo: CGFloat, scaleVideoX: CGFloat, scaleVideoY: CGFloat
-    var videoSizeX: CGFloat, videoSizeY: CGFloat
-    var transformedVideoRect = self._scanViewRect.frame
+    var videoSizeWidth: CGFloat, videoSizeHeight: CGFloat
     if(self._capture.sessionPreset == convertFromAVCaptureSessionPreset(AVCaptureSession.Preset.hd1920x1080)) {
-      videoSizeX = 1080;
-      videoSizeY = 1920;
+      videoSizeWidth = 1920;
+      videoSizeHeight = 1080;
     } else {
-      videoSizeX = 720;
-      videoSizeY = 1280;
+      videoSizeWidth = 1280;
+      videoSizeHeight = 720;
     }
     if(orientation.isPortrait) {
-      scaleVideoX = self.view.frame.size.width / videoSizeX;
-      scaleVideoY = self.view.frame.size.height / videoSizeY;
-      scaleVideo = max(scaleVideoX, scaleVideoY)
-      if(scaleVideoX > scaleVideoY) {
-        transformedVideoRect.origin.y += (scaleVideo * videoSizeY - self.view.frame.size.height) / 2
-      } else {
-        transformedVideoRect.origin.x += (scaleVideo * videoSizeX - self.view.frame.size.width) / 2
-      }
+      // the video is landscape, so we need to swap the meaning of left/top and width/height
+      self._capture.scanRect = CGRect(x: kTopMargin * videoSizeWidth,
+                                      y: kLeftMargin * videoSizeHeight,
+                                      width: kHeight * videoSizeWidth,
+                                      height: kWidth * videoSizeHeight)
     } else {
-      scaleVideoX = self.view.frame.size.width / videoSizeY
-      scaleVideoY = self.view.frame.size.height / videoSizeX
-      scaleVideo = max(scaleVideoX, scaleVideoY)
-      if(scaleVideoX > scaleVideoY) {
-        transformedVideoRect.origin.y += (scaleVideo * videoSizeX - self.view.frame.size.height) / 2
-      } else {
-        transformedVideoRect.origin.x += (scaleVideo * videoSizeY - self.view.frame.size.width) / 2
-      }
+      self._capture.scanRect = CGRect(x: kLeftMargin * videoSizeWidth,
+                                      y: kTopMargin * videoSizeHeight,
+                                      width: kWidth * videoSizeWidth,
+                                      height: kHeight * videoSizeHeight)
     }
-    _captureSizeTransform = CGAffineTransform(scaleX: 1/scaleVideo, y: 1/scaleVideo)
-    self._capture.scanRect = transformedVideoRect.applying(_captureSizeTransform)
+    NSLog("scanRect = \(_capture.scanRect)")
   }
 }
 
