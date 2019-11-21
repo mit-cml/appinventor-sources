@@ -636,4 +636,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/mediaIcon_video.png")
   ImageResource mediaIconVideo();
 
+  /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/twitter.png")
+  ImageResource navigationComponent();
+
 }
