@@ -95,8 +95,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       let ipaddr: String! = NetworkUtils.getIPAddress()
+      let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
+      let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
-      versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
+      versionNumber?.text = "Version: \(version) (build \(build))"
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
