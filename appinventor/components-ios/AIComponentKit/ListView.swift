@@ -9,7 +9,8 @@ fileprivate let kListViewDefaultTextColor = Color.white
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 
-open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableViewDataSource, UITableViewDelegate {
+open class ListView: ViewComponent, AbstractMethodsForViewComponent,
+    UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
   fileprivate final var _view: UITableView
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _elements = [String]()
@@ -20,6 +21,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
+  fileprivate var _results: [String]? = nil
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
@@ -80,7 +82,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     set(elements) {
       _elements = elements
       _automaticHeightConstraint.constant = _elements.isEmpty ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(_elements.count)
-      _view.reloadData()
+      if let searchBar = _view.tableHeaderView as? UISearchBar {
+        self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
+      } else {
+        _view.reloadData()
+      }
     }
   }
 
@@ -133,7 +139,14 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
     set(filterBar) {
       _showFilter = filterBar
-      _view.tableHeaderView = _showFilter ? UISearchBar() : nil
+      if _showFilter && _view.tableHeaderView == nil {
+        let filter = UISearchBar()
+        _view.tableHeaderView = filter
+        filter.sizeToFit()
+        filter.delegate = self
+      } else if !_showFilter && _view.tableHeaderView != nil {
+        _view.tableHeaderView = nil
+      }
     }
   }
 
@@ -168,7 +181,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
-    cell.textLabel?.text = _elements[indexPath.row]
+    cell.textLabel?.text = elements[indexPath.row]
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(_container.form)
@@ -188,14 +201,39 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
   }
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _elements.count
+    return elements.count
   }
 
   // MARK: UITableViewDelegate
 
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     _selectionIndex = Int32(indexPath.row) + 1
-    _selection = _elements[indexPath.row]
+    _selection = elements[indexPath.row]
     AfterPicking()
+  }
+
+  // MARK: UISearchBarDelegate
+
+  open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    _results = nil
+    if !searchText.isEmpty  {
+      _results = [String]()
+      for item in _elements {
+        if item.starts(with: searchText) {
+          _results?.append(item)
+        }
+      }
+    }
+    _view.reloadData()
+  }
+
+  open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    searchBar.endEditing(true)
+  }
+
+  // MARK: Private implementation
+
+  var elements: [String] {
+    return _results ?? _elements
   }
 }
