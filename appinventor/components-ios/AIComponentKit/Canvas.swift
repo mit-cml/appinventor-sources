@@ -14,8 +14,121 @@ fileprivate let TAP_THRESHOLD = Float(15) // corresponds to 15 pixels
 fileprivate let UNSET = CGFloat(-1)
 fileprivate let FINGER_WIDTH = CGFloat(24) // corresponds to 24 pixels
 fileprivate let FINGER_HEIGHT = CGFloat(24)
-fileprivate let HALF_FINGER_WIDTH: CGFloat = FINGER_WIDTH / 2;
-fileprivate let HALF_FINGER_HEIGHT: CGFloat = FINGER_HEIGHT / 2;
+fileprivate let HALF_FINGER_WIDTH: CGFloat = FINGER_WIDTH / 2
+fileprivate let HALF_FINGER_HEIGHT: CGFloat = FINGER_HEIGHT / 2
+
+private class CanvasGestureRecognizer: UIGestureRecognizer {
+  static let UNSET = CGFloat(-1)
+  weak var canvas: Canvas?
+  var draggedSprites = [Sprite]()
+  var drag = false
+  var isDrag = false
+  var startX = UNSET
+  var startY = UNSET
+  var lastX = UNSET
+  var lastY = UNSET
+
+  init(canvas: Canvas) {
+    self.canvas = canvas
+    super.init(target: nil, action: nil)
+    self.delegate = canvas
+  }
+
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    draggedSprites.removeAll()
+    if let width = self.canvas?.Width,
+      let height = self.canvas?.Height,
+      let loc = touches.first?.location(in: self.canvas?._view) {
+      let x = max(CGFloat(0), loc.x)
+      let y = max(CGFloat(0), loc.y)
+      let rect = CGRect(x: max(0, x - HALF_FINGER_WIDTH),
+                        y: max(0, y - HALF_FINGER_HEIGHT),
+                        width: max(CGFloat(width - 1), x + HALF_FINGER_WIDTH),
+                        height: max(CGFloat(height - 1), y + HALF_FINGER_HEIGHT))
+      startX = x
+      startY = y
+      lastX = x
+      lastY = y
+      drag = false
+      isDrag = false
+      canvas?._sprites.forEach({ (sprite) in
+        if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
+          draggedSprites.append(sprite)
+          sprite.TouchDown(Float(startX), Float(startY))
+        }
+      })
+
+      canvas?.TouchDown(Float(startX), Float(startY))
+    }
+  }
+
+  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    if let width = self.canvas?.Width,
+      let height = self.canvas?.Height,
+      let loc = touches.first?.location(in: self.canvas?._view) {
+      let x = max(CGFloat(0), loc.x)
+      let y = max(CGFloat(0), loc.y)
+      let rect = CGRect(x: max(0, x - HALF_FINGER_WIDTH),
+                        y: max(0, y - HALF_FINGER_HEIGHT),
+                        width: max(CGFloat(width - 1), x + HALF_FINGER_WIDTH),
+                        height: max(CGFloat(height - 1), y + HALF_FINGER_HEIGHT))
+      if !isDrag && inThreshold(x: x, y: startX) && inThreshold(x: y, y: startY) {
+        return
+      }
+      isDrag = true
+      drag = true
+      canvas?._sprites.forEach({ (sprite) in
+        if !draggedSprites.contains(sprite)
+          && sprite.Enabled && sprite.Visible
+          && sprite.intersectsWith(rect) {
+          draggedSprites.append(sprite)
+        }
+      })
+      var handled = false
+      canvas?._sprites.forEach({ (sprite) in
+        if sprite.Enabled && sprite.Visible {
+          sprite.Dragged(Float(startX), Float(startY), Float(lastX), Float(lastY), Float(x), Float(y))
+          handled = true
+        }
+      })
+      canvas?.Dragged(Float(startX), Float(startY), Float(lastX), Float(lastY), Float(x), Float(y), handled)
+      lastX = x
+      lastY = y
+    }
+  }
+
+  func inThreshold(x: CGFloat, y: CGFloat) -> Bool {
+    return abs(x - y) < CGFloat(TAP_THRESHOLD)
+  }
+
+  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    if let loc = touches.first?.location(in: self.canvas?._view) {
+      let x = Float(max(CGFloat(0), loc.x))
+      let y = Float(max(CGFloat(0), loc.y))
+      var handled = false
+      draggedSprites.forEach { (sprite) in
+        if sprite.Enabled && sprite.Visible {
+          sprite.Touched(x, y)
+          sprite.TouchUp(x, y)
+          handled = true
+        }
+      }
+      if !drag {
+        canvas?.Touched(x, y, handled)
+      }
+      canvas?.TouchUp(x, y)
+    }
+    drag = false
+    startX = CanvasGestureRecognizer.UNSET
+    startY = CanvasGestureRecognizer.UNSET
+    lastX = CanvasGestureRecognizer.UNSET
+    lastY = CanvasGestureRecognizer.UNSET
+  }
+
+  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+
+  }
+}
 
 // MARK: Canvas class
 public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRecognizerDelegate {
@@ -56,16 +169,9 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _view.Canvas = self
   
     // set up gesture recognizers
-    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
-    let longTouchGesture = UILongPressGestureRecognizer(target: self, action: #selector(onLongTouch))
-    let flingGesture = UIPanGestureRecognizer(target: self, action: #selector(onFling))
-    let dragGesture = DragGestureRecognizer(target: self, action: #selector(onDrag))
-    _view.addGestureRecognizer(tapGesture)
-    _view.addGestureRecognizer(longTouchGesture)
-    _view.addGestureRecognizer(flingGesture)
-    _view.addGestureRecognizer(dragGesture)
-    dragGesture.delegate = self
-    
+    _view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(onFling)))
+    _view.addGestureRecognizer(CanvasGestureRecognizer(canvas: self))
+
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.clipsToBounds = true
     parent.add(self)
@@ -268,7 +374,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   
   // Allow drag and fling gestures to be recognized simultaneously
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    return (gestureRecognizer is DragGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is DragGestureRecognizer)
+    return (gestureRecognizer is CanvasGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is CanvasGestureRecognizer)
   }
   
   @objc func onTap(gesture: UITapGestureRecognizer) {
@@ -382,9 +488,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
         for sprite in _sprites {
           if sprite.Enabled && sprite.Visible && sprite.intersectsWith(rect) {
             draggedAnySprite = true
-            OperationQueue.main.addOperation {
-              sprite.Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)), Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)), Float(max(0, gesture.currentY)))
-            }
+            sprite.Dragged(Float(gesture.startX), Float(gesture.startY), Float(max(0, gesture.prevX)), Float(max(0, gesture.prevY)), Float(max(0, gesture.currentX)), Float(max(0, gesture.currentY)))
           }
         }
 

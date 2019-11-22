@@ -119,7 +119,10 @@ open class ImageSprite: Sprite {
     let d = DisplayLayer
     let centerX = CGFloat(Double(Width) / 2 + X)
     let centerY = CGFloat(Double(Height) / 2 + Y)
+    CATransaction.begin()
+    CATransaction.setAnimationDuration(0.0)
     d.position = CGPoint(x: centerX, y: centerY)
     d.bounds = CGRect(x: centerX, y: centerY, width: CGFloat(Width), height: CGFloat(Height))
+    CATransaction.commit()
   }
 }

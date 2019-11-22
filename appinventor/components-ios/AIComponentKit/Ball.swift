@@ -85,6 +85,9 @@ open class Ball: Sprite {
   override func updateDisplayLayer() {
     let centerX = CGFloat(Double(Radius) + X)
     let centerY = CGFloat(Double(Radius) + Y)
+    CATransaction.begin()
+    CATransaction.setAnimationDuration(0.0)
     DisplayLayer.position = CGPoint(x: centerX, y: centerY)
+    CATransaction.commit()
   }
 }
