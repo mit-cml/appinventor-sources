@@ -142,6 +142,8 @@ public final class Compiler {
       "/tools/mac/zipalign";
   private static final String WINDOWS_AAPT_TOOL =
       "/tools/windows/aapt";
+  private static final String WINDOWS_PTHEAD_DLL =
+      "/tools/windows/libwinpthread-1.dll";
   private static final String WINDOWS_ZIPALIGN_TOOL =
       "/tools/windows/zipalign";
 
@@ -2244,26 +2246,31 @@ public final class Compiler {
     }
   }
 
+  private void ensureLib(String tempdir, String name, String resource) {
+    try {
+      File outFile = new File(tempdir, name);
+      if (outFile.exists()) {
+        return;
+      }
+      File tmpLibDir = new File(tempdir);
+      tmpLibDir.mkdirs();
+      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource(resource)), outFile);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   /*
-   * This code is only invoked on Linux. It copies libc++.so into /tmp/lib64. This
-   * is needed on linux to run the aapt tool.
+   * This code extracts platform specific dynamic libraries needed by the build tools. These
+   * libraries cannot be extracted using the usual mechanism as that assigns a random suffix,
+   * causing dynamic linking to fail.
    */
   private void libSetup() {
     String osName = System.getProperty("os.name");
-    if (!osName.equals("Linux")) {
-      return;                   // Nothing to do (yet) for MacOS and Windows
-    }
-    try {
-      File outFile = new File("/tmp/lib64/libc++.so");
-      if (outFile.exists()) {    // Don't do it more then once!
-        return;
-      }
-      File tmpLibDir = new File("/tmp/lib64");
-      tmpLibDir.mkdirs();
-      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource("/tools/linux/lib64/libc++.so")),
-        outFile);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    if (osName.equals("Linux")) {
+      ensureLib("/tmp/lib64", "libc++.so", "/tools/linux/lib64/libc++.so");
+    } else if (osName.startsWith("Windows")) {
+      ensureLib(System.getProperty("java.io.tmpdir"), "libwinpthread-1.dll", WINDOWS_PTHEAD_DLL);
     }
   }
 
