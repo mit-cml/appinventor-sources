@@ -284,6 +284,44 @@ public final class ListView extends AndroidViewComponent {
 
 
   /**
+   * Set a list of text elements to build a ListView
+   * @param itemsList a YailList containing the strings to be added to the ListView
+   */
+  @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
+          "signal an error if the elements are not text strings.",
+          category = PropertyCategory.BEHAVIOR)
+  public void Elements(YailList itemsList) {
+    currentItems.clear();
+    items = ElementsUtil.elements(itemsList, "Listview");
+    Object[] objects = items.toStringArray();
+    for (int i = 0; i < items.size(); i++) {
+      if (objects[i] instanceof String) {
+        JSONObject jo = new JSONObject();
+        jo.put("Text1", items.getString(i));
+        currentItems.add(jo);
+      }
+    }
+    setAdapterr();
+  }
+
+  /**
+   * Elements property getter method
+   *
+   * @return a YailList representing the list of strings to be picked from
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public YailList Elements() {
+    String elemList = "";
+    for (int i = 0; i < currentItems.size(); i++) {
+      JSONObject object = currentItems.get(i);
+      String strItem = object.has("Text1") ? object.getString("Text1") : "";
+      elemList += elemList.length() > 0 ? "," + strItem : strItem;
+    }
+    items = ElementsUtil.elementsFromString(elemList);
+    return items;
+  }
+
+  /**
    * Specifies the text elements of the ListView.
    *
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
@@ -294,11 +332,11 @@ public final class ListView extends AndroidViewComponent {
           "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
           "list.", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
-    items = ElementsUtil.elementsFromString(itemstring);
+    ArrayList<String> items= new ArrayList(Arrays.asList(itemstring.split(",")));
     currentItems.clear();
-    for (int i = 0; i < items.size(); ++i) {
+    for (String item : items) {
       JSONObject jo = new JSONObject();
-      jo.put("Text1", items.getString(i));
+      jo.put("Text1", item);
       currentItems.add(jo);
     }
     setAdapterr();
