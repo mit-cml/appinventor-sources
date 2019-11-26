@@ -159,7 +159,7 @@ public class Polygon extends PolygonBase implements MapPolygon {
   }
 
   @SuppressWarnings("squid:S00100")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.")
   public void PointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
@@ -233,7 +233,7 @@ public class Polygon extends PolygonBase implements MapPolygon {
   }
 
   @SuppressWarnings("squid:S00100")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.")
   public void HolePointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {

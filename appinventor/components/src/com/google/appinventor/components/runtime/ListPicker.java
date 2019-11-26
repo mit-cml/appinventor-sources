@@ -220,7 +220,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * @param itemstring - a string containing a comma-separated list of the
    *                     strings to be picked from
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
                     defaultValue = "")
   // TODO(sharon): it might be nice to have a list editorType where the developer
   // could directly enter a list of strings (e.g. one per row) and we could

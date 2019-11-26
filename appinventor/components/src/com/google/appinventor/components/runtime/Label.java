@@ -356,7 +356,7 @@ private void setLabelMargins(boolean hasMargins) {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {

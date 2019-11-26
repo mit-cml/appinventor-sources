@@ -405,7 +405,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param text  new text in text box
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty(
       // This kind of breaks the appearance/behavior dichotomy
