@@ -56,6 +56,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
 
   private var _locationSensor: LocationSensor
   private var _mapType: AIMapType = .roads
+  private var _scaleUnits: Int32 = 1 // swift doesn't have scale units??
   private var _zoomLevel: Int32 = 1
   private var _zoomControls: UIStackView
   private var _zoomInBtn: ZoomButton
@@ -101,6 +102,16 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       _compass = comp
     }
   }
+  private var _scale: AnyObject?
+  @available(iOS 11.0, *)
+  private var scale: MKScaleView? {
+    get {
+      return _scale as? MKScaleView
+    }
+    set(scl) {
+      _scale = scl
+    }
+  }
 
   public override init(_ parent: ComponentContainer) {
     featureCount = 0
@@ -112,6 +123,23 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     super.init(parent)
     if #available(iOS 11.0, *) {
       compass = MKCompassButton(mapView: mapView)
+      if let compass = compass {
+        compass.translatesAutoresizingMaskIntoConstraints = false
+        mapView.addSubview(compass)
+        mapView.showsCompass = false
+        mapView.trailingAnchor.constraint(equalToSystemSpacingAfter: compass.trailingAnchor, multiplier: 1.0).isActive = true
+        compass.topAnchor.constraint(equalToSystemSpacingBelow: mapView.topAnchor, multiplier: 1.0).isActive = true
+      }
+    }
+    if #available(iOS 11.0, *) {
+      scale = MKScaleView(mapView: mapView)
+      if let scale = scale {
+        scale.translatesAutoresizingMaskIntoConstraints = false
+        mapView.addSubview(scale)
+        mapView.showsScale = false
+        mapView.trailingAnchor.constraint(equalToSystemSpacingAfter: scale.trailingAnchor, multiplier: 1.0).isActive = true
+        mapView.bottomAnchor.constraint(equalTo: scale.bottomAnchor, constant: 32.0).isActive = true
+      }
     }
     mapView.translatesAutoresizingMaskIntoConstraints = false
     mapView.delegate = self
@@ -119,8 +147,10 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EnableZoom = true
     EnablePan = true
     MapType = 1
+    ScaleUnits = 1
     ShowZoom = false
     ShowCompass = false
+    ShowScale = false
     ShowUser = false
     EnableRotation = false
     parent.add(self)
@@ -309,6 +339,18 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
   
+  @objc open var ScaleUnits: Int32 {
+    get {
+      return _scaleUnits
+    }
+    set(type) {
+      if !(1...2 ~= type) {
+        // throw error
+        return
+      }
+      // set scale units somehow
+    }
+  }
   @objc open var ShowCompass: Bool {
     get {
       return mapView.showsCompass
@@ -316,8 +358,21 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     set(showCompass) {
       if #available(iOS 11.0, *) {
         compass?.compassVisibility = showCompass ? .visible: .hidden
+      } else {
+        mapView.showsCompass = showCompass
       }
-      mapView.showsCompass = showCompass
+    }
+  }
+  @objc open var ShowScale: Bool {
+    get {
+      return mapView.showsScale
+    }
+    set(showScale) {
+      if #available(iOS 11.0, *) {
+        scale?.scaleVisibility = showScale ? .visible: .hidden
+      } else {
+        mapView.showsScale = showScale
+      }
     }
   }
   
