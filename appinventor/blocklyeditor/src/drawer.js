@@ -259,7 +259,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
 
     //create event blocks
     goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
-      if (event.deprecated != 'true') {
+      if (event.deprecated != 'true' && event.deprecated !== true) {
         Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
           'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
         }));
@@ -268,7 +268,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
 
     //create non-generic method blocks
     goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
-      if (method.deprecated != 'true') {
+      if (method.deprecated != 'true' && method.deprecated !== true) {
         Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
           'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
         }));
@@ -277,7 +277,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
 
     //for each property
     goog.object.forEach(componentInfo.properties, function (property, name) {
-      if (property.deprecated != 'true') {
+      if (property.deprecated != 'true' && property.deprecated !== true) {
         var params = {
           'component_type': typeName, 'instance_name': instanceRecord.name,
           'property_name': name
