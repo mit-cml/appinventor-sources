@@ -2122,7 +2122,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The step sensing algorithm was updated to be more accurate.
     // The GPS related functionality was removed.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The Resume and Pause methods were removed.
+    3: "noUpgrade"
 
   }, // End PhoneCall upgraders
 

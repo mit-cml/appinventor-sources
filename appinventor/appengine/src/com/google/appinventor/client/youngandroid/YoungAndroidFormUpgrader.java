@@ -1625,6 +1625,10 @@ public final class YoungAndroidFormUpgrader {
       // The GPS related functionality was removed.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The Resume and Pause methods were removed.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
