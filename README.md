@@ -121,4 +121,4 @@ The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you 
     $ ant tests
 
 ## Need help?
-Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev).
+Join [our community](https://community.appinventor.mit.edu/).
