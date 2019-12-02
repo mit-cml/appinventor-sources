@@ -598,4 +598,12 @@ typedef union {
   XCTAssertEqualObjects(@"4028354713", result);
 }
 
+- (void)testFormatNegative {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"(yail:format-exact -1)"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertEqualObjects(@"-1", result);
+}
+
 @end

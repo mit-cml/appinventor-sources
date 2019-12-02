@@ -856,13 +856,13 @@ pic_value
 yail_format_integer(pic_state *pic) {
   static const int BUFSIZE=24;
   double f;
-  unsigned long i;
+  long i;
   char buf[BUFSIZE];
 
   pic_get_args(pic, "f", &f);
   i = f;
 
-  snprintf(&buf[0], BUFSIZE, "%lu", i);
+  snprintf(&buf[0], BUFSIZE, "%ld", i);
 
   return pic_cstr_value(pic, buf);
 }
