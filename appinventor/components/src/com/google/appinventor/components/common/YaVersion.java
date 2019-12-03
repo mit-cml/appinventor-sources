@@ -1223,7 +1223,9 @@ public class YaVersion {
   // - ClearCaches method was added
   // For WEBVIEWER_COMPONENT_VERSiON 7:
   // - Added WebViewStringChange event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 7;
+  //For WEBVIEWER_COMPONENT_VERSION 8:
+  // - Added PageLoaded event
+  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.

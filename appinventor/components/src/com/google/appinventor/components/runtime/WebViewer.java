@@ -164,13 +164,18 @@ public final class WebViewer extends AndroidViewComponent {
 
   // Create a class so we can override the default link following behavior.
   // The handler doesn't do anything on its own.  But returning true means that
-  // this do nothing will override the default WebVew behavior.  Returning
+  // this do nothing will override the default WebView behavior.  Returning
   // false means to let the WebView handle the Url.  In other words, returning
   // true will not follow the link, and returning false will follow the link.
   private class WebViewerClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
       return !followLinks;
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      PageLoaded(url);
     }
   }
 
@@ -445,6 +450,11 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleEvent(description = "When the JavaScript calls AppInventor.setWebViewString this event is run.")
   public void WebViewStringChange(String value) {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
+  }
+
+  @SimpleEvent(description = "When a page is finished loading this event is run.")
+  public void PageLoaded(String url) {
+    EventDispatcher.dispatchEvent(this, "PageLoaded", url);
   }
 
   private void loadUrl(final String caller, final String url) {
