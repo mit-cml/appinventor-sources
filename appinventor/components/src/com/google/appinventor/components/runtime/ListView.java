@@ -244,7 +244,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Specifies the text elements of the ListView.
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
   @SimpleProperty(description="The TextView elements specified as a string with the " +
       "items separated by commas " +
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
