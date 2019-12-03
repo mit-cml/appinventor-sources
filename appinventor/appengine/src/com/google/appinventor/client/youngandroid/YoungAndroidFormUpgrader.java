@@ -15,7 +15,6 @@ import com.google.appinventor.client.editor.simple.components.MockVisibleCompone
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -752,7 +751,8 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be added to upgrade to version 3.
       // (4) Added MakeDate, MakeTime, MakeInstantFromParts methods
       // No properties need to be added to upgrade to version 4.
-      srcCompVersion = 4;
+      // (5) Added FixedInterval
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

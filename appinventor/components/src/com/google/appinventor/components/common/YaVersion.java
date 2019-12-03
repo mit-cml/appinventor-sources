@@ -734,7 +734,9 @@ public class YaVersion {
   // - Duration Support was added
   // For CLOCK_COMPONENT_VERSION 4:
   // - MakeTime, MakeDate, MakeInstantFromParts methods were added
-  public static final int CLOCK_COMPONENT_VERSION = 4;
+  // For CLOCK_COMPONENT_VERSION 5:
+  // - Added FixedInterval
+  public static final int CLOCK_COMPONENT_VERSION = 5;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
