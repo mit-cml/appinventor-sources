@@ -90,8 +90,10 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Date;
@@ -258,7 +260,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-        tuser = new User(userId, email, null, null, 0, false, false, 0, null);
+        tuser = new User(userId, email, null, null, 0, false, false, 0, null, null);
     }
     final User user = tuser;
     try {
@@ -319,6 +321,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           user.setIsAdmin(userData.isAdmin);
           user.setSessionId(userData.sessionid);
           user.setPassword(userData.password);
+          user.setUserFolders(userData.userFolders);
         }
       }, false);                // Transaction not needed. If we fail there is nothing to rollback
     } catch (ObjectifyException e) {
@@ -354,7 +357,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       }
     }
     User retUser = new User(user.id, email, user.name, user.link, 0, user.tosAccepted,
-      false, user.type, user.sessionid);
+      false, user.type, user.sessionid, user.userFolders);
     retUser.setPassword(user.password);
     return retUser;
   }
@@ -374,6 +377,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.link = "";
     userData.emaillower = email == null ? "" : emaillower;
     userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
+    userData.userFolders = User.DEFAULT_FOLDERS;
     datastore.put(userData);
     return userData;
   }
@@ -471,26 +475,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         }
       }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-  }
-
-  @Override
-  public void setUserSessionId(final String userId, final String sessionId) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
-          UserData userData = datastore.find(userKey(userId));
-          if (userData != null) {
-            userData.sessionid = sessionId;
-            datastore.put(userData);
-          }
-        }
-      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -621,7 +605,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public long createProject(final String userId, final Project project,
-      final String projectSettings) {
+      final String projectSettings, final String parentFolder) {
     final Result<Long> projectId = new Result<Long>();
     final List<FileData> addedFiles = new ArrayList<FileData>();
 
@@ -697,6 +681,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           upd.settings = projectSettings;
           upd.state = UserProjectData.StateEnum.OPEN;
           upd.userKey = userKey(userId);
+          upd.parentFolder = parentFolder;
           datastore.put(upd);
         }
       }, true);
@@ -942,6 +927,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public UserProject getUserProject(final String userId, final long projectId) {
     final Result<ProjectData> projectData = new Result<ProjectData>();
+    final Result<UserProjectData> userProjectData = new Result<UserProjectData>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -954,23 +940,41 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         }
       }, false);
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserProjectData upd = datastore.find(userProjectKey(userKey(userId), projectId));
+          if (upd != null) {
+            userProjectData.t = upd;
+          } else {
+            userProjectData.t = null;
+          }
+        }
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-    if (projectData.t == null) {
+    if (projectData.t == null || userProjectData.t == null) {
       return null;
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.galleryId,
-          projectData.t.attributionId, projectData.t.projectMovedToTrashFlag);
+          projectData.t.attributionId, projectData.t.projectMovedToTrashFlag,
+          userProjectData.t.parentFolder);
     }
   }
 
   @Override
   public List<UserProject> getUserProjects(final String userId, final List<Long> projectIds) {
     final Result<Map<Long,ProjectData>> projectDatas = new Result<Map<Long,ProjectData>>();
+    final Result<Map<Key<UserProjectData>,  UserProjectData>> userProjectDatas = new Result<>();
+    final Key<UserData> user = userKey(userId);
+    final List<Key<UserProjectData>> userProjectKeys = new ArrayList<>(projectIds.size());
+    for (Long projectId : projectIds) {
+      userProjectKeys.add(userProjectKey(user, projectId));
+    }
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -983,11 +987,22 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         }
       }, false);
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Map<Key<UserProjectData>, UserProjectData> upd = datastore.get(userProjectKeys);
+          if (upd != null) {
+            userProjectDatas.t = upd;
+          } else {
+            userProjectDatas.t = null;
+          }
+        }
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
         collectUserErrorInfo(userId), e);
     }
-    if (projectDatas.t == null) {
+    if (projectDatas.t == null || userProjectDatas.t == null) {
       throw new RuntimeException("getUserProjects wants to return null, userId = " + userId);
       // Note we directly throw a RuntimeException instead of calling CrashReport
       // because we don't have an explicitly caught exception to hand it.
@@ -997,7 +1012,12 @@ public class ObjectifyStorageIo implements  StorageIo {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
             projectData.dateModified, projectData.galleryId,
-            projectData.attributionId, projectData.projectMovedToTrashFlag));
+            projectData.attributionId, projectData.projectMovedToTrashFlag, null));
+      }
+      for (UserProject uProject : uProjects){
+        final Key<UserProjectData> key = userProjectKey(user, uProject.getProjectId());
+        UserProjectData userProjectData = userProjectDatas.t.get(key);
+        uProject.setParentFolder(userProjectData.parentFolder);
       }
       return uProjects;
     }
@@ -1092,6 +1112,46 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return dateCreated.t;
+  }
+
+  @Override
+  public String getProjectParentFolder(final String userId, final long projectId) {
+    final Result<String> parentFolder = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserProjectData upd = datastore.find(userProjectKey(userKey(userId), projectId));
+          if (upd != null) {
+            parentFolder.t = upd.parentFolder;
+          } else {
+            parentFolder.t = null;
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return parentFolder.t;
+  }
+
+  @Override
+  public void setProjectParentFolder(final String userId, final long projectId, final String parentFolder) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserProjectData upd = datastore.find(userProjectKey(userKey(userId), projectId));
+          if (upd != null) {
+            upd.parentFolder = parentFolder;
+            datastore.put(upd);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,"error in setProjectParentFolder",  e);
+    }
   }
 
   @Override
@@ -2939,6 +2999,66 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  @Override
+  public void setUserSessionId(final String userId, final String sessionId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.sessionid = sessionId;
+            datastore.put(userData);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public String getUserFolders(final String userId) {
+    final Result<String> userFolders = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(UserData.class, userId);
+          if (userData != null) {
+            userFolders.t = userData.userFolders;
+          } else {
+            userFolders.t = User.DEFAULT_FOLDERS;
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return userFolders.t;
+  }
+
+  @Override
+  public void setUserFolders(final String userId, final String userFolders) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.delete(cachekey);  // Flush cached copy prior to update
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.userFolders = userFolders;
+            datastore.put(userData);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
 
   @Override
   public void storeBuildStatus(String userId, long projectId, int progress) {

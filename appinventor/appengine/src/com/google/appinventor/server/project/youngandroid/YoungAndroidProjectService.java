@@ -372,7 +372,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * {@link NewYoungAndroidProjectParameters}.
    */
   @Override
-  public long newProject(String userId, String projectName, NewProjectParameters params) {
+  public long newProject(String userId, String projectName, NewProjectParameters params, String parentFolder) {
     NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
     String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
 
@@ -400,7 +400,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create new project
     return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
-        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
+        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"), parentFolder);
   }
 
   @Override
@@ -408,6 +408,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldName = storageIo.getProjectName(userId, oldProjectId);
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
+    String oldProjectFolder = storageIo.getProjectParentFolder(userId, oldProjectId);
     Settings oldSettings = new Settings(JSON_PARSER, oldProjectSettings);
     String icon = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -496,7 +497,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
         useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
-        primaryColorDark, accentColor));
+        primaryColorDark, accentColor), oldProjectFolder);
   }
 
   @Override

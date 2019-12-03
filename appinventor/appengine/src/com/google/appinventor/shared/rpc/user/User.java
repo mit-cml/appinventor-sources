@@ -50,6 +50,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   private String backPackId = null; // If non-null we have a shared backpack
 
+  private String userFolders; // Serialized JSON representing all of the user's folders
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
@@ -61,6 +63,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   public static final int MODERATOR = 1;
   public static final int DEFAULT_EMAIL_NOTIFICATION_FREQUENCY = 5;
 
+  public static final String DEFAULT_FOLDERS = "[]"; // JSON List of all folders for new users
+
   /**
    * Creates a new user data transfer object.
    *
@@ -69,7 +73,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param tosAccepted TOS accepted?
    * @param sessionId client session Id
    */
-  public User(String id, String email, String name, String link, int emailFrequency, boolean tosAccepted, boolean isAdmin, int type, String sessionId) {
+  public User(String id, String email, String name, String link, int emailFrequency, boolean tosAccepted, boolean isAdmin, int type, String sessionId, String userFolders) {
     this.id = id;
     this.email = email;
     if (name==null)
@@ -82,6 +86,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.emailFrequency = emailFrequency;
     this.type = type;
     this.sessionId = sessionId;
+    this.setUserFolders(userFolders);
   }
 
   /**
@@ -296,7 +301,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   /**
    * Get the unique session id associated with this user
    * This is used to ensure that only one session is opened
-   * per uers. Old sessions are invalidated.
+   * per user. Old sessions are invalidated.
    *
    * @return sessionId
    */
@@ -308,6 +313,23 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   @Override
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
+  }
+
+  /**
+   * Get the serialized JSON list of folders that this user has.
+   *
+   * @return userFolders
+   */
+  @Override
+  public String getUserFolders() {
+    return this.userFolders;
+  }
+
+  /**
+   * Sets the user's folders.
+   */
+  public void setUserFolders(String userFolders) {
+      this.userFolders = userFolders;
   }
 
   @Override
@@ -329,7 +351,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    User retval = new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
+    User retval = new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId, userFolders);
     // We set the isReadOnly flag in the copy in this fashion so we do not have to
     // modify all the places in the source where we create a "User" object. There are
     // only a few places where we assert or read the isReadOnly flag, so we want to

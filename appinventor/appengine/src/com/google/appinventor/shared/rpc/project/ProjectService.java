@@ -26,7 +26,7 @@ import java.util.List;
 public interface ProjectService extends RemoteService {
 
   /**
-   * Creates a new project.
+   * Creates a new project with no parent folder.
    * @param projectType type of new project
    * @param projectName name of new project
    * @param params optional parameters (project type dependent)
@@ -37,7 +37,19 @@ public interface ProjectService extends RemoteService {
                          NewProjectParameters params);
 
   /**
-   * Creates a new project from a zip file that is stored on the server.
+   * Creates a new project.
+   * @param projectType  type of new project
+   * @param projectName  name of new project
+   * @param params  optional parameter (project type dependent)
+   * @param parentFolder parent folder of the project
+   *
+   * @return  a {@link UserProject} for new project
+   */
+  UserProject newProject(String projectType, String projectName,
+                         NewProjectParameters params, String parentFolder);
+
+  /**
+   * Creates a new project from a zip file that is stored on the server with no parent folder.
    * @param projectName name of new project
    * @param pathToZip path to the zip files
    *
@@ -46,13 +58,33 @@ public interface ProjectService extends RemoteService {
   UserProject newProjectFromTemplate(String projectName, String pathToZip);
 
   /**
-   * Creates a new project from a zip file is stored on an external server.
+   * Creates a new project from a zip file that is stored on the server.
+   * @param projectName name of new project
+   * @param pathToZip path to the zip files
+   * @param parentFolder the parent folder for the new project
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromTemplate(String projectName, String pathToZip, String parentFolder);
+
+  /**
+   * Creates a new project from a zip file is stored on an external server with no parent folder.
    * @param projectName name of new project
    * @param zipData Base64 string representing the zip file
    *
    * @return a {@link UserProject} for new project
    */
   UserProject newProjectFromExternalTemplate(String projectName, String zipData);
+
+  /**
+   * Creates a new project from a zip file is stored on an external server.
+   * @param projectName name of new project
+   * @param zipData Base64 string representing the zip file
+   * @param parentFolder the parent folder for the project
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromExternalTemplate(String projectName, String zipData, String parentFolder);
 
   /**
    * Reads the template data from a JSON File
@@ -90,6 +122,27 @@ public interface ProjectService extends RemoteService {
    * @param projectId  project ID
    */
   UserProject restoreProject(long projectId);
+
+
+  /**
+   * Moves every project in projectIds to the corresponding folder in newFolders;
+   * association by equal index positions.
+   * @param projectIds list of project ids whose parent folders should be changed
+   * @param newFolders list of folders to move projects to-- order corresponds to that of projectIds
+   */
+  List<UserProject> moveProjectsToFolder(List<Long> projectIds, List<String> newFolders);
+
+  /**
+   * Gets the serialized list of user folders.
+   * @return All of the user's folders in a serialized JSON string.
+   */
+  String getUserFolders();
+
+  /**
+   * Sets the user's folders to be equal to the folders provided by folderData.
+   * @param folderData serialized json list of folders
+   */
+  String setUserFolders(String folderData);
 
   /**
    * On publish this sets the project's gallery id
@@ -343,6 +396,18 @@ public interface ProjectService extends RemoteService {
    */
 
   UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
+
+  /**
+   * creates a new project from a gallery app
+   * @param appName name of the app to open
+   * @param aiaPath the url of the aia file in cloud
+   * @param attributionId id of the gallery app that is being remixed
+   * @param parentFolder the new project's parent folder
+   *
+   * @return {@link UserProject} info for new project
+   */
+
+  UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId, String parentFolder);
 
   /**
    * Log a string to the server log, always log with

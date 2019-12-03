@@ -27,14 +27,32 @@ public interface ProjectServiceAsync {
       AsyncCallback<UserProject> callback);
 
   /**
-   * @see ProjectService#newProjectFromTemplate(String, String, NewProjectParameters, String)
+   * @see ProjectService#newProject(String, String, NewProjectParameters, String)
+   */
+  void newProject(String projectType, String projectName, NewProjectParameters params,
+                  String parentFolder, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromTemplate(String, String)
    */
   void newProjectFromTemplate(String projectName, String pathToZip, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromTemplate(String, String, String)
+   */
+  void newProjectFromTemplate(String projectName, String pathToZip,
+                              String parentFolder, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#newProjectFromExternalTemplate(String, String)
    */
   void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromExternalTemplate(String, String, String)
+   */
+  void newProjectFromExternalTemplate(String projectName, String zipData,
+                                      String parentFolder, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#retrieveTemplateData(String)
@@ -52,6 +70,22 @@ public interface ProjectServiceAsync {
   void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#moveProjectsToFolder(List, List) 
+   */
+  void moveProjectsToFolder(List<Long> projectIds, List<String> parentFolders,
+                            AsyncCallback<List<UserProject>> callback);
+
+  /**
+   * @see ProjectService#getUserFolders()
+   */
+  void getUserFolders(AsyncCallback<String> async);
+
+  /**
+   * @see ProjectService#setUserFolders(String)
+   */
+  void setUserFolders(String folderData, AsyncCallback<String> async);
+
+  /**
    * @see ProjectService#restoreProject(long)
    */
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
@@ -62,7 +96,7 @@ public interface ProjectServiceAsync {
   void deleteProject(long projectId, AsyncCallback<Void> callback);
 
    /**
-   * @see ProjectService#setGalleryid
+   * @see ProjectService#setGalleryId(long, long) 
    */
   void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
 
@@ -180,9 +214,11 @@ public interface ProjectServiceAsync {
 
   void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
 
+  void newProjectFromGallery(String appName, String aiaPath, long attributionId,
+                             String parentFolder, AsyncCallback<UserProject> callback);
+
   /**
    * @see ProjectService#log(String)
    */
   void log(String message, AsyncCallback<Void> callback);
-
 }

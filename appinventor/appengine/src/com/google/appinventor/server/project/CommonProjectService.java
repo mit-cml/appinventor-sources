@@ -57,10 +57,11 @@ public abstract class CommonProjectService {
    * @param userId the user id
    * @param projectName project name
    * @param params optional parameters (project type dependent)
+   * @param parentFolder the parent folder for the project
    *
    * @return new project ID
    */
-  public abstract long newProject(String userId, String projectName, NewProjectParameters params);
+  public abstract long newProject(String userId, String projectName, NewProjectParameters params, String parentFolder);
 
   /**
    * Copies a project with a new name.

@@ -172,9 +172,10 @@ public interface StorageIo {
    * @param userId user id
    * @param project project information
    * @param projectSettings project settings
+   * @param String parentFolder
    * @return project id
    */
-  long createProject(String userId, Project project, String projectSettings);
+  long createProject(String userId, Project project, String projectSettings, String parentFolder);
 
   /**
    * Deletes a project and all its files.
@@ -304,6 +305,22 @@ public interface StorageIo {
    * @return long milliseconds
    */
 //  long getGalleryId(String userId, long projectId);
+
+  /**
+   * Returns the project's parent folder.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId project ID
+   * @return parent folder name
+   */
+  String getProjectParentFolder(String userId, long projectId);
+
+  /**
+   * Stores a string with the project's parent folder.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId project ID
+   * @param parentFolder the new parent folder
+   */
+  void setProjectParentFolder(String userId, long projectId, String parentFolder);
 
   // Non-project-specific file management
 
@@ -676,7 +693,7 @@ public interface StorageIo {
    * use. If it doesn't specify a backpack, then the normal user
    * specific version is used.
    *
-   * @param backPackId uuid used to idenfity this backpack
+   * @param backPackId uuid used to identify this backpack
    * @return the contents of the backpack as an XML encoded string
    */
 
@@ -725,5 +742,28 @@ public interface StorageIo {
    * @throws SecurityException if the user doesn't have access to the project
    */
   void assertUserHasProject(String userId, long projectId);
+
+  /**
+   * Gets all the user's project folders for the app engine web interface,
+   * in a serialized JSON list format. Each individual folder is a String
+   * representing a directory, e.g. "directory/subdirectory1/final/"
+   *
+   * @param String userId user id
+   * @return user folders
+   */
+
+  public String getUserFolders(final String userId);
+
+  /**
+   * Updates the user's folders to be those in the provided argument. This
+   * overwrites all previous folders stored in the user's data. The caller
+   * must make sure that the provided JSON list of project folders has
+   * all the desired folders.
+   *
+   * @param String userId user id
+   * @param String userFolders the serialized JSON list of folders
+   */
+
+  public void setUserFolders(final String userId, final String userFolders);
 
 }

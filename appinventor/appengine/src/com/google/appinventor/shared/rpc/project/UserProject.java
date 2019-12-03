@@ -33,10 +33,16 @@ public class UserProject implements IsSerializable {
    * The attribution ID.
    */
   private long attributionId;
+
   /**
    * The moved to Trash flag.
    */
   private boolean projectMovedToTrashFlag;
+
+  /**
+   * The folder containing the project. A null parent folder represents the top level directory.
+   */
+  private String parentFolder;
 
   /**
    * The date the project was created expressed in milliseconds since
@@ -73,7 +79,8 @@ public class UserProject implements IsSerializable {
    * @param creationDate the creation date
    * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId,
+      long attributionId, boolean projectMovedToTrashFlag, String parentFolder) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
@@ -82,6 +89,7 @@ public class UserProject implements IsSerializable {
     this.galleryId = galleryId;
     this.attributionId = attributionId;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.parentFolder = parentFolder;
   }
 
   /**
@@ -96,7 +104,7 @@ public class UserProject implements IsSerializable {
    * @param attributionId attribution id
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
+      long modificationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag, String parentFolder) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
@@ -105,6 +113,7 @@ public class UserProject implements IsSerializable {
     this.galleryId = galleryId;
     this.attributionId = attributionId;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.parentFolder = parentFolder;
   }
 
   /**
@@ -168,6 +177,14 @@ public class UserProject implements IsSerializable {
 
   public boolean getProjectMovedToTrashFlag() {
     return projectMovedToTrashFlag;
+  }
+
+  public String getParentFolder() {
+    return this.parentFolder;
+  }
+
+  public void setParentFolder(String parentFolder) {
+    this.parentFolder = parentFolder;
   }
 
   @Override

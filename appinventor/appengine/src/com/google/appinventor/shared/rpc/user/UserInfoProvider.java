@@ -61,9 +61,9 @@ public interface UserInfoProvider {
   boolean getUserTosAccepted();
   
   /**
-   * Returns whether the user has admin priviledges
+   * Returns whether the user has admin privileges
    * 
-   * @return {@code true} if the user has admin priviledges, 
+   * @return {@code true} if the user has admin privileges,
    *         {@code false} otherwise
    */
   boolean getIsAdmin();
@@ -76,6 +76,13 @@ public interface UserInfoProvider {
   int getType();
 
   String getSessionId();
+
+  /**
+   * Returns the user's folders
+   *
+   * @return user's folders as a non-null, serialized JSON list
+   */
+  String getUserFolders();
 
   void setReadOnly(boolean value);
 
