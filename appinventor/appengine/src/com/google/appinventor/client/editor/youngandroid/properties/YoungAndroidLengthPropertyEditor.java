@@ -199,7 +199,7 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
       boolean success = false;
       try {
         int v = Integer.parseInt(text);
-        if (v > 0 && v <= 100) {
+        if (v >= 0 && v <= 100) {
           success = true;
           property.setValue("" + (-v + MockVisibleComponent.LENGTH_PERCENT_TAG));
         }
