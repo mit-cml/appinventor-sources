@@ -486,8 +486,10 @@ public class YaVersion {
   // - TEXTBOX_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 195:
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 196:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
 
-  public static final int YOUNG_ANDROID_VERSION = 195;
+  public static final int YOUNG_ANDROID_VERSION = 196;
 
   // ............................... Blocks Language Version Number ...............................
 
