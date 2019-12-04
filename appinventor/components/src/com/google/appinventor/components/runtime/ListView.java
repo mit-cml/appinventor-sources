@@ -181,12 +181,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionColor(DEFAULT_SELECTION_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
-    TextColorMain(textColor);
+    TextColor(textColor);
     detailTextColor = DEFAULT_TEXT_COLOR;
     TextColorDetail(detailTextColor);
     textSize = DEFAULT_TEXT_SIZE;
     detailTextSize = DEFAULT_TEXT_SIZE;
-    TextSizeMain(textSize);
+    TextSize(textSize);
     TextSizeDetail(detailTextSize);
     imageWidth = DEFAULT_IMAGE_WIDTH;
     // initially assuming that the image is of square shape
@@ -608,7 +608,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The text color of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
-  public int TextColorMain() {
+  public int TextColor() {
     return textColor;
   }
 
@@ -623,7 +623,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
-  public void TextColorMain(int argb) {
+  public void TextColor(int argb) {
       textColor = argb;
       setAdapterData();
   }
@@ -662,7 +662,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The text size of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
-  public int TextSizeMain() {
+  public int TextSize() {
     return textSize;
   }
 
@@ -674,7 +674,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
-  public void TextSizeMain(int fontSize) {
+  public void TextSize(int fontSize) {
     if (fontSize>1000 || fontSize<1)
       textSize = 999;
     else
