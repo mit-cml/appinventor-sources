@@ -495,6 +495,8 @@ Blockly.Blocks.component_event = {
       });
     });
 
+    delete types['Form'];
+
     Object.keys(types).forEach(function(typeName) {
       componentDb.forEventInType(typeName, function(_, eventName) {
         tb.push({
@@ -830,6 +832,9 @@ Blockly.Blocks.component_method = {
         });
       });
     });
+
+    delete typeNameDict['Form'];
+
     goog.object.forEach(typeNameDict, function(componentType) {
       componentDb.forMethodInType(componentType, function(_, methodName) {
         tb.push({
@@ -1186,6 +1191,9 @@ Blockly.Blocks.component_set_get = {
     }
 
     function pushGenericBlock(prefix, mode, property, typeName) {
+      if (typeName === 'Form') {
+        return;  // Skip generation of 'any Form' blocks
+      }
       tb.push({
         translatedName: prefix + componentDb.getInternationalizedComponentType(typeName) + '.' +
           componentDb.getInternationalizedPropertyName(property),
