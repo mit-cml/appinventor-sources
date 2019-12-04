@@ -127,7 +127,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(text) {
       _view.text = text
-      _view.frame.size = _view.intrinsicContentSize
+      _view.widthAnchor.constraint(equalToConstant:_view.intrinsicContentSize.width).isActive = true
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
       _container.form.view.setNeedsLayout()
