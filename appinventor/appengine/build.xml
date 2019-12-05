@@ -511,7 +511,7 @@
   </target>
 
   <target name="devmode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
           description="Run development mode">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
       <classpath>
