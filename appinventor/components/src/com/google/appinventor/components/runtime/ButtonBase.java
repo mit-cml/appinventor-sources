@@ -84,7 +84,7 @@ public abstract class ButtonBase<T extends android.widget.Button> extends Androi
   protected int textColor;
 
   // Backing for button shape
-  private int shape;
+  protected int shape;
 
   // Image path
   private String imagePath = "";

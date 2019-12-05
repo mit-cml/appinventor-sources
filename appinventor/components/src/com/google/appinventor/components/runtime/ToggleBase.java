@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import javafx.scene.text.TextAlignment;
 
 /**
  * Abstract base class for toggleable items with the ability to detect initialization, focus
@@ -78,7 +77,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase<T>
   }
 
   @Override
-  public void Shape(int shape) {}
+  public void Shape(int shape) {
+    this.shape = shape;
+  }
 
   @Override
   public boolean ShowFeedback() {
@@ -99,7 +100,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends ButtonBase<T>
 
   @Override
   @SimpleProperty(userVisible = false)
-  public void TextAlignment(int alignment) {}
+  public void TextAlignment(int alignment) {
+    textAlignment = alignment;
+  }
 
   /**
    * Default Changed event handler.

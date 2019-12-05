@@ -1391,9 +1391,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
               priorProperty.type = newProperty.type;
             } else if (priorProperty.writable) {
               // TODO(user): handle lang_def and document generation for multiple setters.
-              throw new RuntimeException("Inconsistent types " + priorProperty.type +
-                                        " and " + newProperty.type + " for property " +
-                                        propertyName + " in component " + componentInfo.name);
+              throw new RuntimeException("Inconsistent types " + priorProperty.type + 
+                                         " and " + newProperty.type + " for property " + 
+                                         propertyName + " in component " + componentInfo.name);
             }
           }
 
