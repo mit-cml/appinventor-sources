@@ -71,13 +71,6 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.help.HelpService} within the
-   * ODE GWT module.
-   */
-  public static final String HELP_SERVICE = "help";
-
-  /**
-   * Relative path of the
    * {@link com.google.appinventor.shared.rpc.user.UserInfoService} within the
    * ODE GWT module.
    */
