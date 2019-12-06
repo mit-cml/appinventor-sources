@@ -32,9 +32,7 @@
 
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
-    <include path="/blocklyframe.html" expiration="0s" />
     <include path="/index.html" expiration="0s" />
-    <include path="/JSONGenerator/*" expiration="0s" />
 
     <include path="/ode/**.cache.*" expiration="365d" />
     <exclude path="/ode/**.gwt.rpc" />
