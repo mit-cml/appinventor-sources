@@ -61,4 +61,9 @@ public interface ProjectManagerEventListener {
    *
    */
   void onProjectPublishedOrUnpublished();
+
+  /**
+   * Invoked when the current folder is changed
+   */
+  void onFolderChange(String folder);
 }

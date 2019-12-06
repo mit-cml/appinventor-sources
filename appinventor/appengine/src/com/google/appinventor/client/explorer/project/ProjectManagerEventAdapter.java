@@ -39,4 +39,9 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   @Override
   public void onProjectPublishedOrUnpublished() {
   }
+
+  @Override
+  public void onFolderChange(String folder) {
+
+  }
 }

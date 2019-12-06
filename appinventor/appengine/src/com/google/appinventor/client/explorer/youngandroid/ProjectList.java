@@ -62,11 +62,17 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
 
 
-  private final List<Project> projects;
+  private final List<String> folders;
+  private final List<String> selectedFolders;
+  private final List<Project> allProjects;
   private final List<Project> selectedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
+
+  private String currentFolder;
+  private List<Project> currentProjects;
+  private final Map<String, List<Project>> projectsByFolder;
 
   private boolean projectListLoading = true;
 
@@ -83,12 +89,20 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * Creates a new ProjectList
    */
   public ProjectList() {
-    projects = new ArrayList<Project>();
+    allProjects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
     projectWidgets = new HashMap<Project, ProjectWidgets>();
 
+    folders = new ArrayList<String>();
+    selectedFolders = new ArrayList<String>();
+
     sortField = SortField.DATE_MODIFIED;
     sortOrder = SortOrder.DESCENDING;
+
+    currentFolder = null;
+    currentProjects = new ArrayList<Project>();
+    projectsByFolder = new HashMap<String, List<Project>>();
+    projectsByFolder.put(null, currentProjects);
 
     // Initialize UI
     table = new Grid(1, 5); // The table initially contains just the header row.
@@ -221,7 +235,93 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
   }
 
-  private class ProjectWidgets {
+  private abstract class ListWidgets {
+    CheckBox checkBox;
+    Label nameLabel;
+    Label dateCreatedLabel;
+    Label dateModifiedLabel;
+    Label publishedLabel;
+  }
+
+  private class FolderWidgets extends ListWidgets{
+    final CheckBox checkBox;
+    final Label nameLabel;
+    final Label dateCreatedLabel = new Label("");
+    final Label dateModifiedLabel = new Label("");
+    final Label publishedLabel = new Label("");
+
+    /**
+     * Constructor for standard folder links- the displayed folder name is relative to the current path
+     */
+    private FolderWidgets(final String folderName) {
+      this.checkBox = new CheckBox();
+      this.checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<Boolean> event) {
+          boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
+          int row = 1 + folders.indexOf(folderName);
+          if (isChecked) {
+            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+            selectedFolders.add(folderName);
+          } else {
+            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+            selectedFolders.remove(folderName);
+          }
+          Ode.getInstance().getProjectToolbar().updateButtons();
+        }
+      });
+
+      final String displayName = (currentFolder == null)
+          ? folderName
+          : folderName.replace(currentFolder + "/", "");
+      nameLabel = new Label(displayName);
+      nameLabel.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          Ode ode = Ode.getInstance();
+          if (ode.screensLocked()) {
+            return;             // i/o in progress, ignore request
+          }
+          onFolderChange(folderName);
+        }
+      });
+      nameLabel.addStyleName("ode-ProjectNameLabel");
+
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+    }
+
+    /**
+     * Special constructor for parent folder widget- gets internationalized "Previous Folder"
+     * from OdeMessages, and disables checkbox
+     */
+    private FolderWidgets() {
+      this.checkBox = new CheckBox();
+      this.checkBox.setEnabled(false);
+
+      nameLabel = new Label(MESSAGES.parentFolderName());
+      nameLabel.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          Ode ode = Ode.getInstance();
+          if (ode.screensLocked()) {
+            return;             // i/o in progress, ignore request
+          }
+          if (currentFolder == null) {
+            onFolderChange(null);
+          }
+          final int lastDivider = currentFolder.lastIndexOf('/');
+          if (lastDivider == -1){
+            onFolderChange(null);
+          } else {
+            onFolderChange(currentFolder.substring(0, lastDivider));
+          }
+        }
+      });
+      nameLabel.addStyleName("ode-ProjectNameLabel");
+    }
+  }
+
+  private class ProjectWidgets extends ListWidgets{
     final CheckBox checkBox;
     final Label nameLabel;
     final Label dateCreatedLabel;
@@ -234,7 +334,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + projects.indexOf(project);
+          int row = 1 + currentProjects.indexOf(project);
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedProjects.add(project);
@@ -305,15 +405,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               : ProjectComparators.COMPARE_BY_PUBLISHED_DESCENDING;
           break;
       }
-      Collections.sort(projects, comparator);
+      Collections.sort(currentProjects, comparator);
     }
 
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 5);
+    table.resize(1 + currentProjects.size(), 5);
     int row = 1;
-    for (Project project : projects) {
+    for (Project project : currentProjects) {
       ProjectWidgets pw = projectWidgets.get(project);
       if (selectedProjects.contains(project)) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
@@ -347,7 +447,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * @return the number of projects
    */
   public int getNumProjects() {
-    return projects.size();
+    return allProjects.size();
   }
 
   /**
@@ -372,11 +472,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectAdded(Project project) {
-    projects.add(project);
+    allProjects.add(project);
     projectWidgets.put(project, new ProjectWidgets(project));
     if (!projectListLoading) {
       refreshTable(true);
     }
+
+    mapProjectToFolder(project);
   }
 
   @Override
@@ -384,13 +486,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectRemoved(Project project) {
-    projects.remove(project);
+    allProjects.remove(project);
     projectWidgets.remove(project);
 
     refreshTable(false);
 
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
+
+    unmapProjectFromFolder(project);
   }
 
   @Override
@@ -407,5 +511,34 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   public void setPublishedHeaderVisible(boolean visible){
     table.getWidget(0, 4).setVisible(visible);
+  }
+
+  @Override
+  public void onFolderChange(String folder){
+    this.currentFolder = folder;
+    this.currentProjects = this.projectsByFolder.get(folder);
+    refreshTable(false);
+
+    Ode ode = Ode.getInstance();
+    ode.setProjectViewFolder(folder);
+  }
+
+  public void mapProjectToFolder(Project project){
+    final String parentFolder = project.getParentFolder();
+    final List<Project> parentFolderProjects = this.projectsByFolder.get(project.getParentFolder());
+    if (parentFolderProjects != null){
+      parentFolderProjects.add(project);
+    } else {
+      final List<Project> newList = new ArrayList<Project>();
+      newList.add(project);
+      this.projectsByFolder.put(parentFolder, newList);
+    }
+  }
+
+  public void unmapProjectFromFolder(Project project){
+    final List<Project> parentFolderProjects = this.projectsByFolder.get(project.getParentFolder());
+    if (parentFolderProjects != null){
+      parentFolderProjects.remove(project);
+    }
   }
 }

@@ -399,4 +399,9 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
   public void onProjectPublishedOrUnpublished() {
       refreshTable(false);
   }
+
+  @Override
+  public void onFolderChange(String folder) {
+
+  }
 }

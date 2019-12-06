@@ -160,6 +160,14 @@ public final class Project {
     projectInfo.setGalleryId(id);
   }
 
+  public String getParentFolder() {
+    return projectInfo.getParentFolder();
+  }
+
+  public void setParentFolder(final String parentFolder) {
+    projectInfo.setParentFolder(parentFolder);
+  }
+
   /**
    * Returns the project specific settings, or null if the settings haven't
    * been loaded.
