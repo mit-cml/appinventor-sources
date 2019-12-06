@@ -16,6 +16,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.common.collect.Ordering;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -62,10 +63,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private static final String PUBLISHED = "Yes";
   private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
   private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
+  private static final char FOLDER_DIVIDER = '/';
 
 
   private final List<String> folders;
   private final List<String> selectedFolders;
+  private final Map<String, FolderWidgets> folderWidgets;
   private final List<Project> allProjects;
   private final List<Project> selectedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
@@ -74,6 +77,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private String currentFolder;
   private List<Project> currentProjects;
+  private List<String> currentSubFolders;
   private final Map<String, List<Project>> projectsByFolder;
 
   private boolean projectListLoading = true;
@@ -94,6 +98,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     allProjects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
     projectWidgets = new HashMap<Project, ProjectWidgets>();
+    folderWidgets = new HashMap<String, FolderWidgets>();
 
     folders = new ArrayList<String>();
     selectedFolders = new ArrayList<String>();
@@ -102,6 +107,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.DESCENDING;
 
     currentFolder = null;
+    currentSubFolders = new ArrayList<String>();
     currentProjects = new ArrayList<Project>();
     projectsByFolder = new HashMap<String, List<Project>>();
     projectsByFolder.put(null, currentProjects);
@@ -253,7 +259,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label publishedLabel = new Label("");
 
     /**
-     * Constructor for standard folder links- the displayed folder name is relative to the current path
+     * Constructor for standard folder links- the displayed folder name is relative its parent
      */
     private FolderWidgets(final String folderName) {
       this.checkBox = new CheckBox();
@@ -261,7 +267,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + folders.indexOf(folderName);
+          int row = (currentFolder == null)
+              ? 1 + folders.indexOf(folderName)
+              : 2 + folders.indexOf(folderName); // The first folder will always be the parent folder when available
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedFolders.add(folderName);
@@ -273,9 +281,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         }
       });
 
-      final String displayName = (currentFolder == null)
+      final int lastDividerLocation = folderName.lastIndexOf('/');
+      final String displayName = (lastDividerLocation == -1)
           ? folderName
-          : folderName.replace(currentFolder + "/", "");
+          : folderName.substring(lastDividerLocation + 1);
       nameLabel = new Label(displayName);
       nameLabel.addClickHandler(new ClickHandler() {
         @Override
@@ -308,15 +317,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           if (ode.screensLocked()) {
             return;             // i/o in progress, ignore request
           }
-          if (currentFolder == null) {
-            changeCurrentFolder(null);
-          }
-          final int lastDivider = currentFolder.lastIndexOf('/');
-          if (lastDivider == -1){
-            changeCurrentFolder(null);
-          } else {
-            changeCurrentFolder(currentFolder.substring(0, lastDivider));
-          }
+          changeCurrentFolder(getParentFolder());
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -336,7 +337,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + currentProjects.indexOf(project);
+          int row = (currentFolder == null)
+              ? 1 + currentSubFolders.size() + currentProjects.indexOf(project)
+              : 2 + currentSubFolders.size() + currentProjects.indexOf(project);
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedProjects.add(project);
@@ -408,15 +411,44 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           break;
       }
       Collections.sort(currentProjects, comparator);
+
+      if (sortField == SortField.NAME){
+        if (sortOrder == SortOrder.ASCENDING){
+          Collections.sort(currentSubFolders, Ordering.natural());
+        } else {
+          Collections.sort(currentSubFolders, Ordering.natural().reversed());
+        }
+      }
     }
 
     refreshSortIndicators();
 
+    System.out.println("REFRESHING THE ODE TABLE PLEASE HELP ME");
+    System.out.println(currentFolder);
     // Refill the table.
     table.resize(1 + currentProjects.size(), 5);
     int row = 1;
+    if (currentFolder != null){
+      addWidgetToTable(row, new FolderWidgets());
+      row++;
+      System.out.println("ADDING PARENT");
+    }
+    for (String folder : currentSubFolders) {
+      System.out.println(folder);
+      FolderWidgets fw = folderWidgets.get(folder);
+      if (selectedFolders.contains(folder)) {
+        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+        fw.checkBox.setValue(true);
+      } else {
+        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+        fw.checkBox.setValue(false);
+      }
+      addWidgetToTable(row, fw);
+      row++;
+    }
     for (Project project : currentProjects) {
       ProjectWidgets pw = projectWidgets.get(project);
+      System.out.println(project.getProjectName());
       if (selectedProjects.contains(project)) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
         pw.checkBox.setValue(true);
@@ -424,11 +456,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
         pw.checkBox.setValue(false);
       }
-      table.setWidget(row, 0, pw.checkBox);
-      table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row, 2, pw.dateCreatedLabel);
-      table.setWidget(row, 3, pw.dateModifiedLabel);
-      table.setWidget(row, 4, pw.publishedLabel);
+      addWidgetToTable(row, pw);
       if(Ode.getGallerySettings().galleryEnabled()){
         if (project.isPublished()) {
           pw.publishedLabel.setText(PUBLISHED);
@@ -436,7 +464,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           pw.publishedLabel.setText(NOT_PUBLISHED);
         }
       }
-
       row++;
     }
 
@@ -516,6 +543,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public void onFolderAddition(String folder) {
     if (!projectsByFolder.containsKey(folder)){
       projectsByFolder.put(folder, new ArrayList<Project>());
+      this.folderWidgets.put(folder, new FolderWidgets(folder));
     }
     Ode.getInstance().getProjectManager().setFolders(this.projectsByFolder.keySet());
   }
@@ -523,30 +551,34 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   @Override
   public void onFolderDeletion(String deletionFolder) {
     for (String folder : projectsByFolder.keySet()) {
-      for (final Project project : projectsByFolder.get(folder)) {
-        final long oldProjectId = project.getProjectId();
+      if (folder.startsWith(deletionFolder)) {
+        for (final Project project : projectsByFolder.get(folder)) {
+          final long oldProjectId = project.getProjectId();
 
-        Ode.getInstance().getProjectService().moveToTrash(oldProjectId, //Avoid rebuilding table for each project
-            new OdeAsyncCallback<UserProject>(
-                // failure message
-                MESSAGES.moveToTrashProjectError()) {
-              @Override
-              public void onSuccess(UserProject projectInfo) {
-                if (projectInfo.getProjectId() == oldProjectId) {
-                  allProjects.remove(project);
-                  projectWidgets.remove(project);
-                  Ode.getInstance().getProjectManager().addDeletedProject(projectInfo);
-                  if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                    Ode.getInstance().createEmptyTrashDialog(true);
+          Ode.getInstance().getProjectService().moveToTrash(oldProjectId, //Avoid rebuilding table for each project
+              new OdeAsyncCallback<UserProject>(
+                  // failure message
+                  MESSAGES.moveToTrashProjectError()) {
+                @Override
+                public void onSuccess(UserProject projectInfo) {
+                  if (projectInfo.getProjectId() == oldProjectId) {
+                    allProjects.remove(project);
+                    projectWidgets.remove(project);
+                    Ode.getInstance().getProjectManager().addDeletedProject(projectInfo);
+                    if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                      Ode.getInstance().createEmptyTrashDialog(true);
+                    }
                   }
                 }
-              }
-            });
+              });
+        }
+        projectsByFolder.remove(folder);
+        folderWidgets.remove(folder);
       }
-      projectsByFolder.remove(deletionFolder);
     }
 
     selectedFolders.remove(deletionFolder);
+    folderWidgets.remove(deletionFolder);
     Ode ode = Ode.getInstance();
     ode.getProjectToolbar().updateButtons();
     ode.getProjectManager().setFolders(this.projectsByFolder.keySet());
@@ -557,14 +589,33 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.getWidget(0, 4).setVisible(visible);
   }
 
-  private void changeCurrentFolder(String folder){
-    this.currentFolder = folder;
-    this.currentProjects = this.projectsByFolder.get(folder);
+  private void changeCurrentFolder(String newFolder){
+    this.currentFolder = newFolder;
+    this.currentProjects = this.projectsByFolder.get(newFolder);
+    this.currentSubFolders = new ArrayList<String>();
+    if (newFolder == null){
+      for (String folder : projectsByFolder.keySet()){
+        if (!folder.contains("/")){
+          this.currentSubFolders.add(folder);
+        }
+      }
+    } else {
+      final int newFolderLength = newFolder.length();
+      for (String folder : projectsByFolder.keySet()) {
+        // Only add direct subfolders of the new folder
+        if (!folder.equals(newFolder)
+            && folder.startsWith(newFolder)
+            && folder.indexOf(FOLDER_DIVIDER, newFolderLength) == -1) {
+          this.currentSubFolders.add(folder);
+        }
+      }
+    }
+    selectedFolders.clear();
     refreshTable(false);
 
     Ode ode = Ode.getInstance();
-    ode.getProjectManager().setCurrentFolder(folder);
-    ode.setProjectViewFolder(folder);
+    ode.getProjectManager().setCurrentFolder(newFolder);
+    ode.setProjectViewFolder(newFolder);
   }
 
   @Override
@@ -577,13 +628,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       final List<Project> newList = new ArrayList<Project>();
       newList.add(project);
       this.projectsByFolder.put(parentFolder, newList);
+      this.folderWidgets.put(parentFolder, new FolderWidgets(parentFolder));
 
       // Make sure the folder is not orphaned/unreachable
-      int lastDivider = parentFolder.lastIndexOf('/');
+      int lastDivider = parentFolder.lastIndexOf(FOLDER_DIVIDER);
       parentFolder = parentFolder.substring(0, lastDivider);
       while (lastDivider != -1 && !this.projectsByFolder.containsKey(parentFolder)) {
         this.projectsByFolder.put(parentFolder, new ArrayList<Project>());
-        lastDivider = parentFolder.lastIndexOf('/');
+        this.folderWidgets.put(parentFolder, new FolderWidgets(parentFolder));
+        lastDivider = parentFolder.lastIndexOf(FOLDER_DIVIDER);
         parentFolder = parentFolder.substring(0, lastDivider);
       }
     }
@@ -597,5 +650,32 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     if (parentFolderProjects != null){
       parentFolderProjects.remove(project);
     }
+  }
+
+  /**
+   * Returns the name of the parent folder of the current folder.
+   */
+  private String getParentFolder(){
+    if (currentFolder == null) {
+      return null;
+    }
+    final int lastDivider = currentFolder.lastIndexOf(FOLDER_DIVIDER);
+    if (lastDivider == -1){
+      return null;
+    } else {
+      return currentFolder.substring(0, lastDivider);
+    }
+  }
+
+  /**
+   * Adds the ListEntryWidget to the displayed table -- does not do any formatting besides
+   * adding all the widget items
+   */
+  private void addWidgetToTable(int row, ListEntryWidgets w){
+    table.setWidget(row, 0, w.checkBox);
+    table.setWidget(row, 1, w.nameLabel);
+    table.setWidget(row, 2, w.dateCreatedLabel);
+    table.setWidget(row, 3, w.dateModifiedLabel);
+    table.setWidget(row, 4, w.publishedLabel);
   }
 }
