@@ -260,7 +260,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'trashcan': true,
     'comments': true,
     'disable': true,
-    'media': './assets/',
+    'media': './static/media/',
     'grid': {'spacing': '20', 'length': '5', 'snap': true, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1}
   });

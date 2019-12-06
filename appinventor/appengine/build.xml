@@ -65,6 +65,7 @@
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
   <property name="build.extra.dir" location="${local.build.dir}/extra" />
+  <property name="build.static.dir" location="${build.war.dir}/static" />
 
   <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
@@ -74,34 +75,44 @@
           depends="init,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war">
-        <exclude name="blocklyframe.html"/>
-      </fileset>
-      <fileset dir="src/${appinventor.pkg}">
-        <!-- canvas is a special case (see MockCanvas.java) -->
-        <include name="images/canvas.png" />
-      </fileset>
+      <fileset dir="war" />
       <fileset dir="${docs.dir}"/>
     </copy>
-    <mkdir dir="${build.war.dir}/assets/" />
-    <copy todir="${build.war.dir}/assets/" flatten="true">
+    <copy todir="${build.static.dir}/css" flatten="true">
+      <fileset dir="${lib.dir}/blockly">
+        <include name="**/*.css"/>
+      </fileset>
+      <fileset dir="${appinventor.dir}/blocklyeditor">
+        <include name="media/*.css"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${build.static.dir}/media"/>
+    <copy todir="${build.static.dir}/media" flatten="true">
       <fileset dir="${lib.dir}/blockly">
         <include name="media/*"/>
-        <include name="**/*.css"/>
+        <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
+        <exclude name="media/*.css"/>
       </fileset>
     </copy>
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
-    <copy todir="${build.war.dir}/">
+    <copy todir="${build.static.dir}">
+      <fileset dir="src/${appinventor.pkg}">
+        <!-- canvas is a special case (see MockCanvas.java) -->
+        <include name="images/canvas.png" />
+      </fileset>
       <fileset dir="${lib.dir}">
-        <include name="closure-library/**/*"/>
+        <include name="closure-library/closure/goog/base.js"/>
+        <include name="closure-library/closure/goog/css/dialog.css"/>
+        <include name="closure-library/closure/goog/css/hsvapalette.css"/>
+        <include name="closure-library/closure/goog/deps.js"/>
       </fileset>
     </copy>
     <!-- Resources for Maps designer view -->
-    <copy todir="${build.war.dir}/">
+    <copy todir="${build.static.dir}/">
       <fileset dir="${lib.dir}">
         <include name="leaflet/**/*"/>
         <include name="font-awesome/**/*"/>
