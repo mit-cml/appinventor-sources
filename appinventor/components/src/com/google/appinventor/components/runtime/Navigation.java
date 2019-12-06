@@ -64,6 +64,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   private Web web;
 
   enum TransportMethod {
+    DEFAULT ("foot-walking"),
     DRIVING ("driving-car"),
     CYCLING ("cycling-regular"),
     WALKING ("foot-walking"),
@@ -91,6 +92,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     apiKey = "5b3ce3597851110001cf62489cbb64d2e8b14d7c8586a99c078d47b1";
     startLocation = new GeoPoint(0, 0);
     endLocation = new GeoPoint(0, 0);
+    method = TransportMethod.DEFAULT;
   }
 
   @SimpleFunction(description = "")
@@ -112,7 +114,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   }
 
   private void performRequest() throws IOException, JSONException {
-    final String finalURL = String.format(OPEN_ROUTE_SERVICE_URL, "driving-car");
+    final String finalURL = String.format(OPEN_ROUTE_SERVICE_URL, this.method.method());
     URL url = new URL(finalURL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setDoInput(true);
