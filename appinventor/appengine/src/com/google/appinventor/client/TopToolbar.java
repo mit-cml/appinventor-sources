@@ -979,10 +979,12 @@ public class TopToolbar extends Composite {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
     } else {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
     }
   }
 
