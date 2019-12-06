@@ -55,7 +55,6 @@
       <url-pattern>/about/*</url-pattern>
       <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
-      <url-pattern>/rendezvous/*</url-pattern>
       <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
@@ -106,16 +105,6 @@
   <servlet-mapping>
     <servlet-name>RemoteApiServlet</servlet-name>
     <url-pattern>/remote_api</url-pattern>
-  </servlet-mapping>
-
-  <!-- rendezvious -->
-  <servlet>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.RendezvousServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <url-pattern>/rendezvous/*</url-pattern>
   </servlet-mapping>
 
   <!-- Nonce based APK download -->
