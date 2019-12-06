@@ -156,16 +156,6 @@
     <servlet-name>getMotdService</servlet-name>
   </filter-mapping>
 
-  <!-- help -->
-  <servlet>
-    <servlet-name>helpService</servlet-name>
-    <servlet-class>com.google.appinventor.server.HelpServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>helpService</servlet-name>
-    <url-pattern>/ode/help</url-pattern>
-  </servlet-mapping>
-
   <!-- projects -->
   <servlet>
     <servlet-name>projectService</servlet-name>
