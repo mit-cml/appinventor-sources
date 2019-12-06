@@ -26,9 +26,6 @@
     <include path="/ode/**.cache.*" expiration="365d" />
     <exclude path="/ode/**.gwt.rpc" />
 
-    <!-- don't serve the key file as a static file! -->
-    <exclude path="/keystore/**" />
-
     <!-- don't serve the whitelist as a static file! -->
     <exclude path="/whitelist" />
 

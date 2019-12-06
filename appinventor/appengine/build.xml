@@ -128,7 +128,7 @@
   <target name="CheckKeystore">
     <!-- If build/war/keystore/1 exists, set keystore.present to true.
          Otherwise, set keystore.present to false -->
-    <available file="${build.war.dir}/keystore/1" property="keystore.present"/>
+    <available file="${build.war.dir}/WEB-INF/keystore/1" property="keystore.present"/>
   </target>
 
   <target name="Keystore"
@@ -136,15 +136,15 @@
           depends="CheckKeystore,CopyToBuildWar"
           unless="keystore.present">
     <echo message="Using KeyczarTool to generate keystore"/>
-    <mkdir dir="${build.war.dir}/keystore"/>
+    <mkdir dir="${build.war.dir}/WEB-INF/keystore"/>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="create --location=${build.war.dir}/keystore --purpose=crypt"/>
+      <arg line="create --location=${build.war.dir}/WEB-INF/keystore --purpose=crypt"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="addkey --location=${build.war.dir}/keystore"/>
+      <arg line="addkey --location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="promote --location=${build.war.dir}/keystore --version=1"/>
+      <arg line="promote --location=${build.war.dir}/WEB-INF/keystore --version=1"/>
     </java>
   </target>
 
