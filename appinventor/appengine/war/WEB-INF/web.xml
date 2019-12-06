@@ -298,28 +298,6 @@
     <servlet-name>firebaseAuthService</servlet-name>
   </filter-mapping>
 
-  <!-- Not sure what needs to replace GwtResourceServlet
-  <servlet>
-    <servlet-name>odeUiServlet</servlet-name>
-    <servlet-class>com.google.gwt.gserver.GwtResourceServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeUiServlet</servlet-name>
-    <url-pattern>/ode/*</url-pattern>
-  </servlet-mapping>
-  -->
-
-  <!-- Not sure what to do about the redirect servlet
-  <servlet>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.OdeRedirectServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  -->
-
   <!-- TODO: Optionally add a <welcome-file-list> tag to display a welcome file. -->
 
   <!-- components -->
