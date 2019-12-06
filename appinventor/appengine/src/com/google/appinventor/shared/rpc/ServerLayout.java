@@ -62,13 +62,6 @@ public class ServerLayout {
    */
   public static final String GALLERY_SERVLET = "gallery_servlet";
 
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.AndroidServlet}
-   * within the ODE GWT module.
-   */
-  public static final String ANDROID_SERVLET = "android";
-
   /**
    * Relative path of the
    * {@link com.google.appinventor.shared.rpc.user.UserInfoService} within the

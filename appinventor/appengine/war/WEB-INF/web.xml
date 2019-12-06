@@ -221,20 +221,6 @@
     <servlet-name>cloudDBAuthService</servlet-name>
   </filter-mapping>
 
-  <!-- android -->
-  <servlet>
-    <servlet-name>androidServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.AndroidServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>androidServlet</servlet-name>
-    <url-pattern>/android/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>androidServlet</servlet-name>
-  </filter-mapping>
-
   <!-- accept tos -->
   <servlet>
     <servlet-name>tosServlet</servlet-name>
