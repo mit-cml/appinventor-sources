@@ -919,6 +919,11 @@ public final class MockForm extends MockContainer {
     YaFormEditor formEditor = (YaFormEditor) editor;
     boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
     List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
+      // Attempting to change the selection from old to new when they are the same breaks
+      // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
+      return;
+    }
     if (shouldSelectMultipleComponents && selectedComponents.size() > 1 && formEditor.isSelectedComponent(newSelectedComponent)) {
       int index = selectedComponents.indexOf(newSelectedComponent);
       selectedComponent = selectedComponents.get((index == 0) ? 1 : index - 1);
