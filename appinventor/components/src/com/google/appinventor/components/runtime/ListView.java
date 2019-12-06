@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
@@ -14,7 +15,9 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -24,6 +27,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -31,6 +35,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageSingleText;
 import com.google.appinventor.components.runtime.util.ListViewArrayAdapterImageTwoText;
 import com.google.appinventor.components.runtime.util.ListViewArrayAdapterSingleText;
@@ -38,6 +43,7 @@ import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoTex
 import com.google.appinventor.components.runtime.util.ListViewArrayAdapterTwoTextLinear;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -269,20 +275,45 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Set a list of text elements to build a ListView
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
-                "signal an error if the elements are not text strings.",
+  @SimpleProperty(description="List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
+    jsonItems.clear();
+    stringItems = YailList.makeEmptyList();
     if (itemsList.size() > 0) {
       Object firstitem = itemsList.getObject(0);
+      // Check to see if this is a list of strings (backward compatibility) or a list of lists (JSON elements)
       if (firstitem instanceof  YailList) {
+        // This means that if the first list item is a 3-part JSON element, the entire list will be processed as JSON
+        // elements. If the first item is a string, the entire list will be processed as strings. These two types are
+        // stored differently internally in order to support backward compatibility with the old string-only ListView.
+        // We might come up with a more comprehensive refactor in the future. (SRLane - 12/6/2019)
         for (int i = 0; i < itemsList.size(); i++) {
-          YailList yailItem = (YailList) itemsList.getObject(i);
           JSONObject jsonItem = new JSONObject();
-          jsonItem.put("Text1", yailItem.getString(0));
-          jsonItem.put("Text2", yailItem.getString(1));
-          jsonItem.put("Image", yailItem.getString(2));
-          jsonItems.add(i, jsonItem);
+          Object o = itemsList.getObject(i);
+          try {
+            if (o instanceof YailList) {
+              // JSON elements have three parts: Main text (Text1), Description text (Text1), and an asset filename (Image)
+              YailList yailItem = (YailList) o;
+              if (yailItem.size() >= 1) {
+                jsonItem.put("Text1", yailItem.getString(0));
+              }
+              if (yailItem.size() >= 2) {
+                jsonItem.put("Text2", yailItem.getString(1));
+              }
+              if (yailItem.size() >= 3) {
+                jsonItem.put("Image", yailItem.getString(2));
+              }
+              jsonItems.add(i, jsonItem);
+            } else {
+              // Add support for strings mixed in with the 3-part JSON elements because somebody will end up doing this.
+              jsonItem.put("Text1", YailList.YailListElementToString(o));
+              jsonItems.add(i, jsonItem);
+            }
+          } catch (JSONException e) {
+            Log.e(LOG_TAG, "Malformed string to ListView.Elements", e);
+            container.$form().dispatchErrorOccurredEvent(this, "ListView.Elements", ErrorMessages.ERROR_DEFAULT, e.getMessage());
+          }
         }
       } else {
         stringItems = ElementsUtil.elements(itemsList, "Listview");
@@ -299,14 +330,22 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList Elements() {
     if (jsonItems.size() > 0) {
-      YailList yailItems = YailList.makeEmptyList();
+      ArrayList<YailList> allItems = new ArrayList<>();
       for (int i = 0; i < jsonItems.size(); i++) {
         JSONObject jsonItem = jsonItems.get(i);
-        yailItems.add(jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-        yailItems.add(jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
-        yailItems.add(jsonItem.has("Text3") ? jsonItem.getString("Text3") : "");
+        ArrayList<String> oneItem = new ArrayList<String>();
+          try {
+            oneItem.add(jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
+            oneItem.add(jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
+            oneItem.add(jsonItem.has("Text3") ? jsonItem.getString("Text3") : "");
+          } catch (JSONException e) {
+            Log.e(LOG_TAG, "Malformed JSON returned from ListView.Elements", e);
+            container.$form().dispatchErrorOccurredEvent(this, "ListView.Elements", ErrorMessages.ERROR_DEFAULT, e.getMessage());
+          }
+        allItems.add(YailList.makeList(oneItem));
       }
-      return yailItems;
+      stringItems = YailList.makeEmptyList();
+      return YailList.makeList(allItems);
     } else {
       return stringItems;
     }
@@ -671,6 +710,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param integer value for font size
    */
+  @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
@@ -699,6 +739,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param integer value for font size
    */
+  @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
@@ -803,9 +844,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void ListData(String propertyValue){
     this.propertyValue = propertyValue;
     if (propertyValue != null && propertyValue != "") {
-      JSONArray arr = new JSONArray(propertyValue);
-      for (int i = 0; i < arr.length(); ++i) {
-        jsonItems.add(i, arr.getJSONObject(i));
+      try {
+        JSONArray arr = new JSONArray(propertyValue);
+        for (int i = 0; i < arr.length(); ++i) {
+          jsonItems.add(i, arr.getJSONObject(i));
+        }
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
+        container.$form().dispatchErrorOccurredEvent(this, "ListView.ListData", ErrorMessages.ERROR_DEFAULT, e.getMessage());
       }
     }
     setAdapterData();
