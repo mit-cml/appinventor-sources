@@ -88,6 +88,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
+  private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_SETTINGS = "Settings";
   private static final String WIDGET_NAME_AUTOLOAD = "Autoload Last Project";
@@ -252,6 +253,9 @@ public class TopToolbar extends Composite {
         MESSAGES.emulatorMenuItem(), new EmulatorAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
         new UsbAction()));
+    connectItems.add(null);
+    connectItems.add(new DropDownItem(WIDGET_NAME_REFRESHCOMPANION_BUTTON, MESSAGES.refreshCompanionMenuItem(),
+            new RefreshCompanionAction()));
     connectItems.add(null);
     connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnectionsMenuItem(),
         new ResetAction()));
@@ -481,6 +485,15 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         replHardReset();
+      }
+    }
+  }
+
+  private class RefreshCompanionAction implements Command {
+    @Override
+    public void execute() {
+      if (Ode.getInstance().okToConnect()) {
+        replUpdate();
       }
     }
   }
@@ -1025,6 +1038,17 @@ public class TopToolbar extends Composite {
     DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).hardReset();
     updateConnectToDropDownButton(false, false, false);
+  }
+
+  private void replUpdate() {
+    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    if (currentProject == null) {
+      OdeLog.wlog("DesignToolbar.currentProject is null. "
+              + "Ignoring attempt to refresh companion screen.");
+      return;
+    }
+    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    ((YaBlocksEditor)screen.blocksEditor).sendComponentData();
   }
 
   /**
