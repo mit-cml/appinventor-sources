@@ -31,7 +31,6 @@
       <url-pattern>/reference/*</url-pattern>
       <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
-      <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
       <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
