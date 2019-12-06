@@ -30,7 +30,6 @@ import static com.google.appinventor.components.runtime.util.GeometryUtil.isVali
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
 import android.util.Log;
-import sun.net.www.content.audio.basic;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,7 +58,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   private GeoPoint startLocation;
   private GeoPoint endLocation;
   private TransportMethod method;
-  private String directions;
   private Web web;
 
   enum TransportMethod {
@@ -88,7 +86,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   public Navigation(ComponentContainer container) {
     super(container.$form());
     activity = container.$context();
-    apiKey = "5b3ce3597851110001cf62489cbb64d2e8b14d7c8586a99c078d47b1";
+    apiKey = "";
     startLocation = new GeoPoint(0, 0);
     endLocation = new GeoPoint(0, 0);
     method = TransportMethod.DEFAULT;
@@ -127,7 +125,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
         byte[] postData = coords.getBytes(StandardCharsets.UTF_8);
         connection.setFixedLengthStreamingMode(postData.length);
         BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
-        Log.d(TAG, coords);
         try {
           out.write(postData, 0, postData.length);
           out.flush();
@@ -136,13 +133,16 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
         }
         
         final String geoJson = getResponseContent(connection);
+        final String coordinates = getCoordinatesFromGeoJson(geoJson);
 
         activity.runOnUiThread(new Runnable() {
           @Override
           public void run() {
-            GotDirections(geoJson);
+            GotDirections(coordinates);
           }
         });
+      } catch (Exception e) {
+        e.printStackTrace();
       } finally {
         connection.disconnect();
       }
@@ -155,12 +155,9 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
       encoding = "UTF-8";
     }
     Log.d(TAG, Integer.toString(connection.getResponseCode()));
-    Log.d(TAG, connection.getResponseMessage());
     InputStreamReader reader = new InputStreamReader(connection.getInputStream(), encoding);
-    Log.d(TAG, "getResponseContent");
     try {
       int contentLength = connection.getContentLength();
-      Log.d(TAG, Integer.toString(contentLength));
       StringBuilder sb = (contentLength != -1)
           ? new StringBuilder(contentLength)
           : new StringBuilder();
@@ -169,11 +166,17 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
       while ((read = reader.read(buf)) != -1) {
         sb.append(buf, 0, read);
       }
-      Log.d(TAG, sb.toString());
       return sb.toString();
     } finally {
       reader.close();
     }
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty
+  public void ApiKey(String key) {
+    apiKey = key;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LATITUDE,
@@ -276,11 +279,42 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   private Double[][] getCoordinates() {
     Double[][] coords = new Double[2][2];
-    coords[0][0] = startLocation.getLatitude();
-    coords[0][1] = startLocation.getLongitude();
-    coords[1][0] = endLocation.getLatitude();
-    coords[1][1] = endLocation.getLongitude();
+    coords[0][0] = startLocation.getLongitude();
+    coords[0][1] = startLocation.getLatitude();
+    coords[1][0] = endLocation.getLongitude();
+    coords[1][1] = endLocation.getLatitude();
     return coords;
+  }
+
+  private String getCoordinatesFromGeoJson(String geoJson) {
+    String coordString = "";
+    try {
+      ArrayList<Object> o = (ArrayList<Object>) JsonUtil.getObjectFromJson(geoJson);
+      for (Object x : o) {
+        ArrayList<Object> entry = (ArrayList<Object>) x;
+        if (entry.get(0).toString().equals("features")) {
+          ArrayList<Object> feature = (ArrayList<Object>) ((ArrayList<Object>) entry.get(1)).get(0);
+          for (Object y : feature) {
+            ArrayList<Object> attr = (ArrayList<Object>) y;
+            if (attr.get(0).toString().equals("geometry")) {
+              ArrayList<Object> geometry = (ArrayList<Object>) attr.get(1);
+              for (Object z : geometry) {
+                attr = (ArrayList<Object>) z;
+                if (attr.get(0).toString().equals("coordinates")) {
+                  ArrayList<Object> coordList = (ArrayList<Object>) attr.get(1);
+                  coordString = JsonUtil.getJsonRepresentation(coordList);
+                }
+                break;
+              }
+              break;
+            }
+          }
+          break;
+        }
+      }
+    } finally {
+      return coordString;
+    }
   }
 
   // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
