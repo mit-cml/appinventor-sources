@@ -76,6 +76,38 @@ public final class TextValidators {
     return true;
   }
 
+  /**
+   * Determines whether the given folder name is valid, displaying an alert
+   * if it is not.  In order to be valid, the project name must satisfy
+   * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
+   * folder name for the same user.
+   *
+   * @param folderName the folder name to validate
+   * @return {@code true} if the folder name is valid, {@code false} otherwise
+   */
+  public static boolean checkNewFolderName(String folderName) {
+
+    // Check the format of the project name
+    if (!isValidIdentifier(folderName)) {
+      Window.alert(MESSAGES.malformedFolderNameError());
+      return false;
+    }
+
+    // Check for names that reserved words
+    if (isReservedName(folderName)) {
+      Window.alert(MESSAGES.reservedNameError());
+      return false;
+    }
+
+    // Check that the folder does not already exist
+    if (Ode.getInstance().getProjectManager().getFolders().contains(folderName)) {
+      Window.alert(MESSAGES.duplicateFolderNameError(folderName));
+      return false;
+    }
+
+    return true;
+  }
+
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
@@ -196,6 +228,27 @@ public final class TextValidators {
         errorMessage = MESSAGES.firstCharProjectNameError();
       } else { //The text contains a character that is not a letter, number, or underscore
         errorMessage = MESSAGES.invalidCharProjectNameError();
+      }
+    }
+    return errorMessage;
+  }
+
+  /**
+   * Determines human-readable message for specific error.
+   * @param folderName name of the folder
+   * @return String representing error message, empty string if no error
+   */
+  public static String getFolderErrorMessage(String folderName){
+    String errorMessage = "";
+    String noWhitespace = "[\\S]+";
+    String firstCharacterLetter = "[A-Za-z].*";
+    if(!folderName.matches("[A-Za-z][A-Za-z0-9_]*") && folderName.length() > 0) {
+      if(!folderName.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
+        errorMessage = MESSAGES.whitespaceFolderNameError();
+      } else if (!folderName.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
+        errorMessage = MESSAGES.firstCharFolderNameError();
+      } else { //The text contains a character that is not a letter, number, or underscore
+        errorMessage = MESSAGES.invalidCharFolderNameError();
       }
     }
     return errorMessage;

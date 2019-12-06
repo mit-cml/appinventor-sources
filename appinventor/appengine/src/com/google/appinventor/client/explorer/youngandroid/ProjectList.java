@@ -8,12 +8,14 @@ package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -37,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The project list shows all projects in a table.
+ * The project list shows all folders and the current folder's projects in a table.
  *
  * <p> The project name, date created, and date modified will be shown in the table.
  *
@@ -235,7 +237,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
   }
 
-  private abstract class ListWidgets {
+  private abstract class ListEntryWidgets {
     CheckBox checkBox;
     Label nameLabel;
     Label dateCreatedLabel;
@@ -243,7 +245,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     Label publishedLabel;
   }
 
-  private class FolderWidgets extends ListWidgets{
+  private class FolderWidgets extends ListEntryWidgets {
     final CheckBox checkBox;
     final Label nameLabel;
     final Label dateCreatedLabel = new Label("");
@@ -282,7 +284,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           if (ode.screensLocked()) {
             return;             // i/o in progress, ignore request
           }
-          onFolderChange(folderName);
+          changeCurrentFolder(folderName);
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -307,13 +309,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             return;             // i/o in progress, ignore request
           }
           if (currentFolder == null) {
-            onFolderChange(null);
+            changeCurrentFolder(null);
           }
           final int lastDivider = currentFolder.lastIndexOf('/');
           if (lastDivider == -1){
-            onFolderChange(null);
+            changeCurrentFolder(null);
           } else {
-            onFolderChange(currentFolder.substring(0, lastDivider));
+            changeCurrentFolder(currentFolder.substring(0, lastDivider));
           }
         }
       });
@@ -321,7 +323,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
   }
 
-  private class ProjectWidgets extends ListWidgets{
+  private class ProjectWidgets extends ListEntryWidgets {
     final CheckBox checkBox;
     final Label nameLabel;
     final Label dateCreatedLabel;
@@ -478,7 +480,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       refreshTable(true);
     }
 
-    mapProjectToFolder(project);
+    onProjectMovedToFolder(project);
   }
 
   @Override
@@ -494,7 +496,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
 
-    unmapProjectFromFolder(project);
+    onProjectRemovedFromFolder(project);
   }
 
   @Override
@@ -505,7 +507,49 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projectListLoading = false;
     refreshTable(true);
   }
+
   public void onProjectPublishedOrUnpublished() {
+    refreshTable(false);
+  }
+
+  @Override
+  public void onFolderAddition(String folder) {
+    if (!projectsByFolder.containsKey(folder)){
+      projectsByFolder.put(folder, new ArrayList<Project>());
+    }
+    Ode.getInstance().getProjectManager().setFolders(this.projectsByFolder.keySet());
+  }
+
+  @Override
+  public void onFolderDeletion(String deletionFolder) {
+    for (String folder : projectsByFolder.keySet()) {
+      for (final Project project : projectsByFolder.get(folder)) {
+        final long oldProjectId = project.getProjectId();
+
+        Ode.getInstance().getProjectService().moveToTrash(oldProjectId, //Avoid rebuilding table for each project
+            new OdeAsyncCallback<UserProject>(
+                // failure message
+                MESSAGES.moveToTrashProjectError()) {
+              @Override
+              public void onSuccess(UserProject projectInfo) {
+                if (projectInfo.getProjectId() == oldProjectId) {
+                  allProjects.remove(project);
+                  projectWidgets.remove(project);
+                  Ode.getInstance().getProjectManager().addDeletedProject(projectInfo);
+                  if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
+                    Ode.getInstance().createEmptyTrashDialog(true);
+                  }
+                }
+              }
+            });
+      }
+      projectsByFolder.remove(deletionFolder);
+    }
+
+    selectedFolders.remove(deletionFolder);
+    Ode ode = Ode.getInstance();
+    ode.getProjectToolbar().updateButtons();
+    ode.getProjectManager().setFolders(this.projectsByFolder.keySet());
     refreshTable(false);
   }
 
@@ -513,18 +557,19 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.getWidget(0, 4).setVisible(visible);
   }
 
-  @Override
-  public void onFolderChange(String folder){
+  private void changeCurrentFolder(String folder){
     this.currentFolder = folder;
     this.currentProjects = this.projectsByFolder.get(folder);
     refreshTable(false);
 
     Ode ode = Ode.getInstance();
+    ode.getProjectManager().setCurrentFolder(folder);
     ode.setProjectViewFolder(folder);
   }
 
-  public void mapProjectToFolder(Project project){
-    final String parentFolder = project.getParentFolder();
+  @Override
+  public void onProjectMovedToFolder(Project project){
+    String parentFolder = project.getParentFolder();
     final List<Project> parentFolderProjects = this.projectsByFolder.get(project.getParentFolder());
     if (parentFolderProjects != null){
       parentFolderProjects.add(project);
@@ -532,10 +577,22 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       final List<Project> newList = new ArrayList<Project>();
       newList.add(project);
       this.projectsByFolder.put(parentFolder, newList);
+
+      // Make sure the folder is not orphaned/unreachable
+      int lastDivider = parentFolder.lastIndexOf('/');
+      parentFolder = parentFolder.substring(0, lastDivider);
+      while (lastDivider != -1 && !this.projectsByFolder.containsKey(parentFolder)) {
+        this.projectsByFolder.put(parentFolder, new ArrayList<Project>());
+        lastDivider = parentFolder.lastIndexOf('/');
+        parentFolder = parentFolder.substring(0, lastDivider);
+      }
     }
+
+    Ode.getInstance().getProjectManager().setFolders(this.projectsByFolder.keySet());
   }
 
-  public void unmapProjectFromFolder(Project project){
+  @Override
+  public void onProjectRemovedFromFolder(Project project){
     final List<Project> parentFolderProjects = this.projectsByFolder.get(project.getParentFolder());
     if (parentFolderProjects != null){
       parentFolderProjects.remove(project);

@@ -15,6 +15,7 @@ import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
@@ -38,6 +39,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_PROJECT= "Projects";
   private static final String WIDGET_NAME_RESTORE= "Restore";
   private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
+  private static final String WIDGET_NAME_CREATE_FOLDER = "New Folder";
 
   private boolean isReadOnly;
 
@@ -63,6 +65,8 @@ public class ProjectToolbar extends Toolbar {
         new RestoreProjectAction()));
     addButton(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
         new DeleteForeverProjectAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_CREATE_FOLDER, MESSAGES.createFolderButton(),
+        new CreateNewFolderAction()));
 
     setTrashTabButtonsVisible(false);
     updateButtons();
@@ -184,6 +188,22 @@ public class ProjectToolbar extends Toolbar {
               }
             }
           });
+    }
+  }
+
+  private static class CreateNewFolderAction implements Command {
+    // Need to: spawn widget, in that widget, validate name-- then call projectmanager to create new folder, and
+    // afterwards update the folder names by converting the list of folders to a serialized string to store
+    // via rpc call-- use ode.getprojectservice
+    // Main issue- needs to get current Folder to validate folder name
+    // See textvalidators and newyoungandroidprojectwizard
+
+    @Override
+    public void execute() {
+      if (Ode.getInstance().screensLocked()) {
+        return;                 // Refuse to switch if locked (save file happening)
+      }
+      new NewFolderWizard().center();
     }
   }
 
@@ -411,6 +431,7 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
+      setButtonEnabled(WIDGET_NAME_CREATE_FOLDER, false);
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
       return;
     }
@@ -422,6 +443,7 @@ public class ProjectToolbar extends Toolbar {
     } else {
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
     }
+    setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, true);
     Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
   }
 

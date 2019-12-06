@@ -401,7 +401,22 @@ public class TrashProjectList extends Composite implements ProjectManagerEventLi
   }
 
   @Override
-  public void onFolderChange(String folder) {
+  public void onFolderAddition(String folder) {
+
+  }
+
+  @Override
+  public void onFolderDeletion(String folder) {
+
+  }
+
+  @Override
+  public void onProjectMovedToFolder(Project project) {
+
+  }
+
+  @Override
+  public void onProjectRemovedFromFolder(Project project) {
 
   }
 }

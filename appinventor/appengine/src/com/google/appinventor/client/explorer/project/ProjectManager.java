@@ -12,13 +12,10 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * This class manages projects.
+ * This class manages projects and project folders.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -26,6 +23,9 @@ public final class ProjectManager {
   // Map to find the project from a project ID.
   private final Map<Long, Project> projectsMap;
   private final Map<Long, Project> deletedProjectsMap;
+
+  private Set<String> folders;
+  private String currentFolder;
 
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
@@ -41,6 +41,8 @@ public final class ProjectManager {
   public ProjectManager() {
     projectsMap = new HashMap<Long, Project>();
     deletedProjectsMap = new HashMap<Long, Project>();
+    folders = new HashSet<String>();
+    currentFolder = null;
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
     Ode.getInstance().getProjectService().getProjectInfos(
       new OdeAsyncCallback<List<UserProject>>(
@@ -155,6 +157,40 @@ public final class ProjectManager {
   }
 
   /**
+   * Returns all the folders that currently exist in the client.
+   * @return set of folder names
+   */
+  public Set<String> getFolders(){
+    return this.folders;
+  }
+
+  /**
+   * Updates the set of folders for the client.
+   *
+   * @param folders set of folder names
+   */
+  public void setFolders(Set<String> folders){
+    this.folders = folders;
+  }
+
+  /**
+   * Returns the current active folder in the client.
+   * @return folder name
+   */
+  public String getCurrentFolder(){
+    return this.currentFolder;
+  }
+
+  /**
+   * Updates the set of folders for the client.
+   *
+   * @param currentFolder set of folder names
+   */
+  public void setCurrentFolder(String currentFolder){
+    this.currentFolder = currentFolder;
+  }
+
+  /**
    * Adds a new project to this project manager.
    *
    * @param projectInfo information about the project
@@ -213,6 +249,33 @@ public final class ProjectManager {
     fireProjectAdded(project);
   }
 
+  /**
+   * Adds a new folder.
+   *
+   * @param folderName the new folder name
+   */
+  public void addFolder(String folderName){
+
+    fireOnFolderAddition(folderName);
+  }
+
+  /**
+   * Deletes the specified folder
+   *
+   * @param folderName the new folder name
+   */
+  public void deleteFolder(String folderName){
+    fireOnFolderDeletion(folderName);
+  }
+
+  /**
+   * Returns true if the folder exists in the project manager, false otherwise
+   *
+   * @param folderName the folder to check for
+   */
+  public boolean folderExists(String folderName){
+    return this.folders.contains(folderName);
+  }
 
   /**
    * Handles situation when a project has been published
@@ -302,6 +365,24 @@ public final class ProjectManager {
   private void fireDeletedProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onDeletedProjectRemoved(project);
+    }
+  }
+
+  /*
+   * Triggers a 'folder added' event to be sent to the listener on the listener list.
+   */
+  private void fireOnFolderAddition(String folder) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onFolderAddition(folder);
+    }
+  }
+
+  /*
+   * Triggers a 'folder added' event to be sent to the listener on the listener list.
+   */
+  private void fireOnFolderDeletion(String folder) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onFolderDeletion(folder);
     }
   }
 
