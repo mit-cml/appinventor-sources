@@ -45,8 +45,7 @@ import java.util.ArrayList;
 @DesignerComponent(version = YaVersion.NAVIGATION_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Navigation",
-    nonVisible = true,
-    iconName = "images/twitter.png")
+    nonVisible = true)
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "json.jar")
 @SimpleObject
@@ -86,7 +85,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
    *
    * @param container container, component will be placed in
    */
-  public Navigation(MapFeatureContainer container) {
+  public Navigation(ComponentContainer container) {
     super(container.$form());
     activity = container.$context();
     apiKey = "5b3ce3597851110001cf62489cbb64d2e8b14d7c8586a99c078d47b1";
