@@ -14,24 +14,24 @@ they get cut off in Windows.
 
 @font-face {
   font-family: Roboto;
-  src: url('/fonts/Roboto-Regular.ttf');
+  src: url('../fonts/Roboto-Regular.ttf');
 }
 
 @font-face {
   font-weight: bold;
   font-family: Roboto;
-  src: url('/fonts/Roboto-Bold.ttf');
+  src: url('../fonts/Roboto-Bold.ttf');
 }
 
 @font-face {
   font-family: OpenDyslexic;
-  src: url('/fonts/OpenDyslexic-Regular.otf');
+  src: url('../fonts/OpenDyslexic-Regular.otf');
 }
 
 @font-face {
   font-weight: bold;
   font-family: OpenDyslexic;
-  src: url('/fonts/OpenDyslexic-Bold.otf');
+  src: url('../fonts/OpenDyslexic-Bold.otf');
 }
 
 body, html {
@@ -42,7 +42,7 @@ body {
   background-color: lightgrey;
   font-family: Roboto, Helvetica, Arial, sans-serif;
   /* TODO(opensource): Change to commented version below once we're ready */
-  background: url(images/squairy_light.png);
+  background: url(../images/squairy_light.png);
 }
 
 .dyslexic * {
@@ -122,7 +122,7 @@ body {
   font-size: 13px;
   background-color: #f7f9f2;
   /* TODO(opensource): Delete the background-image line below once we're ready */
-  background-image: url(images/watermark.png);
+  background-image: url(../images/watermark.png);
   color: #555;
   border-left: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
@@ -229,7 +229,7 @@ body {
 }
 
 .ode-ProjectHeaderRow {
-  background: url(images/toolbarBG.png) repeat;
+  background: url(../images/toolbarBG.png) repeat;
   border: 1px;
   border-bottom: 1px solid #bbccff;
 }
@@ -279,7 +279,7 @@ body {
 }
 
 .ode-ComponentHeaderRow {
-  background: url(images/toolbarBG.png) repeat;
+  background: url(../images/toolbarBG.png) repeat;
   border: 1px;
   border-bottom: 1px solid #bbccff;
 }
@@ -539,7 +539,7 @@ body {
   font-size: 12px;
   color: #888;
   padding: 4px 12px;
-  background: url(images/toolbarBG.png) repeat;
+  background: url(../images/toolbarBG.png) repeat;
   border: 1px;
   border-bottom: 1px solid #bbccff;
 }
@@ -1019,7 +1019,7 @@ select.ode-PropertyEditor[disabled] {
 
 /* ==== start: skins for Android */
 .ode-SimpleMockFormPhoneLandscape {
-    background: url(images/phoneLandscape.png);
+    background: url(../images/phoneLandscape.png);
     background-repeat: no-repeat;
     background-position: right top;
     background-size: 100% 100%;
@@ -1027,7 +1027,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormPhonePortrait {
-  background: url(images/phonePortrait.png);
+  background: url(../images/phonePortrait.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
@@ -1035,21 +1035,21 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormPhoneLandscapeTablet {
-    background: url(images/phoneLandscapeTablet.png);
+    background: url(../images/phoneLandscapeTablet.png);
     background-repeat: no-repeat;
     background-position: right top;
     background-size: 100% 100%;
     padding: 15px 56px 12px 64px;;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
-  background: url(images/phonePortraitTablet.png);
+  background: url(../images/phonePortraitTablet.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
   padding: 64px 13px 55px 13px;
 }
 .ode-SimpleMockFormPhoneLandscapeMonitor {
-  background: url(images/phoneLandscapeMonitor.png);
+  background: url(../images/phoneLandscapeMonitor.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
@@ -1057,7 +1057,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormPhonePortraitMonitor {
-  background: url(images/phonePortraitMonitor.png);
+  background: url(../images/phonePortraitMonitor.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
@@ -1123,7 +1123,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormNavigationBarPortrait {
   min-height: 44px;
   min-width: 100%;
-  background-image: url(images/navigationbarPortrait.png);
+  background-image: url(../images/navigationbarPortrait.png);
   background-repeat: no-repeat;
   background-position: center top;
 }
@@ -1131,7 +1131,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormNavigationBarLandscape {
   min-height: 100%;
   min-width: 44px;
-  background-image: url(images/navigationbarLandscape.png);
+  background-image: url(../images/navigationbarLandscape.png);
   background-repeat: no-repeat;
   background-position: right center;
 }
@@ -1333,13 +1333,13 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-RpcStatusMessage .popupBottomLeft {
   width: 4px;
   height: 4px;
-  background: url(images/rpcMessageCorners.png) no-repeat 0px -4px;
+  background: url(../images/rpcMessageCorners.png) no-repeat 0px -4px;
 }
 
 .ode-RpcStatusMessage .popupBottomRight {
   width: 4px;
   height: 4px;
-  background: url(images/rpcMessageCorners.png) no-repeat -4px -4px;
+  background: url(../images/rpcMessageCorners.png) no-repeat -4px -4px;
 }
 
 .ode-ErrorMessage {
