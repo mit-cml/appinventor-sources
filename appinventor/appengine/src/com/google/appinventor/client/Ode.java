@@ -487,7 +487,10 @@ public class Ode implements EntryPoint {
     final String newCaption = (folderName == null)
         ? MESSAGES.projectListBoxCaption()
         : MESSAGES.projectListBoxCaption() + "/" + folderName;
-    ProjectListBox.getProjectListBox().setCaption(newCaption);
+    ProjectListBox projectListBox = ProjectListBox.getProjectListBox();
+    if (projectListBox != null) {
+      projectListBox.setCaption(newCaption);
+    }
   }
 
   /**

@@ -17,6 +17,7 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.common.collect.Ordering;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -106,9 +107,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortField = SortField.DATE_MODIFIED;
     sortOrder = SortOrder.DESCENDING;
 
-    currentFolder = null;
-    currentSubFolders = new ArrayList<String>();
     currentProjects = new ArrayList<Project>();
+    currentSubFolders = new ArrayList<String>();
+    currentFolder = null;
     projectsByFolder = new HashMap<String, List<Project>>();
     projectsByFolder.put(null, currentProjects);
 
@@ -123,6 +124,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     publishedSortIndicator = new Label("");
     refreshSortIndicators();
     setHeaderRow();
+    changeCurrentFolder(null);
 
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -294,6 +296,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             return;             // i/o in progress, ignore request
           }
           changeCurrentFolder(folderName);
+          refreshTable(false);
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -318,6 +321,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             return;             // i/o in progress, ignore request
           }
           changeCurrentFolder(getParentFolder());
+          refreshTable(false);
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -423,18 +427,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     refreshSortIndicators();
 
-    System.out.println("REFRESHING THE ODE TABLE PLEASE HELP ME");
-    System.out.println(currentFolder);
     // Refill the table.
     table.resize(1 + currentProjects.size(), 5);
     int row = 1;
     if (currentFolder != null){
       addWidgetToTable(row, new FolderWidgets());
       row++;
-      System.out.println("ADDING PARENT");
     }
     for (String folder : currentSubFolders) {
-      System.out.println(folder);
       FolderWidgets fw = folderWidgets.get(folder);
       if (selectedFolders.contains(folder)) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
@@ -448,7 +448,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
     for (Project project : currentProjects) {
       ProjectWidgets pw = projectWidgets.get(project);
-      System.out.println(project.getProjectName());
+
       if (selectedProjects.contains(project)) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
         pw.checkBox.setValue(true);
@@ -551,7 +551,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   @Override
   public void onFolderDeletion(String deletionFolder) {
     for (String folder : projectsByFolder.keySet()) {
-      if (folder.startsWith(deletionFolder)) {
+      if (folder != null && folder.startsWith(deletionFolder)) {
         for (final Project project : projectsByFolder.get(folder)) {
           final long oldProjectId = project.getProjectId();
 
@@ -595,7 +595,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     this.currentSubFolders = new ArrayList<String>();
     if (newFolder == null){
       for (String folder : projectsByFolder.keySet()){
-        if (!folder.contains("/")){
+        if (folder != null && !folder.contains("/")){
           this.currentSubFolders.add(folder);
         }
       }
@@ -603,7 +603,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       final int newFolderLength = newFolder.length();
       for (String folder : projectsByFolder.keySet()) {
         // Only add direct subfolders of the new folder
-        if (!folder.equals(newFolder)
+        if (folder != null
+            && !folder.equals(newFolder)
             && folder.startsWith(newFolder)
             && folder.indexOf(FOLDER_DIVIDER, newFolderLength) == -1) {
           this.currentSubFolders.add(folder);
@@ -611,7 +612,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       }
     }
     selectedFolders.clear();
-    refreshTable(false);
 
     Ode ode = Ode.getInstance();
     ode.getProjectManager().setCurrentFolder(newFolder);
