@@ -133,6 +133,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
         }
         
         final String geoJson = getResponseContent(connection);
+        Log.d(TAG, geoJson);
         final String coordinates = getCoordinatesFromGeoJson(geoJson);
 
         activity.runOnUiThread(new Runnable() {
@@ -191,7 +192,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     }
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The latitude of the start location.")
   public double StartLatitude() {
     return startLocation.getLatitude();
@@ -209,7 +210,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     }
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The longitude of the start location.")
   public double StartLongitude() {
     return startLocation.getLongitude();
@@ -240,7 +241,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     }
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The latitude of the end location.")
   public double EndLatitude() {
     return endLocation.getLatitude();
@@ -258,10 +259,27 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     }
   }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The longitude of the end location.")
   public double EndLongitude() {
     return endLocation.getLongitude();
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NAVIGATION_METHOD,
+      defaultValue = "foot-walking")
+  @SimpleProperty
+  public void TransportationMethod(String method) {
+    for (TransportMethod t : TransportMethod.values()) {
+      if (method.equals(t.method())) {
+        this.method = t;
+      }
+    }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The longitude of the end location.")
+  public String TransportationMethod() {
+    return method.method();
   }
 
   @SimpleFunction(description = "Set the end location.")
@@ -316,17 +334,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
       return coordString;
     }
   }
-
-  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
-  //     defaultValue = "0")
-  // @SimpleProperty
-  // public void TransportationMethod(String method) {
-
-  // }
-
-  // public String TransportationMethod() {
-  //   return method;
-  // }
 
   /**
    * Event indicating that a request has finished and has returned data (translation).
