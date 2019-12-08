@@ -133,18 +133,6 @@ public interface ProjectService extends RemoteService {
   List<UserProject> moveProjectsToFolder(List<Long> projectIds, List<String> newFolders);
 
   /**
-   * Gets the serialized list of user folders.
-   * @return All of the user's folders in a serialized JSON string.
-   */
-  String getUserFolders();
-
-  /**
-   * Sets the user's folders to be equal to the folders provided by folderData.
-   * @param folderData serialized json list of folders
-   */
-  String setUserFolders(String folderData);
-
-  /**
    * On publish this sets the project's gallery id
    * @param projectId  project ID
    * @param galleryId  gallery ID

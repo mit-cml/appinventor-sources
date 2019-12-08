@@ -76,16 +76,6 @@ public interface ProjectServiceAsync {
                             AsyncCallback<List<UserProject>> callback);
 
   /**
-   * @see ProjectService#getUserFolders()
-   */
-  void getUserFolders(AsyncCallback<String> async);
-
-  /**
-   * @see ProjectService#setUserFolders(String)
-   */
-  void setUserFolders(String folderData, AsyncCallback<String> async);
-
-  /**
    * @see ProjectService#restoreProject(long)
    */
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);

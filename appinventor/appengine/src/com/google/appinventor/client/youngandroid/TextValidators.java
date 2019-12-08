@@ -82,26 +82,27 @@ public final class TextValidators {
    * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
    * folder name for the same user.
    *
-   * @param folderName the folder name to validate
+   * @param relativeName the name of the folder relative to the current folder
+   * @param fullName the full directory name of the folder
    * @return {@code true} if the folder name is valid, {@code false} otherwise
    */
-  public static boolean checkNewFolderName(String folderName) {
+  public static boolean checkNewFolderName(String relativeName, String fullName) {
 
     // Check the format of the project name
-    if (!isValidIdentifier(folderName)) {
+    if (!isValidIdentifier(relativeName)) {
       Window.alert(MESSAGES.malformedFolderNameError());
       return false;
     }
 
     // Check for names that reserved words
-    if (isReservedName(folderName)) {
+    if (isReservedName(relativeName)) {
       Window.alert(MESSAGES.reservedNameError());
       return false;
     }
 
     // Check that the folder does not already exist
-    if (Ode.getInstance().getProjectManager().getFolders().contains(folderName)) {
-      Window.alert(MESSAGES.duplicateFolderNameError(folderName));
+    if (Ode.getInstance().getProjectManager().getFolders().contains(fullName)) {
+      Window.alert(MESSAGES.duplicateFolderNameError(fullName));
       return false;
     }
 

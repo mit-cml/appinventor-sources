@@ -293,27 +293,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
-   * Gets the serialized list of user folders.
-   * @return All of the user's folders in a serialized JSON string.
-   */
-  @Override
-  public String getUserFolders() {
-    String userId = userInfoProvider.getUserId();
-    return storageIo.getUserFolders(userId);
-  }
-
-  /**
-   * Sets the user's folders to be equal to the folders provided by folderData.
-   * @param folderData serialized json list of folders
-   */
-  @Override
-  public String setUserFolders(String folderData) {
-    String userId = userInfoProvider.getUserId();
-    storageIo.setUserFolders(userId, folderData);
-    return storageIo.getUserFolders(userId);
-  }
-
-  /**
    * On publish this sets the project's gallery id
    *
    * @param projectId project ID

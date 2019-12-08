@@ -70,7 +70,8 @@ public abstract class NewProjectWizard extends Wizard {
     // TODO(user): input error checking
 
     // Create the project on the back-end
-    ode.getProjectService().newProject(projectType, projectName, params, callback);
+    final String currentFolder = ode.getProjectManager().getCurrentFolder();
+    ode.getProjectService().newProject(projectType, projectName, params, currentFolder, callback);
 
     projectIndex++;
   }

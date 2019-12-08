@@ -81,7 +81,7 @@ public class NewFolderWizard extends Wizard {
             ? relativeName
             : currentFolder + "/" + relativeName;
 
-        if (TextValidators.checkNewFolderName(folderName)) {
+        if (TextValidators.checkNewFolderName(relativeName, folderName)) {
           ode.getProjectManager().addFolder(folderName);
         } else {
           show();
