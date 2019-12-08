@@ -641,6 +641,11 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.hardReset();
   }
 
+  /*
+   * Perform a hideChaff of Blockly
+   */
+  public void hideChaff () {blocksArea.hideChaff();}
+
   // Static Function. Find the associated editor for formName and
   // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
   // method to ignore this blocks file and not save it out.
