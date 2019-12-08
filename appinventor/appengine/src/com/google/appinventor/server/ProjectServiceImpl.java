@@ -270,6 +270,20 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Sets projectId's parent folder to newFolder
+   *
+   * @param projectId project id to change
+   * @param newFolder folder to move to
+   */
+  @Override
+  public UserProject moveProjectToFolder(long projectId, String newFolder) {
+    String userId = userInfoProvider.getUserId();
+    List<UserProject> output = new ArrayList<>();
+    storageIo.setProjectParentFolder(userId, projectId, newFolder);
+    return storageIo.getUserProject(userId, projectId);
+  }
+
+  /**
    * Moves every project in projectIds to the corresponding folder in newFolders;
    * association by equal index positions.
    *

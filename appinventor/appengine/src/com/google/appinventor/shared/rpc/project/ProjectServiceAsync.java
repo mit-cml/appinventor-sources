@@ -70,6 +70,12 @@ public interface ProjectServiceAsync {
   void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#moveProjectToFolder(long, String)
+   */
+  void moveProjectToFolder(long projectId, String newFolder,
+                            AsyncCallback<UserProject> callback);
+
+  /**
    * @see ProjectService#moveProjectsToFolder(List, List) 
    */
   void moveProjectsToFolder(List<Long> projectIds, List<String> parentFolders,

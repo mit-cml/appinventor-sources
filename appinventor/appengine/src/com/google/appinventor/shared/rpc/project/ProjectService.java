@@ -123,6 +123,13 @@ public interface ProjectService extends RemoteService {
    */
   UserProject restoreProject(long projectId);
 
+  /**
+   * Sets projectId's parent folder to newFolder
+   *
+   * @param projectId project id to change
+   * @param newFolder folder to move to
+   */
+   UserProject moveProjectToFolder(long projectId, String newFolder);
 
   /**
    * Moves every project in projectIds to the corresponding folder in newFolders;
