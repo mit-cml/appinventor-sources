@@ -1050,7 +1050,7 @@ public class TopToolbar extends Composite {
       return;
     }
     DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    ((YaBlocksEditor)screen.blocksEditor).sendComponentData();
+    ((YaBlocksEditor)screen.blocksEditor).sendComponentData(true);
   }
 
   /**

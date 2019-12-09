@@ -320,6 +320,15 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
+  public synchronized void sendComponentData(boolean force) {
+    try {
+      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true),
+              packageNameFromPath(getFileId()),force);
+    } catch (YailGenerationException e) {
+      e.printStackTrace();
+    }
+  }
+
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
     items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(form);

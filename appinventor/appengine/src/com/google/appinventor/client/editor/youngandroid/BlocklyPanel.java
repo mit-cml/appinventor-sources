@@ -276,6 +276,18 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
+  public void sendComponentData(String formJson, String packageName, boolean force) throws YailGenerationException {
+    if (!currentForm.equals(formName)) { // Not working on the current form...
+      OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
+      return;
+    }
+    try {
+      doSendJson(formJson, packageName, force);
+    } catch (JavaScriptException e) {
+      throw new YailGenerationException(e.getDescription(), formName);
+    }
+  }
+
   public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) { // Start the Repl
     makeActive();
     doStartRepl(alreadyRunning, forEmulator, forUsb);
@@ -808,6 +820,11 @@ public class BlocklyPanel extends HTMLPanel {
   public native void doSendJson(String formJson, String packageName) /*-{
     Blockly.ReplMgr.sendFormData(formJson, packageName,
       this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+  }-*/;
+
+  public native void doSendJson(String formJson, String packageName, boolean force) /*-{
+    Blockly.ReplMgr.sendFormData(formJson, packageName,
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace, force);
   }-*/;
 
   public native void doResetYail() /*-{
