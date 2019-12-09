@@ -52,7 +52,7 @@ import java.util.logging.Logger;
  *
  * <p>Note that this service must be state-less so that it can be run on
  * multiple servers.
- * S
+ *
  */
 public class ProjectServiceImpl extends OdeRemoteServiceServlet implements ProjectService {
 
