@@ -317,9 +317,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               : 2 + currentSubFolders.indexOf(folderName); // The first folder will always be the parent folder when available
           table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
         }});
-      nameLabel.addDragEndHandler(new DragEndHandler() {
+      nameLabel.addDragLeaveHandler(new DragLeaveHandler() {
         @Override
-        public void onDragEnd(DragEndEvent event){
+        public void onDragLeave(DragLeaveEvent event){
           int row = (currentFolder == null)
               ? 1 + currentSubFolders.indexOf(folderName)
               : 2 + currentSubFolders.indexOf(folderName); // The first folder will always be the parent folder when available
@@ -367,9 +367,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         public void onDragOver(DragOverEvent event){
           table.getRowFormatter().setStyleName(1, "ode-ProjectRowHighlighted");
         }});
-      nameLabel.addDragEndHandler(new DragEndHandler() {
+      nameLabel.addDragLeaveHandler(new DragLeaveHandler() {
         @Override
-        public void onDragEnd(DragEndEvent event){
+        public void onDragLeave(DragLeaveEvent event){
           table.getRowFormatter().setStyleName(1, "ode-ProjectRowUnHighlighted");
         }});
     }
