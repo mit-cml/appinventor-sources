@@ -557,22 +557,14 @@ public class Form extends AppInventorCompatActivity
 
   /*
    * Here we override the hardware back button, just to make sure
-   * that the closing screen animation is applied. (In API level
-   * 5, we can simply override the onBackPressed method rather
-   * than bothering with onKeyDown)
+   * that the closing screen animation is applied.
    */
   @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-      if (!BackPressed()) {
-        boolean handled = super.onKeyDown(keyCode, event);
-        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-        return handled;
-      } else {
-        return true;
-      }
+  public void onBackPressed() {
+    if (!BackPressed()) {
+      AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
     }
-    return super.onKeyDown(keyCode, event);
+    super.onBackPressed();
   }
 
   @SimpleEvent(description = "Device back button pressed.")
