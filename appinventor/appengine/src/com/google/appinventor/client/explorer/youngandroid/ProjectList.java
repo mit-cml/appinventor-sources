@@ -18,6 +18,7 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.common.collect.Ordering;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DragLeaveEvent;
@@ -37,6 +38,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -304,37 +306,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           refreshTable(false);
         }
       });
-      nameLabel.addStyleName("ode-ProjectNameLabel");
-      nameLabel.addDragStartHandler(new DragStartHandler(){
-        @Override
-        public void onDragStart(DragStartEvent event) {
-          event.setData("text", "f/"+folderName);
-          event.getDataTransfer().setDragImage(getElement(), 10, 10);
-        }});
-      nameLabel.addDropHandler(new DropHandler() {
-        @Override
-        public void onDrop(DropEvent event) {
-          event.preventDefault();
-
-          final String data = event.getData("text");
-          handleFolderDropEvent(data, folderName);
-        }});
-      nameLabel.addDragOverHandler(new DragOverHandler() {
-        @Override
-        public void onDragOver(DragOverEvent event){
-          int row = (currentFolder == null)
-              ? 1 + currentSubFolders.indexOf(folderName)
-              : 2 + currentSubFolders.indexOf(folderName); // The first folder will always be the parent folder when available
-          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        }});
-      nameLabel.addDragLeaveHandler(new DragLeaveHandler() {
-        @Override
-        public void onDragLeave(DragLeaveEvent event){
-          int row = (currentFolder == null)
-              ? 1 + currentSubFolders.indexOf(folderName)
-              : 2 + currentSubFolders.indexOf(folderName); // The first folder will always be the parent folder when available
-          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        }});
+      nameLabel.addStyleName("ode-FolderNameLabel");
     }
 
     /**
@@ -357,31 +329,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           refreshTable(false);
         }
       });
-      nameLabel.addStyleName("ode-ProjectNameLabel");
-      nameLabel.addDragStartHandler(new DragStartHandler(){
-        @Override
-        public void onDragStart(DragStartEvent event) {
-          event.setData("text", "f/");
-          event.getDataTransfer().setDragImage(getElement(), 10, 10);
-        }});
-      nameLabel.addDropHandler(new DropHandler() {
-        @Override
-        public void onDrop(DropEvent event) {
-          event.preventDefault();
-
-          final String data = event.getData("text");
-          handleFolderDropEvent(data, getParentFolder());
-        }});
-      nameLabel.addDragOverHandler(new DragOverHandler() {
-        @Override
-        public void onDragOver(DragOverEvent event){
-          table.getRowFormatter().setStyleName(1, "ode-ProjectRowHighlighted");
-        }});
-      nameLabel.addDragLeaveHandler(new DragLeaveHandler() {
-        @Override
-        public void onDragLeave(DragLeaveEvent event){
-          table.getRowFormatter().setStyleName(1, "ode-ProjectRowUnHighlighted");
-        }});
+      nameLabel.addStyleName("ode-FolderNameLabel");
     }
   }
 
@@ -424,12 +372,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
-      nameLabel.addDragStartHandler(new DragStartHandler(){
-        @Override
-        public void onDragStart(DragStartEvent event) {
-          event.setData("text", "p/"+String.valueOf(project.getProjectId()));
-          event.getDataTransfer().setDragImage(getElement(), 10, 10);
-        }});
 
       DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
 
@@ -502,6 +444,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
       table.setWidget(row, 3, fw.dateModifiedLabel);
       table.setWidget(row, 4, fw.publishedLabel);
+      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
       row++;
     }
     for (String folder : currentSubFolders) {
@@ -518,6 +461,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, fw.dateCreatedLabel);
       table.setWidget(row, 3, fw.dateModifiedLabel);
       table.setWidget(row, 4, fw.publishedLabel);
+      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
       row++;
     }
     for (Project project : currentProjects) {
@@ -535,6 +479,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.publishedLabel);
+      configureProjectDrag(table.getRowFormatter().getElement(row), Long.toString(project.getProjectId()));
       if(Ode.getGallerySettings().galleryEnabled()){
         if (project.isPublished()) {
           pw.publishedLabel.setText(PUBLISHED);
@@ -746,13 +691,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private void updateCurrentSubFolders() {
     this.currentSubFolders = new ArrayList<String>();
     if (this.currentFolder == null) {
-      for (String folder : projectsByFolder.keySet()) {
+      for (String folder : this.projectsByFolder.keySet()) {
         if (folder != null && !folder.contains("/")) {
           this.currentSubFolders.add(folder);
         }
       }
     } else {
-      for (String folder : projectsByFolder.keySet()) {
+      for (String folder : this.projectsByFolder.keySet()) {
         // Only add direct subfolders of the new folder
         if (folder != null
             && !folder.equals(this.currentFolder)
@@ -776,7 +721,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     if (data.startsWith("p/")){
       final long projectId = Long.parseLong(data.substring(2));
       Project p1 = null;
-      for (Project p : currentProjects){
+      for (Project p : this.currentProjects){
         if (p.getProjectId() == projectId){
           p1 = p;
         }
@@ -856,4 +801,50 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     return currentFolder.replace(currentFolder, newFolder);
   }
 
+  /**
+   * Configures drag and drop functionality for a row.
+   *
+   * Disables drag handler if draggable is false.
+   */
+  private native void configureFolderDragDrop(Element row, int rowNum, String folderName, boolean draggable) /*-{
+    if (draggable) {
+      row.setAttribute('draggable', 'true');
+      row.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text', 'f/'+folderName);
+        e.dataTransfer.effectAllowed = "copy";
+      });
+    } else {
+     row.setAttribute('draggable', 'false');
+    }
+
+    var projectList = this;
+    row.addEventListener('drop', function(e) {
+      e.preventDefault();
+      var data = e.dataTransfer.getData('text');
+      projectList.@com.google.appinventor.client.explorer.youngandroid.ProjectList::handleFolderDropEvent(Ljava/lang/String;Ljava/lang/String;)(data, folderName);
+    });
+    row.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+      row.setAttribute('class', 'ode-ProjectRowHighlighted');
+    });
+    row.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      row.setAttribute('class', 'ode-ProjectRowUnHighlighted');
+    });
+
+
+  }-*/;
+
+
+  /**
+   * Configures drag functionality for a project.
+   */
+  private native void configureProjectDrag(Element row, String projectId) /*-{
+      row.setAttribute('draggable', 'true');
+      row.addEventListener('dragstart', function(e) {
+          e.dataTransfer.setData('text', 'p/' + projectId);
+          e.dataTransfer.effectAllowed = "copy";
+      });
+  }-*/;
 }
