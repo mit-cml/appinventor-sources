@@ -47,7 +47,7 @@ Blockly.ComponentBlock.COMPONENT_SELECTOR = "COMPONENT_SELECTOR";
  * @param {Array.<{enabled,text,callback}>} options the menu options
  */
 Blockly.ComponentBlock.addGenericOption = function(block, options) {
-  if (block.type === 'component_event' && block.isGeneric) {
+  if ((block.type === 'component_event' && block.isGeneric) || block.typeName === 'Form') {
     return;  // Cannot make a generic component_event specific for now...
   }
 
