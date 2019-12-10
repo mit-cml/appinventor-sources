@@ -1,4 +1,4 @@
-  init: {
+{
 // Context menus.
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicar';
     Blockly.Msg.REMOVE_COMMENT = 'Borrar Comentario';

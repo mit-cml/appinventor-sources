@@ -1,5 +1,4 @@
-
-  init:  {
+{
 // Context menus.
     Blockly.Msg.UNDO = 'Undo';
     Blockly.Msg.REDO = 'Redo';
@@ -1446,4 +1445,4 @@
     Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
     Blockly.Msg.DIALOG_SUBMIT = 'Submit';
     Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
-  }
+}
