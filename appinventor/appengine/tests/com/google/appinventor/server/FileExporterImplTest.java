@@ -64,7 +64,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     project.setProjectType(FAKE_PROJECT_TYPE);
     project.setProjectHistory(HISTORY);
     project.addTextFile(new TextFile(FORM1_QUALIFIED_NAME, ""));
-    projectId = storageIo.createProject(USER_ID, project, SETTINGS);
+    projectId = storageIo.createProject(USER_ID, project, SETTINGS, null);
     storageIo.uploadFile(projectId, FORM1_QUALIFIED_NAME, USER_ID, FORM1_CONTENT,
         StorageUtil.DEFAULT_CHARSET);
     storageIo.addSourceFilesToProject(USER_ID, projectId, false, IMAGE1_NAME);

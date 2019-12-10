@@ -54,7 +54,7 @@ public class ComponentServiceTest {
   public void setUp() throws Exception {
     helper.setUp();
     LocalUser localUserMock = LocalUser.getInstance();
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null, null));
     localUserMock.setSessionId("test-session");
     projectService = new ProjectServiceImpl();
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
@@ -289,7 +289,7 @@ public class ComponentServiceTest {
   private UserProject importProject(String projectName, String aiaPath) throws Exception {
     FileImporterImpl importer = new FileImporterImpl();
     FileInputStream fis = new FileInputStream(new File(URI.create(aiaPath)));
-    UserProject project = importer.importProject("1", projectName, fis);
+    UserProject project = importer.importProject("1", projectName, null, fis);
     fis.close();
     return project;
   }
