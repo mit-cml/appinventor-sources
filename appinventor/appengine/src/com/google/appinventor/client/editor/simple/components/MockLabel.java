@@ -149,7 +149,6 @@ public final class MockLabel extends MockVisibleComponent {
       setFontTypefaceProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      Ode.CLog("case 1");
       setTextProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
@@ -157,7 +156,6 @@ public final class MockLabel extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_HTMLFORMAT)) {
       // Just need to re-set the saved text so it is displayed
       // either as HTML or text as appropriate
-      Ode.CLog("case 2");
       setTextProperty(savedText);
       refreshForm();
     }
