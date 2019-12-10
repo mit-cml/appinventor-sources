@@ -1,13 +1,15 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
-import org.osmdroid.util.GeoPoint;
-import org.json.JSONObject;
-
 import android.app.Activity;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
-import org.json.JSONException;
-import org.json.JSONObject;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -26,11 +28,6 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureConta
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.Web;
 
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
-
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -41,20 +38,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.ArrayList;
 
+import org.osmdroid.util.GeoPoint;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
+
 @DesignerComponent(version = YaVersion.NAVIGATION_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Navigation",
     nonVisible = true,
     iconName = "images/navigation.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-@UsesLibraries(libraries = "json.jar")
 @SimpleObject
 public class Navigation extends AndroidNonvisibleComponent implements Component {
 
   private static final String TAG = "Navigation";
 
   public static final String OPEN_ROUTE_SERVICE_URL = "https://api.openrouteservice.org/v2/directions/%s/geojson/";
-  private final Activity activity;
   private String apiKey;
   private GeoPoint startLocation;
   private GeoPoint endLocation;
@@ -86,7 +88,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
    */
   public Navigation(ComponentContainer container) {
     super(container.$form());
-    activity = container.$context();
     apiKey = "";
     startLocation = new GeoPoint(0, 0);
     endLocation = new GeoPoint(0, 0);
