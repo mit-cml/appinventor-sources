@@ -639,7 +639,7 @@ public interface Images extends Resources {
   /**
    * Designer palette item:
    */
-  @Source("com/google/appinventor/images/twitter.png")
+  @Source("com/google/appinventor/images/navigation.png")
   ImageResource navigationComponent();
 
 }

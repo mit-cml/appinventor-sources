@@ -44,7 +44,8 @@ import java.util.ArrayList;
 @DesignerComponent(version = YaVersion.NAVIGATION_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Navigation",
-    nonVisible = true)
+    nonVisible = true,
+    iconName = "images/navigation.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "json.jar")
 @SimpleObject
