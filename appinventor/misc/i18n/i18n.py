@@ -56,11 +56,13 @@ Blockly.Msg.%(lang)s.switch_language_to_%(lang_name)s = {
   category: '',
   helpUrl: '',
   init: function() {
-    Blockly.Msg.%(lang)s.switch_blockly_language_to_%(lang)s.init();
 """
 
 blockly_footer = """  }
 };
+
+Blockly.Msg.%(lang)s.switch_blockly_language_to_%(lang)s.init();
+Blockly.Msg.%(lang)s.switch_language_to_%(lang_name)s.init();
 """
 
 
@@ -234,12 +236,54 @@ def tmx_merge(args):
     else:
         raise ValueError('No output')
 
+def blockly2props(args):
+    if args.lang is None:
+        lang_code = 'en'
+    else:
+        lang_code = args.lang[0]
+    blockprops = read_block_translations(lang_code.lower())  # subprocess.check_output(['node', js_to_prop], text=True, encoding='utf8')
+    with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', lang_code, '_messages.properties'), 'w+', encoding='utf8') as out:
+        out.write('\n# Blocks editor definitions\n')
+        out.write(blockprops)
+        out.close()
+
+def blockly2js(args):
+    if args.lang is None:
+        raise ValueError('No --lang specified for blockly file')
+    if args.lang_name is None:
+        raise ValueError('No --lang_name specified for blockly file')
+    blockly_dir = os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', args.lang[0].lower())
+    if not os.path.isdir(blockly_dir):
+        os.mkdir(blockly_dir)
+    blockly_file = os.path.join(blockly_dir, '_messages.js')
+    with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', lang_code, '_messages.properties')) as source:
+        with open(blockly_file, 'w+') as blockly_output:
+            blockly_output.write(blockly_header % {'lang': args.lang[0], 'lang_name': args.lang_name[0]})
+            for line in source:
+                if len(line) <= 2:
+                    pass
+                else:
+                    parts = [part.strip() for part in line[len('blockseditor.'):].split('=', 1)]
+                    blockly_output.write('    Blockly.Msg.')
+                    blockly_output.write(parts[0])
+                    blockly_output.write(' = ')
+                    blockly_output.write(js_stringify(parts[1]))
+                    blockly_output.write(';\n')
+
+            blockly_output.write(blockly_footer)
+
 def parse_args():
     parser = argparse.ArgumentParser(description='App Inventor internationalization toolkit')
     subparsers = parser.add_subparsers()
     parser_combine = subparsers.add_parser('combine')
     parser_combine.add_argument('--lang', nargs=1, type=str, action='store')
     parser_combine.set_defaults(func=combine)
+    parser_blocklyp = subparsers.add_parser('blockly2props')
+    parser_blocklyp.add_argument('--lang', nargs=1, type=str, action='store')
+    parser_blocklyp.set_defaults(func=blockly2props)
+    parser_blocklyj = subparsers.add_parser('blockly2js')
+    parser_blocklyj.add_argument('--lang', nargs=1, type=str, action='store')
+    parser_blocklyj.set_defaults(func=blockly2js)
     parser_split = subparsers.add_parser('split')
     parser_split.add_argument('--lang', nargs=1, type=str, action='store')
     parser_split.add_argument('--lang_name', nargs=1, type=str, action='store')
