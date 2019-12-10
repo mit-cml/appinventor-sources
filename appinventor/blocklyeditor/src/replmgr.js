@@ -99,8 +99,9 @@ Blockly.ReplMgr.isConnected = function() {
 /**
  * Build YAIL for sending to the companion.
  * @param {Blockly.WorkspaceSvg} workspace
+ * @param {boolean=} opt_force
  */
-Blockly.ReplMgr.buildYail = function(workspace, optForce) {
+Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
     var phoneState;
     var code = [];
     var blocks;
@@ -157,7 +158,7 @@ Blockly.ReplMgr.buildYail = function(workspace, optForce) {
 
         code = code.join('\n');
 
-        if (phoneState.componentYail != code || optForce) {
+        if (phoneState.componentYail != code || opt_force) {
             // We need to send all of the component cruft (sorry)
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
@@ -246,13 +247,13 @@ Blockly.ReplMgr.buildYail = function(workspace, optForce) {
     }
 };
 
-Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace, optForce) {
+Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace, opt_force) {
     top.ReplState.phoneState.formJson = formJson;
     top.ReplState.phoneState.packageName = packageName;
     var context = this;
     var poller = function() {   // Keep track of "this"
         context.polltimer = null;
-        return context.pollYail.call(context, workspace, optForce);
+        return context.pollYail.call(context, workspace, opt_force);
     };
     if (this.polltimer) {       // We have one running, punt it.
         clearTimeout(this.polltimer);
@@ -260,7 +261,7 @@ Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace, optFor
     this.polltimer = setTimeout(poller, 500);
 };
 
-Blockly.ReplMgr.pollYail = function(workspace, optForce) {
+Blockly.ReplMgr.pollYail = function(workspace, opt_force) {
     var RefreshAssets = top.AssetManager_refreshAssets;
     try {
         if (window === undefined)    // If window is gone, then we are a zombie timer firing
@@ -269,7 +270,7 @@ Blockly.ReplMgr.pollYail = function(workspace, optForce) {
         return;
     }
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        this.buildYail(workspace, optForce);
+        this.buildYail(workspace, opt_force);
     }
     if (top.ReplState.state == this.rsState.CONNECTED) {
         RefreshAssets(function() {});

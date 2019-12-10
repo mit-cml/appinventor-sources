@@ -265,15 +265,7 @@ public class BlocklyPanel extends HTMLPanel {
    * @throws YailGenerationException if there was a problem generating the Yail
    */
   public void sendComponentData(String formJson, String packageName) throws YailGenerationException {
-    if (!currentForm.equals(formName)) { // Not working on the current form...
-      OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
-      return;
-    }
-    try {
-      doSendJson(formJson, packageName);
-    } catch (JavaScriptException e) {
-      throw new YailGenerationException(e.getDescription(), formName);
-    }
+    sendComponentData(formJson, packageName, false);
   }
 
   public void sendComponentData(String formJson, String packageName, boolean force) throws YailGenerationException {
@@ -817,10 +809,9 @@ public class BlocklyPanel extends HTMLPanel {
       .getFormYail(formJson, packageName);
   }-*/;
 
-  public native void doSendJson(String formJson, String packageName) /*-{
-    Blockly.ReplMgr.sendFormData(formJson, packageName,
-      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
-  }-*/;
+  public void doSendJson(String formJson, String packageName) {
+    doSendJson(formJson, packageName, false);
+  };
 
   public native void doSendJson(String formJson, String packageName, boolean force) /*-{
     Blockly.ReplMgr.sendFormData(formJson, packageName,
