@@ -96,16 +96,19 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   @SimpleFunction(description = "")
   public void RequestDirections() {
+    if (apiKey.equals("")) {
+      form.dispatchErrorOccurredEvent(this, "Authorization", ErrorMessages.ERROR_INVALID_API_KEY);
+    }
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
         try {
           performRequest();
         } catch (IOException e) {
-          form.dispatchErrorOccurredEvent(Navigation.this, "RequestDirections",
+          form.dispatchErrorOccurredEvent(this, "RequestDirections",
               ErrorMessages.ERROR_DEFAULT);
         } catch (JSONException je) {
-          form.dispatchErrorOccurredEvent(Navigation.this, "RequestDirections",
+          form.dispatchErrorOccurredEvent(this, "RequestDirections",
               ErrorMessages.ERROR_DEFAULT);
         }
       }
@@ -145,7 +148,8 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
           }
         });
       } catch (Exception e) {
-        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "RequestDirections",
+              ErrorMessages.ERROR_DEFAULT);
       } finally {
         connection.disconnect();
       }
