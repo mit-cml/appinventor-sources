@@ -19,3 +19,5 @@ out/
 *.pyc
 .vagrant/
 *.log
+.build/
+.jekyll-cache/

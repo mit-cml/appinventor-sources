@@ -52,6 +52,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.AnnotationValueVisitor;
@@ -863,6 +864,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.RELEASE_7;
+  }
+
+  @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     elementUtils = processingEnv.getElementUtils();
@@ -935,8 +941,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       throw new RuntimeException(e);
     }
 
-    // Indicate that we have successfully handled the annotations.
-    return true;
+    // We need to return false here so that sibling annotation processors can run
+    return false;
   }
 
     /*

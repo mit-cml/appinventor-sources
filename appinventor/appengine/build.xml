@@ -73,10 +73,7 @@
   <target name="CheckDocs">
     <uptodate property="Docs.uptodate">
       <srcfiles dir="${appinventor.dir}/docs/markdown">
-        <exclude name="_layouts/*" />
-        <exclude name="Gemfile*" />
-        <exclude name="_config.yml" />
-        <exclude name=".sass-cache/**/*" />
+        <include name="reference/**/*" />
       </srcfiles>
       <firstmatchmapper>
         <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
@@ -88,7 +85,7 @@
   <!-- =====================================================================
        Builds the documentation from the corresponding Markdown files.
        ===================================================================== -->
-  <target name="BuildDocs" depends="components_Markdown,CheckDocs"
+  <target name="BuildDocs" depends="components_AndroidRuntime,CheckDocs"
           unless="Docs.uptodate">
     <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
     <property name="force.builddocs" value="false" />
@@ -498,7 +495,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="components_AndroidRuntime">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
