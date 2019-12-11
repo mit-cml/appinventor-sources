@@ -790,9 +790,10 @@
                     <img alt="Picture of Barcode Scanner component" src="images/barcodescanner.png" />
                     <p>
                       This non-visible component uses the phone's camera to read a 1-dimensional barcode
-                      or 2-dimensional barcode (QR code). In order for this component to work, the
-                      Barcode scanner app from ZXing must be installed on the phone. This app is
-                      available for free in the Android Market.
+                      or 2-dimensional barcode (QR code). If the UseExternalScanner property is set,
+                      the Barcode scanner app from ZXing will be used, if available. If the Barcode scanner
+                      app is unavailable, or the property is set to false, an internal scanner will be used instead.
+                      The Barcode Scanner app is available for free in Google Play.
                     </p>
                     <h3>
                       Properties
@@ -813,6 +814,17 @@
                           result
                         </code>
                         value.
+                      </dd>
+                    </dl>
+                    <dl>
+                      <dt>
+                        <code class="c2">
+                          UseExternalScanner
+                        </code>
+                        : boolean
+                      </dt>
+                      <dd>
+                        If true App Inventor will look for and use an external scanning program such as "Bar Code Scanner."
                       </dd>
                     </dl>
                     <h3>
