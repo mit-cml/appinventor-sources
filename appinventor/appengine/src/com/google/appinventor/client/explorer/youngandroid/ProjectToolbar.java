@@ -120,11 +120,16 @@ public class ProjectToolbar extends Toolbar {
         public void execute() {
           List<Project> selectedProjects =
               ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-          if (selectedProjects.size() > 0) {
+          List<String> selectedFolders =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+          if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
             // Show one confirmation window for selected projects.
-            if (deleteConfirmation(selectedProjects)) {
+            if (deleteConfirmation(selectedProjects, selectedFolders)) {
               for (Project project : selectedProjects) {
                 moveToTrash(project);
+              }
+              for(String folder : selectedFolders){
+                doDeleteFolder(folder);
               }
             }
           } else {
@@ -136,16 +141,18 @@ public class ProjectToolbar extends Toolbar {
       });
     }
 
-    private boolean deleteConfirmation(List<Project> projects) {
-      String message;
+    private boolean deleteConfirmation(List<Project> projects, List<String> folders) {
+      String projectMessage, folderMessage;
       GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
-      if (projects.size() == 1) {
+      if (projects.size() == 0) {
+        projectMessage = null;
+      } else if (projects.size() == 1) {
         if (projects.get(0).isPublished()) {
-          message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
+          projectMessage = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
         } else {
-          message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+          projectMessage = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
         }
-      } else {
+      } else{
         StringBuilder sb = new StringBuilder();
         String separator = "";
         for (Project project : projects) {
@@ -154,12 +161,34 @@ public class ProjectToolbar extends Toolbar {
         }
         String projectNames = sb.toString();
         if(!gallerySettings.galleryEnabled()){
-          message = MESSAGES.confirmMoveToTrash(projectNames);
+          projectMessage = MESSAGES.confirmMoveToTrash(projectNames);
         } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+          projectMessage = MESSAGES.confirmDeleteForeverManyProjectsWithGalleryOn(projectNames);
         }
       }
-      return Window.confirm(message);
+
+      if (folders.size() == 0) {
+        folderMessage = null;
+      } else if (folders.size() == 1) {
+        folderMessage = MESSAGES.confirmTrashSingleFolder(folders.get(0));
+      } else{
+        StringBuilder sb = new StringBuilder();
+        String separator = "";
+        for (String folder : folders) {
+          sb.append(separator).append(folder);
+          separator = ", ";
+        }
+        String folderNames = sb.toString();
+        folderMessage = MESSAGES.confirmTrashMultipleFolders(folderNames);
+      }
+
+      if (folderMessage == null) {
+        return Window.confirm(projectMessage);
+      } else if (projectMessage == null){
+        return Window.confirm(folderMessage);
+      } else{
+        return Window.confirm(projectMessage + "\n" + folderMessage);
+      }
     }
 
     private void moveToTrash(Project project) {
@@ -188,6 +217,10 @@ public class ProjectToolbar extends Toolbar {
               }
             }
           });
+    }
+
+    private void doDeleteFolder(final String folderName) {
+      Ode.getInstance().getProjectManager().deleteFolder(folderName);// TODO() Need to call RPC to delete folder
     }
   }
 
@@ -307,7 +340,7 @@ public class ProjectToolbar extends Toolbar {
       GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
         if (projects.get(0).isPublished()) {
-          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
+          message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
         } else {
           message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
         }
@@ -322,7 +355,7 @@ public class ProjectToolbar extends Toolbar {
         if(!gallerySettings.galleryEnabled()){
           message = MESSAGES.confirmDeleteManyProjects(projectNames);
         } else {
-          message = MESSAGES.confirmDeleteForeverManyProjectsWithGalleryOn(projectNames);
+          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
         }
       }
       return Window.confirm(message);
@@ -426,6 +459,7 @@ public class ProjectToolbar extends Toolbar {
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
+    int numSelectedFolders = projectList.getNumSelectedFolders();
     if (isReadOnly) {           // If we are read-only, we disable all buttons
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
       setButtonEnabled(WIDGET_NAME_NEW, false);
@@ -435,7 +469,7 @@ public class ProjectToolbar extends Toolbar {
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
       return;
     }
-    setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0 || numSelectedFolders > 0);
     setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
     if (numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
         .getSelectedProjects().get(0).isPublished()){

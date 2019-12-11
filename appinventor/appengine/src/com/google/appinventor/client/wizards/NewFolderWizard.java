@@ -1,6 +1,7 @@
 package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -81,7 +82,7 @@ public class NewFolderWizard extends Wizard {
       public void execute() {
         Ode ode = Ode.getInstance();
         final String relativeName = folderNameTextBox.getText();
-        final String currentFolder = ode.getProjectManager().getCurrentFolder();
+        final String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
         final String folderName = (currentFolder == null)
             ? relativeName
             : currentFolder + "/" + relativeName;

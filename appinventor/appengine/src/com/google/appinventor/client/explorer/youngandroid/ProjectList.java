@@ -503,12 +503,47 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   /**
+   * Gets the number of selected folders
+   *
+   * @return the number of selected folders
+   */
+  public int getNumSelectedFolders() {
+    return selectedFolders.size();
+  }
+
+  /**
    * Returns the list of selected projects
    *
    * @return the selected projects
    */
   public List<Project> getSelectedProjects() {
     return selectedProjects;
+  }
+
+  /**
+   * Returns the list of selected folders
+   *
+   * @return the selected folders
+   */
+  public List<String> getSelectedFolders() {
+    return selectedFolders;
+  }
+
+  /**
+   * Returns a copy set of all the folders that exist
+   *
+   * @return all the folders in the Project List
+   */
+  public Set<String> getFolders(){
+    return new HashSet<String>(this.projectsByFolder.keySet());
+  }
+
+  /**
+   * Returns the current folder
+   * @return the active folder in the project list
+   */
+  public String getCurrentFolder(){
+    return this.currentFolder;
   }
 
   // ProjectManagerEventListener implementation
@@ -559,7 +594,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       projectsByFolder.put(folder, new ArrayList<Project>());
       this.folderWidgets.put(folder, new FolderWidgets(folder));
     }
-    Ode.getInstance().getProjectManager().setFolders(this.projectsByFolder.keySet());
     updateCurrentSubFolders();
     if (!projectListLoading) {
       refreshTable(true);
@@ -568,7 +602,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onFolderDeletion(String deletionFolder) {
-    for (String folder : projectsByFolder.keySet()) {
+    final Set<String> folders = new HashSet<String>(projectsByFolder.keySet());
+    for (String folder : folders) {
       if (isParentOrSameFolder(deletionFolder, folder)) {
         for (final Project project : projectsByFolder.get(folder)) {
           final long oldProjectId = project.getProjectId();
@@ -600,7 +635,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     updateCurrentSubFolders();
     Ode ode = Ode.getInstance();
     ode.getProjectToolbar().updateButtons();
-    ode.getProjectManager().setFolders(this.projectsByFolder.keySet());
     if (!projectListLoading) {
       refreshTable(true);
     }
@@ -621,7 +655,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedFolders.clear();
 
     Ode ode = Ode.getInstance();
-    ode.getProjectManager().setCurrentFolder(newFolder);
     ode.setProjectViewFolder(newFolder);
     if (!projectListLoading) {
       refreshTable(true);
@@ -650,8 +683,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         parentFolder = parentFolder.substring(0, lastDivider);
       }
     }
-
-    Ode.getInstance().getProjectManager().setFolders(this.projectsByFolder.keySet());
   }
 
   @Override
@@ -800,7 +831,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               }
             }
 
-            Ode.getInstance().getProjectManager().setFolders(projectsByFolder.keySet());
             selectedFolders.remove(targetFolder);
             updateCurrentSubFolders();
             refreshTable(false);
@@ -813,7 +843,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * @param parentFolder the top level folder
    * @return all projects
    */
-  private List<Project> getProjectsInFolder(final String parentFolder){
+  public List<Project> getProjectsInFolder(final String parentFolder){
     if (parentFolder == null){
       return allProjects;
     }

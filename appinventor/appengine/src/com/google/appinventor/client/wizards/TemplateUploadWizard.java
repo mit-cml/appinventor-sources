@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
@@ -580,7 +581,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
 
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
-    final String currentFolder = ode.getProjectManager().getCurrentFolder();
+    final String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
       // failure message
       MESSAGES.createProjectError()) {
@@ -713,7 +714,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
           // The response.getText is the zip data used to create a new project.
           // The callback opens the project
           if (response != null && response.getStatusCode() == 200 && response.getText() != null && !response.getText().isEmpty()) {
-            String currentFolder = ode.getProjectManager().getCurrentFolder();
+            String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
             ode.getProjectService().newProjectFromExternalTemplate(projectName,
                 response.getText(),
                 currentFolder,

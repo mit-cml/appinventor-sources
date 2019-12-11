@@ -9,6 +9,7 @@ package com.google.appinventor.client.wizards;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -70,7 +71,7 @@ public abstract class NewProjectWizard extends Wizard {
     // TODO(user): input error checking
 
     // Create the project on the back-end
-    final String currentFolder = ode.getProjectManager().getCurrentFolder();
+    final String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
     ode.getProjectService().newProject(projectType, projectName, params, currentFolder, callback);
 
     projectIndex++;

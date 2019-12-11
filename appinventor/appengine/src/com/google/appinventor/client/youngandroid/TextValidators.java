@@ -9,6 +9,7 @@ package com.google.appinventor.client.youngandroid;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.gwt.http.client.URL;
@@ -101,7 +102,7 @@ public final class TextValidators {
     }
 
     // Check that the folder does not already exist
-    if (Ode.getInstance().getProjectManager().getFolders().contains(fullName)) {
+    if (ProjectListBox.getProjectListBox().getProjectList().getFolders().contains(fullName)) {
       Window.alert(MESSAGES.duplicateFolderNameError(fullName));
       return false;
     }
