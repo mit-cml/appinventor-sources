@@ -17,13 +17,13 @@
     In-browser blocks editor for App Inventor based on Blockly
   </description>
 
-	<target name="all" 
-		      depends="BlocklyCompile, BlocklyTestbed">
-	</target>
+  <target name="all"
+          depends="BlocklyCompile">
+  </target>
 
-	<target name="tests"
-		      depends="BlocklyeditorTests">
-	</target>
+  <target name="tests"
+          depends="BlocklyTestbed, BlocklyeditorTests">
+  </target>
 
 	<!-- =====================================================================
        Import common directory, task, and target definitions.
@@ -81,7 +81,7 @@
 	
 	<target name="BlocklyTestbed" 
 		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
-		      depends="components_JsonComponentDescription, common_CommonTestUtils">
+		      depends="components_AndroidRuntime, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
 
 		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
