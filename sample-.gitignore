@@ -17,3 +17,5 @@ reports/
 .gwt/
 out/
 *.pyc
+.vagrant/
+*.log
