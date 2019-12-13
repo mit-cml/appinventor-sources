@@ -84,6 +84,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
@@ -2025,38 +2026,47 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
-          for (FileData fd: datastore.query(FileData.class).ancestor(projectKey)) {
+          for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+            fileData.add(fd);
+          }
+          for (int i = 0; i < fileData.size(); i ++) {
+            FileData fd = fileData.get(i);
             String fileName = fd.fileName;
-            if (fileName.endsWith("scm") || fileName.endsWith("bky") || fileName.endsWith("yail")) {
+            if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
               String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
-              int count = screens.containsKey(fileNameNoExt)? screens.get(fileNameNoExt) + 1: 1;
+              int count = screens.containsKey(fileNameNoExt) ? screens.get(fileNameNoExt) + 1 : 1;
               screens.put(fileNameNoExt, count);
             }
           }
-          boolean foundFiles = false;
-          for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+          Iterator it = fileData.iterator();
+          while (it.hasNext()) {
+            FileData fd = (FileData)it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new IOException("FATAL Error, external component in gallery app");
             }
-            if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
+            if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+              it.remove();
+            }
+            else {
               if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
                 // Skip legacy remix history files that were previous stored with the project
-                continue;
+                it.remove();
               }
               if (fileName.startsWith("screenshots") && !includeScreenShots) {
                 // Only include screenshots if asked...
-                continue;
+                it.remove();
               }
-              if (fileName.endsWith("scm") || fileName.endsWith("blk") || fileName.endsWith("bky") || (fileName.endsWith("yail") && includeYail)) {
+              if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || (fileName.endsWith(".yail") && includeYail))) {
                 String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
                 if ((Integer)screens.get(fileNameNoExt) < 3) {
-                  LOG.log(Level.INFO, "Not adding file to building process ", fileName);
-                  continue;
+                  LOG.log(Level.INFO, "Not adding file to build ", fileName);
+                  it.remove();
+                  deleteFile(userId, projectId, fileName);
                 }
               }
 
-              if (fileName.endsWith(".yail") && !includeYail) {
+              if (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail) {
                 // Don't include YAIL files when exporting projects
                 // includeYail will be set to true when we are exporting the source
                 // to send to the buildserver or when the person exporting
@@ -2064,13 +2074,11 @@ public class ObjectifyStorageIo implements  StorageIo {
                 // Otherwise Yail files are confusing cruft. In the case of
                 // the Firebase Component they may contain secrets which we would
                 // rather not have leak into an export .aia file or into the Gallery
-                continue;
+                it.remove();
               }
-              fileData.add(fd);
-              foundFiles = true;
             }
           }
-          if (foundFiles) {
+          if (fileData.size() > 0) {
             ProjectData pd = datastore.find(projectKey);
             projectName.t = pd.name;
             if (includeProjectHistory && !Strings.isNullOrEmpty(pd.history)) {
