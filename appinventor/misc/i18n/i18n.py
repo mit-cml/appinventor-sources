@@ -119,6 +119,8 @@ def split(args):
                             description = None
                         line = line[len('appengine.'):]
                         parts = [part.strip() for part in line.split(' = ', 1)]
+                        if parts.__len__() < 2:
+                            continue
                         ode_output.write(parts[0])
                         ode_output.write(' = ')
                         if parts[0].endswith('Params') or parts[0].endswith('Properties') or \
@@ -129,13 +131,15 @@ def split(args):
                             parts[1] = ''.join(parts[1].split())
                         ode_output.write(parts[1].replace("'", "''"))
                         ode_output.write('\n\n')
-                    else:
+                    elif line.startswith('blockseditor.'):
                         parts = [part.strip() for part in line[len('blockseditor.'):].split('=', 1)]
-                        blockly_output.write('    Blockly.Msg.')
+                        blockly_output.write('    ')
                         blockly_output.write(parts[0])
                         blockly_output.write(' = ')
                         blockly_output.write(js_stringify(parts[1]))
                         blockly_output.write(';\n')
+                    else:
+                        blockly_output.write('PARSE_ERROR: ' + line)
                 blockly_output.write(blockly_footer)
 
 
@@ -144,7 +148,7 @@ def propescape(s):
 
 
 def read_block_translations(lang_code):
-    linere = re.compile(r"(Blockly\.Msg\.[A-Z_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
+    linere = re.compile(r"(Blockly\.Msg\.[A-Z0-9_]+)\s*=\s*?[\"\'\[](.*)[\"\'\]];")
     continuation = re.compile(r'\s*\+?\s*(?:\"|\')?(.*)?(?:\"|\')\s*\+?')
     with open(os.path.join(appinventor_dir, 'blocklyeditor', 'src', 'msg', lang_code, '_messages.js')) as js:
         comment = None
@@ -156,15 +160,22 @@ def read_block_translations(lang_code):
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith(r'//'):
-                comment = line[3:]
-                continue
             if is_block_comment:
-                full_line += line
+                full_line += ' ' + line
                 if line.endswith(r'*/'):
                     comment = full_line
                     is_block_comment = False
                     full_line = ''
+                continue
+            if line.startswith(r'/*') and line.endswith(r'*/'):
+                comment = line[2:][:-2].lstrip()
+                continue
+            if line.startswith(r'/*') and line.find('*/') > -1:  # Handle block comment that is only part of a line
+                line_partial_comment = line.split('*/', 1)
+                comment = line_partial_comment[0]
+                line = line_partial_comment[1].strip()
+            if line.startswith(r'//'):
+                comment = line[2:].lstrip()
                 continue
             if line.startswith(r'/*'):
                 full_line = line
@@ -173,14 +184,20 @@ def read_block_translations(lang_code):
             if line.endswith('{'):
                 full_line = ''
                 continue
-            if line.startswith('+') or line.endswith('+'):
-                line = continuation.match(line).group(1)
+            if line.startswith('+'):
+                line = line[3:]
+                full_line = full_line[:-1]
+            if line.endswith('+'):
+                line = continuation.match(line).group(1).strip()
                 is_line_continuation = True
             elif is_line_continuation:
                 line = line[1:]
                 is_line_continuation = False
+            if line.find('_HELPURL') > -1:  # HELPURL strings are not currently translated
+                continue
             full_line += line
             if full_line.endswith(';'):
+                is_line_continuation = False
                 match = linere.match(full_line)
                 if match is not None:
                     items.append('blockseditor.%s = %s' % (match.group(1), propescape(match.group(2))))
@@ -188,6 +205,7 @@ def read_block_translations(lang_code):
                         items.append('# Description: %s' % comment)
                         comment = None
                 full_line = ''
+
         return '\n'.join(items) + '\n'
 
 
@@ -206,11 +224,16 @@ def combine(args):
         with open(javaprops, 'rt', encoding='utf8') as props:
             lastline = ''
             for line in props:
-                if lastline.endswith(r'\n') or line.startswith('#') or line.strip() == '':
+                if lastline != '':
+                    line = lastline + line
+                if line.endswith('\\\n'):
+                    lastline = line[:-2] + ' '
+                elif line.startswith('#') or line.strip() == '':
                     out.write(line)
                 else:
                     out.write('appengine.')
                     out.write(line)
+                    lastline = ''
         out.write('\n# Blocks editor definitions\n')
         out.write(blockprops)
         out.close()
@@ -264,12 +287,11 @@ def blockly2js(args):
                     pass
                 else:
                     parts = [part.strip() for part in line[len('blockseditor.'):].split('=', 1)]
-                    blockly_output.write('    Blockly.Msg.')
+                    blockly_output.write('    ')
                     blockly_output.write(parts[0])
                     blockly_output.write(' = ')
                     blockly_output.write(js_stringify(parts[1]))
                     blockly_output.write(';\n')
-
             blockly_output.write(blockly_footer)
 
 def parse_args():
