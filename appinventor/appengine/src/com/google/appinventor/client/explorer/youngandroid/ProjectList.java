@@ -431,7 +431,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
       FolderWidgets fw = new FolderWidgets();
       configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
-      table.setWidget(row, 0, fw.checkBox); // These duplicate lines of table.setWidget code do
+      table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
       table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
       table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
       table.setWidget(row, 3, fw.dateModifiedLabel);
@@ -881,8 +881,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       return (oldParent == null) ? newFolder : newFolder + "/" + oldParent;
     }
     if (newFolder == null){
-      final String result = oldParent.replace(currentFolder + "/", "");
-      return (result == "") ? null : result;
+      final String result = oldParent.replace(currentFolder, "");
+      return (result.indexOf('/') == 0) ? result.substring(1) : null;
     }
     return oldParent.replace(currentFolder, newFolder);
   }
