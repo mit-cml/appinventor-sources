@@ -80,15 +80,14 @@ import com.google.appengine.tools.cloudstorage.RetryParams;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -2013,6 +2012,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     // entity group.
     final List<FileData> fileData = new ArrayList<FileData>();
     final Result<String> projectName = new Result<String>();
+    final Map<String, Integer> screens = new HashMap<String, Integer>();
     projectName.t = null;
     String fileName = null;
 
@@ -2025,6 +2025,14 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
+          for (FileData fd: datastore.query(FileData.class).ancestor(projectKey)) {
+            String fileName = fd.fileName;
+            if (fileName.endsWith("scm") || fileName.endsWith("bky") || fileName.endsWith("yail")) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              int count = screens.containsKey(fileNameNoExt)? screens.get(fileNameNoExt) + 1: 1;
+              screens.put(fileNameNoExt, count);
+            }
+          }
           boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
             String fileName = fd.fileName;
@@ -2040,6 +2048,13 @@ public class ObjectifyStorageIo implements  StorageIo {
                 // Only include screenshots if asked...
                 continue;
               }
+              if (fileName.endsWith("scm") || fileName.endsWith("blk") || fileName.endsWith("bky") || (fileName.endsWith("yail") && includeYail)) {
+                String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+                if ((Integer)screens.get(fileNameNoExt) < 3) {
+                  continue;
+                }
+              }
+
               if (fileName.endsWith(".yail") && !includeYail) {
                 // Don't include YAIL files when exporting projects
                 // includeYail will be set to true when we are exporting the source
