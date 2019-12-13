@@ -2051,6 +2051,7 @@ public class ObjectifyStorageIo implements  StorageIo {
               if (fileName.endsWith("scm") || fileName.endsWith("blk") || fileName.endsWith("bky") || (fileName.endsWith("yail") && includeYail)) {
                 String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
                 if ((Integer)screens.get(fileNameNoExt) < 3) {
+                  LOG.log(Level.INFO, "Not adding file to building process ", fileName);
                   continue;
                 }
               }
