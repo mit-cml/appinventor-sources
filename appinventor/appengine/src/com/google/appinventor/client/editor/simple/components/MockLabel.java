@@ -99,8 +99,8 @@ public final class MockLabel extends MockVisibleComponent {
    */
   private void setTextProperty(String text) {
     savedText = text;
+    String sanitizedText = SimpleHtmlSanitizer.sanitizeHtml(text).asString();
     if (getPropertyValue(PROPERTY_NAME_HTMLFORMAT).equals("True")) {
-      String sanitizedText = SimpleHtmlSanitizer.sanitizeHtml(text).asString();
       labelWidget.setHTML(
         (sanitizedText == null) ? 
         sanitizedText : 
@@ -108,9 +108,9 @@ public final class MockLabel extends MockVisibleComponent {
       );
     } else {
       labelWidget.setHTML(
-        (text == null) ?
-        text :
-        text.replaceAll("\\\\n", "<br>")
+        (sanitizedText == null) ?
+        sanitizedText :
+        sanitizedText.replaceAll("\\\\n", "<br>")
       );
     }
   }
