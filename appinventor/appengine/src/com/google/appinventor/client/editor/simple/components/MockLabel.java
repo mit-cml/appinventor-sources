@@ -104,7 +104,7 @@ public final class MockLabel extends MockVisibleComponent {
       labelWidget.setHTML(
         (sanitizedText == null) ? 
         sanitizedText : 
-        sanitizedText.replaceAll("\\n", "")
+        sanitizedText.replaceAll("\\\\n", " ")
       );
     } else {
       labelWidget.setHTML(
