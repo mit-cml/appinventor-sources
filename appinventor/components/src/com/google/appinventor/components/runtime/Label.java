@@ -71,6 +71,9 @@ public final class Label extends AndroidViewComponent {
   // Label Format
   private boolean htmlFormat;
 
+  // HTML content of the label
+  private String htmlContent;
+
   /**
    * Creates a new Label component.
    *
@@ -364,6 +367,22 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextHTML(view, text);
     } else {
       TextViewUtil.setText(view, text);
+    }
+    htmlContent = text;
+  }
+
+  /**
+   * Returns the content of the Label as HTML. This is only useful if the
+   * HTMLFormat property is true.
+   *
+   * @return the HTML content of the label
+   */
+  @SimpleProperty
+  public String HTMLContent() {
+    if (htmlFormat) {
+      return htmlContent;
+    } else {
+      return TextViewUtil.getText(view);
     }
   }
 

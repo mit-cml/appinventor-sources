@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -113,6 +113,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int backgroundColor;
   private String backgroundImagePath = "";
   private int textAlignment;
+  private boolean extendMovesOutsideCanvas = false;
 
   // Default values
   private static final int MIN_WIDTH_HEIGHT = 1;
@@ -194,7 +195,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     public static final int FINGER_WIDTH = 24;
 
     /**
-     * The width of a finger.  This is used in determining whether a sprite is
+     * The height of a finger.  This is used in determining whether a sprite is
      * touched.  Specifically, this is used to determine the vertical extent
      * of a bounding box that is tested for collision with each sprite.  The
      * horizontal extent is determined by {@link #FINGER_WIDTH}.
@@ -277,6 +278,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           // Otherwise, it's a drag.
           isDrag = true;
           drag = true;
+
+          // Don't let MOVE extend beyond the bounds of the canvas
+          // if ExtendMovesOutsideCanvas is false
+          if (((x <= 0) || (x > width) || (y <= 0) || (y > height))
+              && (! extendMovesOutsideCanvas)) {
+            break;
+          }
 
           // Update draggedSprites by adding any that are currently being
           // touched.
@@ -1112,6 +1120,21 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
+  @SimpleProperty(description = 
+      "Determines whether moves can extend beyond the canvas borders.  "  +
+      " Default is false. This should normally be false, and the property " +
+      "is provided for backwards compatibility.",
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = true)
+  public boolean ExtendMovesOutsideCanvas() {
+    return extendMovesOutsideCanvas;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(userVisible = true)
+  public void ExtendMovesOutsideCanvas(boolean extend){
+    extendMovesOutsideCanvas = extend;   
+  }
 
   // Methods supporting event handling
 

@@ -201,8 +201,10 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
    * draggable becomes Draggable;
    * infobox becomes EnableInfobox;
    * fill becomes FillColor;
+   * fill-opacity becomes FillOpacity;
    * image becomes ImageAsset;
    * stroke becomes StrokeColor;
+   * stroke-opacity becomes StrokeOpacity;
    * stroke-width becomes StrokeWidth;
    * title becomes Title;
    * visible becomes Visible
@@ -279,6 +281,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   public void removeFeature(MapFactory.MapFeature feature) {
     features.remove(feature);
     getMap().removeFeature(feature);
+  }
+
+  @Override
+  public Iterator<MapFeature> iterator() {
+    return features.iterator();
   }
 
   void addFeature(MapFactory.MapMarker marker) {

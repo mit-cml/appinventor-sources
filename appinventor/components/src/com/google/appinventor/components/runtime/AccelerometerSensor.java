@@ -78,7 +78,7 @@ import java.util.Queue;
     iconName = "images/accelerometersensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
-    implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
+    implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
   // Logging and Debugging
   private final static String LOG_TAG = "AccelerometerSensor";
@@ -134,7 +134,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   public AccelerometerSensor(ComponentContainer container) {
     super(container.$form());
     form.registerForOnResume(this);
-    form.registerForOnStop(this);
+    form.registerForOnPause(this);
 
     enabled = true;
     resources = container.$context().getResources();
@@ -468,10 +468,10 @@ public int getDeviceDefaultOrientation() {
     }
   }
 
-  // OnStopListener implementation
+  // OnPauseListener implementation
 
   @Override
-  public void onStop() {
+  public void onPause() {
     if (enabled) {
       stopListening();
     }
