@@ -1156,6 +1156,10 @@ none
                     their
                     boolean state in response. They are identical to Checkboxes except in appearance.</p>
                   <p> Switches have an on (true) state and an off (false) state. A switch component raises an event when the user taps it to toggle between states. </p>
+                  <p> Switches does not work on Android versions < 4.0. So Switch will automatically get
+                      converted to a Checkbox on a devices older than SDK 14.<br> 
+                      To test Switches in the emulator user need to upgrade to newer emulator packages as older emulators run Android 2.1. </p>
+
                   <h3> Properties </h3>
                   <dl>
                     <dt> <code> BackgroundColor </code> </dt>
