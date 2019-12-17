@@ -2062,7 +2062,9 @@ public class ObjectifyStorageIo implements  StorageIo {
                 if ((Integer)screens.get(fileNameNoExt) < 3) {
                   LOG.log(Level.INFO, "Not adding file to build ", fileName);
                   it.remove();
-                  deleteFile(userId, projectId, fileName);
+                  if (fileName.endsWith(".yail")) {
+                    deleteFile(userId, projectId, fileName);
+                  }
                 }
               }
 
