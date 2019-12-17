@@ -320,6 +320,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SpeechRecognizer")) {
         srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Switch")) {
+        srcCompVersion = upgradeSwitchProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
@@ -739,6 +742,9 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Value", "Checked");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1437,6 +1443,14 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // Added PasswordDialog
       srcCompVersion = 6;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeSwitchProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+        srcCompVersion = 2;
     }
     return srcCompVersion;
   }

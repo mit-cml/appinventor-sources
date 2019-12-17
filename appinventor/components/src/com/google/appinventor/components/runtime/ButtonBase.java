@@ -43,12 +43,12 @@ import java.io.IOException;
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public abstract class ButtonBase extends AndroidViewComponent
+public abstract class ButtonBase<T extends android.widget.Button> extends AndroidViewComponent
     implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
 
   private static final String LOG_TAG = "ButtonBase";
 
-  private final android.widget.Button view;
+  protected T view;
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
@@ -63,28 +63,28 @@ public abstract class ButtonBase extends AndroidViewComponent
   private static final int SHAPED_DEFAULT_BACKGROUND_COLOR = Color.LTGRAY;
 
   // Backing for text alignment
-  private int textAlignment;
+  protected int textAlignment;
 
   // Backing for background color
-  private int backgroundColor;
+  protected int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  protected int fontTypeface;
 
   // Backing for font bold
-  private boolean bold;
+  protected boolean bold;
 
   // Used for determining if visual feedback should be provided for buttons that have images
   private boolean showFeedback=true;
 
   // Backing for font italic
-  private boolean italic;
+  protected boolean italic;
 
   // Backing for text color
-  private int textColor;
+  protected int textColor;
 
   // Backing for button shape
-  private int shape;
+  protected int shape;
 
   // Image path
   private String imagePath = "";
@@ -121,9 +121,9 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param container  container, component will be placed in
    */
-  public ButtonBase(ComponentContainer container) {
+  public ButtonBase(ComponentContainer container, T view) {
     super(container);
-    view = new android.widget.Button(container.$context());
+    this.view = view;
 
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
@@ -155,6 +155,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     Text("");
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
+  }
+
+  public ButtonBase(ComponentContainer container) {
+    this(container, (T) (new android.widget.Button(container.$context())));
   }
 
     /**

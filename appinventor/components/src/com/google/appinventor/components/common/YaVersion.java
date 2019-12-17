@@ -721,7 +721,10 @@ public class YaVersion {
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
-  public static final int CHECKBOX_COMPONENT_VERSION = 2;
+  // For CHECKBOX_COMPONENT_VERSION 3:
+  //  - Add properties Image, TextAlignment, Shape, and ShowFeedback
+  //  - Add event Click
+  public static final int CHECKBOX_COMPONENT_VERSION = 3;
 
   // For CIRCLE_COMPONENT_VERSION 1:
   // - Initial implementation of Circle for Maps
@@ -1117,7 +1120,10 @@ public class YaVersion {
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
-  public static final int SWITCH_COMPONENT_VERSION = 1;
+  // For SWITCH_COMPONENT_VERSION 2
+  //  - Add properties Image, TextAlignment, Shape, and ShowFeedback
+  //  - Add event Click
+  public static final int SWITCH_COMPONENT_VERSION = 2;
 
   public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
 
