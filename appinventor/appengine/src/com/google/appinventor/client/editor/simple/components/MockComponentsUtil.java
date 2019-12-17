@@ -59,7 +59,11 @@ public final class MockComponentsUtil {
    * @param image  URL
    */
   static void setWidgetBackgroundImage(Widget widget, String image) {
-    DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
+    if (image.isEmpty()) {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "none");
+    } else {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
+    }
     DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
     DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
     DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
