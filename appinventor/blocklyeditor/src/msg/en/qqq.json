@@ -148,6 +148,8 @@
 	"Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT": "No description for Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT",
 	"Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE": "No description for Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE",
 	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE": "No description for Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE",
+	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT": "No description for Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT",
+	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP": "No description for Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "/* [lyn, 10/14/13] Removed for now. May come back some day. Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = 'nothing'; Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL = '/reference/blocks/control.html#nothing'; Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP = 'Returns nothing. Used to initialize variables or can be plugged into a return socket if no value needed to return. this is equivalent to null or None.'; */",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME": "No description for Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "No description for Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT",

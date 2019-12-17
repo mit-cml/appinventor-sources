@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 13:50:52.687311",
+		"lastupdated": "2019-12-17 16:44:33.039264",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -153,7 +153,9 @@
 	"Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP": "Runs the blocks in 'do' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.",
 	"Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT": "do/result",
 	"Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE": "do result",
-	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE": "evaluate but ignore result'Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = 'Runs the connected block of code and ignores the return value (if any). Useful if need to call a procedure with a return value but don't need the value.",
+	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE": "evaluate but ignore result",
+	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT": "eval but ignore",
+	"Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP": "Runs the connected block of code and ignores the return value (if any). Useful if need to call a procedure with a return value but don't need the value.",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "open another screen",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME": "screenName",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "open screen",
@@ -188,7 +190,7 @@
 	"Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT": "value",
 	"Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT": "break",
 	"Blockly.Msg.LANG_CATEGORY_LOGIC": "Logic",
-	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ": "Tests whether two things are equal. \nThe things being compared can be any things, not only numbers. \nNumbers are considered to be equal to their printed form as strings, \nfor example, the number 0 is equal to the text \'0\'.  Also, two strings \nthat represent numbers are equal if the numbers are equal, for example \n\'1\' is equal to \'01\'.",
+	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ": "Tests whether two things are equal. \nThe things being compared can be any things, not only numbers. \nNumbers are considered to be equal to their printed form as strings, \nfor example, the number 0 is equal to the text '0'.  Also, two strings \nthat represent numbers are equal if the numbers are equal, for example \n'1' is equal to '01'.",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ": "Return true if both inputs are not equal to each other.",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME": "logic equal",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_EQ": "=",

@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 13:56:46.395139",
+		"lastupdated": "2019-12-17 16:37:04.892269",
 		"locale": "de",
 		"messagedocumentation" : "qqq"
 	},
@@ -179,7 +179,7 @@
 	"Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT": "Wert",
 	"Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT": "break",
 	"Blockly.Msg.LANG_CATEGORY_LOGIC": "Logik",
-	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ": "Testet, ob zwei Dinge gleich sind. \nDie Dinge, die verglichen werden, können irgendwelche Dinge sein, nicht nur Zahlen. \nZahlen werden gleich wie ihre gedruckte Form als Zeichenkette betrachtet. \nZum Beispiel ist die Zahl 0 gleich wie der Text \'0\'. Zudem sind zwei Zeichenketten, \ndie Zahlen repräsentieren, gleich, wenn die Zahlen gleich sind, zum Beispiel \n\'1\' ist gleich wie \'01\'.",
+	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ": "Testet, ob zwei Dinge gleich sind. \nDie Dinge, die verglichen werden, können irgendwelche Dinge sein, nicht nur Zahlen. \nZahlen werden gleich wie ihre gedruckte Form als Zeichenkette betrachtet. \nZum Beispiel ist die Zahl 0 gleich wie der Text '0'. Zudem sind zwei Zeichenketten, \ndie Zahlen repräsentieren, gleich, wenn die Zahlen gleich sind, zum Beispiel \n'1' ist gleich wie '01'.",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ": "Gibt wahr (true) zurück, wenn die Eingaben nicht gleich sind.",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME": "logik gleich",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_EQ": "=",
