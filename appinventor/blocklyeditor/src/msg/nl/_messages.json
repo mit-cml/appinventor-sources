@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 15:07:46.507449",
+		"lastupdated": "2019-12-17 17:00:48.006163",
 		"locale": "nl",
 		"messagedocumentation" : "qqq"
 	},
@@ -233,7 +233,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Netwerk Communicatie Fout met de AI Companion. <br />Probeer eens de smartphone te herstarten en opnieuw te connecteren.",
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO": "doe",
 	"Blockly.Msg.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM": "kies een willekeurig item",
-	"Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT": "Controleert of tekst1 lexicografisch kleiner is dan text2. \ NAls een stuk tekst het voorvoegsel is van de andere, dan wordt de kortere tekst \ nals kleiner beschouwd. Kleine letters worden voorafgegaan door hoofdletters.",
+	"Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT": "Controleert of tekst1 lexicografisch kleiner is dan text2. \nAls een stuk tekst het voorvoegsel is van de andere, dan wordt de kortere tekst \nals kleiner beschouwd. Kleine letters worden voorafgegaan door hoofdletters.",
 	"Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT": "voeg tekst toe",
 	"Blockly.Msg.REPL_CANCEL": "Annuleren",
 	"Blockly.Msg.LANG_CATEGORY_MATH": "Wiskunde",

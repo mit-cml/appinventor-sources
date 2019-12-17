@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 14:07:56.535891",
+		"lastupdated": "2019-12-17 16:56:05.242194",
 		"locale": "fr",
 		"messagedocumentation" : "qqq"
 	},
@@ -300,8 +300,8 @@
 	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD": "degrés à radians",
 	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG": "radians à degrés' ",
 	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT": "convertir",
-	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD": "Retourne la valeur en radian dans l'intervalle\ n[-u03C0, + u03C0) correspondant à son argument en degrés.",
-	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG": "Renvoie la valeur de degré dans l'intervalle\ n[0, 360) correspondant à son argument en radians.",
+	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD": "Retourne la valeur en radian dans l'intervalle\n[-u03C0, + u03C0) correspondant à son argument en degrés.",
+	"Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG": "Renvoie la valeur de degré dans l'intervalle\n[0, 360) correspondant à son argument en radians.",
 	"Blockly.Msg.LANG_MATH_DIVIDE": "u00F7",
 	"Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO": "modulo de",
 	"Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_QUOTIENT": "quotient de' ",

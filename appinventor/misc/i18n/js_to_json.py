@@ -122,11 +122,11 @@ def main():
       match = linere.match(full_line)
       if match is not None:
         result = {}
-        result['meaning'] = match.group(1).replace("\\'", "'")
-        result['source'] = match.group(2).replace("\\'", "'")
+        result['meaning'] = match.group(1).replace("\\\"", "'").replace("\\'", "'").replace("\(", "(").replace("\)", ")")
+        result['source'] = match.group(2).replace("\\\"", "'").replace("\\'", "'").replace("\(", "(").replace("\)", ")")
         if not comment:
           comment = 'No description for ' + result['meaning']
-        result['description'] = comment.replace("\\'", "'")
+        result['description'] = comment.replace("\\\"", "'").replace("\\'", "'").replace("\(", "(").replace("\)", ")")
         comment = None
         results.append(result)
       full_line = ''

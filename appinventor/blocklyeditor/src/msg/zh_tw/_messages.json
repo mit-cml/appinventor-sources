@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 16:08:26.938917",
+		"lastupdated": "2019-12-17 17:08:18.951599",
 		"locale": "zh_tw",
 		"messagedocumentation" : "qqq"
 	},
@@ -410,10 +410,10 @@
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP": "將文字按CSV格式進行解析，生成一個包含各欄位資料的清單。對於CSV格式文字而言，欄位中如果有未轉譯的換行符號將導致錯誤（在有多行欄位的情況下），而只在整行文字的末端才出現換行符或CRLF則是正確的。",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV": "清單轉CSV表格",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_INPUT_LIST": "清單",
-	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP": "將清單轉換為帶標題行的表格形式，且回傳代表該表格的CSV（逗號分隔數值）字元串，清單中的每一項本身還可以作為表示CSV表格行的清單，清單行中的每一項都可看成是一個欄位，在CSV字元串中以雙引號方式進行標識。在回傳的CSV文字中，資料中的各項皆是以逗號分隔，而各列則以CRLF \(\\r\\n\)進行分隔。",
+	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP": "將清單轉換為帶標題行的表格形式，且回傳代表該表格的CSV（逗號分隔數值）字元串，清單中的每一項本身還可以作為表示CSV表格行的清單，清單行中的每一項都可看成是一個欄位，在CSV字元串中以雙引號方式進行標識。在回傳的CSV文字中，資料中的各項皆是以逗號分隔，而各列則以CRLF (\\r\\n)進行分隔。",
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV": "CSV表格轉清單",
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT": "CSV文字",
-	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP": "對CSV（逗號分隔數值）格式的文字進行解析，並產生一筆一筆的記錄，其中的每一欄位都是一個清單，各記錄間分別以換行符號\(\\n\)或CRLF \(\\r\\n\)方式分隔。",
+	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP": "對CSV（逗號分隔數值）格式的文字進行解析，並產生一筆一筆的記錄，其中的每一欄位都是一個清單，各記錄間分別以換行符號(\\n)或CRLF (\\r\\n)方式分隔。",
 	"Blockly.Msg.LANG_LISTS_INSERT_TITLE_INSERT_LIST": "插入清單項",
 	"Blockly.Msg.LANG_LISTS_INSERT_INPUT_LIST": "清單",
 	"Blockly.Msg.LANG_LISTS_INSERT_INPUT_INDEX": "索引值",

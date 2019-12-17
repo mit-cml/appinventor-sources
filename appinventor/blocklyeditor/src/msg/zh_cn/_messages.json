@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-12-17 16:07:54.535304",
+		"lastupdated": "2019-12-17 17:07:56.970843",
 		"locale": "zh_cn",
 		"messagedocumentation" : "qqq"
 	},
@@ -410,10 +410,10 @@
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP": "将文本按CSV格式进行解析，生成一个包含各字段数据的列表。对于CSV格式文本而言，字段中出现未转义的换行符则会出错（在有多行字段的情况下），而只在整行文本的末端才出现换行符或CRLF则是正确的。",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV": "列表转换为CSV表",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_INPUT_LIST": "列表",
-	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP": "将列表转换为行优先形式的表格，且返回表示该表格的CSV格式文本，列表中本身可以代表CSV表中的一行，列表中的每一项都可看成是一个字段，在CSV格式文本中以双引号引用，在返回的CSV文本中，行中数据以逗号分隔，行则以CRLF \(\\r\\n\)分隔。",
+	"Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP": "将列表转换为行优先形式的表格，且返回表示该表格的CSV格式文本，列表中本身可以代表CSV表中的一行，列表中的每一项都可看成是一个字段，在CSV格式文本中以双引号引用，在返回的CSV文本中，行中数据以逗号分隔，行则以CRLF (\\r\\n)分隔。",
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV": "CSV表转换为列表",
 	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT": "文本",
-	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP": "将文本按CSV格式进行解析，并生成多行列表，其中的每一项又都是一个字段列表，各行间分别以换行符\(\\n\)或CRLF \(\\r\\n\)分隔。",
+	"Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP": "将文本按CSV格式进行解析，并生成多行列表，其中的每一项又都是一个字段列表，各行间分别以换行符(\\n)或CRLF (\\r\\n)分隔。",
 	"Blockly.Msg.LANG_LISTS_INSERT_TITLE_INSERT_LIST": "插入列表项",
 	"Blockly.Msg.LANG_LISTS_INSERT_INPUT_LIST": "列表",
 	"Blockly.Msg.LANG_LISTS_INSERT_INPUT_INDEX": "索引值",
