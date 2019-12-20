@@ -423,8 +423,15 @@ public abstract class ButtonBase extends AndroidViewComponent
   private Drawable getSafeBackgroundDrawable() {
     if (myBackgroundDrawable == null) {
       Drawable.ConstantState state = defaultButtonDrawable.getConstantState();
-      if (state != null) {
-        myBackgroundDrawable = state.newDrawable().mutate();
+      if (state != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        try {
+          myBackgroundDrawable = state.newDrawable().mutate();
+        } catch (NullPointerException e) {
+          // We see this on SDK 7, but given we can't easily test every version
+          // this is meant as a safeguard.
+          Log.e(LOG_TAG, "Unable to clone button drawable", e);
+          myBackgroundDrawable = defaultButtonDrawable;
+        }
       } else {
         // Since we can't make a copy of the default we'll just use it directly
         myBackgroundDrawable = defaultButtonDrawable;
