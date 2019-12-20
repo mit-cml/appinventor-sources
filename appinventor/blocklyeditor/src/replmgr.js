@@ -268,11 +268,13 @@ Blockly.ReplMgr.pollYail = function(workspace) {
     } catch (err) {                  // We get an error on FireFox when window is gone.
         return;
     }
+    var self = this;
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        this.buildYail(workspace);
-    }
-    if (top.ReplState.state == this.rsState.CONNECTED) {
-        RefreshAssets(function() {});
+        RefreshAssets(function() {
+            if (top.ReplState.state == self.rsState.CONNECTED) {
+                self.buildYail(workspace);
+            }
+        });
     }
 };
 
