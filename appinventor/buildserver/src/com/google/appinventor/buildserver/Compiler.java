@@ -794,11 +794,7 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
       out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
-      if (isRound) {
-        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_round\" />\n");
-      }else{
-        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
-      }
+      out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
       out.write("</adaptive-icon>\n");
       out.close();
     } catch (IOException e) {
@@ -1766,8 +1762,9 @@ public final class Compiler {
    */
   private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Ratio of icon size to png image size for foreground/round icon is 0.80
-    double iconWidth = imageWidth * 0.80;
+    // According to the adaptive icon documentation, both layers are 108x108dp but only the inner
+    // 72x72dp appears in the masked viewport, so we shrink down the size of the image accordingly.
+    double iconWidth = imageWidth * 72.0 / 108.0;
     // Round iconWidth value to even int for a centered png
     int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
     Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
