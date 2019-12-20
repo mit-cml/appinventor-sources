@@ -20,7 +20,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     
     _recordingSession = AVAudioSession.sharedInstance()
     do {
-      setCategory(.record, for: _recordingSession)
+      setCategory(.playAndRecord, for: _recordingSession)
       try _recordingSession.setActive(true)
       _recordingSession.requestRecordPermission() { [unowned self] allowed in
         DispatchQueue.main.async {
