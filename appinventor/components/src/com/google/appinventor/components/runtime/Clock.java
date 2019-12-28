@@ -22,9 +22,11 @@ import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -603,6 +605,21 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleFunction (description = "Text representing the time of an instant")
   public static String FormatTime(Calendar instant) {
     return Dates.FormatTime(instant);
+  }
+
+  /**
+   * Changes the timezone of a given instant.
+   *
+   * @param instant : instant to modify
+   * @param timezone : timezone to apply to instant
+   * @return : updated instant
+   */
+  @SimpleFunction(description = "Updates the timezone in which the instant is saved at")
+  public static Calendar ChangeTimezone(Calendar instant, String timezone) {
+    if (Arrays.asList(TimeZone.getAvailableIDs()).contains(timezone))
+      return instant.setTimeZone(TimeZone.getTimeZone(timezone));
+    else
+      throw new YailRuntimeError("Your given timezone is not a valid timezone.");
   }
 
   @Override
