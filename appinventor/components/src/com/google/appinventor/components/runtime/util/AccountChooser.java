@@ -149,7 +149,7 @@ public class AccountChooser {
       e.printStackTrace();
     }
     Log.i(LOG_TAG, "Selected: " + account);
-    return account == NO_ACCOUNT ? null : account;
+    return account.equals(NO_ACCOUNT) ? null : account;
   }
 
   private SharedPreferences getPreferences() {
