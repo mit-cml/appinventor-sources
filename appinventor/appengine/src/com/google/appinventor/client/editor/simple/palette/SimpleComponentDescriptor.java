@@ -10,46 +10,7 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.simple.components.MockBall;
-import com.google.appinventor.client.editor.simple.components.MockButton;
-import com.google.appinventor.client.editor.simple.components.MockCanvas;
-import com.google.appinventor.client.editor.simple.components.MockCheckBox;
-import com.google.appinventor.client.editor.simple.components.MockSwitch;
-import com.google.appinventor.client.editor.simple.components.MockCircle;
-import com.google.appinventor.client.editor.simple.components.MockCloudDB;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.editor.simple.components.MockContactPicker;
-import com.google.appinventor.client.editor.simple.components.MockDatePicker;
-import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
-import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
-import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
-import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
-import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
-import com.google.appinventor.client.editor.simple.components.MockImage;
-import com.google.appinventor.client.editor.simple.components.MockImagePicker;
-import com.google.appinventor.client.editor.simple.components.MockImageSprite;
-import com.google.appinventor.client.editor.simple.components.MockLabel;
-import com.google.appinventor.client.editor.simple.components.MockLineString;
-import com.google.appinventor.client.editor.simple.components.MockListPicker;
-import com.google.appinventor.client.editor.simple.components.MockListView;
-import com.google.appinventor.client.editor.simple.components.MockMap;
-import com.google.appinventor.client.editor.simple.components.MockMarker;
-import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
-import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
-import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
-import com.google.appinventor.client.editor.simple.components.MockPolygon;
-import com.google.appinventor.client.editor.simple.components.MockRadioButton;
-import com.google.appinventor.client.editor.simple.components.MockRectangle;
-import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
-import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
-import com.google.appinventor.client.editor.simple.components.MockSlider;
-import com.google.appinventor.client.editor.simple.components.MockSpinner;
-import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
-import com.google.appinventor.client.editor.simple.components.MockTextBox;
-import com.google.appinventor.client.editor.simple.components.MockTimePicker;
-import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
-import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
-import com.google.appinventor.client.editor.simple.components.MockWebViewer;
+import com.google.appinventor.client.editor.simple.components.*;
 
 import com.google.appinventor.shared.storage.StorageUtil;
 
@@ -464,8 +425,10 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
     } else {
-      // TODO(user): add 3rd party mock component proxy here
-      throw new UnsupportedOperationException("unknown component: " + name);
+      String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
+      Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+              pkgName, editor.getProjectId());
+      return new MockVisibleExtension(editor, name, imageFromPath);
     }
   }
 }
