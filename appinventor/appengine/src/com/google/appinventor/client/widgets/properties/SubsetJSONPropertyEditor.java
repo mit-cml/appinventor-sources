@@ -330,13 +330,13 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
               for (int k = 0; k < jsonComponentBlockProps.size(); ++k) {
                 JSONObject jsonComponentBlockType = jsonComponentBlockProps.get(k).isObject();
                 String componentBlockType = jsonComponentBlockType.get("type").isString().stringValue();
-                if (componentBlockType.equals("component_set_get")) {
+                if ("component_set_get".equals(componentBlockType)) {
                   componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("property_name").isString().stringValue(), "PROP");
-                } else if (componentBlockType.equals("component_event")) {
+                } else if ("component_event".equals(componentBlockType)) {
                   JSONValue mutatorValue = jsonComponentBlockType.get("mutatorNameToValue");
                   JSONValue event_name = mutatorValue.isObject().get("event_name");
                   componentPropHash.put(event_name.isString().stringValue(), "EVENT");
-                } else if (componentBlockType.equals("component_method")) {
+                } else if ("component_method".equals(componentBlockType)) {
                   componentPropHash.put(jsonComponentBlockType.get("mutatorNameToValue").isObject().get("method_name").isString().stringValue(), "METHOD");
                 }
               }
@@ -591,7 +591,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   }
 
   protected void updateValue() {
-    if (property.getValue().equals("")) {
+    if ("".equals(property.getValue())) {
       dropDownButton.setCaption("All");
       dropDownButton.setWidth("");
     } else {
