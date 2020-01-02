@@ -81,7 +81,7 @@ public class Clock extends AndroidNonvisibleComponent
       onScreen = true;
     }
 
-    this.timezones = Arrays.asList(TimeZone.getAvailableIDs());
+    timezones = Arrays.asList(TimeZone.getAvailableIDs());
   }
 
   // Only the above constructor should be used in practice.
