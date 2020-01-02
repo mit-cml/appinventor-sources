@@ -312,9 +312,12 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public synchronized void sendComponentData() {
+    sendComponentData(false);
+  }
+
+  public synchronized void sendComponentData(boolean force) {
     try {
-      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true),
-        packageNameFromPath(getFileId()));
+      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true), packageNameFromPath(getFileId()), force);
     } catch (YailGenerationException e) {
       e.printStackTrace();
     }
