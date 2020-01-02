@@ -59,6 +59,8 @@ public class Clock extends AndroidNonvisibleComponent
   private boolean timerAlwaysFires = true;
   private boolean onScreen = false;
 
+  private List<String> timezones = null;
+
   /**
    * Creates a new Clock component.
    *
@@ -78,6 +80,8 @@ public class Clock extends AndroidNonvisibleComponent
       // then onScreen would be false, but the REPL app is, in fact, on screen.
       onScreen = true;
     }
+
+    this.timezones = Arrays.asList(TimeZone.getAvailableIDs());
   }
 
   // Only the above constructor should be used in practice.
@@ -616,7 +620,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Updates the timezone in which the instant is saved at")
   public static Calendar ChangeTimezone(Calendar instant, String timezone) {
-    if (Arrays.asList(TimeZone.getAvailableIDs()).contains(timezone))
+    if (timezones.contains(timezone))
       return instant.setTimeZone(TimeZone.getTimeZone(timezone));
     else
       throw new YailRuntimeError("Your given timezone is not a valid timezone.");
