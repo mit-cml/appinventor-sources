@@ -14,6 +14,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.youngandroid.TextValidators;
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
@@ -591,7 +592,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   }
 
   protected void updateValue() {
-    if ("".equals(property.getValue())) {
+    if (StringUtils.isEmpty(property.getValue())) {
       dropDownButton.setCaption("All");
       dropDownButton.setWidth("");
     } else {
