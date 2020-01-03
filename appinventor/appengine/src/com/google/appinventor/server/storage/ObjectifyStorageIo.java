@@ -2028,9 +2028,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId);
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
             fileData.add(fd);
-          }
-          for (int i = 0; i < fileData.size(); i ++) {
-            FileData fd = fileData.get(i);
             String fileName = fd.fileName;
             if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
               String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
@@ -2038,45 +2035,36 @@ public class ObjectifyStorageIo implements  StorageIo {
               screens.put(fileNameNoExt, count);
             }
           }
-          Iterator it = fileData.iterator();
+          Iterator<FileData> it = fileData.iterator();
           while (it.hasNext()) {
-            FileData fd = (FileData)it.next();
+            FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new IOException("FATAL Error, external component in gallery app");
             }
             if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
               it.remove();
-            }
-            else {
-              if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-                // Skip legacy remix history files that were previous stored with the project
+            } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
+                      (fileName.startsWith("screenshots") && !includeScreenShots) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail)) {
+              // Skip legacy remix history files that were previous stored with the project
+              // only include screenshots if asked ...
+              // Don't include YAIL files when exporting projects
+              // includeYail will be set to true when we are exporting the source
+              // to send to the buildserver or when the person exporting
+              // a project is an Admin (for debugging).
+              // Otherwise Yail files are confusing cruft. In the case of
+              // the Firebase Component they may contain secrets which we would
+              // rather not have leak into an export .aia file or into the Gallery
+              it.remove();
+            } else if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || (fileName.endsWith(".yail") && includeYail))) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              if ((Integer)screens.get(fileNameNoExt) < 3) {
+                LOG.log(Level.INFO, "Not adding file to build ", fileName);
                 it.remove();
-              }
-              if (fileName.startsWith("screenshots") && !includeScreenShots) {
-                // Only include screenshots if asked...
-                it.remove();
-              }
-              if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || (fileName.endsWith(".yail") && includeYail))) {
-                String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
-                if ((Integer)screens.get(fileNameNoExt) < 3) {
-                  LOG.log(Level.INFO, "Not adding file to build ", fileName);
-                  it.remove();
-                  if (fileName.endsWith(".yail")) {
-                    deleteFile(userId, projectId, fileName);
-                  }
+                if (fileName.endsWith(".yail")) {
+                  deleteFile(userId, projectId, fileName);
                 }
-              }
-
-              if (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail) {
-                // Don't include YAIL files when exporting projects
-                // includeYail will be set to true when we are exporting the source
-                // to send to the buildserver or when the person exporting
-                // a project is an Admin (for debugging).
-                // Otherwise Yail files are confusing cruft. In the case of
-                // the Firebase Component they may contain secrets which we would
-                // rather not have leak into an export .aia file or into the Gallery
-                it.remove();
               }
             }
           }
