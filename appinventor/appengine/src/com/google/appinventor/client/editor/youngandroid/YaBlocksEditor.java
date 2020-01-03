@@ -368,21 +368,21 @@ public final class YaBlocksEditor extends FileEditor
     for (int i = 0; i < blockElements.getLength(); ++i) {
       Element blockElem = (Element) blockElements.item(i);
       String blockType = blockElem.getAttribute("type");
-      if (blockType == "component_event") {
+      if ("component_event".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String event_name = mutElem.getAttribute("event_name");
         Set<String> blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
         blockTypes.add(event_name);
         componentBlocks.put(component_type, blockTypes);
-      } else if (blockType == "component_method") {
+      } else if ("component_method".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String method_name = mutElem.getAttribute("method_name");
         Set<String> blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
         blockTypes.add(method_name);
         componentBlocks.put(component_type, blockTypes);
-      } else if (blockType == "component_set_get") {
+      } else if ("component_set_get".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String property_name = mutElem.getAttribute("property_name");
