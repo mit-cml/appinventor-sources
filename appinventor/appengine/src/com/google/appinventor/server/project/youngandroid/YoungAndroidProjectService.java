@@ -831,7 +831,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private String getCurrentHost() {
     if (Server.isProductionServer()) {
-      if (StringUtils.isEmpty(appengineHost.get())) {
+      if (StringUtils.isNullOrEmpty(appengineHost.get())) {
         String applicationVersionId = SystemProperty.applicationVersion.get();
         String applicationId = SystemProperty.applicationId.get();
         return applicationVersionId + "." + applicationId + ".appspot.com";

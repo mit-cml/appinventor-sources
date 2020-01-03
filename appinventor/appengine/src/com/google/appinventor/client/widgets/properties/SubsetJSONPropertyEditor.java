@@ -592,7 +592,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   }
 
   protected void updateValue() {
-    if (StringUtils.isEmpty(property.getValue())) {
+    if (StringUtils.isNullOrEmpty(property.getValue())) {
       dropDownButton.setCaption("All");
       dropDownButton.setWidth("");
     } else {
