@@ -1047,7 +1047,7 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
         if (thisBlock.propertyName) {
-          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTabCatcherElement(),
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTypeName(),
               thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
