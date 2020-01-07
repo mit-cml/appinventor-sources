@@ -235,7 +235,7 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'true.';
 
     Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL = '/reference/blocks/control.html#choose';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'if'
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'if';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST = '';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else';
