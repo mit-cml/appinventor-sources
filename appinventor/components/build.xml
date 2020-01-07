@@ -146,7 +146,7 @@
     <copy toFile="${public.deps.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
-    <copy toFile="${public.deps.dir}/json.jar" file="${lib.dir}/json/json.jar" />
+    <copy toFile="${public.deps.dir}/json.jar" file="${lib.dir}/json/json-android.jar" />
     <copy toFile="${public.deps.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${public.deps.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
     <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
@@ -329,6 +329,29 @@
          destfile="${local.build.dir}/ComponentProcessingLib.jar" />
   </target>
 
+  <target name="CheckAnnotationProcessors"
+          description="Tests whether or not the annotation processors need to be recompiled.">
+    <uptodate property="AnnotationProcessors.uptodate"
+              targetfile="${local.build.dir}/AnnotationProcessors.jar">
+      <srcfiles dir="${src.dir}">
+        <include name="${components.pkg}/scripts/*.java" />
+      </srcfiles>
+      <srcfiles dir="${local.build.dir}">
+        <filename name="ComponentProcessingLib.jar"/>
+        <filename name="HtmlEntities.jar"/>
+      </srcfiles>
+      <srcfiles dir="${public.build.dir}">
+        <filename name="CommonConstants.jar"/>
+      </srcfiles>
+      <srcfiles dir="${build.dir}/common">
+        <filename name="CommonUtils.jar"/>
+      </srcfiles>
+      <srcfiles dir="${lib.dir}/guava">
+        <filename name="guava-14.0.1.jar"/>
+      </srcfiles>
+    </uptodate>
+  </target>
+
   <!-- =====================================================================
        AnnotationProcessors: plugins for processing component annotations
        Note that AnnotationProcessors.jar, produced here, will contain all
@@ -337,7 +360,8 @@
        ===================================================================== -->
   <target name="AnnotationProcessors"
           description="Create plugins for annotation processing"
-          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils">
+          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils,CheckAnnotationProcessors"
+          unless="AnnotationProcessors.uptodate">
 
     <property name="AnnotationProcessors-class.dir"
               location="${class.dir}/AnnotationProcessors" />
@@ -446,6 +470,23 @@
 
     <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
           todir="${public.build.dir}"/>
+  </target>
+
+  <target name="Markdown"
+          depends="AnnotationProcessors,AndroidRuntime">
+    <property name="ComponentDocumentation-class.dir"
+              location="${class.dir}/ComponentDocumentation" />
+    <mkdir dir="${ComponentDocumentation-class.dir}" />
+    <ai.apt apt-classdir="${ComponentDocumentation-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.MarkdownDocumentationGenerator"
+            apt-target="${ComponentDocumentation-class.dir}"/>
+
+    <copy todir="${appinventor.dir}/docs/markdown/reference/components/">
+      <fileset dir="${ComponentDocumentation-class.dir}">
+        <include name="*.md" />
+        <exclude name="internal.md" />
+      </fileset>
+    </copy>
   </target>
 
   <!-- ======================================================================

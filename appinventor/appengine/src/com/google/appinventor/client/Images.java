@@ -92,6 +92,38 @@ public interface Images extends Resources {
    @Source("com/google/appinventor/images/accelerometersensor.png")
    ImageResource accelerometersensor();
 
+   /**
+    * Designer palette item: lightsensor component
+    * <p>
+    * Source: https://feathericons.com/
+    */
+   @Source("com/google/appinventor/images/lightsensor.png")
+   ImageResource lightsensor();
+
+   /**
+    * Designer palette item: barometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/barometer.png")
+   ImageResource barometer();
+
+   /**
+    * Designer palette item: thermometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/thermometer.png")
+   ImageResource thermometer();
+
+  /**
+    * Designer palette item: hygrometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/hygrometer.png")
+   ImageResource hygrometer();
+
   /**
    * Designer palette item: barcode scanner component
    */

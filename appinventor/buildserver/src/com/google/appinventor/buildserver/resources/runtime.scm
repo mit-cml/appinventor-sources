@@ -1336,7 +1336,11 @@
 (define (coerce-to-instant arg)
   (cond
    ((instance? arg java.util.Calendar) arg)
-   (else *non-coercible-value*)))
+   (else
+     (let ((as-millis (coerce-to-number arg)))
+       (if (number? as-millis)
+           (com.google.appinventor.components.runtime.Clock:MakeInstantFromMillis as-millis)
+         *non-coercible-value*)))))
 
 (define (coerce-to-component arg)
   (cond

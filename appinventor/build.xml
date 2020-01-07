@@ -44,10 +44,7 @@
 
   <target name="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
   </target>
 
   <target name="installplay">

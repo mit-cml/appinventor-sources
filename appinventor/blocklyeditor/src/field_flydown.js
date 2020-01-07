@@ -133,10 +133,14 @@ Blockly.FieldFlydown.prototype.onMouseOut_ = function(e) {
 Blockly.FieldFlydown.prototype.showFlydownMaker_ = function() {
   var field = this; // Name receiver in variable so can close over this variable in returned thunk
   return function() {
-    if (Blockly.FieldFlydown.showPid_ != 0) {
-      field.showFlydown_();
-      Blockly.FieldFlydown.showPid_ = 0;
+    if (Blockly.FieldFlydown.showPid_ !== 0 && Blockly.dragMode_ === Blockly.DRAG_NONE) {
+      try {
+        field.showFlydown_();
+      } catch (e) {
+        console.error('Failed to show flydown', e);
+      }
     }
+    Blockly.FieldFlydown.showPid_ = 0;
   };
 };
 
@@ -149,14 +153,12 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
   // much of the code in Blockly.Flydown.prototype.show.
   // alert("FieldFlydown show Flydown");
   Blockly.hideChaff(); // Hide open context menus, dropDowns, flyouts, and other flydowns
-  Blockly.FieldFlydown.openFieldFlydown_ = this; // Remember field to which flydown is attached
   var flydown = Blockly.getMainWorkspace().getFlydown();
-  var flydownSvg = flydown.createDom(this.flyoutCSSClassName);
   // Add flydown to top-level svg, *not* to main workspace svg
   // This is essential for correct positioning of flydown via translation
   // (If it's in workspace svg, it will be additionally translated by
   //  workspace svg translation relative to Blockly.svg.)
-  Blockly.getMainWorkspace().getParentSvg().appendChild(flydownSvg);
+  Blockly.getMainWorkspace().getParentSvg().appendChild(flydown.svgGroup_);
   // adjust scale for current zoom level
   flydown.workspace_.setScale(flydown.targetWorkspace_.scale);
   flydown.setCSSClass(this.flyoutCSSClassName); // This could have been changed by another field.
@@ -175,6 +177,7 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
     x = x + borderBBox.width * flydown.workspace_.scale;
   }
   flydown.showAt(blocksXMLList, x, y);
+  Blockly.FieldFlydown.openFieldFlydown_ = this; // Remember field to which flydown is attached
 };
 
 /**

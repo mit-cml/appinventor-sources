@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -70,6 +71,9 @@ public final class Label extends AndroidViewComponent {
 
   // Label Format
   private boolean htmlFormat;
+
+  // HTML content of the label
+  private String htmlContent;
 
   /**
    * Creates a new Label component.
@@ -165,6 +169,7 @@ public final class Label extends AndroidViewComponent {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -356,7 +361,7 @@ private void setLabelMargins(boolean hasMargins) {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -364,6 +369,22 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextHTML(view, text);
     } else {
       TextViewUtil.setText(view, text);
+    }
+    htmlContent = text;
+  }
+
+  /**
+   * Returns the content of the Label as HTML. This is only useful if the
+   * HTMLFormat property is true.
+   *
+   * @return the HTML content of the label
+   */
+  @SimpleProperty
+  public String HTMLContent() {
+    if (htmlFormat) {
+      return htmlContent;
+    } else {
+      return TextViewUtil.getText(view);
     }
   }
 
@@ -410,6 +431,7 @@ private void setLabelMargins(boolean hasMargins) {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }

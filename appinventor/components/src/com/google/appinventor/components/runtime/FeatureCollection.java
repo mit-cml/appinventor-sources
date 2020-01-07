@@ -39,7 +39,7 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
   }
 
   @SuppressWarnings("squid:S00100")
-  @DesignerProperty
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Loads a collection of features from the given string. If the " +
       "string is not valid GeoJSON, the ErrorLoadingFeatureCollection error will be run with " +
       "url = <string>.")
@@ -73,6 +73,29 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
           "the feature collection was not loaded from a URL, this will be the empty string.")
   public String Source() {
     return source;
+  }
+
+  /**
+   * Returns true iff the component is visible.
+   * @return  true iff the component is visible
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public boolean Visible() {
+    return getMap().getController().isFeatureCollectionVisible(this);
+  }
+
+  /**
+   * Specifies whether the component should be visible on the screen.  Value is true if the
+   * component is showing and false if hidden.
+   * @param  visibility desired state
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
+      defaultValue = "True")
+  @SimpleProperty(description = "Specifies whether the component should be visible on the screen. "
+      + "Value is true if the component is showing and false if hidden.")
+  public void Visible(boolean visibility) {
+    getMap().getController().setFeatureCollectionVisible(this, visibility);
   }
 
   @Override

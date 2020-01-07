@@ -101,7 +101,8 @@ public class LineString extends MapFeatureBase implements MapLineString {
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The type of the map feature.")
+      description = "The type of the map feature. For LineString, this returns "
+          + "the text \"LineString\".")
   @Override
   public String Type() {
     return MapFactory.MapFeatureType.TYPE_LINESTRING;
@@ -140,7 +141,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
    *
    * @param points String containing a sequence of points for the LineString.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty
   public void PointsFromString(String points) {
     final String functionName = "PointsFromString";

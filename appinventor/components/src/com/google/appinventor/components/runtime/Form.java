@@ -45,6 +45,7 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -109,7 +110,7 @@ import java.util.Set;
  */
 
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
-    category = ComponentCategory.LAYOUT,
+    category = ComponentCategory.USERINTERFACE,
     description = "Top-level component containing all other components in the program",
     androidMinSdk = 7,
     showOnPalette = false)
@@ -199,7 +200,7 @@ public class Form extends AppInventorCompatActivity
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
 
-  private static boolean showListsAsJson = false;
+  private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
 
@@ -438,7 +439,7 @@ public class Form extends AppInventorCompatActivity
       ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
-    Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
+    Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
@@ -447,7 +448,7 @@ public class Form extends AppInventorCompatActivity
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
-    ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
+    ShowListsAsJson(true);  // Note: Only the Screen1 value is used as this is per-project
     ActionBar(false);
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
@@ -1211,6 +1212,7 @@ public class Form extends AppInventorCompatActivity
    * @return  background RGB color with alpha
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -1696,7 +1698,7 @@ public class Form extends AppInventorCompatActivity
    * @param
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
-      defaultValue = "Fixed")
+      defaultValue = "Responsive", alwaysSend = true)
   @SimpleProperty(userVisible = false,
   // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
   description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
@@ -1738,7 +1740,7 @@ public class Form extends AppInventorCompatActivity
    */
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "False")
+    defaultValue = "True", alwaysSend = true)
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
     description = "If false, lists will be converted to strings using Lisp "
@@ -1746,13 +1748,11 @@ public class Form extends AppInventorCompatActivity
       + "d). If true, lists will appear as in Json or Python, e.g.  [\"a\", 1, "
       + "\"b\", 2, [\"c\", \"d\"]].  This property appears only in Screen 1, "
       + "and the value for Screen 1 determines the behavior for all "
-      + "screens. The property defaults to \"false\" meaning that the App "
-      + "Inventor programmer must explicitly set it to \"true\" if JSON/Python "
-      + "syntax is desired. At some point in the future we will alter the "
-      + "system so that new projects are created with this property set to "
-      + "\"true\" by default. Existing projects will not be impacted. The App "
-      + "Inventor programmer can also set it back to \"false\" in newer "
-      + "projects if desired. "
+      + "screens. The property defaults to \"true\" meaning that the App "
+      + "Inventor programmer must explicitly set it to \"false\" if Lisp "
+      + "syntax is desired. In older versions of App Inventor, this setting "
+      + "defaulted to false. Older projects should not have been affected by "
+      + "this default settings update."
     )
   public void ShowListsAsJson(boolean asJson) {
     showListsAsJson = asJson;
@@ -1787,6 +1787,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   @SimpleProperty()
+  @IsColor
   public int PrimaryColor() {
     return primaryColor;
   }
@@ -1800,6 +1801,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   @SimpleProperty()
+  @IsColor
   public int PrimaryColorDark() {
     return primaryColorDark;
   }
@@ -1813,6 +1815,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   @SimpleProperty()
+  @IsColor
   public int AccentColor() {
     return accentColor;
   }

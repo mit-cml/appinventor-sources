@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -91,6 +92,8 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   // This is our handle on Android's nice 3-d default button.
   private Drawable defaultButtonDrawable;
+
+  private Drawable myBackgroundDrawable = null;
 
   // This is our handle in Android's default button color states;
   private ColorStateList defaultColorStateList;
@@ -357,6 +360,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Returns the button's background color")
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -393,13 +397,13 @@ public abstract class ButtonBase extends AndroidViewComponent
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
           //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
         } else {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
           //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
           //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
@@ -414,6 +418,26 @@ public abstract class ButtonBase extends AndroidViewComponent
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
       TextViewUtil.setMinSize(view, 0, 0);
     }
+  }
+
+  private Drawable getSafeBackgroundDrawable() {
+    if (myBackgroundDrawable == null) {
+      Drawable.ConstantState state = defaultButtonDrawable.getConstantState();
+      if (state != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        try {
+          myBackgroundDrawable = state.newDrawable().mutate();
+        } catch (NullPointerException e) {
+          // We see this on SDK 7, but given we can't easily test every version
+          // this is meant as a safeguard.
+          Log.e(LOG_TAG, "Unable to clone button drawable", e);
+          myBackgroundDrawable = defaultButtonDrawable;
+        }
+      } else {
+        // Since we can't make a copy of the default we'll just use it directly
+        myBackgroundDrawable = defaultButtonDrawable;
+      }
+    }
+    return myBackgroundDrawable;
   }
 
   private ColorStateList createRippleState () {
@@ -671,6 +695,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Color for button text.")
+  @IsColor
   public int TextColor() {
     return textColor;
   }

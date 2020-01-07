@@ -117,7 +117,12 @@ public class Pedometer extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Stop counting steps")
   public void Stop() {
-    Pause();
+    if (!pedometerPaused) {
+      pedometerPaused = true;
+      sensorManager.unregisterListener(this);
+      Log.d(TAG, "Unregistered listener on pause");
+      prevStopClockTime += (System.currentTimeMillis() - startTime);
+    }
   }
 
   /**
@@ -135,6 +140,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   /**
    * Resumes the counting of steps.
    */
+  @Deprecated
   @SimpleFunction(description = "Resumes counting, synonym of Start.")
   public void Resume() {
     Start();
@@ -143,14 +149,10 @@ public class Pedometer extends AndroidNonvisibleComponent
   /**
    * Pauses the counting of steps.
    */
+  @Deprecated
   @SimpleFunction(description = "Pause counting of steps and distance.")
   public void Pause() {
-    if (!pedometerPaused) {
-      pedometerPaused = true;
-      sensorManager.unregisterListener(this);
-      Log.d(TAG, "Unregistered listener on pause");
-      prevStopClockTime += (System.currentTimeMillis() - startTime);
-    }
+    Stop();
   }
 
   /**

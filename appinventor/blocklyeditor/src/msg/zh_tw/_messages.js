@@ -437,22 +437,18 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = '是否為2進位?';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = '判斷該對象是否為2進位數。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = '進位轉換';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = '10進位轉16進位';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = '回傳輸入10進位數的16進位形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = '進位轉換';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = '10進位轉16進位';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = '回傳輸入10進位數的16進位形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = '16進位轉10進位';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = '回傳輸入16進位數的10進位形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = '16進位轉10進位';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = '回傳輸入16進位數的10進位形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = '10進位轉2進位';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = '回傳輸入10進位數的2進位形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = '10進位轉2進位';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = '回傳輸入10進位數的2進位形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = '2進位轉10進位';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = '回傳輸入2進位數的10進位形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = '2進位轉10進位';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = '回傳輸入2進位數的10進位形式。';
 
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = '文字';

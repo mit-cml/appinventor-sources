@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -113,6 +114,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int backgroundColor;
   private String backgroundImagePath = "";
   private int textAlignment;
+  private boolean extendMovesOutsideCanvas = false;
 
   // Default values
   private static final int MIN_WIDTH_HEIGHT = 1;
@@ -194,7 +196,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     public static final int FINGER_WIDTH = 24;
 
     /**
-     * The width of a finger.  This is used in determining whether a sprite is
+     * The height of a finger.  This is used in determining whether a sprite is
      * touched.  Specifically, this is used to determine the vertical extent
      * of a bounding box that is tested for collision with each sprite.  The
      * horizontal extent is determined by {@link #FINGER_WIDTH}.
@@ -277,6 +279,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           // Otherwise, it's a drag.
           isDrag = true;
           drag = true;
+
+          // Don't let MOVE extend beyond the bounds of the canvas
+          // if ExtendMovesOutsideCanvas is false
+          if (((x <= 0) || (x > width) || (y <= 0) || (y > height))
+              && (! extendMovesOutsideCanvas)) {
+            break;
+          }
 
           // Update draggedSprites by adding any that are currently being
           // touched.
@@ -936,6 +945,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color of the canvas background.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -994,6 +1004,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color in which lines are drawn",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int PaintColor() {
     return paintColor;
   }
@@ -1112,6 +1123,21 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
+  @SimpleProperty(description = 
+      "Determines whether moves can extend beyond the canvas borders.  "  +
+      " Default is false. This should normally be false, and the property " +
+      "is provided for backwards compatibility.",
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = true)
+  public boolean ExtendMovesOutsideCanvas() {
+    return extendMovesOutsideCanvas;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(userVisible = true)
+  public void ExtendMovesOutsideCanvas(boolean extend){
+    extendMovesOutsideCanvas = extend;   
+  }
 
   // Methods supporting event handling
 
@@ -1422,6 +1448,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Gets the color of the specified point. "
       + "This includes the background and any drawn points, lines, or "
       + "circles but not sprites.")
+  @IsColor
   public int GetBackgroundPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());
@@ -1438,7 +1465,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Sets the color of the specified point. "
       + "This differs from DrawPoint by having an argument for color.")
-  public void SetBackgroundPixelColor(int x, int y, int color) {
+  public void SetBackgroundPixelColor(int x, int y, @IsColor int color) {
     Paint pixelPaint = new Paint();
     PaintUtil.changePaint(pixelPaint, color);
     int correctedX = (int) (x * $form().deviceDensity());
@@ -1456,6 +1483,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *         or {@link Component#COLOR_NONE} if that point is not on this Canvas
    */
   @SimpleFunction(description = "Gets the color of the specified point.")
+  @IsColor
   public int GetPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());

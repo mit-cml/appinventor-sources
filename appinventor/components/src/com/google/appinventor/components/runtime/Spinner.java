@@ -147,7 +147,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   /**
    * ElementsFromString property setter method
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
   @SimpleProperty(description = "sets the Spinner list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring){

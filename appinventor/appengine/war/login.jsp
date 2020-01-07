@@ -83,14 +83,14 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <center>
 <%    if (locale != null && locale.equals("zh_CN")) { %>
 <a href="http://www.weibo.com/mitappinventor" target="_blank"><img class="img-scale"
-                  src="/images/mzl.png" width="30" height="30" title="Sina WeiBo"></a>&nbsp;
+                  src="/static/images/mzl.png" width="30" height="30" title="Sina WeiBo"></a>&nbsp;
 <%    } %>
 <a href="http://www.appinventor.mit.edu" target="_blank"><img class="img-scale"
-                src="/images/login-app-inventor.jpg" width="50" height="30" title="MIT App Inventor"></a></center>
+                src="/static/images/login-app-inventor.jpg" width="50" height="30" title="MIT App Inventor"></a></center>
 <p></p>
 
 <p style="text-align: center; clear:both;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"
-                                              target="_blank"><img alt="Creative Commons License" src="/images/cc3.png"></a> <br>
+                                              target="_blank"><img alt="Creative Commons License" src="/static/images/cc3.png"></a> <br>
   <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"></a></p>
 </footer>
 </body></html>
