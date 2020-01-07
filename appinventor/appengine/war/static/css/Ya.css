@@ -49,6 +49,10 @@ body {
   font-family: OpenDyslexic, Roboto, Helvetica, Arial, sans-serif;
 }
 
+.rtl {
+  direction: rtl;
+}
+
 /* For the TOS Form*/
 .floatingBox {
   width: 300px;
@@ -512,11 +516,6 @@ body {
  */
 
 .ode-DeckPanel {
-  margin: 4px 8px 8px;
-}
-
-.ode-DeckPanel-rtl {
-  direction: rtl;
   margin: 4px 8px 8px;
 }
 

@@ -261,6 +261,9 @@ public class TopPanel extends Composite {
     initWidget(topPanel);
 
     setStyleName("ode-TopPanel");
+    if (LocaleInfo.getCurrentLocale().isRTL()) {
+      addStyleName("rtl");
+    }
     setWidth("100%");
   }
 

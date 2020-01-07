@@ -25,11 +25,13 @@ import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -66,8 +68,6 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
-import com.google.appinventor.shared.rpc.help.HelpService;
-import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
@@ -205,6 +205,7 @@ public class Ode implements EntryPoint {
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
   private static final int USERADMIN = 7;
+  private static final int TRASHCAN = 8;
   private static int currentView = DESIGNER;
 
   /*
@@ -244,6 +245,9 @@ public class Ode implements EntryPoint {
   private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+  private VerticalPanel pVertPanel;
+  private HorizontalPanel projectListPanel = new HorizontalPanel();
+  private HorizontalPanel projectListPane2= new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -251,9 +255,6 @@ public class Ode implements EntryPoint {
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
-
-  // Web service for help information
-  private final HelpServiceAsync helpService = GWT.create(HelpService.class);
 
   // Web service for project related information
   private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);
@@ -300,7 +301,7 @@ public class Ode implements EntryPoint {
   private SplashConfig splashConfig; // Splash Screen Configuration
 
   private boolean secondBuildserver = false; // True if we have a second
-                                             // buildserver.
+  // buildserver.
 
   // The flags below are used by the Build menus. Because we have two
   // different buildservers, we have two sets of build menu items, one
@@ -380,11 +381,11 @@ public class Ode implements EntryPoint {
    *
    */
   public void  loadGallerySettings() {
-     // Callback for when the server returns us the apps
+    // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
-    // failure message
-    MESSAGES.gallerySettingsError()) {
+            // failure message
+            MESSAGES.gallerySettingsError()) {
       @Override
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
@@ -438,24 +439,35 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     // We may need to pass the code below as a runnable to
     // screenShotMaybe() so build the runnable now
+    hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
-        @Override
-        public void run() {
-          if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
-            ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
-            ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+      @Override
+      public void run() {
+        if (currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
+          ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+          //shifting back to show projects
+          if (currentView == TRASHCAN)  {
+            projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
+            projectListPanel.setWidth("100%");
+            projectListPanel.add(ProjectListBox.getProjectListBox());
+            pVertPanel.add(projectListPanel);
           }
-          currentView = PROJECTS;
-          getTopToolbar().updateFileMenuButtons(currentView);
-          deckPanel.showWidget(projectsTabIndex);
-          // If we started a project, then the start button was disabled (to avoid
-          // a second press while the new project wizard was starting (aka we "debounce"
-          // the button). When the person switches to the projects list view again (here)
-          // we re-enable it.
-          projectToolbar.enableStartButton();
         }
-      };
+        currentView = PROJECTS;
+        getTopToolbar().updateFileMenuButtons(currentView);
+        deckPanel.showWidget(projectsTabIndex);
+        // If we started a project, then the start button was disabled (to avoid
+        // a second press while the new project wizard was starting (aka we "debounce"
+        // the button). When the person switches to the projects list view again (here)
+        // we re-enable it.
+        projectToolbar.enableStartButton();
+        projectToolbar.setProjectTabButtonsVisible(true);
+        projectToolbar.setPublishOrUpdateButtonVisible(true);
+        projectToolbar.setTrashTabButtonsVisible(false);
+      }
+    };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
     } else {
@@ -465,10 +477,37 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Switch to the Trash tab
+   */
+
+  public void switchToTrash() {
+    hideChaff();
+    hideTutorials();
+    if (currentView != TRASHCAN){
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
+    }
+    currentView = TRASHCAN;
+    projectListPane2.setWidth("100%");
+    projectListPanel.remove(ProjectListBox.getProjectListBox());
+    projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
+    pVertPanel.remove(projectListPanel);
+    pVertPanel.add(projectListPane2);
+    deckPanel.showWidget(projectsTabIndex);
+    projectToolbar.setProjectTabButtonsVisible(false);
+    projectToolbar.setPublishOrUpdateButtonVisible(false);
+    projectToolbar.setTrashTabButtonsVisible(true);
+    if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
+      Ode.getInstance().createEmptyTrashDialog(true);
+    }
+  }
+
+  /**
    * Switch to the User Admin Panel
    */
 
   public void switchToUserAdminPanel() {
+    hideChaff();
     hideTutorials();
     currentView = USERADMIN;
     deckPanel.showWidget(userAdminTabIndex);
@@ -478,6 +517,7 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       // Gallery initialization is deferred until now.
@@ -491,6 +531,7 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery App
    */
   public void switchToGalleryAppView(GalleryApp app, int editStatus) {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       // Gallery initialization is deferred until now.
@@ -506,6 +547,7 @@ public class Ode implements EntryPoint {
    * TODO: change string parameter
    */
   public void switchToUserProfileView(String userId, int editStatus) {
+    hideChaff();
     hideTutorials();
     currentView = USERPROFILE;
     OdeLog.log("###########" + userId + "||||||" + editStatus);
@@ -517,6 +559,7 @@ public class Ode implements EntryPoint {
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
+    hideChaff();
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     showTutorials();
@@ -534,6 +577,7 @@ public class Ode implements EntryPoint {
    * Switch to Gallery TabPanel
    */
   public void switchToPrivateUserProfileView() {
+    hideChaff();
     currentView = privateUserProfileIndex;
     deckPanel.showWidget(privateUserProfileIndex);
   }
@@ -542,6 +586,7 @@ public class Ode implements EntryPoint {
    * Switch to the Moderation Page tab
    */
   public void switchToModerationPageView() {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       initializeGallery();
@@ -553,6 +598,7 @@ public class Ode implements EntryPoint {
    * Switch to the Debugging tab
    */
   public void switchToDebuggingView() {
+    hideChaff();
     hideTutorials();
     deckPanel.showWidget(debuggingTabIndex);
 
@@ -568,39 +614,39 @@ public class Ode implements EntryPoint {
     }
     OdeLog.log("Ode.openPreviousProject called");
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-      getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+            getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
 
     // Retrieve the userTemplates
     String userTemplates = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-      getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
+            getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
     if (templateLoadingFlag) {  // We are loading a template, open it instead
-                                // of the last project
+      // of the last project
       NewProjectCommand callbackCommand = new NewProjectCommand() {
-          @Override
-          public void execute(Project project) {
-            templateLoadingFlag = false;
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-          }
-        };
+        @Override
+        public void execute(Project project) {
+          templateLoadingFlag = false;
+          Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+      };
       TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
     } else if(galleryIdLoadingFlag){
       try {
         long galleryId_Long = Long.valueOf(galleryId);
         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(GalleryApp app) {
-                if(app == null){
-                  openProject(value);
-                  Window.alert(MESSAGES.galleryIdNotExist());
-                }else{
-                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-                }
-              }
-            };
+                // failure message
+                MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(GalleryApp app) {
+            if(app == null){
+              openProject(value);
+              Window.alert(MESSAGES.galleryIdNotExist());
+            }else{
+              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+            }
+          }
+        };
         Ode.getInstance().getGalleryService().getApp(galleryId_Long, callback);
       } catch (NumberFormatException e) {
         openProject(value);
@@ -654,7 +700,7 @@ public class Ode implements EntryPoint {
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
         @Override
-        public void onProjectLoaded(Project projectLoaded) {
+        public void onProjectLoaded(Project glass) {
           project.removeProjectChangeListener(this);
           openYoungAndroidProjectInDesigner(project);
         }
@@ -747,8 +793,8 @@ public class Ode implements EntryPoint {
 
     // Get user information.
     OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
+            // failure message
+            MESSAGES.serverUnavailable()) {
 
       @Override
       public void onSuccess(Config result) {
@@ -773,19 +819,19 @@ public class Ode implements EntryPoint {
         if (noop > 0) {
           // If we have a noop time, setup a timer to do the noop
           Timer t = new Timer() {
-              @Override
-              public void run() {
-                userInfoService.noop(new AsyncCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void e) {
-                    }
-                    @Override
-                    public void onFailure(Throwable e) {
-                    }
-                  });
-              }
-            };
-            t.scheduleRepeating(1000*60*noop);
+            @Override
+            public void run() {
+              userInfoService.noop(new AsyncCallback<Void>() {
+                @Override
+                public void onSuccess(Void e) {
+                }
+                @Override
+                public void onFailure(Throwable e) {
+                }
+              });
+            }
+          };
+          t.scheduleRepeating(1000*60*noop);
         }
 
         // If user hasn't accepted terms of service, ask them to.
@@ -831,21 +877,23 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                openPreviousProject();
+                if (shouldAutoloadLastProject()) {
+                  openPreviousProject();
+                }
 
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
                 OdeAsyncCallback<String> templateCallback =
-                    new OdeAsyncCallback<String>(
-                        // failure message
-                        MESSAGES.createProjectError()) {
-                      @Override
-                      public void onSuccess(String json) {
-                        // Save the templateData
-                        TemplateUploadWizard.initializeBuiltInTemplates(json);
-                      }
-                    };
+                        new OdeAsyncCallback<String>(
+                                // failure message
+                                MESSAGES.createProjectError()) {
+                          @Override
+                          public void onSuccess(String json) {
+                            // Save the templateData
+                            TemplateUploadWizard.initializeBuiltInTemplates(json);
+                          }
+                        };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
               }
             });
@@ -945,7 +993,6 @@ public class Ode implements EntryPoint {
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) galleryService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
@@ -982,37 +1029,35 @@ public class Ode implements EntryPoint {
 
     deckPanel.setAnimationEnabled(true);
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
+    deckPanel.setStyleName("ode-DeckPanel");
     if (LocaleInfo.getCurrentLocale().isRTL()) {
-      deckPanel.setStyleName("ode-DeckPanel-rtl");
-    } else {
-      deckPanel.setStyleName("ode-DeckPanel");
+      deckPanel.addStyleName("rtl");
     }
 
     // Projects tab
-    VerticalPanel pVertPanel = new VerticalPanel() {
-        /**
-         * Flag to indicate the project list has been rendered at least once.
-         */
-        private boolean rendered = false;
+    pVertPanel = new VerticalPanel() {
+      /**
+       * Flag to indicate the project list has been rendered at least once.
+       */
+      private boolean rendered = false;
 
-        // Override to add splash screen behavior after leaving the project list
-        @Override
-        public void setVisible(boolean visible) {
-          super.setVisible(visible);
-          if (visible && !rendered) {
-            // setVisible(false) will be called during UI initialization.
-            // this flag indicates we are now being shown (possibly again...)
-            rendered = true;
-            maybeShowSplash2();  // in case of new user; they have no projects!
-          } else if (rendered && !visible && (mayNeedSplash || shouldShowWelcomeDialog())
-                     && !didShowSplash) {
-            showSplashScreens();
-          }
+      // Override to add splash screen behavior after leaving the project list
+      @Override
+      public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible && !rendered) {
+          // setVisible(false) will be called during UI initialization.
+          // this flag indicates we are now being shown (possibly again...)
+          rendered = true;
+          maybeShowSplash2();  // in case of new user; they have no projects!
+        } else if (rendered && !visible && (mayNeedSplash || shouldShowWelcomeDialog())
+                && !didShowSplash) {
+          showSplashScreens();
         }
-      };
+      }
+    };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
@@ -1086,7 +1131,7 @@ public class Ode implements EntryPoint {
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
 
-     // Gallery app tab
+    // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
@@ -1381,15 +1426,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Get an instance of the help web service.
-   *
-   * @return help service instance
-   */
-  public HelpServiceAsync getHelpService() {
-    return helpService;
-  }
-
-  /**
    * Get an instance of the component web service.
    *
    * @return component web service instance
@@ -1423,8 +1459,8 @@ public class Ode implements EntryPoint {
     switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
-          "" + getCurrentYoungAndroidProjectId());
+              changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
+                      "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
   }
@@ -1497,6 +1533,32 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Checks whether autoloading of the user's previous project should be
+   * performed.
+   *
+   * @return true if autoloading should be performed, otherwise false.
+   */
+  public boolean shouldAutoloadLastProject() {
+    String autoloadParam = Window.Location.getParameter("autoload");
+    if ("false".equalsIgnoreCase(autoloadParam)) {
+      return false;
+    } else if ("true".equalsIgnoreCase(autoloadParam)) {
+      return true;
+    }
+    return getUserAutoloadProject();
+  }
+
+  /**
+   * HideChaff when switching view from block to others
+   */
+  private void hideChaff() {
+    if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
+            // currentFileEditor may be null when switching projects
+            && currentFileEditor != null) {
+      currentFileEditor.hideChaff();
+    }
+  }
+  /**
    * Returns user dyslexic font setting.
    *
    * @return user default font
@@ -1516,6 +1578,28 @@ public class Ode implements EntryPoint {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
                     "" + dyslexicFont);
+    userSettings.saveSettings(null);
+  }
+
+  /**
+   * Checks whether the user has autoloading enabled in their settings.
+   *
+   * @return true if autoloading is enabled, otherwise false.
+   */
+  public static boolean getUserAutoloadProject() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Sets whether to use autoloading for the current user.
+   *
+   * @param enable true if autoloading should be enabled or false if it should be disabled.
+   */
+  public static void setUserAutoloadProject(boolean enable) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+            .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));
     userSettings.saveSettings(null);
   }
 
@@ -1592,7 +1676,6 @@ public class Ode implements EntryPoint {
     }
 
     // Unregister services with RPC status popup.
-    rpcStatusPopup.unregister((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) userInfoService);
 
@@ -1607,10 +1690,10 @@ public class Ode implements EntryPoint {
     // editors because saving work is more important then
     // getting this screenshot!
     screenShotMaybe(new Runnable() {
-        @Override
-        public void run() {
-        }
-      }, true);                 // Wait for i/o!!!
+      @Override
+      public void run() {
+      }
+    }, true);                 // Wait for i/o!!!
   }
 
   /**
@@ -1622,11 +1705,65 @@ public class Ode implements EntryPoint {
    */
   public DialogBox createNoProjectsDialog(boolean showDialog) {
     final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
-    
+
     if (showDialog) {
       dialogBox.show();
     }
-  
+
+    return dialogBox;
+  }
+
+  /**
+   * Creates a dialog box to show empty trash list message.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+
+  public DialogBox createEmptyTrashDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.createNoProjectsDialogText());
+
+    Grid mainGrid = new Grid(2, 2);
+    mainGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(0,
+            1,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(1,
+            1,
+            HasHorizontalAlignment.ALIGN_RIGHT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+    Image dialogImage = new Image(Ode.getImageBundle().codiVert());
+
+    Grid messageGrid = new Grid(2, 1);
+    messageGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_JUSTIFY,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    messageGrid.getCellFormatter().setAlignment(1,
+            0,
+            HasHorizontalAlignment.ALIGN_LEFT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+
+    Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
+    messageGrid.setWidget(1, 0, messageChunk2);
+    mainGrid.setWidget(0, 0, dialogImage);
+    mainGrid.setWidget(0, 1, messageGrid);
+
+    dialogBox.setWidget(mainGrid);
+    dialogBox.center();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+
     return dialogBox;
   }
 
@@ -1668,17 +1805,17 @@ public class Ode implements EntryPoint {
     Button ok = new Button(MESSAGES.createWelcomeDialogButton());
     final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());
     ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          if (noshow.getValue()) { // User checked the box
-            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
-                "" + splashConfig.version);
-            userSettings.saveSettings(null);
-          }
-          maybeShowNoProjectsDialog();
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        if (noshow.getValue()) { // User checked the box
+          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+                  changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
+                          "" + splashConfig.version);
+          userSettings.saveSettings(null);
         }
-      });
+        maybeShowNoProjectsDialog();
+      }
+    });
     holder.add(ok);
     holder.add(noshow);
     DialogBoxContents.add(message);
@@ -1713,7 +1850,7 @@ public class Ode implements EntryPoint {
       return false;             // Check first to avoid others unnecessary calls
     }
     String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-      getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
+            getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
     int uversion;
     if (value == null) {        // Nothing stored
       uversion = 0;
@@ -1751,44 +1888,44 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button takesurvey = new Button(MESSAGES.showSurveySplashButtonNow());
     takesurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // Update Splash Settings here
-          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-              "" + YaVersion.SPLASH_SURVEY);
-          userSettings.saveSettings(null);
-          takeSurvey();         // Open survey in a new window
-          maybeShowSplash();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // Update Splash Settings here
+        userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+                changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+                        "" + YaVersion.SPLASH_SURVEY);
+        userSettings.saveSettings(null);
+        takeSurvey();         // Open survey in a new window
+        maybeShowSplash();
+      }
+    });
     holder.add(takesurvey);
     Button latersurvey = new Button(MESSAGES.showSurveySplashButtonLater());
     latersurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          maybeShowSplash();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        maybeShowSplash();
+      }
+    });
     holder.add(latersurvey);
     Button neversurvey = new Button(MESSAGES.showSurveySplashButtonNever());
     neversurvey.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // Update Splash Settings here
-          Settings settings =
-            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
-          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
-            "" + YaVersion.SPLASH_SURVEY);
-          String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
-          if (declined == null) declined = ""; // Shouldn't happen
-          if (declined != "") declined += ",";
-          declined += "" + YaVersion.SPLASH_SURVEY; // Record that we declined this survey
-          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);
-          userSettings.saveSettings(null);
-          maybeShowSplash();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // Update Splash Settings here
+        Settings settings =
+                userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
+        settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+                "" + YaVersion.SPLASH_SURVEY);
+        String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
+        if (declined == null) declined = ""; // Shouldn't happen
+        if (declined != "") declined += ",";
+        declined += "" + YaVersion.SPLASH_SURVEY; // Record that we declined this survey
+        settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);
+        userSettings.saveSettings(null);
+        maybeShowSplash();
+      }
+    });
     holder.add(neversurvey);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -1831,7 +1968,7 @@ public class Ode implements EntryPoint {
     if (AppInventorFeatures.showSurveySplashScreen()) {
       int nvalue = 0;
       String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
-        getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);
+              getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);
       if (value != null) {
         nvalue = Integer.parseInt(value);
       }
@@ -1878,11 +2015,11 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button reloadSession = new Button(MESSAGES.reloadWindow());
     reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          reloadWindow(true);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        reloadWindow(true);
+      }
+    });
     holder.add(reloadSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -1917,27 +2054,27 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button closeSession = new Button(MESSAGES.invalidSessionDialogButtonEnd());
     closeSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          finalDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        finalDialog();
+      }
+    });
     holder.add(closeSession);
     Button reloadSession = new Button(MESSAGES.invalidSessionDialogButtonCurrent());
     reloadSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          reloadWindow(false);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        reloadWindow(false);
+      }
+    });
     holder.add(reloadSession);
     Button continueSession = new Button(MESSAGES.invalidSessionDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          bashWarningDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        bashWarningDialog();
+      }
+    });
     holder.add(continueSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -1977,23 +2114,23 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          sessionId = "force";  // OK, over-ride in place!
-          // Because we ultimately got here from a failure in the save function...
-          ChainableCommand cmd = new SaveAllEditorsCommand(null);
-          cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
-          // Will now go back to our regularly scheduled main loop
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        sessionId = "force";  // OK, over-ride in place!
+        // Because we ultimately got here from a failure in the save function...
+        ChainableCommand cmd = new SaveAllEditorsCommand(null);
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
+        // Will now go back to our regularly scheduled main loop
+      }
+    });
     holder.add(continueSession);
     Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());
     cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          invalidSessionDialog();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        invalidSessionDialog();
+      }
+    });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2072,12 +2209,12 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());
     continueSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          // call save2 again, this time with force = true so the empty workspace will be written
-          getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        // call save2 again, this time with force = true so the empty workspace will be written
+        getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
+      }
+    });
     holder.add(continueSession);
     final Button cancelSession = new Button(MESSAGES.blocksTruncatedDialogButtonNoSave());
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
@@ -2087,29 +2224,29 @@ public class Ode implements EntryPoint {
       }
     };
     cancelSession.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          // Note: We do *not* remove the dialog, this locks the UI up (our intent)
-          // Wait for a few seconds for other I/O to complete
-          cancelSession.setEnabled(false); // Disable button to prevent further clicking
-          continueSession.setEnabled(false); // This one as well
-          Timer t = new Timer() {
-              int count = 5;
-              @Override
-              public void run() {
-                if (count > 0) {
-                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
-                  html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
-                  count -= 1;
-                } else {
-                  this.cancel();
-                  getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
+      public void onClick(Widget sender) {
+        // Note: We do *not* remove the dialog, this locks the UI up (our intent)
+        // Wait for a few seconds for other I/O to complete
+        cancelSession.setEnabled(false); // Disable button to prevent further clicking
+        continueSession.setEnabled(false); // This one as well
+        Timer t = new Timer() {
+          int count = 5;
+          @Override
+          public void run() {
+            if (count > 0) {
+              HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+              html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
+              count -= 1;
+            } else {
+              this.cancel();
+              getProjectService().log("Disappearing Blocks: ProjectId = " + projectId +
                       " fileId = " + fileId + " User = " + userEmail, logReturn);
-                }
-              }
-            };
-          t.scheduleRepeating(1000);     // Run every second
-        }
-      });
+            }
+          }
+        };
+        t.scheduleRepeating(1000);     // Run every second
+      }
+    });
     holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2139,10 +2276,10 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+      }
+    });
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2172,10 +2309,10 @@ public class Ode implements EntryPoint {
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+      }
+    });
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
@@ -2241,13 +2378,13 @@ public class Ode implements EntryPoint {
 
   public void recordCorruptProject(long projectId, String fileId, String message) {
     getProjectService().recordCorruption(projectId, fileId, message,
-        new OdeAsyncCallback<Void>(
-          "") {                   // No failure message
-          @Override
-            public void onSuccess(Void result) {
-            // do nothing
-          }
-        });
+            new OdeAsyncCallback<Void>(
+                    "") {                   // No failure message
+              @Override
+              public void onSuccess(Void result) {
+                // do nothing
+              }
+            });
   }
 
   /**
@@ -2335,44 +2472,44 @@ public class Ode implements EntryPoint {
     final long projectId = editor.getProjectId();
     final FileNode fileNode = editor.getFileNode();
     currentFileEditor.getBlocksImage(new Callback<String,String>() {
-        @Override
-        public void onSuccess(String result) {
-          int comma = result.indexOf(",");
-          if (comma < 0) {
-            OdeLog.log("screenshot invalid");
-            next.run();
-            return;
-          }
-          result = result.substring(comma+1); // Strip off url header
-          String screenShotName = fileNode.getName();
-          int period = screenShotName.lastIndexOf(".");
-          screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
-          OdeLog.log("ScreenShotName = " + screenShotName);
-          projectService.screenshot(sessionId, projectId, screenShotName, result,
-            new OdeAsyncCallback<RpcResult>() {
-              @Override
-              public void onSuccess(RpcResult result) {
-                if (deferred) {
-                  next.run();
-                }
-              }
-              public void OnFailure(Throwable caught) {
-                super.onFailure(caught);
-                if (deferred) {
-                  next.run();
-                }
-              }
-            });
-          if (!deferred) {
-            next.run();
-          }
+      @Override
+      public void onSuccess(String result) {
+        int comma = result.indexOf(",");
+        if (comma < 0) {
+          OdeLog.log("screenshot invalid");
+          next.run();
+          return;
         }
-        @Override
-        public void onFailure(String error) {
-          OdeLog.log("Screenshot failed: " + error);
+        result = result.substring(comma+1); // Strip off url header
+        String screenShotName = fileNode.getName();
+        int period = screenShotName.lastIndexOf(".");
+        screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
+        OdeLog.log("ScreenShotName = " + screenShotName);
+        projectService.screenshot(sessionId, projectId, screenShotName, result,
+                new OdeAsyncCallback<RpcResult>() {
+                  @Override
+                  public void onSuccess(RpcResult result) {
+                    if (deferred) {
+                      next.run();
+                    }
+                  }
+                  public void OnFailure(Throwable caught) {
+                    super.onFailure(caught);
+                    if (deferred) {
+                      next.run();
+                    }
+                  }
+                });
+        if (!deferred) {
           next.run();
         }
-      });
+      }
+      @Override
+      public void onFailure(String error) {
+        OdeLog.log("Screenshot failed: " + error);
+        next.run();
+      }
+    });
   }
 
   private void initializeGallery() {
@@ -2475,6 +2612,7 @@ public class Ode implements EntryPoint {
   private void showTutorials() {
     if (tutorialVisible) {
       tutorialPanel.setVisible(true);
+      overDeckPanel.setCellWidth(tutorialPanel, "300");
     }
   }
 
@@ -2483,6 +2621,7 @@ public class Ode implements EntryPoint {
     if (visible) {
       tutorialPanel.setVisible(true);
       tutorialPanel.setWidth("300px");
+      overDeckPanel.setCellWidth(tutorialPanel, "300");
     } else {
       tutorialPanel.setVisible(false);
       overDeckPanel.setCellWidth(tutorialPanel, "0%");
@@ -2505,7 +2644,7 @@ public class Ode implements EntryPoint {
 
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/"))) {
+            && !newURL.startsWith("http://appinv.us/"))) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
@@ -2519,15 +2658,15 @@ public class Ode implements EntryPoint {
   // a shared backpack
   private void loadBackpack() {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
-        @Override
-        public void onSuccess(String backpack) {
-          BlocklyPanel.setInitialBackpack(backpack);
-        }
-        @Override
-        public void onFailure(Throwable caught) {
-          OdeLog.log("Fetching backpack failed");
-        }
-      });
+      @Override
+      public void onSuccess(String backpack) {
+        BlocklyPanel.setInitialBackpack(backpack);
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        OdeLog.log("Fetching backpack failed");
+      }
+    });
   }
 
   public boolean hasSecondBuildserver() {
@@ -2582,7 +2721,7 @@ public class Ode implements EntryPoint {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
       return v.toString(16);
-     });
+    });
   }-*/;
 
   public static native void reloadWindow(boolean full) /*-{
@@ -2595,11 +2734,11 @@ public class Ode implements EntryPoint {
 
   private static native boolean finish(String userId) /*-{
     var delete_cookie = function(name) {
-       document.cookie = name + '=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      document.cookie = name + '=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     };
     var retval = {
-       "type": "closeApp",
-       "uuid" : userId }
+      "type": "closeApp",
+      "uuid" : userId }
     if (top.opener) {
       delete_cookie("AppInventor"); // This ends our authentication
       top.opener.postMessage(retval, "*");
