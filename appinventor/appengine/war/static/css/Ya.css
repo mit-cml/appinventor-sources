@@ -515,6 +515,11 @@ body {
   margin: 4px 8px 8px;
 }
 
+.ode-DeckPanel-rtl {
+  direction: rtl;
+  margin: 4px 8px 8px;
+}
+
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;

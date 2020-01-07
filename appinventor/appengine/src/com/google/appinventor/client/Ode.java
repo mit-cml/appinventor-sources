@@ -98,6 +98,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -981,7 +982,11 @@ public class Ode implements EntryPoint {
 
     deckPanel.setAnimationEnabled(true);
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
-    deckPanel.setStyleName("ode-DeckPanel");
+    if (LocaleInfo.getCurrentLocale().isRTL()) {
+      deckPanel.setStyleName("ode-DeckPanel-rtl");
+    } else {
+      deckPanel.setStyleName("ode-DeckPanel");
+    }
 
     // Projects tab
     VerticalPanel pVertPanel = new VerticalPanel() {
