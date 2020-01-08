@@ -73,7 +73,7 @@ public class Toolbar extends Composite {
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.add(leftButtons);  // this nesting keeps buttons left aligned
     toolbar.add(rightButtons);
-    toolbar.setCellHorizontalAlignment(rightButtons, HorizontalPanel.ALIGN_RIGHT);
+    toolbar.setCellHorizontalAlignment(rightButtons, HorizontalPanel.ALIGN_LOCALE_END);
     toolbar.setWidth("100%");
     toolbar.setStylePrimaryName("ya-Toolbar");
 

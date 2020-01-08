@@ -22,8 +22,14 @@ goog.require('goog.Timer');
  * @param {!Function} getMetrics A function that returns workspace's metrics.
  * @constructor
  */
-Blockly.WarningIndicator = function(workspace) {
+Blockly.WarningIndicator = function(workspace, opt_options) {
   this.workspace_ = workspace;
+  if (opt_options instanceof Blockly.Options) {
+    this.options = opt_options;
+  } else {
+    opt_options = opt_options || {};
+    this.options = new Blockly.Options(opt_options);
+  }
 };
 
 /**
@@ -212,8 +218,8 @@ Blockly.WarningIndicator.prototype.position_ = function() {
     // There are no metrics available (workspace is probably not visible).
     return;
   }
-  if (Blockly.RTL) {
-    this.left_ = this.MARGIN_SIDE_;
+  if (this.options.RTL) {
+    this.left_ =  metrics.viewWidth + metrics.absoluteLeft - this.MARGIN_SIDE_ - 120;
   } else {
     this.left_ = metrics.absoluteLeft + this.MARGIN_SIDE_;
   }

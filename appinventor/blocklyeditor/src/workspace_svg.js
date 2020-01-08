@@ -218,7 +218,7 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
     if (!this.warningHandler_) {
       this.warningHandler_ = new Blockly.WarningHandler(this);
     }
-    this.warningIndicator_ = new Blockly.WarningIndicator(this);
+    this.warningIndicator_ = new Blockly.WarningIndicator(this, {rtl: this.RTL});
     var svgWarningIndicator = this.warningIndicator_.createDom();
     this.svgGroup_.appendChild(svgWarningIndicator);
     this.warningIndicator_.init();

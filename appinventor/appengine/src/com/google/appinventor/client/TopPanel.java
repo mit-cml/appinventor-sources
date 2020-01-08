@@ -255,8 +255,8 @@ public class TopPanel extends Composite {
     topPanel.add(tools);
     topPanel.add(rightPanel);
     topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_MIDDLE);
-    rightPanel.setCellHorizontalAlignment(account, HorizontalPanel.ALIGN_RIGHT);
-    topPanel.setCellHorizontalAlignment(rightPanel, HorizontalPanel.ALIGN_RIGHT);
+    rightPanel.setCellHorizontalAlignment(account, HorizontalPanel.ALIGN_LOCALE_END);
+    topPanel.setCellHorizontalAlignment(rightPanel, HorizontalPanel.ALIGN_LOCALE_START);
 
     initWidget(topPanel);
 
@@ -300,14 +300,14 @@ public class TopPanel extends Composite {
     }
     panel.add(logo);
     panel.setCellWidth(logo, "230px");
-    panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
+    panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LOCALE_START);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
   }
 
   private void addMotd(VerticalPanel panel) {
     MotdBox motdBox = MotdBox.getMotdBox();
     panel.add(motdBox);
-    panel.setCellHorizontalAlignment(motdBox, HorizontalPanel.ALIGN_RIGHT);
+    panel.setCellHorizontalAlignment(motdBox, HorizontalPanel.ALIGN_LOCALE_END);
     panel.setCellVerticalAlignment(motdBox, HorizontalPanel.ALIGN_BOTTOM);
   }
 

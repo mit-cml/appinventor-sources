@@ -58,11 +58,11 @@ public class SimplePaletteItem extends DragSourcePanel {
     Image image = scd.getImage();
     image.setStylePrimaryName("ode-SimplePaletteItem-icon");
     panel.add(image);
-    panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
+    panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LOCALE_START);
     panel.setCellWidth(image, "30px");
 
     Label label = new Label(ComponentsTranslation.getComponentName(scd.getName()));
-    label.setHorizontalAlignment(Label.ALIGN_LEFT);
+    label.setHorizontalAlignment(Label.ALIGN_LOCALE_START);
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);
 
@@ -70,16 +70,16 @@ public class SimplePaletteItem extends DragSourcePanel {
 
     ComponentHelpWidget helpImage = new ComponentHelpWidget(scd);
     optPanel.add(helpImage);
-    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
+    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LOCALE_START);
 
     if (scd.getExternal()) {
       ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(scd);
       optPanel.add(deleteImage);
-      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
+      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_LOCALE_END);
     }
 
     panel.add(optPanel);
-    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_RIGHT);
+    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_LOCALE_END);
 
     panel.setWidth("100%");
     add(panel);
