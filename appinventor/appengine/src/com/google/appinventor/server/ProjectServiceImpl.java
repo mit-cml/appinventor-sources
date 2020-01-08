@@ -42,10 +42,11 @@ import java.util.logging.Logger;
 /**
  * The implementation of the RPC service which runs on the server.
  *
- * <p>Note that this service must be state-less so that it can be run on
+ * Note that this service must be state-less so that it can be run on
  * multiple servers.
  *
  */
+
 public class ProjectServiceImpl extends OdeRemoteServiceServlet implements ProjectService {
 
   private static final Logger LOG = Logger.getLogger(ProjectServiceImpl.class.getName());
@@ -221,6 +222,51 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       String userId = userInfoProvider.getUserId();
       storageIo.setMoveToTrashFlag(userId,projectId,false);
       return storageIo.getUserProject(userId,projectId);
+  }
+
+  /**
+   * Login to the new Gallery
+   *
+   * Generate a token used to login to the new gallery
+   * @return RPC Result which contains URL to open a window on the Gallery
+   */
+
+  @Override
+  public RpcResult loginToGallery() {
+    final String userId = userInfoProvider.getUserId();
+    return youngAndroidProject.loginToGallery(userId);
+  }
+
+  /**
+   * Send project to new Gallery
+   * @param projectId project ID
+   * @return RPC Result which contains URL to open a window on the Gallery
+   */
+
+  @Override
+  public RpcResult sendToGallery(long projectId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).sendToGallery(userId, projectId);
+  }
+
+  /**
+   * Load a project from the Gallery
+   * We take the galleryId, fetch the project from the (remote) Gallery
+   * store it with the user's projects and return a UserProject object
+   * to the client, which will then load the project into the UI
+   * @param galleryId The unique id for the project in the gallery
+   * @return UserProject Info for the UI to load the project
+   *
+   * Note: The server loads the project directly from the gallery
+   *       it is *not* routed via the user's browser
+   *
+   */
+
+  @Override
+  public UserProject loadFromGallery(String galleryId) throws IOException {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId,
+      YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE).loadFromGallery(userId, galleryId);
   }
 
   /**

@@ -13,6 +13,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -31,8 +32,12 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_PROJECT= "Projects";
   private static final String WIDGET_NAME_RESTORE= "Restore";
   private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
+  private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
+  private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
   private boolean isReadOnly;
+
+  private boolean galleryEnabled = false; // Is the new gallery enabled
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -40,6 +45,7 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
+    galleryEnabled = Ode.getInstance().getSystemConfig().getGalleryEnabled();
 
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction(this)));
@@ -54,6 +60,12 @@ public class ProjectToolbar extends Toolbar {
         new RestoreProjectAction()));
     addButton(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
         new DeleteForeverProjectAction()));
+    if (galleryEnabled) {
+      addButton(new ToolbarItem(WIDGET_NAME_LOGINTOGALLERY, MESSAGES.loginToGallery(),
+          new LoginToGalleryAction()));
+      addButton(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
+          new SendToGalleryAction()));
+    }
 
     setTrashTabButtonsVisible(false);
     updateButtons();
@@ -179,6 +191,51 @@ public class ProjectToolbar extends Toolbar {
         // The user can select a project to resolve the
         // error.
         ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForRestore());
+      }
+    }
+  }
+
+  // Login to the New Gallery
+  private static class LoginToGalleryAction implements Command {
+    @Override
+      public void execute() {
+      Ode.getInstance().getProjectService().loginToGallery(
+        new OdeAsyncCallback<RpcResult>(
+          MESSAGES.GalleryLoginError()) {
+          @Override
+          public void onSuccess(RpcResult result) {
+            if (result.getResult() == RpcResult.SUCCESS) {
+              Window.open(result.getOutput(), "_blank", "");
+            } else {
+              ErrorReporter.reportError(result.getError());
+            }
+          }
+        });
+    }
+  }
+
+  // Send to the New Gallery
+  private static class SendToGalleryAction implements Command {
+    @Override
+      public void execute() {
+      List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() != 1) {
+        ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
+      } else {
+        Project project = selectedProjects.get(0);
+        Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
+          new OdeAsyncCallback<RpcResult>(
+            MESSAGES.GallerySendingError()) {
+            @Override
+            public void onSuccess(RpcResult result) {
+              if (result.getResult() == RpcResult.SUCCESS) {
+                Window.open(result.getOutput(), "_blank", "");
+              } else {
+                ErrorReporter.reportError(result.getError());
+              }
+            }
+          });
       }
     }
   }

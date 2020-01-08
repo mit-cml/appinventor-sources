@@ -735,6 +735,19 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  /**
+   * getProjectType -- Get the type of this project
+   *
+   * @param userId the user whose project this is
+   * @param projectId the id of the project
+   * @return String type of project
+   *
+   * Note: There is currently only one type of project supported,
+   *       so to avoid database calls (which cost both time and money)
+   *       we just return a constant. If we add a second (or more) type
+   *       of project, we should add appropriate code here.
+   */
+
   @Override
   public String getProjectType(final String userId, final long projectId) {
 //    final Result<String> projectType = new Result<String>();

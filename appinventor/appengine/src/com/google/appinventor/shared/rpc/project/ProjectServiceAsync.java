@@ -57,6 +57,21 @@ public interface ProjectServiceAsync {
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService@loginToGallery()
+   */
+
+  void loginToGallery(AsyncCallback<RpcResult> callback);
+
+  /**
+   * @see ProjectService#sendToGallery(long)
+   */
+  void sendToGallery(long projectId, AsyncCallback<RpcResult> callback);
+  /**
+   * @see ProjectService#loadFromGallery(String)
+   */
+  void loadFromGallery(String galleryId, AsyncCallback<UserProject> callback);
+
+  /**
    * @see ProjectService#deleteProject(long)
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
