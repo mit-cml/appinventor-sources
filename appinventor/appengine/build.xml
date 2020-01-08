@@ -92,12 +92,19 @@
           unless="Docs.uptodate">
     <!-- We set failifexecutionfails to false so the whole build doesn't fail
          if the developer doesn't have Jekyll set up -->
-    <exec executable="jekyll" failonerror="true" failifexecutionfails="false">
+    <exec executable="bundle" failonerror="true"
+          failifexecutionfails="false"
+          dir="${docs.dir}/markdown" >
+      <arg value="install" />
+      <arg value="--path" />
+      <arg value="vendor/bundle" />
+    </exec>
+    <exec executable="bundle" failonerror="true"
+          failifexecutionfails="false"
+          dir="${docs.dir}/markdown" >
+      <arg value="exec" />
+      <arg value="jekyll" />
       <arg value="build" />
-      <arg value="-s" />
-      <arg value="${docs.dir}/markdown" />
-      <arg value="--layouts" />
-      <arg value="${docs.dir}/markdown/_layouts" />
       <arg value="-d" />
       <arg value="${docs.dir}/html" />
     </exec>
