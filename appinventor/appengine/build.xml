@@ -90,17 +90,19 @@
        ===================================================================== -->
   <target name="BuildDocs" depends="components_Markdown,CheckDocs"
           unless="Docs.uptodate">
+    <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
+    <property name="force.builddocs" value="false" />
     <!-- We set failifexecutionfails to false so the whole build doesn't fail
          if the developer doesn't have Jekyll set up -->
-    <exec executable="bundle" failonerror="true"
-          failifexecutionfails="false"
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
           dir="${docs.dir}/markdown" >
       <arg value="install" />
       <arg value="--path" />
       <arg value="vendor/bundle" />
     </exec>
-    <exec executable="bundle" failonerror="true"
-          failifexecutionfails="false"
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
           dir="${docs.dir}/markdown" >
       <arg value="exec" />
       <arg value="jekyll" />
