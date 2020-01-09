@@ -150,6 +150,21 @@ Before entering or scanning the QR code in the Companion, check the box labeled 
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
+    
+### Hot-reloading GWT code with 'Super Dev Mode'
+1. Run `ant devmode`
+2. [Run the main server](#running-the-main-server).
+3. Open http://localhost:9876 (*GWT CodeServer*) and drag the two bookmarklets (*Dev Mode On & Off*) to the bookmarks bar.
+4. Open http://localhost:8888 (*App Engine server*)
+5. To see changes "live":
+   1. Save your changes in file.
+   2. Click on the *"Dev Mode On"* bookmarklet.
+   3. A popup will be shown with a button to compile `ode` module.
+   4. Press that button to compile. (That button is actually a bookmarklet. So you can drag this button to the bookmarks bar as well. This will come handy for subsequent compilations)
+   5. After that, *GWT CodeServer* will compile the module incrementally.
+   6. Refresh the page and that's it! The changes are live.
+
+Logs can be found at http://localhost:9876/log/ode and SourceMaps at http://localhost:9876/sourcemaps/ode
 
 ## Need help?
 Join [our community](https://community.appinventor.mit.edu/).
