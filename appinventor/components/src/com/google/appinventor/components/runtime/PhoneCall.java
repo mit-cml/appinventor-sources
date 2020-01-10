@@ -6,8 +6,17 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.CALL_PHONE;
+import static android.Manifest.permission.PROCESS_OUTGOING_CALLS;
+import static android.Manifest.permission.READ_CALL_LOG;
+import static android.Manifest.permission.READ_PHONE_STATE;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
-import android.util.Log;
+import android.telephony.TelephonyManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -21,13 +30,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
-
-import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.telephony.TelephonyManager;
 
 /**
  * Component for making a phone call to a programatically-specified number.
@@ -58,9 +60,8 @@ import android.telephony.TelephonyManager;
     nonVisible = true,
     iconName = "images/phoneCall.png")
 @SimpleObject
-public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener, ActivityResultListener {
-
-  private static final String LOG_TAG = PhoneCall.class.getSimpleName();
+public class PhoneCall extends AndroidNonvisibleComponent implements Component, OnDestroyListener,
+    ActivityResultListener {
 
   /**
    * Magic number "PHON" used to report when a phone call has been initiated
@@ -88,9 +89,9 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
 
   @SuppressWarnings({"unused"})
   public void Initialize() {
-    if (form.doesAppDeclarePermission(Manifest.permission.PROCESS_OUTGOING_CALLS)) {
+    if (form.doesAppDeclarePermission(READ_CALL_LOG)) {
       form.askPermission(new BulkPermissionRequest(this, "Initialize",
-          Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE) {
+          PROCESS_OUTGOING_CALLS, READ_PHONE_STATE, READ_CALL_LOG) {
         @Override
         public void onGranted() {
           registerCallStateMonitor();
@@ -113,8 +114,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    *
    * @param phoneNumber a phone number to call
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
   public void PhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
@@ -134,12 +134,12 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   /**
    * Makes a phone call using the number in the PhoneNumber property.
    */
-  @UsesPermissions(Manifest.permission.CALL_PHONE)
+  @UsesPermissions(CALL_PHONE)
   @SimpleFunction
   public void MakePhoneCallDirect() {
     // Check that we have permission and ask for it if we don't
     if (!havePermission) {
-      form.askPermission(Manifest.permission.CALL_PHONE,
+      form.askPermission(CALL_PHONE,
         new PermissionResultHandler() {
           @Override
           public void HandlePermissionResponse(String permission, boolean granted) {
@@ -147,8 +147,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               PhoneCall.this.havePermission = true;
               PhoneCall.this.MakePhoneCallDirect();
             } else {
-              form.dispatchPermissionDeniedEvent(PhoneCall.this, "MakePhoneCall",
-                  Manifest.permission.CALL_PHONE);
+              form.dispatchPermissionDeniedEvent(PhoneCall.this, "MakePhoneCall", CALL_PHONE);
             }
           }
         });
@@ -170,7 +169,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               " If status is 1, incoming call is ringing; " +
               "if status is 2, outgoing call is dialled. " +
               "phoneNumber is the incoming/outgoing phone number.")
-  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
+  @UsesPermissions({
+      PROCESS_OUTGOING_CALLS,  // Deprecated SDK 29
+      READ_CALL_LOG,  // minSDK 16, needed on SDK 29
+      READ_PHONE_STATE
+  })
   public void PhoneCallStarted(int status, String phoneNumber) {
     // invoke the application's "PhoneCallStarted" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status, phoneNumber);
@@ -178,9 +181,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
 
   /**
    * Event indicating that a phone call has ended.
-   * status: 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
+   * status: 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up;
+   * 3:Outgoing call is hung up.
    *
-   * @param status 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
+   * @param status 1:incoming call is missed or rejected; 2:incoming call is answered before
+   *               hanging up; 3:Outgoing call is hung up.
    * @param phoneNumber ended call phone number
    */
   @SimpleEvent(
@@ -190,7 +195,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
               "if status is 2, incoming call is answered before hanging up; " +
               "if status is 3, outgoing call is hung up. " +
               "phoneNumber is the ended call phone number.")
-  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
+  @UsesPermissions({
+      PROCESS_OUTGOING_CALLS,  // Deprecated SDK 29
+      READ_CALL_LOG,  // minSDK 16, needed on SDK 29
+      READ_PHONE_STATE,
+  })
   public void PhoneCallEnded(int status, String phoneNumber) {
     // invoke the application's "PhoneCallEnded" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status, phoneNumber);
@@ -205,7 +214,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
       description =
           "Event indicating that an incoming phone call is answered. " +
               "phoneNumber is the incoming call phone number.")
-  @UsesPermissions({Manifest.permission.PROCESS_OUTGOING_CALLS, Manifest.permission.READ_PHONE_STATE})
+  @UsesPermissions({
+      PROCESS_OUTGOING_CALLS,  // Deprecated SDK 29
+      READ_CALL_LOG,  // minSDK 16, needed on SDK 29
+      READ_PHONE_STATE,
+  })
   public void IncomingCallAnswered(String phoneNumber) {
     // invoke the application's "IncomingCallAnswered" event handler.
     EventDispatcher.dispatchEvent(this, "IncomingCallAnswered", phoneNumber);
@@ -223,7 +236,8 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    *
    */
   private class CallStateReceiver extends BroadcastReceiver {
-    private int status; // 0:undetermined, 1:incoming ringed, 2:outgoing dialled, 3: incoming answered
+    private int status; // 0:undetermined, 1:incoming ringed, 2:outgoing dialled,
+                        // 3: incoming answered
     private String number; // phone call number
     public CallStateReceiver() {
       status = 0;
@@ -239,6 +253,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
           // Incoming call rings
           status = 1;
           number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+          if (number == null) {
+            // This gets called first with null, then with the actual number.
+            // Ignore the first invocation.
+            return;
+          }
           PhoneCallStarted(1, number);
         }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
           // Call off-hook
