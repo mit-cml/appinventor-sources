@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.TextResource;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import jsinterop.annotations.JsFunction;
 
 /**
@@ -22,6 +23,9 @@ import jsinterop.annotations.JsFunction;
 public interface BlocklyMsg extends ClientBundle {
   @Source("messages.json")
   ExternalTextResource messages();
+
+  @Source("messages_default.json")
+  TextResource default_messages();
 
   // Translation loading management
 
@@ -38,7 +42,7 @@ public interface BlocklyMsg extends ClientBundle {
 
   final class Loader {
     private static boolean translationsLoaded = false;
-    private static Set<LoadCallback> pendingCallbacks = new HashSet<>();
+    private static Set<LoadCallback> pendingCallbacks = new HashSet<LoadCallback>();
     private static boolean loadInitiated = false;
 
     private Loader() {
@@ -48,6 +52,7 @@ public interface BlocklyMsg extends ClientBundle {
     static void loadTranslation() {
       loadInitiated = true;
       try {
+        final String default_str = ((BlocklyMsg) GWT.create(BlocklyMsg.class)).default_messages().getText();
         ((BlocklyMsg) GWT.create(BlocklyMsg.class)).messages()
             .getText(new ResourceCallback<TextResource>() {
               @Override
@@ -57,7 +62,7 @@ public interface BlocklyMsg extends ClientBundle {
 
               @Override
               public void onSuccess(TextResource textResource) {
-                installTranslations(textResource.getText());
+                installTranslations(textResource.getText(), default_str);
                 translationsLoaded = true;
                 for (LoadCallback callback : pendingCallbacks) {
                   try {
@@ -106,11 +111,16 @@ public interface BlocklyMsg extends ClientBundle {
       }
     }
 
-    private static native void installTranslations(String translations)/*-{
+    private static native void installTranslations(String translations, String default_strings)/*-{
         var messages = JSON.parse(translations);
-        Object.keys(messages).forEach(function (key) {
+        var default_json = JSON.parse(default_strings);
+        Object.keys(default_json).forEach(function (key) {
             if (key.indexOf("Blockly.Msg.") === 0) {
+              if (key in messages) {
                 Blockly.Msg[key.replace("Blockly.Msg.", "")] = messages[key];
+              } else {
+                Blockly.Msg[key.replace("Blockly.Msg.", "")] = default_json[key];
+              }
             }
         });
     }-*/;
