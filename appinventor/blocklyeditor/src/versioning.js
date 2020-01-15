@@ -2628,7 +2628,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Added property Timeout and event TimedOut
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
+    7: "noUpgrade"
 
   }, // End Web upgraders
 

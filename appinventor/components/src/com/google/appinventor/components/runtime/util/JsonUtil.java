@@ -459,5 +459,20 @@ public class JsonUtil {
       files[i].delete();
     }
   }
+
+  /**
+   * Encodes the given JSON object to a JSON string
+   *
+   * @param jsonObject the JSON object to encode
+   * @return the encoded string
+   * @throws IllegalArgumentException if the JSON object can't be encoded
+   */
+  public static String encodeJsonObject(Object jsonObject) throws IllegalArgumentException {
+    try {
+      return getJsonRepresentation(jsonObject);
+    } catch (JSONException e) {
+      throw new IllegalArgumentException("jsonObject is not a legal JSON object");
+    }
+  }
 }
 

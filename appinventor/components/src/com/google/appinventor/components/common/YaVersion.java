@@ -490,6 +490,7 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
+  // - WEB_COMPONENT_VERSION was incremented to 7
 
   public static final int YOUNG_ANDROID_VERSION = 197;
 
@@ -1264,7 +1265,10 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 6:
   // - The Timeout property was added.
   // - The TimedOut event was added for timed out web requests.
-  public static final int WEB_COMPONENT_VERSION = 6;
+  // For WEB_COMPONENT_VERSION 7:
+  // - The JsonTextDecodeWithDictionaries method was added
+  // - The XMLTextDecodeAsDictionary method was added.
+  public static final int WEB_COMPONENT_VERSION = 7;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
