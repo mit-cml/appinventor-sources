@@ -539,14 +539,27 @@ set the following properties:
   <dd>Decodes the given HTML text value.
 
     <p>HTML Character Entities such as <code class="highlighter-rouge">&amp;amp;</code>, <code class="highlighter-rouge">&amp;lt;</code>, <code class="highlighter-rouge">&amp;gt;</code>, <code class="highlighter-rouge">&amp;apos;</code>, and <code class="highlighter-rouge">&amp;quot;</code> are
- changed to &amp;, &lt;, &gt;, ‘, and “.
+ changed to <code class="highlighter-rouge">&amp;</code>, <code class="highlighter-rouge">&lt;</code>, <code class="highlighter-rouge">&gt;</code>, <code class="highlighter-rouge">'</code>, and <code class="highlighter-rouge">"</code>.
  Entities such as <code class="highlighter-rouge">&amp;#xhhhh;</code>, and <code class="highlighter-rouge">&amp;#nnnn;</code> are changed to the appropriate characters.</p>
   </dd>
+  <dt id="Web.JsonObjectEncode" class="method returns text"><i></i> JsonObjectEncode(<em class="any">jsonObject</em>)</dt>
+  <dd>Returns the value of a built-in type (i.e., boolean, number, text, list, dictionary)
+ in its JavaScript Object Notation representation. If the value cannot be
+ represented as JSON, the Screen’s ErrorOccurred event will be run, if any,
+ and the Web component will return the empty string.</dd>
   <dt id="Web.JsonTextDecode" class="method returns any"><i></i> JsonTextDecode(<em class="text">jsonText</em>)</dt>
   <dd>Decodes the given JSON encoded value to produce a corresponding AppInventor value.
  A JSON list <code class="highlighter-rouge">[x, y, z]</code> decodes to a list <code class="highlighter-rouge">(x y z)</code>,  A JSON object with key A and value B,
  (denoted as <code class="highlighter-rouge">{A:B}</code>) decodes to a list <code class="highlighter-rouge">((A B))</code>, that is, a list containing the two-element
- list <code class="highlighter-rouge">(A B)</code>.</dd>
+ list <code class="highlighter-rouge">(A B)</code>.
+
+    <p>Use the method <a href="#Web.JsonTextDecodeWithDictionaries">JsonTextDecodeWithDictionaries</a> if you
+ would prefer to get back dictionary objects rather than lists-of-lists in the result.</p>
+  </dd>
+  <dt id="Web.JsonTextDecodeWithDictionaries" class="method returns any"><i></i> JsonTextDecodeWithDictionaries(<em class="text">jsonText</em>)</dt>
+  <dd>Decodes the given JSON encoded value to produce a corresponding App Inventor value.
+ A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
+ denoted as {a: b} decodes to a dictionary with the key a and value b.</dd>
   <dt id="Web.PostFile" class="method"><i></i> PostFile(<em class="text">path</em>)</dt>
   <dd>Performs an HTTP POST request using the Url property and data from the specified file.
 
@@ -618,19 +631,54 @@ set the following properties:
  a list that contains a pair of tag and string.  More generally, if obj1, obj2, …
  are tag-delimited XML strings, then <code class="highlighter-rouge">&lt;tag&gt;obj1 obj2 ...&lt;/tag&gt;</code> decodes to a list
  that contains a pair whose first element is tag and whose second element is the
- list of the decoded obj’s, ordered alphabetically by tags.  Examples:
- <code class="highlighter-rouge">&lt;foo&gt;123&lt;/foo&gt;</code> decodes to a one-item list containing the pair (foo, 123)
- <code class="highlighter-rouge">&lt;foo&gt;1 2 3&lt;/foo&gt;</code> decodes to a one-item list containing the pair (foo,”1 2 3”)
- <code class="highlighter-rouge">&lt;a&gt;&lt;foo&gt;1 2 3&lt;/foo&gt;&lt;bar&gt;456&lt;/bar&gt;&lt;/a&gt;</code> decodes to a list containing the pair
- (a,X) where X is a 2-item list that contains the pair (bar,123) and the pair (foo,”1 2 3”).
- If the sequence of obj’s mixes tag-delimited and non-tag-delimited
- items, then the non-tag-delimited items are pulled out of the sequence and wrapped
- with a “content” tag.  For example, decoding <code class="highlighter-rouge">&lt;a&gt;&lt;bar&gt;456&lt;/bar&gt;many&lt;foo&gt;1 2 3&lt;/foo&gt;apples&lt;/a&gt;</code>
+ list of the decoded obj’s, ordered alphabetically by tags.
+
+    <p>Examples:</p>
+    <ul>
+      <li><code class="highlighter-rouge">&lt;foo&gt;&lt;123/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo 123)</code></li>
+      <li><code class="highlighter-rouge">&lt;foo&gt;1 2 3&lt;/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo "1 2 3")</code></li>
+      <li><code class="highlighter-rouge">&lt;a&gt;&lt;foo&gt;1 2 3&lt;/foo&gt;&lt;bar&gt;456&lt;/bar&gt;&lt;/a&gt;</code> decodes to a list containing the pair <code class="highlighter-rouge">(a X)</code>
+where X is a 2-item list that contains the pair <code class="highlighter-rouge">(bar 123)</code> and the pair <code class="highlighter-rouge">(foo "1 2 3")</code>.</li>
+    </ul>
+
+    <p>If the sequence of obj’s mixes tag-delimited and non-tag-delimited items, then the
+ non-tag-delimited items are pulled out of the sequence and wrapped with a “content” tag.
+ For example, decoding <code class="highlighter-rouge">&lt;a&gt;&lt;bar&gt;456&lt;/bar&gt;many&lt;foo&gt;1 2 3&lt;/foo&gt;apples&lt;a&gt;&lt;/code&gt;</code>
  is similar to above, except that the list X is a 3-item list that contains the additional pair
  whose first item is the string “content”, and whose second item is the list (many, apples).
- This method signals an error and returns the empty list if the result is not well-formed XML.
+ This method signals an error and returns the empty list if the result is not well-formed XML.</p>
+  </dd>
+  <dt id="Web.XMLTextDecodeAsDictionary" class="method returns any"><i></i> XMLTextDecodeAsDictionary(<em class="text">XmlText</em>)</dt>
+  <dd>Decodes the given XML string to produce a dictionary structure. The dictionary includes the
+ special keys <code class="highlighter-rouge">$tag</code>, <code class="highlighter-rouge">$localName</code>, <code class="highlighter-rouge">$namespace</code>, <code class="highlighter-rouge">$namespaceUri</code>, <code class="highlighter-rouge">$attributes</code>, and <code class="highlighter-rouge">$content</code>,
+ as well as a key for each unique tag for every node, which points to a list of elements of
+ the same structure as described here.
 
-    <p>See <a href="../other/xml.html">“Working with XML and Web Services”</a> for more details.</p>
+    <p>The <code class="highlighter-rouge">$tag</code> key is the full tag name, e.g., foo:bar. The <code class="highlighter-rouge">$localName</code> is the local portion of
+ the name (everything after the colon <code class="highlighter-rouge">:</code> character). If a namespace is given (everything before
+ the colon <code class="highlighter-rouge">:</code> character), it is provided in <code class="highlighter-rouge">$namespace</code> and the corresponding URI is given
+ in <code class="highlighter-rouge">$namespaceUri</code>. The attributes are stored in a dictionary in <code class="highlighter-rouge">$attributes</code> and the
+ child nodes are given as a list under <code class="highlighter-rouge">$content</code>.</p>
+
+    <p><strong>More Information on Special Keys</strong></p>
+
+    <p>Consider the following XML document:</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="nt">&lt;ex:Book</span> <span class="na">xmlns:ex=</span><span class="s">"http://example.com/"</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;ex:title</span> <span class="na">xml:lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>On the Origin of Species<span class="nt">&lt;/ex:title&gt;</span>
+     <span class="nt">&lt;ex:author&gt;</span>Charles Darwin<span class="nt">&lt;/ex:author&gt;</span>
+   <span class="nt">&lt;/ex:Book&gt;</span>
+</code></pre></div>    </div>
+
+    <p>When parsed, the <code class="highlighter-rouge">$tag</code> key will be <code class="highlighter-rouge">"ex:Book"</code>, the <code class="highlighter-rouge">$localName</code> key will be <code class="highlighter-rouge">"Book"</code>, the
+ <code class="highlighter-rouge">$namespace</code> key will be <code class="highlighter-rouge">"ex"</code>, <code class="highlighter-rouge">$namespaceUri</code> will be <code class="highlighter-rouge">"http://example.com/"</code>, the
+ <code class="highlighter-rouge">$attributes</code> key will be a dictionary <code class="highlighter-rouge">{}</code> (xmlns is removed for the namespace), and the
+ <code class="highlighter-rouge">$content</code> will be a list of two items representing the decoded <code class="highlighter-rouge">&lt;ex:title&gt;</code> and <code class="highlighter-rouge">&lt;ex:author&gt;</code>
+ elements. The first item, which corresponds to the <code class="highlighter-rouge">&lt;ex:title&gt;</code> element, will have an
+ <code class="highlighter-rouge">$attributes</code> key containing the dictionary <code class="highlighter-rouge">{"xml:lang": "en"}</code>. For each <code class="highlighter-rouge">name=value</code>
+ attribute on an element, a key-value pair mapping <code class="highlighter-rouge">name</code> to <code class="highlighter-rouge">value</code> will exist in the
+ <code class="highlighter-rouge">$attributes</code> dictionary. In addition to these special keys, there will also be <code class="highlighter-rouge">"ex:title"</code>
+ and <code class="highlighter-rouge">"ex:author"</code> to allow lookups faster than having to traverse the <code class="highlighter-rouge">$content</code> list.</p>
   </dd>
 </dl>
 
