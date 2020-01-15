@@ -1,4 +1,4 @@
-//package com.google.appinventor.client.editor.youngandroid.i18n;
+package com.google.appinventor.client.editor.youngandroid.i18n;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -22,6 +22,7 @@ public class BlocklyTranslationGenerator {
    * args[2]: destination path
    */
   public static void main(String[] args) throws IOException, JSONException {
+
     File blockly_dir = new File(args[1]);
     File ai_dir = new File(args[0]);
     File blockly_english = new File(args[1].concat("/en.json"));
