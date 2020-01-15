@@ -296,6 +296,7 @@ public class JsonUtil {
    * @return the name of the created file
    */
   private static String writeFile(String input, String fileExtension) {
+    FileOutputStream outStream = null;
     try {
       if (fileExtension.length() != 3 && fileExtension.length() != 4) {
         throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
@@ -305,14 +306,15 @@ public class JsonUtil {
       File destDirectory = new File(fullDirName);
       destDirectory.mkdirs();
       File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
-      FileOutputStream outStream = new FileOutputStream(dest);
+      outStream = new FileOutputStream(dest);
       outStream.write(content);
-      outStream.close();
       String retval = dest.toURI().toASCIIString();
       trimDirectory(20, destDirectory);
       return retval;
     } catch (Exception e) {
       throw new YailRuntimeError(e.getMessage(), "Write");
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, outStream);
     }
   }
 
