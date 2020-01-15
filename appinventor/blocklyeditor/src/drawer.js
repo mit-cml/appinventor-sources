@@ -478,6 +478,18 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
 };
 
 Blockly.Drawer.defaultBlockXMLStrings = {
+  controls_if: {xmlString:
+  '<xml>' +
+    '<block type="controls_if">' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation else="1"></mutation>' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation elseif="1" else="1"></mutation>' +
+    '</block>' +
+  '</xml>' },
+
   controls_forRange: {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
