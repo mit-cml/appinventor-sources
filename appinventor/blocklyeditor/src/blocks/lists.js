@@ -362,7 +362,7 @@ Blockly.Blocks['lists_reverse'] = {
       .appendField(Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.LANG_LISTS_REVERSE_TITLE_REVERSE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE }]
 }
 
 Blockly.Blocks['lists_to_csv_row'] = {

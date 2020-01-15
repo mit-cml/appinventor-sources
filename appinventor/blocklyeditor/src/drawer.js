@@ -516,7 +516,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
-   lists_lookup_in_pairs: {xmlString:
+  lists_lookup_in_pairs: {xmlString:
   '<xml>' +
     '<block type="lists_lookup_in_pairs">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
