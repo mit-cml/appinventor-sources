@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -984,7 +984,8 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
+        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard|"
+            + "screenLayout|smallestScreenSize\">\n");
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
