@@ -16,7 +16,7 @@ public class BlocklyTranslationGenerator {
 
   /**
    * The definitions of the arguments used by this script
-   * <p>
+   *
    * args[0]: the path to AI Blockly translation files
    * args[1]: the path to Blockly's translation files
    * args[2]: destination path
@@ -43,8 +43,15 @@ public class BlocklyTranslationGenerator {
       if (f.isFile() && f.getName().endsWith(".json")) {
         // Blockly i18n filenames are of the form language_code.json, so extracting the language code is easy.
         String lang_code = FilenameUtils.getBaseName(f.getName());
-        // Build hash of blockly files by language code
-        blockly_files.put(lang_code, f.getPath());
+        // We use different codes for Chinese variants than Blockly.
+        if (lang_code == "zh-hans") {
+          // We use
+          blockly_files.put("zh_cn", f.getPath());
+        } else if (lang_code == "zh-hant") {
+          blockly_files.put("zh_tw", f.getPath());
+        } else {
+          blockly_files.put(lang_code.replace("-", "_"), f.getPath());
+        }
       }
     }
 

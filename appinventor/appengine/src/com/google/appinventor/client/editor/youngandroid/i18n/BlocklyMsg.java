@@ -109,9 +109,7 @@ public interface BlocklyMsg extends ClientBundle {
     private static native void installTranslations(String translations)/*-{
         var messages = JSON.parse(translations);
         Object.keys(messages).forEach(function (key) {
-            if (key.indexOf("Blockly.Msg.") === 0) {
-                Blockly.Msg[key.replace("Blockly.Msg.", "")] = messages[key];
-            }
+          Blockly.Msg[key] = messages[key];
         });
     }-*/;
   }

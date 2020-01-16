@@ -498,7 +498,7 @@
       </classpath>
     </ai.javac>
     <java failonerror="true" classname="com.google.appinventor.client.editor.youngandroid.i18n.BlocklyTranslationGenerator">
-      <arg line="${appinventor.dir}/appengine/src/com/google/appinventor/client/editor/youngandroid/i18n ${lib.dir}/blockly/msg/json ${build.dir}/blocklyeditor/i18n" />
+      <arg line="${appinventor.dir}/appengine/src/com/google/appinventor/client/editor/youngandroid/i18n/msg ${lib.dir}/blockly/msg/json ${appinventor.dir}/appengine/src/com/google/appinventor/client/editor/youngandroid/i18n" />
       <classpath>
         <pathelement location="${BlocklyTranslator-class.dir}"/>
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
