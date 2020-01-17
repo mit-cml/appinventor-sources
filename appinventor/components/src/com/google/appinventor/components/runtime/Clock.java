@@ -614,9 +614,9 @@ public class Clock extends AndroidNonvisibleComponent
   /**
    * Changes the timezone of a given instant.
    *
-   * @param instant : instant to modify
-   * @param timezone : timezone to apply to instant
-   * @return : updated instant
+   * @param instant  instant to modify
+   * @param timezone  timezone to apply to instant
+   * @return  updated instant
    */
   @SimpleFunction(description = "Updates the timezone in which the instant is saved at")
   public static Calendar ChangeTimezone(Calendar instant, String timezone) {
