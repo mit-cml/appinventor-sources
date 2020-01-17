@@ -87,17 +87,17 @@ public class MagneticFieldSensor extends AndroidNonvisibleComponent implements S
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    public float Xstrength() {
+    public float XStrength() {
         return xStrength;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    public float Ystrength() {
+    public float YStrength() {
         return yStrength;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    public float Zstrength() {
+    public float ZStrength() {
         return zStrength;
     }
 
