@@ -626,6 +626,16 @@ public class Clock extends AndroidNonvisibleComponent
       throw new YailRuntimeError("Your given timezone is not a valid timezone.");
   }
 
+  /**
+   * Returns all the available timezones.
+   *
+   * @return  list of timezones
+   */
+  @SimpleProperty(description = "The addresses and names of paired Bluetooth devices", category = PropertyCategory.BEHAVIOR)
+  public List<String> Timezones() {
+    return timezones;
+  }
+
   @Override
   public void onStop() {
     onScreen = false;
