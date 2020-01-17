@@ -47,7 +47,7 @@
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT": "אם",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN": "אם לא",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN": "אז",
-    "Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE": "if",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE": "אם",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": "",
     "Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT": "בזמן ש",
     "Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO": "עשה",
@@ -206,5 +206,7 @@
     "Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE": "סגור מסך",
     "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP": "מחזירה את הערך שהועבר למסך זה עם פתיחתו, בדרך כלל על ידי מסך אחר באפליקציה עם מסכים מרובים. אם לא הועבר ערך, מחזיר את הטקסט הריק.",
     "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT": "קבל ערך התחלה",
-    "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE": "ערך התחלה"
+    "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE": "ערך התחלה",
+    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ": "מחזיר אמת אם שני המספרים אינם שווים זה לזה.",
+    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ": "מחזיר אמת אם שתי המספרים שווים זה לזה."
 }
