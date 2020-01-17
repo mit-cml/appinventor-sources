@@ -631,7 +631,7 @@ public class Clock extends AndroidNonvisibleComponent
    *
    * @return  list of timezones
    */
-  @SimpleProperty(description = "The addresses and names of paired Bluetooth devices", category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description = "The list of available timezones", category = PropertyCategory.BEHAVIOR)
   public List<String> Timezones() {
     return timezones;
   }
