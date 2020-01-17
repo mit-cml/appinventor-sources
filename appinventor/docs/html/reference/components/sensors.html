@@ -137,6 +137,7 @@
   <li><a href="#Hygrometer">Hygrometer</a></li>
   <li><a href="#LightSensor">LightSensor</a></li>
   <li><a href="#LocationSensor">LocationSensor</a></li>
+  <li><a href="#MagneticFieldSensor">MagneticFieldSensor</a></li>
   <li><a href="#NearField">NearField</a></li>
   <li><a href="#OrientationSensor">OrientationSensor</a></li>
   <li><a href="#Pedometer">Pedometer</a></li>
@@ -454,6 +455,36 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>Derives latitude of given address</dd>
   <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives longitude of given address</dd>
+</dl>
+
+<h2 id="MagneticField">MagneticField</h2>
+
+<h3 id="MagneticField-Properties">Properties</h3>
+
+<dl class="properties">
+    <dt id="MagneticField.AbsoluteStrength" class="double"><em>AbsoluteStrength</em></dt>
+    <dd>Returns the absulute value of all magnetic forces.</dd>
+    <dt id="MagneticField.Available" class="boolean"><em>Available</em></dt>
+    <dd>Returns true when sensor is available in the device.</dd>
+    <dt id="MagneticField.Enabled" class="boolean"><em>Enabled</em></dt>
+    <dd>If enabled, sensor will be available for measurement.</dd>
+    <dt id="MagneticField.MaximumRange" class="float"><em>MaximumRange</em></dt>
+    <dd>Returns the maximum range on which values can be measured.</dd>
+    <dt id="MagneticField.XStrength" class="float"><em>XStrength</em></dt>
+    <dd>Returns the value of the force in the X-axis.</dd>
+    <dt id="MagneticField.Ytrength" class="float"><em>YStrength</em></dt>
+    <dd>Returns the value of the force in the Y-axis.</dd>
+    <dt id="MagneticField.ZStrength" class="float"><em>ZStrength</em></dt>
+    <dd>Returns the value of the force in the Z-axis.</dd>
+    <dd></dd>
+</dl>
+
+<h3 id="MagneticField-Events">Events</h3>
+
+<dl class="events">
+    <dt id="MagneticField.MagneticChanged">MagneticChanged(<em class="float">xStrength</em>,
+        <em class="float">yStrength</em>, <em class="float">zStrength</em>, <em class="double">absoluteStrength</em>)</dt>
+    <dd>Indicates that new values have been measured. Variables are the new values.</dd>
 </dl>
 
 <h2 id="NearField">NearField</h2>
