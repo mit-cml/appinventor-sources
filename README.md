@@ -105,7 +105,7 @@ For developers who will be working on Blocky within the context of App Inventor,
 
 If you need to switch back to a branch that does contains the Blockly and Closure Library sources in the tree, you will need to run the command:
 
-    $ git submodule deinit --all.
+    $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
 
