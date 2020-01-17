@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -944,6 +945,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color of the canvas background.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -1002,6 +1004,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color in which lines are drawn",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int PaintColor() {
     return paintColor;
   }
@@ -1445,6 +1448,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Gets the color of the specified point. "
       + "This includes the background and any drawn points, lines, or "
       + "circles but not sprites.")
+  @IsColor
   public int GetBackgroundPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());
@@ -1461,7 +1465,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Sets the color of the specified point. "
       + "This differs from DrawPoint by having an argument for color.")
-  public void SetBackgroundPixelColor(int x, int y, int color) {
+  public void SetBackgroundPixelColor(int x, int y, @IsColor int color) {
     Paint pixelPaint = new Paint();
     PaintUtil.changePaint(pixelPaint, color);
     int correctedX = (int) (x * $form().deviceDensity());
@@ -1479,6 +1483,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *         or {@link Component#COLOR_NONE} if that point is not on this Canvas
    */
   @SimpleFunction(description = "Gets the color of the specified point.")
+  @IsColor
   public int GetPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());

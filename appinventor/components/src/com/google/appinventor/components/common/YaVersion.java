@@ -477,10 +477,19 @@ public class YaVersion {
   // - BALL_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 193:
   // - FORM_COMPONENT_VERSION was incremented to 26
-  // For YOUNG_ANDROID_VERESION 194:
-  // - Added MagneticFieldSensor
+  // For YOUNG_ANDROID_VERSION 194:
+  // - CIRCLE_COMPONENT_VERSION was incremented to 2
+  // - LINESTRING_COMPONENT_VERSION was incremented to 2
+  // - MARKER_COMPONENT_VERSION was incremented to 3
+  // - POLYGON_COMPONENT_VERSION was incremented to 2
+  // - RECTANGLE_COMPONENT_VERSION was incremented to 2
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 195:
+  // - PEDOMETER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 196:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
 
-  public static final int YOUNG_ANDROID_VERSION = 194;
+  public static final int YOUNG_ANDROID_VERSION = 196;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -716,7 +725,9 @@ public class YaVersion {
 
   // For CIRCLE_COMPONENT_VERSION 1:
   // - Initial implementation of Circle for Maps
-  public static final int CIRCLE_COMPONENT_VERSION = 1;
+  // For CIRCLE_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int CIRCLE_COMPONENT_VERSION = 2;
 
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
@@ -898,7 +909,9 @@ public class YaVersion {
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
-  public static final int LINESTRING_COMPONENT_VERSION = 1;
+  // For LINESTRING_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int LINESTRING_COMPONENT_VERSION = 2;
 
   // For LISTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -958,7 +971,9 @@ public class YaVersion {
   // - Initial Marker implementation using OpenStreetMap
   // For MARKER_COMPONENT_VERSION 2:
   // - The ShowShadow property was removed
-  public static final int MARKER_COMPONENT_VERSION = 2;
+  // For MARKER_COMPONENT_VERSION 3:
+  // - Added fill and stroke opacity properties
+  public static final int MARKER_COMPONENT_VERSION = 3;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
@@ -1021,7 +1036,9 @@ public class YaVersion {
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
   // - The GPS related functionality was removed.
-  public static final int PEDOMETER_COMPONENT_VERSION = 2;
+  // For PEDOMETER_COMPONENT_VERSION 3:
+  // - The Resume and Pause methods were removed.
+  public static final int PEDOMETER_COMPONENT_VERSION = 3;
 
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
@@ -1061,11 +1078,15 @@ public class YaVersion {
 
   // For POLYGON_COMPONENT_VERSION 1:
   // - Initial Polygon implementation for Maps
-  public static final int POLYGON_COMPONENT_VERSION = 1;
+  // For POLYGON_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int POLYGON_COMPONENT_VERSION = 2;
 
   // For RECTANGLE_COMPONENT_VERSION 1:
   // - Initial Rectangle implementation for Maps
-  public static final int RECTANGLE_COMPONENT_VERSION = 1;
+  // For RECTANGLE_COMPONENT_VERSION 2:
+  // - Added fill and stroke opacity properties
+  public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 
@@ -1109,7 +1130,9 @@ public class YaVersion {
   // - The MultiLine property was added.
   // For TEXTBOX_COMPONENT_VERSION 5:
   // - RequestFocus method was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 5;
+  // For TEXTBOX_COMPONENT_VERSION 6:
+  // - ReadOnly property was added
+  public static final int TEXTBOX_COMPONENT_VERSION = 6;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -1251,7 +1274,9 @@ public class YaVersion {
   // - ClearCaches method was added
   // For WEBVIEWER_COMPONENT_VERSiON 7:
   // - Added WebViewStringChange event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 7;
+  //For WEBVIEWER_COMPONENT_VERSION 8:
+  // - Added PageLoaded event
+  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
@@ -1311,11 +1336,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.55";
+  public static final String PREFERRED_COMPANION = "2.56";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.55", "2.55u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.56", "2.56u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

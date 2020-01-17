@@ -302,6 +302,11 @@
          target="ComponentTranslation"/>
   </target>
 
+  <target name="components_Markdown">
+    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
+         target="Markdown"/>
+  </target>
+
   <!-- ====================================================================
        buildserver_StarterApp builds:
        - build/buildserver/AppInventorPhoneApp.apk

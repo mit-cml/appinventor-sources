@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -325,6 +326,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(
       description = "The color of slider to the left of the thumb.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int ColorLeft() {
     return leftColor;
   }
@@ -356,6 +358,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(
       description = "The color of slider to the left of the thumb.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int ColorRight() {
     return rightColor;
   }

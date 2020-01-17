@@ -67,22 +67,21 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_CLOSED_ = 'assets/backpack-closed.png';
+Blockly.Backpack.prototype.BPACK_CLOSED_ = 'static/media/backpack-closed.png';
 
 /**
  * URL of the small backpack image.
  * @type {string}
  * @private
  */
-//Blockly.Backpack.prototype.BPACK_EMPTY_ = 'media/backpack-small-highlighted.png';
-Blockly.Backpack.prototype.BPACK_EMPTY_ = 'assets/backpack-empty.png';
+Blockly.Backpack.prototype.BPACK_EMPTY_ = 'static/media/backpack-empty.png';
 
 /**
  * URL of the full backpack image
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_FULL_ = 'assets/backpack-full.png';
+Blockly.Backpack.prototype.BPACK_FULL_ = 'static/media/backpack-full.png';
 
 /**
  * Width of the image.
@@ -226,7 +225,7 @@ Blockly.Backpack.prototype.init = function() {
   this.flyout_.workspace_.isBackpack = true;
 
   // load files for sound effect
-  Blockly.getMainWorkspace().loadAudio_(['assets/backpack.mp3', 'assets/backpack.ogg', 'assets/backpack.wav'], 'backpack');
+  Blockly.getMainWorkspace().loadAudio_(['static/media/backpack.mp3', 'static/media/backpack.ogg', 'static/media/backpack.wav'], 'backpack');
 
   var p = this;
   this.getContents(function(contents) {
@@ -479,6 +478,7 @@ Blockly.Backpack.prototype.openBackpack = function(e) {
       for (var i = 0; i < len; i++) {
         newBackpack[i] = Blockly.Xml.textToDom(backpack[i]).firstChild;
       }
+      Blockly.hideChaff();
       p.flyout_.show(newBackpack);
     });
   }

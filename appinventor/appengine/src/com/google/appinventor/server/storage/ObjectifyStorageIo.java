@@ -799,7 +799,24 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
+  }
 
+  @Override
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.projectMovedToTrashFlag = flag;
+            datastore.put(projectData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
   }
 
   @Override
@@ -947,7 +964,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.galleryId,
-          projectData.t.attributionId);
+          projectData.t.attributionId, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -980,7 +997,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
             projectData.dateModified, projectData.galleryId,
-            projectData.attributionId));
+            projectData.attributionId, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }

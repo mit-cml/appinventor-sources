@@ -329,6 +329,29 @@
          destfile="${local.build.dir}/ComponentProcessingLib.jar" />
   </target>
 
+  <target name="CheckAnnotationProcessors"
+          description="Tests whether or not the annotation processors need to be recompiled.">
+    <uptodate property="AnnotationProcessors.uptodate"
+              targetfile="${local.build.dir}/AnnotationProcessors.jar">
+      <srcfiles dir="${src.dir}">
+        <include name="${components.pkg}/scripts/*.java" />
+      </srcfiles>
+      <srcfiles dir="${local.build.dir}">
+        <filename name="ComponentProcessingLib.jar"/>
+        <filename name="HtmlEntities.jar"/>
+      </srcfiles>
+      <srcfiles dir="${public.build.dir}">
+        <filename name="CommonConstants.jar"/>
+      </srcfiles>
+      <srcfiles dir="${build.dir}/common">
+        <filename name="CommonUtils.jar"/>
+      </srcfiles>
+      <srcfiles dir="${lib.dir}/guava">
+        <filename name="guava-14.0.1.jar"/>
+      </srcfiles>
+    </uptodate>
+  </target>
+
   <!-- =====================================================================
        AnnotationProcessors: plugins for processing component annotations
        Note that AnnotationProcessors.jar, produced here, will contain all
@@ -337,7 +360,8 @@
        ===================================================================== -->
   <target name="AnnotationProcessors"
           description="Create plugins for annotation processing"
-          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils">
+          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils,CheckAnnotationProcessors"
+          unless="AnnotationProcessors.uptodate">
 
     <property name="AnnotationProcessors-class.dir"
               location="${class.dir}/AnnotationProcessors" />
@@ -446,6 +470,23 @@
 
     <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
           todir="${public.build.dir}"/>
+  </target>
+
+  <target name="Markdown"
+          depends="AnnotationProcessors,AndroidRuntime">
+    <property name="ComponentDocumentation-class.dir"
+              location="${class.dir}/ComponentDocumentation" />
+    <mkdir dir="${ComponentDocumentation-class.dir}" />
+    <ai.apt apt-classdir="${ComponentDocumentation-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.MarkdownDocumentationGenerator"
+            apt-target="${ComponentDocumentation-class.dir}"/>
+
+    <copy todir="${appinventor.dir}/docs/markdown/reference/components/">
+      <fileset dir="${ComponentDocumentation-class.dir}">
+        <include name="*.md" />
+        <exclude name="internal.md" />
+      </fileset>
+    </copy>
   </target>
 
   <!-- ======================================================================

@@ -358,8 +358,16 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradePedometerProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Map")) {
         srcCompVersion = upgradeMapProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Circle")) {
+        srcCompVersion = upgradeCircleProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("LineString")) {
+        srcCompVersion = upgradeLineStringProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Marker")) {
         srcCompVersion = upgradeMarkerProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Polygon")) {
+        srcCompVersion = upgradePolygonProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Rectangle")) {
+        srcCompVersion = upgradeRectangleProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("FeatureCollection")) {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
       }
@@ -1538,6 +1546,10 @@ public final class YoungAndroidFormUpgrader {
       // RequestFocus method was added
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // ReadOnly property was added
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1579,7 +1591,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 7) {
+    if (srcCompVersion < 8) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1589,7 +1601,8 @@ public final class YoungAndroidFormUpgrader {
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
       // WebViewStringChange event was added (version 7)
-      srcCompVersion = 7;
+      // PageLoaded event was added (version 8)
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1613,6 +1626,10 @@ public final class YoungAndroidFormUpgrader {
       // The GPS related functionality was removed.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The Resume and Pause methods were removed.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1631,14 +1648,56 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
+  
+  private static int upgradeCircleProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeLineStringProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The StrokeOpacity property was added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static int upgradeMarkerProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
       // The ShowShadow property was removed.
       if (componentProperties.containsKey("ShowShadow")) {
         componentProperties.remove("ShowShadow");
       }
+      // Verison 3
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradePolygonProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeRectangleProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Verison 2
+      // The FillOpacity and StrokeOpacity properties were added
       srcCompVersion = 2;
     }
     return srcCompVersion;

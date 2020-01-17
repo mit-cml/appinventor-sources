@@ -104,7 +104,7 @@ public final class WebViewer extends AndroidViewComponent {
     webview.getSettings().setJavaScriptEnabled(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
-    wvInterface = new WebViewInterface(webview.getContext());
+    wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
@@ -164,13 +164,18 @@ public final class WebViewer extends AndroidViewComponent {
 
   // Create a class so we can override the default link following behavior.
   // The handler doesn't do anything on its own.  But returning true means that
-  // this do nothing will override the default WebVew behavior.  Returning
+  // this do nothing will override the default WebView behavior.  Returning
   // false means to let the WebView handle the Url.  In other words, returning
   // true will not follow the link, and returning false will follow the link.
   private class WebViewerClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
       return !followLinks;
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      PageLoaded(url);
     }
   }
 
@@ -447,6 +452,11 @@ public final class WebViewer extends AndroidViewComponent {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
   }
 
+  @SimpleEvent(description = "When a page is finished loading this event is run.")
+  public void PageLoaded(String url) {
+    EventDispatcher.dispatchEvent(this, "PageLoaded", url);
+  }
+
   private void loadUrl(final String caller, final String url) {
     if (!havePermission && MediaUtil.isExternalFileUrl(url)) {
       container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -472,12 +482,10 @@ public final class WebViewer extends AndroidViewComponent {
    * in the WebView
    */
   public class WebViewInterface {
-    Context mContext;
     String webViewString;
 
-    /** Instantiate the interface and set the context */
-    WebViewInterface(Context c) {
-      mContext = c;
+    /** Instantiate the interface */
+    WebViewInterface() {
       webViewString = " ";
     }
 
