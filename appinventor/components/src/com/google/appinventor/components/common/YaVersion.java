@@ -488,8 +488,10 @@ public class YaVersion {
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 196:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 197:
+  // - CLOCK_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 196;
+  public static final int YOUNG_ANDROID_VERSION = 197;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -736,7 +738,9 @@ public class YaVersion {
   // - Duration Support was added
   // For CLOCK_COMPONENT_VERSION 4:
   // - MakeTime, MakeDate, MakeInstantFromParts methods were added
-  public static final int CLOCK_COMPONENT_VERSION = 4;
+  // For CLOCK_COMPONENT_VERSION 5:
+  // - Timezones property, ChangeTimezone method were added
+  public static final int CLOCK_COMPONENT_VERSION = 5;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
