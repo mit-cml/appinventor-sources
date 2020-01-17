@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Sensors</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Sensors</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="sensors">Sensors</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#AccelerometerSensor">AccelerometerSensor</a></li>
+  <li><a href="#BarcodeScanner">BarcodeScanner</a></li>
+  <li><a href="#Barometer">Barometer</a></li>
+  <li><a href="#Clock">Clock</a></li>
+  <li><a href="#GyroscopeSensor">GyroscopeSensor</a></li>
+  <li><a href="#Hygrometer">Hygrometer</a></li>
+  <li><a href="#LightSensor">LightSensor</a></li>
+  <li><a href="#LocationSensor">LocationSensor</a></li>
+  <li><a href="#NearField">NearField</a></li>
+  <li><a href="#OrientationSensor">OrientationSensor</a></li>
+  <li><a href="#Pedometer">Pedometer</a></li>
+  <li><a href="#ProximitySensor">ProximitySensor</a></li>
+  <li><a href="#Thermometer">Thermometer</a></li>
+</ul>
+
+<h2 id="AccelerometerSensor">AccelerometerSensor</h2>
+
+<h3 id="AccelerometerSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="AccelerometerSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Available property getter method (read-only property).</dd>
+  <dt id="AccelerometerSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If true, the sensor will generate events.  Otherwise, no events
+ are generated even if the device is accelerated or shaken.</dd>
+  <dt id="AccelerometerSensor.LegacyMode" class="boolean wo do"><em>LegacyMode</em></dt>
+  <dd>Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.</dd>
+  <dt id="AccelerometerSensor.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
+  <dd>The minimum interval, in milliseconds, between phone shakes</dd>
+  <dt id="AccelerometerSensor.Sensitivity" class="number"><em>Sensitivity</em></dt>
+  <dd>A number that encodes how sensitive the accelerometer is. The choices are: 1 = weak, 2 = moderate,  3 = strong.</dd>
+  <dt id="AccelerometerSensor.XAccel" class="number ro bo"><em>XAccel</em></dt>
+  <dd>Returns the acceleration in the X-dimension in SI units (m/s^2).
+ The sensor must be enabled to return meaningful values.</dd>
+  <dt id="AccelerometerSensor.YAccel" class="number ro bo"><em>YAccel</em></dt>
+  <dd>Returns the acceleration in the Y-dimension in SI units (m/s^2).
+ The sensor must be enabled to return meaningful values.</dd>
+  <dt id="AccelerometerSensor.ZAccel" class="number ro bo"><em>ZAccel</em></dt>
+  <dd>Returns the acceleration in the Z-dimension in SI units (m/s^2).
+ The sensor must be enabled to return meaningful values.</dd>
+</dl>
+
+<h3 id="AccelerometerSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="AccelerometerSensor.AccelerationChanged">AccelerationChanged(<em class="number">xAccel</em>,<em class="number">yAccel</em>,<em class="number">zAccel</em>)</dt>
+  <dd>Indicates the acceleration changed in the X, Y, and/or Z dimensions.</dd>
+  <dt id="AccelerometerSensor.Shaking">Shaking()</dt>
+  <dd>Indicates the device started being shaken or continues to be shaken.</dd>
+</dl>
+
+<h2 id="BarcodeScanner">BarcodeScanner</h2>
+
+<h3 id="BarcodeScanner-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="BarcodeScanner.Result" class="text ro bo"><em>Result</em></dt>
+  <dd>Text result of the previous scan.</dd>
+  <dt id="BarcodeScanner.UseExternalScanner" class="boolean"><em>UseExternalScanner</em></dt>
+  <dd>If true App Inventor will look for and use an external scanning program such as “Bar Code Scanner.”</dd>
+</dl>
+
+<h3 id="BarcodeScanner-Events">Events</h3>
+
+<dl class="events">
+  <dt id="BarcodeScanner.AfterScan">AfterScan(<em class="text">result</em>)</dt>
+  <dd>Indicates that the scanner has read a (text) result and provides the result</dd>
+</dl>
+
+<h3 id="BarcodeScanner-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="BarcodeScanner.DoScan" class="method"><i></i> DoScan()</dt>
+  <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
+</dl>
+
+<h2 id="Barometer">Barometer</h2>
+
+<h3 id="Barometer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Barometer.AirPressure" class="number ro bo"><em>AirPressure</em></dt>
+  <dd>The air pressure in hPa (millibar), if the sensor is available and enabled.</dd>
+  <dt id="Barometer.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Specifies whether or not the device has the hardware to support the Barometer component.</dd>
+  <dt id="Barometer.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt id="Barometer.RefreshTime" class="number"><em>RefreshTime</em></dt>
+  <dd>The requested minimum time in milliseconds between changes in readings being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3 id="Barometer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Barometer.AirPressureChanged">AirPressureChanged(<em class="number">pressure</em>)</dt>
+  <dd>Called when a change is detected in the air pressure (provided in hPa).</dd>
+</dl>
+
+<h2 id="Clock">Clock</h2>
+
+<h3 id="Clock-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Clock.TimerAlwaysFires" class="boolean"><em>TimerAlwaysFires</em></dt>
+  <dd>Will fire even when application is not showing on the screen if true</dd>
+  <dt id="Clock.TimerEnabled" class="boolean"><em>TimerEnabled</em></dt>
+  <dd>Fires timer if true</dd>
+  <dt id="Clock.TimerInterval" class="number"><em>TimerInterval</em></dt>
+  <dd>Interval between timer events in ms</dd>
+</dl>
+
+<h3 id="Clock-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Clock.Timer">Timer()</dt>
+  <dd>Timer has gone off.</dd>
+</dl>
+
+<h3 id="Clock-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Clock.AddDays" class="method returns InstantInTime"><i></i> AddDays(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some days after the argument</dd>
+  <dt id="Clock.AddDuration" class="method returns InstantInTime"><i></i> AddDuration(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some duration after the argument</dd>
+  <dt id="Clock.AddHours" class="method returns InstantInTime"><i></i> AddHours(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some hours after the argument</dd>
+  <dt id="Clock.AddMinutes" class="method returns InstantInTime"><i></i> AddMinutes(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some minutes after the argument</dd>
+  <dt id="Clock.AddMonths" class="method returns InstantInTime"><i></i> AddMonths(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some months after the argument</dd>
+  <dt id="Clock.AddSeconds" class="method returns InstantInTime"><i></i> AddSeconds(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some seconds after the argument</dd>
+  <dt id="Clock.AddWeeks" class="method returns InstantInTime"><i></i> AddWeeks(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some weeks after the argument</dd>
+  <dt id="Clock.AddYears" class="method returns InstantInTime"><i></i> AddYears(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
+  <dd>An instant in time some years after the argument</dd>
+  <dt id="Clock.DayOfMonth" class="method returns number"><i></i> DayOfMonth(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The day of the month</dd>
+  <dt id="Clock.Duration" class="method returns number"><i></i> Duration(<em class="InstantInTime">start</em>,<em class="InstantInTime">end</em>)</dt>
+  <dd>Milliseconds elapsed between instants</dd>
+  <dt id="Clock.DurationToDays" class="method returns number"><i></i> DurationToDays(<em class="number">duration</em>)</dt>
+  <dd>convert duration to days</dd>
+  <dt id="Clock.DurationToHours" class="method returns number"><i></i> DurationToHours(<em class="number">duration</em>)</dt>
+  <dd>convert duration to hours</dd>
+  <dt id="Clock.DurationToMinutes" class="method returns number"><i></i> DurationToMinutes(<em class="number">duration</em>)</dt>
+  <dd>convert duration to minutes</dd>
+  <dt id="Clock.DurationToSeconds" class="method returns number"><i></i> DurationToSeconds(<em class="number">duration</em>)</dt>
+  <dd>convert duration to seconds</dd>
+  <dt id="Clock.DurationToWeeks" class="method returns number"><i></i> DurationToWeeks(<em class="number">duration</em>)</dt>
+  <dd>convert duration to weeks</dd>
+  <dt id="Clock.FormatDate" class="method returns text"><i></i> FormatDate(<em class="InstantInTime">instant</em>,<em class="text">pattern</em>)</dt>
+  <dd>Text representing the date of an instant in the specified pattern</dd>
+  <dt id="Clock.FormatDateTime" class="method returns text"><i></i> FormatDateTime(<em class="InstantInTime">instant</em>,<em class="text">pattern</em>)</dt>
+  <dd>Text representing the date and time of an instant in the specified pattern</dd>
+  <dt id="Clock.FormatTime" class="method returns text"><i></i> FormatTime(<em class="InstantInTime">instant</em>)</dt>
+  <dd>Text representing the time of an instant</dd>
+  <dt id="Clock.GetMillis" class="method returns number"><i></i> GetMillis(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The instant in time measured as milliseconds since 1970.</dd>
+  <dt id="Clock.Hour" class="method returns number"><i></i> Hour(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The hour of the day</dd>
+  <dt id="Clock.MakeDate" class="method returns InstantInTime"><i></i> MakeDate(<em class="number">year</em>,<em class="number">month</em>,<em class="number">day</em>)</dt>
+  <dd>Allows the user to set the clock to be a date value.
+Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
+  <dt id="Clock.MakeInstant" class="method returns InstantInTime"><i></i> MakeInstant(<em class="text">from</em>)</dt>
+  <dd>An instant in time specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm</dd>
+  <dt id="Clock.MakeInstantFromMillis" class="method returns InstantInTime"><i></i> MakeInstantFromMillis(<em class="number">millis</em>)</dt>
+  <dd>An instant in time specified by the milliseconds since 1970.</dd>
+  <dt id="Clock.MakeInstantFromParts" class="method returns InstantInTime"><i></i> MakeInstantFromParts(<em class="number">year</em>,<em class="number">month</em>,<em class="number">day</em>,<em class="number">hour</em>,<em class="number">minute</em>,<em class="number">second</em>)</dt>
+  <dd>Allows the user to set the date and time to be displayed when the clock opens.
+Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
+  <dt id="Clock.MakeTime" class="method returns InstantInTime"><i></i> MakeTime(<em class="number">hour</em>,<em class="number">minute</em>,<em class="number">second</em>)</dt>
+  <dd>Allows the user to set the time of the clock - Valid format is hh:mm:ss</dd>
+  <dt id="Clock.Minute" class="method returns number"><i></i> Minute(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The minute of the hour</dd>
+  <dt id="Clock.Month" class="method returns number"><i></i> Month(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The month of the year represented as a number from 1 to 12)</dd>
+  <dt id="Clock.MonthName" class="method returns text"><i></i> MonthName(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The name of the month</dd>
+  <dt id="Clock.Now" class="method returns InstantInTime"><i></i> Now()</dt>
+  <dd>The current instant in time read from phone’s clock</dd>
+  <dt id="Clock.Second" class="method returns number"><i></i> Second(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The second of the minute</dd>
+  <dt id="Clock.SystemTime" class="method returns number"><i></i> SystemTime()</dt>
+  <dd>The phone’s internal time</dd>
+  <dt id="Clock.Weekday" class="method returns number"><i></i> Weekday(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The day of the week represented as a number from 1 (Sunday) to 7 (Saturday)</dd>
+  <dt id="Clock.WeekdayName" class="method returns text"><i></i> WeekdayName(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The name of the day of the week</dd>
+  <dt id="Clock.Year" class="method returns number"><i></i> Year(<em class="InstantInTime">instant</em>)</dt>
+  <dd>The year</dd>
+</dl>
+
+<h2 id="GyroscopeSensor">GyroscopeSensor</h2>
+
+<h3 id="GyroscopeSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="GyroscopeSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Indicates whether a gyroscope sensor is available.</dd>
+  <dt id="GyroscopeSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Enabled property getter method.</dd>
+  <dt id="GyroscopeSensor.XAngularVelocity" class="number ro bo"><em>XAngularVelocity</em></dt>
+  <dd>The angular velocity around the X axis, in degrees per second.</dd>
+  <dt id="GyroscopeSensor.YAngularVelocity" class="number ro bo"><em>YAngularVelocity</em></dt>
+  <dd>The angular velocity around the Y axis, in degrees per second.</dd>
+  <dt id="GyroscopeSensor.ZAngularVelocity" class="number ro bo"><em>ZAngularVelocity</em></dt>
+  <dd>The angular velocity around the Z axis, in degrees per second.</dd>
+</dl>
+
+<h3 id="GyroscopeSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="GyroscopeSensor.GyroscopeChanged">GyroscopeChanged(<em class="number">xAngularVelocity</em>,<em class="number">yAngularVelocity</em>,<em class="number">zAngularVelocity</em>,<em class="number">timestamp</em>)</dt>
+  <dd>Indicates that the gyroscope sensor data has changed. The timestamp parameter is the time in nanoseconds at which the event occurred.</dd>
+</dl>
+
+<h2 id="Hygrometer">Hygrometer</h2>
+
+<h3 id="Hygrometer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Hygrometer.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Specifies whether or not the device has the hardware to support the Hygrometer component.</dd>
+  <dt id="Hygrometer.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt id="Hygrometer.Humidity" class="number ro bo"><em>Humidity</em></dt>
+  <dd>The relative ambient humidity as a percentage, if the sensor is available and enabled.</dd>
+  <dt id="Hygrometer.RefreshTime" class="number"><em>RefreshTime</em></dt>
+  <dd>The requested minimum time in milliseconds between changes in readings being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3 id="Hygrometer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Hygrometer.HumidityChanged">HumidityChanged(<em class="number">humidity</em>)</dt>
+  <dd>Called when a change is detected in the ambient air humidity (expressed as a percentage).</dd>
+</dl>
+
+<h2 id="LightSensor">LightSensor</h2>
+
+<h3 id="LightSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="LightSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Specifies whether or not the device has the hardware to support the LightSensor component.</dd>
+  <dt id="LightSensor.AverageLux" class="number ro bo"><em>AverageLux</em></dt>
+  <dd>The average of the 10 most recent light levels measured, in lux.</dd>
+  <dt id="LightSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt id="LightSensor.Lux" class="number ro bo"><em>Lux</em></dt>
+  <dd>The most recent light level, in lux, if the sensor is available and enabled.</dd>
+  <dt id="LightSensor.RefreshTime" class="number"><em>RefreshTime</em></dt>
+  <dd>The requested minimum time in milliseconds between changes in readings being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+</dl>
+
+<h3 id="LightSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="LightSensor.LightChanged">LightChanged(<em class="number">lux</em>)</dt>
+  <dd>Called when a change is detected in the light level.</dd>
+</dl>
+
+<h2 id="LocationSensor">LocationSensor</h2>
+
+<h3 id="LocationSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="LocationSensor.Accuracy" class="number ro bo"><em>Accuracy</em></dt>
+  <dd>The most recent measure of accuracy, in meters.  If no value is available,
+ 0 will be returned.</dd>
+  <dt id="LocationSensor.Altitude" class="number ro bo"><em>Altitude</em></dt>
+  <dd>The most recently available altitude value, in meters.  If no value is
+ available, 0 will be returned.</dd>
+  <dt id="LocationSensor.AvailableProviders" class="list ro bo"><em>AvailableProviders</em></dt>
+  <dd></dd>
+  <dt id="LocationSensor.CurrentAddress" class="text ro bo"><em>CurrentAddress</em></dt>
+  <dd>Provides a textual representation of the current address or
+ “No address available”.</dd>
+  <dt id="LocationSensor.DistanceInterval" class="number"><em>DistanceInterval</em></dt>
+  <dd>Determines the minimum distance interval, in meters, that the sensor will try to use for sending out location updates. For example, if this is set to 5, then the sensor will fire a LocationChanged event only after 5 meters have been traversed. However, the sensor does not guarantee that an update will be received at exactly the distance interval. It may take more than 5 meters to fire an event, for instance.</dd>
+  <dt id="LocationSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Indicates whether the user has specified that the sensor should
+ listen for location changes and raise the corresponding events.</dd>
+  <dt id="LocationSensor.HasAccuracy" class="boolean ro bo"><em>HasAccuracy</em></dt>
+  <dd>Indicates whether information about location accuracy is available.</dd>
+  <dt id="LocationSensor.HasAltitude" class="boolean ro bo"><em>HasAltitude</em></dt>
+  <dd>Indicates whether altitude information is available.</dd>
+  <dt id="LocationSensor.HasLongitudeLatitude" class="boolean ro bo"><em>HasLongitudeLatitude</em></dt>
+  <dd>Indicates whether longitude and latitude information is available.  (It is
+ always the case that either both or neither are.)</dd>
+  <dt id="LocationSensor.Latitude" class="number ro bo"><em>Latitude</em></dt>
+  <dd>The most recently available latitude value.  If no value is available,
+ 0 will be returned.</dd>
+  <dt id="LocationSensor.Longitude" class="number ro bo"><em>Longitude</em></dt>
+  <dd>The most recent available longitude value.  If no value is available,
+ 0 will be returned.</dd>
+  <dt id="LocationSensor.ProviderLocked" class="boolean bo"><em>ProviderLocked</em></dt>
+  <dd>Indicates whether the sensor should allow the developer to
+ manually change the provider (GPS, GSM, Wifi, etc.)
+ from which location updates are received.</dd>
+  <dt id="LocationSensor.ProviderName" class="text bo"><em>ProviderName</em></dt>
+  <dd>Indicates the source of the location information.  If there is no provider, the
+ string “NO PROVIDER” is returned.  This is useful primarily for debugging.</dd>
+  <dt id="LocationSensor.TimeInterval" class="number"><em>TimeInterval</em></dt>
+  <dd>Determines the minimum time interval, in milliseconds, that the sensor will try to use for sending out location updates. However, location updates will only be received when the location of the phone actually changes, and use of the specified time interval is not guaranteed. For example, if 1000 is used as the time interval, location updates will never be fired sooner than 1000ms, but they may be fired anytime after.</dd>
+</dl>
+
+<h3 id="LocationSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="LocationSensor.LocationChanged">LocationChanged(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="number">altitude</em>,<em class="number">speed</em>)</dt>
+  <dd>Indicates that a new location has been detected.</dd>
+  <dt id="LocationSensor.StatusChanged">StatusChanged(<em class="text">provider</em>,<em class="text">status</em>)</dt>
+  <dd>Indicates that the status of the location provider service has changed, such as when a
+ provider is lost or a new provider starts being used.</dd>
+</dl>
+
+<h3 id="LocationSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="LocationSensor.LatitudeFromAddress" class="method returns number"><i></i> LatitudeFromAddress(<em class="text">locationName</em>)</dt>
+  <dd>Derives latitude of given address</dd>
+  <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
+  <dd>Derives longitude of given address</dd>
+</dl>
+
+<h2 id="NearField">NearField</h2>
+
+<h3 id="NearField-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NearField.LastMessage" class="text ro bo"><em>LastMessage</em></dt>
+  <dd>Returns the content of the most recently received tag.</dd>
+  <dt id="NearField.ReadMode" class="boolean"><em>ReadMode</em></dt>
+  <dd>Returns true if in read mode, false if in write mode.</dd>
+  <dt id="NearField.TextToWrite" class="text bo"><em>TextToWrite</em></dt>
+  <dd>Returns the content of the text that’s going to be written to the tag.</dd>
+  <dt id="NearField.WriteType" class="number ro bo"><em>WriteType</em></dt>
+  <dd></dd>
+</dl>
+
+<h3 id="NearField-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NearField.TagRead">TagRead(<em class="text">message</em>)</dt>
+  <dd>Indicates that a new tag has been detected.
+ Currently this is only a plain text tag, as specified in the
+ manifest.  See Compiler.java.</dd>
+  <dt id="NearField.TagWritten">TagWritten()</dt>
+  <dd>Event for TagWritten</dd>
+</dl>
+
+<h2 id="OrientationSensor">OrientationSensor</h2>
+
+<h3 id="OrientationSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="OrientationSensor.Angle" class="number ro bo"><em>Angle</em></dt>
+  <dd>
+    <p>Angle property getter method (read-only property).  Specifically, this
+ provides the angle in which the orientation sensor is tilted, treating
+
+</p>
+  </dd>
+  <dt id="OrientationSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Available property getter method (read-only property).</dd>
+  <dt id="OrientationSensor.Azimuth" class="number ro bo"><em>Azimuth</em></dt>
+  <dd>Azimuth property getter method (read-only property).</dd>
+</dl>
+
+<p>To return meaningful values the sensor must be enabled.</p>
+
+<dl>
+  <dt id="OrientationSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Enabled property getter method.</dd>
+  <dt id="OrientationSensor.Magnitude" class="number ro bo"><em>Magnitude</em></dt>
+  <dd>Magnitude property getter method (read-only property).  Specifically, this
+ returns a number between 0 and 1, indicating how much the device
+ is tilted.  For the angle of tilt, use</dd>
+  <dt id="OrientationSensor.Pitch" class="number ro bo"><em>Pitch</em></dt>
+  <dd>Pitch property getter method (read-only property).</dd>
+</dl>
+
+<p>To return meaningful values the sensor must be enabled.</p>
+
+<dl>
+  <dt id="OrientationSensor.Roll" class="number ro bo"><em>Roll</em></dt>
+  <dd>Roll property getter method (read-only property).</dd>
+</dl>
+
+<p>To return meaningful values the sensor must be enabled.</p>
+
+<h3 id="OrientationSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="OrientationSensor.OrientationChanged">OrientationChanged(<em class="number">azimuth</em>,<em class="number">pitch</em>,<em class="number">roll</em>)</dt>
+  <dd>Default OrientationChanged event handler.</dd>
+</dl>
+
+<p>This event is signalled when the device's orientation has changed.  It
+ reports the new values of azimuth, pich, and roll, and it also sets the Azimuth, Pitch,
+ and roll properties.</p>
+<p>Azimuth is the compass heading in degrees, pitch indicates how the device
+ is tilted from top to bottom, and roll indicates how much the device is tilted from
+ side to side.</p>
+
+<h2 id="Pedometer">Pedometer</h2>
+
+<h3 id="Pedometer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Pedometer.CalibrateStrideLength" class="boolean bo"><em>CalibrateStrideLength</em></dt>
+  <dd></dd>
+  <dt id="Pedometer.Distance" class="number ro bo"><em>Distance</em></dt>
+  <dd>The approximate distance traveled in meters.</dd>
+  <dt id="Pedometer.ElapsedTime" class="number ro bo"><em>ElapsedTime</em></dt>
+  <dd>Time elapsed in milliseconds since the pedometer was started.</dd>
+  <dt id="Pedometer.Moving" class="boolean ro bo"><em>Moving</em></dt>
+  <dd></dd>
+  <dt id="Pedometer.SimpleSteps" class="number ro bo"><em>SimpleSteps</em></dt>
+  <dd>The number of simple steps taken since the pedometer has started.</dd>
+  <dt id="Pedometer.StopDetectionTimeout" class="number"><em>StopDetectionTimeout</em></dt>
+  <dd>The duration in milliseconds of idleness (no steps detected) after which to go into a “stopped” state</dd>
+  <dt id="Pedometer.StrideLength" class="number"><em>StrideLength</em></dt>
+  <dd>Set the average stride length in meters.</dd>
+  <dt id="Pedometer.UseGPS" class="boolean wo bo"><em>UseGPS</em></dt>
+  <dd></dd>
+  <dt id="Pedometer.WalkSteps" class="number ro bo"><em>WalkSteps</em></dt>
+  <dd>the number of walk steps taken since the pedometer has started.</dd>
+</dl>
+
+<h3 id="Pedometer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Pedometer.CalibrationFailed">CalibrationFailed()</dt>
+  <dd>Event for CalibrationFailed</dd>
+  <dt id="Pedometer.GPSAvailable">GPSAvailable()</dt>
+  <dd>Event for GPSAvailable</dd>
+  <dt id="Pedometer.GPSLost">GPSLost()</dt>
+  <dd>Event for GPSLost</dd>
+  <dt id="Pedometer.SimpleStep">SimpleStep(<em class="number">simpleSteps</em>,<em class="number">distance</em>)</dt>
+  <dd>This event is run when a raw step is detected</dd>
+  <dt id="Pedometer.StartedMoving">StartedMoving()</dt>
+  <dd>Event for StartedMoving</dd>
+  <dt id="Pedometer.StoppedMoving">StoppedMoving()</dt>
+  <dd>Event for StoppedMoving</dd>
+  <dt id="Pedometer.WalkStep">WalkStep(<em class="number">walkSteps</em>,<em class="number">distance</em>)</dt>
+  <dd>This event is run when a walking step is detected. A walking step is a step that appears to be involved in forward motion.</dd>
+</dl>
+
+<h3 id="Pedometer-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Pedometer.Pause" class="method"><i></i> Pause()</dt>
+  <dd>Pause counting of steps and distance.</dd>
+  <dt id="Pedometer.Reset" class="method"><i></i> Reset()</dt>
+  <dd>Resets the step counter, distance measure and time running.</dd>
+  <dt id="Pedometer.Resume" class="method"><i></i> Resume()</dt>
+  <dd>Resumes counting, synonym of Start.</dd>
+  <dt id="Pedometer.Save" class="method"><i></i> Save()</dt>
+  <dd>Saves the pedometer state to the phone. Permits permits accumulation of steps and distance between invocations of an App that uses the pedometer. Different Apps will have their own saved state.</dd>
+  <dt id="Pedometer.Start" class="method"><i></i> Start()</dt>
+  <dd>Start counting steps</dd>
+  <dt id="Pedometer.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stop counting steps</dd>
+</dl>
+
+<h2 id="ProximitySensor">ProximitySensor</h2>
+
+<h3 id="ProximitySensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ProximitySensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Reports whether or not the device has a proximity sensor</dd>
+  <dt id="ProximitySensor.Distance" class="number ro bo"><em>Distance</em></dt>
+  <dd>Returns the distance from the object to the device</dd>
+  <dt id="ProximitySensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If true, the sensor will generate events.  Otherwise, no events
+ are generated .</dd>
+  <dt id="ProximitySensor.KeepRunningWhenOnPause" class="boolean"><em>KeepRunningWhenOnPause</em></dt>
+  <dd>Returns value of keepRunningWhenOnPause</dd>
+  <dt id="ProximitySensor.MaximumRange" class="number ro bo"><em>MaximumRange</em></dt>
+  <dd>Reports the Maximum Range of the device’s ProximitySensor</dd>
+</dl>
+
+<h3 id="ProximitySensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ProximitySensor.ProximityChanged">ProximityChanged(<em class="number">distance</em>)</dt>
+  <dd>Triggered when distance (in cm) of the object to the device changes.</dd>
+</dl>
+
+<h2 id="Thermometer">Thermometer</h2>
+
+<h3 id="Thermometer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Thermometer.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Specifies whether or not the device has the hardware to support the Thermometer component.</dd>
+  <dt id="Thermometer.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If enabled, then device will listen for changes.</dd>
+  <dt id="Thermometer.RefreshTime" class="number"><em>RefreshTime</em></dt>
+  <dd>The requested minimum time in milliseconds between changes in readings being reported. Android is not guaranteed to honor the request. Setting this property has no effect on pre-Gingerbread devices.</dd>
+  <dt id="Thermometer.Temperature" class="number ro bo"><em>Temperature</em></dt>
+  <dd>The temperature in degrees Celsius, if the sensor is available and enabled</dd>
+</dl>
+
+<h3 id="Thermometer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Thermometer.TemperatureChanged">TemperatureChanged(<em class="number">temperature</em>)</dt>
+  <dd>Called when a change is detected in the temperature (in degrees Celsius).</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">Unported License Terms of Service</a>
+		</li>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2019 Massachusetts Institute of Technology</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+		<div>
+		    <div>
+			<span>GitHub:</span>
+			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                           target="_blank">mit-cml</a>
+			<div>
+			</div>
+	            </div>
+	        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

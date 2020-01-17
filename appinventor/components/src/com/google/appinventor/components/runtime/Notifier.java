@@ -27,6 +27,7 @@ import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -467,7 +468,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
   @SimpleProperty(description="Specifies the background color for alerts (not dialogs).")
-  public void BackgroundColor(int argb) {
+  public void BackgroundColor(@IsColor int argb) {
     backgroundColor = argb;
   }
 
@@ -478,6 +479,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleProperty(description = "Specifies the text color for alerts (not dialogs).",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }

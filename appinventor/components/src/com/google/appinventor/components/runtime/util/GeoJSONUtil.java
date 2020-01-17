@@ -53,10 +53,12 @@ public final class GeoJSONUtil {
   private static final String PROPERTY_DESCRIPTION = "description";
   private static final String PROPERTY_DRAGGABLE = "draggable";
   private static final String PROPERTY_FILL = "fill";
+  private static final String PROPERTY_FILL_OPACITY = "fill-opacity";
   private static final String PROPERTY_HEIGHT = "height";
   private static final String PROPERTY_IMAGE = "image";
   private static final String PROPERTY_INFOBOX = "infobox";
   private static final String PROPERTY_STROKE = "stroke";
+  private static final String PROPERTY_STROKE_OPACITY = "stroke-opacity";
   private static final String PROPERTY_STROKE_WIDTH = "stroke-width";
   private static final String PROPERTY_TITLE = "title";
   private static final String PROPERTY_WIDTH = "width";
@@ -126,6 +128,14 @@ public final class GeoJSONUtil {
         }
       }
     });
+    SUPPORTED_PROPERTIES.put(PROPERTY_FILL_OPACITY, new PropertyApplication() {
+      @Override
+      public void apply(MapFeature feature, Object value) {
+        if (feature instanceof HasFill) {
+          ((HasFill) feature).FillOpacity(parseFloatOrString(value));
+        }
+      }
+    });
     SUPPORTED_PROPERTIES.put(PROPERTY_HEIGHT, new PropertyApplication() {
       @Override
       public void apply(MapFeature feature, Object value) {
@@ -154,6 +164,14 @@ public final class GeoJSONUtil {
         if (feature instanceof HasStroke) {
           ((HasStroke) feature).StrokeColor(value instanceof Number ? ((Number) value).intValue() :
               parseColor(value.toString()));
+        }
+      }
+    });
+    SUPPORTED_PROPERTIES.put(PROPERTY_STROKE_OPACITY, new PropertyApplication() {
+      @Override
+      public void apply(MapFeature feature, Object value) {
+        if (feature instanceof HasStroke) {
+          ((HasStroke) feature).StrokeOpacity(parseFloatOrString(value));
         }
       }
     });
@@ -411,6 +429,19 @@ public final class GeoJSONUtil {
     }
   }
 
+  @VisibleForTesting
+  static float parseFloatOrString(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).floatValue();
+    } else if (value instanceof String) {
+      return Float.parseFloat((String) value);
+    } else if (value instanceof FString) {
+      return Float.parseFloat(value.toString());
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
   private static final class FeatureWriter implements MapFactory.MapFeatureVisitor<Void> {
 
     private final PrintStream out;
@@ -483,11 +514,13 @@ public final class GeoJSONUtil {
 
     private void writeProperties(HasStroke feature) {
       writeColorProperty(PROPERTY_STROKE, feature.StrokeColor());
+      writeProperty(PROPERTY_STROKE_OPACITY, feature.StrokeOpacity());
       writeProperty(PROPERTY_STROKE_WIDTH, feature.StrokeWidth());
     }
 
     private void writeProperties(HasFill feature) {
       writeColorProperty(PROPERTY_FILL, feature.FillColor());
+      writeProperty(PROPERTY_FILL_OPACITY, feature.FillOpacity());
     }
 
     private void writePoints(List<GeoPoint> points) {

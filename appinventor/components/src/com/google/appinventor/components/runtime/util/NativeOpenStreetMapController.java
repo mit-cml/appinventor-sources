@@ -694,10 +694,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
           }
           ((MapRectangle) component).updateBounds(north, west, south, east);
         } else {
-          ((MapPolygon) component).updatePoints(Collections.singletonList(polygon.getPoints()));
-          List<List<GeoPoint>> holes = new ArrayList<List<GeoPoint>>();
-          holes.addAll(polygon.getHoles());
-          ((MapPolygon) component).updateHolePoints(Collections.singletonList(holes));
+          ((MapPolygon) component).updatePoints(((MultiPolygon) polygon).getMultiPoints());
+          ((MapPolygon) component).updateHolePoints(((MultiPolygon) polygon).getMultiHoles());
         }
         for (MapEventListener listener : eventListeners) {
           listener.onFeatureStopDrag(component);
@@ -1000,6 +998,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
       @Override
       public void onSuccess(BitmapDrawable result) {
+        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
         callback.onSuccess(result);
       }
     });
@@ -1052,6 +1051,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         path.baseStyle.stroke = new SVG.Colour(strokePaint.getColor());
         path.baseStyle.strokeOpacity = strokePaint.getAlpha()/255.0f;
         path.baseStyle.strokeWidth = strokeWidth;
+        path.baseStyle.specifiedFlags = 0x3d;
         if (path.style != null) {
           if ((path.style.specifiedFlags & SPECIFIED_FILL) == 0) {
             path.style.fill = new SVG.Colour(fillPaint.getColor());
@@ -1341,6 +1341,14 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       }
     }
 
+    public List<List<GeoPoint>> getMultiPoints() {
+      List<List<GeoPoint>> result = new ArrayList<>();
+      for (Polygon p : children) {
+        result.add(p.getPoints());
+      }
+      return result;
+    }
+
     public void setMultiPoints(List<List<GeoPoint>> points) {
       Iterator<Polygon> polygonIterator = children.iterator();
       Iterator<List<GeoPoint>> pointIterator = points.iterator();
@@ -1363,6 +1371,15 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         p.setOnDragListener(dragListener);
         children.add(p);
       }
+    }
+
+    @SuppressWarnings("unchecked")  // upcasting nested ArrayList to List
+    public List<List<List<GeoPoint>>> getMultiHoles() {
+      List<List<List<GeoPoint>>> result = new ArrayList<>();
+      for (Polygon p : children) {
+        result.add((List) p.getHoles());
+      }
+      return result;
     }
 
     public void setMultiHoles(List<List<List<GeoPoint>>> holes) {

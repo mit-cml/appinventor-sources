@@ -897,6 +897,18 @@ public final class MapFactory {
      * @return the fill paint color
      */
     int FillColor();
+
+    /**
+     * Sets the opacity of the interior of the feature
+     * @param opacity the fill opacity
+     */
+    void FillOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the interior of the feature
+     * @return the fill opacity
+     */
+    float FillOpacity();
   }
 
   /**
@@ -916,6 +928,18 @@ public final class MapFactory {
      * @return the outline paint color
      */
     int StrokeColor();
+
+    /**
+     * Sets the opacity of the outline of the feature
+     * @param opacity the stroke opacity
+     */
+    void StrokeOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the outline of the feature
+     * @return the stroke opacity
+     */
+    float StrokeOpacity();
 
     /**
      * Sets the width of the outline of the feature

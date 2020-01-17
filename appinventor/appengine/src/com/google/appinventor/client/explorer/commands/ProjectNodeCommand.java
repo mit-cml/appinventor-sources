@@ -53,4 +53,8 @@ public final class ProjectNodeCommand {
   public void execute(ProjectNode node) {
     command.startExecuteChain(actionName, node);
   }
+
+  public boolean isSupported(ProjectNode node) {
+    return command.isSupported(node);
+  }
 }

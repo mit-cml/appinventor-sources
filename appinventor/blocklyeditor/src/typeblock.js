@@ -600,7 +600,8 @@ Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdB
             }
         }
       }
-      else {
+      // Only attempt a connection if the input is empty
+      else if (!inputList[i].connection.isConnected()) {
         createdBlock.previousConnection.connect(inputList[i].connection);
       }
     } catch(e) {

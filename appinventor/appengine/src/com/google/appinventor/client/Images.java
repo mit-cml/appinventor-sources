@@ -619,6 +619,12 @@ public interface Images extends Resources {
   ImageResource rectangle();
 
   /**
+   * Codi Logo
+   */
+   @Source("com/google/appinventor/images/logo.png")
+   ImageResource logo();
+
+  /**
    * Designer palette item: Arduino component
    */
   @Source("com/google/appinventor/images/arduino.png")
@@ -640,5 +646,23 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/mediaIcon_video.png")
   ImageResource mediaIconVideo();
+
+  /**
+  * Wilson Logo 
+  */
+  @Source("com/google/appinventor/images/wilson.png")
+  ImageResource wilson();
+
+  /**
+  * Talk to Me Logo
+  */
+  @Source("com/google/appinventor/images/talkToMeLogo.png")
+  ImageResource talkToMeLogo();
+
+  /**
+  * YR Media Logo
+  */
+  @Source("com/google/appinventor/images/YRLogo.png")
+  ImageResource YRLogo();
 
 }

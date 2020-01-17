@@ -11,28 +11,6 @@
     <filter-class>com.google.appinventor.server.OdeAuthFilter</filter-class>
   </filter>
 
-  <!-- Filter for application statistics.  See:
-       http://code.google.com/appengine/docs/java/tools/appstats.html
-       Note that all requests are logged, including appstats ones.
-       The only way I see to not log the appstats ones is to
-       explicitly list all the ones we do want, which seems
-       error-prone.
-    -->
-  <!-- App Stats Disabled
-  <filter>
-    <filter-name>appstats</filter-name>
-    <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>
-    <init-param>
-      <param-name>logMessage</param-name>
-      <param-value>Appstats available: /appstats/details?time={ID}</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>appstats</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
--->
-
   <!-- Security constraints: require login for these urls -->
   <!-- This is how we implement Google Account login -->
 
@@ -51,11 +29,8 @@
       <url-pattern>/ode2/*</url-pattern>
       <url-pattern>/companions/*</url-pattern>
       <url-pattern>/reference/*</url-pattern>
-      <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
-      <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
-      <url-pattern>/rendezvous/*</url-pattern>
       <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
@@ -63,7 +38,6 @@
   <!-- Security constraint: require admin access for the appstats url -->
   <security-constraint>
     <web-resource-collection>
-      <url-pattern>/appstats/*</url-pattern>
       <url-pattern>/convert/</url-pattern>
     </web-resource-collection>
     <auth-constraint>
@@ -108,16 +82,6 @@
     <url-pattern>/remote_api</url-pattern>
   </servlet-mapping>
 
-  <!-- rendezvious -->
-  <servlet>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.RendezvousServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <url-pattern>/rendezvous/*</url-pattern>
-  </servlet-mapping>
-
   <!-- Nonce based APK download -->
   <servlet>
     <servlet-name>buildOutputServlet</servlet-name>
@@ -155,16 +119,6 @@
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>getMotdService</servlet-name>
   </filter-mapping>
-
-  <!-- help -->
-  <servlet>
-    <servlet-name>helpService</servlet-name>
-    <servlet-class>com.google.appinventor.server.HelpServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>helpService</servlet-name>
-    <url-pattern>/ode/help</url-pattern>
-  </servlet-mapping>
 
   <!-- projects -->
   <servlet>
@@ -265,20 +219,6 @@
     <servlet-name>cloudDBAuthService</servlet-name>
   </filter-mapping>
 
-  <!-- android -->
-  <servlet>
-    <servlet-name>androidServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.AndroidServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>androidServlet</servlet-name>
-    <url-pattern>/android/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>androidServlet</servlet-name>
-  </filter-mapping>
-
   <!-- accept tos -->
   <servlet>
     <servlet-name>tosServlet</servlet-name>
@@ -342,39 +282,7 @@
     <servlet-name>firebaseAuthService</servlet-name>
   </filter-mapping>
 
-  <!-- Not sure what needs to replace GwtResourceServlet
-  <servlet>
-    <servlet-name>odeUiServlet</servlet-name>
-    <servlet-class>com.google.gwt.gserver.GwtResourceServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeUiServlet</servlet-name>
-    <url-pattern>/ode/*</url-pattern>
-  </servlet-mapping>
-  -->
-
-  <!-- Not sure what to do about the redirect servlet
-  <servlet>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.OdeRedirectServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  -->
-
   <!-- TODO: Optionally add a <welcome-file-list> tag to display a welcome file. -->
-
-  <!-- appstats-->
-  <servlet>
-    <servlet-name>appstats</servlet-name>
-    <servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>appstats</servlet-name>
-    <url-pattern>/appstats/*</url-pattern>
-  </servlet-mapping>
 
   <!-- components -->
   <servlet>

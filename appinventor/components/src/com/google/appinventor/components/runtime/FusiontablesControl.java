@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
@@ -88,6 +88,8 @@ import java.util.ArrayList;
     description = "<p>A non-visible component that communicates with Google Fusion Tables. " +
     "Fusion Tables let you store, share, query and visualize data tables; " +
     "this component lets you query, create, and modify these tables.</p> "  +
+    "<p><font color=red><b>NOTE:</b>&nbsp;Google shutdown the Fusion Tables service on December 3, 2019. This " +
+    "component no longer functions.</font></p> " +
     "<p>This component uses the " +
     "<a href=\"https://developers.google.com/fusiontables/docs/v2/getting_started\" target=\"_blank\">Fusion Tables API V2.0</a>. " +
     "<p>Applications using Fusion Tables must authentication to Google's servers. There " +
@@ -121,7 +123,7 @@ import java.util.ArrayList;
     "<a href=\"https://developers.google.com/fusiontables/docs/v2/getting_started\" target=\"_blank\">the reference manual</a>, " +
     "which means that things like capitalization for names of columns matters, and " +
     "that single quotes must be used around column names if there are spaces in them.</p>",
-    category = ComponentCategory.STORAGE,
+    category = ComponentCategory.INTERNAL,
     nonVisible = true,
     iconName = "images/fusiontables.png")
 @SimpleObject

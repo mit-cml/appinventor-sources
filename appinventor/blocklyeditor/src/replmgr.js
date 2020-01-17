@@ -180,19 +180,59 @@ Blockly.ReplMgr.buildYail = function(workspace) {
         this.block.replError = message;
         this.block.workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
     };
+    var componentEventMap = {};
+    var componentGenericEventMap = {};
+
+    function willEmitEvent(block) {
+        if (block.isGeneric) {
+            if (!componentGenericEventMap[block.typeName]) {
+                componentGenericEventMap[block.typeName] = {};
+            }
+            componentGenericEventMap[block.typeName][block.eventName] = true;
+        } else {
+            if (!componentEventMap[block.instanceName]) {
+                componentEventMap[block.instanceName] = {};
+            }
+            componentEventMap[block.instanceName][block.eventName] = true;
+        }
+    }
+
+    function didEmitEvent(block) {
+        if (block.isGeneric && componentGenericEventMap[block.typeName] &&
+          componentGenericEventMap[block.typeName][block.eventName]) {
+            return true;
+        }
+        if (!block.isGeneric && componentEventMap[block.instanceName] &&
+          componentEventMap[block.instanceName][block.eventName]) {
+            return true;
+        }
+        return false;
+    }
 
     for (var x = 0; (block = blocks[x]); x++) {
+        if (block.disabled) {
+            if (block.type == 'component_event' && !didEmitEvent(block)) {
+                // We do need do remove disabled event handlers, though
+                var code = Blockly.Yail.disabledEventBlockToCode(block);
+                if (phoneState.blockYail[block.id] != code) {
+                    this.putYail(code, block, success, failure);
+                    phoneState.blockYail[block.id] = code;
+                }
+            }
+            // Skip normal code generation for disabled blocks
+            continue;
+        }
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
             continue;           // Errors, unless they were errors signaled by the repl
-        }
-        if (block.disabled) {   // Don't send disabled blocks
-            continue;
         }
         if (block.blockType != "event" &&
             block.type != "global_declaration" &&
             block.type != "procedures_defnoreturn" &&
             block.type != "procedures_defreturn")
             continue;
+        if (block.type == 'component_event') {
+            willEmitEvent(block);
+        }
         var tempyail = Blockly.Yail.blockToCode(block);
         if (phoneState.blockYail[block.id] != tempyail) { // Only send changed yail
             this.putYail(tempyail, block, success, failure);

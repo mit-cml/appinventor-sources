@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -150,6 +151,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
 
   @SimpleProperty(description = "The text color of the ListPicker items.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int ItemTextColor() {
     return this.itemTextColor;
   }
@@ -163,6 +165,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
 
   @SimpleProperty(description = "The background color of the ListPicker items.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int ItemBackgroundColor() {
     return this.itemBackgroundColor;
   }
@@ -220,7 +223,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * @param itemstring - a string containing a comma-separated list of the
    *                     strings to be picked from
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
                     defaultValue = "")
   // TODO(sharon): it might be nice to have a list editorType where the developer
   // could directly enter a list of strings (e.g. one per row) and we could
