@@ -138,7 +138,7 @@
 	"Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT": "while",
 	"Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP": "Runs the blocks in the 'do' section while the test is true.",
 	"Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE": "if",
-	"Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST: "",
+	"Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": "",
 	"Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN": "then",
 	"Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN": "else",
 	"Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT": "if",
