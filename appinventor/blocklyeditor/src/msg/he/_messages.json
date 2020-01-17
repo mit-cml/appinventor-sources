@@ -48,7 +48,7 @@
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN": "אם לא",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN": "אז",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE": "if",
-    "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST: "",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": "",
     "Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT": "בזמן ש",
     "Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO": "עשה",
     "Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST": "בדיקה",
