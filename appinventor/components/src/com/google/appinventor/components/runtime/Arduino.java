@@ -9,11 +9,15 @@ package com.google.appinventor.components.runtime;
 import android.content.Context;
 import android.util.Log;
 
-import com.physicaloid.lib.*;
+import com.physicaloid.lib.Physicaloid;
 
-import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.runtime.*;
-import com.google.appinventor.components.common.*;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.common.YaVersion;
 
 import java.io.UnsupportedEncodingException;
 
