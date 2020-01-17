@@ -489,7 +489,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 196:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
   // For YOUNG_ANDROID_VERSION 197:
-  // - Added Arduino
+  // - Added Serial
 
   public static final int YOUNG_ANDROID_VERSION = 197;
 
@@ -1291,8 +1291,8 @@ public class YaVersion {
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
-  //For ARDUINO_COMPONENT_VERSION: Initial Version
-  public static final int ARDUINO_COMPONENT_VERSION = 1;
+  //For SERIAL_COMPONENT_VERSION: Initial Version
+  public static final int SERIAL_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";

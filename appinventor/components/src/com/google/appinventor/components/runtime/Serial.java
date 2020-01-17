@@ -21,16 +21,16 @@ import com.google.appinventor.components.common.YaVersion;
 
 import java.io.UnsupportedEncodingException;
 
-@DesignerComponent(version = YaVersion.ARDUINO_COMPONENT_VERSION,
-    description = "Arduino USB Serial Component",
+@DesignerComponent(version = YaVersion.SERIAL_COMPONENT_VERSION,
+    description = "Serial component which can be used to connect to devices like Arduino",
     category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
     iconName = "images/arduino.png")
 
 @SimpleObject
 @UsesLibraries(libraries = "physicaloid.jar")
-public class Arduino extends AndroidNonvisibleComponent implements Component {
-  private static final String LOG_TAG = "Arduino USB Serial Component";
+public class Serial extends AndroidNonvisibleComponent implements Component {
+  private static final String LOG_TAG = "Serial Component";
 
   private Context context;
 
@@ -38,26 +38,26 @@ public class Arduino extends AndroidNonvisibleComponent implements Component {
 
   private int baudRate = 9600;
 
-  public Arduino(ComponentContainer container) {
+  public Serial(ComponentContainer container) {
     super(container.$form());
     context = container.$context();
     Log.d(LOG_TAG, "Created");
   }
 
-  @SimpleFunction(description = "Initializes Arduino Connection")
-  public void InitializeArduino() {
+  @SimpleFunction(description = "Initializes Serial Connection")
+  public void InitializeSerial() {
     mPhysicaloid = new Physicaloid(context);
     Log.d(LOG_TAG, "Initialized");
   }
 
-  @SimpleFunction(description = "Opens Arduino Connection")
-  public boolean OpenArduino() {
+  @SimpleFunction(description = "Opens Serial Connection")
+  public boolean OpenSerial() {
     Log.d(LOG_TAG, "Opening connection");
     return mPhysicaloid.open();
   }
 
-  @SimpleFunction(description = "Closes Arduino Connection")
-  public boolean CloseArduino() {
+  @SimpleFunction(description = "Closes Serial Connection")
+  public boolean CloseSerial() {
     Log.d(LOG_TAG, "Closing connection");
     return mPhysicaloid.close();
   }
@@ -70,7 +70,7 @@ public class Arduino extends AndroidNonvisibleComponent implements Component {
   }
 
   @SimpleFunction(description = "Read from Serial")
-  public void ReadArduino() {
+  public void ReadSerial() {
     byte[] buf = new byte[256];
     boolean success = true;
     String data = "";
@@ -86,24 +86,24 @@ public class Arduino extends AndroidNonvisibleComponent implements Component {
       success = false;
     }
 
-    AfterReadArduino(success, data);
+    AfterReadSerial(success, data);
   }
 
   @SimpleFunction(description = "Write Data to Serial")
-  public void WriteArduino(String writeDataArduino) {
-    if (!writeDataArduino.isEmpty()) {
-      byte[] buf = writeDataArduino.getBytes();
+  public void WriteSerial(String writeDataSerial) {
+    if (!writeDataSerial.isEmpty()) {
+      byte[] buf = writeDataSerial.getBytes();
       mPhysicaloid.write(buf);
     }
   }
 
-  @SimpleFunction(description = "Returns true when the Arduino connection is open")
-  public boolean IsOpenedArduino() {
+  @SimpleFunction(description = "Returns true when the Serial connection is open")
+  public boolean IsOpenedSerial() {
     return mPhysicaloid.isOpened();
   }
 
   @SimpleEvent(description = "Triggered after Read function")
-  public void AfterReadArduino(boolean success, String data) {
+  public void AfterReadSerial(boolean success, String data) {
     EventDispatcher.dispatchEvent(this, "AfterRead", success, data);
   }
 }
