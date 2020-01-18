@@ -132,6 +132,7 @@
   <li><a href="#ActivityStarter">ActivityStarter</a></li>
   <li><a href="#BluetoothClient">BluetoothClient</a></li>
   <li><a href="#BluetoothServer">BluetoothServer</a></li>
+  <li><a href="#Serial">Serial</a></li>
   <li><a href="#Web">Web</a></li>
 </ul>
 
@@ -332,6 +333,34 @@ DEPRECATED: New code should use Extras property instead.</dd>
   <dd>Send text to the connected Bluetooth device.</dd>
   <dt id="BluetoothServer.StopAccepting" class="method"><i></i> StopAccepting()</dt>
   <dd>Stop accepting an incoming connection.</dd>
+</dl>
+
+<h2 id="Serial">Serial</h2>
+
+<h3 id="Serial-Events">Events</h3>
+
+<dl class="events">
+    <dt id="Serial.AfterReadSerial">AfterReadSerial(<em class="boolean">success</em>, (<em class="text">data</em>))</dt>
+    <dd>Triggered after data has been read if success is true. Data will contain the read data from Serial.</dd>
+</dl>
+
+<h3 id="Serial-Methods">Methods</h3>
+
+<dl class="methods">
+    <dt id="Serial.BaudRate" class="method"><i></i> BaudRate(<em class="int">baudRate</em>)</dt>
+    <dd>Sets a new baud rate to be used with the Serial component.</dd>
+    <dt id="Serial.CloseSerial" class="method returns boolean"><i></i> CloseSerial()</dt>
+    <dd>Attempts to close the serial connection, returning true when success.</dd>
+    <dt id="Serial.InitializeSerial" class="method"><i></i> InitializeSerial()</dt>
+    <dd>Initializes the serial component to be ready to use.</dd>
+    <dt id="Serial.IsOpenedSerial" class="method returns boolean"><i></i> IsOpenedSerial()</dt>
+    <dd>Returns true when serial connection is open, false when not.</dd>
+    <dt id="Serial.OpenSerial" class="method returns boolean"><i></i> OpenSerial()</dt>
+    <dd>Attempts to close the serial connection, returning true when success.</dd>
+    <dt id="Serial.ReadSerial" class="method"><i></i> ReadSerial()</dt>
+    <dd>Starts reading the serial port. Will raise AfterReadSerial event.</dd>
+    <dt id="Serial.WriteSerial" class="method"><i></i> WriteSerial(<em class="text">writeDataSerial</em>)</dt>
+    <dd>Sends the given data to the serial connection.</dd>
 </dl>
 
 <h2 id="Web">Web</h2>

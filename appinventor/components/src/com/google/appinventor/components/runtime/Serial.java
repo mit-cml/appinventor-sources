@@ -44,32 +44,32 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     Log.d(LOG_TAG, "Created");
   }
 
-  @SimpleFunction(description = "Initializes Serial Connection")
+  @SimpleFunction(description = "Initializes serial connection.")
   public void InitializeSerial() {
     mPhysicaloid = new Physicaloid(context);
     Log.d(LOG_TAG, "Initialized");
   }
 
-  @SimpleFunction(description = "Opens Serial Connection")
+  @SimpleFunction(description = "Opens serial connection. Returns true when opened.")
   public boolean OpenSerial() {
     Log.d(LOG_TAG, "Opening connection");
     return mPhysicaloid.open();
   }
 
-  @SimpleFunction(description = "Closes Serial Connection")
+  @SimpleFunction(description = "Closes serial connection. Returns true when closed.")
   public boolean CloseSerial() {
     Log.d(LOG_TAG, "Closing connection");
     return mPhysicaloid.close();
   }
 
-  @SimpleFunction(description = "Default baud rate is 9600 bps")
+  @SimpleFunction(description = "Sets a new baud rate. Default is 9600 bps.")
   public void BaudRate(int baudRate) {
     this.baudRate = baudRate;
     mPhysicaloid.setBaudrate(baudRate);
     Log.d(LOG_TAG, "Baud Rate: " + baudRate);
   }
 
-  @SimpleFunction(description = "Read from Serial")
+  @SimpleFunction(description = "Reads data from serial.")
   public void ReadSerial() {
     byte[] buf = new byte[256];
     boolean success = true;
@@ -89,7 +89,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     AfterReadSerial(success, data);
   }
 
-  @SimpleFunction(description = "Write Data to Serial")
+  @SimpleFunction(description = "Writes given data to serial.")
   public void WriteSerial(String writeDataSerial) {
     if (!writeDataSerial.isEmpty()) {
       byte[] buf = writeDataSerial.getBytes();
@@ -97,12 +97,12 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  @SimpleFunction(description = "Returns true when the Serial connection is open")
+  @SimpleFunction(description = "Returns true when the Serial connection is open.")
   public boolean IsOpenedSerial() {
     return mPhysicaloid.isOpened();
   }
 
-  @SimpleEvent(description = "Triggered after Read function")
+  @SimpleEvent(description = "Triggered after ReadSerial method.")
   public void AfterReadSerial(boolean success, String data) {
     EventDispatcher.dispatchEvent(this, "AfterRead", success, data);
   }
