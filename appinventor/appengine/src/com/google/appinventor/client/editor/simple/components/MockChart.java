@@ -46,7 +46,7 @@ public final class MockChart extends MockContainer {
     public MockChart(SimpleEditor editor) {
         super(editor, TYPE, images.image(), new MockChartLayout());
 
-        // Since the Mcok Chart component is not a container in a normal
+        // Since the Mock Chart component is not a container in a normal
         // sense (attached components should not be visible), the Chart Widget
         // is added to the root panel, and the root panel itself is initialized.
         // This is done to ensure that Mock Chart Data components can be dragged

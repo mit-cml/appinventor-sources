@@ -341,7 +341,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
             // Check whether the provided criterion & value combination are satisfied
             // according to the current Entry
             if (isEntryCriterionSatisfied(entry, criterion, value)) {
-                // Criterion satisfied; Add enttry to resulting List
+                // Criterion satisfied; Add entry to resulting List
                 entries.add(getTupleFromEntry(entry));
             }
         }

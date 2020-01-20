@@ -620,7 +620,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         e.printStackTrace();
       }
 
-      // Undefined behavior: return emtpy List
+      // Undefined behavior: return empty List
       return new YailList();
     }
 

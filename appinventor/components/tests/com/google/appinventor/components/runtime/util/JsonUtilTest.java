@@ -156,8 +156,8 @@ public class JsonUtilTest extends TestCase {
         "[1,2,3]" +
         "}";
 
-    YailList expecetdColumn = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
-    YailList expected = YailList.makeList(Collections.singletonList(expecetdColumn));
+    YailList expectedColumn = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
     YailList result = JsonUtil.getColumnsFromJSON(json);
     assertEquals(expected, result);
@@ -174,8 +174,8 @@ public class JsonUtilTest extends TestCase {
         "[7]" +
         "}";
 
-    YailList expecetdColumn = YailList.makeList(Arrays.asList("array", "7"));
-    YailList expected = YailList.makeList(Collections.singletonList(expecetdColumn));
+    YailList expectedColumn = YailList.makeList(Arrays.asList("array", "7"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
     YailList result = JsonUtil.getColumnsFromJSON(json);
     assertEquals(expected, result);
@@ -192,8 +192,8 @@ public class JsonUtilTest extends TestCase {
         "\"test-value\"" +
         "}";
 
-    YailList expecetdColumn = YailList.makeList(Arrays.asList("value", "test-value"));
-    YailList expected = YailList.makeList(Collections.singletonList(expecetdColumn));
+    YailList expectedColumn = YailList.makeList(Arrays.asList("value", "test-value"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
     YailList result = JsonUtil.getColumnsFromJSON(json);
     assertEquals(expected, result);

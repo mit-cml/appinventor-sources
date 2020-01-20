@@ -124,7 +124,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
      *
      * @param text  new elements text
      */
-    private void setElementsFromPairsProperty(String text){
+    private void setElementsFromPairsProperty(String text) {
         currentElements = text;
 
         chartDataModel.setElements(currentElements);
