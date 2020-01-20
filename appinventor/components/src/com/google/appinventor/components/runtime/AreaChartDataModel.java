@@ -24,7 +24,7 @@ public class AreaChartDataModel extends LineChartBaseDataModel {
     public void setColors(List<Integer> colors) {
         super.setColors(colors);
 
-        // If the colors List is non-empty, use the first oclor
+        // If the colors List is non-empty, use the first color
         // as the fill color.
         if (!colors.isEmpty()) {
             dataset.setFillColor(colors.get(0));

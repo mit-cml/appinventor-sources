@@ -38,7 +38,8 @@ import java.util.HashSet;
 
 @SimpleObject
 public class GyroscopeSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener, RealTimeChartDataSource<String, Float> {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeChartDataSource<String, Float> {
 
   // Properties
   private boolean enabled;
