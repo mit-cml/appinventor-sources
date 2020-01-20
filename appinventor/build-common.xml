@@ -14,8 +14,26 @@
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
 <project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless">
-  <!-- Always build with debug set... (jis) -->
-  <property name="debug" value="true"/>
+  <!-- Check if mode property is set correctly -->
+  <fail message="Property &quot;mode&quot; must be either &quot;debug&quot; or &quot;release&quot;">
+    <condition>
+      <and>
+        <isset property="mode" />
+        <not>
+          <or>
+            <equals arg1="${mode}" arg2="debug"/>
+            <equals arg1="${mode}" arg2="release"/>
+          </or>
+        </not>
+      </and>
+    </condition>
+  </fail>
+
+  <!-- Set debug flag -->
+  <condition property="debug" value="true">
+    <equals arg1="${mode}" arg2="debug" />
+  </condition>
+
   <description>
     Definitions common to multiple App Inventor build.xml files."
   </description>
@@ -64,7 +82,7 @@
   <property name="class.dir" location="${local.build.dir}/classes" />
 
   <!-- reports.dir is the directory for testing reports created by junitreport. This
-       directory is different for each project. 
+       directory is different for each project.
        -->
   <property name="reports.dir" location="${basedir}/reports"/>
 
@@ -154,7 +172,7 @@
         which libaries are needed to compile the tests, and one called
         ${aij-testingtarget}.path as the libraries needed to run the
         tests.
-   
+
           aij-dir: the package and subdirectory containing the tests,
         e.g.  ${appinventor.pkg}/server
 
@@ -276,7 +294,7 @@
        blockseditor_BlocksEditor builds:
        - build/blockseditor/BlocksEditor.jar
        ==================================================================== -->
-  
+
   <target name="blockseditor_BlocksEditor">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockseditor"
          target="BlocksEditor"/>
@@ -286,7 +304,7 @@
        blocklyeditor_BlocklyCompile builds:
        - build/blockly-all.js
        ==================================================================== -->
-  
+
   <target name="blocklyeditor_BlocklyCompile">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
          target="BlocklyCompile"/>
@@ -311,7 +329,7 @@
        buildserver_StarterApp builds:
        - build/buildserver/AppInventorPhoneApp.apk
        ==================================================================== -->
-  
+
   <target name="buildserver_StarterApp">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/buildserver"
          target="StarterApp"/>
@@ -321,7 +339,7 @@
        common_CommonTranslations builds:
        - build/common/CommonTranslations.jar
        ==================================================================== -->
-  
+
   <target name="common_CommonTranslations">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonTranslations"/>
@@ -332,7 +350,7 @@
        - build/common/CommonUtils.jar
        - build/common/CommonUtils-gwt.jar
        ==================================================================== -->
-  
+
   <target name="common_CommonUtils">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonUtils"/>
@@ -343,7 +361,7 @@
        - build/common/CommonVersion.jar
        - build/common/CommonVersion-gwt.jar
        ==================================================================== -->
-  
+
   <target name="common_CommonVersion">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonVersion"/>
@@ -353,17 +371,17 @@
        common_CommonTestUtils builds:
        - build/common/CommonTestUtils.jar
        ==================================================================== -->
-  
+
   <target name="common_CommonTestUtils">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonTestUtils"/>
   </target>
-  
+
   <!-- ====================================================================
        components_AndroidRuntime builds:
        - build/components/AndroidRuntime.jar
        ==================================================================== -->
-  
+
   <target name="components_AndroidRuntime">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="AndroidRuntime"/>
@@ -373,7 +391,7 @@
        components_Barcode builds:
        - build/components/Barcode.jar
        ==================================================================== -->
-  
+
   <target name="components_Barcode">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="Barcode"/>
@@ -384,7 +402,7 @@
        - build/components/CommonConstants.jar
        - build/components/CommonConstants-gwt.jar
        ==================================================================== -->
-  
+
   <target name="components_CommonConstants">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="CommonConstants"/>
@@ -395,7 +413,7 @@
        - build/components/simple_components.txt
        - build/components/simple_components_build_info.json
        ==================================================================== -->
-  
+
   <target name="components_ComponentList">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="ComponentList"/>
@@ -405,7 +423,7 @@
        components_JsonComponentDescription builds:
        - build/components/simple_components.json
        ==================================================================== -->
-  
+
   <target name="components_JsonComponentDescription">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="JsonComponentDescription"/>

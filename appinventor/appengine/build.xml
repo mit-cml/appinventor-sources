@@ -550,6 +550,9 @@
           description="GWT compile to JavaScript"
           depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
           unless="YaClientApp.uptodate">
+    <condition property="compiler.extra.args" value="-logLevel INFO -extra ${build.extra.dir} -style pretty" else="-logLevel INFO -extra ${build.extra.dir} -style pretty -optimize 9 -localWorkers 4">
+      <isset property="debug" />
+    </condition>
     <mkdir dir="${build.extra.dir}" />
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
@@ -581,7 +584,7 @@
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
+      <arg line="${compiler.extra.args}" />
       <arg value="com.google.appinventor.YaClient"/>
     </java>
   </target>
