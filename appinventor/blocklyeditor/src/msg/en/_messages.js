@@ -758,6 +758,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
 
+    Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
+
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';
 //Blockly.Msg.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list.html#Empty_lists';

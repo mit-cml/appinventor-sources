@@ -1872,6 +1872,9 @@
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
 
+(define (string-reverse s)
+  (list->string (reverse (string->list s))))
+
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
 (define (format-as-decimal number places)
