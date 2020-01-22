@@ -491,8 +491,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 198:
+  // - IMAGE_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 197;
+  public static final int YOUNG_ANDROID_VERSION = 198;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -876,6 +878,7 @@ public class YaVersion {
   // - Scaling Property added, but hidden for now
   // For IMAGE_COMPONENT_VERSION 4:
   // - The Click event was added.
+  // - The Clickable property was added.
   public static final int IMAGE_COMPONENT_VERSION = 4;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:

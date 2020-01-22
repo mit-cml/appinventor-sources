@@ -1583,6 +1583,7 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // Click event was added
+    // The Clickable property was added.
     4: "noUpgrade"
 
   }, // End Image upgraders

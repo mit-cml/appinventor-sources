@@ -414,6 +414,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
  <code class="highlighter-rouge">ScrollLeftSlow</code>, <code class="highlighter-rouge">ScrollLeft</code>, <code class="highlighter-rouge">ScrollLeftFast</code>, and <code class="highlighter-rouge">Stop</code>.</dd>
+  <dt id="Image.Clickable" class="boolean"><em>Clickable</em></dt>
+  <dd>Specifies whether the image should be clickable or not.</dd>
   <dt id="Image.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Image</code>’s vertical height, measured in pixels.</dd>
   <dt id="Image.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -439,7 +441,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="Image-Events">Events</h3>
 
-<p class="events">None</p>
+<dl class="events">
+  <dt id="Image.Click">Click()</dt>
+  <dd>An event that occurs when an image is clicked.</dd>
+</dl>
 
 <h3 id="Image-Methods">Methods</h3>
 
