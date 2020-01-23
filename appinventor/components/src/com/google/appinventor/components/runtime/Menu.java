@@ -37,8 +37,8 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   private List<MenuItem> items;
 
   // Menu items for About and Stop options
-  private MenuItem aboutItem;
-  private MenuItem stopItem;
+  private MenuItem aboutItem = null;
+  private MenuItem stopItem = null;
 
   // Visibility of About and Stop menu items
   private boolean showAboutItem = true;
@@ -97,6 +97,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     aboutItem.Visible(showAboutItem);
     aboutItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
+        Log.d(LOG_TAG, "about menu item clicked");
         form.showAboutApplicationNotification();
         return true;
       }
@@ -110,6 +111,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     stopItem.Visible(showStopItem);
     stopItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
+        Log.d(LOG_TAG, "exit menu item clicked");
         form.showExitApplicationNotification();
         return true;
       }

@@ -217,6 +217,15 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     }
   }
 
+  @Override
+  public void invalidateOptionsMenu() {
+    if (appCompatDelegate != null) {
+      appCompatDelegate.invalidateOptionsMenu();
+    } else {
+      super.invalidateOptionsMenu();
+    }
+  }
+
   public static boolean isEmulator() {
     return android.os.Build.PRODUCT.contains("google_sdk") ||  // Old emulator build (2.x)
         android.os.Build.PRODUCT.equals("sdk") ||              // Honeycomb image (for testing)

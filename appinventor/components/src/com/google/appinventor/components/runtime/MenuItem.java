@@ -32,15 +32,16 @@ import java.io.IOException;
 public final class MenuItem implements Component {
   private static final String LOG_TAG = "MenuItem";
 
+  private final Menu menu;
   private android.view.MenuItem item;
-  private Menu menu;
 
   private String text = "";
   private String iconPath = "";
   private Drawable iconDrawable;
   private boolean enabled = true;
   private boolean visible = true;
-  private boolean showOnActionBar;
+  private boolean showOnActionBar = false;
+  private OnMenuItemClickListener listener = null;
 
   public MenuItem(Menu parent) {
     menu = parent;
@@ -60,6 +61,9 @@ public final class MenuItem implements Component {
     item.setIcon(iconDrawable);
     item.setEnabled(enabled);
     item.setVisible(visible);
+    if (listener != null) {
+      item.setOnMenuItemClickListener(listener);
+    }
     ShowOnActionBar(showOnActionBar);
   }
 
@@ -141,6 +145,8 @@ public final class MenuItem implements Component {
    * @param listener  the on-click listener to replace the default Click event
    */
   public void setOnClickListener(OnMenuItemClickListener listener) {
+    Log.d(LOG_TAG, "setOnClickListener item = " + item);
+    this.listener = listener;
     if (item != null) {
       item.setOnMenuItemClickListener(listener);
     }
@@ -230,6 +236,7 @@ public final class MenuItem implements Component {
         showOnActionBar? android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM
                        : android.view.MenuItem.SHOW_AS_ACTION_NEVER
       );
+      menu.$form().invalidateOptionsMenu();
     }
   }
 
