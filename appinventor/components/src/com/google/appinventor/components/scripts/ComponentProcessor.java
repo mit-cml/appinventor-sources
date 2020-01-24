@@ -1144,7 +1144,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private void processDescriptions(ComponentInfo info) {
     final String name = info.displayName;
     info.description = info.description.replaceAll(TYPE_PLACEHOLDER, name);
-    info.helpUrl = info.description.replaceAll(TYPE_PLACEHOLDER, name);
+    info.helpUrl = info.helpUrl.replaceAll(TYPE_PLACEHOLDER, name);
     for (Property property : info.properties.values()) {
       property.description = property.description.replaceAll(TYPE_PLACEHOLDER, name);
     }
