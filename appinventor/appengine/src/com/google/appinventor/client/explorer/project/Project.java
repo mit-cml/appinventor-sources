@@ -261,6 +261,8 @@ public final class Project {
   }
 
   public void deleteFromTrash() {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+            Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
     if (isPublished()) {
       Ode.getInstance().getGalleryService().deleteApp(projectInfo.getGalleryId(),
               new OdeAsyncCallback<Void>(

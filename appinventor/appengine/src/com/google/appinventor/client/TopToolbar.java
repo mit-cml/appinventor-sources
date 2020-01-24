@@ -1039,9 +1039,9 @@ public class TopToolbar extends Composite {
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects() == null);
+          ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects().size() > 0);
+              ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
@@ -1050,8 +1050,9 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects().size() > 0);
+              ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);

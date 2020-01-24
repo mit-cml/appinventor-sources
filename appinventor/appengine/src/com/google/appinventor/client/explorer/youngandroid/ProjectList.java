@@ -357,31 +357,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   /**
-   * Gets the number of projects
-   *
-   * @return the number of projects
-   */
-  public int getAllProjectsCount() {
-    return projects.size();
-  }
-
-  /**
    * Gets the number of selected projects
    *
    * @return the number of selected projects
    */
   public int getSelectedProjectsCount() {
     return selectedProjects.size();
-  }
-
-  public int getTrashProjectsCount() {
-    int count = 0;
-    for (Project project : projects) {
-      if (project.isInTrash()) {
-        ++ count;
-      };
-    }
-    return count;
   }
 
   public int getMyProjectsCount() {

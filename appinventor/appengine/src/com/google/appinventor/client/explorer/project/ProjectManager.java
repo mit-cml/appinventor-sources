@@ -54,15 +54,6 @@ public final class ProjectManager {
   }
 
   /**
-   * Returns a list of all projects.
-   *
-   * @return  a list of projects
-   */
-  public List<Project> getProjects() {
-    return new ArrayList<Project>(projectsMap.values());
-  }
-
-  /**
    * Returns a list of the projects with the given project name prefix.
    *
    * @param prefix  project name prefix
@@ -117,16 +108,6 @@ public final class ProjectManager {
    */
   public Project getProject(long projectId) {
     return projectsMap.get(projectId);
-  }
-
-  public int getTrashProjectsCount() {
-    int count = 0;
-    for (Project project : projectsMap.values()) {
-      if (project.isInTrash()) {
-        ++ count;
-      };
-    }
-    return count;
   }
 
 
@@ -215,20 +196,6 @@ public final class ProjectManager {
    */
   public void removeProjectManagerEventListener(ProjectManagerEventListener listener) {
     projectManagerEventListeners.remove(listener);
-  }
-
-  public int allProjectCount() {
-    return projectsMap.size();
-  }
-
-  public int myProjectsCount() {
-    int count = 0;
-    for (Project project : projectsMap.values()) {
-      if (!project.isInTrash()) {
-        ++ count;
-      };
-    }
-    return count;
   }
 
   private List<ProjectManagerEventListener> copyProjectManagerEventListeners() {
