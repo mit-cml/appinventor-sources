@@ -38,7 +38,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -186,7 +185,7 @@ public class TopToolbar extends Composite {
     boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
-    fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), allowDelete);
+    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
     fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), allowExport);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
@@ -633,7 +632,8 @@ public class TopToolbar extends Composite {
               // Show one confirmation window for selected projects.
               if (deleteConfirmation(selectedProjects)) {
                 for (Project project : selectedProjects) {
-                  moveToTrash(project);
+                  project.moveToTrash();
+//                  moveToTrash(project);
                 }
               }
             } else {
@@ -646,11 +646,12 @@ public class TopToolbar extends Composite {
             Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
             selectedProjects.add(currentProject);
             if (deleteConfirmation(selectedProjects)) {
-              moveToTrash(currentProject);
+              currentProject.moveToTrash();
+//              moveToTrash(currentProject);
               //Add the command to stop this current project from saving
-              Ode.getInstance().switchToProjectsView();
             }
           }
+          Ode.getInstance().switchToProjectsView();
         }
       });
     }
@@ -679,34 +680,6 @@ public class TopToolbar extends Composite {
         }
       }
       return Window.confirm(message);
-    }
-
-    private void moveToTrash(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-              Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      // Make sure that we delete projects even if they are not open.
-      doMoveProjectToTrash(projectId);
-    }
-
-    private void doMoveProjectToTrash(final long projectId) {
-      Ode.getInstance().getProjectService().moveToTrash(projectId,
-          new OdeAsyncCallback<UserProject>(
-              // failure message
-              MESSAGES.moveToTrashProjectError()) {
-            @Override
-            public void onSuccess(UserProject project) {
-              if (project.getProjectId() == projectId) {
-                Ode.getInstance().getProjectManager().removeProject(projectId);
-                Ode.getInstance().getProjectManager().addDeletedProject(project);
-                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                  Ode.getInstance().createEmptyTrashDialog(true);
-                }
-              }
-            }
-          });
     }
   }
 
@@ -1065,7 +1038,7 @@ public class TopToolbar extends Composite {
     }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);

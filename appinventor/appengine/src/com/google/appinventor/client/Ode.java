@@ -25,13 +25,11 @@ import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -443,17 +441,7 @@ public class Ode implements EntryPoint {
     Runnable next = new Runnable() {
         @Override
         public void run() {
-          if (currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
-            ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
-            ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
-            //shifting back to show projects
-            if (currentView == TRASHCAN)  {
-              projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
-              projectListPanel.setWidth("100%");
-              projectListPanel.add(ProjectListBox.getProjectListBox());
-              pVertPanel.add(projectListPanel);
-            }
-          }
+          ProjectListBox.getProjectListBox().loadProjectList();
           currentView = PROJECTS;
           getTopToolbar().updateFileMenuButtons(currentView);
           deckPanel.showWidget(projectsTabIndex);
@@ -482,23 +470,12 @@ public class Ode implements EntryPoint {
   public void switchToTrash() {
     hideChaff();
     hideTutorials();
-    if (currentView != TRASHCAN){
-      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
-      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
-    }
+    ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
-    projectListPane2.setWidth("100%");
-    projectListPanel.remove(ProjectListBox.getProjectListBox());
-    projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
-    pVertPanel.remove(projectListPanel);
-    pVertPanel.add(projectListPane2);
-    deckPanel.showWidget(projectsTabIndex);
+    projectToolbar.enableStartButton();
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setPublishOrUpdateButtonVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
-    if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
-        Ode.getInstance().createEmptyTrashDialog(true);
-    }
   }
 
   /**
@@ -1054,6 +1031,7 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
+    projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
@@ -1828,7 +1806,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
+        if (projectManager.myProjectsCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
         }
@@ -1941,7 +1919,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+        if (projectManager.myProjectsCount() == 0 && !templateLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           showSplashScreens();
         }
