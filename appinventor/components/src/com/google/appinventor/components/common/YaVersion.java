@@ -488,10 +488,8 @@ public class YaVersion {
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 196:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
-  // For YOUNG_ANDROID_VERSION 197:
-  // - Added Serial
 
-  public static final int YOUNG_ANDROID_VERSION = 197;
+  public static final int YOUNG_ANDROID_VERSION = 196;
 
   // ............................... Blocks Language Version Number ...............................
 
