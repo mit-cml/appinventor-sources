@@ -25,7 +25,8 @@ import java.io.UnsupportedEncodingException;
     description = "Serial component which can be used to connect to devices like Arduino",
     category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
-    iconName = "images/arduino.png")
+    iconName = "images/arduino.png",
+    androidMinSdk = 12)
 
 @SimpleObject
 @UsesLibraries(libraries = "physicaloid.jar")
