@@ -48,6 +48,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction(description = "Initializes serial connection.")
   public void InitializeSerial() {
     mPhysicaloid = new Physicaloid(context);
+    self.BaudRate(self.baudRate);
     Log.d(LOG_TAG, "Initialized");
   }
 
