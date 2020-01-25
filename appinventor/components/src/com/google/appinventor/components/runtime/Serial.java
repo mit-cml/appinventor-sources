@@ -110,6 +110,13 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+  @SimpleFunction(description = "Writes given data to serial, and appends a new line at the end.")
+  public void PrintSerial(String writeDataSerial) {
+    if (!writeDataSerial.isEmpty()) {
+      WriteSerial(writeDataSerial + "\n");
+    }
+  }
+
   @SimpleFunction(description = "Returns true when the Serial connection is open.")
   public boolean IsOpenedSerial() {
     if (mPhysicaloid == null)
