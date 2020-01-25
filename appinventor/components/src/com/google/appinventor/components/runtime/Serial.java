@@ -55,45 +55,56 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction(description = "Opens serial connection. Returns true when opened.")
   public boolean OpenSerial() {
     Log.d(LOG_TAG, "Opening connection");
+    if (mPhysicaloid == null)
+      return false;
     return mPhysicaloid.open();
   }
 
   @SimpleFunction(description = "Closes serial connection. Returns true when closed.")
   public boolean CloseSerial() {
     Log.d(LOG_TAG, "Closing connection");
+    if (mPhysicaloid == null)
+      return false;
     return mPhysicaloid.close();
   }
 
   @SimpleFunction(description = "Sets a new baud rate. Default is 9600 bps.")
   public void BaudRate(int baudRate) {
     this.baudRate = baudRate;
-    mPhysicaloid.setBaudrate(baudRate);
     Log.d(LOG_TAG, "Baud Rate: " + baudRate);
+    if (mPhysicaloid != null)
+      mPhysicaloid.setBaudrate(baudRate);
+    else
+      Log.w(LOG_TAG, "Could not set Serial Baud Rate to " + baudRate + ". Just saved, not applied to serial! Maybe you forgot to initialize it?");
   }
 
   @SimpleFunction(description = "Reads data from serial.")
   public void ReadSerial() {
-    byte[] buf = new byte[256];
-    boolean success = true;
-    String data = "";
-
-    if (mPhysicaloid.read(buf) > 0) {
-      try {
-        data = new String(buf, "UTF-8");
-      } catch (UnsupportedEncodingException mEr) {
+    if (mPhysicaloid == null)
+      AfterReadSerial(false, "");
+    else {
+      byte[] buf = new byte[256];
+      boolean success = true;
+      String data = "";
+  
+      if (mPhysicaloid.read(buf) > 0) {
+        try {
+          data = new String(buf, "UTF-8");
+        } catch (UnsupportedEncodingException mEr) {
+          success = false;
+          Log.e(LOG_TAG, mEr.getMessage());
+        }
+      } else {
         success = false;
-        Log.e(LOG_TAG, mEr.getMessage());
       }
-    } else {
-      success = false;
+  
+      AfterReadSerial(success, data);
     }
-
-    AfterReadSerial(success, data);
   }
 
   @SimpleFunction(description = "Writes given data to serial.")
   public void WriteSerial(String writeDataSerial) {
-    if (!writeDataSerial.isEmpty()) {
+    if (!writeDataSerial.isEmpty() && mPhysicaloid != null) {
       byte[] buf = writeDataSerial.getBytes();
       mPhysicaloid.write(buf);
     }
@@ -101,6 +112,8 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
 
   @SimpleFunction(description = "Returns true when the Serial connection is open.")
   public boolean IsOpenedSerial() {
+    if (mPhysicaloid == null)
+      return false;
     return mPhysicaloid.isOpened();
   }
 
