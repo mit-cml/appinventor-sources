@@ -662,7 +662,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
 
     // Serial
-    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized")
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
   }
 
   private ErrorMessages() {
