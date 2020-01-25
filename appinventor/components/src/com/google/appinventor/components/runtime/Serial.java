@@ -13,9 +13,11 @@ import com.physicaloid.lib.Physicaloid;
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -117,8 +119,8 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  @SimpleFunction(description = "Returns true when the Serial connection is open.")
-  public boolean IsOpenedSerial() {
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns true when the Serial connection is open.")
+  public boolean Opened() {
     if (mPhysicaloid == null)
       return false;
     return mPhysicaloid.isOpened();
