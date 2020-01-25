@@ -265,7 +265,10 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
-  // Start the next group of errors at 3900
+  // Serial errors
+  public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+
+  // Start the next group of errors at 4000
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -657,6 +660,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    // Serial
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized")
   }
 
   private ErrorMessages() {
