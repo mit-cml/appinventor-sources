@@ -117,6 +117,11 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     return mPhysicaloid.isOpened();
   }
 
+  @SimpleFunction(description = "Returns true when the Serial has been initialized.")
+  public boolean IsInitialized() {
+    return mPhysicaloid != null;
+  }
+
   @SimpleEvent(description = "Triggered after ReadSerial method.")
   public void AfterReadSerial(boolean success, String data) {
     EventDispatcher.dispatchEvent(this, "AfterRead", success, data);
