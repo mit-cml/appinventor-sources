@@ -13,6 +13,7 @@ import com.physicaloid.lib.Physicaloid;
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -20,6 +21,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import java.io.UnsupportedEncodingException;
 
@@ -50,7 +52,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction(description = "Initializes serial connection.")
   public void InitializeSerial() {
     mPhysicaloid = new Physicaloid(context);
-    self.BaudRate(self.baudRate);
+    BaudRate(this.baudRate);
     Log.d(LOG_TAG, "Initialized");
   }
 
@@ -68,16 +70,6 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     if (mPhysicaloid == null)
       return false;
     return mPhysicaloid.close();
-  }
-
-  @SimpleFunction(description = "Sets a new baud rate. Default is 9600 bps.")
-  public void BaudRate(int baudRate) {
-    this.baudRate = baudRate;
-    Log.d(LOG_TAG, "Baud Rate: " + baudRate);
-    if (mPhysicaloid != null)
-      mPhysicaloid.setBaudrate(baudRate);
-    else
-      Log.w(LOG_TAG, "Could not set Serial Baud Rate to " + baudRate + ". Just saved, not applied to serial! Maybe you forgot to initialize it?");
   }
 
   @SimpleFunction(description = "Reads data from serial.")
@@ -134,5 +126,22 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent(description = "Triggered after ReadSerial method.")
   public void AfterReadSerial(boolean success, String data) {
     EventDispatcher.dispatchEvent(this, "AfterRead", success, data);
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+    description = "Returns the current baud rate")
+  public int BaudRate() {
+    return this.baudRate;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "9600")
+  @SimpleProperty
+  public void BaudRate(int baudRate) {
+    this.baudRate = baudRate;
+    Log.d(LOG_TAG, "Baud Rate: " + baudRate);
+    if (mPhysicaloid != null)
+      mPhysicaloid.setBaudrate(baudRate);
+    else
+      Log.w(LOG_TAG, "Could not set Serial Baud Rate to " + baudRate + ". Just saved, not applied to serial! Maybe you forgot to initialize it?");
   }
 }
