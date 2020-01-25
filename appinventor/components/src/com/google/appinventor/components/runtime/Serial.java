@@ -35,7 +35,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
 
   private Context context;
 
-  Physicaloid mPhysicaloid;
+  private Physicaloid mPhysicaloid;
 
   private int baudRate = 9600;
 
