@@ -22,6 +22,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.io.UnsupportedEncodingException;
 
@@ -59,24 +60,29 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction(description = "Opens serial connection. Returns true when opened.")
   public boolean OpenSerial() {
     Log.d(LOG_TAG, "Opening connection");
-    if (mPhysicaloid == null)
+    if (mPhysicaloid == null) {
+      form.dispatchErrorOccurredEvent(Serial.this, "OpenSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
       return false;
+    }
     return mPhysicaloid.open();
   }
 
   @SimpleFunction(description = "Closes serial connection. Returns true when closed.")
   public boolean CloseSerial() {
     Log.d(LOG_TAG, "Closing connection");
-    if (mPhysicaloid == null)
+    if (mPhysicaloid == null) {
+      form.dispatchErrorOccurredEvent(Serial.this, "CloseSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
       return false;
+    }
     return mPhysicaloid.close();
   }
 
   @SimpleFunction(description = "Reads data from serial.")
-  public void ReadSerial() {
-    if (mPhysicaloid == null)
-      AfterReadSerial(false, "");
-    else {
+  public String ReadSerial() {
+    if (mPhysicaloid == null) {
+      form.dispatchErrorOccurredEvent(Serial.this, "ReadSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
+      return "";
+    } else {
       byte[] buf = new byte[256];
       boolean success = true;
       String data = "";
@@ -92,7 +98,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
         success = false;
       }
   
-      AfterReadSerial(success, data);
+      return data;
     }
   }
 
@@ -101,31 +107,29 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     if (!writeDataSerial.isEmpty() && mPhysicaloid != null) {
       byte[] buf = writeDataSerial.getBytes();
       mPhysicaloid.write(buf);
+    } else if (mPhysicaloid == null) {
+      form.dispatchErrorOccurredEvent(Serial.this, "WriteSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
     }
   }
 
   @SimpleFunction(description = "Writes given data to serial, and appends a new line at the end.")
   public void PrintSerial(String writeDataSerial) {
-    if (!writeDataSerial.isEmpty()) {
+    if (!writeDataSerial.isEmpty())
       WriteSerial(writeDataSerial + "\n");
-    }
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns true when the Serial connection is open.")
   public boolean Opened() {
-    if (mPhysicaloid == null)
+    if (mPhysicaloid == null) {
+      form.dispatchErrorOccurredEvent(Serial.this, "Opened", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
       return false;
+    }
     return mPhysicaloid.isOpened();
   }
 
-  @SimpleFunction(description = "Returns true when the Serial has been initialized.")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns true when the Serial has been initialized.")
   public boolean IsInitialized() {
     return mPhysicaloid != null;
-  }
-
-  @SimpleEvent(description = "Triggered after ReadSerial method.")
-  public void AfterReadSerial(boolean success, String data) {
-    EventDispatcher.dispatchEvent(this, "AfterRead", success, data);
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
