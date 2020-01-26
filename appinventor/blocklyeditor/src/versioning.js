@@ -1182,7 +1182,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // Extras property was added
     6: "noUpgrade",
 
-    // EmailAddresses property was added
+    // EmailAddressList property was added
     7: "noUpgrade"
 
   }, // End ActivityStarter upgraders
