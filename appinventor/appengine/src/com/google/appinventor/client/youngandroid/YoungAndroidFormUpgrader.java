@@ -492,6 +492,11 @@ public final class YoungAndroidFormUpgrader {
 
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The ActivityStarter.EmailAddresses property was added.
+      // No properties need to be modified to upgrade to version 7.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

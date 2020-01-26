@@ -35,6 +35,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -150,6 +151,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   private String result;
   private int requestCode;
   private YailList extras;
+  private YailList emailAddressList;
   private final ComponentContainer container;
 
   private static final String LOG_TAG = "ActivityStarter";
@@ -172,6 +174,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     ExtraKey("");
     ExtraValue("");
     Extras(new YailList());
+    emailAddressList(new YailList());
     ResultName("");
   }
 
@@ -245,6 +248,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     return extraValue;
   }
 
+  
+  
   /**
    * Specifies the extra value that will be passed to the activity.
    * Obsolete. Should use Extras instead
@@ -255,7 +260,48 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   public void ExtraValue(String extraValue) {
     this.extraValue = extraValue.trim();
   }
-
+    
+  
+  /**
+   * Set a list of email addresses for an activity whose action is 
+   * android.intent.action.SEND
+   * We also provide a way to set this as a designer property.
+   * @param addresses a YailList containing the address strings
+   */
+  @SimpleProperty(description="List of email addresses for a SEND activity.  This will" +
+                "signal an error if the elements are not text strings.",
+      category = PropertyCategory.BEHAVIOR)
+  public void emailAddressList(YailList addresses) {
+    emailAddressList = ElementsUtil.elements(addresses, "ActivityStarter");
+  }
+  
+  
+  /**
+   * Returns the list extraEmail of email addresses that are passed to the activity.
+   * for activities that send email with action.SEND
+   */
+  @SimpleProperty(
+      description = "Returns the list of email addresses for an activity" +
+          "whose action is android.intent.action.SEND.",
+      category = PropertyCategory.BEHAVIOR)
+  public YailList emailAddressList() {
+    return emailAddressList;
+  }
+  
+  /**
+   * Specifies the emmail addresses for SEND action.
+   * @param addressString a comma-separated string of email addresses
+   */
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
+      defaultValue = "")
+  @SimpleProperty(description="The list of recipient email addreeses specified as a comma-separated string " +
+      "such as: someone@gmail.com, person@mit.edu", category = PropertyCategory.BEHAVIOR)
+  public void emailAddressListFromString(String addressString) {
+   emailAddressList = ElementsUtil.elementsFromString(addressString);
+  }
+ 
+ 
   // TODO(lizlooney) - currently we support retrieving just one string extra result from the
   // activity. The user specifies the ResultName property and, then after the activity finishes,
   // the string extra result corresponding to ResultName is passed as the result parameter to the
@@ -550,7 +596,14 @@ public class ActivityStarter extends AndroidNonvisibleComponent
         intent.putExtra(key, value);
       }
     }
-
+    
+    // emailAddressList is handled differently from other extras because the value should
+    // be sent as a Java array
+    if (! emailAddressList.isEmpty()) {
+          Log.i(LOG_TAG, "adding EXTRA_EMAIL" + emailAddressList);
+          intent.putExtra(Intent.EXTRA_EMAIL, emailAddressList.toStringArray());
+    } 
+    
     return intent;
   }
 
