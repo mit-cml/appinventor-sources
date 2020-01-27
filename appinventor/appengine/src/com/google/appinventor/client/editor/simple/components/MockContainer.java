@@ -316,11 +316,17 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   @Override
-  public void onRemoved()
-  {
-    for (MockComponent child : children) {
-      getForm().fireComponentRemoved(child, true);
+  public void delete() {
+    // Traverse list backwards to make removal easier
+    for (int i = children.size() - 1; i >= 0; --i) {
+      MockComponent child = children.get(i);
+
+      // Manually delete child component to ensure that it is
+      // completely removed from the Designer.
+      child.delete();
     }
+
+    super.delete();
   }
 
   @Override

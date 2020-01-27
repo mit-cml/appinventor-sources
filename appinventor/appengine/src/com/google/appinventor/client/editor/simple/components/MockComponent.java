@@ -1142,13 +1142,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       String oldType = "";
       String newType = "";
       for (PropertyDefinition prop : newProperties) {
-        if (prop.getName() == property.getName()) {
+        if (prop.getName().equals(property.getName())) {
           presentInNewProperties = true;
           newType = prop.getEditorType();
         }
       }
       for (PropertyDefinition prop : oldProperties) {
-        if (prop.getName() == property.getName()) {
+        if (prop.getName().equals(property.getName())) {
           presentInOldProperties = true;
           oldType = prop.getEditorType();
         }

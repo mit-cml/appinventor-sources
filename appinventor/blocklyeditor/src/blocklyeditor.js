@@ -258,6 +258,13 @@ Blockly.usePrefixInYail = false;
      + maybe index variables have prefix "index", or maybe instead they are treated as "param"
 */
 
+/**
+ * The global keyword. Users may be shown a translated keyword instead but this is the internal
+ * token used to identify global variables.
+ * @type {string}
+ * @const
+ */
+Blockly.GLOBAL_KEYWORD = 'global';  // used internally to identify global variables; not translated
 Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
 Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
 Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
@@ -292,6 +299,8 @@ Blockly.unprefixName = function (name) {
   if (name.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator) == 0) {
     // Globals always have prefix, regardless of flags. Handle these specially
     return [Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX, name.substring(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX.length + Blockly.menuSeparator.length)];
+  } else if (name.indexOf(Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator) === 0) {
+    return [Blockly.GLOBAL_KEYWORD, name.substring(6 + Blockly.menuSeparator.length)];
   } else if (!Blockly.showPrefixToUser) {
     return ["", name];
   } else {
