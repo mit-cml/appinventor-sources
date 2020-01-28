@@ -89,13 +89,6 @@ A component that can launch an activity using the StartActivity method.
 {:id="ActivityStarter.ResultUri" .text .ro .bo} *ResultUri*
 : Returns the URI from the activity.
 
-{:id="ActivityStarter.emailAddressList" .list .bo} *emailAddressList*
-: Returns the list extraEmail of email addresses that are passed to the activity.
- for activities that send email with action.SEND
-
-{:id="ActivityStarter.emailAddressListFromString" .text .wo} *emailAddressListFromString*
-: Specifies the emmail addresses for SEND action.
-
 ### Events  {#ActivityStarter-Events}
 
 {:.events}
