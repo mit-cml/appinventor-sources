@@ -435,7 +435,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
  manifest.  See Compiler.java.
 
 {:id="NearField.TagWritten"} TagWritten()
-: Event for TagWritten
+: Indicates that a tag has come into range of the NFC sensor and has been written.
 
 ## OrientationSensor  {#OrientationSensor}
 
@@ -494,7 +494,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.properties}
 
 {:id="Pedometer.CalibrateStrideLength" .boolean .bo} *CalibrateStrideLength*
-: 
+: This property has been deprecated.
 
 {:id="Pedometer.Distance" .number .ro .bo} *Distance*
 : The approximate distance traveled in meters.
@@ -503,7 +503,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : Time elapsed in milliseconds since the pedometer was started.
 
 {:id="Pedometer.Moving" .boolean .ro .bo} *Moving*
-: 
+: This property has been deprecated.
 
 {:id="Pedometer.SimpleSteps" .number .ro .bo} *SimpleSteps*
 : The number of simple steps taken since the pedometer has started.
@@ -515,7 +515,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : Set the average stride length in meters.
 
 {:id="Pedometer.UseGPS" .boolean .wo .bo} *UseGPS*
-: 
+: This property has been deprecated.
 
 {:id="Pedometer.WalkSteps" .number .ro .bo} *WalkSteps*
 : the number of walk steps taken since the pedometer has started.
@@ -525,22 +525,22 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.events}
 
 {:id="Pedometer.CalibrationFailed"} CalibrationFailed()
-: Event for CalibrationFailed
+: This event has been deprecated.
 
 {:id="Pedometer.GPSAvailable"} GPSAvailable()
-: Event for GPSAvailable
+: This event has been deprecated.
 
 {:id="Pedometer.GPSLost"} GPSLost()
-: Event for GPSLost
+: This event has been deprecated.
 
 {:id="Pedometer.SimpleStep"} SimpleStep(*simpleSteps*{:.number},*distance*{:.number})
 : This event is run when a raw step is detected
 
 {:id="Pedometer.StartedMoving"} StartedMoving()
-: Event for StartedMoving
+: This event has been deprecated.
 
 {:id="Pedometer.StoppedMoving"} StoppedMoving()
-: Event for StoppedMoving
+: This event has been deprecated.
 
 {:id="Pedometer.WalkStep"} WalkStep(*walkSteps*{:.number},*distance*{:.number})
 : This event is run when a walking step is detected. A walking step is a step that appears to be involved in forward motion.

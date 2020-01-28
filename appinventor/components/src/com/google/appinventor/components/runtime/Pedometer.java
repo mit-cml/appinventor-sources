@@ -447,51 +447,53 @@ public class Pedometer extends AndroidNonvisibleComponent
   // that has them is loaded.
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StartedMoving() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StoppedMoving() {
 
   }
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void UseGPS(boolean gps) {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void CalibrationFailed() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSAvailable() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSLost() {
   }
 
   // Properties
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void CalibrateStrideLength(boolean cal) {
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean CalibrateStrideLength() {
     return false;
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean Moving() {
     return false;
   }

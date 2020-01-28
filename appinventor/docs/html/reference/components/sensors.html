@@ -481,7 +481,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  Currently this is only a plain text tag, as specified in the
  manifest.  See Compiler.java.</dd>
   <dt id="NearField.TagWritten">TagWritten()</dt>
-  <dd>Event for TagWritten</dd>
+  <dd>Indicates that a tag has come into range of the NFC sensor and has been written.</dd>
 </dl>
 
 <h2 id="OrientationSensor">OrientationSensor</h2>
@@ -544,13 +544,13 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <dl class="properties">
   <dt id="Pedometer.CalibrateStrideLength" class="boolean bo"><em>CalibrateStrideLength</em></dt>
-  <dd></dd>
+  <dd>This property has been deprecated.</dd>
   <dt id="Pedometer.Distance" class="number ro bo"><em>Distance</em></dt>
   <dd>The approximate distance traveled in meters.</dd>
   <dt id="Pedometer.ElapsedTime" class="number ro bo"><em>ElapsedTime</em></dt>
   <dd>Time elapsed in milliseconds since the pedometer was started.</dd>
   <dt id="Pedometer.Moving" class="boolean ro bo"><em>Moving</em></dt>
-  <dd></dd>
+  <dd>This property has been deprecated.</dd>
   <dt id="Pedometer.SimpleSteps" class="number ro bo"><em>SimpleSteps</em></dt>
   <dd>The number of simple steps taken since the pedometer has started.</dd>
   <dt id="Pedometer.StopDetectionTimeout" class="number"><em>StopDetectionTimeout</em></dt>
@@ -558,7 +558,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Pedometer.StrideLength" class="number"><em>StrideLength</em></dt>
   <dd>Set the average stride length in meters.</dd>
   <dt id="Pedometer.UseGPS" class="boolean wo bo"><em>UseGPS</em></dt>
-  <dd></dd>
+  <dd>This property has been deprecated.</dd>
   <dt id="Pedometer.WalkSteps" class="number ro bo"><em>WalkSteps</em></dt>
   <dd>the number of walk steps taken since the pedometer has started.</dd>
 </dl>
@@ -567,17 +567,17 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <dl class="events">
   <dt id="Pedometer.CalibrationFailed">CalibrationFailed()</dt>
-  <dd>Event for CalibrationFailed</dd>
+  <dd>This event has been deprecated.</dd>
   <dt id="Pedometer.GPSAvailable">GPSAvailable()</dt>
-  <dd>Event for GPSAvailable</dd>
+  <dd>This event has been deprecated.</dd>
   <dt id="Pedometer.GPSLost">GPSLost()</dt>
-  <dd>Event for GPSLost</dd>
+  <dd>This event has been deprecated.</dd>
   <dt id="Pedometer.SimpleStep">SimpleStep(<em class="number">simpleSteps</em>,<em class="number">distance</em>)</dt>
   <dd>This event is run when a raw step is detected</dd>
   <dt id="Pedometer.StartedMoving">StartedMoving()</dt>
-  <dd>Event for StartedMoving</dd>
+  <dd>This event has been deprecated.</dd>
   <dt id="Pedometer.StoppedMoving">StoppedMoving()</dt>
-  <dd>Event for StoppedMoving</dd>
+  <dd>This event has been deprecated.</dd>
   <dt id="Pedometer.WalkStep">WalkStep(<em class="number">walkSteps</em>,<em class="number">distance</em>)</dt>
   <dd>This event is run when a walking step is detected. A walking step is a step that appears to be involved in forward motion.</dd>
 </dl>
