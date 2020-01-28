@@ -89,6 +89,9 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     EventDispatcher.dispatchEvent(this, "TagRead", message);
   }
 
+  /**
+   * Indicates that a tag has come into range of the NFC sensor and has been written.
+   */
   @SimpleEvent
   public void TagWritten() {
     Log.d(TAG, "Tag written: " + textToWrite);
