@@ -1084,22 +1084,38 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  private void testUnaryIntegerFunction(String funName, int[] args, int[] vals)
+          throws Throwable {
+    for (int i = 0; i < args.length; i++) {
+      String expression = "(" + funName + " " + args[i] + ")";
+      Object result = scheme.eval(expression);
+      if (result instanceof IntNum) {
+        assertEquals(expression, vals[i], ((IntNum) result).intValue());
+      } else {
+        assertEquals(expression, vals[i], (int) result);
+      }
+    }
+  }
+
    public void testSine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 0,  1,  0,   -1 };
-     testUnaryDoubleFunction("sin-degrees", args, vals);
+     int[] args = { 0, 90, 180, 270, 360 };
+     int[] vals = { 0,  1,  0,   -1, 0 };
+     testUnaryIntegerFunction("sin-degrees", args, vals);
    }
 
    public void testCosine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 1,  0,  -1,   0 };
-     testUnaryDoubleFunction("cos-degrees", args, vals);
+     int[] args = { 0, 90, 180, 270, 360 };
+     int[] vals = { 1,  0,  -1,   0, 1 };
+     testUnaryIntegerFunction("cos-degrees", args, vals);
    }
 
    public void testTangent() throws Throwable {
-     double[] args = { 0, 45, 135, 180, 225, 315, 30 };
-     double[] vals = { 0,  1,  -1,   0,   1,  -1, .57735 };
-     testUnaryDoubleFunction("tan-degrees", args, vals);
+     int[] args = { 0, 45, 135, 180, 225, 315 };
+     int[] vals = { 0,  1,  -1,   0,   1,  -1 };
+     testUnaryIntegerFunction("tan-degrees", args, vals);
+     double[] arg = { 30 };
+     double[] val = { .57735 };
+     testUnaryDoubleFunction("tan-degrees", arg, val);
    }
 
    public void testAsin() throws Throwable {
