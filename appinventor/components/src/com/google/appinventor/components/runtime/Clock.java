@@ -625,7 +625,7 @@ public class Clock extends AndroidNonvisibleComponent
     if (timezones.contains(timezone)) {
       return instant.setTimeZone(TimeZone.getTimeZone(timezone));
     } else {
-      for (String tz : timezone) {
+      for (String tz : timezones) {
         if (tz.equalsIgnoreCase(timezone))
           return ChangeTimezone(instant, tz);
       }
