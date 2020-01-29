@@ -620,10 +620,17 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Updates the timezone in which the instant is saved at")
   public static Calendar ChangeTimezone(Calendar instant, String timezone) {
-    if (timezones.contains(timezone))
+    if (timezone == null) throw new YailRuntimeError("No timezones available.");
+
+    if (timezones.contains(timezone)) {
       return instant.setTimeZone(TimeZone.getTimeZone(timezone));
-    else
+    } else {
+      for (String tz : timezone) {
+        if (tz.equalsIgnoreCase(timezone))
+          return ChangeTimezone(instant, tz);
+      }
       throw new YailRuntimeError("Your given timezone is not a valid timezone.");
+    }
   }
 
   /**
