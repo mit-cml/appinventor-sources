@@ -267,6 +267,7 @@ public final class ErrorMessages {
 
   // Serial errors
   public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+  public static final int ERROR_SERIAL_WRITING = 3902;
 
   // Start the next group of errors at 4000
 
@@ -663,6 +664,7 @@ public final class ErrorMessages {
 
     // Serial
     errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
+    errorMessages.put(ERROR_SERIAL_WRITING, "Error writing data to serial");
   }
 
   private ErrorMessages() {

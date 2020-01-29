@@ -106,7 +106,9 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   public void WriteSerial(String writeDataSerial) {
     if (!writeDataSerial.isEmpty() && mPhysicaloid != null) {
       byte[] buf = writeDataSerial.getBytes();
-      mPhysicaloid.write(buf);
+      int result = mPhysicaloid.write(buf);
+      if (result == -1)
+        form.dispatchErrorOccurredEvent(Serial.this, "WriteSerial", ErrorMessages.ERROR_SERIAL_WRITING);
     } else if (mPhysicaloid == null) {
       form.dispatchErrorOccurredEvent(Serial.this, "WriteSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
     }
