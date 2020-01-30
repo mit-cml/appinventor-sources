@@ -30,7 +30,24 @@ import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
 
 /**
- * Component for making a phone call to a programatically-specified number.
+ * ![PhoneCall component icon](images/phonecall.png)
+ *
+ * A non-visible component that makes a phone call to the number specified in the
+ * {@link #PhoneNumber()} property, which can be set either in the Designer or Blocks Editor.
+ * The component has a {@link #MakePhoneCall()} method, enabling the program to launch a phone call.
+ * You may also use {@link #MakePhoneCallDirect()} to directly initiate a phone call without user
+ * interaction. However, apps using this block may require further review by Google if submitted
+ * to the Play Store so it is advised to use {@link #MakePhoneCall()} instead.
+ *
+ * Often, this component is used with the {@link ContactPicker} component, which lets the user
+ * select a contact from the ones stored on the phone and sets the
+ * {@link #PhoneNumber()} property to {@link ContactPicker#PhoneNumber()} property.
+ *
+ * To directly specify the phone number (e.g., 650-555-1212), set the {@link #PhoneNumber()}
+ * property to a Text with the specified digits (e.g., "6505551212"). Dashes, dots, and parentheses
+ * may be included (e.g., "(650)-555-1212") but will be ignored; spaces may not be included.
+ *
+ * @internaldoc
  *
  * TODO(markf): Note that the initial carrier for Android phones only supports 3 participants
  *              in a conference call, so that's all that the current implementation of this
@@ -109,7 +126,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * PhoneNumber property setter method: sets a phone number to call.
+   * Specifies the phone number to call.
    *
    * @param phoneNumber a phone number to call
    */
@@ -121,9 +138,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * Makes a phone call using the number in the PhoneNumber property.
+   * Launches the default dialer app set to start a phone call using the number in the
+   * {@link #PhoneNumber()} property.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Launches the default dialer app set to start a phone call using"
+      + "the number in the PhoneNumber property.")
   public void MakePhoneCall() {
     Intent i = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", this.phoneNumber, null));
     if (i.resolveActivity(form.getPackageManager()) != null) {
@@ -132,10 +151,13 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * Makes a phone call using the number in the PhoneNumber property.
+   * Directly initiates a phone call using the number in the {@link #PhoneNumber()} property,
+   * bypassing user interaction to start the call. **Most apps should use
+   * {@link #MakePhoneCall()} instead, which requires no permissions.**
    */
   @UsesPermissions(Manifest.permission.CALL_PHONE)
-  @SimpleFunction
+  @SimpleFunction(description = "Directly initiates a phone call using the number in the "
+      + "PhoneNumber property.")
   public void MakePhoneCallDirect() {
     // Check that we have permission and ask for it if we don't
     if (!havePermission) {
@@ -158,8 +180,10 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * Event indicating that a phone call has started.
-   * status: 1:incoming call is ringing; 2:outgoing call is dialled.
+   * Event indicating that a phone call has started. The `status`{:.variable.block} can be any of:
+   *
+   *   - `1`: Incoming call is ringing
+   *   - `2`: Outgoing call is dialled
    *
    * @param status 1:incoming call is ringing; 2:outgoing call is dialled.
    * @param phoneNumber incoming/outgoing call phone number
@@ -177,8 +201,11 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * Event indicating that a phone call has ended.
-   * status: 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
+   * Event indicating that a phone call has ended. The `status`{:.variable.block} can be any of:
+   *
+   *   - `1`: Incoming call was missed or rejected
+   *   - `2`: Incoming call was answered and hung up
+   *   - `3`: Outgoing call was hung up.
    *
    * @param status 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
    * @param phoneNumber ended call phone number
@@ -197,7 +224,8 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   }
 
   /**
-   * Event indicating that an incoming phone call is answered.
+   * Event indicating that an incoming phone call is answered. `phoneNumber`{:.variable.block} is
+   * the incoming call phone number.
    *
    * @param phoneNumber incoming call phone number
    */

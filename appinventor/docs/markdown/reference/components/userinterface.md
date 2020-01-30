@@ -27,248 +27,320 @@ Table of Contents:
 
 ## Button  {#Button}
 
+Button with the ability to detect clicks. Many aspects of its appearance can be changed, as well
+ as whether it is clickable (`Enabled`). Its properties can be changed in the Designer or in the
+ Blocks Editor.
+
+
+
 ### Properties  {#Button-Properties}
 
 {:.properties}
 
 {:id="Button.BackgroundColor" .color} *BackgroundColor*
-: Returns the button's background color
+: Specifies the `Button`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#Button.Image) has been set, the color
+ change will not be visible until the [`Image`](#Button.Image) is removed.
 
 {:id="Button.Enabled" .boolean} *Enabled*
-: If set, user can tap Button to cause action.
+: Specifies whether the `Button` should be active and clickable.
 
 {:id="Button.FontBold" .boolean} *FontBold*
-: If set, Button text is displayed in bold.
+: Specifies whether the text of the `Button` should be bold.
+ Some fonts do not support bold.
 
 {:id="Button.FontItalic" .boolean} *FontItalic*
-: If set, Button text is displayed in italics.
+: Specifies whether the text of the `Button` should be italic.
+ Some fonts do not support italic.
 
 {:id="Button.FontSize" .number} *FontSize*
-: Point size for Button text.
+: Specifies the text font size of the `Button`, measured in sp(scale-independent pixels).
 
 {:id="Button.FontTypeface" .number .do} *FontTypeface*
-: Font family for Button text.
+: Specifies the text font face of the `Button` as default, serif, sans
+ serif, or monospace.
 
 {:id="Button.Height" .number .bo} *Height*
-: Specifies the vertical height of the Button, measured in pixels.
+: Specifies the `Button`'s vertical height, measured in pixels.
 
 {:id="Button.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Button as a percentage of the height of the Screen.
+: Specifies the `Button`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Button.Image" .text} *Image*
-: Image to display on button.
+: Specifies the path of the `Button`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#Button.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="Button.Shape" .number .do} *Shape*
-: Returns the style of the button.
+: Specifies the shape of the `Button`. The valid values for this property are `0` (default),
+ `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+ [`Image`](#Button.Image) is used.
 
 {:id="Button.ShowFeedback" .boolean} *ShowFeedback*
-: Specifies if a visual feedback should be shown  for a Button that as an image as background.
+: Specifies if a visual feedback should be shown when a `Button` with an assigned
+ [`Image`](#Button.Image) is pressed.
 
 {:id="Button.Text" .text} *Text*
-: Text to display on Button.
+: Specifies the text displayed by the `Button`.
 
 {:id="Button.TextAlignment" .number .do} *TextAlignment*
-: Left, center, or right.
+: Specifies the alignment of the `Button`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="Button.TextColor" .color} *TextColor*
-: Color for button text.
+: Specifies the text color of the `Button` as an alpha-red-green-blue
+ integer.
 
 {:id="Button.Visible" .boolean} *Visible*
-: Returns true iff the Button is visible.
+: Specifies whether the `Button` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Button` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Button.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Button, measured in pixels.
+: Specifies the horizontal width of the `Button`, measured in pixels.
 
 {:id="Button.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Button as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Button` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#Button-Events}
 
 {:.events}
 
 {:id="Button.Click"} Click()
-: User tapped and released the button.
+: Indicates that the user tapped and released the `Button`.
 
 {:id="Button.GotFocus"} GotFocus()
-: Indicates the cursor moved over the Button so it is now possible to click it.
+: Indicates the cursor moved over the `Button` so it is now possible
+ to click it.
 
 {:id="Button.LongClick"} LongClick()
-: User held the button down.
+: Indicates that the user held the `Button` down.
 
 {:id="Button.LostFocus"} LostFocus()
-: Indicates the cursor moved away from the Button so it is now no longer possible to click it.
+: Indicates the cursor moved away from the `Button` so it is now no
+ longer possible to click it.
 
 {:id="Button.TouchDown"} TouchDown()
-: Indicates that the Button was pressed down.
+: Indicates that the `Button` was pressed down.
 
 {:id="Button.TouchUp"} TouchUp()
-: Indicates that the Button has been released.
+: Indicates that the `Button` has been released.
+
+### Methods  {#Button-Methods}
+
+{:.methods}
+None
+
 
 ## CheckBox  {#CheckBox}
+
+![Example of a CheckBox](images/checkbox.png)
+
+ `CheckBox` components can detect user taps and can change their boolean state in response.
+
+ A `CheckBox` component raises an event when the user taps it. There are many properties affecting
+ its appearance that can be set in the Designer or Blocks Editor.
+
+
 
 ### Properties  {#CheckBox-Properties}
 
 {:.properties}
 
 {:id="CheckBox.BackgroundColor" .color} *BackgroundColor*
-: Returns the background color of the CheckBox as an alpha-red-green-blue
+: Specifies the background color of the `CheckBox` as an alpha-red-green-blue
  integer.
 
 {:id="CheckBox.Checked" .boolean} *Checked*
-: Returns true if the checkbox is checked.
+: Set to `true`{:.logic.block} if the box is checked, `false`{:.logic.block} otherwise.
 
 {:id="CheckBox.Enabled" .boolean} *Enabled*
-: Returns true if the CheckBox is active and clickable.
+: Specifies whether the `CheckBox` should be active and clickable.
 
 {:id="CheckBox.FontBold" .boolean .do} *FontBold*
-: Returns true if the text of the CheckBox should be bold.
- If bold has been requested, this property will return true, even if the
- font does not support bold.
+: Specifies whether the text of the `CheckBox` should be bold.
+ Some fonts do not support bold.
 
 {:id="CheckBox.FontItalic" .boolean .do} *FontItalic*
-: Returns true if the text of the CheckBox should be italic.
- If italic has been requested, this property will return true, even if the
- font does not support italic.
+: Specifies whether the text of the `CheckBox` should be italic.
+ Some fonts do not support italic.
 
 {:id="CheckBox.FontSize" .number} *FontSize*
-: Returns the text font size of the CheckBox, measured in sp(scale-independent pixels).
+: Specifies the text font size of the `CheckBox`, measured in sp(scale-independent pixels).
 
 {:id="CheckBox.FontTypeface" .number .do} *FontTypeface*
-: Returns the text font face of the CheckBox as default, serif, sans
+: Specifies the text font face of the `CheckBox` as default, serif, sans
  serif, or monospace.
 
 {:id="CheckBox.Height" .number .bo} *Height*
-: Specifies the vertical height of the CheckBox, measured in pixels.
+: Specifies the `CheckBox`'s vertical height, measured in pixels.
 
 {:id="CheckBox.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the CheckBox as a percentage of the height of the Screen.
+: Specifies the `CheckBox`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="CheckBox.Text" .text} *Text*
-: Returns the text displayed by the CheckBox.
+: Specifies the text displayed by the `CheckBox`.
 
 {:id="CheckBox.TextColor" .color} *TextColor*
-: Returns the text color of the CheckBox as an alpha-red-green-blue
+: Specifies the text color of the `CheckBox` as an alpha-red-green-blue
  integer.
 
 {:id="CheckBox.Visible" .boolean} *Visible*
-: Returns true iff the CheckBox is visible.
+: Specifies whether the `CheckBox` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `CheckBox` is showing and `false`{:.logic.block} if hidden.
 
 {:id="CheckBox.Width" .number .bo} *Width*
-: Specifies the horizontal width of the CheckBox, measured in pixels.
+: Specifies the horizontal width of the `CheckBox`, measured in pixels.
 
 {:id="CheckBox.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the CheckBox as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `CheckBox` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#CheckBox-Events}
 
 {:.events}
 
 {:id="CheckBox.Changed"} Changed()
-: Default Changed event handler.
+: User tapped and released the `CheckBox`.
 
 {:id="CheckBox.GotFocus"} GotFocus()
-: Default GotFocus event handler.
+: `CheckBox` became the focused component.
 
 {:id="CheckBox.LostFocus"} LostFocus()
-: Default LostFocus event handler.
+: `CheckBox` stopped being the focused component.
+
+### Methods  {#CheckBox-Methods}
+
+{:.methods}
+None
+
 
 ## DatePicker  {#DatePicker}
+
+A button that, when clicked on, launches a popup dialog to allow the user to select a date on
+ the Gregorian Calendar.
+
+ Note: Date and time are manipulated using methods in the [Clock](sensors.html#Clock) component.
+
+
 
 ### Properties  {#DatePicker-Properties}
 
 {:.properties}
 
 {:id="DatePicker.BackgroundColor" .color} *BackgroundColor*
-: Returns the button's background color
+: Specifies the `DatePicker`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#DatePicker.Image) has been set, the color
+ change will not be visible until the [`Image`](#DatePicker.Image) is removed.
 
 {:id="DatePicker.Day" .number .ro .bo} *Day*
-: the Day of the month that was last picked using the DatePicker.
+: Returns the Day of the month that was last picked using the DatePicker.
 
 {:id="DatePicker.Enabled" .boolean} *Enabled*
-: If set, user can tap DatePicker to cause action.
+: Specifies whether the `DatePicker` should be active and clickable.
 
 {:id="DatePicker.FontBold" .boolean} *FontBold*
-: If set, DatePicker text is displayed in bold.
+: Specifies whether the text of the `DatePicker` should be bold.
+ Some fonts do not support bold.
 
 {:id="DatePicker.FontItalic" .boolean} *FontItalic*
-: If set, DatePicker text is displayed in italics.
+: Specifies whether the text of the `DatePicker` should be italic.
+ Some fonts do not support italic.
 
 {:id="DatePicker.FontSize" .number} *FontSize*
-: Point size for DatePicker text.
+: Specifies the text font size of the `DatePicker`, measured in sp(scale-independent pixels).
 
 {:id="DatePicker.FontTypeface" .number .do} *FontTypeface*
-: Font family for DatePicker text.
+: Specifies the text font face of the `DatePicker` as default, serif, sans
+ serif, or monospace.
 
 {:id="DatePicker.Height" .number .bo} *Height*
-: Specifies the vertical height of the DatePicker, measured in pixels.
+: Specifies the `DatePicker`'s vertical height, measured in pixels.
 
 {:id="DatePicker.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the DatePicker as a percentage of the height of the Screen.
+: Specifies the `DatePicker`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="DatePicker.Image" .text} *Image*
-: Image to display on button.
+: Specifies the path of the `DatePicker`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#DatePicker.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="DatePicker.Instant" .InstantInTime .ro .bo} *Instant*
-: the instant of the date that was last picked using the DatePicker.
+: Returns instant of the date that was last picked using the DatePicker.
 
 {:id="DatePicker.Month" .number .ro .bo} *Month*
-: the number of the Month that was last picked using the DatePicker. Note that months start in 1 = January, 12 = December.
+: Returns the number of the Month that was last picked using the DatePicker.
 
 {:id="DatePicker.MonthInText" .text .ro .bo} *MonthInText*
-: Returns the name of the Month that was last picked using the DatePicker, in textual format.
+: Returns the name of the Month that was last picked using the DatePicker.
 
 {:id="DatePicker.Shape" .number .do} *Shape*
-: Returns the style of the button.
+: Specifies the shape of the `DatePicker`. The valid values for this property are `0` (default),
+ `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+ [`Image`](#DatePicker.Image) is used.
 
 {:id="DatePicker.ShowFeedback" .boolean} *ShowFeedback*
-: Specifies if a visual feedback should be shown  for a DatePicker that as an image as background.
+: Specifies if a visual feedback should be shown when a `DatePicker` with an assigned
+ [`Image`](#DatePicker.Image) is pressed.
 
 {:id="DatePicker.Text" .text} *Text*
-: Text to display on DatePicker.
+: Specifies the text displayed by the `DatePicker`.
 
 {:id="DatePicker.TextAlignment" .number .do} *TextAlignment*
-: Left, center, or right.
+: Specifies the alignment of the `DatePicker`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="DatePicker.TextColor" .color} *TextColor*
-: Color for button text.
+: Specifies the text color of the `DatePicker` as an alpha-red-green-blue
+ integer.
 
 {:id="DatePicker.Visible" .boolean} *Visible*
-: Returns true iff the DatePicker is visible.
+: Specifies whether the `DatePicker` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `DatePicker` is showing and `false`{:.logic.block} if hidden.
 
 {:id="DatePicker.Width" .number .bo} *Width*
-: Specifies the horizontal width of the DatePicker, measured in pixels.
+: Specifies the horizontal width of the `DatePicker`, measured in pixels.
 
 {:id="DatePicker.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the DatePicker as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `DatePicker` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 {:id="DatePicker.Year" .number .ro .bo} *Year*
-: the Year that was last picked using the DatePicker
+: Returns the Year that was last picked using the DatePicker.
 
 ### Events  {#DatePicker-Events}
 
 {:.events}
 
 {:id="DatePicker.AfterDateSet"} AfterDateSet()
-: Event that runs after the user chooses a Date in the dialog
+: Event that runs after the user chooses a Date in the dialog.
 
 {:id="DatePicker.GotFocus"} GotFocus()
-: Indicates the cursor moved over the DatePicker so it is now possible to click it.
+: Indicates the cursor moved over the `DatePicker` so it is now possible
+ to click it.
 
 {:id="DatePicker.LostFocus"} LostFocus()
-: Indicates the cursor moved away from the DatePicker so it is now no longer possible to click it.
+: Indicates the cursor moved away from the `DatePicker` so it is now no
+ longer possible to click it.
 
 {:id="DatePicker.TouchDown"} TouchDown()
-: Indicates that the DatePicker was pressed down.
+: Indicates that the `DatePicker` was pressed down.
 
 {:id="DatePicker.TouchUp"} TouchUp()
-: Indicates that the DatePicker has been released.
+: Indicates that the `DatePicker` has been released.
 
 ### Methods  {#DatePicker-Methods}
 
 {:.methods}
 
 {:id="DatePicker.LaunchPicker" class="method"} <i/> LaunchPicker()
-: Launches the DatePicker popup.
+: Launches the DatePicker dialog. The [`AfterDateSet`](#DatePicker.AfterDateSet) event will be run after the user
+ confirms their selection.
 
 {:id="DatePicker.SetDateToDisplay" class="method"} <i/> SetDateToDisplay(*year*{:.number},*month*{:.number},*day*{:.number})
 : Allows the user to set the date to be displayed when the date picker opens.
@@ -279,24 +351,34 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 
 ## Image  {#Image}
 
+Component for displaying images and basic animations.
+
+ The picture to display, and other aspects of the Image's appearance, can be specified in the
+ Designer or in the Blocks Editor.
+
+
+
 ### Properties  {#Image-Properties}
 
 {:.properties}
 
 {:id="Image.Animation" .text .wo .bo} *Animation*
-: This is a limited form of animation that can attach a small number of motion types to images.  The allowable motions are ScrollRightSlow, ScrollRight, ScrollRightFast, ScrollLeftSlow, ScrollLeft, ScrollLeftFast, and Stop
+: This is a limited form of animation that can attach a small number of motion types to images.
+ The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
+ `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
 {:id="Image.Height" .number .bo} *Height*
-: Specifies the vertical height of the Image, measured in pixels.
+: Specifies the `Image`'s vertical height, measured in pixels.
 
 {:id="Image.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Image as a percentage of the height of the Screen.
+: Specifies the `Image`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Image.Picture" .text} *Picture*
-: Returns the path of the image's picture.
+: Specifies the path of the `Image`'s `Picture`.
 
 {:id="Image.RotationAngle" .number} *RotationAngle*
-: Specifies the angle at which the image picture appears rotated.
+: The angle at which the image picture appears rotated. This rotation does not appear on the designer screen, only on the device.
 
 {:id="Image.ScalePictureToFit" .boolean .wo} *ScalePictureToFit*
 : Specifies whether the image should be resized to match the size of the ImageView.
@@ -305,39 +387,60 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : This property determines how the picture scales according to the Height or Width of the Image. Scale proportionally (0) preserves the picture aspect ratio. Scale to fit (1) matches the Image area, even if the aspect ratio changes.
 
 {:id="Image.Visible" .boolean} *Visible*
-: Returns true iff the Image is visible.
+: Specifies whether the `Image` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Image` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Image.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Image, measured in pixels.
+: Specifies the horizontal width of the `Image`, measured in pixels.
 
 {:id="Image.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Image as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Image` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#Image-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Image-Methods}
+
+{:.methods}
+None
+
 
 ## Label  {#Label}
+
+Labels are components used to show text.
+
+ ![Example of a label](images/label.png)
+
+ A label displays text which is specified by the `Text` property. Other properties, all of which
+ can be set in the Designer or Blocks Editor, control the appearance and placement of the text.
+
+
 
 ### Properties  {#Label-Properties}
 
 {:.properties}
 
 {:id="Label.BackgroundColor" .color} *BackgroundColor*
-: Returns the label's background color as an alpha-red-green-blue
+: Specifies the label's background color as an alpha-red-green-blue
  integer.
 
 {:id="Label.FontBold" .boolean .do} *FontBold*
-: Returns true if the label's text should be bold.
- If bold has been requested, this property will return true, even if the
- font does not support bold.
+: Specifies whether the label's text should be bold.
+ Some fonts do not support bold.
 
 {:id="Label.FontItalic" .boolean .do} *FontItalic*
-: Returns true if the label's text should be italic.
- If italic has been requested, this property will return true, even if the
- font does not support italic.
+: Specifies whether the label's text should be italic.
+ Some fonts do not support italic.
 
 {:id="Label.FontSize" .number} *FontSize*
-: Returns the label's text's font size, measured in sp(scale-independent pixels).
+: Specifies the label's text's font size, measured in sp(scale-independent pixels).
 
 {:id="Label.FontTypeface" .number .do} *FontTypeface*
-: Returns the label's text's font face as default, serif, sans
+: Specifies the label's text's font face as default, serif, sans
  serif, or monospace.
 
 {:id="Label.HTMLContent" .text .ro .bo} *HTMLContent*
@@ -345,207 +448,286 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
  HTMLFormat property is true.
 
 {:id="Label.HTMLFormat" .boolean .do} *HTMLFormat*
-: If true, then this label will show html text else it will show plain text. Note: Not all HTML is supported.
+: Specifies the label's text's format
 
 {:id="Label.HasMargins" .boolean} *HasMargins*
-: Reports whether or not the label appears with margins.  All four margins (left, right, top, bottom) are the same.  This property has no effect in the designer, where labels are always shown with margins.
+: Specifies whether the label should have margins.
+ This margin value is not well coordinated with the
+ designer, where the margins are defined for the arrangement, not just for individual
+ labels.
 
 {:id="Label.Height" .number .bo} *Height*
-: Specifies the vertical height of the Label, measured in pixels.
+: Specifies the `Label`'s vertical height, measured in pixels.
 
 {:id="Label.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Label as a percentage of the height of the Screen.
+: Specifies the `Label`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Label.Text" .text} *Text*
-: Returns the text displayed by the label.
+: Specifies the text displayed by the label.
 
 {:id="Label.TextAlignment" .number .do} *TextAlignment*
-: Returns the alignment of the label's text: center, normal
+: Specifies the alignment of the label's text: center, normal
  (e.g., left-justified if text is written left to right), or
  opposite (e.g., right-justified if text is written left to right).
 
 {:id="Label.TextColor" .color} *TextColor*
-: Returns the label's text color as an alpha-red-green-blue
+: Specifies the label's text color as an alpha-red-green-blue
  integer.
 
 {:id="Label.Visible" .boolean} *Visible*
-: Returns true iff the Label is visible.
+: Specifies whether the `Label` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Label` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Label.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Label, measured in pixels.
+: Specifies the horizontal width of the `Label`, measured in pixels.
 
 {:id="Label.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Label as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Label` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#Label-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Label-Methods}
+
+{:.methods}
+None
+
 
 ## ListPicker  {#ListPicker}
+
+A button that, when clicked on, displays a list of texts for the user to choose among. The texts
+ can be specified through the Designer or Blocks Editor by setting the
+ [`ElementsFromString`](#ListPicker.ElementsFromString)  property to their string-separated concatenation
+ (for example, `choice 1, choice 2, choice 3`) or by setting the [`Elements`](#ListPicker.Elements)
+ property to a List in the Blocks editor.
+
+ Setting property [`ShowFilterBar`](#ListPicker.ShowFilterBar) to `true`{:.logic.block}, will make the list
+ searchable. Other properties affect the appearance of the button ([`TextAlignment`](#ListPicker.TextAlignment),
+ [`BackgroundColor`](#ListPicker.BackgroundColor), etc.) and whether it can be clicked on
+ ([`Enabled`](#ListPicker.Enabled)).
+
+
 
 ### Properties  {#ListPicker-Properties}
 
 {:.properties}
 
 {:id="ListPicker.BackgroundColor" .color} *BackgroundColor*
-: Returns the button's background color
+: Specifies the `ListPicker`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#ListPicker.Image) has been set, the color
+ change will not be visible until the [`Image`](#ListPicker.Image) is removed.
 
 {:id="ListPicker.Elements" .list .bo} *Elements*
-: Elements property getter method
+: Specifies the list of choices to display.
 
 {:id="ListPicker.ElementsFromString" .text .wo} *ElementsFromString*
-: ElementsFromString property setter method
+: Set the list of choices from a string of comma-separated values.
 
 {:id="ListPicker.Enabled" .boolean} *Enabled*
-: If set, user can tap ListPicker to cause action.
+: Specifies whether the `ListPicker` should be active and clickable.
 
 {:id="ListPicker.FontBold" .boolean} *FontBold*
-: If set, ListPicker text is displayed in bold.
+: Specifies whether the text of the `ListPicker` should be bold.
+ Some fonts do not support bold.
 
 {:id="ListPicker.FontItalic" .boolean} *FontItalic*
-: If set, ListPicker text is displayed in italics.
+: Specifies whether the text of the `ListPicker` should be italic.
+ Some fonts do not support italic.
 
 {:id="ListPicker.FontSize" .number} *FontSize*
-: Point size for ListPicker text.
+: Specifies the text font size of the `ListPicker`, measured in sp(scale-independent pixels).
 
 {:id="ListPicker.FontTypeface" .number .do} *FontTypeface*
-: Font family for ListPicker text.
+: Specifies the text font face of the `ListPicker` as default, serif, sans
+ serif, or monospace.
 
 {:id="ListPicker.Height" .number .bo} *Height*
-: Specifies the vertical height of the ListPicker, measured in pixels.
+: Specifies the `ListPicker`'s vertical height, measured in pixels.
 
 {:id="ListPicker.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the ListPicker as a percentage of the height of the Screen.
+: Specifies the `ListPicker`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="ListPicker.Image" .text} *Image*
-: Image to display on button.
+: Specifies the path of the `ListPicker`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#ListPicker.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="ListPicker.ItemBackgroundColor" .color} *ItemBackgroundColor*
-: The background color of the ListPicker items.
+: The background color of the `ListPicker` items.
 
 {:id="ListPicker.ItemTextColor" .color} *ItemTextColor*
 : The text color of the ListPicker items.
 
 {:id="ListPicker.Selection" .text} *Selection*
-: The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.
+: The selected item. When directly changed by the programmer, the [`SelectionIndex`](#ListPicker.SelectionIndex)
+ property is also changed to the first item in the [`ListPicker`](#ListPicker) with the given value.
+ If the value is not in [`Elements`](#ListPicker.Elements), [`SelectionIndex`](#ListPicker.SelectionIndex) will be set to 0.
 
 {:id="ListPicker.SelectionIndex" .number .bo} *SelectionIndex*
-: The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.
+: Selection index property setter method.
 
 {:id="ListPicker.Shape" .number .do} *Shape*
-: Returns the style of the button.
+: Specifies the shape of the `ListPicker`. The valid values for this property are `0` (default),
+ `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+ [`Image`](#ListPicker.Image) is used.
 
 {:id="ListPicker.ShowFeedback" .boolean} *ShowFeedback*
-: Specifies if a visual feedback should be shown  for a ListPicker that as an image as background.
+: Specifies if a visual feedback should be shown when a `ListPicker` with an assigned
+ [`Image`](#ListPicker.Image) is pressed.
 
 {:id="ListPicker.ShowFilterBar" .boolean} *ShowFilterBar*
-: Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not
+: If `true`{:.logic.block}, the ListPicker will show a search filter bar.
 
 {:id="ListPicker.Text" .text} *Text*
-: Text to display on ListPicker.
+: Specifies the text displayed by the `ListPicker`.
 
 {:id="ListPicker.TextAlignment" .number .do} *TextAlignment*
-: Left, center, or right.
+: Specifies the alignment of the `ListPicker`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="ListPicker.TextColor" .color} *TextColor*
-: Color for button text.
+: Specifies the text color of the `ListPicker` as an alpha-red-green-blue
+ integer.
 
 {:id="ListPicker.Title" .text} *Title*
 : Optional title displayed at the top of the list of choices.
 
 {:id="ListPicker.Visible" .boolean} *Visible*
-: Returns true iff the ListPicker is visible.
+: Specifies whether the `ListPicker` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `ListPicker` is showing and `false`{:.logic.block} if hidden.
 
 {:id="ListPicker.Width" .number .bo} *Width*
-: Specifies the horizontal width of the ListPicker, measured in pixels.
+: Specifies the horizontal width of the `ListPicker`, measured in pixels.
 
 {:id="ListPicker.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the ListPicker as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `ListPicker` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#ListPicker-Events}
 
 {:.events}
 
 {:id="ListPicker.AfterPicking"} AfterPicking()
-: Event to be raised after the picker activity returns its
+: Event to be raised after the `ListPicker` activity returns its
  result and the properties have been filled in.
 
 {:id="ListPicker.BeforePicking"} BeforePicking()
-: Event to raise when the ListPicker is clicked or the list is shown
- using the Open block.  This event occurs before the list of items is displayed, and 
- can be used to prepare the list before it is shown.
+: Event to raise when the `ListPicker` is clicked or the picker is shown
+ using the [`Open`](#ListPicker.Open) method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.
 
 {:id="ListPicker.GotFocus"} GotFocus()
-: Indicates the cursor moved over the ListPicker so it is now possible to click it.
+: Indicates the cursor moved over the `ListPicker` so it is now possible
+ to click it.
 
 {:id="ListPicker.LostFocus"} LostFocus()
-: Indicates the cursor moved away from the ListPicker so it is now no longer possible to click it.
+: Indicates the cursor moved away from the `ListPicker` so it is now no
+ longer possible to click it.
 
 {:id="ListPicker.TouchDown"} TouchDown()
-: Indicates that the ListPicker was pressed down.
+: Indicates that the `ListPicker` was pressed down.
 
 {:id="ListPicker.TouchUp"} TouchUp()
-: Indicates that the ListPicker has been released.
+: Indicates that the `ListPicker` has been released.
 
 ### Methods  {#ListPicker-Methods}
 
 {:.methods}
 
 {:id="ListPicker.Open" class="method"} <i/> Open()
-: Opens the picker, as though the user clicked on it.
+: Opens the `ListPicker`, as though the user clicked on it.
 
 ## ListView  {#ListView}
+
+This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
+ display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
+ [`Elements`](#ListView.Elements) block in the blocks editor.
+
+   Warning: This component will not work correctly on Screens that are scrollable if its
+ [`Height`](#ListView.Height) is set to Fill Parent.
+
+
 
 ### Properties  {#ListView-Properties}
 
 {:.properties}
 
 {:id="ListView.BackgroundColor" .color} *BackgroundColor*
-: The color of the listview background.
+: The color of the `ListView` background.
 
 {:id="ListView.Elements" .list .bo} *Elements*
-: List of text elements to show in the ListView.  This willsignal an error if the elements are not text strings.
+: Specifies the list of choices to display.
 
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
-: The TextView elements specified as a string with the items separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.
+: Set the list of choices from a string of comma-separated values.
 
 {:id="ListView.Height" .number .bo} *Height*
-: Determines the height of the list on the view.
+: Specifies the `ListView`'s vertical height, measured in pixels.
 
 {:id="ListView.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the ListView as a percentage of the height of the Screen.
+: Specifies the `ListView`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="ListView.Selection" .text} *Selection*
-: Returns the text last selected in the ListView.
+: Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
-: The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListView, SelectionIndex will be set to 0, and Selection will be set to the empty text.
+: The index of the currently selected item, starting at `1`. If no item is selected, the value
+ will be `0`. If an attempt is made to set this to a number less than `1` or greater than the
+ number of items in the `ListView`, `SelectionIndex` will be set to `0`, and
+ [`Selection`](#ListView.Selection) will be set to the empty text.
 
 {:id="ListView.ShowFilterBar" .boolean} *ShowFilterBar*
-: Sets visibility of ShowFilterBar. True will show the bar, False will hide it.
+: Sets visibility of the filter bar. `true`{:.logic.block} will show the bar,
+ `false`{:.logic.block} will hide it.
 
 {:id="ListView.TextColor" .color} *TextColor*
-: The text color of the listview items.
+: The text color of the `ListView` items.
 
 {:id="ListView.TextSize" .number} *TextSize*
-: The text size of the listview items.
+: Specifies the `ListView` item's text font size
 
 {:id="ListView.Visible" .boolean} *Visible*
-: Returns true iff the ListView is visible.
+: Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `ListView` is showing and `false`{:.logic.block} if hidden.
 
 {:id="ListView.Width" .number .bo} *Width*
-: Determines the width of the list on the view.
+: Specifies the horizontal width of the `ListView`, measured in pixels.
 
 {:id="ListView.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the ListView as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `ListView` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#ListView-Events}
 
 {:.events}
 
 {:id="ListView.AfterPicking"} AfterPicking()
-: Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.
+: Simple event to be raised after the an element has been chosen in the list.
+ The selected element is available in the [`Selection`](#ListView.Selection) property.
+
+### Methods  {#ListView-Methods}
+
+{:.methods}
+None
+
 
 ## Notifier  {#Notifier}
+
+The Notifier component displays alert messages and creates Android log entries through
+ an assortment of methods.
+
+
 
 ### Properties  {#Notifier-Properties}
 
@@ -565,115 +747,167 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.events}
 
 {:id="Notifier.AfterChoosing"} AfterChoosing(*choice*{:.text})
-: Event after the user has made a selection for ShowChooseDialog.
+: Event after the user has made a selection for
+ [`ShowChooseDialog`](#Notifier.ShowChooseDialog).
 
 {:id="Notifier.AfterTextInput"} AfterTextInput(*response*{:.text})
-: Event raised after the user has responded to ShowTextDialog.
+: Event raised after the user has responded to [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
 {:id="Notifier.ChoosingCanceled"} ChoosingCanceled()
-: Event raised when the user canceled ShowChooseDialog.
+: Event raised when the user cancels choosing an option.
+ [`ShowChooseDialog`](#Notifier.ShowChooseDialog).
 
 {:id="Notifier.TextInputCanceled"} TextInputCanceled()
-: Event raised when the user canceled ShowTextDialog.
+: Event raised when the user cancels
+ [`ShowChooseDialog`](#Notifier.ShowChooseDialog),
+ [`ShowPasswordDialog`](#Notifier.ShowPasswordDialog), or
+ [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
 ### Methods  {#Notifier-Methods}
 
 {:.methods}
 
 {:id="Notifier.DismissProgressDialog" class="method"} <i/> DismissProgressDialog()
-: Dismiss a previously displayed ProgressDialog box
+: Dismisses the alert created by the ShowProgressDialog block
 
 {:id="Notifier.LogError" class="method"} <i/> LogError(*message*{:.text})
-: Writes an error message to the Android system log. See the Google Android documentation for how to access the log.
+: Writes an error message to the Android system log. See the Google Android documentation for
+ how to access the log.
 
 {:id="Notifier.LogInfo" class="method"} <i/> LogInfo(*message*{:.text})
 : Writes an information message to the Android log.
 
 {:id="Notifier.LogWarning" class="method"} <i/> LogWarning(*message*{:.text})
-: Writes a warning message to the Android log. See the Google Android documentation for how to access the log.
+: Writes a warning message to the Android log. See the Google Android documentation for how to
+ access the log.
 
 {:id="Notifier.ShowAlert" class="method"} <i/> ShowAlert(*notice*{:.text})
-: Display a temporary notification
+: Display a temporary notification.
 
 {:id="Notifier.ShowChooseDialog" class="method"} <i/> ShowChooseDialog(*message*{:.text},*title*{:.text},*button1Text*{:.text},*button2Text*{:.text},*cancelable*{:.boolean})
-: Shows a dialog box with two buttons, from which the user can choose.  If cancelable is true there will be an additional CANCEL button. Pressing a button will raise the AfterChoosing event.  The "choice" parameter to AfterChoosing will be the text on the button that was pressed, or "Cancel" if the  CANCEL button was pressed.
+: Shows a dialog box with two buttons, from which the user can choose. If `cancelable` is
+ `true`{:.logic.block} there will be an additional CANCEL button. Pressing a button will raise
+ the [`AfterChoosing`](#Notifier.AfterChoosing) event. The "choice" parameter to
+ [`AfterChoosing`](#Notifier.AfterChoosing) will be the text on the button that was pressed, or "Cancel" if
+ the CANCEL button was pressed. If canceled, the [`TextInputCanceled`](#Notifier.TextInputCanceled) event will also
+ run.
 
 {:id="Notifier.ShowMessageDialog" class="method"} <i/> ShowMessageDialog(*message*{:.text},*title*{:.text},*buttonText*{:.text})
 : Display an alert dialog with a single button that dismisses the alert.
 
 {:id="Notifier.ShowPasswordDialog" class="method"} <i/> ShowPasswordDialog(*message*{:.text},*title*{:.text},*cancelable*{:.boolean})
-: Shows a dialog box where the user can enter password (input is masked), after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering password will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the entered password, or "Cancel" if CANCEL button was pressed.
+: Shows a dialog box where the user can enter password (input is masked), after which the
+ [`AfterTextInput`](#Notifier.AfterTextInput) event will be raised. If `cancelable` is `true`{:.logic.block}
+ there will be an additional CANCEL button. The [`AfterTextInput`](#Notifier.AfterTextInput) and
+ [`TextInputCanceled`](#Notifier.TextInputCanceled) events behave the same way as described in
+ [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
 {:id="Notifier.ShowProgressDialog" class="method"} <i/> ShowProgressDialog(*message*{:.text},*title*{:.text})
-: Shows a dialog box with an optional title and message (use empty strings if they are not wanted). This dialog box contains a spinning artifact to indicate that the program is working. It cannot be canceled by the user but must be dismissed by the App Inventor Program by using the DismissProgressDialog block.
+: Shows a dialog box with an optional title and message (use empty strings if they are not
+ wanted). This dialog box contains a spinning artifact to indicate that the program is working.
+ It cannot be canceled by the user but must be dismissed by the App Inventor Program by using
+ the [`DismissProgressDialog`](#Notifier.DismissProgressDialog) method.
 
 {:id="Notifier.ShowTextDialog" class="method"} <i/> ShowTextDialog(*message*{:.text},*title*{:.text},*cancelable*{:.boolean})
-: Shows a dialog box where the user can enter text, after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering text will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the text that was entered, or "Cancel" if the CANCEL button was pressed.
+: Shows a dialog box where the user can enter text, after which the
+ [`AfterTextInput`](#Notifier.AfterTextInput)  event will be raised. If `cancelable` is `true`{:.logic.block}
+ there will be an additional CANCEL button. Entering text will raise the
+ [`AfterTextInput`](#Notifier.AfterTextInput) event. The "response" parameter to
+ [`AfterTextInput`](#Notifier.AfterTextInput)  will be the text that was entered, or "Cancel" if the CANCEL
+ button was pressed. If canceled, the [`TextInputCanceled`](#Notifier.TextInputCanceled) event will also run.
 
 ## PasswordTextBox  {#PasswordTextBox}
+
+Users enter passwords in a password text box component, which hides the text that has been typed in it.
+
+ ![Example of a PasswordTextBox](images/passwordtextbox.png)
+
+ A password text box is the same as the ordinary [`TextBox`](#TextBox) component, except that it does
+ not display the characters typed by the user.
+
+ You can get or set the value of the text in the box with the [`Text`](#PasswordTextBox.Text) property. If
+ [`Text`](#PasswordTextBox.Text) is blank, you can use the [`Hint`](#PasswordTextBox.Hint) property to provide the user
+ with a suggestion of what to type. The [`Hint`](#PasswordTextBox.Hint) appears as faint text in the box.
+
+ Password text box components are usually used with a [`Button`](#Button) component. The user taps the
+ `Button` after entering text.
+
+
 
 ### Properties  {#PasswordTextBox-Properties}
 
 {:.properties}
 
 {:id="PasswordTextBox.BackgroundColor" .color} *BackgroundColor*
-: The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is 'default' (shaded 3-D look).
+: The background color of the `PasswordTextBox``. You can choose a color by name in the Designer or in
+ the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
 {:id="PasswordTextBox.Enabled" .boolean} *Enabled*
-: Whether the user can enter text into the PasswordTextBox.  By default, this is true.
+: If set, user can enter text into the `PasswordTextBox`.
 
 {:id="PasswordTextBox.FontBold" .boolean .do} *FontBold*
-: Whether the font for the text should be bold.  By default, it is not.
+: Specifies whether the text of the `PasswordTextBox` should be bold.
+ Some fonts do not support bold.
 
 {:id="PasswordTextBox.FontItalic" .boolean .do} *FontItalic*
-: Whether the text should appear in italics.  By default, it does not.
+: Specifies whether the text of the `PasswordTextBox` should be italic.
+ Some fonts do not support italic.
 
 {:id="PasswordTextBox.FontSize" .number} *FontSize*
-: The font size for the text.  By default, it is 14.0 points.
+: Specifies the text font size of the `PasswordTextBox`, measured in sp(scale-independent pixels).
 
 {:id="PasswordTextBox.FontTypeface" .number .do} *FontTypeface*
-: The font for the text.  The value can be changed in the Designer.
+: The text font face of the `PasswordTextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
+ serif), or `3` (monospace).
 
 {:id="PasswordTextBox.Height" .number .bo} *Height*
-: Specifies the vertical height of the PasswordTextBox, measured in pixels.
+: Specifies the `PasswordTextBox`'s vertical height, measured in pixels.
 
 {:id="PasswordTextBox.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the PasswordTextBox as a percentage of the height of the Screen.
+: Specifies the `PasswordTextBox`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="PasswordTextBox.Hint" .text} *Hint*
-: Text that should appear faintly in the PasswordTextBox to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.
+: `PasswordTextBox` hint for the user.
 
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
-: Visibility of password.
+: Specifies whether the password is hidden (default) or shown.
 
 {:id="PasswordTextBox.Text" .text} *Text*
-: Returns the textbox contents.
+: The text in the `PasswordTextBox`, which can be set by the programmer in the Designer or Blocks Editor,
+ or it can be entered by the user (unless the [`Enabled`](#PasswordTextBox.Enabled) property is false).
 
 {:id="PasswordTextBox.TextAlignment" .number .do} *TextAlignment*
-: Whether the text should be left justified, centered, or right justified.  By default, text is left justified.
+: Specifies the alignment of the `PasswordTextBox`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="PasswordTextBox.TextColor" .color} *TextColor*
-: The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.
+: Specifies the text color of the `PasswordTextBox` as an alpha-red-green-blue
+ integer.
 
 {:id="PasswordTextBox.Visible" .boolean} *Visible*
-: Returns true iff the PasswordTextBox is visible.
+: Specifies whether the `PasswordTextBox` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `PasswordTextBox` is showing and `false`{:.logic.block} if hidden.
 
 {:id="PasswordTextBox.Width" .number .bo} *Width*
-: Specifies the horizontal width of the PasswordTextBox, measured in pixels.
+: Specifies the horizontal width of the `PasswordTextBox`, measured in pixels.
 
 {:id="PasswordTextBox.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the PasswordTextBox as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `PasswordTextBox` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#PasswordTextBox-Events}
 
 {:.events}
 
 {:id="PasswordTextBox.GotFocus"} GotFocus()
-: Event raised when the PasswordTextBox is selected for input, such as by
+: Event raised when the `PasswordTextBox` is selected for input, such as by
  the user touching it.
 
 {:id="PasswordTextBox.LostFocus"} LostFocus()
-: Event raised when the PasswordTextBox is no longer selected for input, such
+: Event raised when the `PasswordTextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
 ### Methods  {#PasswordTextBox-Methods}
@@ -681,91 +915,144 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.methods}
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
-: Sets the PasswordTextBox active.
+: Request focus to current `PasswordTextBox`.
 
 ## Screen  {#Screen}
+
+Top-level component containing all other components in the program.
+
+
 
 ### Properties  {#Screen-Properties}
 
 {:.properties}
 
 {:id="Screen.AboutScreen" .text} *AboutScreen*
-: Information about the screen.  It appears when "About this Application" is selected from the system menu. Use it to inform people about your app.  In multiple screen apps, each screen has its own AboutScreen info.
+: Information about the screen. It appears when "About this Application" is selected from the
+ system menu. Use it to tell users about your app. In multiple screen apps, each screen has its
+ own `AboutScreen` info.
 
 {:id="Screen.AccentColor" .color .do} *AccentColor*
-: This is the accent color used for highlights and other user interface accents.
+: This is the accent color used for highlights and other user interface accents in newer
+ versions of Android. Components affected by this property include dialogs created by the
+ [`Notifier`](#Notifier), the [`DatePicker`](#DatePicker), and others.
 
 {:id="Screen.AlignHorizontal" .number} *AlignHorizontal*
-: A number that encodes how contents of the screen are aligned  horizontally. The choices are: 1 = left aligned, 2 = horizontally centered,  3 = right aligned.
+: A number that encodes how contents of the screen are aligned horizontally. The choices are:
+ `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
 
 {:id="Screen.AlignVertical" .number} *AlignVertical*
-: A number that encodes how the contents of the arrangement are aligned vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.
+: A number that encodes how the contents of the arrangement are aligned vertically. The choices
+ are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
+ alignment has no effect if the screen is scrollable.
 
 {:id="Screen.AppName" .text .wo .do} *AppName*
-: This is the display name of the installed application in the phone.If the AppName is blank, it will be set to the name of the project when the project is built.
+: This is the display name of the installed application in the phone. If the `AppName` is blank,
+ it will be set to the name of the project when the project is built.
 
 {:id="Screen.BackgroundColor" .color} *BackgroundColor*
-: BackgroundColor property getter method.
+: Specifies the `Screen`'s background color as an alpha-red-green-blue
+ integer.  If an [`BackgroundImage`](#Screen.BackgroundImage) has been set, the color
+ change will not be visible until the [`BackgroundImage`](#Screen.BackgroundImage) is removed.
 
 {:id="Screen.BackgroundImage" .text} *BackgroundImage*
-: The screen background image.
+: Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
+ and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
 
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
-: A JSON string representing the subset for the screen
+: A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
 
 {:id="Screen.CloseScreenAnimation" .text} *CloseScreenAnimation*
-: The animation for closing current screen and returning  to the previous screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none
+: Sets the animation type for the transition of this form closing and returning
+ to a form behind it in the activity stack.
 
 {:id="Screen.Height" .number .ro .bo} *Height*
-: Screen height (y-size).
+: Returns the Screen height in pixels (y-size).
 
 {:id="Screen.Icon" .text .wo .do} *Icon*
-: Specifies the name of the application icon.
+: The image used for your App's display icon should be a square png or jpeg image with dimensions
+ up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
+ The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
-: The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none
+: The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
+ `slidehorizontal`, `slidevertical`, and `none`.
 
 {:id="Screen.PrimaryColor" .color .do} *PrimaryColor*
-: This is the primary color used for Material UI elements, such as the ActionBar.
+: This is the primary color used as part of the Android theme, including coloring the `Screen`'s
+ title bar.
 
 {:id="Screen.PrimaryColorDark" .color .do} *PrimaryColorDark*
-: This is the primary color used for darker elements in Material UI.
+: This is the primary color used when the Theme property is specified to be Dark. It applies to
+ a number of elements, including the `Screen`'s title bar.
 
 {:id="Screen.ScreenOrientation" .text} *ScreenOrientation*
-: The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.
+: Declares the requested screen orientation, specified as a text value. Commonly used values are
+ `landscape`, `portrait`, `sensor`, `user` and `unspecified`. See the Android developer
+ documentation for the complete list of possible
+ [options](https://developer.android.com/reference/android/R.attr.html#screenOrientation).
 
 {:id="Screen.Scrollable" .boolean} *Scrollable*
-: When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.
+: When checked, there will be a vertical scrollbar on the screen, and the height of the
+ application can exceed the physical height of the device. When unchecked, the application
+ height is constrained to the height of the device.
 
 {:id="Screen.ShowListsAsJson" .boolean .do} *ShowListsAsJson*
-: If false, lists will be converted to strings using Lisp notation, i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d). If true, lists will appear as in Json or Python, e.g.  ["a", 1, "b", 2, ["c", "d"]].  This property appears only in Screen 1, and the value for Screen 1 determines the behavior for all screens. The property defaults to "true" meaning that the App Inventor programmer must explicitly set it to "false" if Lisp syntax is desired. In older versions of App Inventor, this setting defaulted to false. Older projects should not have been affected by this default settings update.
+: If `true`{:.logic.block} (the default), lists will be shown as strings in JSON/Python notation
+ for example [1, "a", true]. If `false`{:.logic.block}, lists will be shown in the LISP
+ notation, for example (1 a true).
+
+   **Note:** This property appears only in Screen1 and the value for Screen1 determines the
+ behavior for all screens in the app.
 
 {:id="Screen.ShowStatusBar" .boolean} *ShowStatusBar*
-: The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.
+: The status bar is the topmost bar on the screen. This property reports whether the status bar
+ is visible.
 
 {:id="Screen.Sizing" .text .wo .do} *Sizing*
-: If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. If set to responsive, screen layouts will use the actual resolution of the device.  See the documentation on responsive design in App Inventor for more information. This property appears on Screen1 only and controls the sizing for all screens in the app.
+: If set to responsive (the default), screen layouts will use the actual resolution of the
+ device. See the [documentation on responsive design](../other/responsiveDesign.html) in App
+ Inventor for more information.
+ If set to fixed, screen layouts will be created for a single fixed-size screen and autoscaled.
+
+   **Note:** This property appears on Screen1 only and controls the sizing for all screens in
+ the app.
 
 {:id="Screen.Theme" .text .wo .do} *Theme*
-: Sets the theme used by the application.
+: Selects the theme for the application. Theme can only be set at compile time and the Companion
+ will approximate changes during live development. Possible options are:
+
+   * `Classic`, which is the same as older versions of App Inventor;
+   * `Device Default`, which gives the same theme as the version of Android running on the
+     device and uses PrimaryColor for the Action Bar and has light buttons;
+   * `Black Title Text`, which is the `Device Default` theme but with black title text; and
+   * `Dark`, which is a dark version of the `Device Default` theme using `PrimaryColorDark` and
+     having dark grey components.
 
 {:id="Screen.Title" .text} *Title*
-: The caption for the form, which apears in the title bar
+: Title property setter method: sets a new caption for the form in the
+ form's title bar.
 
 {:id="Screen.TitleVisible" .boolean} *TitleVisible*
-: The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.
+: The title bar is the top gray bar on the screen. This property reports whether the title bar
+ is visible.
 
 {:id="Screen.TutorialURL" .text .wo .do} *TutorialURL*
-: A URL to use to populate the Tutorial Sidebar while editing a project. Used as a teaching aid.
+: A URL which will be opened on the left side panel (which can be toggled once it is open). This
+ is intended for projects that have an in-line tutorial as part of the project. For security
+ reasons, only tutorials hosted on http://appinventor.mit.edu or linked to from our URL
+ shortener (http://appinv.us) may be used here. Other URLs will be silently ignored.
 
 {:id="Screen.VersionCode" .number .wo .do} *VersionCode*
-: An integer value which must be incremented each time a new Android Application Package File (APK) is created for the Google Play Store.
+: An integer value which must be incremented each time a new Android Application Package File
+ (APK) is created for the Google Play Store.
 
 {:id="Screen.VersionName" .text .wo .do} *VersionName*
-: A string which can be changed to allow Google Play Store users to distinguish between different versions of the App.
+: A string which can be changed to allow Google Play Store users to distinguish between
+ different versions of the App.
 
 {:id="Screen.Width" .number .ro .bo} *Width*
-: Screen width (x-size).
+: Returns the Screen width in pixels (x-size).
 
 ### Events  {#Screen-Events}
 
@@ -778,7 +1065,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : Event raised when an error occurs. Only some errors will raise this condition.  For those errors, the system will show a notification by default.  You can use this event handler to prescribe an error behavior different than the default.
 
 {:id="Screen.Initialize"} Initialize()
-: Screen starting
+: The Initialize event is run when the Screen starts and is only run once per screen.
 
 {:id="Screen.OtherScreenClosed"} OtherScreenClosed(*otherScreenName*{:.text},*result*{:.any})
 : Event raised when another screen has closed and control has returned to this screen.
@@ -788,7 +1075,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 
 {:id="Screen.PermissionGranted"} PermissionGranted(*permissionName*{:.text})
 : Event to handle when the app user has granted a needed permission. This event is only run when permission is
- granted in response to the AskForPermission method.
+ granted in response to the [`AskForPermission`](#Screen.AskForPermission) method.
 
 {:id="Screen.ScreenOrientationChanged"} ScreenOrientationChanged()
 : Screen orientation changed
@@ -798,46 +1085,87 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.methods}
 
 {:id="Screen.AskForPermission" class="method"} <i/> AskForPermission(*permissionName*{:.text})
-: Ask the user to grant access to a dangerous permission.
+: Ask the user to grant access to a sensitive permission, such as `ACCESS_FINE_LOCATION`. This
+ block is typically used as part of a [`PermissionDenied`](#Screen.PermissionDenied)
+ event to ask for permission. If the user grants permission, the
+ [`PermissionGranted`](#Screen.PermissionGranted) event will be run. If the user denies permission, the
+ [`PermissionDenied`](#Screen.PermissionDenied) event will be run.
+
+   **Note:** It is a best practice to only ask for permissions at the time they are needed,
+ which App Inventor components will do when necessary. You should not use `AskForPermission`
+ in your [`Initialize`](#Screen.Initialize) event unless access to that permission is critical to the
+ behavior of your app and is needed up front, such as location services for a navigation app.
 
 {:id="Screen.HideKeyboard" class="method"} <i/> HideKeyboard()
-: Hide the onscreen soft keyboard.
+: Hide the soft keyboard
 
 ## Slider  {#Slider}
+
+This class is used to display a `Slider`.
+
+ ![Example Slider icon](images/slider.png)
+
+ A `Slider` is a progress bar that adds a draggable thumb. You can touch the thumb and drag left
+ or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the
+ [`PositionChanged`](#Slider.PositionChanged) event, reporting the position of the `Slider` thumb. The
+ reported position of the thumb can be used to dynamically update another component attribute,
+ such as the [`TextBox`'s `FontSize`](#TextBox.FontSize) of a `TextBox` or the
+ [Radius](animation.html#Ball.Radius) of a `Ball`.
+
+ The `Slider` uses the following default values. However these values can be changed through the
+ Designer or Blocks editor:
+
+  * [`MinValue`](#Slider.MinValue) = 10
+  * [`MaxValue`](#Slider.MaxValue) = 50
+  * [`ThumbPosition`](#Slider.ThumbPosition) = 30
+
+
 
 ### Properties  {#Slider-Properties}
 
 {:.properties}
 
 {:id="Slider.ColorLeft" .color} *ColorLeft*
-: The color of slider to the left of the thumb.
+: Specifies the color of the slider bar to the left of the thumb as an alpha-red-green-blue
+ integer, i.e., `0xAARRGGBB`.  An alpha of `00`
+ indicates fully transparent and `FF` means opaque.
 
 {:id="Slider.ColorRight" .color} *ColorRight*
-: The color of slider to the left of the thumb.
-
-{:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Slider as a percentage of the height of the Screen.
+: Specifies the color of the slider bar to the right of the thumb as an alpha-red-green-blue
+ integer, i.e., `0xAARRGGBB`.  An alpha of `00`
+ indicates fully transparent and `FF` means opaque.
 
 {:id="Slider.MaxValue" .number} *MaxValue*
-: Sets the maximum value of slider.  Changing the maximum value also resets Thumbposition to be halfway between the minimum and the (new) maximum. If the new maximum is less than the current minimum, then minimum and maximum will both be set to this value.  Setting MaxValue resets the thumb position to halfway between MinValue and MaxValue and signals the PositionChanged event.
+: Sets the maximum value of slider. If the new maximum is less than the
+ current minimum, then minimum and maximum will both be set to this value.
+ Setting `MaxValue` resets the thumb position to halfway between [`MinValue`](#Slider.MinValue)
+ and `MaxValue` and signals the [`PositionChanged`](#Slider.PositionChanged)` event.
 
 {:id="Slider.MinValue" .number} *MinValue*
-: Sets the minimum value of slider.  Changing the minimum value also resets Thumbposition to be halfway between the (new) minimum and the maximum. If the new minimum is greater than the current maximum, then minimum and maximum will both be set to this value.  Setting MinValue resets the thumb position to halfway between MinValue and MaxValue and signals the PositionChanged event.
+: Sets the minimum value of slider. If the new minimum is greater than the
+ current maximum, then minimum and maximum will both be set to this value.
+ Setting `MinValue` resets the thumb position to halfway between `MinValue`
+ and [`MaxValue`](#Slider.MaxValue) and signals the [`PositionChanged`](#Slider.PositionChanged)`
+ event.
 
 {:id="Slider.ThumbEnabled" .boolean} *ThumbEnabled*
-: Sets whether or not to display the slider thumb.
+: Whether or not the slider thumb is being be shown.
 
 {:id="Slider.ThumbPosition" .number} *ThumbPosition*
-: Sets the position of the slider thumb. If this value is greater than MaxValue, then it will be set to same value as MaxValue. If this value is less than MinValue, then it will be set to same value as MinValue.
+: Sets the position of the slider thumb. If this value is greater than [`MaxValue`](#Slider.MaxValue),
+ then it will be set to same value as [`MaxValue`](#Slider.MaxValue). If this value is less than
+ [`MinValue`](#Slider.MinValue), then it will be set to same value as [`MinValue`](#Slider.MinValue).
 
 {:id="Slider.Visible" .boolean} *Visible*
-: Returns true iff the Slider is visible.
+: Specifies whether the `Slider` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Slider` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Slider.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Slider, measured in pixels.
+: Specifies the horizontal width of the `Slider`, measured in pixels.
 
 {:id="Slider.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Slider as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Slider` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#Slider-Events}
 
@@ -846,41 +1174,63 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:id="Slider.PositionChanged"} PositionChanged(*thumbPosition*{:.number})
 : Indicates that position of the slider thumb has changed.
 
+### Methods  {#Slider-Methods}
+
+{:.methods}
+None
+
+
 ## Spinner  {#Spinner}
+
+A `Spinner` component that displays a dialog with a list of elements. These elements can be set
+ in the Designer or Blocks Editor by setting the [`ElementsFromString`](#Spinner.ElementsFromString) property to
+ a comma-separated list of values (for example, `choice 1, choice 2, choice 3`) or by setting the
+ [`Elements`](#Spinner.Elements) property to a List in the Blocks editor. Spinners are created with
+ the first item already selected, so selecting it does not generate an
+ [`AfterSelecting`](#Spinner.AfterSelecting) event. Consequently it's useful to make the first `Spinner` item
+ be a non-choice like "Select from below...".
+
+
 
 ### Properties  {#Spinner-Properties}
 
 {:.properties}
 
 {:id="Spinner.Elements" .list .bo} *Elements*
-: returns a list of text elements to be picked from.
+: Specifies the list of choices to display.
 
 {:id="Spinner.ElementsFromString" .text .wo} *ElementsFromString*
-: sets the Spinner list to the elements passed in the comma-separated string
+: Set the list of choices from a string of comma-separated values.
 
 {:id="Spinner.Height" .number .bo} *Height*
-: Specifies the vertical height of the Spinner, measured in pixels.
+: Specifies the `Spinner`'s vertical height, measured in pixels.
 
 {:id="Spinner.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Spinner as a percentage of the height of the Screen.
+: Specifies the `Spinner`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Spinner.Prompt" .text} *Prompt*
-: Text with the current title for the Spinner window
+: Specifies the text used for the title of the Spinner window.
 
 {:id="Spinner.Selection" .text} *Selection*
-: Returns the current selected item in the spinner
+: Specifies the current selected item in the `Spinner`.
 
 {:id="Spinner.SelectionIndex" .number .bo} *SelectionIndex*
-: The index of the currently selected item, starting at 1. If no item is selected, the value will be 0.
+: Set the `Spinner` selection to the element at the given index.
+ If an attempt is made to set this to a number less than `1` or greater than the number of
+ items in the `Spinner`, `SelectionIndex` will be set to `0`, and [`Selection`](#Spinner.Selection)
+ will be set to the empty text.
 
 {:id="Spinner.Visible" .boolean} *Visible*
-: Returns true iff the Spinner is visible.
+: Specifies whether the `Spinner` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Spinner` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Spinner.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Spinner, measured in pixels.
+: Specifies the horizontal width of the `Spinner`, measured in pixels.
 
 {:id="Spinner.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Spinner as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Spinner` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#Spinner-Events}
 
@@ -894,160 +1244,217 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.methods}
 
 {:id="Spinner.DisplayDropdown" class="method"} <i/> DisplayDropdown()
-: displays the dropdown list for selection, same action as when the user clicks on the spinner.
+: Displays the dropdown list for selection, same action as when the user clicks on the spinner.
 
 ## Switch  {#Switch}
+
+`Switch` components can detect user taps and can change their boolean state in response. They
+ are identical to [`CheckBox`](#CheckBox)es except in appearance.
+
+ Switches have an on (true) state and an off (false) state. A `Switch` component raises an event
+ when the user taps it to toggle between states.
+
+
 
 ### Properties  {#Switch-Properties}
 
 {:.properties}
 
 {:id="Switch.BackgroundColor" .color} *BackgroundColor*
-: Returns the background color of the Switch as an alpha-red-green-blue
+: Specifies the background color of the `Switch` as an alpha-red-green-blue
  integer.
 
 {:id="Switch.Enabled" .boolean} *Enabled*
-: Returns true if the Switch is active and clickable.
+: Specifies whether the `Switch` should be active and clickable.
 
 {:id="Switch.FontBold" .boolean .do} *FontBold*
-: Returns true if the text of the Switch should be bold.
- If bold has been requested, this property will return true, even if the
- font does not support bold.
+: Specifies whether the text of the `Switch` should be bold.
+ Some fonts do not support bold.
 
 {:id="Switch.FontItalic" .boolean .do} *FontItalic*
-: Returns true if the text of the Switch should be italic.
- If italic has been requested, this property will return true, even if the
- font does not support italic.
+: Specifies whether the text of the `Switch` should be italic.
+ Some fonts do not support italic.
 
 {:id="Switch.FontSize" .number} *FontSize*
-: Returns the text font size of the Switch, measured in sp(scale-independent pixels).
+: Specifies the text font size of the `Switch`, measured in sp(scale-independent pixels).
 
 {:id="Switch.FontTypeface" .number .do} *FontTypeface*
-: Returns the text font face of the Switch as default, serif, sans
+: Specifies the text font face of the `Switch` as default, serif, sans
  serif, or monospace.
 
 {:id="Switch.Height" .number .bo} *Height*
-: Specifies the vertical height of the Switch, measured in pixels.
+: Specifies the `Switch`'s vertical height, measured in pixels.
 
 {:id="Switch.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the Switch as a percentage of the height of the Screen.
+: Specifies the `Switch`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Switch.On" .boolean} *On*
-: Returns true if the checkbox is checked.
+: True if the switch is in the On state, false otherwise.
 
 {:id="Switch.Text" .text} *Text*
-: Returns the text displayed by the Switch.
+: Specifies the text displayed by the `Switch`.
 
 {:id="Switch.TextColor" .color} *TextColor*
-: Returns the text color of the Switch as an alpha-red-green-blue
+: Specifies the text color of the `Switch` as an alpha-red-green-blue
  integer.
 
 {:id="Switch.ThumbColorActive" .color .do} *ThumbColorActive*
-: Returns the switch's thumb color (button that toggles back and forth)
- when the switch is ON/Checked
+: Specifies the `Switch`'s thumb color when switch is in the On state.
 
 {:id="Switch.ThumbColorInactive" .color} *ThumbColorInactive*
-: Returns the switch's thumb color (button that toggles back and forth)
- when the switch is Off/Unchecked
+: Specifies the `Switch`'s thumb color when switch is in the Off state.
 
 {:id="Switch.TrackColorActive" .color} *TrackColorActive*
-: Returns the switch's track color
+: Specifies the `Switch`'s track color when in the On state.
 
 {:id="Switch.TrackColorInactive" .color} *TrackColorInactive*
-: Color of the toggle track when switched off
+: Specifies the `Switch`'s track color when in the Off state.
 
 {:id="Switch.Visible" .boolean} *Visible*
-: Returns true iff the Switch is visible.
+: Specifies whether the `Switch` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Switch` is showing and `false`{:.logic.block} if hidden.
 
 {:id="Switch.Width" .number .bo} *Width*
-: Specifies the horizontal width of the Switch, measured in pixels.
+: Specifies the horizontal width of the `Switch`, measured in pixels.
 
 {:id="Switch.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the Switch as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `Switch` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#Switch-Events}
 
 {:.events}
 
 {:id="Switch.Changed"} Changed()
-: Default Changed event handler.
+: User change the state of the `Switch` from On to Off or back.
 
 {:id="Switch.GotFocus"} GotFocus()
-: Default GotFocus event handler.
+: `Switch` became the focused component.
 
 {:id="Switch.LostFocus"} LostFocus()
-: Default LostFocus event handler.
+: `Switch` stopped being the focused component.
+
+### Methods  {#Switch-Methods}
+
+{:.methods}
+None
+
 
 ## TextBox  {#TextBox}
+
+Users enter text in a text box component.
+
+ ![Example of a TextBox](images/textbox.png)
+
+ The initial or user-entered text value in a text box component is in the [`Text`](#TextBox.Text)
+ property. If [`Text`](#TextBox.Text) is blank, you can use the [`Hint`](#TextBox.Hint) property to provide
+ the user with a suggestion of what to type. The [`Hint`](#TextBox.Hint) appears as faint text in the box.
+
+ The [`MultiLine`](#TextBox.MultiLine) property determines if the text can have more than one line.
+ For a single line text box, the keyboard will close automatically when the user presses the Done
+ key. To close the keyboard for multiline text boxes, the app should use the
+ [`HideKeyboard`](#TextBox.HideKeyboard) method or rely on the user to press the Back key.
+
+ The [`NumbersOnly`](#TextBox.NumbersOnly) property restricts the keyboard to accept numeric input only.
+
+ Other properties affect the appearance of the text box
+ ([`TextAlignment`](#TextBox.TextAlignment), [`BackgroundColor`](#TextBox.BackgroundColor), etc.) and whether it can be used
+ ([`Enabled`](#TextBox.Enabled)).
+
+ Text boxes are usually used with the [`Button`](#Button) component, with the user clicking on the
+ `Button` when text entry is complete.
+
+ If the text entered by the user should not be displayed, use [`PasswordTextBox`](#PasswordTextBox) instead.
+
+
 
 ### Properties  {#TextBox-Properties}
 
 {:.properties}
 
 {:id="TextBox.BackgroundColor" .color} *BackgroundColor*
-: The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is 'default' (shaded 3-D look).
+: The background color of the `TextBox``. You can choose a color by name in the Designer or in
+ the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
 {:id="TextBox.Enabled" .boolean} *Enabled*
-: Whether the user can enter text into the TextBox.  By default, this is true.
+: If set, user can enter text into the `TextBox`.
 
 {:id="TextBox.FontBold" .boolean .do} *FontBold*
-: Whether the font for the text should be bold.  By default, it is not.
+: Specifies whether the text of the `TextBox` should be bold.
+ Some fonts do not support bold.
 
 {:id="TextBox.FontItalic" .boolean .do} *FontItalic*
-: Whether the text should appear in italics.  By default, it does not.
+: Specifies whether the text of the `TextBox` should be italic.
+ Some fonts do not support italic.
 
 {:id="TextBox.FontSize" .number} *FontSize*
-: The font size for the text.  By default, it is 14.0 points.
+: Specifies the text font size of the `TextBox`, measured in sp(scale-independent pixels).
 
 {:id="TextBox.FontTypeface" .number .do} *FontTypeface*
-: The font for the text.  The value can be changed in the Designer.
+: The text font face of the `TextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
+ serif), or `3` (monospace).
 
 {:id="TextBox.Height" .number .bo} *Height*
-: Specifies the vertical height of the TextBox, measured in pixels.
+: Specifies the `TextBox`'s vertical height, measured in pixels.
 
 {:id="TextBox.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the TextBox as a percentage of the height of the Screen.
+: Specifies the `TextBox`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="TextBox.Hint" .text} *Hint*
-: Text that should appear faintly in the TextBox to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.
+: `TextBox` hint for the user.
 
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
-: If true, then this text box accepts multiple lines of input, which are entered using the return key.  For single line text boxes there is a Done key instead of a return key, and pressing Done hides the keyboard.  The app should call the HideKeyboard method to hide the keyboard for a mutiline text box.
+: If true, then this `TextBox` accepts multiple lines of input, which are entered using the
+ return key. For single line text boxes there is a Done key instead of a return key, and
+ pressing Done hides the keyboard. The app should call the HideKeyboard method to hide the
+ keyboard for a mutiline text box.
 
 {:id="TextBox.NumbersOnly" .boolean} *NumbersOnly*
-: If true, then this text box accepts only numbers as keyboard input.  Numbers can include a decimal point and an optional leading minus sign.  This applies to keyboard input only.  Even if NumbersOnly is true, you can use [set Text to] to enter any text at all.
+: If true, then this `TextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#TextBox.Text) property.
 
 {:id="TextBox.ReadOnly" .boolean} *ReadOnly*
-: Whether the TextBox is read-only. By default, this is true.
+: Whether the TextBox is read-only. By default, this is `true`{:.logic.block}.
 
 {:id="TextBox.Text" .text} *Text*
-: Returns the textbox contents.
+: The text in the `TextBox`, which can be set by the programmer in the Designer or Blocks Editor,
+ or it can be entered by the user (unless the [`Enabled`](#TextBox.Enabled) property is false).
 
 {:id="TextBox.TextAlignment" .number .do} *TextAlignment*
-: Whether the text should be left justified, centered, or right justified.  By default, text is left justified.
+: Specifies the alignment of the `TextBox`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="TextBox.TextColor" .color} *TextColor*
-: The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.
+: Specifies the text color of the `TextBox` as an alpha-red-green-blue
+ integer.
 
 {:id="TextBox.Visible" .boolean} *Visible*
-: Returns true iff the TextBox is visible.
+: Specifies whether the `TextBox` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `TextBox` is showing and `false`{:.logic.block} if hidden.
 
 {:id="TextBox.Width" .number .bo} *Width*
-: Specifies the horizontal width of the TextBox, measured in pixels.
+: Specifies the horizontal width of the `TextBox`, measured in pixels.
 
 {:id="TextBox.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the TextBox as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `TextBox` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#TextBox-Events}
 
 {:.events}
 
 {:id="TextBox.GotFocus"} GotFocus()
-: Event raised when the TextBox is selected for input, such as by
+: Event raised when the `TextBox` is selected for input, such as by
  the user touching it.
 
 {:id="TextBox.LostFocus"} LostFocus()
-: Event raised when the TextBox is no longer selected for input, such
+: Event raised when the `TextBox` is no longer selected for input, such
  as if the user touches a different text box.
 
 ### Methods  {#TextBox-Methods}
@@ -1055,76 +1462,101 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:.methods}
 
 {:id="TextBox.HideKeyboard" class="method"} <i/> HideKeyboard()
-: Hide the keyboard.  Only multiline text boxes need this. Single line text boxes close the keyboard when the users presses the Done key.
+: Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
+ keyboard when the users presses the Done key.
 
 {:id="TextBox.RequestFocus" class="method"} <i/> RequestFocus()
-: Sets the TextBox active.
+: Request focus to current `TextBox`.
 
 ## TimePicker  {#TimePicker}
+
+A button that, when clicked on, opens a dialog to allow the user to select a time.
+
+ Note: Date and time are manipulated using methods in the [`Clock`](sensors.html#Clock) component.
+
+
 
 ### Properties  {#TimePicker-Properties}
 
 {:.properties}
 
 {:id="TimePicker.BackgroundColor" .color} *BackgroundColor*
-: Returns the button's background color
+: Specifies the `TimePicker`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#TimePicker.Image) has been set, the color
+ change will not be visible until the [`Image`](#TimePicker.Image) is removed.
 
 {:id="TimePicker.Enabled" .boolean} *Enabled*
-: If set, user can tap TimePicker to cause action.
+: Specifies whether the `TimePicker` should be active and clickable.
 
 {:id="TimePicker.FontBold" .boolean} *FontBold*
-: If set, TimePicker text is displayed in bold.
+: Specifies whether the text of the `TimePicker` should be bold.
+ Some fonts do not support bold.
 
 {:id="TimePicker.FontItalic" .boolean} *FontItalic*
-: If set, TimePicker text is displayed in italics.
+: Specifies whether the text of the `TimePicker` should be italic.
+ Some fonts do not support italic.
 
 {:id="TimePicker.FontSize" .number} *FontSize*
-: Point size for TimePicker text.
+: Specifies the text font size of the `TimePicker`, measured in sp(scale-independent pixels).
 
 {:id="TimePicker.FontTypeface" .number .do} *FontTypeface*
-: Font family for TimePicker text.
+: Specifies the text font face of the `TimePicker` as default, serif, sans
+ serif, or monospace.
 
 {:id="TimePicker.Height" .number .bo} *Height*
-: Specifies the vertical height of the TimePicker, measured in pixels.
+: Specifies the `TimePicker`'s vertical height, measured in pixels.
 
 {:id="TimePicker.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the TimePicker as a percentage of the height of the Screen.
+: Specifies the `TimePicker`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="TimePicker.Hour" .number .ro .bo} *Hour*
-: The hour of the last time set using the time picker. The hour is in a 24 hour format. If the last time set was 11:53 pm, this property will return 23.
+: Returns the hour of the time that was last picked using the `TimePicker``.
+ The time returned is always in the 24hour format.
 
 {:id="TimePicker.Image" .text} *Image*
-: Image to display on button.
+: Specifies the path of the `TimePicker`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#TimePicker.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="TimePicker.Instant" .InstantInTime .ro .bo} *Instant*
-: The instant of the last time set using the time picker
+: Returns the instant in time that was last picked using the `TimePicker`.
 
 {:id="TimePicker.Minute" .number .ro .bo} *Minute*
-: The minute of the last time set using the time picker
+: Returns the hour of the time that was last picked using the `TimePicker`.
+ The time returned is always in the 24hour format.
 
 {:id="TimePicker.Shape" .number .do} *Shape*
-: Returns the style of the button.
+: Specifies the shape of the `TimePicker`. The valid values for this property are `0` (default),
+ `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+ [`Image`](#TimePicker.Image) is used.
 
 {:id="TimePicker.ShowFeedback" .boolean} *ShowFeedback*
-: Specifies if a visual feedback should be shown  for a TimePicker that as an image as background.
+: Specifies if a visual feedback should be shown when a `TimePicker` with an assigned
+ [`Image`](#TimePicker.Image) is pressed.
 
 {:id="TimePicker.Text" .text} *Text*
-: Text to display on TimePicker.
+: Specifies the text displayed by the `TimePicker`.
 
 {:id="TimePicker.TextAlignment" .number .do} *TextAlignment*
-: Left, center, or right.
+: Specifies the alignment of the `TimePicker`'s text. Valid values are:
+ `0` (normal; e.g., left-justified if text is written left to right),
+ `1` (center), or
+ `2` (opposite; e.g., right-justified if text is written left to right).
 
 {:id="TimePicker.TextColor" .color} *TextColor*
-: Color for button text.
+: Specifies the text color of the `TimePicker` as an alpha-red-green-blue
+ integer.
 
 {:id="TimePicker.Visible" .boolean} *Visible*
-: Returns true iff the TimePicker is visible.
+: Specifies whether the `TimePicker` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `TimePicker` is showing and `false`{:.logic.block} if hidden.
 
 {:id="TimePicker.Width" .number .bo} *Width*
-: Specifies the horizontal width of the TimePicker, measured in pixels.
+: Specifies the horizontal width of the `TimePicker`, measured in pixels.
 
 {:id="TimePicker.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the TimePicker as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `TimePicker` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#TimePicker-Events}
 
@@ -1134,74 +1566,120 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : This event is run when a user has set the time in the popup dialog.
 
 {:id="TimePicker.GotFocus"} GotFocus()
-: Indicates the cursor moved over the TimePicker so it is now possible to click it.
+: Indicates the cursor moved over the `TimePicker` so it is now possible
+ to click it.
 
 {:id="TimePicker.LostFocus"} LostFocus()
-: Indicates the cursor moved away from the TimePicker so it is now no longer possible to click it.
+: Indicates the cursor moved away from the `TimePicker` so it is now no
+ longer possible to click it.
 
 {:id="TimePicker.TouchDown"} TouchDown()
-: Indicates that the TimePicker was pressed down.
+: Indicates that the `TimePicker` was pressed down.
 
 {:id="TimePicker.TouchUp"} TouchUp()
-: Indicates that the TimePicker has been released.
+: Indicates that the `TimePicker` has been released.
 
 ### Methods  {#TimePicker-Methods}
 
 {:.methods}
 
 {:id="TimePicker.LaunchPicker" class="method"} <i/> LaunchPicker()
-: Launches the TimePicker popup.
+: Launches the `TimePicker` dialog.
 
 {:id="TimePicker.SetTimeToDisplay" class="method"} <i/> SetTimeToDisplay(*hour*{:.number},*minute*{:.number})
-: Set the time to be shown in the Time Picker popup. Current time is shown by default.
+: Allows the user to set the time to be displayed when the `TimePicker` opens. Valid values for
+ the hour field are 0-23 and 0-59 for the second field.
 
 {:id="TimePicker.SetTimeToDisplayFromInstant" class="method"} <i/> SetTimeToDisplayFromInstant(*instant*{:.InstantInTime})
-: Set the time from the instant to be shown in the Time Picker popup. Current time is shown by default.
+: Allows the instant to set the hour and minute to be displayed when the `TimePicker` opens.
+ Instants are used in [`Clock`](sensors.html#Clock), [`DatePicker`](#DatePicker), and [`TimePicker`](#TimePicker)
+ components.
 
 ## WebViewer  {#WebViewer}
+
+Component for viewing Web pages.
+
+ ![WebViewer icon](images/webviewer.png)
+
+ The [`HomeUrl`](#WebViewer.HomeUrl) can be specified in the Designer or in the Blocks Editor. The view can be
+ set to follow links when they are tapped, and users can fill in Web forms.
+
+ **Warning:** This is not a full browser. For example, pressing the phone's hardware Back key
+ will exit the app, rather than move back in the browser history.
+
+ You can use the [`WebViewString`](#WebViewer.WebViewString) property to communicate between your app and
+ Javascript code running in the `WebViewer` page. In the app, you get and set
+ [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
+ ```
+ The answer is hello.
+ ```
+ And if the Web page contains Javascript that executes the command
+ ```javascript
+ windowAppInventor.setWebViewString("hello from Javascript"),
+ ```
+ then the value of the [`WebViewString`](#WebViewer.WebViewString) property will be
+ ```
+ hello from Javascript.
+ ```
+ Calling `setWebViewString` from JavaScript will also run the [`WebViewStringChange`](#WebViewer.WebViewStringChange)
+ event so that the blocks can handle when the [`WebViewString`](#WebViewer.WebViewString) property changes.
+
+
 
 ### Properties  {#WebViewer-Properties}
 
 {:.properties}
 
 {:id="WebViewer.CurrentPageTitle" .text .ro .bo} *CurrentPageTitle*
-: Title of the page currently viewed
+: Returns the title of the page currently being viewed
 
 {:id="WebViewer.CurrentUrl" .text .ro .bo} *CurrentUrl*
-: URL of the page currently viewed.   This could be different from the Home URL if new pages were visited by following links.
+: Returns the URL currently being viewed. This could be different from the [`HomeUrl`](#WebViewer.HomeUrl)
+ if new pages were visited by following links.
 
 {:id="WebViewer.FollowLinks" .boolean} *FollowLinks*
-: Determines whether to follow links when they are tapped in the WebViewer.  If you follow links, you can use GoBack and GoForward to navigate the browser history.
+: Determines whether to follow links when they are tapped in the `WebViewer`. If you follow
+ links, you can use [`GoBack`](#WebViewer.GoBack) and [`GoForward`](#WebViewer.GoForward) to navigate the browser history.
 
 {:id="WebViewer.Height" .number .bo} *Height*
-: Specifies the vertical height of the WebViewer, measured in pixels.
+: Specifies the `WebViewer`'s vertical height, measured in pixels.
 
 {:id="WebViewer.HeightPercent" .number .wo .bo} *HeightPercent*
-: Specifies the vertical height of the WebViewer as a percentage of the height of the Screen.
+: Specifies the `WebViewer`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="WebViewer.HomeUrl" .text} *HomeUrl*
-: URL of the page the WebViewer should initially open to.  Setting this will load the page.
+: Specifies the URL of the page the `WebViewer` should initially open to. Setting this will
+ load the page.
 
 {:id="WebViewer.IgnoreSslErrors" .boolean} *IgnoreSslErrors*
-: Determine whether or not to ignore SSL errors. Set to true to ignore errors. Use this to accept self signed certificates from websites.
+: Determine whether or not to ignore SSL errors. Set to `true`{:.logic.block} to ignore errors.
+ Use this to accept self signed certificates from websites.
 
 {:id="WebViewer.PromptforPermission" .boolean} *PromptforPermission*
-: If True, then prompt the user of the WebView to give permission to access the geolocation API. If False, then assume permission is granted.
+: Determine if the user should be prompted for permission to use the geolocation API while in
+ the `WebViewer`. If `true`{:.logic.block}, prompt the user of the `WebViewer` to give
+ permission to access the geolocation API. If `false`{:.logic.block}, assume permission is
+ granted.
 
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
-: Whether or not to give the application permission to use the Javascript geolocation API. This property is available only in the designer.
+: Specifies whether or not this `WebViewer` can access the JavaScript
+ geolocation API.
 
 {:id="WebViewer.Visible" .boolean} *Visible*
-: Returns true iff the WebViewer is visible.
+: Specifies whether the `WebViewer` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `WebViewer` is showing and `false`{:.logic.block} if hidden.
 
 {:id="WebViewer.WebViewString" .text .bo} *WebViewString*
-: Gets the WebView's String, which is viewable through Javascript in the WebView as the window.AppInventor object
+: Gets the `WebView`'s String, which is viewable through Javascript in the `WebView` as the
+ `window.AppInventor` object.
 
 {:id="WebViewer.Width" .number .bo} *Width*
-: Specifies the horizontal width of the WebViewer, measured in pixels.
+: Specifies the horizontal width of the `WebViewer`, measured in pixels.
 
 {:id="WebViewer.WidthPercent" .number .wo .bo} *WidthPercent*
-: Specifies the horizontal width of the WebViewer as a percentage of the width of the Screen.
+: Specifies the horizontal width of the `WebViewer` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
 ### Events  {#WebViewer-Events}
 
@@ -1211,7 +1689,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : When a page is finished loading this event is run.
 
 {:id="WebViewer.WebViewStringChange"} WebViewStringChange(*value*{:.text})
-: When the JavaScript calls AppInventor.setWebViewString this event is run.
+: Event that runs when the `AppInventor.setWebViewString` method is called from JavaScript.
+ The new [`WebViewString`](#WebViewer.WebViewString) is given by the `value`{:.variable.block} parameter.
 
 ### Methods  {#WebViewer-Methods}
 
@@ -1224,19 +1703,28 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 : Returns true if the WebViewer can go forward in the history list.
 
 {:id="WebViewer.ClearCaches" class="method"} <i/> ClearCaches()
-: Clear WebView caches.
+: Clear the internal webview cache, both ram and disk. This is useful
+ when using the `WebViewer` to poll a page that may not be sending
+ appropriate cache control headers.
 
 {:id="WebViewer.ClearLocations" class="method"} <i/> ClearLocations()
-: Clear stored location permissions.
+: Clear Stored Location permissions. When the geolocation API is used in
+ the `WebViewer`, the end user is prompted on a per URL basis for whether
+ or not permission should be granted to access their location. This
+ function clears this information for all locations.
+
+  As the permissions interface is not available on phones older then
+  Eclair, this function is a no-op on older phones.
 
 {:id="WebViewer.GoBack" class="method"} <i/> GoBack()
-: Go back to the previous page in the history list.  Does nothing if there is no previous page.
+: Go back to the previous page in the history list. Does nothing if there is no previous page.
 
 {:id="WebViewer.GoForward" class="method"} <i/> GoForward()
-: Go forward to the next page in the history list.   Does nothing if there is no next page.
+: Go forward to the next page in the history list. Does nothing if there is no next page.
 
 {:id="WebViewer.GoHome" class="method"} <i/> GoHome()
-: Loads the home URL page.  This happens automatically when the home URL is changed.
+: Loads the  page from the home URL.  This happens automatically when
+ home URL is changed.
 
 {:id="WebViewer.GoToUrl" class="method"} <i/> GoToUrl(*url*{:.text})
 : Load the page at the given URL.
