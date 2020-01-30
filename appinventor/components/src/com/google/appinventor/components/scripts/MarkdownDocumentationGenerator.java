@@ -30,7 +30,6 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
         categoryDocs.put(component.getCategoryString(), new StringBuilder());
       }
       if (!sortedComponents.containsKey(component.getCategoryString())) {
-        //noinspection Convert2Diamond
         sortedComponents.put(component.getCategoryString(), new TreeMap<String, ComponentInfo>());
       }
       categoryNames.put(component.getCategoryString(), component.getCategory());
@@ -59,34 +58,45 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
           String name = entry.getKey();
           out.write("\n\n## ");
           out.write(name);
-          out.write("  {#" + name + "}");
+          out.write("  {#" + name + "}\n\n");
           ComponentInfo info = entry.getValue();
+          out.write(info.getLongDescription(info));
+          out.write("\n\n");
           outputProperties(name, info, out);
           outputEvents(name, info, out);
           outputMethods(name, info, out);
         }
+        out.write("\n");
       }
     }
   }
 
   private void outputProperties(String name, ComponentInfo info, Writer out) throws IOException {
-    if (info.properties.size() == 0) {
-      return;
-    }
     out.write(String.format("%n%n### Properties  {#%s-Properties}%n%n{:.properties}", name));
+    boolean didOutput = false;
     for (Property property : info.properties.values()) {
-      if (propertyIsHidden(info, property)) {
+      if (isPropertyHidden(info, property)) {
         continue;
       }
       out.write(String.format("%n%n{:id=\"%s.%s\" %s} *%s*%n: ", name, property.name,
           getPropertyClass(info, property), property.name));
-      out.write(property.getDescription());
+      out.write(property.getLongDescription(info));
+      didOutput = true;
+    }
+    if (!didOutput) {
+      out.write("\nNone\n");
     }
   }
 
-  private boolean propertyIsHidden(ComponentInfo info, Property property) {
-    return (!property.isUserVisible() && !info.designerProperties.containsKey(property.name))
-        || (info.displayName.equals("Screen") && property.name.equals("ActionBar"));
+  private boolean isPropertyHidden(ComponentInfo info, Property property) {
+    return (isFeatureHidden(info, property) && !info.designerProperties.containsKey(property.name))
+        || (info.displayName.equals("Screen") && property.name.equals("ActionBar"))
+        || (info.displayName.equals("FirebaseDB") && property.name.equals("DefaultURL"))
+        || (info.displayName.equals("CloudDB") && property.name.equals("DefaultRedisServer"));
+  }
+
+  private boolean isFeatureHidden(ComponentInfo info, Feature feature) {
+    return !feature.isUserVisible() || feature.isDeprecated();
   }
 
   private String getPropertyClass(ComponentInfo info, Property property) {
@@ -107,27 +117,27 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
   }
 
   private void outputEvents(String name, ComponentInfo info, Writer out) throws IOException {
-    if (info.events.size() == 0) {
-      return;
-    }
     out.write(String.format("%n%n### Events  {#%s-Events}%n%n{:.events}", name));
+    boolean didOutput = false;
     for (Event event : info.events.values()) {
-      if (!event.userVisible) {
+      if (isFeatureHidden(info, event)) {
         continue;
       }
       out.write(String.format("%n%n{:id=\"%s.%s\"} %s(%s)%n: ", name, event.name, event.name,
           formatParameters(event.parameters)));
-      out.write(event.description);
+      out.write(event.getLongDescription(info));
+      didOutput = true;
+    }
+    if (!didOutput) {
+      out.write("\nNone\n");
     }
   }
 
   private void outputMethods(String name, ComponentInfo info, Writer out) throws IOException {
-    if (info.methods.size() == 0) {
-      return;
-    }
     out.write(String.format("%n%n### Methods  {#%s-Methods}%n%n{:.methods}", name));
+    boolean didOutput = false;
     for (Method method : info.methods.values()) {
-      if (!method.userVisible) {
+      if (isFeatureHidden(info, method)) {
         continue;
       }
       String returnType = "";
@@ -137,7 +147,11 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
       }
       out.write(String.format("%n%n{:id=\"%s.%s\" class=\"method%s\"} <i/> %s(%s)%n: ", name,
           method.name, returnType, method.name, formatParameters(method.parameters)));
-      out.write(method.description);
+      out.write(method.getLongDescription(info));
+      didOutput = true;
+    }
+    if (!didOutput) {
+      out.write("\nNone\n");
     }
   }
 
