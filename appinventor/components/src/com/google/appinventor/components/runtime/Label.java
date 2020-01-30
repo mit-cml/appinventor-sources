@@ -23,8 +23,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Label containing a text string.
+ * Labels are components used to show text.
  *
+ * ![Example of a label](images/label.png)
+ *
+ * A label displays text which is specified by the `Text` property. Other properties, all of which
+ * can be set in the Designer or Blocks Editor, control the appearance and placement of the text.
  */
 @DesignerComponent(version = YaVersion.LABEL_COMPONENT_VERSION,
     description = "A Label displays a piece of text, which is " +

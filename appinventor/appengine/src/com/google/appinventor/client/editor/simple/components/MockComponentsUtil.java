@@ -283,7 +283,7 @@ public final class MockComponentsUtil {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
-    String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "lineHeight");
     if (widthStyle != null) {
       DOM.setStyleAttribute(element, "width", null);
     }
@@ -291,7 +291,7 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(element, "height", null);
     }
     if (lineHeightStyle != null) {
-      DOM.setStyleAttribute(element, "line-height", "initial");
+      DOM.setStyleAttribute(element, "lineHeight", "initial");
     }
     return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
@@ -312,7 +312,7 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(element, "height", style[1]);
     }
     if (style[2] != null) {
-      DOM.setStyleAttribute(element, "line-height", style[2]);
+      DOM.setStyleAttribute(element, "lineHeight", style[2]);
     }
   }
 

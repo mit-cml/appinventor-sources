@@ -63,7 +63,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
    */
   static class ClonedSwitch extends InlineHTML {
     ClonedSwitch(HorizontalPanel ptb) {
-      super(DOM.clone(ptb.getElement(), true));
+      super(DOM.clone(ptb.getWidget(0).getElement(), true));
     }
   }
 

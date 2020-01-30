@@ -52,6 +52,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.AnnotationValueVisitor;
@@ -72,6 +73,8 @@ import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
@@ -256,18 +259,144 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * Represents a component feature that has a name and a description.
    */
   protected abstract static class Feature {
+    private static final Pattern AT_SIGN = Pattern.compile("[^\\\\]@");
+    private static final Pattern LINK_FORM = Pattern.compile("\\{@link ([A-Za-z]*#?)([A-Za-z]*)[^}]*}");
+    private static final Pattern CODE_FORM = Pattern.compile("\\{@code ([^}]*)}");
+
+    private final String featureType;
     protected final String name;
     protected String description;
+    protected boolean defaultDescription = false;
+    protected String longDescription;
+    protected boolean userVisible;
+    protected boolean deprecated;
 
-    protected Feature(String name, String description, String featureType) {
+    protected Feature(String name, String description, String longDescription, String featureType,
+        boolean userVisible, boolean deprecated) {
+      this.featureType = featureType;
       this.name = name;
+      setDescription(description);
+      setLongDescription(longDescription);
+      this.userVisible = userVisible;
+      this.deprecated = deprecated;
+    }
+
+    public boolean isDefaultDescription() {
+      return defaultDescription;
+    }
+
+    public void setDescription(String description) {
       if (description == null || description.isEmpty()) {
         this.description = featureType + " for " + name;
+        defaultDescription = true;
       } else {
         // Throw out the first @ or { and everything after it,
         // in order to strip out @param, @author, {@link ...}, etc.
         this.description = description.split("[@{]")[0].trim();
+        defaultDescription = false;
       }
+    }
+
+    public void setLongDescription(String longDescription) {
+      if (longDescription == null || longDescription.isEmpty()) {
+        this.longDescription = this.description;
+      } else if (longDescription.contains("@suppressdoc")) {
+        this.longDescription = "";
+      } else {
+        this.longDescription = longDescription;
+      }
+      // Handle links
+      Matcher linkMatcher = LINK_FORM.matcher(this.longDescription);
+      StringBuffer sb = new StringBuffer();
+      int lastEnd = 0;
+      while (linkMatcher.find(lastEnd)) {
+        sb.append(this.longDescription, lastEnd, linkMatcher.start());
+        String clazz = linkMatcher.group(1);
+        if (clazz.endsWith("#")) {
+          clazz = clazz.substring(0, clazz.length() - 1);
+        }
+        if ("Form".equals(clazz)) {
+          clazz = "Screen";
+        }
+        String func = linkMatcher.group(2);
+        sb.append("[");
+        if (!clazz.isEmpty()) {
+          sb.append("`");
+          sb.append(clazz);
+          sb.append("`");
+          if (!func.isEmpty()) {
+            sb.append("'s ");
+          }
+        }
+        if (!func.isEmpty()) {
+          sb.append("`");
+          sb.append(func);
+          sb.append("`");
+        }
+        sb.append("](#");
+        if (clazz.isEmpty()) {
+          sb.append("%type%.");
+        } else {
+          sb.append(clazz);
+          if (!func.isEmpty()) {
+            sb.append(".");
+          }
+        }
+        if (!func.isEmpty()) {
+          sb.append(func);
+        }
+        sb.append(")");
+        lastEnd = linkMatcher.end();
+      }
+      sb.append(this.longDescription.substring(lastEnd));
+      this.longDescription = sb.toString();
+      // Map {@code foo} to `foo`
+      sb = new StringBuffer();
+      Matcher codeMatcher = CODE_FORM.matcher(this.longDescription);
+      lastEnd = 0;
+      while (codeMatcher.find(lastEnd)) {
+        sb.append(this.longDescription, lastEnd, codeMatcher.start());
+        sb.append("`");
+        sb.append(codeMatcher.group(1));
+        sb.append("`");
+        lastEnd = codeMatcher.end();
+      }
+      sb.append(this.longDescription.substring(lastEnd));
+      this.longDescription = sb.toString();
+      // Strip out the Javadoc annotations (@param, etc.) for end-user documentation
+      Matcher m = AT_SIGN.matcher(this.longDescription);
+      if (m.find()) {
+        this.longDescription = this.longDescription.substring(0, m.start() + 1);
+      }
+      // Replace escaped @ with just @, e.g., so we can use @ in email address examples.
+      this.longDescription = this.longDescription.replaceAll("\\\\@", "@").trim();
+    }
+
+    public String getLongDescription(ComponentInfo component) {
+      if (longDescription == null || longDescription.isEmpty()) {
+        return description;
+      }
+      String name = component.name.equals("Form") ? "Screen" : component.name;
+      return longDescription.replaceAll("%type%", name).trim();
+    }
+
+    /**
+     * Returns whether this property is visible in the Blocks Editor, as retrieved
+     * from {@link SimpleProperty#userVisible()}.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
+    protected boolean isUserVisible() {
+      return userVisible;
+    }
+
+    /**
+     * Returns whether this property is deprecated in the Blocks Editor.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
+    protected boolean isDeprecated() {
+      return deprecated;
     }
   }
 
@@ -278,14 +407,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   protected abstract class ParameterizedFeature extends Feature {
     // Inherits name, description
     protected final List<Parameter> parameters;
-    protected final boolean userVisible;
-    protected final boolean deprecated; // [lyn, 2015/12/29] added
 
-    protected ParameterizedFeature(String name, String description, String feature,
-        boolean userVisible, boolean deprecated) {
-      super(name, description, feature);
-      this.userVisible = userVisible;
-      this.deprecated = deprecated;
+    protected ParameterizedFeature(String name, String description, String longDescription,
+        String feature, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, feature, userVisible, deprecated);
       parameters = Lists.newArrayList();
     }
 
@@ -327,13 +452,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       implements Cloneable, Comparable<Event> {
     // Inherits name, description, and parameters
 
-    protected Event(String name, String description, boolean userVisible, boolean deprecated) {
-      super(name, description, "Event", userVisible, deprecated);
+    protected Event(String name, String description, String longDescription, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, "Event", userVisible, deprecated);
     }
 
     @Override
     public Event clone() {
-      Event that = new Event(name, description, userVisible, deprecated);
+      Event that = new Event(name, description, longDescription, userVisible, deprecated);
       for (Parameter p : parameters) {
         that.addParameter(p.name, p.type);
       }
@@ -356,8 +481,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String returnType;
     private boolean color;
 
-    protected Method(String name, String description, boolean userVisible, boolean deprecated) {
-      super(name, description, "Method", userVisible, deprecated);
+    protected Method(String name, String description, String longDescription, boolean userVisible,
+        boolean deprecated) {
+      super(name, description, longDescription, "Method", userVisible, deprecated);
       // returnType defaults to null
     }
 
@@ -371,7 +497,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     @Override
     public Method clone() {
-      Method that = new Method(name, description, userVisible, deprecated);
+      Method that = new Method(name, description, longDescription, userVisible, deprecated);
       for (Parameter p : parameters) {
         that.addParameter(p.name, p.type);
       }
@@ -389,32 +515,28 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * Represents an App Inventor component property (annotated with
    * {@link SimpleProperty}).
    */
-  protected static final class Property implements Cloneable {
+  protected static final class Property extends Feature implements Cloneable {
     protected final String name;
-    private String description;
     private PropertyCategory propertyCategory;
-    private boolean userVisible;
-    private boolean deprecated;
     private String type;
     private boolean readable;
     private boolean writable;
     private String componentInfoName;
     private boolean color;
 
-    protected Property(String name, String description,
+    protected Property(String name, String description, String longDescription,
                        PropertyCategory category, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, "Property", userVisible, deprecated);
       this.name = name;
-      this.description = description;
       this.propertyCategory = category;
-      this.userVisible = userVisible;
-      this.deprecated = deprecated;
       // type defaults to null
       // readable and writable default to false
     }
 
     @Override
     public Property clone() {
-      Property that = new Property(name, description, propertyCategory, userVisible, deprecated);
+      Property that = new Property(name, description, longDescription, propertyCategory,
+          isUserVisible(), isDeprecated());
       that.type = type;
       that.readable = readable;
       that.writable = writable;
@@ -447,25 +569,6 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected String getDescription() {
       return description;
-    }
-
-    /**
-     * Returns whether this property is visible in the Blocks Editor, as retrieved
-     * from {@link SimpleProperty#userVisible()}.
-     *
-     * @return whether the property is visible in the Blocks Editor
-     */
-    protected boolean isUserVisible() {
-      return userVisible;
-    }
-
-    /**
-     * Returns whether this property is deprecated in the Blocks Editor.
-     *
-     * @return whether the property is visible in the Blocks Editor
-     */
-    protected boolean isDeprecated() {
-      return deprecated;
     }
 
     /**
@@ -639,7 +742,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
             elementUtils.getDocComment(element),
-            "Component");
+            elementUtils.getDocComment(element),
+            "Component", false, elementUtils.isDeprecated(element));
       type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
@@ -697,7 +801,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           // if provided.
           String explicitDescription = designerComponentAnnotation.description();
           if (!explicitDescription.isEmpty()) {
-            description = explicitDescription;
+            setDescription(explicitDescription);
           }
 
           // Set helpDescription to the designerHelpDescription field if
@@ -719,6 +823,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           iconName = designerComponentAnnotation.iconName();
           androidMinSdk = designerComponentAnnotation.androidMinSdk();
           versionName = designerComponentAnnotation.versionName();
+          userVisible = designerComponentAnnotation.showOnPalette();
         }
       }
     }
@@ -863,6 +968,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.RELEASE_7;
+  }
+
+  @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     elementUtils = processingEnv.getElementUtils();
@@ -935,8 +1045,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       throw new RuntimeException(e);
     }
 
-    // Indicate that we have successfully handled the annotations.
-    return true;
+    // We need to return false here so that sibling annotation processors can run
+    return false;
   }
 
     /*
@@ -1138,7 +1248,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private void processDescriptions(ComponentInfo info) {
     final String name = info.displayName;
     info.description = info.description.replaceAll(TYPE_PLACEHOLDER, name);
-    info.helpUrl = info.description.replaceAll(TYPE_PLACEHOLDER, name);
+    info.helpUrl = info.helpUrl.replaceAll(TYPE_PLACEHOLDER, name);
     for (Property property : info.properties.values()) {
       property.description = property.description.replaceAll(TYPE_PLACEHOLDER, name);
     }
@@ -1166,6 +1276,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     // Use Javadoc for property unless description is set to a non-empty string.
     String description = elementUtils.getDocComment(element);
+    String longDescription = description;
     if (!simpleProperty.description().isEmpty()) {
       description = simpleProperty.description();
     }
@@ -1177,6 +1288,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     Property property = new Property(propertyName,
                                      description,
+                                     longDescription,
                                      simpleProperty.category(),
                                      simpleProperty.userVisible(),
                                      elementUtils.isDeprecated(element));
@@ -1452,9 +1564,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
 
           // Merge newProperty into priorProperty, which is already in the properties map.
-          if ((priorProperty.description.isEmpty() || element.getAnnotation(Override.class) != null)
-              && !newProperty.description.isEmpty()) {
-            priorProperty.description = newProperty.description;
+          if ((priorProperty.description.isEmpty() || priorProperty.isDefaultDescription()
+               || element.getAnnotation(Override.class) != null)
+              && !newProperty.description.isEmpty() && !newProperty.isDefaultDescription()) {
+            priorProperty.setDescription(newProperty.description);
+          }
+          if (!newProperty.longDescription.isEmpty()) {  /* Latter descriptions of the same property
+                                                            override earlier descriptions. */
+            priorProperty.longDescription = newProperty.longDescription;
           }
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {
             priorProperty.propertyCategory = newProperty.propertyCategory;
@@ -1468,8 +1585,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
           priorProperty.readable = priorProperty.readable || newProperty.readable;
           priorProperty.writable = priorProperty.writable || newProperty.writable;
-          priorProperty.userVisible = priorProperty.userVisible && newProperty.userVisible;
-          priorProperty.deprecated = priorProperty.deprecated && newProperty.deprecated;
+          priorProperty.userVisible = priorProperty.isUserVisible() && newProperty.isUserVisible();
+          priorProperty.deprecated = priorProperty.isDeprecated() && newProperty.isDeprecated();
           priorProperty.componentInfoName = componentInfo.name;
           priorProperty.color = newProperty.color || priorProperty.color;
         } else {
@@ -1518,8 +1635,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
       } else {
         String eventDescription = simpleEventAnnotation.description();
+        String longEventDescription = elementUtils.getDocComment(element);
         if (eventDescription.isEmpty()) {
-          eventDescription = elementUtils.getDocComment(element);
+          eventDescription = longEventDescription;
           if (eventDescription == null) {
             messager.printMessage(Diagnostic.Kind.WARNING,
                                   "In component " + componentInfo.name +
@@ -1530,7 +1648,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         boolean userVisible = simpleEventAnnotation.userVisible();
         boolean deprecated = elementUtils.isDeprecated(element);
-        Event event = new Event(eventName, eventDescription, userVisible, deprecated);
+        Event event = new Event(eventName, eventDescription, longEventDescription, userVisible, deprecated);
         componentInfo.events.put(event.name, event);
 
         // Verify that this element has an ExecutableType.
@@ -1572,9 +1690,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           componentInfo.methods.remove(methodName);
         }
       } else {
+        String methodLongDescription = elementUtils.getDocComment(element);
         String methodDescription = simpleFunctionAnnotation.description();
         if (methodDescription.isEmpty()) {
-          methodDescription = elementUtils.getDocComment(element);
+          methodDescription = methodLongDescription;
           if (methodDescription == null) {
             messager.printMessage(Diagnostic.Kind.WARNING,
                                   "In component " + componentInfo.name +
@@ -1585,7 +1704,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         boolean userVisible = simpleFunctionAnnotation.userVisible();
         boolean deprecated = elementUtils.isDeprecated(element);
-        Method method = new Method(methodName, methodDescription, userVisible, deprecated);
+        Method method = new Method(methodName, methodDescription, methodLongDescription, userVisible, deprecated);
         componentInfo.methods.put(method.name, method);
 
         // Verify that this element has an ExecutableType.

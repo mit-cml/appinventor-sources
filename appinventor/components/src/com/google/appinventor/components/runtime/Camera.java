@@ -34,9 +34,15 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * Camera provides access to the phone's camera
+ * ![Camera icon](images/camera.png)
  *
+ * Use a camera component to take a picture on the phone.
  *
+ * `Camera` is a non-visible component that takes a picture using the device's camera. After the
+ * picture is taken, the path to the file on the phone containing the picture is available as an
+ * argument to the {@link #AfterPicture(String)} event. The path can be used, for example, as the
+ * [`Picture`](userinterface.html#Image.Picture) property of an [`Image`](userinterface.html3Image)
+ * component.
  */
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
    description = "A component to take a picture using the device's camera. " +
@@ -112,7 +118,9 @@ public class Camera extends AndroidNonvisibleComponent
   }
 
   /**
-   * Takes a picture, then raises the AfterPicture event.
+   * Takes a picture, then raises the {@link #AfterPicture(String)} event.
+   *
+   * @internaldoc
    * If useFront is true, adds an extra to the intent that requests the front-facing camera.
    */
   @SimpleFunction
@@ -230,8 +238,8 @@ public class Camera extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that a photo was taken with the camera and provides the path to
-   * the stored picture.
+   * Called after the picture is taken. The text argument `image` is the path that can be used to
+   * locate the image on the phone.
    */
   @SimpleEvent
   public void AfterPicture(String image) {
