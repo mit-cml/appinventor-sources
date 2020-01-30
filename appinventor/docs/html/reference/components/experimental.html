@@ -136,21 +136,33 @@
 
 <h2 id="FirebaseDB">FirebaseDB</h2>
 
+<p>The Firebase component communicates with a Web service to store
+ and retrieve information.  The component has methods to
+ store a value under a tag and to retrieve the value associated with
+ the tag. It also possesses a listener to fire events when stored
+ values are changed.</p>
+
+<p><a href="../other/firebase.html">Additional Information</a></p>
+
 <h3 id="FirebaseDB-Properties">Properties</h3>
 
 <dl class="properties">
-  <dt id="FirebaseDB.DefaultURL" class="text wo do"><em>DefaultURL</em></dt>
-  <dd></dd>
   <dt id="FirebaseDB.DeveloperBucket" class="text do"><em>DeveloperBucket</em></dt>
   <dd>Getter for the DeveloperBucket.</dd>
   <dt id="FirebaseDB.FirebaseToken" class="text do"><em>FirebaseToken</em></dt>
   <dd>Getter for the FirebaseToken.</dd>
   <dt id="FirebaseDB.FirebaseURL" class="text do"><em>FirebaseURL</em></dt>
-  <dd>Gets the URL for this FirebaseDB.</dd>
+  <dd>Specifies the URL for the Firebase.</dd>
+</dl>
+
+<p>The default value is currently my private Firebase URL, but this will
+ eventually changed once the App Inventor Candle plan is activated.</p>
+
+<dl>
   <dt id="FirebaseDB.Persist" class="boolean wo do"><em>Persist</em></dt>
   <dd>If true, variables will retain their values when off-line and the App exits. Values will be uploaded to Firebase the next time the App is run while connected to the network. This is useful for applications which will gather data while not connected to the network. Note: AppendValue and RemoveFirst will not work correctly when off-line, they require a network connection.<br /><br /> <i>Note</i>: If you set Persist on any Firebase component, on any screen, it makes all Firebase components on all screens persistent. This is a limitation of the low level Firebase library. Also be aware that if you want to set persist to true, you should do so before connecting the Companion for incremental development.</dd>
   <dt id="FirebaseDB.ProjectBucket" class="text"><em>ProjectBucket</em></dt>
-  <dd>Gets the ProjectBucket for this FirebaseDB.</dd>
+  <dd>Getter for the ProjectBucket.</dd>
 </dl>
 
 <h3 id="FirebaseDB-Events">Events</h3>
@@ -175,7 +187,7 @@
   <dt id="FirebaseDB.AppendValue" class="method"><i></i> AppendValue(<em class="text">tag</em>,<em class="any">valueToAdd</em>)</dt>
   <dd>Append a value to the end of a list atomically. If two devices use this function simultaneously, both will be appended and no data lost.</dd>
   <dt id="FirebaseDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
-  <dd>Remove the tag from Firebase</dd>
+  <dd>Asks Firebase to forget (delete or set to “null”) a given tag.</dd>
   <dt id="FirebaseDB.GetTagList" class="method"><i></i> GetTagList()</dt>
   <dd>Get the list of tags for this application. When complete a “TagList” event will be triggered with the list of known tags.</dd>
   <dt id="FirebaseDB.GetValue" class="method"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>
@@ -187,7 +199,24 @@
   <dt id="FirebaseDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
   <dd>Asks Firebase to store the given value under the given tag.</dd>
   <dt id="FirebaseDB.Unauthenticate" class="method"><i></i> Unauthenticate()</dt>
-  <dd>If you are having difficulty with the Companion and you are switching between different Firebase accounts, you may need to use this function to clear internal Firebase caches. You can just use the “Do It” function on this block in the blocks editor. Note: You should not normally need to use this block as part of an application.</dd>
+  <dd>Unauthenticate from Firebase.
+
+    <p>Firebase keeps track of credentials in a cache in shared_prefs
+ It will re-use these credentials as long as they are valid. Given
+ That we retrieve a FirebaseToken with a version long life, this will
+ effectively be forever. Shared_prefs survive an application update
+ and depending on how backup is configured on a device, it might survive
+ an application removal and reinstallation.</p>
+
+    <p>Normally this is not a problem, however if we change the credentials
+ used, for example the App author is switching from one Firebase account
+ to another, or invalided their firebase.secret, this cached credential
+ is invalid, but will continue to be used, which results in errors.</p>
+
+    <p>This function permits us to unauthenticate, which tosses the cached
+ credentials. The next time authentication is needed we will use our
+ current FirebaseToken and get fresh credentials.</p>
+  </dd>
 </dl>
 
 </article>

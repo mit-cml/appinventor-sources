@@ -62,8 +62,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Original Web component provided functions for HTTP GET and POST requests.
- * This new version provides added PUT and DELETE requests.
+ * Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
+ *
  * @author lizlooney@google.com (Liz Looney)
  * @author josmasflores@gmail.com (Jose Dominguez)
  */
@@ -217,7 +217,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Returns the URL.
+   * The URL for the web request.
+   *
+   * @return the URL
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The URL for the web request.")
@@ -236,7 +238,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Returns the request headers.
+   * The request headers, as a list of two-element sublists. The first element of each sublist
+   * represents the request header field name. The second element of each sublist represents the
+   * request header field values, either a single value or a list containing multiple values.
+   *
+   * @return the request headers.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The request headers, as a list of two-element sublists. The first element " +
@@ -265,7 +271,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Returns whether cookies should be allowed
+   * Whether the cookies from a response should be saved and used in subsequent requests. Cookies
+   * are only supported on Android version 2.3 or greater.
+   *
+   * @return whether cookies should be allowed
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Whether the cookies from a response should be saved and used in subsequent " +
@@ -308,9 +317,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Returns the name of the file where the response should be saved.
-   * If SaveResponse is true and ResponseFileName is empty, then a new file
-   * name will be generated.
+   * The name of the file where the response should be saved. If SaveResponse is true and
+   * ResponseFileName is empty, then a new file name will be generated.
+   *
+   * @return the name of the file where the response should be saved
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The name of the file where the response should be saved. If SaveResponse " +
@@ -333,7 +343,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   /**
    * Returns the number of milliseconds that each request will wait for a response before they time out.
-   * If set to 0, then the request will wait for a response indefinitely.
+   * If set to 0 (the default), then the request will wait for a response indefinitely.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The number of milliseconds that a web request will wait for a response before giving up. " +
@@ -368,11 +378,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   /**
    * Performs an HTTP GET request using the Url property and retrieves the
-   * response.<br>
-   * If the SaveResponse property is true, the response will be saved in a file
+   * response.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
    * and the GotFile event will be triggered. The ResponseFileName property
-   * can be used to specify the name of the file.<br>
-   * If the SaveResponse property is false, the GotText event will be
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be
    * triggered.
    */
   @SimpleFunction
@@ -410,6 +422,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Performs an HTTP POST request using the Url property and the specified text.
    *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
    * @param text the text data for the POST request
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
@@ -425,6 +445,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   /**
    * Performs an HTTP POST request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param text the text data for the POST request
    * @param encoding the character encoding to use when sending the text. If
@@ -442,8 +470,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Performs an HTTP POST request using the Url property and data from the
-   * specified file, and retrieves the response.
+   * Performs an HTTP POST request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param path the path of the file for the POST request
    */
@@ -486,6 +519,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Performs an HTTP PUT request using the Url property and the specified text.
    *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
    * @param text the text data for the PUT request
    */
   @SimpleFunction(description = "Performs an HTTP PUT request using the Url property and " +
@@ -501,6 +542,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   /**
    * Performs an HTTP PUT request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param text the text data for the PUT request
    * @param encoding the character encoding to use when sending the text. If
@@ -518,8 +567,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Performs an HTTP PUT request using the Url property and data from the
-   * specified file, and retrieves the response.
+   * Performs an HTTP PUT request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param path the path of the file for the PUT request
    */
@@ -561,11 +615,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   /**
    * Performs an HTTP DELETE request using the Url property and retrieves the
-   * response.<br>
-   * If the SaveResponse property is true, the response will be saved in a file
+   * response.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
    * and the GotFile event will be triggered. The ResponseFileName property
-   * can be used to specify the name of the file.<br>
-   * If the SaveResponse property is false, the GotText event will be
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be
    * triggered.
    */
   @SimpleFunction
@@ -772,7 +828,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
     
   /**
-   * Decodes the encoded text value.
+   * Decodes the encoded text value so that the values aren't URL encoded anymore.
    *
    * @param text the text to encode
    * @return the decoded text
@@ -792,9 +848,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     
   /**
    * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
-   * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
-   * (denoted as A:B enclosed in curly braces) decodes to a list
-   * ((A B)), that is, a list containing the two-element list (A B).
+   * A JSON list `[x, y, z]` decodes to a list `(x y z)`,  A JSON object with key A and value B,
+   * (denoted as `{A:B}`) decodes to a list `((A B))`, that is, a list containing the two-element
+   * list `(A B)`.
    *
    * @param jsonText the JSON text to decode
    * @return the decoded text
@@ -835,23 +891,25 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Decodes the given XML string to produce a list structure. <tag>string</tag> decodes to
+   * Decodes the given XML string to produce a list structure. `<tag>string</tag>` decodes to
    * a list that contains a pair of tag and string.  More generally, if obj1, obj2, ...
-   * are tag-delimited XML strings, then <tag>obj1 obj2 ...</tag> decodes to a list
+   * are tag-delimited XML strings, then `<tag>obj1 obj2 ...</tag>` decodes to a list
    * that contains a pair whose first element is tag and whose second element is the
    * list of the decoded obj's, ordered alphabetically by tags.  Examples:
-   * <foo>123</foo> decodes to a one-item list containing the pair (foo, 123)
-   * <foo>1 2 3</foo> decodes to a one-item list containing the pair (foo,"1 2 3")
-   * <a><foo>1 2 3</foo><bar>456</bar></a> decodes to a list containing the pair
+   * `<foo>123</foo>` decodes to a one-item list containing the pair (foo, 123)
+   * `<foo>1 2 3</foo>` decodes to a one-item list containing the pair (foo,"1 2 3")
+   * `<a><foo>1 2 3</foo><bar>456</bar></a>` decodes to a list containing the pair
    * (a,X) where X is a 2-item list that contains the pair (bar,123) and the pair (foo,"1 2 3").
    * If the sequence of obj's mixes tag-delimited and non-tag-delimited
    * items, then the non-tag-delimited items are pulled out of the sequence and wrapped
-   * with a "content" tag.  For example, decoding <a><bar>456</bar>many<foo>1 2 3</foo>apples</a>
+   * with a "content" tag.  For example, decoding `<a><bar>456</bar>many<foo>1 2 3</foo>apples</a>`
    * is similar to above, except that the list X is a 3-item list that contains the additional pair
    * whose first item is the string "content", and whose second item is the list (many, apples).
    * This method signals an error and returns the empty list if the result is not well-formed XML.
    *
-   * @param jsonText the JSON text to decode
+   *   See ["Working with XML and Web Services"](../other/xml.html) for more details.
+   *
+   * @param XmlText the XML text to decode
    * @return the decoded text
    */
    // This method works by by first converting the XML to JSON and then decoding the JSON.
@@ -878,11 +936,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Decodes the given HTML text value.
    *
-   * <pre>
-   * HTML Character Entities such as &amp;, &lt;, &gt;, &apos;, and &quot; are
+   *   HTML Character Entities such as `&amp;`, `&lt;`, `&gt;`, `&apos;`, and `&quot;` are
    * changed to &, <, >, ', and ".
-   * Entities such as &#xhhhh, and &#nnnn are changed to the appropriate characters.
-   * </pre>
+   * Entities such as `&#xhhhh;`, and `&#nnnn;` are changed to the appropriate characters.
    *
    * @param htmlText the HTML text to decode
    * @return the decoded text
