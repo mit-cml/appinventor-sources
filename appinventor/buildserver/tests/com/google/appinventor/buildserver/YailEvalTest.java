@@ -1098,20 +1098,20 @@ public class YailEvalTest extends TestCase {
   }
 
    public void testSine() throws Throwable {
-     int[] args = { 0, 90, 180, 270, 360 };
-     int[] vals = { 0,  1,  0,   -1, 0 };
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    0,    1,    0,  -1, 0,  1,   0,  -1,   0 };
      testUnaryIntegerFunction("sin-degrees", args, vals);
    }
 
    public void testCosine() throws Throwable {
-     int[] args = { 0, 90, 180, 270, 360 };
-     int[] vals = { 1,  0,  -1,   0, 1 };
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    1,    0,   -1,   0, 1,  0,  -1,   0,   1 };
      testUnaryIntegerFunction("cos-degrees", args, vals);
    }
 
    public void testTangent() throws Throwable {
-     int[] args = { 0, 45, 135, 180, 225, 315 };
-     int[] vals = { 0,  1,  -1,   0,   1,  -1 };
+     int[] args = { -315, -225, -180, -135, -45, 0, 45, 135, 180, 225, 315 };
+     int[] vals = {    1,   -1,    0,    1,  -1, 0,  1,  -1,   0,   1,  -1 };
      testUnaryIntegerFunction("tan-degrees", args, vals);
      double[] arg = { 30 };
      double[] val = { .57735 };
