@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -150,7 +150,6 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   private String result;
   private int requestCode;
   private YailList extras;
-//  private YailList emailAddressList;
   private final ComponentContainer container;
 
   private static final String LOG_TAG = "ActivityStarter";
@@ -173,7 +172,6 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     ExtraKey("");
     ExtraValue("");
     Extras(new YailList());
-   // emailAddressList(new YailList());
     ResultName("");
   }
 
@@ -247,8 +245,6 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     return extraValue;
   }
 
-  
-  
   /**
    * Specifies the extra value that will be passed to the activity.
    * Obsolete. Should use Extras instead
@@ -259,48 +255,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   public void ExtraValue(String extraValue) {
     this.extraValue = extraValue.trim();
   }
-    
-  
-//  /**
-//   * Set a list of email addresses for an activity whose action is 
-//   * android.intent.action.SEND
-//   * We also provide a way to set this as a designer property.
-//   * @param addresses a YailList containing the address strings
-//   */
-//  @SimpleProperty(description="List of email addresses for a SEND activity.  This will" +
-//                "signal an error if the elements are not text strings.",
-//      category = PropertyCategory.BEHAVIOR)
-//  public void emailAddressList(YailList addresses) {
-//    emailAddressList = ElementsUtil.elements(addresses, "ActivityStarter");
-//  }
-//  
-//  
-//  /**
-//   * Returns the list extraEmail of email addresses that are passed to the activity.
-//   * for activities that send email with action.SEND
-//   */
-//  @SimpleProperty(
-//      description = "Returns the list of email addresses for an activity" +
-//          "whose action is android.intent.action.SEND.",
-//      category = PropertyCategory.BEHAVIOR)
-//  public YailList emailAddressList() {
-//    return emailAddressList;
-//  }
-//  
-//  /**
-//   * Specifies the email addresses for SEND action.
-//   * @param addressString a comma-separated string of email addresses
-//   */
-//  
-//  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
-//      defaultValue = "")
-//  @SimpleProperty(description="The list of recipient email addreeses specified as a comma-separated string " +
-//      "such as: someone@gmail.com, person@mit.edu", category = PropertyCategory.BEHAVIOR)
-//  public void emailAddressListFromString(String addressString) {
-//   emailAddressList = ElementsUtil.elementsFromString(addressString);
-//  }
-// 
- 
+
   // TODO(lizlooney) - currently we support retrieving just one string extra result from the
   // activity. The user specifies the ResultName property and, then after the activity finishes,
   // the string extra result corresponding to ResultName is passed as the result parameter to the
@@ -586,8 +541,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       intent.putExtra(extraKey, extraValue);
     }
 
-   // If the extra value is a string, put it to the intent. If the extra value is a list
-   // of strings, convert it to a java list and put that to the intent.
+    // If the extra value is a string, put it to the intent. If the extra value is a list
+    // of strings, convert it to a java list and put that to the intent.
     for (Object extra : extras.toArray()) {
       YailList castExtra = (YailList) extra;
       String key = castExtra.getString(0);
@@ -596,7 +551,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       if ((key.length() != 0)) {
         if (value instanceof YailList) {
           Log.i(LOG_TAG, "Adding extra list, key = " + key + " value = " + value);
-          intent.putExtra(key, ((YailList) value).toStringArray());        
+          intent.putExtra(key, ((YailList) value).toStringArray());
         }
         else {
           String stringValue = castExtra.getString(1);
@@ -606,7 +561,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       };
     };
     return intent;
-    }
+  }
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {

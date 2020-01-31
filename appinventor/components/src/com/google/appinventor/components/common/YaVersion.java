@@ -491,10 +491,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
-  // For YOUNG_ANDROID_VERSION 198:
-  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 198;
+  public static final int YOUNG_ANDROID_VERSION = 197;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -636,9 +634,7 @@ public class YaVersion {
   // - The ActivityStarter.ActivityCanceled event was added.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
   // - Extras property was added to accept a list of key-value pairs to put to the intent
-  // For ACTIVITYSTARTER_COMPONENT_VERSION 7:
-  // - EmailAddressList property was added
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 7;
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
