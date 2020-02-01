@@ -1,1 +1,20 @@
-{}
+{
+    "Blockly.Msg.EXPAND_BLOCK": "توسيع القطعة البرمجية",
+    "Blockly.Msg.COLLAPSE_BLOCK": "طي القطعة البرمجية",
+    "Blockly.Msg.DELETE_X_BLOCKS": "إحذف %1 قطع برمجية",
+    "Blockly.Msg.DELETE_BLOCK": "إحذف القطعة البرمجية",
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "إحذف ال  %1 القطع البرمجية؟",
+    "Blockly.Msg.CONFIRM_DELETE": "تأكيد الحذف",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "رتب المُعلمات (المتغيرات) عمودياً",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "رتب المُعلمات (المتغيرات) أفقياً",
+    "Blockly.Msg.INLINE_INPUTS": "مدخلات مضمنة",
+    "Blockly.Msg.EXTERNAL_INPUTS": "مدخلات خارجية",
+    "Blockly.Msg.ADD_COMMENT": "أضافة تعليق",
+    "Blockly.Msg.REMOVE_COMMENT": "إزالة التعليق",
+    "Blockly.Msg.DUPLICATE_BLOCK": "كرر (نسخة طبق الأصل)",
+    "Blockly.Msg.SHOW": "إظهار عناصر التحكم الخاصة بساحة العمل",
+    "Blockly.Msg.HIDE": "إخفاء عناصر التحكم الخاصة بمساحة العمل",
+    "Blockly.Msg.CLEAN_UP": "أمسح جميع القطع البرمجية",
+    "Blockly.Msg.REDO": "إعادة",
+    "Blockly.Msg.UNDO": "تراجع"
+}
