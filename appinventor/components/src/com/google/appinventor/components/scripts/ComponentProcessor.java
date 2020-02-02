@@ -1813,6 +1813,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (type.startsWith("java.util.List")) {
       return "list";
     }
+    if (type.equals("com.google.appinventor.components.runtime.util.YailDictionary")) {
+      return "dictionary";
+    }
+    if (type.equals("com.google.appinventor.components.runtime.util.YailObject")) {
+      return "yailobject";
+    }
 
     // Calendar -> InstantInTime
     if (type.equals("java.util.Calendar")) {

@@ -533,7 +533,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   public void GotValue(String tag, Object value) {
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -554,7 +554,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   public void DataChanged(String tag, Object value) {
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -665,7 +665,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
           }
           try {
             if (value instanceof String) {
-              value = JsonUtil.getObjectFromJson((String) value);
+              value = JsonUtil.getObjectFromJson((String) value, true);
             } else {
               result.err = "Invalid JSON object in database (shouldn't happen!)";
               return Transaction.abort();
@@ -758,7 +758,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
           }
           try {
             if (value instanceof String) {
-              value = JsonUtil.getObjectFromJson((String) value);
+              value = JsonUtil.getObjectFromJson((String) value, true);
             } else {
               result.err = "Invalid JSON object in database (shouldn't happen!)";
               return Transaction.abort();

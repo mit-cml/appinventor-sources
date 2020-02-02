@@ -830,7 +830,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     checkProjectIDNotBlank();
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch (JSONException e) {
       Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
@@ -980,7 +980,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         Log.d(LOG_TAG, "GotValue: Class of value = " + value.getClass().getName());
       }
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -1082,7 +1082,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     Object tagValue = "";
     try {
       if(value != null && value instanceof String) {
-        tagValue = JsonUtil.getObjectFromJson((String) value);
+        tagValue = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");

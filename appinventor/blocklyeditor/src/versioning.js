@@ -1799,7 +1799,10 @@ Blockly.Versioning.AllUpgradeMaps =
     26: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 27, Added not-equal to text compare block
-    27: "noUpgrade"
+    27: "noUpgrade",
+
+    // AI2: Added dictionaries
+    28: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2625,7 +2628,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Added property Timeout and event TimedOut
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
+    7: "noUpgrade"
 
   }, // End Web upgraders
 

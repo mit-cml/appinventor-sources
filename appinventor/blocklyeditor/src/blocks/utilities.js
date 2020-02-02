@@ -27,13 +27,16 @@ Blockly.Blocks.Utilities.InstantInTime = function () { return 'InstantInTime'; }
 // The Yail type 'any' is repsented by Javascript null, to match
 // Blockly's convention
 Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
-  'number':{input:"Number",output:["Number","String"]},
-  'text':{input:"String",output:["Number","String"]},
+  'number':{input:"Number",output:["Number","String", "Key"]},
+  'text':{input:"String",output:["Number","String", "Key"]},
   'boolean':{input:"Boolean",output:["Boolean","String"]},
   'list':{input:"Array",output:["Array","String"]},
-  'component':{input:"COMPONENT",output:"COMPONENT"},
+  'component':{input:"COMPONENT",output:["COMPONENT", "Key"]},
   'InstantInTime':{input:Blockly.Blocks.Utilities.InstantInTime,output:Blockly.Blocks.Utilities.InstantInTime},
-  'any':{input:null,output:null}
+  'any':{input:null,output:null},
+  'dictionary':{input:"Dictionary",output:["Dictionary", "String", "Array"]},
+  'pair':{input:"Pair",output:["Pair", "String", "Array"]},
+  'key':{input:"Key",output:["String", "Key"]}
   //add  more types here
 };
 

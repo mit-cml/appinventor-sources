@@ -488,8 +488,11 @@ public class YaVersion {
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 196:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 197:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 28
+  // - WEB_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 196;
+  public static final int YOUNG_ANDROID_VERSION = 197;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -561,8 +564,10 @@ public class YaVersion {
   // - Generic event handlers were added.
   // For BLOCKS_LANGUAGE_VERSION 27:
   // - The text compare block was modified to include the not-equal operator
+  // For BLOCKS_LANGUAGE_VERSION 28
+  // - The dictionaries blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 27;
+  public static final int BLOCKS_LANGUAGE_VERSION = 28;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -1260,7 +1265,10 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 6:
   // - The Timeout property was added.
   // - The TimedOut event was added for timed out web requests.
-  public static final int WEB_COMPONENT_VERSION = 6;
+  // For WEB_COMPONENT_VERSION 7:
+  // - The JsonTextDecodeWithDictionaries method was added
+  // - The XMLTextDecodeAsDictionary method was added.
+  public static final int WEB_COMPONENT_VERSION = 7;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
