@@ -17,7 +17,6 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -27,7 +26,6 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -537,10 +535,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     if (!jsonItems.isEmpty()) {
-      JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
-      this.selection = item.has("Text1") ? item.getString("Text1") : "";
-      this.selectionDetailText = item.has("Text2") ? item.getString("Text2") : "";
-      this.selectionIndex = itemAdapterCopy.getPosition(item)+1;
+      try {
+        JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
+        this.selection = item.has("Text1") ? item.getString("Text1") : "";
+        this.selectionDetailText = item.has("Text2") ? item.getString("Text2") : "";
+        this.selectionIndex = itemAdapterCopy.getPosition(item) + 1;
+      } catch (JSONException e) {
+        container.$form().dispatchErrorOccurredEvent(this, "ListView.onItemClick", ErrorMessages.ERROR_SCREEN_BAD_VALUE_RECEIVED, e.getMessage());
+      }
     } else {
       Spannable item = (Spannable) parent.getAdapter().getItem(position);
       this.selection = item.toString();
