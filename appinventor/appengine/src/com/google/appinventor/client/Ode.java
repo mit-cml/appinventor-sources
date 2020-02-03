@@ -640,7 +640,7 @@ public class Ode implements EntryPoint {
     } else if (!projectIdString.equals("0")) {
       final long projectId = Long.parseLong(projectIdString);
       Project project = projectManager.getProject(projectId);
-      if (project != null) {
+      if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
         openYoungAndroidProjectInDesigner(project);
       } else {
         // The project hasn't been added to the ProjectManager yet.
