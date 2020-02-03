@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.components.common.ComponentConstants;
@@ -37,7 +42,7 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
 
   /**
    * Changes the Point Shape of the Data Series.
-   *
+   * <p>
    * The following values are used:
    * 0 - Circle
    * 1 - Square
@@ -45,7 +50,7 @@ public class MockScatterChartDataModel extends MockPointChartDataModel {
    * 3 - Cross
    * 4 - X
    *
-   * @param shape  new Point Shape value (integer)
+   * @param shape new Point Shape value (integer)
    */
   public void changePointShape(int shape) {
     switch (shape) {

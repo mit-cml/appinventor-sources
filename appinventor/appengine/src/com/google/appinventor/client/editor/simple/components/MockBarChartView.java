@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.BarChart;
@@ -8,12 +13,12 @@ import org.pepstock.charba.client.data.Dataset;
 
 /**
  * Chart View for the Bar Chart. Responsible for the GUI of the Bar Chart.
- *
+ * <p>
  * The Bar Chart has two important properties:
  * 1.The entries in each Data Series of the Bar Chart are indexed by
  * x value, meaning that the first entry has an x value of 0, the second
  * has an x value of 1, and so on. The x value essentially acts as an index.
- *
+ * <p>
  * 2.Following from the 1st property, the entries are sorted by the x value (in
  * ascending order), and the difference between neighboring entries' x values are
  * at most 1.
@@ -51,7 +56,7 @@ public class MockBarChartView extends MockAxisChartView<BarChart> {
    * The labels are integer values from 0 to #dataSetCount - 1 (0, 1, ..., N - 1).
    * Since the Bar Chart's x axis is not scaled automatically upon adding entries,
    * the process has to be done manually.
-   *
+   * <p>
    * To be invoked whenever a Data Series changes.
    */
   public void updateLabels() {

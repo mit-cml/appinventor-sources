@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.output.OdeLog;
@@ -156,7 +161,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
    * Returns a List of entry labels corresponding to the
    * x values of the Data Series in order.
    *
-   * @return  List of entry labels (Strings)
+   * @return List of entry labels (Strings)
    */
   public List<String> getLabels() {
     return labels;

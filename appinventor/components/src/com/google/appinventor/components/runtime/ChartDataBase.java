@@ -456,8 +456,6 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
      * Sets the Data Source for the Chart data component. The data
      * is then automatically imported.
      *
-     * TODO: Modify description to include more data sources
-     * TODO: Support for more Data Sources (so not only limited to DataFile)
      * @param dataSource  Data Source to use for the Chart data.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,

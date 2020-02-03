@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.output.OdeLog;
@@ -21,7 +26,8 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
   /**
    * Creates a new Mock Bar Chart Data Model object instance,
    * linking it with the specified MockBarChartView object.
-   * @param view  MockBarChartView to link the model to
+   *
+   * @param view MockBarChartView to link the model to
    */
   public MockBarChartDataModel(MockBarChartView view) {
     super(view.getChartWidget().getData());
@@ -90,10 +96,10 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
 
   /**
    * Adds an entry to the Data Series from the specified tuple.
-   *
+   * <p>
    * The tuple is expected to have at least 2 entries. All subsequent
    * values are ignored.
-   *
+   * <p>
    * The addEntryFromTuple method relies on the property that each
    * entry in the Bar Chart corresponds to an index, meaning that
    * an x value directly corresponds to an index in the Data Series.
@@ -102,7 +108,7 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
    * which is at least 1 bigger than the current size is added,
    * blank entries are filled in between.
    *
-   * @param tuple  tuple (array of doubles)
+   * @param tuple tuple (array of doubles)
    */
   public void addEntryFromTuple(Double... tuple) {
     // The first entry of the tuple is expected to represent
