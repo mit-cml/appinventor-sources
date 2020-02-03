@@ -84,7 +84,7 @@ public final class MockCanvas extends MockContainer {
     if (url == null) {
       // text was not recognized as an asset.
       ((MockCanvasLayout) layout).setBackgroundImageUrl("");
-      url = "images/canvas.png";
+      url = "static/images/canvas.png";
       // We set the background image of the canvasWidget so it displays the image. We do it inside
       // the if because we need to override the background-size property only for this case
       MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);

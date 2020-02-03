@@ -146,7 +146,7 @@ public final class EditableProperty extends Property {
    *
    * @return  property caption
    */
-  String getCaption() {
+  public String getCaption() {
     return caption;
   }
 

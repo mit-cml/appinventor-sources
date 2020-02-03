@@ -61,7 +61,7 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
       'METHOD-TranslatedMethod': 'SuccessfulMethod',
       'PROPERTY-TranslatedProperty': 'SuccessfulProperty',
       'EVENTDESC-TranslatedEvent': 'Successfully translated event test.',
-      'METHDESC-TranslatedMethod': 'Successfully translated method test.',
+      'METHODDESC-TranslatedMethod': 'Successfully translated method test.',
       'PROPDESC-TranslatedProperty': 'Successfully translated property test.'
     });
 

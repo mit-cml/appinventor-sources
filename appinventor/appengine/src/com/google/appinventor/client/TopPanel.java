@@ -66,8 +66,7 @@ public class TopPanel extends Composite {
   private static final String WIDGET_NAME_LANGUAGE = "Language";
 
   private static final String SIGNOUT_URL = "/ode/_logout";
-  private static final String LOGO_IMAGE_URL = "/images/codi_long.png";
-  private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
+  private static final String LOGO_IMAGE_URL = "/static/images/codi_long.png";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
@@ -138,6 +137,17 @@ public class TopPanel extends Composite {
 
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
+
+    // View Trash Link
+    TextButton viewTrash = new TextButton(MESSAGES.viewTrashTabName());
+    viewTrash.setStyleName("ode-TopPanelButton");
+    viewTrash.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        ode.switchToTrash();
+      }
+    });
+    links.add(viewTrash);
 
     // Code on gallerydev branch
     // Gallery Link

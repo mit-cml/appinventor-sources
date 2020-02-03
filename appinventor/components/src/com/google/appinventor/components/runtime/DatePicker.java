@@ -25,6 +25,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
+ * A button that, when clicked on, launches a popup dialog to allow the user to select a date on
+ * the Gregorian Calendar.
+ *
+ * Note: Date and time are manipulated using methods in the [Clock](sensors.html#Clock) component.
+ *
+ * @internaldoc
  * A button allowing a user to launch a DatePickerDialog. This component is
  * is based off the ButtonBase class instead of the base Picker class because
  * unlike the other pickers, the DatePicker does not need to launch a new
@@ -145,7 +151,11 @@ public class DatePicker extends ButtonBase {
     customDate = true;
   }
 
-  @SimpleFunction(description="Launches the DatePicker popup.")
+  /**
+   * Launches the DatePicker dialog. The {@link #AfterDateSet()} event will be run after the user
+   * confirms their selection.
+   */
+  @SimpleFunction(description="Launches the DatePicker dialog.")
   public void LaunchPicker() {
     click();
   }
@@ -197,7 +207,7 @@ public class DatePicker extends ButtonBase {
       };
 
   /**
-   * Runs when the user sets the date in the Dialog.
+   * Event that runs after the user chooses a Date in the dialog.
    */
   @SimpleEvent(description = "Event that runs after the user chooses a Date in the dialog")
   public void AfterDateSet() {

@@ -330,8 +330,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       if(Ode.getGallerySettings().galleryEnabled()){
         if (project.isPublished()) {
           pw.publishedLabel.setText(PUBLISHED);
-        }
-        else {
+        } else {
           pw.publishedLabel.setText(NOT_PUBLISHED);
         }
       }
@@ -381,6 +380,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
+  public void onDeletedProjectAdded(Project project) {}
+
+  @Override
   public void onProjectRemoved(Project project) {
     projects.remove(project);
     projectWidgets.remove(project);
@@ -390,6 +392,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
+
+  @Override
+  public void onDeletedProjectRemoved(Project project) { }
 
   @Override
   public void onProjectsLoaded() {

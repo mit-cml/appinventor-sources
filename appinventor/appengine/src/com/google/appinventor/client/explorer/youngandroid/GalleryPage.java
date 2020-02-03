@@ -73,11 +73,12 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
-  private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
-  private final String RED_HEART_ICON_URL = "/images/numLike.png";
-  private final String DOWNLOAD_ICON_URL = "/images/numDownload.png";
-  private final String NUM_VIEW_ICON_URL = "/images/numView.png";
-  private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
+  private static final String PERSON_URL = "/static/images/person.png";
+  private static final String RED_HEART_ICON_URL = "/static/images/numLike.png";
+  private static final String HOLLOW_HEART_ICON_URL = "/static/images/numLikeHollow.png";
+  private static final String DOWNLOAD_ICON_URL = "/static/images/numDownload.png";
+  private static final String NUM_VIEW_ICON_URL = "/static/images/numView.png";
+  private static final String NUM_COMMENT_ICON_URL = "/static/images/numComment.png";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -465,7 +466,7 @@ panel
       // the error will occur and we'll load default image
       image.addErrorHandler(new ErrorHandler() {
         public void onError(ErrorEvent event) {
-          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+          image.setResource(GalleryImages.get().genericApp());
         }
       });
       container.add(image);
@@ -477,7 +478,9 @@ panel
           MESSAGES.galleryError()) {
             @Override
             public void onSuccess(String newUrl) {
-              image.setUrl(newUrl + "?" + System.currentTimeMillis());
+              if (newUrl != null) {
+                image.setUrl(newUrl + "?" + System.currentTimeMillis());
+              }
             }
           };
         Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
@@ -546,7 +549,7 @@ panel
       // the error will occur and we'll load default image
       authorAvatar.addErrorHandler(new ErrorHandler() {
         public void onError(ErrorEvent event) {
-          authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+          authorAvatar.setResource(GalleryImages.get().androidIcon());
         }
       });
       authorAvatar.addClickHandler(new ClickHandler() {

@@ -362,7 +362,7 @@ Blockly.Blocks['lists_reverse'] = {
       .appendField(Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.LANG_LISTS_REVERSE_TITLE_REVERSE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE }]
 }
 
 Blockly.Blocks['lists_to_csv_row'] = {
@@ -371,7 +371,7 @@ Blockly.Blocks['lists_to_csv_row'] = {
   helpUrl : Blockly.Msg.LANG_LISTS_TO_CSV_ROW_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV)
@@ -387,7 +387,7 @@ Blockly.Blocks['lists_to_csv_table'] = {
   helpUrl : Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV)

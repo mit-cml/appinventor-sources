@@ -420,7 +420,7 @@ public final class MockMap extends MockContainer {
         onAdd: function () {
           var container = L.DomUtil.create('div', 'compass-control'),
               img = L.DomUtil.create('img');
-          img.setAttribute('src', '/leaflet/assets/compass.svg');
+          img.setAttribute('src', '/static/leaflet/assets/compass.svg');
           container.appendChild(img);
           return container;
         }
@@ -434,7 +434,7 @@ public final class MockMap extends MockContainer {
           this._el = L.DomUtil.create('div', 'ai2-user-mock-location leaflet-zoom-hide');
           var img = L.DomUtil.create('img');
           this._el.appendChild(img);
-          img.setAttribute('src', '/leaflet/assets/location.png');
+          img.setAttribute('src', '/static/leaflet/assets/location.png');
           map.getPanes()['overlayPane'].appendChild(this._el);
           map.on('viewreset', this._reposition, this);
           this._reposition();

@@ -69,7 +69,25 @@ import java.io.IOException;
  */
 
 /**
- * Implementation of VideoPlayer, using {@link android.widget.VideoView}.
+ * A multimedia component capable of playing videos. When the application is run, the `VideoPlayer`
+ * will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will
+ * appear to play/pause, skip ahead, and skip backward within the video. The application can also
+ * control behavior by calling the {@link #Start()}, {@link #Pause()}, and {@link #SeekTo(int)}
+ * methods.
+ *
+ * Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats. For more details about legal
+ * formats, see
+ * [Android Supported Media Formats](//developer.android.com/guide/appendix/media-formats.html).
+ *
+ * App Inventor only permits video files under 1 MB and limits the total size of an application to
+ * 5 MB, not all of which is available for media (video, audio, and sound) files. If your media
+ * files are too large, you may get errors when packaging or installing your application, in which
+ * case you should reduce the number of media files or their sizes. Most video editing software,
+ * such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by
+ * shortening them or re-encoding the video into a more compact format.
+ *
+ * You can also set the media source to a URL that points to a streaming video, but the URL must
+ * point to the video file itself, not to a program that plays the video.
  *
  * @author halabelson@google.com (Hal Abelson)
  */
@@ -159,9 +177,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
 
   /**
-   * Sets the video source.
+   * Sets the "path" to the video. Usually, this will be the name of the video file, which should be
+   * added in the Designer.
    *
-   * <p/>
+   * @internaldoc
    * See {@link MediaUtil#determineMediaSource} for information about what a
    * path can be.
    *
@@ -214,9 +233,11 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
 
   /**
-   * Plays the media specified by the source. These won't normally be used in
-   * the most elementary applications, because videoView brings up its own
-   * player controls when the video is touched.
+   * Plays the media specified by the {@link #Source(String)}.
+   *
+   * @internaldoc
+   * These won't normally be used in the most elementary applications, because
+   * videoView brings up its own player controls when the video is touched.
    */
   @SimpleFunction(description = "Starts playback of the video.")
   public void Start() {
@@ -238,7 +259,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
 
   /**
-   * Sets the volume property to a number between 0 and 100.
+   * Sets the volume property to a number between 0 and 100. Values less than 0
+   * will be treated as 0, and values greater than 100 will be treated as 100.
    *
    * @param vol  the desired volume level
    */
@@ -268,6 +290,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
     Start();
   }
 
+  /**
+   * Pauses playback of the video.  Playback can be resumed at the same location by calling the
+   * {@link #Start()} method.
+   */
   @SimpleFunction(
       description = "Pauses playback of the video.  Playback can be resumed "
       + "at the same location by calling the <code>Start</code> method.")

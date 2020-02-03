@@ -79,6 +79,19 @@ goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
+  // Fix for issue #1901. If the variable name contains a space separating two words, and the first
+  // isn't "global", then replace the first word with global. This fixes an issue where the
+  // translated "global" keyword was being stored instead of the English keyword, resulting in
+  // errors when moving between languages in the App Inventor UI.
+  // NB: This makes an assumption that we won't allow for multi-word variables in the future. Right
+  // now variables identifiers still need to be a sequence of non-whitespace characters, so only
+  // global variables will split on a space.
+  if (text && text !== ' ') {
+    var parts = text.split(' ');
+    if (parts.length == 2 && parts[0] !== 'global') {
+      text = 'global ' + parts[1];
+    }
+  }
   Blockly.FieldLexicalVariable.superClass_.setValue.call(this, text);
   this.updateMutation();
 };
@@ -213,8 +226,8 @@ Blockly.FieldLexicalVariable.getNamesInScope = function (block) {
   var globalNames = Blockly.FieldLexicalVariable.getGlobalNames(); // from global variable declarations
   // [lyn, 11/24/12] Sort and remove duplicates from namespaces
   globalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(globalNames);
-  globalNames = globalNames.map(Blockly.prefixGlobalMenuName).map(function(name) {
-    return [name, name];
+  globalNames = globalNames.map(function(name) {
+    return [Blockly.prefixGlobalMenuName(name), 'global ' + name];
   });
   var allLexicalNames = Blockly.FieldLexicalVariable.getLexicalNamesInScope(block);
   // Return a list of all names in scope: global names followed by lexical ones.

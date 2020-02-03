@@ -33,8 +33,11 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 
 /**
- * A Component for working with files and directories on the device.
- *
+ * Non-visible component for storing and retrieving files. Use this component to write or read files
+ * on the device. The default behavior is to write files to the private data directory associated
+ * with the app. The Companion writes files to `/sdcard/AppInventor/data` for easy debugging. If
+ * the file path starts with a slash (`/`), then the file is created relative to `/sdcard`.
+ * For example, writing a file to `/myFile.txt` will write the file in `/sdcard/myFile.txt`.
  */
 @DesignerComponent(version = YaVersion.FILE_COMPONENT_VERSION,
     description = "Non-visible component for storing and retrieving files. Use this component to " +
@@ -68,7 +71,17 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Stores the text to a specified file on the phone.
+   * Saves text to a file. If the `fileName`{:.text.block} begins with a slash (`/`) the file is
+   * written to the sdcard (for example, writing to `/myFile.txt` will write the file to
+   * `/sdcard/myFile.txt`). If the `fileName`{:.text.block} does not start with a slash, it will be
+   * written in the program's private data directory where it will not be accessible to other
+   * programs on the phone. There is a special exception for the AI Companion where these files are
+   * written to `/sdcard/AppInventor/data` to facilitate debugging.
+   *
+   *   Note that this block will overwrite a file if it already exists. If you want to add content
+   * to an existing file use the {@link #AppendToFile(String, String)} method.
+   *
+   * @internaldoc
    * Calls the Write function to write to the file asynchronously to prevent
    * the UI from hanging when there is a large write.
    *
@@ -91,7 +104,11 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Appends text to a specified file on the phone.
+   * Appends text to the end of a file. Creates the file if it does not already exist. See the help
+   * text under {@link #SaveFile(String, String)} for information about where files are written.
+   * On success, the {@link #AfterFileSaved(String)} event will run.
+   *
+   * @internaldoc
    * Calls the Write function to write to the file asynchronously to prevent
    * the UI from hanging when there is a large write.
    *
@@ -108,11 +125,14 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Retrieve the text stored in a specified file.
+   * Reads text from a file in storage. Prefix the `fileName`{:.text.block} with `/` to read from a
+   * specific file on the SD card (for example, `/myFile.txt` will read the file
+   * `/sdcard/myFile.txt`). To read assets packaged with an application (also works for the
+   * Companion) start the `fileName`{:.text.block} with `//` (two slashes). If a
+   * `fileName`{:.text.block} does not start with a slash, it will be read from the application's
+   * private storage (for packaged apps) and from `/sdcard/AppInventor/data` for the Companion.
    *
    * @param fileName the file from which the text is read
-   * @throws FileNotFoundException if the file cannot be found
-   * @throws IOException if the text cannot be read from the file
    */
   @SimpleFunction(description = "Reads text from a file in storage. " +
       "Prefix the filename with / to read from a specific file on the SD card. " +
@@ -163,7 +183,11 @@ public class File extends AndroidNonvisibleComponent implements Component {
 
 
   /**
-   * Delete the specified file.
+   * Deletes a file from storage. Prefix the `fileName`{:.text.block} with `/` to delete a specific
+   * file in the SD card (for example, `/myFile.txt` will delete the file `/sdcard/myFile.txt`).
+   * If the `fileName`{:.text.block} does not begin with a `/`, then the file located in the
+   * program's private storage will be deleted. Starting the `fileName`{:.text.block} with `//` is
+   * an error because asset files cannot be deleted.
    *
    * @param fileName the file to be deleted
    */
@@ -346,7 +370,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Event indicating that a request has finished.
+   * Event indicating that the contents from the file have been read.
    *
    * @param text read from the file
    */
@@ -357,9 +381,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Event indicating that a request has finished.
+   * Event indicating that the contents of the file have been written.
    *
-   * @param text write to the file
+   * @param fileName the name of the written file
    */
   @SimpleEvent (description = "Event indicating that the contents of the file have been written.")
   public void AfterFileSaved(String fileName) {

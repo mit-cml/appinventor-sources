@@ -30,6 +30,18 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
+/**
+ * The `Circle` component visualizes a circle of a given {@link #Radius(double)}, in meters,
+ * centered at a {@link #Latitude(double)} and {@link #Longitude(double)}. The `Circle`'s appearance
+ * cnn be customized using properties such as {@link #FillColor(int)}, {@link #StrokeColor(int)},
+ * and {@link #StrokeWidth(int)}.
+ *
+ * The `Circle` component can also be used to implement features such as geofencing, a mechanism
+ * where the user's presence within an area is used to trigger other behaviors. Using the
+ * {@link #DistanceToPoint(double, double, boolean)} method combined with the
+ * [`LocationSensor`](sensors.html#LocationSensor), you can determine whether a user's location is
+ * inside or outside of the `Circle`. You can use this feature to trigger additional actions.
+ */
 @DesignerComponent(version = YaVersion.CIRCLE_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Circle")
@@ -108,7 +120,8 @@ public class Circle extends PolygonBase implements MapCircle {
   }
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(description = "Returns the type of the feature. For Circles, "
+      + "this returns the text \"Circle\".")
   public String Type() {
     return MapFactory.MapFeatureType.TYPE_CIRCLE;
   }
@@ -123,6 +136,9 @@ public class Circle extends PolygonBase implements MapCircle {
     map.getController().updateFeaturePosition(this);
   }
 
+  /**
+   * Sets or gets the radius of the circle, in meters.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The radius of the circle in meters.")
@@ -146,6 +162,11 @@ public class Circle extends PolygonBase implements MapCircle {
     }
   }
 
+  /**
+   * Sets or gets the latitude of the center of the circle, in degrees. Positive values represent
+   * north of the equator and negative values represent south of the equator. To update the
+   * latitude and longitude simultaneously, use the {@link #SetLocation(double, double)} method.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The latitude of the center of the circle.")
@@ -169,6 +190,11 @@ public class Circle extends PolygonBase implements MapCircle {
     }
   }
 
+  /**
+   * Sets or gets the longitude of the center of the circle, in degrees. Positive values represent
+   * east of the prime meridian and negative values represent west of the prime meridian. To update
+   * the latitude and longitude simultaneously, use the {@link #SetLocation(double, double)} method.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The longitude of the center of the circle.")
@@ -176,6 +202,12 @@ public class Circle extends PolygonBase implements MapCircle {
     return longitude;
   }
 
+  /**
+   * Moves the center of the `Circle` to the given `latitude` and `longitude`. This method is more
+   * efficient than setting {@link #Latitude(double)} and {@link #Longitude(double)} separately.
+   * @param latitude the new latitude of the circle center, in decimal degrees.
+   * @param longitude the new longitude of the circle center, in decimal degrees.
+   */
   @Override
   @SimpleFunction(description = "Set the center of the Circle.")
   public void SetLocation(double latitude, double longitude) {

@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.appinventor.components.runtime.Component;
@@ -387,6 +388,23 @@ public final class MapFactory {
      * feature is drawn within the viewport. It may be offscreen.
      */
     boolean isFeatureVisible(MapFeature feature);
+
+    /**
+     * Gets whether the feature collection is visible or not.
+     * @param collection the collection to check.
+     * @return  true if the collection is visible, otherwise false. This may not guarantee that the
+     *     children of the collection are visible within the viewport.
+     */
+    boolean isFeatureCollectionVisible(MapFeatureCollection collection);
+
+    /**
+     * Changes the visibility of the feature collection.
+     * @param collection the collection which will have its visibility changed
+     * @param visible true if the features in the feature collection should be visible, otherwise
+     *                false. Note that the feature has its own visibility flag. Both visible flags
+     *                must be true for the feature to be drawn.
+     */
+    void setFeatureCollectionVisible(MapFeatureCollection collection, boolean visible);
 
     /**
      * Show the infobox attached to a map feature. The feature must have been
@@ -779,7 +797,7 @@ public final class MapFactory {
    *
    * @author ewpatton@mit.edu (Evan W. Patton)
    */
-  public interface MapFeatureContainer extends ComponentContainer {
+  public interface MapFeatureContainer extends ComponentContainer, Iterable<MapFeature> {
 
     // Properties
 
@@ -850,6 +868,12 @@ public final class MapFactory {
     void addFeature(MapFeature feature);
 
     /**
+     * Iterates over the features in the MapFeatureContainer.
+     * @return new iterator
+     */
+    Iterator<MapFeature> iterator();
+
+    /**
      * Removes a feature from the feature collection.
      * @param feature the feature to remove
      */
@@ -873,6 +897,18 @@ public final class MapFactory {
      * @return the fill paint color
      */
     int FillColor();
+
+    /**
+     * Sets the opacity of the interior of the feature
+     * @param opacity the fill opacity
+     */
+    void FillOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the interior of the feature
+     * @return the fill opacity
+     */
+    float FillOpacity();
   }
 
   /**
@@ -892,6 +928,18 @@ public final class MapFactory {
      * @return the outline paint color
      */
     int StrokeColor();
+
+    /**
+     * Sets the opacity of the outline of the feature
+     * @param opacity the stroke opacity
+     */
+    void StrokeOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the outline of the feature
+     * @return the stroke opacity
+     */
+    float StrokeOpacity();
 
     /**
      * Sets the width of the outline of the feature

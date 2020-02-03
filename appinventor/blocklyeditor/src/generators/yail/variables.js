@@ -90,7 +90,7 @@ Blockly.Yail['getVariableCommandAndName'] = function(name){
   var pair = Blockly.unprefixName(name);
   var prefix = pair[0];
   var unprefixedName = pair[1];
-  if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
+  if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX || prefix === Blockly.GLOBAL_KEYWORD) {
     name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
     command = Blockly.Yail.YAIL_GET_VARIABLE;
   } else {
@@ -106,7 +106,7 @@ Blockly.Yail['setVariableCommandAndName'] = function(name){
   var pair = Blockly.unprefixName(name);
   var prefix = pair[0];
   var unprefixedName = pair[1];
-  if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX) {
+  if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX || prefix === Blockly.GLOBAL_KEYWORD) {
     name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
     command = Blockly.Yail.YAIL_SET_VARIABLE;
   } else {

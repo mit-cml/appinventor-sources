@@ -124,6 +124,9 @@ public class StorageUtil {
     if (filePath.endsWith(".webp")) {
       return "image/webp";
     }
+    if (filePath.endsWith(".svg")) {
+      return "image/svg+xml";
+    }
 
     // Audio File Types
     if (filePath.endsWith(".mp3")) {
@@ -161,6 +164,9 @@ public class StorageUtil {
     }
 
     // Video File Types
+    if (filePath.endsWith(".avi")) {
+      return "video/avi";
+    }
     if (filePath.endsWith(".mp4")) {
       return "video/mp4";
     }
@@ -175,9 +181,6 @@ public class StorageUtil {
     }
     if (filePath.endsWith(".mkv")) {
       return "video/mkv";
-    }
-    if (filePath.endsWith(".svg")) {
-      return "image/svg+xml";
     }
 
     // Other File Types

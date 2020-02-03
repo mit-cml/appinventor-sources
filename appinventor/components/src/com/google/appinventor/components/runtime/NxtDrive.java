@@ -23,6 +23,8 @@ import java.util.List;
 // TODO(lizlooney) - We need to document what configuration of robot this component will work
 // with.
 /**
+ * ![NXT component icon](images/legoMindstormsNxt.png)
+ *
  * A component that provides a high-level interface to a LEGO MINDSTORMS NXT
  * robot, with functions that can move and turn the robot.
  *

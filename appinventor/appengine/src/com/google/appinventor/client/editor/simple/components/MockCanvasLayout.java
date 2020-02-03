@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,8 +23,6 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 final class MockCanvasLayout extends MockLayout {
-  private static final String PROPERTY_NAME_X = "X";
-  private static final String PROPERTY_NAME_Y = "Y";
   private final Image image;
   private String imageUrl;
 
@@ -108,21 +106,8 @@ final class MockCanvasLayout extends MockLayout {
     // Position the children.
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      int x;
-      try {
-        x = (int) Math.round(Double.parseDouble(child.getPropertyValue(PROPERTY_NAME_X)));
-      } catch (NumberFormatException e) {
-        // Ignore this. If we throw an exception here, the project is unrecoverable.
-        x = 0;
-      }
-      int y;
-      try {
-        y = (int) Math.round(Double.parseDouble(child.getPropertyValue(PROPERTY_NAME_Y)));
-      } catch (NumberFormatException e) {
-        // Ignore this. If we throw an exception here, the project is unrecoverable.
-        y = 0;
-      }
-      container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
+      MockSprite sprite = (MockSprite) child;
+      container.setChildSizeAndPosition(child, childLayoutInfo, sprite.getLeftX(), sprite.getTopY());
     }
 
     // Update layoutWidth and layoutHeight.
@@ -139,9 +124,13 @@ final class MockCanvasLayout extends MockLayout {
 
   @Override
   boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
+    MockSprite sprite = (MockSprite) source;
+
     // Set position of component
-    source.changeProperty(PROPERTY_NAME_X, toIntegerString(x - offsetX));
-    source.changeProperty(PROPERTY_NAME_Y, toIntegerString(y - offsetY));
+    source.changeProperty(MockSprite.PROPERTY_NAME_X,
+        toIntegerString(x - offsetX + sprite.getXOffset()));
+    source.changeProperty(MockSprite.PROPERTY_NAME_Y,
+        toIntegerString(y - offsetY + sprite.getYOffset()));
 
     // Perform drop
     MockContainer srcContainer = source.getContainer();
@@ -151,7 +140,7 @@ final class MockCanvasLayout extends MockLayout {
       srcContainer.removeComponent(source, false);
     }
     container.addComponent(source);
-    ((MockCanvas) container).reorderComponents((MockSprite) source);
+    ((MockCanvas) container).reorderComponents(sprite);
     return true;
   }
 

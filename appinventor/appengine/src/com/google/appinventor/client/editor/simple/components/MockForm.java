@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -60,6 +61,10 @@ public final class MockForm extends MockContainer {
     private AbsolutePanel bar;
     private boolean actionBar;
     private String backgroundColor;
+
+    public String getTitle() {
+      return title.getText();
+    }
 
     /*
      * Creates a new title bar.
@@ -911,14 +916,30 @@ public final class MockForm extends MockContainer {
     if (newSelectedComponent == null) {
       throw new IllegalArgumentException("at least one component must always be selected");
     }
-    if (newSelectedComponent == oldSelectedComponent) {
+    YaFormEditor formEditor = (YaFormEditor) editor;
+    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
+    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
+      // Attempting to change the selection from old to new when they are the same breaks
+      // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
+      return;
+    }
+    if (shouldSelectMultipleComponents && selectedComponents.size() > 1 && formEditor.isSelectedComponent(newSelectedComponent)) {
+      int index = selectedComponents.indexOf(newSelectedComponent);
+      selectedComponent = selectedComponents.get((index == 0) ? 1 : index - 1);
+      newSelectedComponent.onSelectedChange(false);
       return;
     }
 
     selectedComponent = newSelectedComponent;
+    Map<String, MockComponent> componentsMap = formEditor.getComponents();
 
-    if (oldSelectedComponent != null) {     // Can be null initially
-      oldSelectedComponent.onSelectedChange(false);
+    if (oldSelectedComponent != null && !shouldSelectMultipleComponents) {     // Can be null initially
+      for (MockComponent component : componentsMap.values()) {
+        if (component.getName() != selectedComponent.getName()) {
+          component.onSelectedChange(false);
+        }
+      }
     }
     newSelectedComponent.onSelectedChange(true);
   }

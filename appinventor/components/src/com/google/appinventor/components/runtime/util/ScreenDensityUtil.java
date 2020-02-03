@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2015 Google, All Rights reserved
-// Copyright 2011-2015 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -75,12 +74,8 @@ public final class ScreenDensityUtil {
 
     float sw = width/(float)newWidth;
     float sh = height/(float)newHeight;
-    float scale = sw < sh ? sw : sh;
-    if (scale < 1) {
-      scale = 1;
-    }
 
-    return scale;
+    return Math.max(1, Math.min(Math.min(sw, sh), MAXIMUM_ASPECT_RATIO));
   }
 
   /**
@@ -90,14 +85,19 @@ public final class ScreenDensityUtil {
    * @param context context to get screen size of.
    * @param outSize Set to the real size of the display.
    */
-  public static void getRawScreenDim(Context context, Point outSize) {
+  private static void getRawScreenDim(Context context, Point outSize) {
 
     final DisplayMetrics metrics = new DisplayMetrics();
     final WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
 
     int sdkLevel = SdkLevel.getLevel();
-    if (sdkLevel >= SdkLevel.LEVEL_JELLYBEAN_MR1) {
+    if (sdkLevel >= SdkLevel.LEVEL_NOUGAT) {
+      // Needed for multi-window support
+      display.getMetrics(metrics);
+      outSize.x = metrics.widthPixels;
+      outSize.y = metrics.heightPixels;
+    } else if (sdkLevel >= SdkLevel.LEVEL_JELLYBEAN_MR1) {
       // On API level 17, a public method was added to get the actual sizes
       JellybeanUtil.getRealSize(display, outSize);
     } else if ( sdkLevel > SdkLevel.LEVEL_GINGERBREAD_MR1){

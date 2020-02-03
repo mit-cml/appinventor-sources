@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2016-2017 MIT, All rights reserved
+// Copyright 2016-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -27,6 +27,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.Collections;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -91,7 +92,8 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
             closeAdditionalChoiceDialog(true);
           }
         };
-        FileUploadWizard uploader = new FileUploadWizard(assetsFolder, callback);
+        FileUploadWizard uploader = new FileUploadWizard(assetsFolder,
+            Collections.singleton(".geojson"), callback);
         uploader.show();
       }
     });

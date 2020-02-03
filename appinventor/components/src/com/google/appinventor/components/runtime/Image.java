@@ -33,8 +33,10 @@ import android.widget.ImageView;
 import java.io.IOException;
 
 /**
- * Component for displaying images and animations.
+ * Component for displaying images and basic animations.
  *
+ * The picture to display, and other aspects of the Image's appearance, can be specified in the
+ * Designer or in the Blocks Editor.
  */
 @DesignerComponent(version = YaVersion.IMAGE_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
@@ -93,8 +95,9 @@ public final class Image extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the path of the image's picture.
+   * Specifies the path of the `Image`'s `Picture`.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -133,11 +136,10 @@ public final class Image extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the angle at which the image picture appears rotated.
+   * Specifies the angle, in degrees, at which the image picture appears rotated.
    *
    * @param rotated  the rotation angle
    */
-
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
   @SimpleProperty
@@ -175,7 +177,9 @@ public final class Image extends AndroidViewComponent {
   }
 
   /**
-   * Animation property setter method.
+   * This is a limited form of animation that can attach a small number of motion types to images.
+   * The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
+   * `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
    *
    * @see AnimationUtil
    *
@@ -214,6 +218,9 @@ public final class Image extends AndroidViewComponent {
     scalingMode = mode;
   }
 
+  /**
+   * @suppressdoc
+   */
   @SimpleProperty
   public int Scaling() {
     return scalingMode;

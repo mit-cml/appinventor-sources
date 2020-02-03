@@ -69,8 +69,44 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * A component capable of sending and receiving text messages via SMS.
-
+ * ![Texting component icon](images/texting.png)
+ *
+ * A component that will, when the {@link #SendMessage()} method is called, launch the device's
+ * preferred texting app to send the text message specified in the {@link #SendMessage()} property
+ * to the phone number specified in the {@link #PhoneNumber()} property. You may also send text
+ * messages without user interaction by calling {@link #SendMessageDirect()} instead, but this
+ * adds dangerous permissions to your final app.
+ *
+ * If the {@link #ReceivingEnabled()} property is set to 1 messages will not be received. If
+ * {@link #ReceivingEnabled()} is set to 2 messages will be received only when the application is
+ * running. Finally if {@link #ReceivingEnabled()} is set to 3, messages will be received when the
+ * application is running and when the application is not running they will be queued and a
+ * notification displayed to the user.
+ *
+ * When a message arrives, the {@link #MessageReceived(String, String)} event is raised and
+ * provides the sending number and message.
+ *
+ * An app that includes this component will receive messages even when it is in the background
+ * (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long
+ * as it's installed on the phone. If the phone receives a text message when the app is not in the
+ * foreground, the phone will show a notification in the notification bar. Selecting the
+ * notification will bring up the app. As an app developer, you'll probably want to give your users
+ * the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
+ *
+ * If the {@link #GoogleVoiceEnabled()} property is true, messages can be sent over Wifi using
+ * Google Voice. This option requires that the user have a Google Voice account and that the mobile
+ * Voice app is installed on the phone. The Google Voice option works only on phones that support
+ * Android 2.0 (Eclair) or higher. **Unfortunately, receiving no longer works in Google Voice due to
+ * changes introduced in Google Voice App.**
+ *
+ * To specify the phone number (e.g., 650-555-1212), set the PhoneNumber property to a Text string
+ * with the specified digits (e.g., 6505551212). Dashes, dots, and parentheses may be included
+ * (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
+ *
+ * Another way for an app to specify a phone number would be to include a {@link PhoneNumberPicker}
+ * component, which lets the users select a phone numbers from the ones stored in the the phone's
+ * contacts.
+ *
  * @author markf@google.com (Mark Friedman)
  * @author ram8647@gmail.com (Ralph Morelli)
  */
@@ -309,7 +345,9 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * The text message to that will be sent when the SendMessage method is called.
+   * The message that will be sent when the {@link #SendMessage()} method is called.
+   * The maximum length of a standard SMS message is usually 170. It may be less for languages
+   * using diacritical marks.
    *
    * @param message the message to send when the SendMessage function is called.
    */
@@ -323,6 +361,7 @@ public class Texting extends AndroidNonvisibleComponent
 
   /**
    * The text message that will be sent when the SendMessage method is called.
+   * @suppressdoc
    */
   @SimpleProperty
   public String Message() {
@@ -330,7 +369,7 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * Send a text message
+   * Launch the phone's default text messaging app with the message and phone number prepopulated.
    */
   @SimpleFunction
   public void SendMessage() {
@@ -347,7 +386,9 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * Send a text message directly
+   * Send a text message. **Using this block will add
+   * [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
+   * that will require additional approval if your app is submitted to the Google Play Store.**
    */
   @UsesPermissions({Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE})
   @SimpleFunction
@@ -405,8 +446,9 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * Event that's raised when a text message is received by the phone.
-   * 
+   * Event that's raised when a text message is received by the phone. **Using this block will add
+   * [dangerous permissions](//developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
+   * that will require additional approval if your app is submitted to the Google Play Store.**
    * 
    * @param number the phone number that the text message was sent from.
    * @param messageText the text of the message.
@@ -427,8 +469,11 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * If this property is true, then SendMessage will attempt to send messages using
-   * Google voice.
+   * If true, then {@link #SendMessage()} will attempt to send messages over Wifi using Google
+   * Voice. This requires that the Google Voice app must be installed and set up on the phone or
+   * tablet, with a Google Voice account. If `GoogleVoiceEnabled` is false, the device must have
+   * phone and texting service in order to send or receive messages with this component. Google
+   * Voice is available only in the USA, and some phone networks do not support it.
    *
    * @return 'true' or 'false' depending on whether you want to
    * use Google Voice for sending/receiving messages.
@@ -476,6 +521,7 @@ public class Texting extends AndroidNonvisibleComponent
    * Gets whether you want the {@link #MessageReceived(String,String)} event to
    * get run when a new text message is received.
    *
+   * @suppressdoc
    * @return 1,2 or 3 indicating that receiving is disabled (1) or foreground only
    *          (2) or always (3).
    *          {@link #MessageReceived(String,String)} event to get run when a
@@ -497,8 +543,15 @@ public class Texting extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets whether you want the {@link #MessageReceived(String,String)} event to
-   * get run when a new text message is received.
+   * If set to 1 (OFF) no messages will be received. If set to 2 (FOREGROUND) or 3 (ALWAYS) the
+   * component will respond to messages if it is running. In the case of 2 (FOREGROUND), messages
+   * received while the app is not running are discarded. In the case of 3 (ALWAYS), messages
+   * receive while the app is not running will show a notification. Selecting the notification
+   * will bring up the app and signal the {@link #MessageReceived(String, String)} event. Messages
+   * received when the app is dormant will be queued, and so several
+   * {@link #MessageReceived(String, String)} events might appear when the app awakens. As an app
+   * developer, it would be a good idea to give your users control over this property, so they can
+   * make their phones ignore text messages when your app is installed.
    *
    * @param enabled  0 = never receive, 1 = receive foreground only, 2 = receive always
    *

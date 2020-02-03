@@ -113,7 +113,7 @@ goog.require('goog.Timer');
 
     clone.setAttribute("width", width);
     clone.setAttribute("height", height);
-    clone.setAttribute("style", 'background-color: #FFFFFF');
+    clone.setAttribute("style", 'background-color: rgba(255, 255, 255, 0);');
     outer.appendChild(clone);
 
     var css = styles(el, options.selectorRemap);

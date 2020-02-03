@@ -185,6 +185,15 @@ public interface StorageIo {
   void deleteProject(String userId, long projectId);
 
   /**
+   * Sets the bit true and moves the project to trash.
+   *
+   * @param userId user ID
+   * @param projectId project ID
+   * @param boolean flag
+   */
+  void setMoveToTrashFlag(final String userId, final long projectId,boolean flag);
+
+  /**
    * Returns an array with the user's projects.
    *
    * @param userId  user ID

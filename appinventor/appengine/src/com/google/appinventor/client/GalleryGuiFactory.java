@@ -9,6 +9,7 @@ package com.google.appinventor.client;
 import java.util.Date;
 import java.util.List;
 
+import com.google.appinventor.client.explorer.youngandroid.GalleryImages;
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
@@ -28,12 +29,12 @@ public class GalleryGuiFactory {
 
   public static final OdeMessages MESSAGES = Ode.getMessages();
 
-  private final String PERSON_URL = "/images/person.png";
-  private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
-  private final String RED_HEART_ICON_URL = "/images/numLike.png";
-  private final String DOWNLOAD_ICON_URL = "/images/numDownload.png";
-  private final String NUM_VIEW_ICON_URL = "/images/numView.png";
-  private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
+  private static final String PERSON_URL = "/static/images/person.png";
+  private static final String RED_HEART_ICON_URL = "/static/images/numLike.png";
+  private static final String HOLLOW_HEART_ICON_URL = "/static/images/numLikeHollow.png";
+  private static final String DOWNLOAD_ICON_URL = "/static/images/numDownload.png";
+  private static final String NUM_VIEW_ICON_URL = "/static/images/numView.png";
+  private static final String NUM_COMMENT_ICON_URL = "/static/images/numComment.png";
 
   /**
    * Generates a new GalleryGuiFactory instance.
@@ -63,20 +64,22 @@ public class GalleryGuiFactory {
       image = new Image();
       image.addErrorHandler(new ErrorHandler() {
         public void onError(ErrorEvent event) {
-          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+          image.setResource(GalleryImages.get().genericApp());
         }
       });
       String url = gallery.getCloudImageURL(app.getGalleryAppId());
       image.setUrl(url);
 
       if(gallery.getSystemEnvironment() != null &&
-          gallery.getSystemEnvironment().toString().equals("Development")){
+          gallery.getSystemEnvironment().equals("Development")){
         final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
           // failure message
           MESSAGES.galleryError()) {
             @Override
             public void onSuccess(String newUrl) {
-              image.setUrl(newUrl + "?" + System.currentTimeMillis());
+              if (newUrl != null) {
+                image.setUrl(newUrl + "?" + System.currentTimeMillis());
+              }
             }
           };
         Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
@@ -138,14 +141,14 @@ public class GalleryGuiFactory {
 
       // Set helper icons
       Image numViews = new Image();
-      numViews.setUrl("/images/numView.png");
+      numViews.setUrl(NUM_VIEW_ICON_URL);
       Image numDownloads = new Image();
-      numDownloads.setUrl("/images/numDownload.png");
+      numDownloads.setUrl(DOWNLOAD_ICON_URL);
       Image numLikes = new Image();
-      numLikes.setUrl("/images/numLikeHollow.png");
+      numLikes.setUrl(HOLLOW_HEART_ICON_URL);
     // For generic cards, do not show comment
 //    Image numComments = new Image();
-//    numComments.setUrl("/image/numComment.png");
+//    numComments.setUrl(NUM_COMMENT_ICON_URL);
 
 //      appCardMeta.add(numViews);
 //      appCardMeta.add(gaw.numViewsLabel);

@@ -16,6 +16,8 @@ import com.google.appinventor.components.runtime.util.Ev3BinaryParser;
 import com.google.appinventor.components.runtime.util.Ev3Constants;
 
 /**
+ * ![EV3 component icon](images/legoMindstormsEv3.png)
+ *
  * A component that provides a low-level interface to a LEGO MINDSTORMS EV3
  * robot, with functions to send system or direct commands to EV3 robots.
  *

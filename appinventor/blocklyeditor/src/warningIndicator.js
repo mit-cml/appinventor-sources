@@ -257,20 +257,26 @@ Blockly.WarningIndicator.prototype.updateWarningToggleText = function() {
  *
  */
 Blockly.WarningIndicator.prototype.onclickWarningToggle = function() {
+  Blockly.hideChaff();
   window.parent.BlocklyPanel_callToggleWarning();
-}
+};
 
 Blockly.WarningIndicator.prototype.onclickWarningNavPrevious = function() {
+  Blockly.hideChaff();
   this.workspace_.getWarningHandler().previousWarning();
-}
-Blockly.WarningIndicator.prototype.onclickWarningNavNext = function() {
-  this.workspace_.getWarningHandler().nextWarning();
-}
+};
 
+Blockly.WarningIndicator.prototype.onclickWarningNavNext = function() {
+  Blockly.hideChaff();
+  this.workspace_.getWarningHandler().nextWarning();
+};
 
 Blockly.WarningIndicator.prototype.onclickErrorNavPrevious = function() {
+  Blockly.hideChaff();
   this.workspace_.getWarningHandler().previousError();
-}
+};
+
 Blockly.WarningIndicator.prototype.onclickErrorNavNext = function() {
+  Blockly.hideChaff();
   this.workspace_.getWarningHandler().nextError();
-}
+};

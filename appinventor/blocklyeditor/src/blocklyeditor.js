@@ -40,6 +40,70 @@ Blockly.configForTypeBlock = {
 Blockly.BlocklyEditor.render = function() {
 };
 
+Blockly.BlocklyEditor.HELP_IFRAME = null;
+
+top.addEventListener('mousedown', function(e) {
+  if (e.target.tagName === 'IMG' &&
+      e.target.parentElement.tagName === 'A' &&
+      e.target.parentElement.className === 'menu-help-item') {
+    e.stopPropagation();
+    if (Blockly.BlocklyEditor.HELP_IFRAME != null) {
+      Blockly.BlocklyEditor.HELP_IFRAME.parentNode.removeChild(Blockly.BlocklyEditor.HELP_IFRAME);
+      Blockly.BlocklyEditor.HELP_IFRAME = null;
+    }
+    if (e.shiftKey || e.metaKey) {
+      return;
+    }
+    e.preventDefault();
+    var div = document.createElement('div');
+    div.style.width = '400px';
+    div.style.height = '300px';
+    div.style.resize = 'both';
+    div.style.zIndex = '99999';
+    div.style.border = '1px solid gray';
+    div.style.boxSizing = 'border-box';
+    div.style.position = 'absolute';
+    div.style.top = e.clientY + 'px';
+    div.style.left = e.clientX + 'px';
+    div.style.backgroundColor = 'white';
+    div.style.overflow = 'hidden';
+    Blockly.BlocklyEditor.HELP_IFRAME = div;
+    var iframe = document.createElement('iframe');
+    iframe.src = e.target.parentElement.href;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    div.appendChild(iframe);
+    top.document.body.appendChild(div);
+    Blockly.WidgetDiv.dispose_ = function() {
+      Blockly.BlocklyEditor.HELP_IFRAME.parentNode.removeChild(Blockly.BlocklyEditor.HELP_IFRAME);
+      Blockly.BlocklyEditor.HELP_IFRAME = null;
+    };
+  }
+  return true;
+}, true);
+
+Blockly.BlocklyEditor.makeMenuItemWithHelp = function(text, helpUrl) {
+  var span = document.createElement("span");
+  var a = document.createElement("a");
+  var img = document.createElement('img');
+  img.src = '/static/images/help.png';
+  a.href = helpUrl;
+  a.target = '_blank';
+  a.className = 'menu-help-item';
+  a.style.position = 'absolute';
+  a.style.right = '5em';
+  a.addEventListener('click', function(e) {
+    if (!e.shiftKey && !e.metaKey) {
+      e.preventDefault()
+    }
+  });
+  a.appendChild(img);
+  span.appendChild(document.createTextNode(text));
+  span.appendChild(a);
+  return span;
+};
+
 function unboundVariableHandler(myBlock, yailText) {
   var unbound_vars = Blockly.LexicalVariable.freeVariables(myBlock);
   unbound_vars = unbound_vars.toList();
@@ -66,9 +130,13 @@ function unboundVariableHandler(myBlock, yailText) {
 }
 
 Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
-  var downloadBlockOption = {enabled: true, text: Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG};
-  downloadBlockOption.callback = function() {
-    Blockly.exportBlockAsPng(myBlock);
+  var downloadBlockOption = {
+    enabled: true,
+    text: Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG,
+      '/reference/other/download-pngs.html'),
+    callback: function() {
+      Blockly.exportBlockAsPng(myBlock);
+    }
   };
   options.splice(options.length - 1, 0, downloadBlockOption);
 };
@@ -190,6 +258,13 @@ Blockly.usePrefixInYail = false;
      + maybe index variables have prefix "index", or maybe instead they are treated as "param"
 */
 
+/**
+ * The global keyword. Users may be shown a translated keyword instead but this is the internal
+ * token used to identify global variables.
+ * @type {string}
+ * @const
+ */
+Blockly.GLOBAL_KEYWORD = 'global';  // used internally to identify global variables; not translated
 Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
 Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
 Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
@@ -224,6 +299,8 @@ Blockly.unprefixName = function (name) {
   if (name.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator) == 0) {
     // Globals always have prefix, regardless of flags. Handle these specially
     return [Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX, name.substring(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX.length + Blockly.menuSeparator.length)];
+  } else if (name.indexOf(Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator) === 0) {
+    return [Blockly.GLOBAL_KEYWORD, name.substring(6 + Blockly.menuSeparator.length)];
   } else if (!Blockly.showPrefixToUser) {
     return ["", name];
   } else {
@@ -260,7 +337,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'trashcan': true,
     'comments': true,
     'disable': true,
-    'media': './assets/',
+    'media': './static/media/',
     'grid': {'spacing': '20', 'length': '5', 'snap': true, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1}
   });

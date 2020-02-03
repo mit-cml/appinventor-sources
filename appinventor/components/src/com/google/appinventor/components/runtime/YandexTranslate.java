@@ -25,6 +25,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+/**
+ * Use this component to translate words and sentences between different languages. This component
+ * needs Internet access, as it will request translations to the Yandex.Translate service.
+ * Specify the source and target language in the form source-target using two letter language codes.
+ * So "en-es" will translate from English to Spanish while "es-ru" will translate from Spanish to
+ * Russian. If you leave out the source language, the service will attempt to detect the source
+ * language. So providing just "es" will attempt to detect the source language and translate it
+ * to Spanish.
+ *
+ * This component is powered by the Yandex translation service. See
+ * http://api.yandex.com/translate/ for more information, including the list of available languages
+ * and the meanings of the language codes and status codes.
+ *
+ * **Note:** Translation happens asynchronously in the background. When the translation is complete,
+ * the {@link #GotTranslation(String, String)} event is triggered.
+ */
 @DesignerComponent(version = YaVersion.YANDEX_COMPONENT_VERSION,
     description = "Use this component to translate words and sentences between different " +
         "languages. This component needs Internet access, as it will request " +
@@ -70,7 +86,14 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
   }
 
   /**
-   * Performs an HTTP GET request to the Yandex.Translate service
+   * By providing a target language to translate to (for instance, 'es' for Spanish, 'en' for
+   * English, or 'ru' for Russian), and a word or sentence to translate, this method will request
+   * a translation to the Yandex.Translate service. Once the text is translated by the external
+   * service, the event {@link #GotTranslation(String, String)} will be executed.
+   *
+   *   **Note:** Yandex.Translate will attempt to detect the source language. You can also specify
+   * prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
+   * translation.
    */
   @SimpleFunction(description = "By providing a target language to translate to (for instance, " +
       "'es' for Spanish, 'en' for English, or 'ru' for Russian), and a word or sentence to " +

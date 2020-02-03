@@ -37,6 +37,12 @@ public class PreviewFileCommand extends ChainableCommand {
   }
 
   @Override
+  public boolean isSupported(final ProjectNode node) {
+    return StorageUtil.isImageFile(node.getFileId()) || StorageUtil.isAudioFile(node.getFileId())
+        || StorageUtil.isVideoFile(node.getFileId());
+  }
+
+  @Override
   public void execute(final ProjectNode node) {
     final DialogBox dialogBox = new DialogBox();
     dialogBox.setText(node.getName());
@@ -95,7 +101,7 @@ public class PreviewFileCommand extends ChainableCommand {
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       // Support preview for file types that all major browser support
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
-          || fileType.endsWith("bmp")) {
+          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
         Image img = new Image(fileUrl);
         img.getElement().getStyle().setProperty("maxWidth","600px");
         return img;
@@ -108,7 +114,7 @@ public class PreviewFileCommand extends ChainableCommand {
       }
     } else if (StorageUtil.isVideoFile(fileSuffix)) { // Video Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
-      if (fileType.endsWith("mp4") || fileType.endsWith("webm")) {
+      if (fileType.endsWith("avi") || fileType.endsWith("mp4") || fileType.endsWith("webm")) {
         return new HTML("<video width='320' height='240' controls> <source src='" + fileUrl
             + "' type='" + fileType + "'>" + MESSAGES.filePlaybackError() + "</video>");
       }

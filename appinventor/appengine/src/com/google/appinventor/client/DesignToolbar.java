@@ -522,7 +522,7 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
 
     if (AppInventorFeatures.allowMultiScreenApplications() && !isReadOnly) {
-      if (getCurrentProject() == null || getCurrentProject().currentScreen == "Screen1") {
+      if (getCurrentProject() == null || "Screen1".equals(getCurrentProject().currentScreen)) {
         setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);
       } else {
         setButtonEnabled(WIDGET_NAME_REMOVEFORM, true);

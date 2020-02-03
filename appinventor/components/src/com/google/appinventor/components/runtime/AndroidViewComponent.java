@@ -51,24 +51,25 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public abstract View getView();
 
   /**
-   * Returns true iff the %type% is visible.
+   * Returns true iff the `%type%` is visible.
    * @return  true iff the component is visible
    */
   @SimpleProperty(
+      description = "Specifies whether the %type% should be visible on the screen. "
+          + "Value is true if the %type% is showing and false if hidden.",
       category = PropertyCategory.APPEARANCE)
   public boolean Visible() {
     return getView().getVisibility() == View.VISIBLE;
   }
 
   /**
-   * Specifies whether the component should be visible on the screen.  Value is true if the
-   * component is showing and false if hidden.
+   * Specifies whether the `%type%` should be visible on the screen.  Value is `true`{:.logic.block}
+   * if the `%type%` is showing and `false`{:.logic.block} if hidden.
    * @param  visibility desired state
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
       defaultValue = "True")
-  @SimpleProperty(description = "Specifies whether the %type% should be visible on the screen. "
-      + "Value is true if the %type% is showing and false if hidden.")
+  @SimpleProperty
   public void Visible(boolean visibility) {
     // The principle of least astonishment suggests we not offer the
     // Android option INVISIBLE.
@@ -76,7 +77,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Returns the horizontal width of the %type%, measured in pixels.
+   * Returns the horizontal width of the `%type%`, measured in pixels.
    *
    * @return  width in pixels
    */
@@ -89,7 +90,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the horizontal width of the %type%, measured in pixels.
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
    *
    * @param  width in pixels
    */
@@ -106,8 +107,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the horizontal width of the %type% as a percentage
-   * of the Width of the Screen.
+   * Specifies the horizontal width of the `%type%` as a percentage
+   * of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
    *
    * @param pCent width in percent
    */
@@ -168,7 +169,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Returns the component's vertical height, measured in pixels.
+   * Returns the `%type%`'s vertical height, measured in pixels.
    *
    * @return  height in pixels
    */
@@ -179,7 +180,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the component's vertical height, measured in pixels.
+   * Specifies the `%type%`'s vertical height, measured in pixels.
    *
    * @param  height in pixels
    */
@@ -196,8 +197,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the component's vertical height as a percentage
-   * of the height of its parent Component.
+   * Specifies the `%type%`'s vertical height as a percentage
+   * of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
    *
    * @param pCent height in percent
    */

@@ -45,15 +45,16 @@ public final class ProjectNodeContextMenu {
         Window.getScrollTop() + clientY);
     for (final CommandRegistry.Entry entry : entries) {
       final ProjectNodeCommand cmd = entry.getCommand();
-
-      // Create the menu item.
-      menu.addItem(cmd.getLabel(), new Command() {
-        @Override
-        public void execute() {
-          menu.hide();
-          cmd.execute(node);
-        }
-      });
+      if (cmd.isSupported(node)) {
+        // Create the menu item.
+        menu.addItem(cmd.getLabel(), new Command() {
+          @Override
+          public void execute() {
+            menu.hide();
+            cmd.execute(node);
+          }
+        });
+      }
     }
 
     menu.show();

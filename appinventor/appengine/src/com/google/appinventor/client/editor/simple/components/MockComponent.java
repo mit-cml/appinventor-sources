@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -53,6 +54,7 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -774,7 +776,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
     TreeItem itemNode = new TreeItem(
-        new HTML("<span>" + iconImage.getElement().getString() + getName() + "</span>")) {
+        new HTML("<span>" + iconImage.getElement().getString() + SafeHtmlUtils.htmlEscapeAllowEntities(getName()) + "</span>")) {
       @Override
       protected Focusable getFocusable() {
         return nullFocusable;
@@ -1023,11 +1025,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // If this component's visible property is false, we need to check whether to show hidden
       // components.
       if (!visible) {
-        boolean showHiddenComponents = Boolean.parseBoolean(
-            editor.getProjectEditor().getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS));
-        return showHiddenComponents;
+        YaFormEditor formEditor = (YaFormEditor) editor;
+        return formEditor.shouldDisplayHiddenComponents();
       }
     }
     return true;
@@ -1144,13 +1143,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       String oldType = "";
       String newType = "";
       for (PropertyDefinition prop : newProperties) {
-        if (prop.getName() == property.getName()) {
+        if (prop.getName().equals(property.getName())) {
           presentInNewProperties = true;
           newType = prop.getEditorType();
         }
       }
       for (PropertyDefinition prop : oldProperties) {
-        if (prop.getName() == property.getName()) {
+        if (prop.getName().equals(property.getName())) {
           presentInOldProperties = true;
           oldType = prop.getEditorType();
         }

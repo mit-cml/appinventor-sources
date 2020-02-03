@@ -30,8 +30,9 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Multimedia component that records audio using
- * {@link android.media.MediaRecorder}.
+ * ![SoundRecorder icon](images/soundrecorder.png)
+ *
+ * Multimedia component that records audio.
  *
  */
 @DesignerComponent(version = YaVersion.SOUND_RECORDER_COMPONENT_VERSION,
@@ -121,13 +122,16 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
 
 
   /**
-   * Returns the path to the saved recording
+   * Specifies the path to the file where the recording should be stored. If this property is the
+   * empty string, then starting a recording will create a file in an appropriate location. If the
+   * property is not the empty string, it should specify a complete path to a file in an existing
+   * directory, including a file name with the extension .3gp.
    *
    * @return  savedRecording path to recording
    */
   @SimpleProperty(
       description = "Specifies the path to the file where the recording should be stored. " +
-          "If this proprety is the empty string, then starting a recording will create a file in " +
+          "If this property is the empty string, then starting a recording will create a file in " +
           "an appropriate location.  If the property is not the empty string, it should specify " +
           "a complete path to a file in an existing directory, including a file name with the " +
           "extension .3gp." ,
@@ -139,6 +143,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
   /**
    * Specifies the path to the saved recording displayed by the label.
    *
+   * @suppressdoc
    * @param pathName  path to saved recording
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,

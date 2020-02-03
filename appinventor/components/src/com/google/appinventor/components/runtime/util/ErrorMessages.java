@@ -138,6 +138,8 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113;
   public static final int ERROR_WEB_UNABLE_TO_DELETE = 1114;
   public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115;
+  public static final int ERROR_WEB_REQUEST_TIMED_OUT = 1117; //Continuing from number after contact picker
+  public static final int ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118;
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -217,6 +219,9 @@ public final class ErrorMessages {
 
   // Form errors that are signalled in runtime.scm
   public static final int ERROR_DIVISION_BY_ZERO = 3200;
+  public static final int ERROR_INDEX_MISSING_IN_LIST = 3201;
+  public static final int ERROR_NUMBER_FORMAT_EXCEPTION = 3202;
+  public static final int ERROR_INVALID_VALUE_IN_PATH = 3203;
 
   // Extension errors are signalled from extensions
   public static final int ERROR_EXTENSION_ERROR = 3300;
@@ -501,7 +506,11 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS,
         "Unable to build request data: element %s does not contain two elements");
     errorMessages.put(ERROR_WEB_UNABLE_TO_DELETE,
-            "Unable to delete a resource with the specified URL: %s");
+        "Unable to delete a resource with the specified URL: %s");
+    errorMessages.put(ERROR_WEB_REQUEST_TIMED_OUT,
+        "Took longer then timeout period to receive data from the URL: %s");
+    errorMessages.put(ERROR_WEB_JSON_TEXT_ENCODE_FAILED,
+        "Unable to encode as JSON the object %s");
     // Contact picker (and PhoneNumberPicker) errors
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER,
         "The software used in this app cannot extract contacts from this type of phone.");
@@ -585,6 +594,12 @@ public final class ErrorMessages {
     // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
         "Trying to divide %s by 0.  The result might not be valid.");
+    errorMessages.put(ERROR_INDEX_MISSING_IN_LIST,
+        "Index %d out of bounds in list %s.");
+    errorMessages.put(ERROR_NUMBER_FORMAT_EXCEPTION,
+        "Expected a number for an index, but got \"%s\" instead.");
+    errorMessages.put(ERROR_INVALID_VALUE_IN_PATH,
+        "Expected a list or dictionary, but found a %s when walking path.");
     // Extension errors
     errorMessages.put(ERROR_EXTENSION_ERROR,
         "Error %d in extension %s: %s");

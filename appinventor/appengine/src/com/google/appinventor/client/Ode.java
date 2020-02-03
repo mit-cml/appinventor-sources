@@ -25,11 +25,13 @@ import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -66,8 +68,6 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
-import com.google.appinventor.shared.rpc.help.HelpService;
-import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
@@ -204,6 +204,7 @@ public class Ode implements EntryPoint {
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
   private static final int USERADMIN = 7;
+  private static final int TRASHCAN = 8;
   private static int currentView = DESIGNER;
 
   /*
@@ -243,6 +244,9 @@ public class Ode implements EntryPoint {
   private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+  private VerticalPanel pVertPanel;
+  private HorizontalPanel projectListPanel = new HorizontalPanel();
+  private HorizontalPanel projectListPane2= new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -250,9 +254,6 @@ public class Ode implements EntryPoint {
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
-
-  // Web service for help information
-  private final HelpServiceAsync helpService = GWT.create(HelpService.class);
 
   // Web service for project related information
   private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);
@@ -437,13 +438,21 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     // We may need to pass the code below as a runnable to
     // screenShotMaybe() so build the runnable now
+    hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
         @Override
         public void run() {
-          if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+          if (currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
             ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
             ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+            //shifting back to show projects
+            if (currentView == TRASHCAN)  {
+              projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
+              projectListPanel.setWidth("100%");
+              projectListPanel.add(ProjectListBox.getProjectListBox());
+              pVertPanel.add(projectListPanel);
+            }
           }
           currentView = PROJECTS;
           getTopToolbar().updateFileMenuButtons(currentView);
@@ -453,6 +462,9 @@ public class Ode implements EntryPoint {
           // the button). When the person switches to the projects list view again (here)
           // we re-enable it.
           projectToolbar.enableStartButton();
+          projectToolbar.setProjectTabButtonsVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(true);
+          projectToolbar.setTrashTabButtonsVisible(false);
         }
       };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
@@ -464,10 +476,37 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Switch to the Trash tab
+   */
+
+  public void switchToTrash() {
+    hideChaff();
+    hideTutorials();
+    if (currentView != TRASHCAN){
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
+      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
+    }
+    currentView = TRASHCAN;
+    projectListPane2.setWidth("100%");
+    projectListPanel.remove(ProjectListBox.getProjectListBox());
+    projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
+    pVertPanel.remove(projectListPanel);
+    pVertPanel.add(projectListPane2);
+    deckPanel.showWidget(projectsTabIndex);
+    projectToolbar.setProjectTabButtonsVisible(false);
+    projectToolbar.setPublishOrUpdateButtonVisible(false);
+    projectToolbar.setTrashTabButtonsVisible(true);
+    if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
+        Ode.getInstance().createEmptyTrashDialog(true);
+    }
+  }
+
+  /**
    * Switch to the User Admin Panel
    */
 
   public void switchToUserAdminPanel() {
+    hideChaff();
     hideTutorials();
     currentView = USERADMIN;
     deckPanel.showWidget(userAdminTabIndex);
@@ -477,6 +516,7 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       // Gallery initialization is deferred until now.
@@ -490,6 +530,7 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery App
    */
   public void switchToGalleryAppView(GalleryApp app, int editStatus) {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       // Gallery initialization is deferred until now.
@@ -505,6 +546,7 @@ public class Ode implements EntryPoint {
    * TODO: change string parameter
    */
   public void switchToUserProfileView(String userId, int editStatus) {
+    hideChaff();
     hideTutorials();
     currentView = USERPROFILE;
     OdeLog.log("###########" + userId + "||||||" + editStatus);
@@ -516,6 +558,7 @@ public class Ode implements EntryPoint {
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
+    hideChaff();
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     showTutorials();
@@ -533,6 +576,7 @@ public class Ode implements EntryPoint {
    * Switch to Gallery TabPanel
    */
   public void switchToPrivateUserProfileView() {
+    hideChaff();
     currentView = privateUserProfileIndex;
     deckPanel.showWidget(privateUserProfileIndex);
   }
@@ -541,6 +585,7 @@ public class Ode implements EntryPoint {
    * Switch to the Moderation Page tab
    */
   public void switchToModerationPageView() {
+    hideChaff();
     hideTutorials();
     if (!galleryInitialized) {
       initializeGallery();
@@ -552,6 +597,7 @@ public class Ode implements EntryPoint {
    * Switch to the Debugging tab
    */
   public void switchToDebuggingView() {
+    hideChaff();
     hideTutorials();
     deckPanel.showWidget(debuggingTabIndex);
 
@@ -653,7 +699,7 @@ public class Ode implements EntryPoint {
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
         @Override
-        public void onProjectLoaded(Project projectLoaded) {
+        public void onProjectLoaded(Project glass) {
           project.removeProjectChangeListener(this);
           openYoungAndroidProjectInDesigner(project);
         }
@@ -830,7 +876,9 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                openPreviousProject();
+                if (shouldAutoloadLastProject()) {
+                  openPreviousProject();
+                }
 
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
@@ -944,7 +992,6 @@ public class Ode implements EntryPoint {
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) galleryService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
@@ -984,7 +1031,7 @@ public class Ode implements EntryPoint {
     deckPanel.setStyleName("ode-DeckPanel");
 
     // Projects tab
-    VerticalPanel pVertPanel = new VerticalPanel() {
+    pVertPanel = new VerticalPanel() {
         /**
          * Flag to indicate the project list has been rendered at least once.
          */
@@ -1007,7 +1054,6 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
@@ -1376,15 +1422,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Get an instance of the help web service.
-   *
-   * @return help service instance
-   */
-  public HelpServiceAsync getHelpService() {
-    return helpService;
-  }
-
-  /**
    * Get an instance of the component web service.
    *
    * @return component web service instance
@@ -1492,6 +1529,32 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Checks whether autoloading of the user's previous project should be
+   * performed.
+   *
+   * @return true if autoloading should be performed, otherwise false.
+   */
+  public boolean shouldAutoloadLastProject() {
+    String autoloadParam = Window.Location.getParameter("autoload");
+    if ("false".equalsIgnoreCase(autoloadParam)) {
+      return false;
+    } else if ("true".equalsIgnoreCase(autoloadParam)) {
+      return true;
+    }
+    return getUserAutoloadProject();
+  }
+
+  /**
+   * HideChaff when switching view from block to others
+   */
+  private void hideChaff() {
+    if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
+        // currentFileEditor may be null when switching projects
+        && currentFileEditor != null) {
+      currentFileEditor.hideChaff();
+    }
+  }
+  /**
    * Returns user dyslexic font setting.
    *
    * @return user default font
@@ -1511,6 +1574,28 @@ public class Ode implements EntryPoint {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
                     "" + dyslexicFont);
+    userSettings.saveSettings(null);
+  }
+
+  /**
+   * Checks whether the user has autoloading enabled in their settings.
+   *
+   * @return true if autoloading is enabled, otherwise false.
+   */
+  public static boolean getUserAutoloadProject() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Sets whether to use autoloading for the current user.
+   *
+   * @param enable true if autoloading should be enabled or false if it should be disabled.
+   */
+  public static void setUserAutoloadProject(boolean enable) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .changePropertyValue(SettingsConstants.USER_AUTOLOAD_PROJECT, Boolean.toString(enable));
     userSettings.saveSettings(null);
   }
 
@@ -1587,7 +1672,6 @@ public class Ode implements EntryPoint {
     }
 
     // Unregister services with RPC status popup.
-    rpcStatusPopup.unregister((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) userInfoService);
 
@@ -1622,6 +1706,60 @@ public class Ode implements EntryPoint {
       dialogBox.show();
     }
   
+    return dialogBox;
+  }
+
+  /**
+   * Creates a dialog box to show empty trash list message.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+
+  public DialogBox createEmptyTrashDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(true, false); //DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.createNoProjectsDialogText());
+
+    Grid mainGrid = new Grid(2, 2);
+    mainGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(0,
+            1,
+            HasHorizontalAlignment.ALIGN_CENTER,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(1,
+            1,
+            HasHorizontalAlignment.ALIGN_RIGHT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+    Image dialogImage = new Image(Ode.getImageBundle().codiVert());
+
+    Grid messageGrid = new Grid(2, 1);
+    messageGrid.getCellFormatter().setAlignment(0,
+            0,
+            HasHorizontalAlignment.ALIGN_JUSTIFY,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+    messageGrid.getCellFormatter().setAlignment(1,
+            0,
+            HasHorizontalAlignment.ALIGN_LEFT,
+            HasVerticalAlignment.ALIGN_MIDDLE);
+
+
+    Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
+    messageGrid.setWidget(1, 0, messageChunk2);
+    mainGrid.setWidget(0, 0, dialogImage);
+    mainGrid.setWidget(0, 1, messageGrid);
+
+    dialogBox.setWidget(mainGrid);
+    dialogBox.center();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+
     return dialogBox;
   }
 
@@ -2470,6 +2608,7 @@ public class Ode implements EntryPoint {
   private void showTutorials() {
     if (tutorialVisible) {
       tutorialPanel.setVisible(true);
+      overDeckPanel.setCellWidth(tutorialPanel, "300");
     }
   }
 
@@ -2478,6 +2617,7 @@ public class Ode implements EntryPoint {
     if (visible) {
       tutorialPanel.setVisible(true);
       tutorialPanel.setWidth("300px");
+      overDeckPanel.setCellWidth(tutorialPanel, "300");
     } else {
       tutorialPanel.setVisible(false);
       overDeckPanel.setCellWidth(tutorialPanel, "0%");

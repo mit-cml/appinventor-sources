@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import gnu.lists.FString;
 import gnu.lists.LList;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
@@ -294,7 +295,7 @@ public class GeoJSONUtilTest extends MapTestBase {
   }
 
   @Test
-  public void testWriteFeaturesAsGeoJSON() throws IOException {
+  public void testWriteFeaturesAsGeoJSON() throws IOException, JSONException {
     MarkerTest.createMarker(getMap(), 42.0, -71.0);
     defaultLineEW(new LineString(getMap()));
     defaultPolygon(new Polygon(getMap()));
@@ -308,7 +309,7 @@ public class GeoJSONUtilTest extends MapTestBase {
   }
 
   @Test
-  public void testWriteFeaturesAsGeoJSONNoFeatures() throws IOException {
+  public void testWriteFeaturesAsGeoJSONNoFeatures() throws IOException, JSONException {
     String contents = saveMapToString();
     JSONObject json = new JSONObject(contents);
     assertEquals(0, json.getJSONArray("features").length());
@@ -376,9 +377,11 @@ public class GeoJSONUtilTest extends MapTestBase {
         "description", TEST_DESCRIPTION,
         "draggable", true,
         "fill", "blue",
+        "fill-opacity", 0.4,
         "image", "",
         "infobox", false,
         "stroke", "green",
+        "stroke-opacity", 0.7,
         "stroke-width", 3,
         "title", TEST_TITLE,
         "visible", true,
@@ -399,12 +402,16 @@ public class GeoJSONUtilTest extends MapTestBase {
   }
 
   private static void assertTestProperties(MapFeatureBaseWithFill feature) {
-    assertEquals(COLOR_BLUE, feature.FillColor());
+    assertEquals(COLOR_BLUE, feature.FillColor() | 0xFF000000);
+    assertEquals(0.4, feature.FillOpacity(), 1e-6);
+    assertEquals(Math.round(0.4 * 255), feature.FillColor() >>> 24);
     assertTestProperties((MapFeatureBase) feature);
   }
 
   private static void assertTestProperties(MapFeatureBase feature) {
-    assertEquals(COLOR_GREEN, feature.StrokeColor());
+    assertEquals(COLOR_GREEN, feature.StrokeColor() | 0xFF000000);
+    assertEquals(0.7, feature.StrokeOpacity(), 1e-6);
+    assertEquals(Math.round(0.7 * 255), feature.StrokeColor() >>> 24);
     assertEquals(3, feature.StrokeWidth());
     assertTestProperties((MapFeature) feature);
   }

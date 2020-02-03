@@ -99,6 +99,9 @@ public class StoredData {
     long galleryId;  // this is the galleryId of this project (if published)
     long attributionId;  // if this project was initiated from the gallery, this is
        // the id of the gallery app that was copied for remix
+
+    //adding a boolean variable to mark deleted project
+    boolean projectMovedToTrashFlag;
   }
 
   // Project properties specific to the user

@@ -407,9 +407,6 @@ public class GalleryClient {
 
   }
 
-  public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
-  public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
-
   /**
    * URL is in GCS, of form: /gs/<bucket>/gallery/apps/6046115656892416/aia
    * @return gallery bucket

@@ -42,7 +42,34 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.io.File;
 
 /**
- * Implementation of a general Android Activity component.
+ * A component that can launch an activity using the StartActivity method.
+ *
+ * Activities that can be launched include:
+ *
+ * * Starting another App Inventor for Android app. To do so, first find out the class of the other
+ *   application by downloading the source code and using a file explorer or unzip utility to find
+ *   a file named "youngandroidproject/project.properties". The first line of the file will start
+ *   with "main=" and be followed by the class name; for example,
+ *   `main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1`. (The first components indicate that it was
+ *   created by Ben.Bitdiddle\@gmail.com.) To make your `ActivityStarter` launch this application,
+ *   set the following properties:
+ *   * `ActivityPackage` to the class name, dropping the last component (for example,
+ *     `com.gmail.Bitdiddle.Ben.HelloPurr`)
+ *   * `ActivityClass` to the entire class name (for example,
+ *     `com.gmail.Bitdiddle.Ben.HelloPurr.Screen1`)
+ * * Starting the camera application by setting the following properties:
+ *   * `Action`: `android.intent.action.MAIN`
+ *   * `ActivityPackage`: `com.android.camera`
+ *   * `ActivityClass`: `com.android.camera.Camera`
+ * * Performing web search. Assuming the term you want to search for is "vampire" (feel free to substitute your own choice), set the properties to:
+ *   * `Action`: `android.intent.action.WEB_SEARCH`
+ *   * `ExtraKey`: `query`
+ *   * `ExtraValue`: `vampire`
+ *   * `ActivityPackage`: `com.google.android.providers.enhancedgooglesearch`
+ *   * `ActivityClass`: `com.google.android.providers.enhancedgooglesearch.Launcher`
+ * * Opening a browser to a specified web page. Assuming the page you want to go to is "www.facebook.com" (feel free to substitute your own choice), set the properties to:
+ *   * `Action`: `android.intent.action.VIEW`
+ *   * `DataUri`: `http://www.facebook.com`
  *
  * @author markf@google.com (Mark Friedman)
  */
@@ -350,11 +377,18 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     this.activityClass = activityClass.trim();
   }
 
+  /**
+   * Event raised after this `ActivityStarter` returns.
+   * @param result The result returned by the activity
+   */
   @SimpleEvent(description = "Event raised after this ActivityStarter returns.")
   public void AfterActivity(String result) {
     EventDispatcher.dispatchEvent(this, "AfterActivity", result);
   }
 
+  /**
+   * Event raised if this `ActivityStarter returns because the activity was canceled.
+   */
   @SimpleEvent(description =
       "Event raised if this ActivityStarter returns because the activity was canceled.")
   public void ActivityCanceled() {
@@ -417,7 +451,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
 
   /**
-   * Returns the name of the activity that corresponds to this ActivityStarter,
+   * Returns the name of the activity that corresponds to this `ActivityStarter`,
    * or an empty string if no corresponding activity can be found.
    */
   @SimpleFunction(description = "Returns the name of the activity that corresponds to this " +
@@ -433,7 +467,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   }
 
   /**
-   * Start the activity.
+   * Start the activity corresponding to this `ActivityStarter`.
    */
   @SimpleFunction(description = "Start the activity corresponding to this ActivityStarter.")
   public void StartActivity() {

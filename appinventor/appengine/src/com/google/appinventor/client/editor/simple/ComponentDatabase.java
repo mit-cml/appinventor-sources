@@ -167,7 +167,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getComponentName(String componentType) {
     for (String componentName : components.keySet()) {
       ComponentDefinition component = components.get(componentName);
-      if (component.getType() == componentType) {
+      if (componentType.equals(component.getType())) {
         return componentName;
       }
     }

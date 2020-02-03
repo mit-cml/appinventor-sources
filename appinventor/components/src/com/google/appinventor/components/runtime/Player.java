@@ -47,6 +47,18 @@ import java.io.IOException;
 // if the state restrictions are adequate given the API, and prove that
 // there can't be deadlock or starvation.
 /**
+ * Multimedia component that plays audio and controls phone vibration. The name of a multimedia
+ * file is specified in the {@link #Source(String)} property, which can be set in the Designer or
+ * in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in
+ * milliseconds (thousandths of a second).
+ *
+ * For supported audio formats, see
+ * [Android Supported Media Formats](//developer.android.com/guide/appendix/media-formats.html).
+ *
+ * This component is best for long sound files, such as songs, while the {@link Sound} component is
+ * more efficient for short files, such as sound effects.
+ *
+ * @internaldoc
  * Multimedia component that plays audio and optionally
  * vibrates.  It is built on top of {@link android.media.MediaPlayer}.
  *
@@ -154,7 +166,8 @@ public final class Player extends AndroidNonvisibleComponent
   /**
    * Sets the audio source.
    *
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
+   * @internaldoc
+   * See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
    * @param path  the path to the audio source
@@ -241,7 +254,8 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the looping property to true or false.
+   * If true, the `Player` will loop when it plays. Setting `Loop` while the player is playing will
+   * affect the current playing.
    *
    * @param shouldLoop determines if the playing should loop
    */
@@ -294,7 +308,9 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the property PlayOnlyInForeground to true or false.
+   * If true, the `Player` will pause playing when leaving the current screen; if false
+   * (default option), the `Player` continues playing whenever the current screen is displaying or
+   * not.
    *
    * @param shouldForeground determines whether plays only in foreground or always.
    */
@@ -429,7 +445,8 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that the other player has requested the focus of media
+   * This event is signaled when another player has started (and the current player is playing or
+   * paused, but not stopped).
    */
   @SimpleEvent(description = "This event is signaled when another player has started" +
       " (and the current player is playing or paused, but not stopped).")

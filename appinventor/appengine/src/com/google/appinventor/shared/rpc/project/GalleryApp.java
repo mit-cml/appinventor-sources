@@ -39,9 +39,6 @@ public class GalleryApp implements IsSerializable {
     this.credit = "no credit";
   }
 
-  public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
-  public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
-
   public GalleryApp(String title, String developerId, String description,
       long creationDate, long updateDate, String imageURL, String projectName,
       int downloads, int views, int likes, int unreadLikes,

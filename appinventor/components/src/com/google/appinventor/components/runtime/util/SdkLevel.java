@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,6 +34,7 @@ public class SdkLevel {
   public static final int LEVEL_KITKAT = 19;              // a.k.a. 4.4
   public static final int LEVEL_LOLLIPOP = 21;            // a.k.a. 5.0
   public static final int LEVEL_MARSHMALLOW = 23;         // a.k.a. 6.0
+  public static final int LEVEL_NOUGAT = 24;              // a.k.a. 7.0
 
   private SdkLevel() {
   }
