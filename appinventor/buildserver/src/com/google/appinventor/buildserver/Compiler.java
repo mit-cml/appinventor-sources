@@ -897,11 +897,21 @@ public final class Compiler {
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
+      // List of permissions taken from
+      // https://support.google.com/googleplay/android-developer/answer/9047303#intended
       if (isForCompanion && !includeDangerousPermissions) {
+        // Default SMS handler
+        permissions.remove("android.permission.READ_SMS");
+        permissions.remove("android.permission.RECEIVE_MMS");
         permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.RECEIVE_WAP_PUSH");
         permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.WRITE_SMS");
+        // Default Phone handler
         permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
         permissions.remove("android.permission.CALL_PHONE");
+        permissions.remove("android.permission.READ_CALL_LOG");
+        permissions.remove("android.permission.WRITE_CALL_LOG");
       }
 
       for (String permission : permissions) {
