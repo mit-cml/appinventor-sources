@@ -184,7 +184,11 @@ public class DropDownButton extends TextButton {
   }
 
   public void addItem(DropDownItem item) {
-    items.add(menu.addItem(item.caption, true, item.command));
+    if (item == null) {
+      menu.addSeparator();
+    } else {
+      items.add(menu.addItem(item.caption, true, item.command));
+    }
   }
 
   public void removeItem(String itemName) {

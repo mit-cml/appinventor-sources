@@ -26,8 +26,19 @@ import com.google.appinventor.components.runtime.util.NougatUtil;
 import java.io.File;
 
 /**
- * Component for sharing files and/or messages through Android's built-in sharing
- * functionality.
+ * Sharing is a non-visible component that enables sharing files and/or messages between your app
+ * and other apps installed on a device. The component will display a list of the installed apps
+ * that can handle the information provided, and will allow the user to choose one to share the
+ * content with, for instance a mail app, a social network app, a texting app, and so on.
+ *
+ * The file path can be taken directly from other components such as the
+ * [`Camera`](media.html#Camera) or the [`ImagePicker`](media.html#ImagePicker), but can also be
+ * specified directly to read from storage. Be aware that different devices treat storage
+ * differently, so a few things to try if, for instance, you have a file called `arrow.gif` in the
+ * folder `Appinventor/assets`, would be:
+ *
+ * - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
+ * - `"/storage/Appinventor/assets/arrow.gif"`
  *
  * @author victsou@gmail.com (Victor Silva) - Picked up on @cfromknecht's work
  * and fixed file support.
@@ -57,6 +68,7 @@ public class Sharing extends AndroidNonvisibleComponent {
 
   /**
    * Shares a message using Android' built-in sharing.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Shares a message through any capable " +
       "application installed on the phone by displaying a list of the available apps and " +
@@ -74,6 +86,7 @@ public class Sharing extends AndroidNonvisibleComponent {
 
   /**
    * Shares a file using Android' built-in sharing.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Shares a file through any capable application "
       + "installed on the phone by displaying a list of the available apps and allowing the " +
@@ -84,6 +97,7 @@ public class Sharing extends AndroidNonvisibleComponent {
 
   /**
    * Shares a file along with a message using Android' built-in sharing.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Shares both a file and a message through any capable application "
       + "installed on the phone by displaying a list of available apps and allowing the user to " +

@@ -18,6 +18,8 @@ import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -163,6 +165,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   @Override
   public void processProject() {
     resetExternalComponents();
+    resetProjectWarnings();
     loadExternalComponents();
     callLoadProject();
   }
@@ -346,6 +349,45 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     return components;
   }
+
+  public Set<String> getComponentTypes(String formName) {
+    Set<String> types = new HashSet<String>();
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null) {
+      return types;
+    }
+    for(MockComponent m : editorSet.formEditor.getComponents().values()) {
+      types.add(m.getType());
+    }
+    return types;
+  }
+
+  public Set<String> getUniqueComponentTypes() {
+    Set<String> types = new HashSet<String>();
+    for (String formName : editorMap.keySet()) {
+      types.addAll(getComponentTypes(formName));
+    }
+    return types;
+  }
+
+  public Set<String> getUniqueBuiltInBlockTypes() {
+    Set<String> types = new HashSet<String>();
+    for (EditorSet ed : editorMap.values()) {
+      types.addAll(ed.blocksEditor.getBlockTypeSet());
+    }
+    return types;
+  }
+
+  // Returns a hash of component names with the set of all component blocks (events, methods,
+  // and properties) in use for all screens in the current project
+  public HashMap<String, Set<String>> getUniqueComponentBlockTypes() {
+    HashMap<String, Set<String>> componentBlocks = new HashMap<String, Set<String>>();
+    for (EditorSet ed : editorMap.values()) {
+      componentBlocks = ed.blocksEditor.getComponentBlockTypeSet(componentBlocks);
+    }
+    return componentBlocks;
+  }
+
 
   // Private methods
 
@@ -662,6 +704,14 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     if (componentCount == 0) {
       externalComponentsLoaded = true; // to hint that we are ready to load
     }
+  }
+
+  // Resets any warnings that should be given when a project is loaded
+  // For now this is just the deprecation warning for the
+  // FusiontablesControl component.
+
+  private void resetProjectWarnings() {
+    MockFusionTablesControl.resetWarning();
   }
 
   private void resetExternalComponents() {

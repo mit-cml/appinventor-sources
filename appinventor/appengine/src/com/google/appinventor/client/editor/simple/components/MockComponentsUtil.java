@@ -59,7 +59,11 @@ public final class MockComponentsUtil {
    * @param image  URL
    */
   static void setWidgetBackgroundImage(Widget widget, String image) {
-    DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
+    if (image.isEmpty()) {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "none");
+    } else {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
+    }
     DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
     DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
     DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
@@ -279,7 +283,7 @@ public final class MockComponentsUtil {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
-    String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "lineHeight");
     if (widthStyle != null) {
       DOM.setStyleAttribute(element, "width", null);
     }
@@ -287,7 +291,7 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(element, "height", null);
     }
     if (lineHeightStyle != null) {
-      DOM.setStyleAttribute(element, "line-height", "initial");
+      DOM.setStyleAttribute(element, "lineHeight", "initial");
     }
     return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
@@ -308,7 +312,7 @@ public final class MockComponentsUtil {
       DOM.setStyleAttribute(element, "height", style[1]);
     }
     if (style[2] != null) {
-      DOM.setStyleAttribute(element, "line-height", style[2]);
+      DOM.setStyleAttribute(element, "lineHeight", style[2]);
     }
   }
 

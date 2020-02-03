@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -15,6 +17,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 
@@ -31,9 +34,15 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * Camera provides access to the phone's camera
+ * ![Camera icon](images/camera.png)
  *
+ * Use a camera component to take a picture on the phone.
  *
+ * `Camera` is a non-visible component that takes a picture using the device's camera. After the
+ * picture is taken, the path to the file on the phone containing the picture is available as an
+ * argument to the {@link #AfterPicture(String)} event. The path can be used, for example, as the
+ * [`Picture`](userinterface.html#Image.Picture) property of an [`Image`](userinterface.html3Image)
+ * component.
  */
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
    description = "A component to take a picture using the device's camera. " +
@@ -50,8 +59,8 @@ import java.util.Date;
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
-  private static final String CAMERA_INTENT = "android.media.action.IMAGE_CAPTURE";
-  private static final String CAMERA_OUTPUT = "output";
+  private static final String CAMERA_INTENT = MediaStore.ACTION_IMAGE_CAPTURE;
+  private static final String CAMERA_OUTPUT = MediaStore.EXTRA_OUTPUT;
   private final ComponentContainer container;
   private Uri imageFile;
 
@@ -109,41 +118,33 @@ public class Camera extends AndroidNonvisibleComponent
   }
 
   /**
-   * Takes a picture, then raises the AfterPicture event.
+   * Takes a picture, then raises the {@link #AfterPicture(String)} event.
+   *
+   * @internaldoc
    * If useFront is true, adds an extra to the intent that requests the front-facing camera.
    */
   @SimpleFunction
   public void TakePicture() {
-    Date date = new Date();
-    String state = Environment.getExternalStorageState();
     if (!havePermission) {
       final Camera me = this;
-      form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            form.askPermission(Manifest.permission.CAMERA,
-                               new PermissionResultHandler() {
-                                 @Override
-                                 public void HandlePermissionResponse(String permission, boolean granted) {
-                                   if (granted) {
-                                     me.havePermission = true;
-                                     me.TakePicture();
-                                   } else {
-                                     form.dispatchPermissionDeniedEvent(me, "TakePicture",
-                                         Manifest.permission.CAMERA);
-                                   }
-                                 }
-                               });
-          }
-        });
+      form.askPermission(new BulkPermissionRequest(this, "TakePicture",
+          Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+        @Override
+        public void onGranted() {
+          me.havePermission = true;
+          me.TakePicture();
+        }
+      });
       return;
     }
+    String state = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CameraComponent", "External storage is available and writable");
 
-      imageFile = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-        "/Pictures/app_inventor_" + date.getTime()
-        + ".jpg"));
+      File image = new File(Environment.getExternalStorageDirectory(),
+          "/Pictures/app_inventor_" + new Date().getTime()
+              + ".jpg");
+      imageFile = Uri.fromFile(image);
 
       ContentValues values = new ContentValues();
       values.put(MediaStore.Images.Media.DATA, imageFile.getPath());
@@ -154,8 +155,13 @@ public class Camera extends AndroidNonvisibleComponent
         requestCode = form.registerForActivityResult(this);
       }
 
-      Uri imageUri = container.$context().getContentResolver().insert(
-        MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
+      Uri imageUri;
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        imageUri = container.$context().getContentResolver().insert(
+            MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
+      } else {
+        imageUri = NougatUtil.getPackageUri(form, image);
+      }
       Intent intent = new Intent(CAMERA_INTENT);
       intent.putExtra(CAMERA_OUTPUT, imageUri);
 
@@ -232,8 +238,8 @@ public class Camera extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that a photo was taken with the camera and provides the path to
-   * the stored picture.
+   * Called after the picture is taken. The text argument `image` is the path that can be used to
+   * locate the image on the phone.
    */
   @SimpleEvent
   public void AfterPicture(String image) {

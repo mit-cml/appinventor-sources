@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015 MIT, All rights reserved
+// Copyright 2015-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -39,7 +39,7 @@ public class BlobUpgradeServlet extends OdeServlet {
   // Logging support
   private static final Logger LOG = Logger.getLogger(BlobUpgradeServlet.class.getName());
   private static final CapabilitiesService caps = CapabilitiesServiceFactory.getCapabilitiesService();
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)

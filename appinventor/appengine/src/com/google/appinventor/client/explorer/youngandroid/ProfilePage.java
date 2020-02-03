@@ -506,7 +506,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     // the error will occur and we'll load default image
     userAvatar.addErrorHandler(new ErrorHandler() {
       public void onError(ErrorEvent event) {
-        userAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+        userAvatar.setResource(GalleryImages.get().androidIcon());
       }
     });
     container.add(userAvatar);
@@ -518,7 +518,9 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
         MESSAGES.galleryError()) {
           @Override
           public void onSuccess(String newUrl) {
-            userAvatar.setUrl(newUrl + "?" + System.currentTimeMillis());
+            if (userAvatar != null) {
+              userAvatar.setUrl(newUrl + "?" + System.currentTimeMillis());
+            }
           }
         };
       Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
