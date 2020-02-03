@@ -85,6 +85,9 @@ open class ButtonBase: ViewComponent {
   fileprivate var _imagePath: String?
   fileprivate var _defaultTextColor: UIColor
   fileprivate var _defaultHighlightColor: UIColor?
+  fileprivate static var CLASSIC_BUTTON: UIImage!
+  fileprivate static var CLASSIC_BUTTON_DISABLED: UIImage!
+  fileprivate static var CLASSIC_BUTTON_PRESSED: UIImage!
   fileprivate static var _classicButton: UIImage!
   fileprivate static var _classicButtonDisabled: UIImage!
   fileprivate static var _classicButtonPressed: UIImage!
@@ -95,12 +98,12 @@ open class ButtonBase: ViewComponent {
 
   static func loadClassicButton() {
     let bundle = Bundle(for: ButtonBase.self)
-    _classicButton = UIImage(contentsOfFile: bundle.path(forResource: "classic_button", ofType: "png")!)
-    _classicButton = _classicButton?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-    _classicButtonPressed = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.pressed", ofType: "png")!)
-    _classicButtonPressed = _classicButtonPressed?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-    _classicButtonDisabled = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.disabled", ofType: "png")!)
-    _classicButtonDisabled = _classicButtonDisabled?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+    CLASSIC_BUTTON = UIImage(contentsOfFile: bundle.path(forResource: "classic_button", ofType: "png")!)
+    _classicButton = CLASSIC_BUTTON.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+    CLASSIC_BUTTON_PRESSED = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.pressed", ofType: "png")!)
+    _classicButtonPressed = CLASSIC_BUTTON_PRESSED.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+    CLASSIC_BUTTON_DISABLED = UIImage(contentsOfFile: bundle.path(forResource: "classic_button.disabled", ofType: "png")!)
+    _classicButtonDisabled = CLASSIC_BUTTON_DISABLED.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
 
     // Classic Android theme
     CLASSIC_DEFAULT_PIPELINE[.Base] = { $0._view.imageView?.tintColor = nil; return true }
@@ -128,10 +131,13 @@ open class ButtonBase: ViewComponent {
         var bg = ButtonBase._classicButton, bgd = ButtonBase._classicButtonDisabled, bgh = ButtonBase._classicButtonPressed
         if $0._backgroundColor != kDefaultColor {
           let tint = argbToColor($0._backgroundColor)
-          bg = ButtonBase._classicButton.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
-          bgd = ButtonBase._classicButtonDisabled.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          bg = CLASSIC_BUTTON.imageWithTint(tint: tint)?
+            .resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+          bgd = CLASSIC_BUTTON_DISABLED.imageWithTint(tint: tint)?
+            .resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
           if $0.ShowFeedback {
-            bgh = ButtonBase._classicButtonPressed.imageWithTint(tint: tint)?.resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
+            bgh = CLASSIC_BUTTON_PRESSED.imageWithTint(tint: tint)?
+              .resizableImage(withCapInsets: DEFAULT_BUTTON_INSET, resizingMode: .stretch)
           }
         }
         $0._view.setBackgroundImage(bg, for: .normal)
