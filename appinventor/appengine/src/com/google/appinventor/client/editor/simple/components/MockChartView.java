@@ -6,10 +6,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.AbstractChart;
-import org.pepstock.charba.client.data.Dataset;
 import org.pepstock.charba.client.enums.Position;
-
-import java.util.HashMap;
 
 public abstract class MockChartView<C extends AbstractChart> {
     protected C chartWidget;

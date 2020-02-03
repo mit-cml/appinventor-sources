@@ -8,10 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.DataPoint;
-import org.pepstock.charba.client.enums.CubicInterpolationMode;
 import org.pepstock.charba.client.enums.SteppedLine;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 /**

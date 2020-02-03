@@ -5,13 +5,10 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
 import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.Labels;
 import org.pepstock.charba.client.data.PieDataset;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
