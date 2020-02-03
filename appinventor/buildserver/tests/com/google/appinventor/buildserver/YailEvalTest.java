@@ -13,6 +13,9 @@ import gnu.math.IntNum;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
 
+import java.util.Random;
+
+
 /**
  * Tests the evaluation of various YAIL code.
  *
@@ -1138,6 +1141,24 @@ public class YailEvalTest extends TestCase {
      double[] vals = { 0, 45, -45, 30 };
      testUnaryDoubleFunction("atan-degrees", args, vals);
    }
+
+   public void testTrigonometricIdentities() throws Throwable {
+       Random random = new Random();
+       double theta = 90 * random.nextDouble();
+
+       String sinExpression = "(" + "sin-degrees" + " " + theta + ")";
+       Object sinResult = scheme.eval(sinExpression);
+       String cosExpression = "(" + "cos-degrees" + " " + theta + ")";
+       Object cosResult = scheme.eval(cosExpression);
+       String tanExpression = "(" + "tan-degrees" + " " + theta + ")";
+       Object tanResult = scheme.eval(tanExpression);
+
+       double sin = Double.parseDouble(String.valueOf(sinResult));
+       double cos = Double.parseDouble(String.valueOf(cosResult));
+       double tan = Double.parseDouble(String.valueOf(tanResult));
+
+       assertEquals(tan * cos, sin, DELTA);
+  }
 
   // These constant definitions make the below tests more readable.
   private static final double PI = Math.PI;
