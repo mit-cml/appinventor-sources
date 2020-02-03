@@ -551,15 +551,15 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="ADD1"><block type="pair"></block></value>' +
     '</block>' +
   '</xml>'},
-  dictionary_lookup: {xmlString:
+  dictionaries_lookup: {xmlString:
   '<xml>' +
-    '<block type="dictionary_lookup">' +
+    '<block type="dictionaries_lookup">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
-  dictionary_recursive_lookup: {xmlString:
+  dictionaries_recursive_lookup: {xmlString:
   '<xml>' +
-    '<block type="dictionary_recursive_lookup">' +
+    '<block type="dictionaries_recursive_lookup">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
