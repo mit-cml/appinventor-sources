@@ -1299,7 +1299,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the text color of the `Switch` as an alpha-red-green-blue
  integer.
 
-{:id="Switch.ThumbColorActive" .color .do} *ThumbColorActive*
+{:id="Switch.ThumbColorActive" .color} *ThumbColorActive*
 : Specifies the `Switch`'s thumb color when switch is in the On state.
 
 {:id="Switch.ThumbColorInactive" .color} *ThumbColorInactive*

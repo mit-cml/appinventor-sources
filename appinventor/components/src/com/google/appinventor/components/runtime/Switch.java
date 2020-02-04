@@ -94,7 +94,7 @@ public final class Switch extends ToggleBase<CompoundButton> {
    *
    * @return  thumb RGB color with alpha
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = true)
   public int ThumbColorActive() {
     return thumbColorActive;
   }
