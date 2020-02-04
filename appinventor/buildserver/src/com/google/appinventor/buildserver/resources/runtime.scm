@@ -1212,7 +1212,7 @@
       (if (not (iterator:hasNext))
           dict
           (let ((entry (iterator:next)))
-            (entry:setValue (santize-component-data (entry:getValue)))
+            (entry:setValue (sanitize-component-data (entry:getValue)))
             (convert))))
     (convert)))
 
