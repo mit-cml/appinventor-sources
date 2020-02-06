@@ -6,10 +6,12 @@ import Foundation
 public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _view: UILabel
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
-  fileprivate var _typeface: Int32 = Typeface.normal.rawValue
+  fileprivate var _typeface = Typeface.normal
   fileprivate var _bold = false
   fileprivate var _italic = false
   fileprivate var _hasMargins = false
+  fileprivate var _htmlContent: String? = nil
+  fileprivate var _htmlFormat = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -72,28 +74,33 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   
   @objc public var FontBold: Bool {
     get {
-      return false
+      return _bold
     }
     set(bold) {
-      
+      _bold = bold
+      _view.font = getFontTrait(font: _view.font, trait: .traitBold, shouldSet: bold)
     }
   }
   
   @objc public var FontItalic: Bool {
     get {
-      return false
+      return _italic
     }
     set(italic) {
-      
+      _italic = italic
+      _view.font = getFontTrait(font: _view.font, trait: .traitItalic, shouldSet: italic)
     }
   }
   
   @objc public var HasMargins: Bool {
     get {
-      return false
+      return _hasMargins
     }
     set(hasMargins) {
-      
+      _hasMargins = hasMargins
+      _view.layoutMargins = hasMargins ?
+        UIEdgeInsets(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0) :
+        UIEdgeInsets()
     }
   }
   
@@ -109,11 +116,15 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   
   @objc public var FontTypeface: Int32 {
     get {
-      return Typeface.normal.rawValue
+      return _typeface.rawValue
     }
     set(typeface) {
-      
-      _view.sizeToFit()
+      if typeface != _typeface.rawValue {
+        if let type = Typeface(rawValue: Int32(typeface)) {
+          _typeface = type
+          _view.font = getFontTypeface(font: _view.font, typeFace: type)
+        }
+      }
     }
   }
   
@@ -126,20 +137,50 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
     set(text) {
-      _view.text = text
-      _view.widthAnchor.constraint(equalToConstant:_view.intrinsicContentSize.width).isActive = true
+      _htmlContent = text
+      if _htmlFormat {
+        let data = text.data(using: .utf8) ?? Data()
+        var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
+        options[NSAttributedString.DocumentReadingOptionKey.documentType] =
+          NSAttributedString.DocumentType.html
+        _view.attributedText = try? NSAttributedString(data: data,
+                                                       options: options,
+                                                       documentAttributes: nil)
+      } else {
+        _view.text = text
+        _view.widthAnchor.constraint(equalToConstant:_view.intrinsicContentSize.width).isActive = true
+      }
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
       _container.form.view.setNeedsLayout()
     }
   }
-  
+
+  @objc public var HTMLContent: String {
+    get {
+      return _htmlContent ?? ""
+    }
+  }
+
   @objc public var HTMLFormat: Bool {
     get {
-      return false
+      return _htmlFormat
     }
     set(fmt) {
-      
+      _htmlFormat = fmt
+      if let content = _htmlContent {
+        if _htmlFormat {
+          let data = content.data(using: .utf8) ?? Data()
+          var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
+          options[NSAttributedString.DocumentReadingOptionKey.documentType] =
+            NSAttributedString.DocumentType.html
+          _view.attributedText = try? NSAttributedString(data: data,
+                                                         options: options,
+                                                         documentAttributes: nil)
+        } else {
+          _view.text = content
+        }
+      }
     }
   }
   
