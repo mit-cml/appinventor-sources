@@ -14,9 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.appinventor.components.runtime.ComponentContainer;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,21 +24,21 @@ public class ListViewArrayAdapterTwoTextLinear {
 
   private int textSize, detailTextSize, textColor, detailTextColor;
   private static ComponentContainer container;
-  private List<JSONObject> currentItems;
-  private List<JSONObject> filterCurrentItems;
+  private List<YailDictionary> currentItems;
+  private List<YailDictionary> filterCurrentItems;
 
-  private ArrayAdapter<JSONObject> itemAdapter;
+  private ArrayAdapter<YailDictionary> itemAdapter;
   private final Filter filter;
 
   public ListViewArrayAdapterTwoTextLinear(int textSize, int detailTextSize, int textColor, int detailTextColor,
-      ComponentContainer container, List<JSONObject> items) {
+      ComponentContainer container, List<YailDictionary> items) {
     this.textSize = textSize;
     this.detailTextSize = detailTextSize;
     this.textColor = textColor;
     this.detailTextColor = detailTextColor;
     this.container = container;
-    this.currentItems = new ArrayList<>(items);
-    this.filterCurrentItems = new ArrayList<>(items);
+    this.currentItems = items;
+    this.filterCurrentItems = items;
 
     filter = new Filter() {
       @Override
@@ -49,33 +47,27 @@ public class ListViewArrayAdapterTwoTextLinear {
         FilterResults results = new FilterResults();
 
         if (filterQuery == null || filterQuery.length() == 0) {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          results.count = arrayList.size();
-          results.values = arrayList;
+          results.count = currentItems.size();
+          results.values = currentItems;
         } else {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          List<JSONObject> filteredList = new ArrayList<>();
-          for (int i = 0; i < arrayList.size(); ++i) {
-            JSONObject object = arrayList.get(i);
-            if ((object.has("Text1") && object.getString("Text1").toLowerCase()
-                .contains(charSequence.toString())) || (object.has("Text2")) && object.getString("Text2")
-                .toLowerCase().contains(charSequence.toString())) {
-              filteredList.add(object);
+          filterCurrentItems.clear();
+          for (YailDictionary item : currentItems) {
+            if (item.get("Text1").toString().concat(ElementsUtil.toStringEmptyIfNull(item.get("Text2"))).contains(charSequence)) {
+              filterCurrentItems.add(item);
             }
           }
-
-          results.count = filteredList.size();
-          results.values = filteredList;
+          results.count = filterCurrentItems.size();
+          results.values = filterCurrentItems;
         }
         return results;
       }
 
       @Override
       protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-        filterCurrentItems = (List<JSONObject>) filterResults.values;
+        filterCurrentItems = (List<YailDictionary>) filterResults.values;
         itemAdapter.clear();
-        for (int i = 0; i < filterCurrentItems.size(); ++i) {
-          itemAdapter.add(filterCurrentItems.get(i));
+        for (Object o : filterCurrentItems) {
+          itemAdapter.add((YailDictionary) o);
         }
       }
     };
@@ -110,8 +102,8 @@ public class ListViewArrayAdapterTwoTextLinear {
     return linearLayout;
   }
 
-  public ArrayAdapter<JSONObject> createAdapter() {
-    itemAdapter = new ArrayAdapter<JSONObject>(container.$context(), 0, currentItems) {
+  public ArrayAdapter<YailDictionary> createAdapter() {
+    itemAdapter = new ArrayAdapter<YailDictionary>(container.$context(), 0, currentItems) {
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
         View view = createView();
@@ -119,9 +111,9 @@ public class ListViewArrayAdapterTwoTextLinear {
         TextView text1 = view.findViewById(2);
         TextView text2 = view.findViewById(3);
 
-        JSONObject row = filterCurrentItems.get(position);
-        String val1 = row.has("Text1") ? row.getString("Text1") : "";
-        String val2 = row.has("Text2") ? row.getString("Text2") : "";
+        YailDictionary row = filterCurrentItems.get(position);
+        String val1 = ElementsUtil.toStringEmptyIfNull(row.get("Text1"));
+        String val2 = ElementsUtil.toStringEmptyIfNull(row.get("Text2"));
 
         text1.setText(val1);
         text2.setText(val2);

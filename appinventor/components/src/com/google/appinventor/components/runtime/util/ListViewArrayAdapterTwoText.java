@@ -23,21 +23,21 @@ public class ListViewArrayAdapterTwoText {
 
   private int textSize, detailTextSize, textColor, detailTextColor;
   private ComponentContainer container;
-  private List<JSONObject> currentItems;
-  private List<JSONObject> filterCurrentItems;
+  private List<YailDictionary> currentItems;
+  private List<YailDictionary> filterCurrentItems;
 
-  private ArrayAdapter<JSONObject> itemAdapter;
+  private ArrayAdapter<YailDictionary> itemAdapter;
   private final Filter filter;
 
   public ListViewArrayAdapterTwoText(int textSize, int detailTextSize, int textColor, int detailTextColor,
-      ComponentContainer container, List<JSONObject> items) {
+      ComponentContainer container, List<YailDictionary> items) {
     this.textSize = textSize;
     this.detailTextSize = detailTextSize;
     this.textColor = textColor;
     this.detailTextColor = detailTextColor;
     this.container = container;
-    this.currentItems = new ArrayList<>(items);
-    this.filterCurrentItems = new ArrayList<>(items);
+    this.currentItems = items;
+    this.filterCurrentItems = items;
 
     filter = new Filter() {
       @Override
@@ -46,40 +46,34 @@ public class ListViewArrayAdapterTwoText {
         FilterResults results = new FilterResults();
 
         if (filterQuery == null || filterQuery.length() == 0) {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          results.count = arrayList.size();
-          results.values = arrayList;
+          results.count = currentItems.size();
+          results.values = currentItems;
         } else {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          List<JSONObject> filteredList = new ArrayList<>();
-          for (int i = 0; i < arrayList.size(); ++i) {
-            JSONObject object = arrayList.get(i);
-            if ((object.has("Text1") && object.getString("Text1").toLowerCase()
-                .contains(charSequence.toString())) || (object.has("Text2")) && object.getString("Text2")
-                .toLowerCase().contains(charSequence.toString())) {
-              filteredList.add(object);
+          filterCurrentItems.clear();
+          for (YailDictionary item : currentItems) {
+            if (item.get("Text1").toString().concat(ElementsUtil.toStringEmptyIfNull(item.get("Text2"))).contains(charSequence)) {
+              filterCurrentItems.add(item);
             }
           }
-
-          results.count = filteredList.size();
-          results.values = filteredList;
+          results.count = filterCurrentItems.size();
+          results.values = filterCurrentItems;
         }
         return results;
       }
 
       @Override
       protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-        filterCurrentItems = (List<JSONObject>) filterResults.values;
+        filterCurrentItems.clear();
         itemAdapter.clear();
-        for (int i = 0; i < filterCurrentItems.size(); ++i) {
-          itemAdapter.add(filterCurrentItems.get(i));
+        for (YailDictionary item : filterCurrentItems) {
+          itemAdapter.add(item);
         }
       }
     };
   }
 
-  public ArrayAdapter<JSONObject> createAdapter() {
-    itemAdapter = new ArrayAdapter<JSONObject>(container.$context(),
+  public ArrayAdapter<YailDictionary> createAdapter() {
+    itemAdapter = new ArrayAdapter<YailDictionary>(container.$context(),
         android.R.layout.simple_list_item_2, android.R.id.text1, currentItems) {
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
@@ -88,9 +82,9 @@ public class ListViewArrayAdapterTwoText {
         TextView text1 = view.findViewById(android.R.id.text1);
         TextView text2 = view.findViewById(android.R.id.text2);
 
-        JSONObject row = filterCurrentItems.get(position);
-        String val1 = row.has("Text1") ? row.getString("Text1") : "";
-        String val2 = row.has("Text2") ? row.getString("Text2") : "";
+        YailDictionary row = filterCurrentItems.get(position);
+        String val1 = ElementsUtil.toStringEmptyIfNull(row.get("Text1"));
+        String val2 = ElementsUtil.toStringEmptyIfNull(row.get("Text2"));
 
         text1.setText(val1);
         text2.setText(val2);

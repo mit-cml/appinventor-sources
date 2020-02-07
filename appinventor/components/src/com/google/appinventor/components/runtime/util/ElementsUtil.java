@@ -75,46 +75,8 @@ public class ElementsUtil {
     return 0;
   }
 
-  public static int selectionIndex(List<JSONObject> items, int index ) {
-    if (index<=0 || index > items.size()) {
-      return 0;
-    } else {
-      return index;
-    }
+  public static String toStringEmptyIfNull(Object o) {
+    String text = o.toString();
+    return text == null ? "" : text;
   }
-
-  public static String setSelectionFromIndex(int index, JSONObject item) {
-    if (index == 0) {
-      return "";
-    }
-    return item.has("Text1") ? item.getString("Text1") : "";
-  }
-
-  public static String setDetailSelectionFromIndex(int index, JSONObject item) {
-    if (index == 0) {
-      return "";
-    }
-    return item.has("Text2") ? item.getString("Text2") : "";
-  }
-
-  public static int setSelectedIndexFromValue(List<JSONObject> items, String value) {
-    for (int i = 0; i < items.size(); ++i) {
-      JSONObject item = items.get(i);
-      if (item.has("Text1") && item.getString("Text1").equals(value)) {
-        return i+1;
-      }
-    }
-    return 0;
-  }
-
-  public static int setSelectedIndexFromDetailTextValue(List<JSONObject> items, String value) {
-    for (int i = 0; i < items.size(); ++i) {
-      JSONObject item = items.get(i);
-      if (item.has("Text2") && item.getString("Text2").equals(value)) {
-        return i+1;
-      }
-    }
-    return 0;
-  }
-
 }

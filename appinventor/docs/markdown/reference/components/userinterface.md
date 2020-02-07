@@ -693,8 +693,8 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
 
-{:id="ListView.SelectionDetailText" .text .bo} *SelectionDetailText*
-: SelectionDetailText property setter method
+{:id="ListView.SelectionDetailText" .text .ro .bo} *SelectionDetailText*
+: Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
 : The index of the currently selected item, starting at `1`. If no item is selected, the value
@@ -740,8 +740,21 @@ This is a visible component that allows to place a list of text elements in your
 ### Methods  {#ListView-Methods}
 
 {:.methods}
-None
 
+{:id="ListView.CreateElement" class="method returns dictionary"} <i/> CreateElement(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Creates a
+
+{:id="ListView.GetDetailText" class="method returns text"} <i/> GetDetailText(*listElement*{:.dictionary})
+: Get the Detail Text of a ListView element.
+
+{:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
+: Get the name of the image of a ListView element.
+
+{:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
+: Get the Main Text of a ListView element.
+
+{:id="ListView.Refresh" class="method"} <i/> Refresh()
+: Reload the ListView to reflect any changes in the data.
 
 ## Notifier  {#Notifier}
 

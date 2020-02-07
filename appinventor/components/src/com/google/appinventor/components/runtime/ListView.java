@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
@@ -29,6 +28,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -44,6 +44,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private ArrayAdapter<Spannable> adapter;
   private ArrayAdapter<Spannable> adapterCopy;
   private YailList stringItems;
+  private List<YailDictionary> dictItems;
   private int selectionIndex;
   private String selection;
   private String selectionDetailText;
@@ -112,25 +114,25 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   // variable for ListView layout types
   private int layout;
-  private String propertyValue;
+  private String propertyValue;  // JSON string representing data entered through the Designer
 
-  private ArrayAdapter<JSONObject> itemAdapter;
+  private ArrayAdapter<YailDictionary> itemAdapter;
   /*
    * the copy is maintained to get the actual index of the selected item from the original list
    * while the filter is applied, which filters the original list
    */
-  private ArrayAdapter<JSONObject> itemAdapterCopy;
-  private List<JSONObject> jsonItems;
+  private ArrayAdapter<YailDictionary> itemAdapterCopy;
 
   /**
    * Creates a new ListView component.
-   * @param container  container that the component will be placed in
+   *
+   * @param container container that the component will be placed in
    */
   public ListView(ComponentContainer container) {
     super(container);
     this.container = container;
-    jsonItems = new ArrayList<>();
     stringItems = YailList.makeEmptyList();
+    dictItems = new ArrayList<>();
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
@@ -153,27 +155,27 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     //set up the listener
     txtSearchBox.addTextChangedListener(new TextWatcher() {
 
-        @Override
-        public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
-          // When user changed the Text
-          if (!jsonItems.isEmpty()) {
-            setAdapterData();
-            itemAdapter.getFilter().filter(cs.toString());
-          } else {
-            adapter.getFilter().filter(cs);
-          }
+      @Override
+      public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+        // When user changed the Text
+        if (!dictItems.isEmpty()) {
+          setAdapterData();
+          itemAdapter.getFilter().filter(cs.toString());
+        } else {
+          adapter.getFilter().filter(cs);
         }
+      }
 
-        @Override
-        public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-          // no-op. Required method
-        }
+      @Override
+      public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+        // no-op. Required method
+      }
 
-        @Override
-        public void afterTextChanged(Editable arg0) {
-          // no-op. Required method
-        }
-      });
+      @Override
+      public void afterTextChanged(Editable arg0) {
+        // no-op. Required method
+      }
+    });
 
     if (showFilter) {
       txtSearchBox.setVisibility(View.VISIBLE);
@@ -219,12 +221,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * Specifies the `%type%`'s vertical height, measured in pixels.
-  * @param height for height length
-  */
+   * Specifies the `%type%`'s vertical height, measured in pixels.
+   *
+   * @param height for height length
+   */
   @Override
   @SimpleProperty(description = "Determines the height of the list on the view.",
-      category =PropertyCategory.APPEARANCE)
+          category = PropertyCategory.APPEARANCE)
   public void Height(int height) {
     if (height == LENGTH_PREFERRED) {
       height = LENGTH_FILL_PARENT;
@@ -233,12 +236,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * Specifies the horizontal width of the `%type%`, measured in pixels.
-  * @param width for width length
-  */
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
+   *
+   * @param width for width length
+   */
   @Override
   @SimpleProperty(description = "Determines the width of the list on the view.",
-      category = PropertyCategory.APPEARANCE)
+          category = PropertyCategory.APPEARANCE)
   public void Width(int width) {
     if (width == LENGTH_PREFERRED) {
       width = LENGTH_FILL_PARENT;
@@ -253,15 +257,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param showFilter set the visibility according to this input
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = DEFAULT_ENABLED ? "True" : "False")
+          defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty(description = "Sets visibility of ShowFilterBar. True will show the bar, " +
-      "False will hide it.")
+          "False will hide it.")
   public void ShowFilterBar(boolean showFilter) {
     this.showFilter = showFilter;
     if (showFilter) {
       txtSearchBox.setVisibility(View.VISIBLE);
-    }
-    else {
+    } else {
       txtSearchBox.setVisibility(View.GONE);
     }
   }
@@ -269,60 +272,45 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns true or false depending on the visibility of the Filter bar element
    *
-   * @suppressdoc
    * @return true or false (visibility)
+   * @suppressdoc
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Returns current state of ShowFilterBar for visibility.")
+          description = "Returns current state of ShowFilterBar for visibility.")
   public boolean ShowFilterBar() {
     return showFilter;
   }
 
   /**
    * Specifies the list of choices to display.
+   *
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description="List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
+          category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
-    jsonItems.clear();
+    dictItems.clear();
     stringItems = YailList.makeEmptyList();
     if (itemsList.size() > 0) {
       Object firstitem = itemsList.getObject(0);
-      // Check to see if this is a list of strings (backward compatibility) or a list of lists (JSON elements)
-      if (firstitem instanceof  YailList) {
-        // This means that if the first list item is a 3-part JSON element, the entire list will be processed as JSON
-        // elements. If the first item is a string, the entire list will be processed as strings. These two types are
-        // stored differently internally in order to support backward compatibility with the old string-only ListView.
-        // We might come up with a more comprehensive refactor in the future. (SRLane - 12/6/2019)
+      // Check to see if this is a list of strings (backward compatibility) or a list of Dictionaries
+      if (firstitem instanceof YailDictionary) {
+        //  To preserve backward compatibility with the old single-string ListView, we check to be sure we
+        // have dictionary elements. If first element is a dictionary, treat all as such.
         for (int i = 0; i < itemsList.size(); i++) {
-          JSONObject jsonItem = new JSONObject();
           Object o = itemsList.getObject(i);
-          try {
-            if (o instanceof YailList) {
-              // JSON elements have three parts: Main text (Text1), Description text (Text1), and an asset filename (Image)
-              YailList yailItem = (YailList) o;
-              if (yailItem.size() >= 1) {
-                jsonItem.put("Text1", yailItem.getString(0));
-              }
-              if (yailItem.size() >= 2) {
-                jsonItem.put("Text2", yailItem.getString(1));
-              }
-              if (yailItem.size() >= 3) {
-                jsonItem.put("Image", yailItem.getString(2));
-              }
-              jsonItems.add(i, jsonItem);
-            } else {
-              // Add support for strings mixed in with the 3-part JSON elements because somebody will end up doing this.
-              jsonItem.put("Text1", YailList.YailListElementToString(o));
-              jsonItems.add(i, jsonItem);
-            }
-          } catch (JSONException e) {
-            Log.e(LOG_TAG, "Malformed string to ListView.Elements", e);
-            container.$form().dispatchErrorOccurredEvent(this, "ListView.Elements", ErrorMessages.ERROR_DEFAULT, e.getMessage());
+          if (o instanceof YailDictionary) {
+            YailDictionary yailItem = (YailDictionary) o;
+            dictItems.add(i, yailItem);
+          } else {
+            // Support strings mixed in with the Dictionary elements because somebody will end up doing this.
+            YailDictionary yailItem = new YailDictionary();
+            yailItem.put("Text1", YailList.YailListElementToString(o));
+            dictItems.add(i, yailItem);
           }
         }
       } else {
+        // Support legacy single-string ListViews
         stringItems = ElementsUtil.elements(itemsList, "Listview");
       }
     }
@@ -332,28 +320,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Elements property getter method
    *
-   * @suppressdoc
    * @return a YailList representing the list of strings to be picked from
+   * @suppressdoc
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public YailList Elements() {
-    if (jsonItems.size() > 0) {
-      ArrayList<YailList> allItems = new ArrayList<>();
-      for (int i = 0; i < jsonItems.size(); i++) {
-        JSONObject jsonItem = jsonItems.get(i);
-        ArrayList<String> oneItem = new ArrayList<String>();
-          try {
-            oneItem.add(jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-            oneItem.add(jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
-            oneItem.add(jsonItem.has("Text3") ? jsonItem.getString("Text3") : "");
-          } catch (JSONException e) {
-            Log.e(LOG_TAG, "Malformed JSON returned from ListView.Elements", e);
-            container.$form().dispatchErrorOccurredEvent(this, "ListView.Elements", ErrorMessages.ERROR_DEFAULT, e.getMessage());
-          }
-        allItems.add(YailList.makeList(oneItem));
-      }
-      stringItems = YailList.makeEmptyList();
-      return YailList.makeList(allItems);
+    if (dictItems.size() > 0) {
+      return YailList.makeList(dictItems);
     } else {
       return stringItems;
     }
@@ -361,13 +334,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   /**
    * Set the list of choices from a string of comma-separated values.
+   *
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
-  @SimpleProperty(description="The TextView elements specified as a string with the " +
-      "stringItems separated by commas " +
-      "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
-      "list.",  category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description = "The TextView elements specified as a string with the " +
+          "stringItems separated by commas " +
+          "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
+          "list.", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
     stringItems = ElementsUtil.elementsFromString(itemstring);
     setAdapterData();
@@ -376,32 +350,32 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Sets the stringItems of the ListView through an adapter
    */
-  public void setAdapterData(){
-    if (!jsonItems.isEmpty()) {
+  public void setAdapterData() {
+    if (!dictItems.isEmpty()) {
       // if the data is available in AddData property
       if (layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
         ListViewArrayAdapterSingleText adapterSingleText = new ListViewArrayAdapterSingleText(textSize, textColor,
-            container, jsonItems);
+                container, dictItems);
         itemAdapter = adapterSingleText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_1);
       } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT) {
         ListViewArrayAdapterTwoText adapterTwoText = new ListViewArrayAdapterTwoText(textSize, detailTextSize,
-            textColor, detailTextColor, container, jsonItems);
+                textColor, detailTextColor, container, dictItems);
         itemAdapter = adapterTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_2);
       } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
         ListViewArrayAdapterTwoTextLinear adapterTwoTextLinear = new ListViewArrayAdapterTwoTextLinear(textSize,
-            detailTextSize, textColor, detailTextColor, container, jsonItems);
+                detailTextSize, textColor, detailTextColor, container, dictItems);
         itemAdapter = adapterTwoTextLinear.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
       } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
         ListViewArrayAdapterImageSingleText adapterImageSingleText = new ListViewArrayAdapterImageSingleText(textSize,
-            textColor, imageWidth, imageHeight, container, jsonItems);
+                textColor, imageWidth, imageHeight, container, dictItems);
         itemAdapter = adapterImageSingleText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
       } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         ListViewArrayAdapterImageTwoText adapterImageTwoText = new ListViewArrayAdapterImageTwoText(textSize,
-            detailTextSize, textColor, detailTextColor, imageWidth, imageHeight, container, jsonItems);
+                detailTextSize, textColor, detailTextColor, imageWidth, imageHeight, container, dictItems);
         itemAdapter = adapterImageTwoText.createAdapter();
         itemAdapterCopy = new ArrayAdapter<>(container.$context(), 0);
       }
@@ -412,7 +386,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     } else {
       // if the data is not available in AddData property but is available in ElementsFromString property
       adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
-          itemsToColoredText());
+              itemsToColoredText());
       view.setAdapter(adapter);
 
       adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
@@ -427,7 +401,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // colors and even fonts and sizes
     int size = stringItems.size();
     int displayTextSize = textSize;
-    Spannable [] objects = new Spannable[size];
+    Spannable[] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
       // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
       // YailList.ToStringArray.
@@ -437,11 +411,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // Is there a more efficient way to do conversion to spannable strings that does not
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
-      chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
+      chars.setSpan(new ForegroundColorSpan(textColor), 0, chars.length(), 0);
       if (!container.$form().getCompatibilityMode()) {
         displayTextSize = (int) (textSize * container.$form().deviceDensity());
       }
-      chars.setSpan(new AbsoluteSizeSpan(displayTextSize),0,chars.length(),0);
+      chars.setSpan(new AbsoluteSizeSpan(displayTextSize), 0, chars.length(), 0);
       objects[i - 1] = chars;
     }
     return objects;
@@ -454,12 +428,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * {@link #Selection(String)} will be set to the empty text.
    */
   @SimpleProperty(
-      description = "The index of the currently selected item, starting at " +
-          "1.  If no item is selected, the value will be 0.  If an attempt is " +
-          "made to set this to a number less than 1 or greater than the number " +
-          "of stringItems in the ListView, SelectionIndex will be set to 0, and " +
-          "Selection will be set to the empty text.",
-      category = PropertyCategory.BEHAVIOR)
+          description = "The index of the currently selected item, starting at " +
+                  "1.  If no item is selected, the value will be 0.  If an attempt is " +
+                  "made to set this to a number less than 1 or greater than the number " +
+                  "of stringItems in the ListView, SelectionIndex will be set to 0, and " +
+                  "Selection will be set to the empty text.",
+          category = PropertyCategory.BEHAVIOR)
   public int SelectionIndex() {
     return selectionIndex;
   }
@@ -467,21 +441,21 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Sets the index to the passed argument for selection
    *
-   * @suppressdoc
    * @param index the index to be selected
+   * @suppressdoc
    */
-  @SimpleProperty(description="Specifies the position of the selected item in the ListView. " +
-      "This could be used to retrieve" +
-      "the text at the chosen position. If an attempt is made to set this to a " +
-      "number less than 1 or greater than the number of stringItems in the ListView, SelectionIndex " +
-      "will be set to 0, and Selection will be set to the empty text."
-      ,
-      category = PropertyCategory.BEHAVIOR)
-  public void SelectionIndex(int index){
-    if (!jsonItems.isEmpty()) {
-      selectionIndex = ElementsUtil.selectionIndex(jsonItems, index);
-      selection = ElementsUtil.setSelectionFromIndex(selectionIndex, jsonItems.get(selectionIndex-1));
-      selectionDetailText = ElementsUtil.setDetailSelectionFromIndex(selectionIndex, jsonItems.get(selectionIndex-1));
+  @SimpleProperty(description = "Specifies the position of the selected item in the ListView. " +
+          "This could be used to retrieve" +
+          "the text at the chosen position. If an attempt is made to set this to a " +
+          "number less than 1 or greater than the number of stringItems in the ListView, SelectionIndex " +
+          "will be set to 0, and Selection will be set to the empty text."
+          ,
+          category = PropertyCategory.BEHAVIOR)
+  public void SelectionIndex(int index) {
+    if (!dictItems.isEmpty()) {
+      selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
+      selection = dictItems.get(selectionIndex - 1).get("Text1").toString();
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1));
     } else {
       selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
@@ -492,13 +466,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
-  */
-  @SimpleProperty(description="Returns the text last selected in the ListView.",
-      category = PropertyCategory
-      .BEHAVIOR)
-  public String Selection(){
-      return selection;
+   * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
+   */
+  @SimpleProperty(description = "Returns the text last selected in the ListView.",
+          category = PropertyCategory
+                  .BEHAVIOR)
+  public String Selection() {
+    return selection;
   }
 
   /**
@@ -507,14 +481,24 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @suppressdoc
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+          defaultValue = "")
   @SimpleProperty
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    if (!jsonItems.isEmpty()) {
-      selectionIndex = ElementsUtil.setSelectedIndexFromValue(jsonItems, value);
-      selectionDetailText = ElementsUtil.setDetailSelectionFromIndex(selectionIndex, jsonItems.get(selectionIndex-1));
+    if (!dictItems.isEmpty()) {
+      for (int i = 0; i < dictItems.size(); ++i) {
+        YailDictionary item = dictItems.get(i);
+        if (item.get("Text1").toString() == value) {
+          selectionIndex = i + 1;
+          selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
+          break;
+        }
+        // Not found
+        selection = "";
+        selectionIndex = 0;
+        selectionDetailText = "";
+      }
     } else {
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
       selectionDetailText = "";
@@ -525,24 +509,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
    */
   @SimpleProperty(description = "Returns the secondary text of the selected row in the ListView.",
-      category = PropertyCategory.BEHAVIOR)
-  public String SelectionDetailText(){
+          category = PropertyCategory.BEHAVIOR)
+  public String SelectionDetailText() {
     return selectionDetailText;
-  }
-
-  /**
-   * SelectionDetailText property setter method
-   */
-  @SimpleProperty
-  public void SelectionDetailText(String value){
-    selectionDetailText = value;
-    if (!jsonItems.isEmpty() && (selection == null || selection.equals(""))) {
-      selectionIndex = ElementsUtil.setSelectedIndexFromDetailTextValue(jsonItems, value);
-      selection = ElementsUtil.setSelectionFromIndex(selectionIndex, jsonItems.get(selectionIndex-1));
-    } else {
-      selectionIndex = 0;
-      selection = "";
-    }
   }
 
   /**
@@ -551,15 +520,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    if (!jsonItems.isEmpty()) {
-      try {
-        JSONObject item = (JSONObject) parent.getAdapter().getItem(position);
-        this.selection = item.has("Text1") ? item.getString("Text1") : "";
-        this.selectionDetailText = item.has("Text2") ? item.getString("Text2") : "";
-        this.selectionIndex = itemAdapterCopy.getPosition(item) + 1;
-      } catch (JSONException e) {
-        container.$form().dispatchErrorOccurredEvent(this, "ListView.onItemClick", ErrorMessages.ERROR_SCREEN_BAD_VALUE_RECEIVED, e.getMessage());
-      }
+    if (!dictItems.isEmpty()) {
+      YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
+      this.selection = ElementsUtil.toStringEmptyIfNull(item.get("Text1"));
+      this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
+      this.selectionIndex = itemAdapterCopy.getPosition(item) + 1;
     } else {
       Spannable item = (Spannable) parent.getAdapter().getItem(position);
       this.selection = item.toString();
@@ -573,22 +538,23 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * The selected element is available in the {@link #Selection(String)} property.
    */
   @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the" +
-      " list. The selected element is available in the Selection property.")
+          " list. The selected element is available in the Selection property.")
   public void AfterPicking() {
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
 
   /**
    * Assigns a value to the backgroundColor
-   * @param color  an alpha-red-green-blue integer for a color
+   *
+   * @param color an alpha-red-green-blue integer for a color
    */
 
   public void setBackgroundColor(int color) {
-      backgroundColor = color;
-      view.setBackgroundColor(backgroundColor);
-      listViewLayout.setBackgroundColor(backgroundColor);
-      // Keeps background color behind list elements correct when scrolling through listView
-      view.setCacheColorHint(backgroundColor);
+    backgroundColor = color;
+    view.setBackgroundColor(backgroundColor);
+    listViewLayout.setBackgroundColor(backgroundColor);
+    // Keeps background color behind list elements correct when scrolling through listView
+    view.setCacheColorHint(backgroundColor);
   }
 
   /**
@@ -600,8 +566,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * alpha, red, green, and blue components
    */
   @SimpleProperty(
-      description = "The color of the listview background.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The color of the listview background.",
+          category = PropertyCategory.APPEARANCE)
   @IsColor
   public int BackgroundColor() {
     return backgroundColor;
@@ -610,20 +576,18 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * The color of the `ListView` background.
    *
-   * @internaldoc
-   * Specifies the ListView's background color as an alpha-red-green-blue
+   * @param argb background color in the format 0xAARRGGBB, which
+   *             includes alpha, red, green, and blue components
+   * @internaldoc Specifies the ListView's background color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
-   *
-   * @param argb background color in the format 0xAARRGGBB, which
-   * includes alpha, red, green, and blue components
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+          defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void BackgroundColor(int argb) {
-      backgroundColor = argb;
-      setBackgroundColor(backgroundColor);
+    backgroundColor = argb;
+    setBackgroundColor(backgroundColor);
   }
 
   /**
@@ -644,22 +608,20 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * The color of the item when it is selected.
    *
-   * @internaldoc
-   * Specifies the ListView's selection color as an alpha-red-green-blue
+   * @param argb selection color in the format 0xAARRGGBB, which
+   *             includes alpha, red, green, and blue components
+   * @internaldoc Specifies the ListView's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    * Is not supported on Icecream Sandwich or earlier
-   *
-   * @param argb selection color in the format 0xAARRGGBB, which
-   * includes alpha, red, green, and blue components
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+          defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
     view.setSelector(new GradientDrawable(
-      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
+            GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
     ));
   }
 
@@ -672,8 +634,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * alpha, red, green, and blue components
    */
   @SimpleProperty(
-      description = "The text color of the listview stringItems.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The text color of the listview stringItems.",
+          category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
     return textColor;
@@ -682,20 +644,18 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * The text color of the `ListView` items.
    *
-   * @internaldoc
-   * Specifies the ListView item's text color as an alpha-red-green-blue
+   * @param argb background color in the format 0xAARRGGBB, which
+   *             includes alpha, red, green, and blue components
+   * @internaldoc Specifies the ListView item's text color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
-   *
-   * @param argb background color in the format 0xAARRGGBB, which
-   * includes alpha, red, green, and blue components
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+          defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColor(int argb) {
-      textColor = argb;
-      setAdapterData();
+    textColor = argb;
+    setAdapterData();
   }
 
   /**
@@ -704,8 +664,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return color of the secondary text
    */
   @SimpleProperty(
-      description = "The text color of DetailText of listview stringItems. ",
-      category = PropertyCategory.APPEARANCE)
+          description = "The text color of DetailText of listview stringItems. ",
+          category = PropertyCategory.APPEARANCE)
   public int TextColorDetail() {
     return detailTextColor;
   }
@@ -714,10 +674,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Specifies the color of the secondary text in a ListView layout
    *
    * @param argb background color in the format 0xAARRGGBB, which
-   * includes alpha, red, green, and blue components
+   *             includes alpha, red, green, and blue components
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+          defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColorDetail(int argb) {
     detailTextColor = argb;
@@ -730,8 +690,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return text size as an float
    */
   @SimpleProperty(
-      description = "The text size of the listview stringItems.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The text size of the listview stringItems.",
+          category = PropertyCategory.APPEARANCE)
   public int TextSize() {
     return textSize;
   }
@@ -743,10 +703,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_TEXT_SIZE + "")
+          defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void TextSize(int fontSize) {
-    if (fontSize>1000 || fontSize<1)
+    if (fontSize > 1000 || fontSize < 1)
       textSize = 999;
     else
       textSize = fontSize;
@@ -759,8 +719,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return text size as an float
    */
   @SimpleProperty(
-      description = "The detailText size of the listview stringItems.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The detailText size of the listview stringItems.",
+          category = PropertyCategory.APPEARANCE)
   public int TextSizeDetail() {
     return detailTextSize;
   }
@@ -772,10 +732,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_TEXT_SIZE + "")
+          defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void TextSizeDetail(int fontSize) {
-    if (fontSize>1000 || fontSize<1)
+    if (fontSize > 1000 || fontSize < 1)
       detailTextSize = 999;
     else
       detailTextSize = fontSize;
@@ -788,8 +748,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return width of image
    */
   @SimpleProperty(
-      description = "The image width of the listview image stringItems.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The image width of the listview image.",
+          category = PropertyCategory.APPEARANCE)
   public int ImageWidth() {
     return imageWidth;
   }
@@ -800,7 +760,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param width sets the width of image in the ListView row
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+          defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
   public void ImageWidth(int width) {
     imageWidth = width;
@@ -813,8 +773,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @return height of image
    */
   @SimpleProperty(
-      description = "The image height of the listview image stringItems.",
-      category = PropertyCategory.APPEARANCE)
+          description = "The image height of the listview image stringItems.",
+          category = PropertyCategory.APPEARANCE)
   public int ImageHeight() {
     return imageHeight;
   }
@@ -825,7 +785,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param height sets the height of image in the ListView row
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = DEFAULT_IMAGE_WIDTH + "")
+          defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
   public void ImageHeight(int height) {
     imageHeight = height;
@@ -848,7 +808,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param value integer value to determine type of ListView layout
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
-      defaultValue = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT+"")
+          defaultValue = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT + "")
   @SimpleProperty(userVisible = false)
   public void ListViewLayout(int value) {
     layout = value;
@@ -872,19 +832,63 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
-  public void ListData(String propertyValue){
+  public void ListData(String propertyValue) {
     this.propertyValue = propertyValue;
+    dictItems.clear();
     if (propertyValue != null && propertyValue != "") {
       try {
         JSONArray arr = new JSONArray(propertyValue);
+        // Convert the JSON data into a list of Dictionaries
         for (int i = 0; i < arr.length(); ++i) {
-          jsonItems.add(i, arr.getJSONObject(i));
+          JSONObject jsonItem = arr.getJSONObject(i);
+          YailDictionary dictItem = new YailDictionary();
+          dictItem.put("Text1", jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
+          dictItem.put("Text2", jsonItem.has("Text1") ? jsonItem.getString("Text2") : "");
+          dictItem.put("Image", jsonItem.has("Image") ? jsonItem.getString("Image") : "");
+          dictItems.add(dictItem);
         }
       } catch (JSONException e) {
         Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
         container.$form().dispatchErrorOccurredEvent(this, "ListView.ListData", ErrorMessages.ERROR_DEFAULT, e.getMessage());
       }
     }
+    setAdapterData();
+  }
+
+  /**
+   * Creates a
+   *
+   * @param mainText     Primary text of the entry. Should be unique if possible.
+   * @param detailText   Additional descriptive text.
+   * @param imageName    File name of an image that has been uploaded to media.
+   *
+   */
+  @SimpleFunction(description = "Create a ListView entry.")
+  public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
+    YailDictionary dictItem = new YailDictionary();
+    dictItem.put("Text1", mainText);
+    dictItem.put("Text2", detailText);
+    dictItem.put("Image", imageName);
+    return dictItem;
+  }
+
+  @SimpleFunction(description = "Get the Main Text of a ListView element.")
+  public String GetMainText(final YailDictionary listElement) {
+    return listElement.get("Text1").toString();
+  }
+
+  @SimpleFunction(description = "Get the Detail Text of a ListView element.")
+  public String GetDetailText(final YailDictionary listElement) {
+    return listElement.get("Text2").toString();
+  }
+
+  @SimpleFunction(description = "Get the name of the image of a ListView element.")
+  public String GetImageName(final YailDictionary listElement) {
+    return listElement.get("Image").toString();
+  }
+
+  @SimpleFunction(description = "Reload the ListView to reflect any changes in the data.")
+  public void Refresh() {
     setAdapterData();
   }
 }

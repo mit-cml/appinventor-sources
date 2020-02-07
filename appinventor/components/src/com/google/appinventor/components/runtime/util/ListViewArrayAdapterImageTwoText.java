@@ -15,10 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.appinventor.components.runtime.ComponentContainer;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,14 +25,14 @@ import java.util.List;
 public class ListViewArrayAdapterImageTwoText {
   private int textSize, detailTextSize, textColor, detailTextColor, imageWidth, imageHeight;
   private ComponentContainer container;
-  private List<JSONObject> currentItems;
-  private List<JSONObject> filterCurrentItems;
+  private List<YailDictionary> currentItems;
+  private List<YailDictionary> filterCurrentItems;
 
-  private ArrayAdapter<JSONObject> itemAdapter;
+  private ArrayAdapter<YailDictionary> itemAdapter;
   private final Filter filter;
 
   public ListViewArrayAdapterImageTwoText(int textSize, int detailTextSize, int textColor, int detailTextColor,
-      int imageWidth, int imageHeight, ComponentContainer container, List<JSONObject> items) {
+      int imageWidth, int imageHeight, ComponentContainer container, List<YailDictionary> items) {
     this.textSize = textSize;
     this.detailTextSize = detailTextSize;
     this.textColor = textColor;
@@ -42,8 +40,8 @@ public class ListViewArrayAdapterImageTwoText {
     this.imageWidth = imageWidth;
     this.imageHeight = imageHeight;
     this.container = container;
-    this.currentItems = new ArrayList<>(items);
-    this.filterCurrentItems = new ArrayList<>(items);
+    this.currentItems = items;
+    this.filterCurrentItems = items;
 
     filter = new Filter() {
       @Override
@@ -52,33 +50,27 @@ public class ListViewArrayAdapterImageTwoText {
         FilterResults results = new FilterResults();
 
         if (filterQuery == null || filterQuery.length() == 0) {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          results.count = arrayList.size();
-          results.values = arrayList;
+          results.count = currentItems.size();
+          results.values = currentItems;
         } else {
-          List<JSONObject> arrayList = new ArrayList<>(currentItems);
-          List<JSONObject> filteredList = new ArrayList<>();
-          for (int i = 0; i < arrayList.size(); ++i) {
-            JSONObject object = arrayList.get(i);
-            if ((object.has("Text1") && object.getString("Text1").toLowerCase()
-                .contains(charSequence.toString())) || (object.has("Text2")) && object.getString("Text2")
-                .toLowerCase().contains(charSequence.toString())) {
-              filteredList.add(object);
+          filterCurrentItems.clear();
+          for (YailDictionary item : currentItems) {
+            if (item.get("Text1").toString().concat(ElementsUtil.toStringEmptyIfNull(item.get("Text2"))).contains(charSequence)) {
+              filterCurrentItems.add(item);
             }
           }
 
-          results.count = filteredList.size();
-          results.values = filteredList;
-        }
+          results.count = filterCurrentItems.size();
+          results.values = filterCurrentItems;
+          }
         return results;
       }
 
       @Override
       protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-        filterCurrentItems = (List<JSONObject>) filterResults.values;
         itemAdapter.clear();
-        for (int i = 0; i < filterCurrentItems.size(); ++i) {
-          itemAdapter.add(filterCurrentItems.get(i));
+        for (YailDictionary item : filterCurrentItems) {
+          itemAdapter.add(item);
         }
       }
     };
@@ -113,18 +105,19 @@ public class ListViewArrayAdapterImageTwoText {
   }
 
   public void setImage(ImageView imageView, String imagePath) {
-    Drawable drawable;
-    try {
-      drawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
-    } catch (IOException ioe) {
-      Log.e("Image", "Unable to load " + imagePath);
-      drawable = null;
+    Drawable drawable = null;
+    if (imagePath != null) {
+      try {
+        drawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+      } catch (IOException ioe) {
+        Log.e("Image", "Unable to load " + imagePath);
+      }
+      ViewUtil.setImage(imageView, drawable);
     }
-    ViewUtil.setImage(imageView, drawable);
   }
 
-  public ArrayAdapter<JSONObject> createAdapter() {
-    itemAdapter = new ArrayAdapter<JSONObject>(container.$context(),
+  public ArrayAdapter<YailDictionary> createAdapter() {
+    itemAdapter = new ArrayAdapter<YailDictionary>(container.$context(),
         android.R.layout.simple_list_item_2, android.R.id.text1, currentItems) {
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
@@ -134,10 +127,10 @@ public class ListViewArrayAdapterImageTwoText {
         TextView text1 = view.findViewById(2);
         TextView text2 = view.findViewById(3);
 
-        JSONObject row = filterCurrentItems.get(position);
-        String imageVal = row.has("Image") ? row.getString("Image") : "None";
-        String val1 = row.has("Text1") ? row.getString("Text1") : "";
-        String val2 = row.has("Text2") ? row.getString("Text2") : "";
+        YailDictionary row = filterCurrentItems.get(position);
+        String imageVal = row.get("Image").toString();
+        String val1 = row.get("Text1").toString();
+        String val2 = ElementsUtil.toStringEmptyIfNull(row.get("Text2"));
 
         setImage(image, imageVal);
         text1.setText(val1);
