@@ -222,6 +222,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_TEXT = 'for key with value in dictionary';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_PREFIX = 'for';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_SUFFIX = ' in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
         'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
         + ' Use the given variable names to refer to the key/value of the current dictionary item.';

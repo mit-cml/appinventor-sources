@@ -539,6 +539,7 @@ Blockly.Blocks['controls_for_each_dict'] = {
 
     return result;
   },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE}]
 };
 
 Blockly.Blocks['controls_while'] = {
