@@ -419,8 +419,7 @@ Blockly.Blocks['controls_forEach'] = {
 Blockly.Blocks['controls_for_each_dict'] = {
   category: 'Control',
 
-  // TODO:
-  // helpUrl:
+  helpUrl: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL,
 
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);

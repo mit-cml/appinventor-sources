@@ -212,7 +212,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.';
 
-    //Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = ;
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_ITEM = 'for each';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_WITH = 'with';

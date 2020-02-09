@@ -47,6 +47,12 @@ Runs the blocks in the do section for each numeric value in the range starting f
 
 Runs the blocks in the do section for each item in the list. Use the given variable name, `item`{:.variable.block}, to refer to the current list item. You can change the name `item`{:.variable.block} to something else if you wish.
 
+### for each key with value in dictionary   {#foreachdict}
+
+![](images/control/foreachdict.png)
+
+Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, `key`{:.variable.block} and `value`{:.variable.block}, to refer to the key and value of the current dictionary entry. You can change the names `key`{:.variable.block} and `value`{:.variable.block} to something else if you wish.
+
 ### while   {#while}
 
 ![](images/control/while.png)
