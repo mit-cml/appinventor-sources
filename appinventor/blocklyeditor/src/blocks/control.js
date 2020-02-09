@@ -427,23 +427,31 @@ Blockly.Blocks['controls_for_each_dict'] = {
     this.appendValueInput('DICT')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(
             'dictionary', Blockly.Blocks.Utilities.INPUT))
-        .appendField('for each')
-        .appendField(new Blockly.FieldParameterFlydown(
-            'key', true, Blockly.FieldFlydown.DISPLAY_BELOW), 'KEY')
-        .appendField(new Blockly.FieldParameterFlydown(
-            'value', true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VALUE')
-        .appendField('in dictionary')
+        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_ITEM)
+        .appendField(
+            new Blockly.FieldParameterFlydown(
+                Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
+                true, Blockly.FieldFlydown.DISPLAY_BELOW),
+            'KEY')
+        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_WITH)
+        .appendField(
+            new Blockly.FieldParameterFlydown(
+                Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE,
+                true, Blockly.FieldFlydown.DISPLAY_BELOW),
+            'VALUE')
+        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_INDICT)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO')
-        .appendField('do');
+        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    // TODO:
-    //this.setToolTip();
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP);
   },
+
   getVars: function () {
     return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
   },
+
   blocksInScope: function () {
     var doBlock = this.getInputTargetBlock('DO');
     if (doBlock) {
@@ -452,9 +460,11 @@ Blockly.Blocks['controls_for_each_dict'] = {
       return [];
     }
   },
+
   declaredNames: function () {
     return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
   },
+
   renameVar: function (oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
       this.setFieldValue(newName, 'KEY');
@@ -463,6 +473,7 @@ Blockly.Blocks['controls_for_each_dict'] = {
       this.setFieldValue(newName, 'VALUE');
     }
   },
+
   renameBound: function (boundSubstitution, freeSubstitution) {
     Blockly.LexicalVariable.renameFree(
         this.getInputTargetBlock('DICT'), freeSubstitution);
@@ -489,6 +500,7 @@ Blockly.Blocks['controls_for_each_dict'] = {
       Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
     }
   },
+
   renameFree: function (freeSubstitution) {
     var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
         this.getInputTargetBlock('DO'));
@@ -509,6 +521,7 @@ Blockly.Blocks['controls_for_each_dict'] = {
       }
     }
   },
+
   freeVariables: function () { // return the free variables of this block
     var result = Blockly.LexicalVariable.freeVariables(
         this.getInputTargetBlock('DO'));
