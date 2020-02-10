@@ -416,6 +416,119 @@ Blockly.Blocks['controls_forEach'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM}]
 };
 
+Blockly.Blocks['controls_for_each_dict'] = {
+  category: 'Control',
+
+  // TODO:
+  // helpUrl:
+
+  init: function() {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendValueInput('DICT')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+            'dictionary', Blockly.Blocks.Utilities.INPUT))
+        .appendField('for each')
+        .appendField(new Blockly.FieldParameterFlydown(
+            'key', true, Blockly.FieldFlydown.DISPLAY_BELOW), 'KEY')
+        .appendField(new Blockly.FieldParameterFlydown(
+            'value', true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VALUE')
+        .appendField('in dictionary')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendStatementInput('DO')
+        .appendField('do');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    // TODO:
+    //this.setToolTip();
+  },
+  getVars: function () {
+    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
+  },
+  blocksInScope: function () {
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
+  },
+  declaredNames: function () {
+    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
+  },
+  renameVar: function (oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
+      this.setFieldValue(newName, 'KEY');
+    }
+    if (Blockly.Names.equals(oldName, this.getFieldValue('VALUE'))) {
+      this.setFieldValue(newName, 'VALUE');
+    }
+  },
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(
+        this.getInputTargetBlock('DICT'), freeSubstitution);
+
+    var varFieldIds = ['KEY', 'VALUE'];
+
+    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
+      var oldVar = this.getFieldValue(fieldId);
+      var newVar = boundSubstitution.apply(oldVar);
+      if (newVar !== oldVar) {
+        this.renameVar(oldVar, newVar);
+        var keySubstitution = Blockly.Substitution.simpleSubstitution(
+            oldVar, newVar);
+        freeSubstitution = freeSubstitution.extend(keySubstitution);
+      } else {
+        freeSubstitution = freeSubstitution.remove([oldVar]);
+      }
+    }
+
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), modifiedSubstitution);
+
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function (freeSubstitution) {
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DO'));
+
+    var varFieldIds = ['KEY', 'VALUE'];
+    var boundSubstitution = new Blockly.Substitution();
+
+    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
+      var oldVar = this.getFieldValue(fieldId);
+      bodyFreeVars.deleteName(oldVar);
+      var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+      if (renamedBodyFreeVars.isMember(oldVar)) {
+        var newVar = Blockly.FieldLexicalVariable.nameNotIn(
+            oldVar, renamedBodyFreeVars.toList());
+        var substitution = Blockly.Substitution.simpleSubstitution(
+            oldVar, newVar);
+        boundSubstitution.extend(substitution);
+      }
+    }
+  },
+  freeVariables: function () { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DO'));
+
+    // Remove bound variables from body free vars.
+    result.deleteName(this.getFieldValue('KEY'));
+    result.deleteName(this.getFieldValue('VALUE'));
+
+    result.unite(Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DICT')));
+
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+
+    return result;
+  },
+};
+
 Blockly.Blocks['controls_while'] = {
   // While condition.
   category: 'Control',
