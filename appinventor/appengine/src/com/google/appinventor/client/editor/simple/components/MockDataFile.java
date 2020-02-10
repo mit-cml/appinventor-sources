@@ -18,6 +18,10 @@ import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Mock component for the Data File component.
+ * Is a non-visible component due to serving as a File.
+ */
 public class MockDataFile extends MockNonVisibleComponent {
   public static final String TYPE = "DataFile";
 
@@ -124,7 +128,7 @@ public class MockDataFile extends MockNonVisibleComponent {
    * @return  List of columns (a column is a List of Strings)
    */
   public List<List<String>> getColumns(List<String> columns) {
-    ArrayList<List<String>> dataColumns = new ArrayList<List<String>>();
+    List<List<String>> dataColumns = new ArrayList<List<String>>();
 
     for (String column : columns) {
       // Get the index of the column and get the column itself

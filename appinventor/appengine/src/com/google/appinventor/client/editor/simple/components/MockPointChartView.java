@@ -11,6 +11,10 @@ import org.pepstock.charba.client.configuration.Axis;
 
 import java.util.List;
 
+/**
+ * Chart View for the Point-Based Charts for the Mock Chart component.
+ * Handles the UI of Point-based Charts (e.g. Line/Scatter)
+ */
 public abstract class MockPointChartView extends MockAxisChartView<ScatterChart> {
   /**
    * Creates a new MockPointChartView object instance.

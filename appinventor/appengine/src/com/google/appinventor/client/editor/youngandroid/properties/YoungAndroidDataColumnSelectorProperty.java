@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.editor.simple.components.DataFileChangeListener;
@@ -17,7 +22,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * Property setter for selecting columns in Chart Data components
  * for the attached DataFile sources.
- *
+ * <p>
  * TODO: Reduce redundancy (a lot of reuse from ComponentSelector)
  */
 public class YoungAndroidDataColumnSelectorProperty
@@ -107,7 +112,7 @@ public class YoungAndroidDataColumnSelectorProperty
 
   /**
    * Clears the current columns and reinitializes the choices list.
-   *
+   * <p>
    * Re-initialization is needed to clear old entries of the list.
    * Used when updating the DataFile source.
    */
@@ -139,7 +144,8 @@ public class YoungAndroidDataColumnSelectorProperty
 
   /**
    * Changes the MockDataFile source of the Data column selector
-   * @param source  new MockDataFile source
+   *
+   * @param source new MockDataFile source
    */
   public void changeSource(MockDataFile source) {
     // Check if a DataFile source is currently referenced by the

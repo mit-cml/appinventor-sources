@@ -5,6 +5,10 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+/**
+ * Chart View for the Scatter Chart.
+ * Handles the UI of the Scatter Chart for the Mock Chart component.
+ */
 public class MockScatterChartView extends MockPointChartView {
   /**
    * Creates a new Mock Scatter Chart View object instance

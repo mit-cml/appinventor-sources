@@ -13,6 +13,11 @@ import org.pepstock.charba.client.enums.PointStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * Data Model class for the Scatter Chart.
+ * Provides full functionality for data operations and some styling settings
+ * for Scatter points.
+ */
 public class MockScatterChartDataModel extends MockPointChartDataModel {
   private PointStyle pointStyle = PointStyle.CIRCLE;
 

@@ -344,7 +344,17 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_CHART_PIE_RADIUS = "chart_pie_radius";
 
+  /**
+   * Chart Point Shape for Scatter Chart
+   * @see
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor
+   */
   public static final String PROPERTY_TYPE_CHART_POINT_SHAPE = "chart_point_shape";
 
+  /**
+   * Chart Line Type for Line Chart
+   * @see
+   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor
+   */
   public static final String PROPERTY_TYPE_CHART_LINE_TYPE = "chart_line_type";
 }

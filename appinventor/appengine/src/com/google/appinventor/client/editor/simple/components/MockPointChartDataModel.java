@@ -9,11 +9,17 @@ import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.DataPoint;
 import org.pepstock.charba.client.data.ScatterDataset;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * Data Model class for Point-based Charts for the Mock Chart component.
+ * The class is used in extensions of the Point Charts whenever the specified
+ * class type is selected in the Mock Chart (e.g. Line/Scatter Chart)
+ * <p>
+ * Extensions should minimally only provide a constructor. The class handles
+ * 2D data operations.
+ */
 public abstract class MockPointChartDataModel extends MockChartDataModel<ScatterDataset> {
 
   /**
