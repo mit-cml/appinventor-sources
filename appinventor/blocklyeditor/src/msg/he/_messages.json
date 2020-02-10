@@ -223,5 +223,9 @@
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE": "מחזיר אמת אם המספר הראשון גדול מהמספר השני או שווה לו.",
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT": "מחזיר אמת אם המספר הראשון גדול מהמספר השני.",
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE": "מחזיר אמת אם המספר הראשון פחות מהמספר השני או שווה לו.",
-    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT": "מחזיר אמת אם המספר הראשון פחות מהמספר השני."
+    "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT": "מחזיר אמת אם המספר הראשון פחות מהמספר השני.",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_ADD": "פלוס",
+    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR": "מחזיר פעולת OR לפי סיביות (כולל) של שני המספרים.",
+    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND": "מחזיר פעולת AND לפי סיביות של שני המספרים.",
+    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR": "מחזיר פעולת OR לפי סיביות (לא כולל) של שני המספרים."
 }
