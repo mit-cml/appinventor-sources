@@ -102,7 +102,6 @@ Blockly.Yail['controls_for_each_dict'] = function() {
   var dictionaryCode = yail.valueToCode(this, 'DICT', yail.ORDER_NONE);
   var bodyCode = yail.statementToCode(this, 'DO') || yail.YAIL_FALSE;
 
-  // TODO: Add loopIndexVar to reserved words.
   var loopIndexName = 'item';
   var loopIndexCommandAndName = yail.getVariableCommandAndName(loopIndexName);
   loopIndexName = loopIndexCommandAndName[1];
@@ -130,17 +129,12 @@ Blockly.Yail['controls_for_each_dict'] = function() {
       + yail.YAIL_OPEN_COMBINATION + valueName
       + yail.YAIL_SPACER + getValueCode
       + yail.YAIL_CLOSE_COMBINATION + yail.YAIL_SPACER;
-  console.log(loopIndexCommandAndName);
-  console.log(getListCode);
-  console.log(setKeyCode);
-  console.log(setValueCode);
 
-  var code = yail.YAIL_FOREACH + loopIndexName + yail.YAIL_SPACER
+  return yail.YAIL_FOREACH + loopIndexName + yail.YAIL_SPACER
       + yail.YAIL_BEGIN + yail.YAIL_SPACER + yail.YAIL_SPACER
       + setKeyCode + setValueCode + bodyCode + yail.YAIL_CLOSE_COMBINATION
       + yail.YAIL_CLOSE_COMBINATION + yail.YAIL_SPACER
       + dictionaryCode + yail.YAIL_CLOSE_COMBINATION;
-  return code;
 };
 
 // In general break could take a value to return from the loop, but
