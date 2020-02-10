@@ -1,19 +1,24 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.ArrayList;
-
+/**
+ * Handles the data operations & model-specific styling for Line
+ * Chart data for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartDataModel
+ */
 public class LineChartDataModel extends LineChartBaseDataModel {
-    /**
-     * Initializes a new LineChartDataModel object instance.
-     *
-     * @param data Line Chart Data object instance
-     */
-    public LineChartDataModel(LineData data) {
-        super(data);
-    }
+  /**
+   * Initializes a new LineChartDataModel object instance.
+   *
+   * @param data Line Chart Data object instance
+   */
+  public LineChartDataModel(LineData data) {
+    super(data);
+  }
 }

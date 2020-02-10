@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.ScatterChart;
@@ -9,6 +14,11 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 
+/**
+ * Handles the data operations & model-specific styling for Scatter
+ * Chart data for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartDataModel
+ */
 public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, ScatterData> {
   /**
    * Initializes a new ScatterChartDataModel object instance.

@@ -1,14 +1,24 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.view.View;
 import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.BarLineChartBase;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 
+/**
+ * Base class for handling the UI (view) of the Point-based Charts
+ * (e.g. Line/Scatter Charts) for the Chart component
+ * @see com.google.appinventor.components.runtime.ChartView
+ */
 public abstract class PointChartView<T extends BarLineChartBase,
     D extends BarLineScatterCandleBubbleData>
     extends AxisChartView<T, D> {
+
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();
